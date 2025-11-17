@@ -11,11 +11,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import py_dev
+from py_dev import dev
 from py_dev.dev.configs.base.base import ConfigFile
 from py_dev.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from py_dev.utils.modules.module import (
+    get_isolated_obj_name,
     import_module_with_default,
     to_path,
 )
@@ -222,7 +224,7 @@ def assert_no_dev_usage_in_non_dev_files() -> None:
 
     """
     src_pkg = get_src_package().__name__
-    dev_pkg = src_pkg + ".dev"
+    dev_pkg = src_pkg + "." + get_isolated_obj_name(dev)
     dev_path = to_path(dev_pkg, is_package=True)
     usages: list[Path] = []
     for path in Path(src_pkg).rglob("*.py"):
@@ -236,6 +238,10 @@ def assert_no_dev_usage_in_non_dev_files() -> None:
     msg = "Found dev utils usage in non-dev files."
     for path in usages:
         msg += f"\n    {path}"
+
+    if src_pkg == py_dev.__name__:
+        # py_dev is allowed to use itself
+        return
 
     assert_with_msg(
         not usages,

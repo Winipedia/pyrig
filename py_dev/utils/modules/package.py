@@ -45,10 +45,11 @@ def get_src_package() -> ModuleType:
 
     """
     from py_dev.utils.modules.module import to_path  # noqa: PLC0415
+    from py_dev.utils.testing.convention import TESTS_PACKAGE_NAME  # noqa: PLC0415
 
     package_names = find_packages(depth=0, include_namespace_packages=False)
     package_paths = [to_path(p, is_package=True) for p in package_names]
-    pkg = next(p for p in package_paths if p.name != "tests")
+    pkg = next(p for p in package_paths if p.name != TESTS_PACKAGE_NAME)
 
     return import_pkg_from_path(pkg)
 

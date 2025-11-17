@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 SETUP_STEPS: list[Callable[..., Any]] = [
     create_root,
     create_tests,
-    create_root,  # second time to make sure __init__.py files are created
     PyprojectConfigFile.update_dependencies,
     PreCommitConfigConfigFile.run_hooks,
     ConftestConfigFile.run_tests,
@@ -35,7 +34,3 @@ def setup() -> None:
         logger.info("Running setup step: %s", step.__name__)
         step()
     logger.info("Setup complete!")
-
-
-if __name__ == "__main__":
-    setup()

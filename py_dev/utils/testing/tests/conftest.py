@@ -13,8 +13,16 @@ package_path = Path(py_dev.__path__[0])
 
 custom_plugin_path = to_path("tests.base.fixtures", is_package=True)
 package_plugin_path = (
-    package_path / to_path("dev.testing", is_package=True) / custom_plugin_path
+    package_path / to_path("utils.testing", is_package=True) / custom_plugin_path
 )
+
+if not package_plugin_path.exists():
+    msg = f"Package plugin path not found: {package_plugin_path}"
+    raise FileNotFoundError(msg)
+
+if not custom_plugin_path.exists():
+    msg = f"Custom plugin path not found: {custom_plugin_path}"
+    raise FileNotFoundError(msg)
 
 custom_plugin_module_names = [
     to_module_name(path) for path in custom_plugin_path.rglob("*.py")
