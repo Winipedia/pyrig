@@ -15,7 +15,7 @@ repos:
     pass_filenames: false
   - id: create-root
     name: create-root
-    entry: poetry run py-dev create-root
+    entry: poetry run pyrig create-root
     language: system
     always_run: true
     pass_filenames: false

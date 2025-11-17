@@ -217,8 +217,9 @@ __marimo__/
 # vscode stuff
 .vscode/
 
-# py_dev stuff
+# pyrig stuff
 # for walk_os_skipping_gitignore_patterns func
 .git/
 # for executing experimental code
 /experiment.py
+# pyrig stuff

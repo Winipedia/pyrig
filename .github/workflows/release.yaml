@@ -62,7 +62,7 @@ jobs:
         from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"
     - name: Protect Repository
       id: protect_repository
-      run: poetry run py-dev protect-repo
+      run: poetry run pyrig protect-repo
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
     - name: Run Pre Commit Hooks
@@ -123,12 +123,12 @@ jobs:
         from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"
     - name: Build Artifacts
       id: build_artifacts
-      run: poetry run py-dev build
+      run: poetry run pyrig build
     - name: Upload Artifacts
       id: upload_artifacts
       uses: actions/upload-artifact@main
       with:
-        name: py_dev-${{ runner.os }}
+        name: pyrig-${{ runner.os }}
         path: artifacts
   release:
     needs:

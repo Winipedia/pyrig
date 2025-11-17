@@ -58,7 +58,7 @@ jobs:
         from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"
     - name: Protect Repository
       id: protect_repository
-      run: poetry run py-dev protect-repo
+      run: poetry run pyrig protect-repo
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
     - name: Run Pre Commit Hooks
