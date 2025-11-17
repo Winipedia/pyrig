@@ -1,0 +1,74 @@
+[project]
+name = "py-dev"
+version = "0.1.0"
+description = "A dev kit that standardizes configurations and testing"
+authors = [
+    {name = "Winipedia",email = "win.steveker@gmx.de"}
+]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.12"
+dynamic = ["dependencies"]
+
+
+[project.scripts]
+py-dev = "py_dev.dev.cli.cli:main"
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.packages]]
+include = "py_dev"
+
+[tool.poetry.dependencies]
+tomlkit = "*"
+pyyaml = "*"
+pygithub = "*"
+networkx = "*"
+setuptools = "*"
+packaging = "*"
+dotenv = "*"
+pathspec = "*"
+typer = "*"
+pillow = "*"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "*"
+pre-commit = "*"
+mypy = "*"
+pytest = "*"
+bandit = "*"
+types-setuptools = "*"
+types-tqdm = "*"
+types-defusedxml = "*"
+types-pyyaml = "*"
+pytest-mock = "*"
+types-networkx = "*"
+types-pyinstaller = "*"
+
+[tool.poetry.group.dev.dependencies.pyinstaller]
+version = "*"
+python = "<3.15"
+
+[tool.ruff]
+exclude = [".*", "**/migrations/*.py"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D203", "D213", "COM812", "ANN401"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+strict = true
+warn_unreachable = true
+show_error_codes = true
+files = "."
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.bandit]
+exclude_dirs = ["./experiment.py"]
