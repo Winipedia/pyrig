@@ -128,6 +128,9 @@ def to_path(module_name: str | ModuleType | Path, *, is_package: bool) -> Path:
     # for smth like pyinstaller we support frozen path
     if getattr(sys, "frozen", False):
         path = Path(getattr(sys, "_MEIPASS", "")) / path
+    # if path is cwd or "."
+    if path in (Path.cwd(), Path()):
+        return Path()
     # if path without with.py exists
     with_py = path.with_suffix(".py")
     if with_py.exists():

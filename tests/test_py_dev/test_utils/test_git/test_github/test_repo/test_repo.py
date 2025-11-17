@@ -88,7 +88,7 @@ def test_get_all_rulesets() -> None:
     rulesets = get_all_rulesets(
         get_github_repo_token(),
         PyprojectConfigFile.get_main_author_name(),
-        py_dev.__name__,
+        PyprojectConfigFile.get_project_name_from_pkg_name(py_dev.__name__),
     )
     assert_with_msg(
         isinstance(rulesets, list),
@@ -101,7 +101,7 @@ def test_ruleset_exists() -> None:
     ruleset_id = ruleset_exists(
         get_github_repo_token(),
         PyprojectConfigFile.get_main_author_name(),
-        py_dev.__name__,
+        PyprojectConfigFile.get_project_name_from_pkg_name(py_dev.__name__),
         DEFAULT_RULESET_NAME,
     )
     assert_with_msg(
