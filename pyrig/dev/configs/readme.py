@@ -32,6 +32,6 @@ class ReadmeConfigFile(TextConfigFile):
 """
         if PyprojectConfigFile.get_project_name() != pyrig.__name__:
             content += f"""
-(This project was created with [{pyrig.__name__}](https://github.com/Winipedia/{pyrig.__name__}))
+(This project uses [{PyprojectConfigFile.get_project_name_from_pkg_name(pyrig.__name__)}](https://github.com/Winipedia/{pyrig.__name__}))
 """
         return content
