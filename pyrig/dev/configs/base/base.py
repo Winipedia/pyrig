@@ -277,6 +277,10 @@ class TextConfigFile(ConfigFile):
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to text file."
             raise TypeError(msg)
+        if cls.get_file_content().strip():
+            config[cls.CONTENT_KEY] = (
+                config[cls.CONTENT_KEY] + "\n" + cls.get_file_content()
+            )
         cls.get_path().write_text(config[cls.CONTENT_KEY], encoding="utf-8")
 
     @classmethod
