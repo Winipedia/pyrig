@@ -24,7 +24,7 @@ def my_test_conftest_config_file(
 
 
 class TestConftestConfigFile:
-    """Test class for ConftestConfigFile."""
+    """Test class."""
 
     def test_get_content_str(
         self, my_test_conftest_config_file: type[ConftestConfigFile]

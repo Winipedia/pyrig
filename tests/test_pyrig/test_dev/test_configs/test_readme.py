@@ -7,7 +7,7 @@ from pyrig.src.testing.assertions import assert_with_msg
 
 
 class TestReadmeConfigFile:
-    """Test class for ReadmeConfigFile."""
+    """Test class."""
 
     def test_get_filename(self) -> None:
         """Test method for get_filename."""

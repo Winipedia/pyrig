@@ -23,7 +23,7 @@ def my_test_dotenv_config_file(
 
 
 class TestDotEnvConfigFile:
-    """Test class for DotEnvConfigFile."""
+    """Test class."""
 
     def test_load(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
         """Test method for load."""

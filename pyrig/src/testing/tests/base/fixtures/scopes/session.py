@@ -247,3 +247,13 @@ def assert_no_dev_usage_in_non_dev_files() -> None:
         not usages,
         msg,
     )
+
+
+@autouse_session_fixture
+def assert_dependencies_are_up_to_date() -> None:
+    """Verify that the dependencies are up to date.
+
+    This fixture runs once per test session and runs poetry update --with dev
+    to make sure the dependencies are up to date.
+    """
+    PyprojectConfigFile.update_dependencies(check=True)

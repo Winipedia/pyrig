@@ -19,7 +19,7 @@ def my_test_health_check_workflow(
 
 
 class TestHealthCheckWorkflow:
-    """Test class for HealthCheckWorkflow."""
+    """Test class."""
 
     def test_get_workflow_triggers(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]

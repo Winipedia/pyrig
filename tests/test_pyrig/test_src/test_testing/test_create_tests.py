@@ -327,7 +327,7 @@ class StringHelper:
     test_module_content = '''"""Test module."""
 
 class TestCalculator:
-    """Test class for Calculator."""
+    """Test class."""
 
     def test_add(self) -> None:
         """Test method for add."""

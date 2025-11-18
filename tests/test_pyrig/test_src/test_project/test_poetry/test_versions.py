@@ -7,7 +7,7 @@ from pyrig.src.testing.assertions import assert_with_msg
 
 
 class TestVersionConstraint:
-    """Test class for VersionConstraint."""
+    """Test class."""
 
     def test___init__(self) -> None:
         """Test method for __init__."""

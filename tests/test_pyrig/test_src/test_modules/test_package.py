@@ -316,7 +316,7 @@ def test_get_main_package(mocker: MockFixture) -> None:
 
 
 class TestDependencyGraph:
-    """Test class for DependencyGraph."""
+    """Test class."""
 
     def test_parse_distname_from_metadata(self) -> None:
         """Test method for parse_distname_from_metadata."""

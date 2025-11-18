@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 
 import pyrig
-from pyrig import main
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.module import to_path
 from pyrig.src.os.os import run_subprocess
@@ -100,10 +99,10 @@ def test_init(tmp_path: Path) -> None:
         # assert the pkgs own cli is available
         res = run_subprocess(["poetry", "run", "src-project", "--help"], check=False)
         stdout = res.stdout.decode("utf-8")
-        expected_cmd = main.__name__
+        expected = "src-project "
         assert_with_msg(
-            expected_cmd in stdout,
-            f"Expected {expected_cmd} in stdout, got {stdout}",
+            expected in stdout.lower(),
+            f"Expected {expected} in stdout, got {stdout}",
         )
         #  assert running the main command raises the NotImplementedError
         res = run_subprocess(["poetry", "run", "src-project"], check=False)

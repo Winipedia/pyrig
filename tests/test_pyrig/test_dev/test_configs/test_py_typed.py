@@ -21,7 +21,7 @@ def my_test_py_typed_config_file(
 
 
 class TestPyTypedConfigFile:
-    """Test class for PyTypedConfigFile."""
+    """Test class."""
 
     def test_get_parent_path(
         self, my_test_py_typed_config_file: type[PyTypedConfigFile]

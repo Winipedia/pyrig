@@ -17,7 +17,7 @@ def my_test_release_workflow(
 
 
 class TestReleaseWorkflow:
-    """Test class for ReleaseWorkflow."""
+    """Test class."""
 
     def test_get_workflow_triggers(
         self, my_test_release_workflow: type[ReleaseWorkflow]

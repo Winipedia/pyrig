@@ -24,7 +24,7 @@ def my_test_experiment_config_file(
 
 
 class TestExperimentConfigFile:
-    """Test class for ExperimentConfigFile."""
+    """Test class."""
 
     def test_get_parent_path(
         self, my_test_experiment_config_file: type[ExperimentConfigFile]

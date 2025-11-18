@@ -27,7 +27,7 @@ def my_test_gitignore_config_file(
 
 
 class TestGitIgnoreConfigFile:
-    """Test class for GitIgnoreConfigFile."""
+    """Test class."""
 
     def test_get_filename(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]

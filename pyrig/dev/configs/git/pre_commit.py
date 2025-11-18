@@ -66,6 +66,10 @@ class PreCommitConfigConfigFile(YamlConfigFile):
                 ["poetry", "check", "--strict"],
             ),
             cls.get_hook(
+                "install-dependencies",
+                ["poetry", "install", "--with", "dev"],
+            ),
+            cls.get_hook(
                 "create-root",
                 ["pyrig", "create-root"],
             ),

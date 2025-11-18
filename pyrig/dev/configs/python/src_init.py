@@ -22,3 +22,8 @@ class SrcInitConfigFile(CopyModuleConfigFile):
         path = super().get_parent_path()
         # this path will be parent of src
         return path / get_isolated_obj_name(src)
+
+    @classmethod
+    def get_filename(cls) -> str:
+        """Get the filename of the config file."""
+        return "__init__"

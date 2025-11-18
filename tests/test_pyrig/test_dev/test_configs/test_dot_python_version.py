@@ -26,7 +26,7 @@ def my_test_dot_python_version_config_file(
 
 
 class TestDotPythonVersionConfigFile:
-    """Test class for DotPythonVersionConfigFile."""
+    """Test class."""
 
     def test_get_filename(
         self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
