@@ -61,7 +61,7 @@ class ParentClass:
 
 
 class TestClass(ParentClass):
-    """Test class for method extraction."""
+    """Test class."""
 
     class_var: ClassVar[str] = "test_class_var"
 

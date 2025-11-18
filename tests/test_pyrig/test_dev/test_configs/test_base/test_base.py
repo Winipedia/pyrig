@@ -11,6 +11,7 @@ from pytest_mock import MockFixture
 
 from pyrig.dev.configs.base.base import (
     ConfigFile,
+    CopyModuleConfigFile,
     PythonConfigFile,
     PythonPackageConfigFile,
     PythonTestsConfigFile,
@@ -79,7 +80,7 @@ def my_test_config_file(
 
 
 class TestConfigFile:
-    """Test class for ConfigFile."""
+    """Test class."""
 
     def test_get_module_name_replacing_start_module(
         self,
@@ -369,7 +370,7 @@ def my_test_yaml_config_file(
 
 
 class TestYamlConfigFile:
-    """Test class for YamlConfigFile."""
+    """Test class."""
 
     def test_load(self, my_test_yaml_config_file: type[YamlConfigFile]) -> None:
         """Test method for load."""
@@ -419,7 +420,7 @@ def my_test_toml_config_file(
 
 
 class TestTomlConfigFile:
-    """Test class for TomlConfigFile."""
+    """Test class."""
 
     def test_load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method for load."""
@@ -474,7 +475,7 @@ def my_test_text_config_file(
 
 
 class TestTextConfigFile:
-    """Test class for TextConfigFile."""
+    """Test class."""
 
     def test_get_content_str(
         self, my_test_text_config_file: type[TextConfigFile]
@@ -559,7 +560,7 @@ def my_test_python_config_file(
 
 
 class TestPythonConfigFile:
-    """Test class for PythonConfigFile."""
+    """Test class."""
 
     def test_get_file_extension(
         self, my_test_python_config_file: type[PythonConfigFile]
@@ -590,7 +591,7 @@ def my_test_python_tests_config_file(
 
 
 class TestPythonTestsConfigFile:
-    """Test class for PythonTestsConfigFile."""
+    """Test class."""
 
     def test_get_parent_path(
         self, my_test_python_tests_config_file: type[PythonTestsConfigFile]
@@ -633,7 +634,7 @@ def my_test_python_package_config_file(
 
 
 class TestPythonPackageConfigFile:
-    """Test class for PythonPackageConfigFile."""
+    """Test class."""
 
     def test_dump(
         self, my_test_python_package_config_file: type[PythonPackageConfigFile]
@@ -661,7 +662,7 @@ def my_test_typed_config_file(
 
 
 class TestTypedConfigFile:
-    """Test class for TypedConfigFile."""
+    """Test class."""
 
     def test_get_file_extension(
         self, my_test_typed_config_file: type[TypedConfigFile]
@@ -699,4 +700,101 @@ class TestTypedConfigFile:
         assert_with_msg(
             configs == {},
             "Expected get_configs to return empty dict",
+        )
+
+
+@pytest.fixture
+def my_test_copy_module_config_file(
+    config_file_factory: Callable[
+        [type[PythonPackageConfigFile]], type[PythonPackageConfigFile]
+    ],
+    tmp_path: Path,
+) -> type[PythonPackageConfigFile]:
+    """Create a test copy module config file class with tmp_path."""
+    # Create a mock module for testing
+
+    mock_module = ModuleType("test_package.test_subpackage.test_module")
+    mock_module.__file__ = str(
+        tmp_path / "test_package" / "test_subpackage" / "test_module.py"
+    )
+
+    # Create the module file with some content
+    module_path = Path(mock_module.__file__)
+    module_path.parent.mkdir(parents=True, exist_ok=True)
+    test_content = (
+        '"""Test module content."""\n\n'
+        "def test_func():\n"
+        '    """Test function."""\n'
+        "    pass\n"
+    )
+    module_path.write_text(test_content)
+
+    class MyTestCopyModuleConfigFile(config_file_factory(CopyModuleConfigFile)):  # type: ignore [misc]
+        """Test copy module config file with tmp_path override."""
+
+        @classmethod
+        def get_src_module(cls) -> ModuleType:
+            """Get the source module."""
+            return mock_module
+
+        @classmethod
+        def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+            """Dump the config file."""
+            with chdir(tmp_path):
+                super().dump(config)
+
+    return MyTestCopyModuleConfigFile
+
+
+class TestCopyModuleConfigFile:
+    """Test class."""
+
+    def test_get_src_module(
+        self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
+    ) -> None:
+        """Test method for get_src_module."""
+        src_module = my_test_copy_module_config_file.get_src_module()
+        assert_with_msg(
+            isinstance(src_module, ModuleType),
+            "Expected ModuleType",
+        )
+        expected_name = "test_package.test_subpackage.test_module"
+        assert_with_msg(
+            src_module.__name__ == expected_name,
+            f"Expected '{expected_name}', got {src_module.__name__}",
+        )
+
+    def test_get_parent_path(
+        self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
+    ) -> None:
+        """Test method for get_parent_path."""
+        parent_path = my_test_copy_module_config_file.get_parent_path()
+        assert_with_msg(
+            isinstance(parent_path, Path),
+            "Expected Path",
+        )
+
+    def test_get_content_str(
+        self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
+    ) -> None:
+        """Test method for get_content_str."""
+        content_str = my_test_copy_module_config_file.get_content_str()
+        assert_with_msg(
+            len(content_str) > 0,
+            "Expected non-empty string",
+        )
+        # Verify it contains the module content
+        assert_with_msg(
+            "Test module content" in content_str,
+            "Expected module content in string",
+        )
+
+    def test_get_filename(
+        self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
+    ) -> None:
+        """Test method for get_filename."""
+        filename = my_test_copy_module_config_file.get_filename()
+        assert_with_msg(
+            filename == "test_module",
+            f"Expected 'test_module', got {filename}",
         )

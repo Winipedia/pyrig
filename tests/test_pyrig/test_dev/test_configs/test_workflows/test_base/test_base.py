@@ -46,7 +46,7 @@ def my_test_workflow(
 
 
 class TestWorkflow:
-    """Test class for Workflow."""
+    """Test class."""
 
     def test_steps_core_installed_setup(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for steps_core_installed_setup."""

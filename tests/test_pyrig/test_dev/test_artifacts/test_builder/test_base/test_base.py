@@ -35,7 +35,7 @@ def my_test_builder(
 
 
 class TestBuilder:
-    """Test class for Builder."""
+    """Test class."""
 
     def test_get_artifacts_dir(self) -> None:
         """Test method for get_artifacts_dir."""
@@ -209,7 +209,7 @@ def my_test_pyinstaller_builder(
 
 
 class TestPyInstallerBuilder:
-    """Test class for PyInstallerBuilder."""
+    """Test class."""
 
     def test_get_temp_distpath(self, tmp_path: Path) -> None:
         """Test method for get_temp_distpath."""

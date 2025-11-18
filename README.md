@@ -207,11 +207,14 @@ Automatically created and configured with the following pre-commit hooks:
 
 - `update-package-manager`: poetry self update
 - `check-package-manager-config`: poetry check --strict
+- `install-dependencies`: poetry install --with dev (keeps dependencies up-to-date automatically)
 - `create-root`: pyrig create-root
 - `lint-code`: ruff check --fix
 - `format-code`: ruff format
 - `check-static-types`: mypy --exclude-gitignore
 - `check-security`: bandit -c pyproject.toml -r .
+
+The `install-dependencies` hook ensures that your local environment stays synchronized with the latest dependencies defined in `pyproject.toml` before each commit.
 
 #### `.gitignore`
 
@@ -238,6 +241,7 @@ Automatically created to run the release workflow via GitHub Actions.
   2. Creates a tag for the release and builds a changelog
   3. Creates a release on GitHub
   4. Builds artifacts (if a builder class is implemented) and uploads them to the release
+  5. Commits the tag and possible dependency updates to `pyproject.toml` and `poetry.lock`
 - **Synchronization**: Keeps tags, poetry version, and PyPI (if PYPI_TOKEN is configured) in sync
 
 #### `.github/workflows/publish.yaml`
@@ -515,6 +519,42 @@ class TestCalculator:
         """Test func for add."""
         raise NotImplementedError
 ```
+
+### Automatic Test Enforcement with Autouse Session Fixtures
+
+pyrig automatically enforces code quality and project conventions through a suite of autouse session fixtures that run once per test session. These fixtures are automatically plugged in via `tests/conftest.py` and ensure your project maintains best practices.
+
+#### Session-Level Fixtures
+
+The following autouse session fixtures are automatically applied to every test run:
+
+**Project Structure Enforcement**:
+- `assert_no_namespace_packages`: Ensures all packages have `__init__.py` files (no namespace packages)
+- `assert_all_src_code_in_one_package`: Verifies that all source code is in a single package (besides the tests package)
+- `assert_src_package_correctly_named`: Checks that the source package name matches the project name in `pyproject.toml`
+
+**Test Coverage Enforcement**:
+- `assert_all_modules_tested`: Automatically creates missing test modules, classes, and functions for any untested code. If tests are missing, they are generated and the fixture fails to alert you.
+
+**Code Quality Enforcement**:
+- `assert_no_unit_test_package_usage`: Prevents usage of the `unittest` package (enforces pytest)
+- `assert_no_dev_usage_in_non_dev_files`: Ensures development utilities from the `dev/` folder are not imported in production code
+
+**Configuration Enforcement**:
+- `assert_config_files_are_correct`: Verifies all configuration files are correct and automatically fixes them if needed
+- `assert_dev_dependencies_config_is_correct`: Validates dev dependencies configuration (pyrig internal)
+
+**Dependency Management**:
+- `assert_dependencies_are_up_to_date`: Runs `poetry update --with dev` to ensure dependencies are current
+
+These fixtures run automatically before your tests execute, ensuring that:
+1. Your project structure follows best practices
+2. All code has corresponding test skeletons
+3. Configuration files are up-to-date
+4. Dependencies are synchronized
+5. Code quality standards are maintained
+
+**Note**: These fixtures are designed to fail fast and provide clear error messages when conventions are violated, helping you maintain a clean and well-structured codebase.
 
 ### Running Tests
 

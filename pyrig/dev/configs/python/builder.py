@@ -19,5 +19,5 @@ class BuilderConfigFile(CopyModuleConfigFile):
         """Get the content."""
         # override content bc we have a Pyrig Builder
         content = super().get_content_str()
-        # only keep the docstring
-        return '"""' + content.split('"""', 1)[1] + '"""'
+        parts = content.split('"""', 2)
+        return '"""' + parts[1] + '"""\n'

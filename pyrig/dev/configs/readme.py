@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import pyrig
 from pyrig.dev.configs.base.base import TextConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 
@@ -27,4 +28,10 @@ class ReadmeConfigFile(TextConfigFile):
     @classmethod
     def get_content_str(cls) -> str:
         """Get the content."""
-        return f"# {PyprojectConfigFile.get_project_name()}"
+        content = f"""# {PyprojectConfigFile.get_project_name()}
+"""
+        if PyprojectConfigFile.get_project_name() != pyrig.__name__:
+            content += f"""
+(This project was created with [{pyrig.__name__}](https://github.com/Winipedia/{pyrig.__name__}))
+"""
+        return content

@@ -24,7 +24,7 @@ def my_test_zero_test_config_file(
 
 
 class TestZeroTestConfigFile:
-    """Test class for ZeroTestConfigFile."""
+    """Test class."""
 
     def test_create_tests(self, mocker: MockFixture) -> None:
         """Test method for create_tests."""

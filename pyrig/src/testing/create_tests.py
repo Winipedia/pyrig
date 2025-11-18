@@ -32,7 +32,6 @@ from pyrig.src.testing.convention import (
     get_test_obj_from_obj,
     make_test_obj_importpath_from_obj,
     make_test_obj_name,
-    reverse_make_test_obj_name,
 )
 
 
@@ -168,7 +167,7 @@ def get_test_functions_content(
         test_module_content += f"""
 
 def {test_func_name}() -> None:
-    \"\"\"Test func for {reverse_make_test_obj_name(test_func_name)}.\"\"\"
+    \"\"\"Test function.\"\"\"
     raise {NotImplementedError.__name__}
 """
 
@@ -247,13 +246,13 @@ def get_test_classes_content(
     ) in untested_test_class_to_methods_names.items():
         test_class_declaration = f"""
 class {test_class_name}:
-    \"\"\"Test class for {reverse_make_test_obj_name(test_class_name)}.\"\"\"
+    \"\"\"Test class.\"\"\"
 """
         test_class_content = test_class_declaration
         for untested_method_name in untested_methods_names:
             test_class_content += f"""
     def {untested_method_name}(self) -> None:
-        \"\"\"Test method for {reverse_make_test_obj_name(untested_method_name)}.\"\"\"
+        \"\"\"Test method.\"\"\"
         raise {NotImplementedError.__name__}
 """
         parts = test_module_content.split(test_class_declaration)

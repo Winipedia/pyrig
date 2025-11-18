@@ -30,7 +30,7 @@ def my_test_pyproject_config_file(
 
 
 class TestPyprojectConfigFile:
-    """Test class for PyprojectConfigFile."""
+    """Test class."""
 
     def test_get_project_description(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]

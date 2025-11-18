@@ -30,7 +30,7 @@ def my_test_pyrig_builder(
 
 
 class TestPyrigBuilder:
-    """Test class for PyrigBuilder."""
+    """Test class."""
 
     def test_create_artifacts(self, my_test_pyrig_builder: type[PyrigBuilder]) -> None:
         """Test method for get_artifacts."""

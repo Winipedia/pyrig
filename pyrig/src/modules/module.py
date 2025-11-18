@@ -123,10 +123,14 @@ def to_path(module_name: str | ModuleType | Path, *, is_package: bool) -> Path:
         module_name_to_path("src.package.module") -> Path("src/package/module.py")
 
     """
-    if isinstance(module_name, ModuleType):
-        file_path = module_name.__file__
-        if file_path is not None:
-            return Path(file_path)
+    if isinstance(module_name, ModuleType) and hasattr(module_name, "__file__"):
+        file_str = module_name.__file__
+        if file_str is not None:
+            file_path = Path(file_str)
+            if is_package:
+                # this way if you want __init__ in the path then package=False
+                file_path = file_path.parent
+            return file_path
     module_name = to_module_name(module_name)
     path = Path(module_name.replace(".", os.sep))
     # for smth like pyinstaller we support frozen path

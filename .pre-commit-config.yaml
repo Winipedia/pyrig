@@ -13,6 +13,12 @@ repos:
     language: system
     always_run: true
     pass_filenames: false
+  - id: install-dependencies
+    name: install-dependencies
+    entry: poetry install --with dev
+    language: system
+    always_run: true
+    pass_filenames: false
   - id: create-root
     name: create-root
     entry: poetry run pyrig create-root

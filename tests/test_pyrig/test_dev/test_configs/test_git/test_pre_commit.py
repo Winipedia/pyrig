@@ -28,7 +28,7 @@ def my_test_pre_commit_config_file(
 
 
 class TestPreCommitConfigConfigFile:
-    """Test class for PreCommitConfigConfigFile."""
+    """Test class."""
 
     def test_get_hook(self) -> None:
         """Test method for get_hook."""
