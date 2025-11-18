@@ -10,7 +10,7 @@ from pytest_mock import MockFixture
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.base import base
 from pyrig.dev.configs.workflows.base.base import Workflow
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture

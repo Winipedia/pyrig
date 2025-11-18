@@ -4,7 +4,7 @@ from pytest_mock import MockFixture
 
 from pyrig.dev.artifacts.build import build
 from pyrig.dev.artifacts.builder.base.base import Builder
-from pyrig.utils.modules.module import make_obj_importpath
+from pyrig.src.modules.module import make_obj_importpath
 
 
 def test_build(mocker: MockFixture) -> None:

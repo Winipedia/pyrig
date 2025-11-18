@@ -11,8 +11,8 @@ from PIL import Image
 from pytest_mock import MockFixture
 
 from pyrig.dev.artifacts.builder.base.base import Builder, PyInstallerBuilder
-from pyrig.utils.modules.module import make_obj_importpath
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.modules.module import make_obj_importpath
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture

@@ -6,17 +6,17 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.dev.artifacts.builder.builder import PydevBuilder
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.dev.artifacts.builder.builder import PyrigBuilder
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
 def my_test_pyrig_builder(
-    builder_factory: Callable[[type[PydevBuilder]], type[PydevBuilder]],
-) -> type[PydevBuilder]:
+    builder_factory: Callable[[type[PyrigBuilder]], type[PyrigBuilder]],
+) -> type[PyrigBuilder]:
     """Create a test pyrigbuild class."""
 
-    class MyTestPydevBuild(builder_factory(PydevBuilder)):  # type: ignore [misc]
+    class MyTestPyrigBuild(builder_factory(PyrigBuilder)):  # type: ignore [misc]
         """Test pyrigbuild class."""
 
         @classmethod
@@ -26,13 +26,13 @@ def my_test_pyrig_builder(
             for path in paths:
                 path.write_text("Hello World!")
 
-    return MyTestPydevBuild
+    return MyTestPyrigBuild
 
 
-class TestPydevBuilder:
-    """Test class for PydevBuilder."""
+class TestPyrigBuilder:
+    """Test class for PyrigBuilder."""
 
-    def test_create_artifacts(self, my_test_pyrig_builder: type[PydevBuilder]) -> None:
+    def test_create_artifacts(self, my_test_pyrig_builder: type[PyrigBuilder]) -> None:
         """Test method for get_artifacts."""
         my_build = my_test_pyrig_builder()
         artifacts = my_build.get_artifacts()

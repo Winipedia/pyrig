@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from pyrig.dev.configs.dot_python_version import DotPythonVersionConfigFile
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture

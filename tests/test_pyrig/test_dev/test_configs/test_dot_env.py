@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 """Contains an simple test for cli."""
 
-from pyrig.utils.os.os import run_subprocess
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.os.os import run_subprocess
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_add_subcommands() -> None:

@@ -11,8 +11,8 @@ from pyrig.dev.configs import pyproject
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
-from pyrig.utils.modules.module import make_obj_importpath
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.modules.module import make_obj_importpath
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -427,4 +427,15 @@ class TestPyprojectConfigFile:
         my_test_pyproject_config_file()
         mock_run = mocker.patch(make_obj_importpath(pyproject) + ".run_subprocess")
         my_test_pyproject_config_file.update_dependencies()
+        mock_run.assert_called()
+
+    def test_install_dependencies(
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
+        mocker: MockFixture,
+    ) -> None:
+        """Test method for install_dependencies."""
+        my_test_pyproject_config_file()
+        mock_run = mocker.patch(make_obj_importpath(pyproject) + ".run_subprocess")
+        my_test_pyproject_config_file.install_dependencies()
         mock_run.assert_called()

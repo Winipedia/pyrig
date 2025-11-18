@@ -5,7 +5,7 @@ from collections.abc import Callable
 import pytest
 
 from pyrig.dev.configs.py_typed import PyTypedConfigFile
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
