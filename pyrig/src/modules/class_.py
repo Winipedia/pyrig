@@ -178,7 +178,7 @@ def init_all_nonabstract_subclasses(
 
 def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
     cls: type, dep: ModuleType, load_package_before: ModuleType
-) -> set[type]:
+) -> list[type]:
     """Get all non-abstract subclasses of a class from a module in all deps.
 
     Retrieves all classes that are subclasses of the specified class,
@@ -195,6 +195,7 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
 
     Returns:
         A list of non-abstract subclasses of the given class
+        Order is garanteed only that classes from the same module are grouped together
 
     """
     from pyrig.src.modules.module import (  # noqa: PLC0415
@@ -204,11 +205,11 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
 
     graph = DependencyGraph()
     pkgs = graph.get_all_depending_on(dep, include_self=True)
-    subclasses: set[type] = set()
+    subclasses: list[type] = []
     for pkg in pkgs:
         load_package_before_name = load_package_before.__name__.replace(
             dep.__name__, pkg.__name__, 1
         )
         load_package_before_pkg = import_module_from_path(load_package_before_name)
-        subclasses.update(get_all_nonabstract_subclasses(cls, load_package_before_pkg))
+        subclasses.extend(get_all_nonabstract_subclasses(cls, load_package_before_pkg))
     return subclasses

@@ -354,7 +354,7 @@ class DependencyGraph(nx.DiGraph):  # type: ignore [type-arg]
 
     def get_all_depending_on(
         self, package: ModuleType | str, *, include_self: bool = False
-    ) -> set[ModuleType]:
+    ) -> list[ModuleType]:
         """Return all packages that directly or indirectly depend on the given package.
 
         Args:
@@ -362,7 +362,9 @@ class DependencyGraph(nx.DiGraph):  # type: ignore [type-arg]
             include_self: Whether to include the package itself in the result.
 
         Returns:
-            A set of imported module objects representing dependents.
+            A list of imported module objects representing dependents.
+            Order is that the the one that has the most deps is last and the one that
+            has the least deps is first.
         """
         # replace - with _ to handle packages like pyrig
         if isinstance(package, ModuleType):
@@ -372,22 +374,25 @@ class DependencyGraph(nx.DiGraph):  # type: ignore [type-arg]
             msg = f"""Package '{target}' not found in dependency graph.
 Possibly the target is the current project itself."""
             logger.warning(msg)
-            return set()
+            return []
 
-        dependents = nx.ancestors(self, target)
+        dependents: list[str] = list(nx.ancestors(self, target))
         if include_self:
-            dependents.add(target)
+            dependents.insert(0, target)
+
+        # sort by number of dependencies
+        dependents = sorted(dependents, key=lambda p: len(self[p]), reverse=True)
 
         return self.import_packages(dependents)
 
     @staticmethod
-    def import_packages(names: set[str]) -> set[ModuleType]:
+    def import_packages(names: Iterable[str]) -> list[ModuleType]:
         """Attempt to import all module names that can be resolved."""
-        modules: set[ModuleType] = set()
+        modules: list[ModuleType] = []
         for name in names:
             spec = importlib.util.find_spec(name)
             if spec is not None:
-                modules.add(importlib.import_module(name))
+                modules.append(importlib.import_module(name))
         return modules
 
 

@@ -111,7 +111,7 @@ class Builder(ABC):
         return path
 
     @classmethod
-    def get_non_abstract_subclasses(cls) -> set[type["Builder"]]:
+    def get_non_abstract_subclasses(cls) -> list[type["Builder"]]:
         """Get all non-abstract subclasses of Builder."""
         return get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
             cls, pyrig, builder

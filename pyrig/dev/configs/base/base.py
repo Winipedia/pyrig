@@ -155,7 +155,7 @@ class ConfigFile(ABC):
         return nested_structure_is_subset(expected_config, actual_config)
 
     @classmethod
-    def get_all_subclasses(cls) -> set[type["ConfigFile"]]:
+    def get_all_subclasses(cls) -> list[type["ConfigFile"]]:
         """Get all subclasses of ConfigFile."""
         return get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
             cls, pyrig, configs
@@ -196,7 +196,7 @@ class ConfigFile(ABC):
             subclass()
 
         subclasses = cls.get_all_subclasses()
-        subclasses = subclasses - set(priorities)
+        subclasses = [subclass for subclass in subclasses if subclass not in priorities]
         for subclass in subclasses:
             subclass()
 
