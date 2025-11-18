@@ -451,15 +451,15 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
-    def step_no_build_script(
+    def step_no_builder_defined(
         cls,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Get the no build script step."""
         return cls.get_step(
-            step_func=cls.step_no_build_script,
-            run="echo 'No build script found. Skipping build.'",
+            step_func=cls.step_no_builder_defined,
+            run="echo 'No non-abstract builders defined. Skipping build.'",
             step=step,
         )
 

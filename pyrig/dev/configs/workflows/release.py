@@ -66,7 +66,7 @@ class ReleaseWorkflow(HealthCheckWorkflow):
         """Get the build steps."""
         non_abstract_builders = Builder.get_non_abstract_subclasses()
         if not non_abstract_builders:
-            return [cls.step_no_build_script()]
+            return [cls.step_no_builder_defined()]
         return [
             *cls.steps_core_matrix_setup(),
             cls.step_build_artifacts(),
