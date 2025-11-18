@@ -275,6 +275,8 @@ def copy_package(
         if src.is_dir():
             dst_.mkdir(parents=True, exist_ok=True)
             continue
+        # Ensure parent directory exists before copying file
+        dst_.parent.mkdir(parents=True, exist_ok=True)
         if with_file_content:
             shutil.copy2(src, dst_)
         else:
