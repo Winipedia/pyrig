@@ -273,7 +273,23 @@ Automatically created for defining build scripts. Any subclass of `pyrig.dev.art
 
 #### `tests/conftest.py`
 
-Automatically created and configured to run pytest plugins. It plugs in a conftest file from pyrig that contains all necessary fixtures and plugins.
+Automatically created and configured to run pytest plugins. It automatically discovers and loads:
+- All fixtures from `tests/base/fixtures/` in your project
+- All fixtures from pyrig's testing module
+- Makes all fixtures available to all tests in the project
+
+This allows you to define reusable fixtures in `tests/base/fixtures/fixture.py` that are automatically available across all your tests.
+
+#### `tests/base/`
+
+Automatically created base test structure containing:
+- **`tests/base/fixtures/`** - Directory for reusable pytest fixtures
+  - `fixture.py` - Define custom fixtures here (e.g., `builder_factory`, `config_file_factory`)
+  - `scopes/` - Fixture scope configurations
+- **`tests/base/utils/`** - Directory for test utility functions
+  - `utils.py` - Helper functions for tests
+
+This base structure is copied from pyrig's internal testing framework and provides a foundation for organizing shared test utilities and fixtures.
 
 #### `tests/test_zero.py`
 
@@ -413,6 +429,19 @@ pyrig automatically generates test skeletons in two ways:
 
 1. **Manual Generation**: Run `poetry run pyrig create-tests` to generate all missing tests
 2. **Automatic Generation**: When you run `pytest`, an autouse session fixture automatically creates missing test modules, classes, and functions
+
+#### Test Base Structure Creation
+
+When you run `pyrig create-tests` (or `pyrig init`), pyrig first creates a **base test structure** by copying a template from pyrig's internal testing framework. This creates:
+
+- **`tests/base/fixtures/`** - Reusable pytest fixtures that are automatically available to all tests
+  - `fixture.py` - Define custom fixtures here (automatically loaded by conftest.py)
+  - `scopes/` - Fixture scope configurations
+- **`tests/base/utils/`** - Test utility functions
+  - `utils.py` - Helper functions for your tests
+- **`tests/conftest.py`** - Pytest configuration that auto-discovers and loads all fixtures
+
+This base structure provides a foundation for organizing shared test utilities and fixtures across your entire test suite. Any fixtures defined in `tests/base/fixtures/fixture.py` are automatically available to all your tests without needing to import them.
 
 **Generated Test Example**:
 ```python
@@ -572,6 +601,15 @@ your-project/
     ├── __init__.py
     ├── conftest.py               # Pytest configuration
     ├── test_zero.py              # Empty test placeholder
+    ├── base/                     # Base test structure
+    │   ├── __init__.py
+    │   ├── fixtures/             # Reusable pytest fixtures
+    │   │   ├── __init__.py
+    │   │   ├── fixture.py        # Custom fixtures
+    │   │   └── scopes/           # Fixture scopes
+    │   └── utils/                # Test utilities
+    │       ├── __init__.py
+    │       └── utils.py          # Helper functions
     └── test_your_project/        # Mirror of source structure
         ├── __init__.py
         └── test_dev
