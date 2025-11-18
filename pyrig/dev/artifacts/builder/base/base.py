@@ -40,7 +40,7 @@ class Builder(ABC):
         YourBuildClass()
     """
 
-    ARTIFACTS_DIR_NAME = "artifacts"
+    ARTIFACTS_DIR_NAME = "dist"
 
     @classmethod
     @abstractmethod

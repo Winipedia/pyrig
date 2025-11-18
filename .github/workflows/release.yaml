@@ -150,7 +150,7 @@ jobs:
       id: download_artifacts
       uses: actions/download-artifact@main
       with:
-        path: artifacts
+        path: dist
         merge-multiple: 'true'
     - name: Build Changelog
       id: build_changelog
@@ -166,3 +166,4 @@ jobs:
           }}
         body: ${{ steps.build_changelog.outputs.changelog }}
         artifacts: artifacts/*
+        dist: dist/*
