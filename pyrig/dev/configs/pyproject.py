@@ -8,11 +8,11 @@ import requests
 from packaging.version import Version
 
 from pyrig.dev.configs.base.base import TomlConfigFile
-from pyrig.dev.configs.experiment import ExperimentConfigFile
-from pyrig.utils.os.os import run_subprocess
-from pyrig.utils.project.poetry.dev_deps import DEV_DEPENDENCIES
-from pyrig.utils.project.poetry.versions import VersionConstraint
-from pyrig.utils.testing.convention import TESTS_PACKAGE_NAME
+from pyrig.dev.configs.python.experiment import ExperimentConfigFile
+from pyrig.src.os.os import run_subprocess
+from pyrig.src.project.poetry.dev_deps import DEV_DEPENDENCIES
+from pyrig.src.project.poetry.versions import VersionConstraint
+from pyrig.src.testing.convention import TEST_MODULE_PREFIX, TESTS_PACKAGE_NAME
 
 
 class PyprojectConfigFile(TomlConfigFile):
@@ -103,6 +103,9 @@ class PyprojectConfigFile(TomlConfigFile):
                         "select": ["ALL"],
                         "ignore": ["D203", "D213", "COM812", "ANN401"],
                         "fixable": ["ALL"],
+                        "per-file-ignores": {
+                            f"{TESTS_PACKAGE_NAME}/**/*.py": ["S101"],
+                        },
                         "pydocstyle": {"convention": "google"},
                     },
                 },
@@ -115,6 +118,9 @@ class PyprojectConfigFile(TomlConfigFile):
                 "pytest": {"ini_options": {"testpaths": [TESTS_PACKAGE_NAME]}},
                 "bandit": {
                     "exclude_dirs": ["./" + ExperimentConfigFile.get_path().as_posix()],
+                    "assert_used": {
+                        "skips": [f"*{TEST_MODULE_PREFIX}*.py"],
+                    },
                 },
             },
         }
@@ -299,3 +305,8 @@ class PyprojectConfigFile(TomlConfigFile):
     def update_dependencies(cls, *, check: bool = True) -> None:
         """Update the dependencies."""
         run_subprocess(["poetry", "update", "--with", "dev"], check=check)
+
+    @classmethod
+    def install_dependencies(cls, *, check: bool = True) -> None:
+        """Install the dependencies."""
+        run_subprocess(["poetry", "install", "--with", "dev"], check=check)

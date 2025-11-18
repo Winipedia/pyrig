@@ -1,8 +1,8 @@
 """module."""
 
-from pyrig.utils.os.os import run_subprocess
-from pyrig.utils.project.poetry.poetry import get_poetry_run_pyrig_cli_cmd_args
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.os.os import run_subprocess
+from pyrig.src.project.poetry.poetry import get_poetry_run_pyrig_cli_cmd_args
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_create_root() -> None:

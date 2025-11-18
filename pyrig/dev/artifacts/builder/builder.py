@@ -8,7 +8,7 @@ from pathlib import Path
 from pyrig.dev.artifacts.builder.base.base import Builder
 
 
-class PydevBuilder(Builder):
+class PyrigBuilder(Builder):
     """Build script for Pyrig."""
 
     @classmethod

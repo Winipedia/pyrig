@@ -19,9 +19,11 @@ from pyrig.dev.configs.base.base import (
     TypedConfigFile,
     YamlConfigFile,
 )
-from pyrig.utils.modules.class_ import get_all_nonabstract_subclasses
-from pyrig.utils.testing.assertions import assert_with_msg
-from pyrig.utils.testing.convention import TESTS_PACKAGE_NAME
+from pyrig.src.modules.class_ import (
+    get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
+)
+from pyrig.src.testing.assertions import assert_with_msg
+from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
 
 @pytest.fixture
@@ -307,7 +309,9 @@ class TestConfigFile:
         """Test method for get_all_subclasses."""
         # mock get_all_nonabstract_subclasses to return my_test_config_file
         mocker.patch(
-            ConfigFile.__module__ + "." + get_all_nonabstract_subclasses.__name__,
+            ConfigFile.__module__
+            + "."
+            + get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep.__name__,
             return_value={my_test_config_file},
         )
         actual = my_test_config_file.get_all_subclasses()
@@ -322,7 +326,9 @@ class TestConfigFile:
         """Test method for init_config_files."""
         # mock get_all_nonabstract_subclasses to return my_test_config_file
         mocker.patch(
-            ConfigFile.__module__ + "." + get_all_nonabstract_subclasses.__name__,
+            ConfigFile.__module__
+            + "."
+            + get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep.__name__,
             return_value={my_test_config_file},
         )
         my_test_config_file.init_config_files()

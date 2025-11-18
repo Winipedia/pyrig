@@ -15,18 +15,19 @@ from pathlib import Path
 
 from PIL import Image
 
+import pyrig
+from pyrig import main
 from pyrig.dev import artifacts
+from pyrig.dev.artifacts import builder
 from pyrig.dev.configs.base.base import ConfigFile
-from pyrig.dev.configs.builder import BuilderConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.utils.modules.class_ import (
-    get_all_nonabstract_subclasses,
+from pyrig.src.modules.class_ import (
+    get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
-from pyrig.utils.modules.module import (
-    import_module_from_path,
+from pyrig.src.modules.module import (
     to_path,
 )
-from pyrig.utils.modules.package import get_src_package
+from pyrig.src.modules.package import get_src_package
 
 
 class Builder(ABC):
@@ -112,15 +113,15 @@ class Builder(ABC):
     @classmethod
     def get_non_abstract_subclasses(cls) -> set[type["Builder"]]:
         """Get all non-abstract subclasses of Builder."""
-        path = BuilderConfigFile.get_parent_path()
-        builds_pkg = import_module_from_path(path)
-        return get_all_nonabstract_subclasses(cls, load_package_before=builds_pkg)
+        return get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
+            cls, pyrig, builder
+        )
 
     @classmethod
     def init_all_non_abstract_subclasses(cls) -> None:
         """Build all artifacts."""
-        for builder in cls.get_non_abstract_subclasses():
-            builder()
+        for builder_cls in cls.get_non_abstract_subclasses():
+            builder_cls()
 
     @classmethod
     def get_app_name(cls) -> str:
@@ -149,7 +150,7 @@ class Builder(ABC):
 
         The path to main from the src package.
         """
-        return Path("main.py")
+        return Path(main.__file__).relative_to(cls.get_src_pkg_path())
 
 
 class PyInstallerBuilder(Builder):

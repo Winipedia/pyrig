@@ -6,11 +6,11 @@ tests.base.scopes.session
 import re
 
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.utils.modules.module import to_path
-from pyrig.utils.project.poetry import dev_deps
-from pyrig.utils.project.poetry.dev_deps import DEV_DEPENDENCIES
-from pyrig.utils.testing.assertions import assert_with_msg
-from pyrig.utils.testing.fixtures import autouse_session_fixture
+from pyrig.src.modules.module import to_path
+from pyrig.src.project.poetry import dev_deps
+from pyrig.src.project.poetry.dev_deps import DEV_DEPENDENCIES
+from pyrig.src.testing.assertions import assert_with_msg
+from pyrig.src.testing.fixtures import autouse_session_fixture
 
 
 @autouse_session_fixture

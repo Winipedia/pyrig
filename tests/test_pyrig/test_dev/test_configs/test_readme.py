@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from pyrig.dev.configs.readme import ReadmeConfigFile
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 class TestReadmeConfigFile:

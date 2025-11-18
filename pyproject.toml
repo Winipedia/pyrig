@@ -58,6 +58,9 @@ select = ["ALL"]
 ignore = ["D203", "D213", "COM812", "ANN401"]
 fixable = ["ALL"]
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
@@ -72,3 +75,6 @@ testpaths = ["tests"]
 
 [tool.bandit]
 exclude_dirs = ["./experiment.py"]
+
+[tool.bandit.assert_used]
+skips = ["*test_*.py"]

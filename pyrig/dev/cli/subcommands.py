@@ -6,12 +6,12 @@ So best to define the logic elsewhere and just call it here in a wrapper.
 """
 
 from pyrig.dev.artifacts.build import build as build_cmd
-from pyrig.utils.git.github.repo.protect import (
+from pyrig.src.git.github.repo.protect import (
     protect_repository as protect_repo_cmd,
 )
-from pyrig.utils.project.create_root import create_root as create_root_cmd
-from pyrig.utils.project.init import init as init_cmd
-from pyrig.utils.testing.create_tests import create_tests as create_tests_cmd
+from pyrig.src.project.create_root import create_root as create_root_cmd
+from pyrig.src.project.init import init as init_cmd
+from pyrig.src.testing.create_tests import create_tests as create_tests_cmd
 
 
 def create_root() -> None:

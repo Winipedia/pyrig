@@ -60,6 +60,16 @@ pip install pyrig
 poetry add pyrig
 ```
 
+**Note**: pyrig should be added as a regular dependency, not a dev dependency. 
+Some might argue it should be a dev dependency. I hav ethought about it, but
+decided against it for several reasons. 
+The CLI functionality requires pyrig availability at runtime. Also pyrig has a small but often useful utility functionality that is available at runtime if you should need it. Also in the future functionality of pyrig might be extended around other things every project needs and these could include things that require runtime availability. 
+Also pyrig decides itself what should be a dev dependency and what not. 
+You will see in the generated pyproject.toml file that pyrig adds many dev dependencies. 
+These are things that are only needed for development and testing and are not needed at runtime. 
+pyrig does not add itself to the dev dependencies because it is needed at runtime for some of the functionality. 
+You can add it as a dev dependency if you want, but all the functionality that requires pyrig at runtime will not be working then outside of the dev environment.
+
 ### From Source
 
 ```bash
@@ -238,6 +248,50 @@ Automatically created to run the publish workflow via GitHub Actions.
 - **Purpose**: Publishes the package to PyPI with poetry
 - **Note**: If you do not want to publish to PyPI, empty the file and pyrig will not overwrite it, but will add a simple workflow that does nothing
 
+#### `pkg/main.py`
+
+Automatically created as the main entry point for your application. This file is used by PyInstaller to build standalone executables and can also be run directly.
+
+- **Purpose**: Provides a clear entry point for your application
+- **Usage**: Implement your application logic in the `main()` function
+- **CLI Integration**: Can be called with `poetry run your-pkg-name main` or `python -m your-pkg-name`
+- **PyInstaller**: Automatically used as the entry point for building executables
+
+**Example**:
+```python
+# In pkg/main.py
+def main() -> None:
+    """Main entrypoint for the project."""
+    print("Hello from your application!")
+    # Add your application logic here
+
+if __name__ == "__main__":
+    main()
+```
+
+#### `pkg/src/`
+
+Automatically created as a subfolder within your package to organize your source code. This separates your application code from development infrastructure (`dev/`) and configuration files.
+
+- **Purpose**: Clear separation between source code and development tooling
+- **Structure**: Place your modules, classes, and functions here
+- **Organization**: Helps maintain a clean project structure
+
+**Example Structure**:
+```
+your_project/
+├── main.py              # Entry point
+├── src/                 # Your source code goes here
+│   ├── __init__.py
+│   ├── models.py
+│   ├── services.py
+│   └── utils.py
+└── dev/                 # Development infrastructure
+    ├── cli/
+    ├── configs/
+    └── artifacts/
+```
+
 #### `pkg/dev/subcommands.py`
 
 Automatically created for defining custom CLI subcommands. Any function in this file is automatically added as a subcommand to your project's CLI.
@@ -404,7 +458,7 @@ pyrig uses pytest as the test framework, which is automatically added as a dev d
 
 pyrig enforces comprehensive testing by generating test skeletons for all functions and classes in the source code. It follows a mirror structure of the source package in the tests package:
 
-- **Module Level**: For every module in `src`, there is a corresponding module in `tests`
+- **Module Level**: For every module in your package, there is a corresponding module in `tests`
 - **Class Level**: For every class in a module, there is a corresponding class in the test module
 - **Function Level**: For every function in a class, there is a corresponding test function in the test class
 
@@ -413,13 +467,18 @@ pyrig enforces comprehensive testing by generating test skeletons for all functi
 your_project/
 ├── your_project/
 │   ├── __init__.py
-│   ├── calculator.py        # Source module
-│   └── utils.py             # Source module
+│   ├── main.py              # Main entry point
+│   └── src/
+│       ├── __init__.py
+│       ├── calculator.py    # Source module
+│       └── utils.py         # Source module
 └── tests/
     ├── __init__.py
     ├── test_your_project/
-    │   ├── test_calculator.py   # Mirror test module
-    │   └── test_utils.py        # Mirror test module
+    │   ├── test_main.py         # Test for main.py
+    │   └── test_src/
+    │       ├── test_calculator.py   # Mirror test module
+    │       └── test_utils.py        # Mirror test module
     └── conftest.py
 ```
 
@@ -445,12 +504,12 @@ This base structure provides a foundation for organizing shared test utilities a
 
 **Generated Test Example**:
 ```python
-# If you have this in your_project/calculator.py:
+# If you have this in your_project/src/calculator.py:
 class Calculator:
     def add(self, a: int, b: int) -> int:
         return a + b
 
-# pyrig generates this in tests/test_your_project/test_calculator.py:
+# pyrig generates this in tests/test_your_project/test_src/test_calculator.py:
 class TestCalculator:
     def test_add(self) -> None:
         """Test func for add."""
@@ -477,7 +536,7 @@ If you do not want tests for a specific module, you must manually empty the test
 **To disable tests for a module**:
 ```bash
 # Empty the test file (but keep the file)
-echo "" > tests/test_your_project/test_calculator.py
+echo "" > tests/test_your_project/test_src/test_calculator.py
 ```
 
 ---
@@ -514,13 +573,14 @@ Artifacts are placed in the `artifacts/` directory with platform-specific naming
 
 ### PyInstaller Builder
 
-pyrig includes a `PyInstallerBuilder` class for creating standalone executables. To use it:
+pyrig includes a `PyInstallerBuilder` class for creating standalone executables. The `main.py` file is automatically created in your source package during initialization.
 
-1. **Create a main.py file** in your source package:
+1. **Implement your main function** in `your_project/main.py` (automatically created):
    ```python
    # your_project/main.py
    def main() -> None:
        print("Hello from your app!")
+       # Add your application logic here
 
    if __name__ == "__main__":
        main()
@@ -587,8 +647,11 @@ your-project/
 │       └── release.yaml          # Release workflow
 ├── your_project/                 # Source package
 │   ├── __init__.py
+│   ├── main.py                   # Main entry point (auto-created)
 │   ├── py.typed                  # Type checking marker
-│   └── dev/
+│   ├── src/                      # Source code folder
+│   │   └── __init__.py
+│   └── dev/                      # Development infrastructure
 │       ├── __init__.py
 │       ├── artifacts/
 │       │   └── builder/
@@ -718,9 +781,10 @@ poetry update --with dev
 #### Issue: PyInstaller build fails
 
 **Solution**:
-1. Ensure `main.py` exists in your source package
-2. Ensure `icon.png` exists at `your_project/dev/artifacts/icon.png`
-3. Check that all data files in `get_add_datas()` exist
+1. Ensure `main.py` exists in your source package (automatically created by `pyrig init`)
+2. Ensure you've implemented the `main()` function in `main.py`
+3. Ensure `icon.png` exists at `your_project/dev/artifacts/icon.png`
+4. Check that all data files in `get_add_datas()` exist
 
 ---
 

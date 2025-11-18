@@ -11,18 +11,18 @@ import yaml
 
 import pyrig
 from pyrig.dev import configs
-from pyrig.utils.iterate import nested_structure_is_subset
-from pyrig.utils.modules.class_ import (
-    get_all_nonabstract_subclasses,
+from pyrig.src.iterate import nested_structure_is_subset
+from pyrig.src.modules.class_ import (
+    get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
-from pyrig.utils.modules.module import (
-    import_module_from_path,
+from pyrig.src.modules.module import (
+    get_isolated_obj_name,
+    get_module_content_as_str,
     make_pkg_dir,
     to_path,
 )
-from pyrig.utils.modules.package import DependencyGraph, get_src_package
-from pyrig.utils.string import split_on_uppercase
-from pyrig.utils.testing.convention import TESTS_PACKAGE_NAME
+from pyrig.src.string import split_on_uppercase
+from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
 
 class ConfigFile(ABC):
@@ -157,44 +157,40 @@ class ConfigFile(ABC):
     @classmethod
     def get_all_subclasses(cls) -> set[type["ConfigFile"]]:
         """Get all subclasses of ConfigFile."""
-        pkgs_depending_on_this = DependencyGraph().get_all_depending_on(
-            pyrig.__name__, include_self=True
+        return get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
+            cls, pyrig, configs
         )
-        pkgs_depending_on_this.add(get_src_package())
-
-        subclasses: set[type[ConfigFile]] = set()
-        for pkg in pkgs_depending_on_this:
-            configs_pkg_name = configs.__name__.replace(pyrig.__name__, pkg.__name__, 1)
-            configs_pkg_path = to_path(configs_pkg_name, is_package=True)
-            configs_pkg = import_module_from_path(configs_pkg_path)
-            subclasses.update(
-                get_all_nonabstract_subclasses(cls, load_package_before=configs_pkg)
-            )
-
-        return subclasses
 
     @classmethod
     def init_config_files(cls) -> None:
         """Initialize all subclasses."""
         # Some must be first:
-        from pyrig.dev.configs.builder import (  # noqa: PLC0415
-            BuilderConfigFile,
-        )
-        from pyrig.dev.configs.configs import (  # noqa: PLC0415
-            ConfigsConfigFile,
-        )
-        from pyrig.dev.configs.gitignore import (  # noqa: PLC0415
+        from pyrig.dev.configs.git.gitignore import (  # noqa: PLC0415
             GitIgnoreConfigFile,
         )
         from pyrig.dev.configs.pyproject import (  # noqa: PLC0415
             PyprojectConfigFile,
         )
+        from pyrig.dev.configs.python.builder import (  # noqa: PLC0415
+            BuilderConfigFile,
+        )
+        from pyrig.dev.configs.python.configs import (  # noqa: PLC0415
+            ConfigsConfigFile,
+        )
+        from pyrig.dev.configs.python.src_init import (  # noqa: PLC0415
+            SrcInitConfigFile,
+        )
+        from pyrig.dev.configs.testing.conftest import (  # noqa: PLC0415
+            ConftestConfigFile,
+        )
 
         priorities: list[type[ConfigFile]] = [
             GitIgnoreConfigFile,
             PyprojectConfigFile,
+            SrcInitConfigFile,
             ConfigsConfigFile,
             BuilderConfigFile,
+            ConftestConfigFile,
         ]
         for subclass in priorities:
             subclass()
@@ -327,6 +323,41 @@ class PythonPackageConfigFile(PythonConfigFile):
         """Dump the config file."""
         super().dump(config)
         make_pkg_dir(cls.get_path().parent)
+
+
+class CopyModuleConfigFile(PythonPackageConfigFile):
+    """Config file that copies a module."""
+
+    @classmethod
+    @abstractmethod
+    def get_src_module(cls) -> ModuleType:
+        """Get the source module."""
+
+    @classmethod
+    def get_parent_path(cls) -> Path:
+        """Get the path to the config file.
+
+        Replaces the start module with the package name.
+        """
+        from pyrig.dev.configs.pyproject import PyprojectConfigFile  # noqa: PLC0415
+
+        src_module = cls.get_src_module()
+        new_module_name = cls.get_module_name_replacing_start_module(
+            src_module, PyprojectConfigFile.get_package_name()
+        )
+        return to_path(new_module_name, is_package=True).parent
+
+    @classmethod
+    def get_content_str(cls) -> str:
+        """Get the content."""
+        src_module = cls.get_src_module()
+        return get_module_content_as_str(src_module)
+
+    @classmethod
+    def get_filename(cls) -> str:
+        """Get the filename of the config file."""
+        src_module = cls.get_src_module()
+        return get_isolated_obj_name(src_module)
 
 
 class TypedConfigFile(ConfigFile):

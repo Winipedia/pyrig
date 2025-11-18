@@ -10,9 +10,9 @@ from pyrig.dev.artifacts.builder.base.base import Builder
 from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.utils.modules.package import get_src_package
-from pyrig.utils.project.poetry.poetry import get_poetry_run_pyrig_cli_cmd_script
-from pyrig.utils.string import (
+from pyrig.src.modules.package import get_src_package
+from pyrig.src.project.poetry.poetry import get_poetry_run_pyrig_cli_cmd_script
+from pyrig.src.string import (
     make_name_from_obj,
     split_on_uppercase,
 )

@@ -5,7 +5,7 @@ from collections.abc import Callable
 import pytest
 
 from pyrig.dev.configs.workflows.publish import PublishWorkflow
-from pyrig.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
