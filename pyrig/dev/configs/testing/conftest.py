@@ -13,7 +13,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
     @classmethod
     def get_content_str(cls) -> str:
         """Get the config content."""
-        from pyrig.src.testing.tests import conftest  # noqa: PLC0415
+        from pyrig.dev.tests import conftest  # noqa: PLC0415
 
         return f'''"""Pytest configuration for tests.
 

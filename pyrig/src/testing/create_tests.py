@@ -9,6 +9,7 @@ NotImplementedError to indicate tests that need to be written.
 from types import ModuleType
 from typing import cast
 
+from pyrig.dev import tests
 from pyrig.src.modules.class_ import (
     get_all_cls_from_module,
     get_all_methods_from_cls,
@@ -26,7 +27,6 @@ from pyrig.src.modules.package import (
     get_src_package,
     walk_package,
 )
-from pyrig.src.testing import tests
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
     get_test_obj_from_obj,
