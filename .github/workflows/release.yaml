@@ -56,10 +56,6 @@ jobs:
     - name: Add Dependency Updates To Git
       id: add_dependency_updates_to_git
       run: git add pyproject.toml poetry.lock
-    - name: Setup Keyring
-      id: setup_keyring
-      run: poetry run pip install keyrings.alt && poetry run python -c "import keyring;
-        from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"
     - name: Protect Repository
       id: protect_repository
       run: poetry run pyrig protect-repo
@@ -117,10 +113,6 @@ jobs:
     - name: Add Dependency Updates To Git
       id: add_dependency_updates_to_git
       run: git add pyproject.toml poetry.lock
-    - name: Setup Keyring
-      id: setup_keyring
-      run: poetry run pip install keyrings.alt && poetry run python -c "import keyring;
-        from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"
     - name: Build Artifacts
       id: build_artifacts
       run: poetry run pyrig build
@@ -138,8 +130,6 @@ jobs:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
-      with:
-        token: ${{ secrets.REPO_TOKEN }}
     - name: Setup Python
       id: setup_python
       uses: actions/setup-python@main
@@ -148,6 +138,10 @@ jobs:
     - name: Setup Poetry
       id: setup_poetry
       uses: snok/install-poetry@main
+    - name: Add Poetry To Windows Path
+      id: add_poetry_to_windows_path
+      run: echo 'C:/Users/runneradmin/.local/bin' >> $GITHUB_PATH
+      if: ${{ runner.os }} == 'Windows'
     - name: Install Python Dependencies
       id: install_python_dependencies
       run: poetry install --with dev
@@ -157,10 +151,6 @@ jobs:
     - name: Add Dependency Updates To Git
       id: add_dependency_updates_to_git
       run: git add pyproject.toml poetry.lock
-    - name: Setup Keyring
-      id: setup_keyring
-      run: poetry run pip install keyrings.alt && poetry run python -c "import keyring;
-        from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"
     - name: Setup Git
       id: setup_git
       run: git config --global user.email "github-actions[bot]@users.noreply.github.com"

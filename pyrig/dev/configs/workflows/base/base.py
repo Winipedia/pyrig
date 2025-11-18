@@ -404,18 +404,37 @@ class Workflow(YamlConfigFile):
         ]
 
     @classmethod
+    def steps_core_installed_setup(
+        cls, python_version: str | None = None, *, repo_token: bool = False
+    ) -> list[dict[str, Any]]:
+        """Get the core setup steps."""
+        return [
+            *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
+            cls.step_add_poetry_to_windows_path(),
+            cls.step_install_python_dependencies(),
+            *cls.steps_configure_keyring_if_needed(),
+            cls.step_update_dependencies(),
+            cls.step_add_dependency_updates_to_git(),
+        ]
+
+    @classmethod
     def steps_core_matrix_setup(
         cls, python_version: str | None = None, *, repo_token: bool = False
     ) -> list[dict[str, Any]]:
         """Get the core matrix setup steps."""
         return [
-            *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
-            cls.step_add_poetry_to_windows_path(),
-            cls.step_install_python_dependencies(),
-            cls.step_update_dependencies(),
-            cls.step_add_dependency_updates_to_git(),
-            cls.step_setup_keyring(),
+            *cls.steps_core_installed_setup(
+                python_version=python_version, repo_token=repo_token
+            ),
         ]
+
+    @classmethod
+    def steps_configure_keyring_if_needed(cls) -> list[dict[str, Any]]:
+        """Get the keyring steps if keyring is in dependencies."""
+        steps: list[dict[str, Any]] = []
+        if "keyring" in PyprojectConfigFile.get_all_dependencies():
+            steps.append(cls.step_setup_keyring())
+        return steps
 
     # Single Step
     @classmethod

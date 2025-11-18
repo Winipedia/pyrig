@@ -52,10 +52,6 @@ jobs:
     - name: Add Dependency Updates To Git
       id: add_dependency_updates_to_git
       run: git add pyproject.toml poetry.lock
-    - name: Setup Keyring
-      id: setup_keyring
-      run: poetry run pip install keyrings.alt && poetry run python -c "import keyring;
-        from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"
     - name: Protect Repository
       id: protect_repository
       run: poetry run pyrig protect-repo

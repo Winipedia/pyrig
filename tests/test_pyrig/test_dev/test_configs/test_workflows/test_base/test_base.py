@@ -5,7 +5,10 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from pytest_mock import MockFixture
 
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.dev.configs.workflows.base import base
 from pyrig.dev.configs.workflows.base.base import Workflow
 from pyrig.utils.testing.assertions import assert_with_msg
 
@@ -44,6 +47,31 @@ def my_test_workflow(
 
 class TestWorkflow:
     """Test class for Workflow."""
+
+    def test_steps_core_installed_setup(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for steps_core_installed_setup."""
+        result = my_test_workflow.steps_core_installed_setup()
+        assert_with_msg(len(result) > 0, "Expected steps to be non-empty")
+
+    def test_steps_configure_keyring_if_needed(
+        self, my_test_workflow: type[Workflow], mocker: MockFixture
+    ) -> None:
+        """Test method for steps_configure_keyring_if_needed."""
+        # mock get_all_dependencies to return no dependencies
+        mocker.patch(
+            base.__name__
+            + "."
+            + PyprojectConfigFile.__name__
+            + "."
+            + PyprojectConfigFile.get_all_dependencies.__name__,
+            side_effect=[{}, {"keyring": "*"}],
+        )
+        result = my_test_workflow.steps_configure_keyring_if_needed()
+        assert_with_msg(len(result) == 0, "Expected steps to be empty")
+        # mock get_all_dependencies to return keyring as dependency
+
+        result = my_test_workflow.steps_configure_keyring_if_needed()
+        assert_with_msg(len(result) > 0, "Expected steps to be non-empty")
 
     def test_make_id_from_func(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for make_id_from_func."""
