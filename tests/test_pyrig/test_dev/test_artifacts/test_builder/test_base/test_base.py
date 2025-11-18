@@ -130,7 +130,7 @@ class TestBuilder:
         """Test method for get_non_abstract_builders."""
         builders = Builder.get_non_abstract_subclasses()
         assert_with_msg(
-            len(builders) == 1,
+            len(builders) == 0,
             "Expected one builder",
         )
 

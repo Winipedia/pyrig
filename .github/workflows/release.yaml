@@ -89,39 +89,9 @@ jobs:
       fail-fast: true
     runs-on: ${{ matrix.os }}
     steps:
-    - name: Checkout Repository
-      id: checkout_repository
-      uses: actions/checkout@main
-    - name: Setup Python
-      id: setup_python
-      uses: actions/setup-python@main
-      with:
-        python-version: 3.14.0
-    - name: Setup Poetry
-      id: setup_poetry
-      uses: snok/install-poetry@main
-    - name: Add Poetry To Windows Path
-      id: add_poetry_to_windows_path
-      run: echo 'C:/Users/runneradmin/.local/bin' >> $GITHUB_PATH
-      if: ${{ runner.os }} == 'Windows'
-    - name: Install Python Dependencies
-      id: install_python_dependencies
-      run: poetry install --with dev
-    - name: Update Dependencies
-      id: update_dependencies
-      run: poetry update --with dev
-    - name: Add Dependency Updates To Git
-      id: add_dependency_updates_to_git
-      run: git add pyproject.toml poetry.lock
-    - name: Build Artifacts
-      id: build_artifacts
-      run: poetry run pyrig build
-    - name: Upload Artifacts
-      id: upload_artifacts
-      uses: actions/upload-artifact@main
-      with:
-        name: pyrig-${{ runner.os }}
-        path: artifacts
+    - name: No Builder Defined
+      id: no_builder_defined
+      run: echo 'No non-abstract builders defined. Skipping build.'
   release:
     needs:
     - build

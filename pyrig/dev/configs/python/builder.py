@@ -13,11 +13,3 @@ class BuilderConfigFile(CopyModuleConfigFile):
     def get_src_module(cls) -> ModuleType:
         """Get the source module."""
         return builder
-
-    @classmethod
-    def get_content_str(cls) -> str:
-        """Get the content."""
-        # override content bc we have a Pyrig Builder
-        content = super().get_content_str()
-        parts = content.split('"""', 2)
-        return '"""' + parts[1] + '"""\n'

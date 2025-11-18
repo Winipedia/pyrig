@@ -284,9 +284,9 @@ class TestWorkflow:
         assert_with_msg("name" in result, "Expected 'name' in step")
         assert_with_msg("run" in result, "Expected 'run' in step")
 
-    def test_step_no_build_script(self, my_test_workflow: type[Workflow]) -> None:
+    def test_step_no_builder_defined(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for step_no_build_script."""
-        result = my_test_workflow.step_no_build_script()
+        result = my_test_workflow.step_no_builder_defined()
         assert_with_msg("run" in result, "Expected 'run' in step")
 
     def test_step_checkout_repository(self, my_test_workflow: type[Workflow]) -> None:
