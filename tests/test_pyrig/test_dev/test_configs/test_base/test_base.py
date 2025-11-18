@@ -503,9 +503,9 @@ class TestTextConfigFile:
         content = "New content."
         my_test_text_config_file.dump({TextConfigFile.CONTENT_KEY: content})
         loaded = my_test_text_config_file.load()
-        assert_with_msg(
-            loaded[TextConfigFile.CONTENT_KEY] == content,
-            "Expected dumped content to match loaded content",
+        assert (
+            loaded[TextConfigFile.CONTENT_KEY]
+            == content + "\n" + my_test_text_config_file.get_content_str()
         )
 
     def test_get_configs(self, my_test_text_config_file: type[TextConfigFile]) -> None:
