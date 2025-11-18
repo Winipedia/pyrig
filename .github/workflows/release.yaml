@@ -130,6 +130,8 @@ jobs:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
+      with:
+        token: ${{ secrets.REPO_TOKEN }}
     - name: Setup Python
       id: setup_python
       uses: actions/setup-python@main

@@ -77,7 +77,7 @@ class ReleaseWorkflow(HealthCheckWorkflow):
     def steps_release(cls) -> list[dict[str, Any]]:
         """Get the release steps."""
         return [
-            *cls.steps_core_installed_setup(),
+            *cls.steps_core_installed_setup(repo_token=True),
             cls.step_setup_git(),
             cls.step_add_version_patch(),
             cls.step_run_pre_commit_hooks(),
