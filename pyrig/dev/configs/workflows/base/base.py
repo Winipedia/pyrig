@@ -860,7 +860,7 @@ class Workflow(YamlConfigFile):
                 "tag": version,
                 "name": f"{cls.insert_repository_name()} {version}",
                 "body": cls.insert_changelog(),
-                Builder.ARTIFACTS_DIR_NAME: artifacts_pattern,
+                "artifacts": artifacts_pattern,
             },
             step=step,
         )

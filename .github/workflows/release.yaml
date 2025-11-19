@@ -165,5 +165,4 @@ jobs:
         name: ${{ github.event.repository.name }} ${{ steps.extract_version.outputs.version
           }}
         body: ${{ steps.build_changelog.outputs.changelog }}
-        artifacts: artifacts/*
-        dist: dist/*
+        artifacts: dist/*
