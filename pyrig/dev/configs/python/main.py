@@ -25,5 +25,5 @@ class MainConfigFile(CopyModuleConfigFile):
         """
         return super().is_correct() or (
             "def main" in cls.get_file_content()
-            and "if __name__ == '__main__':" in cls.get_file_content()
+            and 'if __name__ == "__main__":' in cls.get_file_content()
         )

@@ -48,3 +48,11 @@ def test_main() -> None:
     )
     assert project_name in stdout
 '''
+
+    @classmethod
+    def is_correct(cls) -> bool:
+        """Check if the config is correct.
+
+        Allow modifications to the test func.
+        """
+        return super().is_correct() or "def test_main" in cls.get_file_content()
