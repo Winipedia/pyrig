@@ -150,7 +150,9 @@ class Builder(ABC):
 
         The path to main from the src package.
         """
-        return Path(main.__file__).relative_to(cls.get_src_pkg_path())
+        return to_path(main, is_package=False).relative_to(
+            to_path(pyrig, is_package=True)
+        )
 
 
 class PyInstallerBuilder(Builder):

@@ -2,6 +2,7 @@
 
 from functools import cache
 from pathlib import Path
+from subprocess import CompletedProcess  # nosec: B404
 from typing import Any, cast
 
 import requests
@@ -302,11 +303,11 @@ class PyprojectConfigFile(TomlConfigFile):
         )
 
     @classmethod
-    def update_dependencies(cls, *, check: bool = True) -> None:
+    def update_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
         """Update the dependencies."""
-        run_subprocess(["poetry", "update", "--with", "dev"], check=check)
+        return run_subprocess(["poetry", "update", "--with", "dev"], check=check)
 
     @classmethod
-    def install_dependencies(cls, *, check: bool = True) -> None:
+    def install_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
         """Install the dependencies."""
-        run_subprocess(["poetry", "install", "--with", "dev"], check=check)
+        return run_subprocess(["poetry", "install", "--with", "dev"], check=check)

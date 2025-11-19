@@ -256,4 +256,16 @@ def assert_dependencies_are_up_to_date() -> None:
     This fixture runs once per test session and runs poetry update --with dev
     to make sure the dependencies are up to date.
     """
-    PyprojectConfigFile.update_dependencies(check=True)
+    completed_process = PyprojectConfigFile.update_dependencies(check=True)
+    # if there were updates raise an error
+    no_deps_updated_msg = "No dependencies to install or update"
+    stdout = completed_process.stdout.decode("utf-8")
+
+    msg = f"""This fixture runs poetry update --with dev to make sure the dependencies
+    are up to date. The following dependencies were updated:
+    {stdout}
+"""
+    assert_with_msg(
+        no_deps_updated_msg in stdout,
+        msg,
+    )
