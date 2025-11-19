@@ -340,6 +340,13 @@ class DependencyGraph(nx.DiGraph):  # type: ignore [type-arg]
         return DependencyGraph.normalize_package_name(name)
 
     @staticmethod
+    def get_all_dependencies() -> list[str]:
+        """Get all dependencies."""
+        dists = importlib.metadata.distributions()
+        # extract the name from the metadata
+        return [DependencyGraph.parse_distname_from_metadata(dist) for dist in dists]
+
+    @staticmethod
     def normalize_package_name(name: str) -> str:
         """Normalize a package name."""
         return name.lower().replace("-", "_").strip()
