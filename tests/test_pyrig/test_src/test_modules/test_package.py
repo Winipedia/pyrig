@@ -390,6 +390,11 @@ class TestDependencyGraph:
             "Expected edge from 'test-package' to 'dependency2'",
         )
 
+    def test_get_all_dependencies(self) -> None:
+        """Test method for get_all_dependencies."""
+        deps = DependencyGraph.get_all_dependencies()
+        assert "networkx" in deps, "Expected 'networkx' to be in dependencies"
+
     def test_parse_pkg_name_from_req(self) -> None:
         """Test method for parse_pkg_name_from_req."""
         # Test simple package name

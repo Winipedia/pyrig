@@ -10,7 +10,7 @@ from pyrig.dev.artifacts.builder.base.base import Builder
 from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.modules.package import get_src_package
+from pyrig.src.modules.package import DependencyGraph, get_src_package
 from pyrig.src.project.poetry.poetry import get_poetry_run_pyrig_cli_cmd_script
 from pyrig.src.string import (
     make_name_from_obj,
@@ -432,7 +432,7 @@ class Workflow(YamlConfigFile):
     def steps_configure_keyring_if_needed(cls) -> list[dict[str, Any]]:
         """Get the keyring steps if keyring is in dependencies."""
         steps: list[dict[str, Any]] = []
-        if "keyring" in PyprojectConfigFile.get_all_dependencies():
+        if "keyring" in DependencyGraph.get_all_dependencies():
             steps.append(cls.step_setup_keyring())
         return steps
 
