@@ -54,6 +54,7 @@ def test_assert_no_dev_usage_in_non_dev_files() -> None:
     raise NotImplementedError
 
 
+@skip_fixture_test
 def test_assert_dependencies_are_up_to_date() -> None:
     """Test function."""
     raise NotImplementedError
