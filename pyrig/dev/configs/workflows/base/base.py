@@ -54,6 +54,7 @@ class Workflow(YamlConfigFile):
             "permissions": cls.get_permissions(),
             "run-name": cls.get_run_name(),
             "defaults": cls.get_defaults(),
+            "env": cls.get_global_env(),
             "jobs": cls.get_jobs(),
         }
 
@@ -106,6 +107,14 @@ class Workflow(YamlConfigFile):
         Standard is bash.
         """
         return {"run": {"shell": "bash"}}
+
+    @classmethod
+    def get_global_env(cls) -> dict[str, Any]:
+        """Get the global env. Can be overriden.
+
+        Standard is no global env.
+        """
+        return {"PYTHONDONTWRITEBYTECODE": 1}
 
     # Workflow Conventions
     # ----------------------------------------------------------------------------

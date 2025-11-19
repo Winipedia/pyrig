@@ -13,6 +13,8 @@ run-name: Health Check Workflow
 defaults:
   run:
     shell: bash
+env:
+  PYTHONDONTWRITEBYTECODE: 1
 jobs:
   health_check_matrix:
     strategy:
