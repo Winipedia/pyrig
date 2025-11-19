@@ -8,6 +8,10 @@ from pyrig.dev.configs.testing.main_test import MainTestConfigFile
 class TestMainTestConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert MainTestConfigFile().is_correct()
+
     def test_get_parent_path(self) -> None:
         """Test method for get_parent_path."""
         assert isinstance(MainTestConfigFile.get_parent_path(), Path)
