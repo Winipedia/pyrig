@@ -7,9 +7,9 @@ from typing import Any
 import pytest
 from pytest_mock import MockFixture
 
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.base import base
 from pyrig.dev.configs.workflows.base.base import Workflow
+from pyrig.src.modules.package import DependencyGraph
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -61,10 +61,10 @@ class TestWorkflow:
         mocker.patch(
             base.__name__
             + "."
-            + PyprojectConfigFile.__name__
+            + DependencyGraph.__name__
             + "."
-            + PyprojectConfigFile.get_all_dependencies.__name__,
-            side_effect=[{}, {"keyring": "*"}],
+            + DependencyGraph.get_all_dependencies.__name__,
+            side_effect=[[], ["keyring"]],
         )
         result = my_test_workflow.steps_configure_keyring_if_needed()
         assert_with_msg(len(result) == 0, "Expected steps to be empty")
