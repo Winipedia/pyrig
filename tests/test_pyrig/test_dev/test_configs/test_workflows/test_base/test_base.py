@@ -119,6 +119,14 @@ class TestWorkflow:
             "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         )
 
+    def test_get_global_env(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for get_global_env."""
+        result = my_test_workflow.get_global_env()
+        assert_with_msg(
+            "PYTHONDONTWRITEBYTECODE" in result,
+            "Expected 'PYTHONDONTWRITEBYTECODE' in global env",
+        )
+
     def test_get_permissions(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for get_permissions."""
         result = my_test_workflow.get_permissions()
