@@ -230,7 +230,7 @@ class PyInstallerBuilder(Builder):
             for path in pkg_path.rglob("*"):
                 if path.is_dir():
                     continue
-                dest = path.relative_to(pkg_root)
+                dest = path.relative_to(pkg_root).parent
                 add_datas.append((path, dest))
         return add_datas
 
