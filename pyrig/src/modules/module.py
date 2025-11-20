@@ -560,12 +560,13 @@ def get_same_modules_from_deps_depen_on_dep(
         The same module from the dependency
 
     """
+    module_name = module.__name__
     graph = DependencyGraph()
     pkgs = graph.get_all_depending_on(dep, include_self=True)
 
     modules: list[ModuleType] = []
     for pkg in pkgs:
-        module_name = module.__name__.replace(dep.__name__, pkg.__name__, 1)
-        module = import_module_from_path(module_name)
-        modules.append(module)
+        module_name = module_name.replace(dep.__name__, pkg.__name__, 1)
+        pkg_module = import_module_from_path(module_name)
+        modules.append(pkg_module)
     return modules
