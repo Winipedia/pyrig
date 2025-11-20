@@ -203,7 +203,10 @@ class PyInstallerBuilder(Builder):
     @classmethod
     def get_all_resource_pkgs(cls) -> list[ModuleType]:
         """Get all resource packages."""
-        return [resources, *cls.get_default_additional_resource_pkgs()]
+        return [
+            *cls.get_default_additional_resource_pkgs(),
+            *cls.get_additional_resource_pkgs(),
+        ]
 
     @classmethod
     def get_add_datas(cls) -> list[tuple[Path, Path]]:

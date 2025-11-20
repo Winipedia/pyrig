@@ -220,6 +220,39 @@ def my_test_pyinstaller_builder(
 class TestPyInstallerBuilder:
     """Test class."""
 
+    def test_get_default_additional_resource_pkgs(self) -> None:
+        """Test method."""
+        # Test that default additional resource packages are discovered
+        result = PyInstallerBuilder.get_default_additional_resource_pkgs()
+        # Should return a list of modules
+        assert_with_msg(
+            isinstance(result, list),
+            f"Expected list, got {type(result)}",
+        )
+        # All items should be modules
+        for pkg in result:
+            assert_with_msg(
+                hasattr(pkg, "__name__"),
+                f"Expected module, got {pkg}",
+            )
+
+    def test_get_all_resource_pkgs(
+        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
+        """Test method."""
+        # Test that all resource packages includes both default and resources
+        result = my_test_pyinstaller_builder.get_all_resource_pkgs()
+        # Should return a list of modules
+        assert_with_msg(
+            isinstance(result, list),
+            f"Expected list, got {type(result)}",
+        )
+        # Should include at least the resources package
+        assert_with_msg(
+            len(result) > 0,
+            f"Expected at least one resource package, got {result}",
+        )
+
     def test_get_additional_resource_pkgs(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
