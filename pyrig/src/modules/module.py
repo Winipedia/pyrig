@@ -566,7 +566,7 @@ def get_same_modules_from_deps_depen_on_dep(
 
     modules: list[ModuleType] = []
     for pkg in pkgs:
-        module_name = module_name.replace(dep.__name__, pkg.__name__, 1)
-        pkg_module = import_module_from_path(module_name)
+        pkg_module_name = module_name.replace(dep.__name__, pkg.__name__, 1)
+        pkg_module = import_module_from_path(pkg_module_name)
         modules.append(pkg_module)
     return modules
