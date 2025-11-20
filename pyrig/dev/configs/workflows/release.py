@@ -21,6 +21,7 @@ class ReleaseWorkflow(HealthCheckWorkflow):
     def get_workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers."""
         triggers = super().get_workflow_triggers()
+        del triggers["pull_request"]
         triggers.update(cls.on_push())
         triggers.update(cls.on_schedule(cron="0 6 * * 2"))
         return triggers
