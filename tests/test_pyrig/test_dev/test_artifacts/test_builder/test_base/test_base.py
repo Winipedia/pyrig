@@ -4,6 +4,7 @@ import platform
 import random
 from collections.abc import Callable
 from pathlib import Path
+from types import ModuleType
 
 import PyInstaller.__main__ as pyinstaller_main
 import pytest
@@ -36,6 +37,14 @@ def my_test_builder(
 
 class TestBuilder:
     """Test class."""
+
+    def test_get_resources_path(self) -> None:
+        """Test method."""
+        assert isinstance(Builder.get_resources_path(), Path)
+
+    def test_get_resources_path_from_src_pkg(self) -> None:
+        """Test method."""
+        assert isinstance(Builder.get_resources_path_from_src_pkg(), Path)
 
     def test_get_artifacts_dir(self) -> None:
         """Test method for get_artifacts_dir."""
@@ -188,9 +197,9 @@ def my_test_pyinstaller_builder(
         """Test PyInstaller builder class."""
 
         @classmethod
-        def get_add_datas(cls) -> list[tuple[Path, Path]]:
-            """Get add datas."""
-            return [(Path("src"), Path("dest"))]
+        def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+            """Get the resource packages."""
+            return []
 
         @classmethod
         def get_app_icon_png_path(cls) -> Path:
@@ -210,6 +219,13 @@ def my_test_pyinstaller_builder(
 
 class TestPyInstallerBuilder:
     """Test class."""
+
+    def test_get_additional_resource_pkgs(
+        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
+        """Test method."""
+        additional_pkgs = my_test_pyinstaller_builder.get_additional_resource_pkgs()
+        assert len(additional_pkgs) == 0, "Expected no additional packages"
 
     def test_get_temp_distpath(self, tmp_path: Path) -> None:
         """Test method for get_temp_distpath."""
@@ -231,7 +247,9 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method for get_add_datas."""
         result = my_test_pyinstaller_builder.get_add_datas()
-        assert_with_msg(len(result) == 1, "Expected one item")
+        # should contain the resource.py and __init__.py from the resources pkg
+        expected = 2
+        assert len(result) == expected, "Expected no additional data"
 
     def test_get_pyinstaller_options(
         self,

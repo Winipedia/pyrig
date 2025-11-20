@@ -24,6 +24,7 @@ from pyrig.src.modules.class_ import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
 from pyrig.src.modules.module import (
+    import_module_from_path,
     to_path,
 )
 from pyrig.src.modules.package import get_src_package
@@ -188,7 +189,6 @@ class PyInstallerBuilder(Builder):
         Override this methdod and return packages that conatin your resources.
         Those will be traversed and all files included in the build.
         The generated src_pkg/dev/artifacts/resources package is added by default.
-        As well as pyrigs own resources pkg.
         """
 
     @classmethod
@@ -199,10 +199,9 @@ class PyInstallerBuilder(Builder):
             list[tuple[Path, Path]]: List of tuples with the source path
                 and the destination path.
         """
-        add_datas: list[tuple[Path, Path]] = [
-            (cls.get_resources_path().resolve(), cls.get_resources_path())
-        ]
-        resources_pkgs = [resources, *cls.get_additional_resource_pkgs()]
+        add_datas: list[tuple[Path, Path]] = []
+        src_resources_pkg = import_module_from_path(cls.get_resources_path())
+        resources_pkgs = [src_resources_pkg, *cls.get_additional_resource_pkgs()]
         for pkg in resources_pkgs:
             pkg_path = to_path(pkg, is_package=True)
             for path in pkg_path.rglob("*"):
