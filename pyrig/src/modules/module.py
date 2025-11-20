@@ -30,6 +30,7 @@ from pyrig.src.modules.inspection import (
     get_unwrapped_obj,
 )
 from pyrig.src.modules.package import (
+    DependencyGraph,
     get_modules_and_packages_from_package,
     import_pkg_from_path,
     module_is_package,
@@ -544,3 +545,27 @@ def make_pkg_dir(path: Path) -> None:
         if p in (Path.cwd(), Path()):
             continue
         make_init_module(p)
+
+
+def get_same_modules_from_deps_depen_on_dep(
+    module: ModuleType, dep: ModuleType
+) -> list[ModuleType]:
+    """Get the same module from a dependency.
+
+    Args:
+        module: The module to find the same module from
+        dep: The dependency to find the same module from
+
+    Returns:
+        The same module from the dependency
+
+    """
+    graph = DependencyGraph()
+    pkgs = graph.get_all_depending_on(dep, include_self=True)
+
+    modules: list[ModuleType] = []
+    for pkg in pkgs:
+        module_name = module.__name__.replace(dep.__name__, pkg.__name__, 1)
+        module = import_module_from_path(module_name)
+        modules.append(module)
+    return modules
