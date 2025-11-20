@@ -226,11 +226,11 @@ class PyInstallerBuilder(Builder):
                 pkg_path.as_posix().removesuffix(
                     cls.get_resources_path_from_src_pkg().as_posix()
                 )
-            )
-            for path in pkg_path.rglob("*"):
+            ).parent
+            for path in [pkg_path, *pkg_path.rglob("*")]:
                 if path.is_file():
                     continue
-                dest = path.relative_to(pkg_root).parent
+                dest = path.relative_to(pkg_root)
                 add_datas.append((path, dest))
         return add_datas
 

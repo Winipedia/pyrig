@@ -281,7 +281,7 @@ class TestPyInstallerBuilder:
         """Test method for get_add_datas."""
         result = my_test_pyinstaller_builder.get_add_datas()
         # should contain the resource.py and __init__.py from the resources pkg
-        expected = 2
+        expected = 1
         assert len(result) == expected, "Expected no additional data"
 
     def test_get_pyinstaller_options(
