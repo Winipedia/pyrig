@@ -198,18 +198,13 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
         Order is garanteed only that classes from the same module are grouped together
 
     """
-    from pyrig.src.modules.module import (  # noqa: PLC0415
-        import_module_from_path,
+    from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
+        get_same_modules_from_deps_depen_on_dep,
     )
-    from pyrig.src.modules.package import DependencyGraph  # noqa: PLC0415
 
-    graph = DependencyGraph()
-    pkgs = graph.get_all_depending_on(dep, include_self=True)
     subclasses: list[type] = []
-    for pkg in pkgs:
-        load_package_before_name = load_package_before.__name__.replace(
-            dep.__name__, pkg.__name__, 1
-        )
-        load_package_before_pkg = import_module_from_path(load_package_before_name)
+    for load_package_before_pkg in get_same_modules_from_deps_depen_on_dep(
+        load_package_before, dep
+    ):
         subclasses.extend(get_all_nonabstract_subclasses(cls, load_package_before_pkg))
     return subclasses

@@ -38,6 +38,7 @@ Built for Python 3.12+ projects using Poetry and GitHub, pyrig automatically gen
 - **Artifact Building**: Extensible build system with PyInstaller support
 - **Custom CLI**: Automatically generates CLI commands from your functions
 - **Cross-Platform Testing**: Matrix testing across multiple OS and Python versions
+- **Multi-Package Architecture**: Automatic discovery of configs, builders, and resources across all packages depending on pyrig
 
 ---
 
@@ -321,11 +322,23 @@ def hello(name: str = "World") -> None:
 
 Define custom configuration files here. Any subclass of `pyrig.dev.configs.base.base.ConfigFile` is automatically discovered and initialized (created if not exists, updated if not correct). Configs can be defined in any file in the `pkg/dev/configs` folder.
 
+**Automatic Discovery**: Config files are discovered from:
+- Your project's `pkg/dev/configs/` directory
+- All `dev/configs/` directories from packages depending on pyrig
+
+This means if you have multiple packages that depend on pyrig, all their config files will be automatically initialized.
+
 **Note**: The configs.py file must exist. Deleting config files is pointless as they will be recreated by the create-root hook or by pytest session fixture.
 
 #### `pkg/dev/artifacts/builder/builder.py`
 
 Automatically created for defining build scripts. Any subclass of `pyrig.dev.artifacts.builder.base.base.Builder` is automatically discovered and executed. Builders can be defined in any file in the `pkg/dev/artifacts/builder` folder.
+
+**Automatic Discovery**: Builders are discovered from:
+- Your project's `pkg/dev/artifacts/builder/` directory
+- All `dev/artifacts/builder/` directories from packages depending on pyrig
+
+This means if you have multiple packages that depend on pyrig, all their builders will be automatically executed when you run `pyrig build`.
 
 **Note**: The builder.py file must exist. Deleting builder classes is pointless as they will be recreated by the create-root hook or by pytest session fixture.
 
@@ -335,8 +348,9 @@ Automatically created directory for storing static resources (images, data files
 
 - **Purpose**: Centralized location for application resources
 - **PyInstaller Integration**: All files in this directory are automatically included in built executables
+- **Automatic Discovery**: Resources from ALL packages depending on pyrig are automatically discovered and included
 - **Resource Access**: Use `pyrig.dev.artifacts.resources.resource.get_resource_path()` to access resources at runtime
-- **Custom Resources**: Override `get_additional_resource_pkgs()` in your PyInstallerBuilder to include additional resource packages
+- **Custom Resources**: Override `get_additional_resource_pkgs()` in your PyInstallerBuilder to include additional resource packages beyond the automatic discovery
 
 **Example Usage**:
 ```python
@@ -347,6 +361,9 @@ import your_project.dev.artifacts.resources as resources
 config_path = get_resource_path("config.json", resources)
 data = config_path.read_text()
 ```
+
+**Automatic Resource Discovery**:
+If you have multiple packages in your project that depend on pyrig, all their `dev/artifacts/resources/` directories will be automatically included in PyInstaller builds without any additional configuration.
 
 #### `pkg/dev/configs/python/resources_init.py`
 
@@ -560,8 +577,7 @@ The following autouse session fixtures are automatically applied to every test r
 - `assert_all_modules_tested`: Automatically creates missing test modules, classes, and functions for any untested code. If tests are missing, they are generated and the fixture fails to alert you.
 
 **Code Quality Enforcement**:
-- `assert_no_unit_test_package_usage`: Prevents usage of the `unittest` package (enforces pytest)
-- `assert_no_dev_usage_in_non_dev_files`: Ensures development utilities from the `dev/` folder are not imported in production code
+- `assert_no_unit_test_package_usage`: Prevents usage of the `unittest` package (enforces pytest), use pytest-mock instead for mocking
 
 **Configuration Enforcement**:
 - `assert_config_files_are_correct`: Verifies all configuration files are correct and automatically fixes them if needed
@@ -668,8 +684,12 @@ pyrig includes a `PyInstallerBuilder` class for creating standalone executables.
        def get_additional_resource_pkgs(cls) -> list[ModuleType]:
            """Specify additional resource packages to include.
 
-           The resources from your_project/dev/artifacts/resources/ are
-           automatically included. Override this to add more resource packages.
+           Resources are automatically included from:
+           - your_project/dev/artifacts/resources/ (your project's resources)
+           - All dev/artifacts/resources/ from packages depending on pyrig
+
+           Override this method only if you need to include additional
+           resource packages beyond the automatic discovery.
            """
            # Example: import your_project.data as data
            # return [data]
@@ -684,8 +704,10 @@ pyrig includes a `PyInstallerBuilder` class for creating standalone executables.
 The builder automatically:
 - Creates a single executable file
 - Converts icon.png to platform-specific format (ico for Windows, icns for macOS)
-- Includes all files from `your_project/dev/artifacts/resources/` directory
-- Includes files from additional resource packages specified in `get_additional_resource_pkgs()`
+- **Auto-discovers and includes resources** from:
+  - `your_project/dev/artifacts/resources/` (your project's resources)
+  - All `dev/artifacts/resources/` directories from packages depending on pyrig
+  - Additional resource packages specified in `get_additional_resource_pkgs()`
 - Names the output with platform suffix (e.g., `your-project-Windows.exe`, `your-project-Linux`)
 
 **PyInstaller Options**:
@@ -708,6 +730,56 @@ def load_config() -> dict:
 ```
 
 This function works both in development and in PyInstaller-built executables by using `importlib.resources`, which handles the `_MEIPASS` temporary directory automatically.
+
+### Advanced: Multi-Package Architecture
+
+pyrig supports a powerful multi-package architecture where multiple packages can depend on pyrig and automatically share their configurations, builders, and resources. This is powered by the `get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep()` and `get_same_modules_from_deps_depen_on_dep()` utility functions.
+
+**Automatic Discovery Across Packages**:
+
+When you run pyrig commands, it automatically discovers and executes components from ALL packages that depend on pyrig:
+
+1. **Config Files**: All `ConfigFile` subclasses from all `dev/configs/` directories
+2. **Builders**: All `Builder` subclasses from all `dev/artifacts/builder/` directories
+3. **Resources**: All files from all `dev/artifacts/resources/` directories
+
+**Example Multi-Package Scenario**:
+```
+my-app/                           # Main application (depends on pyrig)
+├── my_app/
+│   └── dev/
+│       ├── configs/
+│       │   └── configs.py        # App-specific configs
+│       ├── artifacts/
+│       │   ├── builder/
+│       │   │   └── builder.py    # App builder
+│       │   └── resources/
+│       │       └── app_icon.png
+│       └── cli/
+│           └── subcommands.py
+
+my-lib/                           # Shared library (depends on pyrig)
+├── my_lib/
+│   └── dev/
+│       ├── configs/
+│       │   └── configs.py        # Library configs
+│       └── artifacts/
+│           └── resources/
+│               └── lib_config.json
+```
+
+**What Happens Automatically**:
+
+- **`pyrig init`**: Initializes config files from both `my-app` and `my-lib`
+- **`pyrig build`**: Executes builders from both packages and includes resources from both
+- **`pyrig create-root`**: Creates root structure for both packages
+- **PyInstaller builds**: Includes resources from both `my-app` and `my-lib`
+
+This architecture enables:
+- **Modular development**: Split your project into multiple packages with shared infrastructure
+- **Reusable components**: Share configs, builders, and resources across projects
+- **Clean separation**: Each package manages its own development infrastructure
+- **Zero configuration**: Everything works automatically through dependency discovery
 
 ---
 

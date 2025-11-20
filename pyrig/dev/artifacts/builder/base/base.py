@@ -19,12 +19,14 @@ from PIL import Image
 import pyrig
 from pyrig import main
 from pyrig.dev.artifacts import builder, resources
+from pyrig.dev.artifacts.resources.resource import (
+    get_all_resources_pkgs_from_deps_depen_on_dep,
+)
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.class_ import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
 from pyrig.src.modules.module import (
-    import_module_from_path,
     to_path,
 )
 from pyrig.src.modules.package import get_src_package
@@ -189,7 +191,19 @@ class PyInstallerBuilder(Builder):
         Override this methdod and return packages that conatin your resources.
         Those will be traversed and all files included in the build.
         The generated src_pkg/dev/artifacts/resources package is added by default.
+        All resources folders from all pkgs depending on pyrig are also added by
+        default.
         """
+
+    @classmethod
+    def get_default_additional_resource_pkgs(cls) -> list[ModuleType]:
+        """Get the default additional resource packages."""
+        return get_all_resources_pkgs_from_deps_depen_on_dep(dep=pyrig)
+
+    @classmethod
+    def get_all_resource_pkgs(cls) -> list[ModuleType]:
+        """Get all resource packages."""
+        return [resources, *cls.get_default_additional_resource_pkgs()]
 
     @classmethod
     def get_add_datas(cls) -> list[tuple[Path, Path]]:
@@ -200,14 +214,20 @@ class PyInstallerBuilder(Builder):
                 and the destination path.
         """
         add_datas: list[tuple[Path, Path]] = []
-        src_resources_pkg = import_module_from_path(cls.get_resources_path())
-        resources_pkgs = [src_resources_pkg, *cls.get_additional_resource_pkgs()]
+        resources_pkgs = cls.get_all_resource_pkgs()
         for pkg in resources_pkgs:
-            pkg_path = to_path(pkg, is_package=True)
+            pkg_path = Path(pkg.__path__[0])
+            # get the root of the pkg, which will be
+            # the path remove suufix get_resources_path_from_src_pkg
+            pkg_root = Path(
+                pkg_path.as_posix().removesuffix(
+                    cls.get_resources_path_from_src_pkg().as_posix()
+                )
+            )
             for path in pkg_path.rglob("*"):
                 if path.is_dir():
                     continue
-                dest = path.relative_to(cls.get_root_path())
+                dest = path.relative_to(pkg_root)
                 add_datas.append((path, dest))
         return add_datas
 

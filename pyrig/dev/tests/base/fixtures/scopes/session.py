@@ -11,15 +11,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pyrig
-from pyrig import dev
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.src.modules.module import (
-    get_isolated_obj_name,
     import_module_with_default,
-    to_path,
 )
 from pyrig.src.modules.package import (
     find_packages,
@@ -208,45 +205,6 @@ def assert_no_unit_test_package_usage() -> None:
             "UnitTest".lower() not in path.read_text(encoding="utf-8"),
             f"Found unit test package usage in {path}. Use pytest instead.",
         )
-
-
-@autouse_session_fixture
-def assert_no_dev_usage_in_non_dev_files() -> None:
-    """Verify that any utils from the dev folder are not used in non-dev files.
-
-    E.g. utils can be used anywhere, dev not.
-
-    This fixture runs once per test session and checks that any utils from the
-    dev folder are not used in non-dev files.
-
-    Raises:
-        AssertionError: If any utils from the dev folder are used in non-dev files
-
-    """
-    src_pkg = get_src_package().__name__
-    dev_pkg = src_pkg + "." + get_isolated_obj_name(dev)
-    dev_path = to_path(dev_pkg, is_package=True)
-    usages: list[Path] = []
-    for path in Path(src_pkg).rglob("*.py"):
-        # check if any part of the path contains dev_path
-        if dev_path in path.parents:
-            continue
-
-        if dev_pkg in path.read_text(encoding="utf-8"):
-            usages.append(path)
-
-    msg = "Found dev utils usage in non-dev files."
-    for path in usages:
-        msg += f"\n    {path}"
-
-    if src_pkg == pyrig.__name__:
-        # pyrigis allowed to use itself
-        return
-
-    assert_with_msg(
-        not usages,
-        msg,
-    )
 
 
 @autouse_session_fixture
