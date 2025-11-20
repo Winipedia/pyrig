@@ -329,6 +329,29 @@ Automatically created for defining build scripts. Any subclass of `pyrig.dev.art
 
 **Note**: The builder.py file must exist. Deleting builder classes is pointless as they will be recreated by the create-root hook or by pytest session fixture.
 
+#### `pkg/dev/artifacts/resources/`
+
+Automatically created directory for storing static resources (images, data files, etc.) that need to be included in your application. This directory is automatically included in PyInstaller builds.
+
+- **Purpose**: Centralized location for application resources
+- **PyInstaller Integration**: All files in this directory are automatically included in built executables
+- **Resource Access**: Use `pyrig.dev.artifacts.resources.resource.get_resource_path()` to access resources at runtime
+- **Custom Resources**: Override `get_additional_resource_pkgs()` in your PyInstallerBuilder to include additional resource packages
+
+**Example Usage**:
+```python
+from pyrig.dev.artifacts.resources.resource import get_resource_path
+import your_project.dev.artifacts.resources as resources
+
+# Access a resource file
+config_path = get_resource_path("config.json", resources)
+data = config_path.read_text()
+```
+
+#### `pkg/dev/configs/python/resources_init.py`
+
+Automatically created configuration file that manages the `resources/__init__.py` file. This ensures the resources package is properly initialized and can be imported by your application.
+
 #### `tests/conftest.py`
 
 Automatically created and configured to run pytest plugins. It automatically discovers and loads:
@@ -626,26 +649,34 @@ pyrig includes a `PyInstallerBuilder` class for creating standalone executables.
        main()
    ```
 
-2. **Create an icon.png file** at `your_project/dev/artifacts/icon.png` (256x256 recommended)
+2. **Create an icon.png file** at `your_project/dev/artifacts/resources/icon.png` (256x256 recommended)
 
-3. **Subclass PyInstallerBuilder** in `your_project/dev/artifacts/builder/builder.py`:
+3. **Add any additional resources** to `your_project/dev/artifacts/resources/` (optional):
+   - Configuration files
+   - Images, icons, or other assets
+   - Data files needed at runtime
+
+4. **Subclass PyInstallerBuilder** in `your_project/dev/artifacts/builder/builder.py`:
    ```python
-   from pathlib import Path
+   from types import ModuleType
    from pyrig.dev.artifacts.builder.base.base import PyInstallerBuilder
 
    class MyAppBuilder(PyInstallerBuilder):
        """Build standalone executable with PyInstaller."""
 
        @classmethod
-       def get_add_datas(cls) -> list[tuple[Path, Path]]:
-           """Specify additional data files to include."""
-           return [
-               (Path("your_project/data"), Path("data")),
-               # Add more data files as needed
-           ]
+       def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+           """Specify additional resource packages to include.
+
+           The resources from your_project/dev/artifacts/resources/ are
+           automatically included. Override this to add more resource packages.
+           """
+           # Example: import your_project.data as data
+           # return [data]
+           return []
    ```
 
-4. **Build the executable**:
+5. **Build the executable**:
    ```bash
    poetry run pyrig build
    ```
@@ -653,13 +684,30 @@ pyrig includes a `PyInstallerBuilder` class for creating standalone executables.
 The builder automatically:
 - Creates a single executable file
 - Converts icon.png to platform-specific format (ico for Windows, icns for macOS)
-- Includes specified data files
+- Includes all files from `your_project/dev/artifacts/resources/` directory
+- Includes files from additional resource packages specified in `get_additional_resource_pkgs()`
 - Names the output with platform suffix (e.g., `your-project-Windows.exe`, `your-project-Linux`)
 
 **PyInstaller Options**:
 - `--onefile`: Single executable (default)
 - `--noconsole`: No console window (default)
 - Platform-specific icons handled automatically
+
+### Accessing Resources in Built Executables
+
+When your application is built with PyInstaller, use the `get_resource_path()` function to access resources:
+
+```python
+from pyrig.dev.artifacts.resources.resource import get_resource_path
+import your_project.dev.artifacts.resources as resources
+
+def load_config() -> dict:
+    """Load configuration from resources."""
+    config_path = get_resource_path("config.json", resources)
+    return json.loads(config_path.read_text())
+```
+
+This function works both in development and in PyInstaller-built executables by using `importlib.resources`, which handles the `_MEIPASS` temporary directory automatically.
 
 ---
 
@@ -694,12 +742,16 @@ your-project/
 │   └── dev/                      # Development infrastructure
 │       ├── __init__.py
 │       ├── artifacts/
-│       │   └── builder/
-│       │       └── builder.py    # Build scripts
+│       │   ├── builder/
+│       │   │   └── builder.py    # Build scripts
+│       │   └── resources/        # Static resources (auto-created)
+│       │       ├── __init__.py
+utilities
 │       ├── cli/
 │       │   └── subcommands.py    # CLI commands
 │       └── configs/
-│           └── configs.py        # Custom config files
+│           ├── configs.py        # Custom config
+package config
 └── tests/                        # Test package
     ├── __init__.py
     ├── conftest.py               # Pytest configuration
@@ -823,8 +875,21 @@ poetry update --with dev
 **Solution**:
 1. Ensure `main.py` exists in your source package (automatically created by `pyrig init`)
 2. Ensure you've implemented the `main()` function in `main.py`
-3. Ensure `icon.png` exists at `your_project/dev/artifacts/icon.png`
-4. Check that all data files in `get_add_datas()` exist
+3. Ensure `icon.png` exists at `your_project/dev/artifacts/resources/icon.png`
+4. Check that all resource packages specified in `get_additional_resource_pkgs()` exist and are importable
+
+#### Issue: Resources not found in built executable
+
+**Solution**: Use `get_resource_path()` to access resources instead of hardcoded paths:
+```python
+# Wrong - won't work in built executable
+path = Path("your_project/dev/artifacts/resources/config.json")
+
+# Correct - works in both development and built executable
+from pyrig.dev.artifacts.resources.resource import get_resource_path
+import your_project.dev.artifacts.resources as resources
+path = get_resource_path("config.json", resources)
+```
 
 ---
 

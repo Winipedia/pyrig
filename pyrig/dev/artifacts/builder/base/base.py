@@ -12,14 +12,13 @@ import shutil
 import tempfile
 from abc import ABC, abstractmethod
 from pathlib import Path
+from types import ModuleType
 
 from PIL import Image
 
 import pyrig
 from pyrig import main
-from pyrig.dev import artifacts
-from pyrig.dev.artifacts import builder
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.artifacts import builder, resources
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.class_ import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
@@ -140,6 +139,11 @@ class Builder(ABC):
         return cls.get_src_pkg_path() / cls.get_main_path_from_src_pkg()
 
     @classmethod
+    def get_resources_path(cls) -> Path:
+        """Get the resources path."""
+        return cls.get_src_pkg_path() / cls.get_resources_path_from_src_pkg()
+
+    @classmethod
     def get_src_pkg_path(cls) -> Path:
         """Get the src package path."""
         return cls.get_root_path() / PyprojectConfigFile.get_package_name()
@@ -151,6 +155,13 @@ class Builder(ABC):
         The path to main from the src package.
         """
         return to_path(main, is_package=False).relative_to(
+            to_path(pyrig, is_package=True)
+        )
+
+    @classmethod
+    def get_resources_path_from_src_pkg(cls) -> Path:
+        """Get the resources path."""
+        return to_path(resources, is_package=True).relative_to(
             to_path(pyrig, is_package=True)
         )
 
@@ -171,6 +182,16 @@ class PyInstallerBuilder(Builder):
 
     @classmethod
     @abstractmethod
+    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+        """Get the resource packages.
+
+        Override this methdod and return packages that conatin your resources.
+        Those will be traversed and all files included in the build.
+        The generated src_pkg/dev/artifacts/resources package is added by default.
+        As well as pyrigs own resources pkg.
+        """
+
+    @classmethod
     def get_add_datas(cls) -> list[tuple[Path, Path]]:
         """Get the add data paths.
 
@@ -178,6 +199,18 @@ class PyInstallerBuilder(Builder):
             list[tuple[Path, Path]]: List of tuples with the source path
                 and the destination path.
         """
+        add_datas: list[tuple[Path, Path]] = [
+            (cls.get_resources_path().resolve(), cls.get_resources_path())
+        ]
+        resources_pkgs = [resources, *cls.get_additional_resource_pkgs()]
+        for pkg in resources_pkgs:
+            pkg_path = to_path(pkg, is_package=True)
+            for path in pkg_path.rglob("*"):
+                if path.is_dir():
+                    continue
+                dest = path.relative_to(cls.get_root_path())
+                add_datas.append((path, dest))
+        return add_datas
 
     @classmethod
     def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
@@ -246,13 +279,7 @@ class PyInstallerBuilder(Builder):
     def get_app_icon_png_path(cls) -> Path:
         """Get the app icon path.
 
-        Default is under dev/artifacts folder as icon.png
+        Default is under dev/artifacts/resources folder as icon.png
         You can override this method to change the icon location.
         """
-        artifacts_path = to_path(
-            ConfigFile.get_module_name_replacing_start_module(
-                artifacts, PyprojectConfigFile.get_package_name()
-            ),
-            is_package=True,
-        )
-        return cls.get_root_path() / artifacts_path / "icon.png"
+        return cls.get_resources_path() / "icon.png"
