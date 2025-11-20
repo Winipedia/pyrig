@@ -103,7 +103,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
     def install(cls) -> None:
         """Installs the pre commits in the config."""
         logger.info("Running pre-commit install")
-        run_subprocess(["pre-commit", "install"])
+        run_subprocess([*POETRY_RUN_ARGS, "pre-commit", "install"])
 
     @classmethod
     def run_hooks(
