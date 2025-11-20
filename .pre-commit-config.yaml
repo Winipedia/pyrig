@@ -1,12 +1,6 @@
 repos:
 - repo: local
   hooks:
-  - id: update-package-manager
-    name: update-package-manager
-    entry: poetry self update
-    language: system
-    always_run: true
-    pass_filenames: false
   - id: check-package-manager-config
     name: check-package-manager-config
     entry: poetry check --strict
