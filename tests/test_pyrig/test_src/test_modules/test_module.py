@@ -13,6 +13,8 @@ from types import ModuleType
 import pytest
 from pytest_mock import MockFixture
 
+import pyrig
+from pyrig import src
 from pyrig.src.modules.module import (
     create_module,
     execute_all_functions_from_module,
@@ -23,6 +25,7 @@ from pyrig.src.modules.module import (
     get_module_content_as_str,
     get_module_of_obj,
     get_objs_from_obj,
+    get_same_modules_from_deps_depen_on_dep,
     import_module_from_file,
     import_module_from_path,
     import_module_from_path_with_default,
@@ -660,3 +663,19 @@ def test_make_pkg_dir(tmp_path: Path) -> None:
             not (Path.cwd() / "__init__.py").exists(),
             "Did not expect __init__.py file to be created",
         )
+
+
+def test_get_same_modules_from_deps_depen_on_dep() -> None:
+    """Test function."""
+    # Test getting the same module from all packages depending on pyrig
+
+    modules = get_same_modules_from_deps_depen_on_dep(src, pyrig)
+    # Should at least include pyrig.src itself
+    assert_with_msg(
+        len(modules) > 0,
+        f"Expected at least one module, got {modules}",
+    )
+    assert_with_msg(
+        src in modules,
+        f"Expected pyrig.src in modules, got {modules}",
+    )
