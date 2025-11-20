@@ -27,7 +27,7 @@ class TestReleaseWorkflow:
         assert_with_msg(
             "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         )
-        assert_with_msg("pull_request" in result, "Expected 'pull_request' in triggers")
+        assert "pull_request" not in result
         assert_with_msg("push" in result, "Expected 'push' in triggers")
         assert_with_msg("schedule" in result, "Expected 'schedule' in triggers")
 
