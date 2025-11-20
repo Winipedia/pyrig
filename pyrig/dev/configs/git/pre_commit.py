@@ -58,10 +58,6 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         """Get the config."""
         hooks: list[dict[str, Any]] = [
             cls.get_hook(
-                "update-package-manager",
-                ["poetry", "self", "update"],
-            ),
-            cls.get_hook(
                 "check-package-manager-config",
                 ["poetry", "check", "--strict"],
             ),

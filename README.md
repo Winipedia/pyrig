@@ -584,7 +584,8 @@ The following autouse session fixtures are automatically applied to every test r
 - `assert_dev_dependencies_config_is_correct`: Validates dev dependencies configuration (pyrig internal)
 
 **Dependency Management**:
-- `assert_dependencies_are_up_to_date`: Runs `poetry update --with dev` to ensure dependencies are current
+- `assert_dependencies_are_up_to_date`: Runs `poetry self update` and `poetry update --with dev` to ensure dependencies are current and poetry is up to date. These are here bc they are too slow for pre-commit, but I like having this done automatically and as updates occur regularly, but not too often to justify the wait time.
+So I added them as an autouse session fixture.
 
 These fixtures run automatically before your tests execute, ensuring that:
 1. Your project structure follows best practices
