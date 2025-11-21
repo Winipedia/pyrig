@@ -13,7 +13,7 @@ def test_assert_dev_dependencies_config_is_correct() -> None:
 
 
 @skip_fixture_test
-def test_assert_config_files_are_correct() -> None:
+def test_assert_root_is_correct() -> None:
     """Test func for assert_config_files_are_correct."""
     raise NotImplementedError
 

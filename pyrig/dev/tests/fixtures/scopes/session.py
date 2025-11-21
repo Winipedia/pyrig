@@ -19,6 +19,8 @@ from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
+from pyrig.dev.configs.python.experiment import ExperimentConfigFile
+from pyrig.src.git.github.github import running_in_github_actions
 from pyrig.src.modules.module import (
     import_module_with_default,
     make_init_module,
@@ -48,7 +50,7 @@ logger = logging.getLogger(__name__)
 
 
 @autouse_session_fixture
-def assert_config_files_are_correct() -> None:
+def assert_root_is_correct() -> None:
     """Verify that the dev dependencies are installed.
 
     This fixture runs once per test session and checks that the dev dependencies
@@ -58,6 +60,11 @@ def assert_config_files_are_correct() -> None:
         ImportError: If a dev dependency is not installed
 
     """
+    # if we are in CI then we must create experiment.py if it doesn't exist
+    running_in_ci = running_in_github_actions()
+    if running_in_ci:
+        ExperimentConfigFile()
+
     subclasses = ConfigFile.get_all_subclasses()
     all_correct = all(subclass.is_correct() for subclass in subclasses)
 
