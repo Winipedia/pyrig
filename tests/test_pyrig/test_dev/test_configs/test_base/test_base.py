@@ -12,6 +12,7 @@ from pytest_mock import MockFixture
 from pyrig.dev.configs.base.base import (
     ConfigFile,
     CopyModuleConfigFile,
+    CopyModuleOnlyDocstringConfigFile,
     PythonConfigFile,
     PythonPackageConfigFile,
     PythonTestsConfigFile,
@@ -797,4 +798,37 @@ class TestCopyModuleConfigFile:
         assert_with_msg(
             filename == "test_module",
             f"Expected 'test_module', got {filename}",
+        )
+
+
+@pytest.fixture
+def my_test_copy_module_only_docstring_config_file(
+    my_test_copy_module_config_file: type[CopyModuleConfigFile],
+) -> type[CopyModuleOnlyDocstringConfigFile]:
+    """Create a test copy module only docstring config file class with tmp_path."""
+
+    class MyTestCopyModuleOnlyDocstringConfigFile(
+        CopyModuleOnlyDocstringConfigFile,
+        my_test_copy_module_config_file,  # type: ignore [misc, valid-type]
+    ):
+        """Test copy module only docstring config file with tmp_path override."""
+
+    return MyTestCopyModuleOnlyDocstringConfigFile
+
+
+class TestCopyModuleOnlyDocstringConfigFile:
+    """Test class."""
+
+    def test_get_content_str(
+        self,
+        my_test_copy_module_only_docstring_config_file: type[
+            CopyModuleOnlyDocstringConfigFile
+        ],
+    ) -> None:
+        """Test method."""
+        content_str = my_test_copy_module_only_docstring_config_file.get_content_str()
+
+        # assert its only the docstring
+        assert content_str == '"""Test module content."""\n', (
+            "Expected only docstring in string"
         )

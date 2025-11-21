@@ -52,3 +52,9 @@ def test_assert_no_unit_test_package_usage() -> None:
 def test_assert_dependencies_are_up_to_date() -> None:
     """Test function."""
     raise NotImplementedError
+
+
+@skip_fixture_test
+def test_assert_pre_commit_is_installed() -> None:
+    """Test function."""
+    raise NotImplementedError

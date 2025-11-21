@@ -364,6 +364,17 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         return get_isolated_obj_name(src_module)
 
 
+class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
+    """Config file that copies only the docstring of a module."""
+
+    @classmethod
+    def get_content_str(cls) -> str:
+        """Get the content."""
+        content = super().get_content_str()
+        parts = content.split('"""', 2)
+        return '"""' + parts[1] + '"""\n'
+
+
 class TypedConfigFile(ConfigFile):
     """Config file for py.typed."""
 

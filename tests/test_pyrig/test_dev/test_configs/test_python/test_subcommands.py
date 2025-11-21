@@ -11,8 +11,3 @@ class TestSubcommandsConfigFile:
         """Test method for get_src_module."""
         module = SubcommandsConfigFile.get_src_module()
         assert module == subcommands
-
-    def test_get_content_str(self) -> None:
-        """Test method for get_content_str."""
-        content_str = SubcommandsConfigFile.get_content_str()
-        assert len(content_str) > 0

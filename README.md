@@ -206,7 +206,6 @@ Automatically created and set to the lowest supported Python version. Used by py
 
 Automatically created and configured with the following pre-commit hooks:
 
-- `update-package-manager`: poetry self update
 - `check-package-manager-config`: poetry check --strict
 - `install-dependencies`: poetry install --with dev (keeps dependencies up-to-date automatically)
 - `create-root`: pyrig create-root

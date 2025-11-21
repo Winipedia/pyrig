@@ -1,7 +1,6 @@
 """Tests for pyrig.src.testing.create_tests module."""
 
 import inspect
-import os
 from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
@@ -15,7 +14,6 @@ from pyrig.src.testing.create_tests import (
     create_test_module,
     create_test_package,
     create_tests,
-    create_tests_base,
     create_tests_for_package,
     get_test_classes_content,
     get_test_functions_content,
@@ -26,9 +24,7 @@ from pyrig.src.testing.create_tests import (
 def test_create_tests(mocker: MockFixture) -> None:
     """Test func for create_tests."""
     # Mock the two main functions that create_tests calls to verify orchestration
-    mock_create_tests_base = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".create_tests_base"
-    )
+
     mock_create_tests_for_src_package = mocker.patch(
         make_obj_importpath(create_tests_module) + ".create_tests_for_package"
     )
@@ -36,48 +32,12 @@ def test_create_tests(mocker: MockFixture) -> None:
     # Call the function
     create_tests()
 
-    # Verify both functions were called exactly once
-    base_count = mock_create_tests_base.call_count
     src_count = mock_create_tests_for_src_package.call_count
-
-    assert_with_msg(
-        base_count == 1,
-        f"Expected create_tests_base called once, got {base_count}",
-    )
 
     assert_with_msg(
         src_count == 1,
         f"Expected create_tests_for_src_package called once, got {src_count}",
     )
-
-
-def test_create_tests_base(tmp_path: Path, mocker: MockFixture) -> None:
-    """Test func for create_tests_base."""
-    # Change to tmp directory for testing
-    original_cwd = Path.cwd()
-    try:
-        os.chdir(tmp_path)
-
-        # Mock only the external dependencies we can't easily test
-        mock_copy_package = mocker.patch(
-            make_obj_importpath(create_tests_module) + ".copy_package"
-        )
-
-        # Create tests directory first (since copy_package is mocked)
-        tests_dir = tmp_path / "tests"
-        tests_dir.mkdir(exist_ok=True)
-
-        # Call the function
-        create_tests_base()
-
-        # Verify copy_package was called
-        assert_with_msg(
-            mock_copy_package.called,
-            "Expected copy_package to be called",
-        )
-
-    finally:
-        os.chdir(original_cwd)
 
 
 def test_create_tests_for_package(mocker: MockFixture) -> None:

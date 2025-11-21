@@ -7,33 +7,27 @@ and adds them to pytest_plugins. This way defining reusable fixtures is easy.
 from pathlib import Path
 
 import pyrig
-from pyrig import dev
-from pyrig.src.modules.module import to_module_name, to_path
+from pyrig.dev.tests import fixtures
+from pyrig.src.modules.module import (
+    get_same_modules_from_deps_depen_on_dep,
+    to_module_name,
+    to_path,
+)
 
-tests_to_fixtures = "tests.base.fixtures"
-tests_to_fixtures_path = to_path(tests_to_fixtures, is_package=True)
-
-package_root_path = Path(pyrig.__file__).parent.parent
-package_plugin_path = Path(dev.__file__).parent / tests_to_fixtures_path
-package_plugin_module_names = [
-    to_module_name(path.relative_to(package_root_path))
-    for path in package_plugin_path.rglob("*.py")
-]
-
-if not package_plugin_module_names or not package_plugin_path.exists():
-    msg = f"Found no plugins in {package_plugin_path}"
-    raise ValueError(msg)
+# find the fixtures module in all packages that depend on pyrig
+# and add all paths to pytest_plugins
+fixtures_pkgs = get_same_modules_from_deps_depen_on_dep(fixtures, pyrig)
 
 
-custom_plugin_path = tests_to_fixtures_path
-custom_plugin_module_names = [
-    to_module_name(path) for path in custom_plugin_path.rglob("*.py")
-]
-if not custom_plugin_module_names and custom_plugin_path.exists():
-    msg = f"Found no plugins in {custom_plugin_path}"
-    raise ValueError(msg)
+pytest_plugin_paths: list[Path] = []
+for pkg in fixtures_pkgs:
+    absolute_path = Path(pkg.__path__[0])
+    relative_path = to_path(pkg.__name__, is_package=True)
 
-pytest_plugins = [
-    *package_plugin_module_names,
-    *custom_plugin_module_names,
-]
+    pkg_root = Path(absolute_path.as_posix().removesuffix(relative_path.as_posix()))
+
+    for path in absolute_path.rglob("*.py"):
+        rel_plugin_path = path.relative_to(pkg_root)
+        pytest_plugin_paths.append(rel_plugin_path)
+
+pytest_plugins = [to_module_name(path) for path in pytest_plugin_paths]
