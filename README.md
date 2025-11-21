@@ -29,16 +29,17 @@ Built for Python 3.12+ projects using Poetry and GitHub, pyrig automatically gen
 
 - **Zero-Configuration Setup**: Opinionated, best-practice configurations for Python development tools
 - **Automatic Test Generation**: Creates test skeletons that mirror your source code structure
+- **Intelligent Fixture System**: Automatic discovery and loading of pytest fixtures across all packages
 - **Strict Type Checking**: Enforces mypy strict mode with comprehensive type coverage
 - **Code Quality Tools**: Pre-configured ruff (linting + formatting), mypy, bandit (security)
 - **CI/CD Workflows**: GitHub Actions workflows for health checks, releases, and publishing
 - **Repository Protection**: Automated GitHub branch protection and security settings
 - **Dependency Management**: Automatic dependency updates with Poetry
-- **Pre-commit Hooks**: Automated code quality checks before every commit
+- **Pre-commit Hooks**: Automated code quality checks before every commit with automatic installation
 - **Artifact Building**: Extensible build system with PyInstaller support
 - **Custom CLI**: Automatically generates CLI commands from your functions
 - **Cross-Platform Testing**: Matrix testing across multiple OS and Python versions
-- **Multi-Package Architecture**: Automatic discovery of configs, builders, and resources across all packages depending on pyrig
+- **Multi-Package Architecture**: Automatic discovery of configs, builders, fixtures, and resources across all packages depending on pyrig
 
 ---
 
@@ -146,13 +147,14 @@ git push
    poetry run pyrig init
    ```
 
-   This command performs the following steps:
-   - Creates the project root structure (source and test packages)
-   - Initializes all configuration files
-   - Generates test skeletons for all source code
-   - Updates all dependencies to latest versions
-   - Runs all pre-commit hooks
-   - Executes the test suite
+   This command performs the following steps in order:
+   1. Writes dev dependencies to `pyproject.toml`
+   2. Updates dependencies to install dev dependencies
+   3. Creates the project root structure (source and test packages)
+   4. Generates test skeletons for all source code
+   5. Runs all pre-commit hooks
+   6. Executes the test suite (which also installs pre-commit hooks)
+   7. Installs dependencies to activate CLI commands
 
 6. **Commit and push changes**
    ```bash
@@ -168,6 +170,19 @@ git push
 All configuration files are subclasses of `pyrig.dev.configs.base.base.ConfigFile` and are automatically created and managed by pyrig. You can add custom configs by subclassing `ConfigFile` and adding it to `pkg/dev/configs/**`. All subclasses in this folder are automatically discovered and initialized (created if not exists, updated if not correct).
 
 **Note**: If you do not wish to have a specific config file managed by pyrig, you can make the file empty and pyrig will not overwrite it, however the file must exist.
+
+### Config File Types
+
+pyrig provides several base classes for different types of configuration files:
+
+- **`ConfigFile`**: Base class for all config files
+- **`CopyModuleConfigFile`**: Copies entire module content to a config file
+- **`CopyModuleOnlyDocstringConfigFile`**: Copies only the docstring from a module (useful for creating stub files with documentation)
+- **`PythonConfigFile`**: For Python source files
+- **`YamlConfigFile`**: For YAML configuration files
+- **`JsonConfigFile`**: For JSON configuration files
+
+The `CopyModuleOnlyDocstringConfigFile` is particularly useful for creating configuration files that mirror source modules but only contain documentation, keeping the generated files clean and focused.
 
 ### Managed Configuration Files
 
@@ -215,6 +230,8 @@ Automatically created and configured with the following pre-commit hooks:
 - `check-security`: bandit -c pyproject.toml -r .
 
 The `install-dependencies` hook ensures that your local environment stays synchronized with the latest dependencies defined in `pyproject.toml` before each commit.
+
+Pre-commit hooks are automatically installed during the test session via an autouse session fixture that verifies pre-commit is properly configured.
 
 #### `.gitignore`
 
@@ -368,25 +385,35 @@ If you have multiple packages in your project that depend on pyrig, all their `d
 
 Automatically created configuration file that manages the `resources/__init__.py` file. This ensures the resources package is properly initialized and can be imported by your application.
 
+#### `pkg/dev/configs/testing/fixtures/`
+
+Automatically created configuration files that manage the fixture system structure. These config files ensure that fixture modules are properly created with appropriate documentation:
+
+- **`fixture.py`**: Manages the main `pkg/dev/tests/fixtures/fixture.py` file
+- **`scopes/session.py`**: Manages session-level fixture configuration
+- **`scopes/package.py`**: Manages package-level fixture configuration
+- **`scopes/module.py`**: Manages module-level fixture configuration
+- **`scopes/class_.py`**: Manages class-level fixture configuration
+- **`scopes/function.py`**: Manages function-level fixture configuration
+
+These configuration files use `CopyModuleOnlyDocstringConfigFile` to create stub files with documentation from pyrig's internal fixture modules, providing a template for your custom fixtures.
+
 #### `tests/conftest.py`
 
-Automatically created and configured to run pytest plugins. It automatically discovers and loads:
-- All fixtures from `tests/base/fixtures/` in your project
-- All fixtures from pyrig's testing module
-- Makes all fixtures available to all tests in the project
+Automatically created and configured to run pytest plugins. It uses pyrig's multi-package architecture to automatically discover and load fixtures from ALL packages that depend on pyrig:
 
-This allows you to define reusable fixtures in `tests/base/fixtures/fixture.py` that are automatically available across all your tests.
+**How it works**:
+- Uses `get_same_modules_from_deps_depen_on_dep()` to find all `fixtures` modules across all packages depending on pyrig
+- Automatically discovers all Python files within these fixtures packages
+- Adds them to `pytest_plugins` for automatic loading
 
-#### `tests/base/`
+**What this means**:
+- All fixtures from `pyrig.dev.tests.fixtures/` are automatically available
+- All fixtures from your project's `pkg/dev/tests/fixtures/` (if created) are automatically available
+- All fixtures from any other package depending on pyrig are automatically available
+- No manual imports needed - fixtures are globally available across all tests
 
-Automatically created base test structure containing:
-- **`tests/base/fixtures/`** - Directory for reusable pytest fixtures
-  - `fixture.py` - Define custom fixtures here (e.g., `builder_factory`, `config_file_factory`)
-  - `scopes/` - Fixture scope configurations
-- **`tests/base/utils/`** - Directory for test utility functions
-  - `utils.py` - Helper functions for tests
-
-This base structure is copied from pyrig's internal testing framework and provides a foundation for organizing shared test utilities and fixtures.
+This powerful mechanism allows you to define reusable fixtures in your project's fixture modules that are automatically plugged into the entire test suite.
 
 #### `tests/test_zero.py`
 
@@ -532,18 +559,58 @@ pyrig automatically generates test skeletons in two ways:
 1. **Manual Generation**: Run `poetry run pyrig create-tests` to generate all missing tests
 2. **Automatic Generation**: When you run `pytest`, an autouse session fixture automatically creates missing test modules, classes, and functions
 
-#### Test Base Structure Creation
+#### Fixture System
 
-When you run `pyrig create-tests` (or `pyrig init`), pyrig first creates a **base test structure** by copying a template from pyrig's internal testing framework. This creates:
+pyrig provides a powerful fixture system that automatically discovers and loads fixtures from all packages depending on pyrig through the `conftest.py` mechanism.
 
-- **`tests/base/fixtures/`** - Reusable pytest fixtures that are automatically available to all tests
-  - `fixture.py` - Define custom fixtures here (automatically loaded by conftest.py)
-  - `scopes/` - Fixture scope configurations
-- **`tests/base/utils/`** - Test utility functions
-  - `utils.py` - Helper functions for your tests
-- **`tests/conftest.py`** - Pytest configuration that auto-discovers and loads all fixtures
+**How Fixture Discovery Works**:
 
-This base structure provides a foundation for organizing shared test utilities and fixtures across your entire test suite. Any fixtures defined in `tests/base/fixtures/fixture.py` are automatically available to all your tests without needing to import them.
+The `tests/conftest.py` file uses `get_same_modules_from_deps_depen_on_dep()` to:
+1. Find all packages that depend on pyrig
+2. Locate the `fixtures` module in each package's `dev/tests/` directory
+3. Recursively discover all Python files within these fixtures packages
+4. Add them to `pytest_plugins` for automatic loading
+
+This means fixtures are automatically shared across:
+- pyrig's internal fixtures (`pyrig.dev.tests.fixtures/`)
+- Your project's fixtures (`your_project.dev.tests.fixtures/`)
+- Any other package's fixtures that depends on pyrig
+
+**Built-in Fixtures** (from `pyrig.dev.tests.fixtures/`):
+- `config_file_factory` - Factory for creating test config file classes with `tmp_path`
+- `builder_factory` - Factory for creating test builder classes with `tmp_path`
+
+**Built-in Autouse Fixtures** (from `pyrig.dev.tests.fixtures/scopes/`):
+- `session.py` - Session-level autouse fixtures (run once per test session)
+- `package.py` - Package-level autouse fixtures
+- `module.py` - Module-level autouse fixtures
+- `class_.py` - Class-level autouse fixtures
+- `function.py` - Function-level autouse fixtures
+
+**Creating Custom Fixtures**:
+
+Create custom fixtures by adding a `pkg/dev/tests/fixtures/` directory:
+
+```
+your_project/
+└── dev/
+    └── tests/
+        └── fixtures/
+            ├── __init__.py
+            ├── fixture.py          # Custom fixtures
+            └── scopes/
+                ├── __init__.py
+                ├── session.py      # Session-level autouse fixtures
+                ├── module.py       # Module-level autouse fixtures
+                └── ...
+```
+
+**Important Notes**:
+- All fixtures are automatically discovered - no manual imports needed
+- Autouse fixtures must still be decorated with `@pytest.fixture(autouse=True)` or use pyrig's convenience decorators (`@autouse_session_fixture`, etc.)
+- The fixture discovery happens at pytest collection time
+- Fixtures from all packages are available to all tests across the entire test suite
+- **Breaking Change**: The old `tests/base/` structure has been removed. Fixtures are now defined in `pkg/dev/tests/fixtures/` instead of `tests/base/fixtures/`. This change enables the multi-package fixture discovery architecture.
 
 **Generated Test Example**:
 ```python
@@ -568,7 +635,7 @@ pyrig automatically enforces code quality and project conventions through a suit
 The following autouse session fixtures are automatically applied to every test run:
 
 **Project Structure Enforcement**:
-- `assert_no_namespace_packages`: Ensures all packages have `__init__.py` files (no namespace packages)
+- `assert_no_namespace_packages`: Ensures all packages have `__init__.py` files. If namespace packages are found, automatically creates `__init__.py` files for them and fails the test to alert you to verify the changes.
 - `assert_all_src_code_in_one_package`: Verifies that all source code is in a single package (besides the tests package)
 - `assert_src_package_correctly_named`: Checks that the source package name matches the project name in `pyproject.toml`
 
@@ -580,11 +647,13 @@ The following autouse session fixtures are automatically applied to every test r
 
 **Configuration Enforcement**:
 - `assert_config_files_are_correct`: Verifies all configuration files are correct and automatically fixes them if needed
-- `assert_dev_dependencies_config_is_correct`: Validates dev dependencies configuration (pyrig internal)
+- `assert_dev_dependencies_config_is_correct`: Validates dev dependencies configuration and automatically updates the config file if incorrect (pyrig internal only)
+
+**Pre-commit Integration**:
+- `assert_pre_commit_is_installed`: Runs `pre-commit install` to ensure pre-commit hooks are properly installed and configured
 
 **Dependency Management**:
-- `assert_dependencies_are_up_to_date`: Runs `poetry self update` and `poetry update --with dev` to ensure dependencies are current and poetry is up to date. These are here bc they are too slow for pre-commit, but I like having this done automatically and as updates occur regularly, but not too often to justify the wait time.
-So I added them as an autouse session fixture.
+- `assert_dependencies_are_up_to_date`: Runs `poetry self update` and `poetry update --with dev` to ensure dependencies are current and poetry is up to date. These are here because they are too slow for pre-commit, but I like having this done automatically. Updates occur regularly but not too often to justify the wait time, so I added them as an autouse session fixture.
 
 These fixtures run automatically before your tests execute, ensuring that:
 1. Your project structure follows best practices
@@ -733,15 +802,16 @@ This function works both in development and in PyInstaller-built executables by 
 
 ### Advanced: Multi-Package Architecture
 
-pyrig supports a powerful multi-package architecture where multiple packages can depend on pyrig and automatically share their configurations, builders, and resources. This is powered by the `get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep()` and `get_same_modules_from_deps_depen_on_dep()` utility functions.
+pyrig supports a powerful multi-package architecture where multiple packages can depend on pyrig and automatically share their configurations, builders, fixtures, and resources. This is powered by the `get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep()` and `get_same_modules_from_deps_depen_on_dep()` utility functions.
 
 **Automatic Discovery Across Packages**:
 
-When you run pyrig commands, it automatically discovers and executes components from ALL packages that depend on pyrig:
+When you run pyrig commands or tests, it automatically discovers and executes components from ALL packages that depend on pyrig:
 
 1. **Config Files**: All `ConfigFile` subclasses from all `dev/configs/` directories
 2. **Builders**: All `Builder` subclasses from all `dev/artifacts/builder/` directories
-3. **Resources**: All files from all `dev/artifacts/resources/` directories
+3. **Fixtures**: All pytest fixtures from all `dev/tests/fixtures/` directories
+4. **Resources**: All files from all `dev/artifacts/resources/` directories
 
 **Example Multi-Package Scenario**:
 ```
@@ -755,6 +825,9 @@ my-app/                           # Main application (depends on pyrig)
 │       │   │   └── builder.py    # App builder
 │       │   └── resources/
 │       │       └── app_icon.png
+│       ├── tests/
+│       │   └── fixtures/
+│       │       └── fixture.py    # App-specific fixtures
 │       └── cli/
 │           └── subcommands.py
 
@@ -763,6 +836,9 @@ my-lib/                           # Shared library (depends on pyrig)
 │   └── dev/
 │       ├── configs/
 │       │   └── configs.py        # Library configs
+│       ├── tests/
+│       │   └── fixtures/
+│       │       └── fixture.py    # Library-specific fixtures
 │       └── artifacts/
 │           └── resources/
 │               └── lib_config.json
@@ -773,11 +849,12 @@ my-lib/                           # Shared library (depends on pyrig)
 - **`pyrig init`**: Initializes config files from both `my-app` and `my-lib`
 - **`pyrig build`**: Executes builders from both packages and includes resources from both
 - **`pyrig create-root`**: Creates root structure for both packages
+- **`pytest`**: Loads fixtures from both `my-app` and `my-lib` (and pyrig)
 - **PyInstaller builds**: Includes resources from both `my-app` and `my-lib`
 
 This architecture enables:
 - **Modular development**: Split your project into multiple packages with shared infrastructure
-- **Reusable components**: Share configs, builders, and resources across projects
+- **Reusable components**: Share configs, builders, fixtures, and resources across projects
 - **Clean separation**: Each package manages its own development infrastructure
 - **Zero configuration**: Everything works automatically through dependency discovery
 
@@ -817,30 +894,27 @@ your-project/
 │       │   ├── builder/
 │       │   │   └── builder.py    # Build scripts
 │       │   └── resources/        # Static resources (auto-created)
-│       │       ├── __init__.py
-utilities
+│       │       └── __init__.py
 │       ├── cli/
 │       │   └── subcommands.py    # CLI commands
-│       └── configs/
-│           ├── configs.py        # Custom config
-package config
+│       ├── configs/
+│       │   └── configs.py        # Custom config files
+│       └── tests/                # Optional: Custom test fixtures
+│           └── fixtures/         # Custom fixtures for your project
+│               ├── __init__.py
+│               ├── fixture.py    # Define custom fixtures here
+│               └── scopes/       # Scope-specific autouse fixtures
+│                   ├── __init__.py
+│                   ├── session.py
+│                   └── ...
 └── tests/                        # Test package
     ├── __init__.py
-    ├── conftest.py               # Pytest configuration
+    ├── conftest.py               # Pytest configuration (auto-discovers fixtures)
     ├── test_zero.py              # Empty test placeholder
-    ├── base/                     # Base test structure
-    │   ├── __init__.py
-    │   ├── fixtures/             # Reusable pytest fixtures
-    │   │   ├── __init__.py
-    │   │   ├── fixture.py        # Custom fixtures
-    │   │   └── scopes/           # Fixture scopes
-    │   └── utils/                # Test utilities
-    │       ├── __init__.py
-    │       └── utils.py          # Helper functions
     └── test_your_project/        # Mirror of source structure
         ├── __init__.py
-        └── test_dev
-            ├── ...               # will have the tests for the dev package
+        └── test_dev/
+            └── ...               # Tests for the dev package
                 
         
 ```
