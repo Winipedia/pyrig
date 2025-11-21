@@ -9,7 +9,6 @@ NotImplementedError to indicate tests that need to be written.
 from types import ModuleType
 from typing import cast
 
-from pyrig.dev import tests
 from pyrig.src.modules.class_ import (
     get_all_cls_from_module,
     get_all_methods_from_cls,
@@ -23,12 +22,10 @@ from pyrig.src.modules.module import (
     to_path,
 )
 from pyrig.src.modules.package import (
-    copy_package,
     get_src_package,
     walk_package,
 )
 from pyrig.src.testing.convention import (
-    TESTS_PACKAGE_NAME,
     get_test_obj_from_obj,
     make_test_obj_importpath_from_obj,
     make_test_obj_name,
@@ -41,25 +38,7 @@ def create_tests() -> None:
     This function orchestrates the test creation process by first setting up the base
     test structure and then creating test files for all source packages.
     """
-    create_tests_base()
     create_tests_for_package(get_src_package())
-
-
-def create_tests_base() -> None:
-    """Create the base test structure.
-
-    This function:
-    1. Creates a mirror of testing.tests in the tests directory
-    2. Skips copying __init__.py file contents
-    3. Writes new __init__.py files for all packages
-    4. Creates a conftest.py file with the appropriate pytest plugin configuration
-    5. Does not overwrite anything if it already exists except conftest.py
-    """
-    copy_package(
-        src_package=tests,
-        dst=TESTS_PACKAGE_NAME,
-        with_file_content=False,
-    )
 
 
 def create_tests_for_package(package: ModuleType) -> None:

@@ -1,22 +1,27 @@
 """Session-level test fixtures and utilities.
 
-This module provides fixtures and test functions that operate at the session scope,
-ensuring that project-wide conventions are followed and that the overall project
-structure is correct. These fixtures are automatically applied to the test session
-through pytest's autouse mechanism.
+These fixtures in this module are automatically applied to the test session
+through pytest's autouse mechanism. Pyrig automatically adds this module to
+pytest_plugins in conftest.py. However you still have decorate the fixture
+with @autouse_session_fixture from pyrig.src.testing.fixtures or with pytest's
+autouse mechanism @pytest.fixture(scope="session", autouse=True).
 """
 
 import logging
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pyrig
 from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.src.modules.module import (
     import_module_with_default,
+    make_init_module,
+    to_path,
 )
 from pyrig.src.modules.package import (
     find_packages,
@@ -24,6 +29,8 @@ from pyrig.src.modules.package import (
     walk_package,
 )
 from pyrig.src.os.os import run_subprocess
+from pyrig.src.project.poetry import dev_deps
+from pyrig.src.project.poetry.dev_deps import DEV_DEPENDENCIES
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
@@ -37,32 +44,6 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 logger = logging.getLogger(__name__)
-
-
-@autouse_session_fixture
-def assert_dev_dependencies_config_is_correct() -> None:
-    """Verify that the dev dependencies in consts.py are correct.
-
-    This fixture runs once per test session and checks that the dev dependencies
-    in consts.py are correct by comparing them to the dev dependencies in
-    pyproject.toml.
-
-    Raises:
-        AssertionError: If the dev dependencies in consts.py are not correct
-
-    """
-    if PyprojectConfigFile.get_package_name() != pyrig.__name__:
-        # this const is only used in pyrig
-        # to be able to install them with setup.py
-        return
-    actual_dev_dependencies = PyprojectConfigFile.get_dev_dependencies()
-    expected_dev_dependencies = PyprojectConfigFile.get_configs()["tool"]["poetry"][
-        "group"
-    ]["dev"]["dependencies"].keys()
-    assert_with_msg(
-        set(actual_dev_dependencies) == set(expected_dev_dependencies),
-        "Dev dependencies in consts.py are not correct",
-    )
 
 
 @autouse_session_fixture
@@ -102,11 +83,20 @@ def assert_no_namespace_packages() -> None:
     namespace_packages = find_packages(depth=None, include_namespace_packages=True)
 
     any_namespace_packages = set(namespace_packages) - set(packages)
-    assert_with_msg(
-        not any_namespace_packages,
-        f"Found namespace packages: {any_namespace_packages}. "
-        f"All packages should have __init__.py files.",
-    )
+    if any_namespace_packages:
+        # make init files for all namespace packages
+        for package in any_namespace_packages:
+            make_init_module(to_path(package, is_package=True))
+
+    msg = f"""Found {len(any_namespace_packages)} namespace packages.
+    Created __init__.py files for them.
+    Please verify the changes at the following paths:
+"""
+    for package in any_namespace_packages:
+        msg += f"""
+        - {package}
+        """
+    assert_with_msg(not any_namespace_packages, msg)
 
 
 @autouse_session_fixture
@@ -233,4 +223,58 @@ def assert_dependencies_are_up_to_date() -> None:
     assert_with_msg(
         no_deps_updated_msg in stdout,
         msg,
+    )
+
+
+@autouse_session_fixture
+def assert_pre_commit_is_installed() -> None:
+    """Verify that pre-commit is installed.
+
+    This fixture runs once per test session and runs pre-commit install
+    to make sure pre-commit is installed.
+    """
+    completed_process = PreCommitConfigConfigFile.install()
+    stdout = completed_process.stdout.decode("utf-8")
+    logger.info("Pre-commit install output: %s", stdout)
+    expected = "pre-commit installed at .git/hooks/pre-commit"
+
+    assert_with_msg(
+        expected in stdout,
+        f"Expected {expected} in pre-commit install output, got {stdout}",
+    )
+
+
+@autouse_session_fixture
+def assert_dev_dependencies_config_is_correct() -> None:
+    """Verify that the dev dependencies in consts.py are correct.
+
+    If not it dumps the correct config to consts.py.
+    """
+    # skip if not in pyrig
+    if PyprojectConfigFile.get_package_name() != pyrig.__name__:
+        return
+
+    expected_dev_deps = PyprojectConfigFile.get_dev_dependencies()
+    actual_dev_deps = DEV_DEPENDENCIES
+
+    correct = expected_dev_deps == actual_dev_deps
+    if correct:
+        return
+
+    path = to_path(module_name=dev_deps, is_package=False)
+    content = path.read_text()
+    # replace DEV_DEPENDENCIES = {.*} with the correct value with re
+    pattern = r"DEV_DEPENDENCIES: dict\[str, str \| dict\[str, str\]\] = \{.*?\}"
+
+    replacement = (
+        f"DEV_DEPENDENCIES: dict[str, str | dict[str, str]] = {expected_dev_deps}"
+    )
+
+    new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+    path.write_text(new_content)
+
+    assert_with_msg(
+        correct,
+        "Dev dependencies in consts.py are not correct. "
+        "Corrected the file. Please verify the changes.",
     )

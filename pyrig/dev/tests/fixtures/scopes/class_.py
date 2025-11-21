@@ -1,9 +1,10 @@
 """Class-level test fixtures and utilities.
 
-This module provides fixtures and test functions that operate at the class scope,
-ensuring that all methods within a test class have corresponding tests.
-These fixtures are automatically applied to all test classes through pytest's autouse
-mechanism.
+These fixtures in this module are automatically applied to all test classes
+through pytest's autouse mechanism. Pyrig automatically adds this module to
+pytest_plugins in conftest.py. However you still have decorate the fixture
+with @autouse_class_fixture from pyrig.src.testing.fixtures or with pytest's
+autouse mechanism @pytest.fixture(scope="class", autouse=True).
 """
 
 import pytest

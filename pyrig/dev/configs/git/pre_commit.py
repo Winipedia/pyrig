@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+from subprocess import CompletedProcess  # nosec: B404
 from typing import Any
 
 from pyrig.dev.configs.base.base import YamlConfigFile
@@ -100,10 +101,10 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         super().__init__()
 
     @classmethod
-    def install(cls) -> None:
+    def install(cls) -> CompletedProcess[bytes]:
         """Installs the pre commits in the config."""
         logger.info("Running pre-commit install")
-        run_subprocess([*POETRY_RUN_ARGS, "pre-commit", "install"])
+        return run_subprocess([*POETRY_RUN_ARGS, "pre-commit", "install"])
 
     @classmethod
     def run_hooks(
