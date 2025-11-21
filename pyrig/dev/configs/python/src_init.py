@@ -4,11 +4,11 @@ from pathlib import Path
 from types import ModuleType
 
 from pyrig import src
-from pyrig.dev.configs.base.base import CopyModuleConfigFile
+from pyrig.dev.configs.base.base import CopyModuleOnlyDocstringConfigFile
 from pyrig.src.modules.module import get_isolated_obj_name
 
 
-class SrcInitConfigFile(CopyModuleConfigFile):
+class SrcInitConfigFile(CopyModuleOnlyDocstringConfigFile):
     """Config file for src/__init__.py."""
 
     @classmethod

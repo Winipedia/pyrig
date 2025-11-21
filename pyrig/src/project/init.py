@@ -20,9 +20,10 @@ logger = logging.getLogger(__name__)
 
 
 SETUP_STEPS: list[Callable[..., Any]] = [
+    PyprojectConfigFile,  # write dev deps to pyproject.toml
+    PyprojectConfigFile.update_dependencies,  # to install dev deps
     create_root,
     create_tests,
-    PyprojectConfigFile.update_dependencies,
     PreCommitConfigConfigFile.run_hooks,
     ConftestConfigFile.run_tests,
     PyprojectConfigFile.install_dependencies,  # to activate cli

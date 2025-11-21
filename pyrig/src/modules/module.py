@@ -471,6 +471,7 @@ def import_module_with_default(
     try:
         return import_module(module_name)
     except ImportError:
+        logger.exception("Could not import module %s", module_name)
         return default
 
 

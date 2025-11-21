@@ -183,6 +183,9 @@ class ConfigFile(ABC):
         from pyrig.dev.configs.testing.conftest import (  # noqa: PLC0415
             ConftestConfigFile,
         )
+        from pyrig.dev.configs.testing.fixtures.fixture import (  # noqa: PLC0415
+            FixtureConfigFile,
+        )
 
         priorities: list[type[ConfigFile]] = [
             GitIgnoreConfigFile,
@@ -190,6 +193,7 @@ class ConfigFile(ABC):
             SrcInitConfigFile,
             ConfigsConfigFile,
             BuilderConfigFile,
+            FixtureConfigFile,
             ConftestConfigFile,
         ]
         for subclass in priorities:

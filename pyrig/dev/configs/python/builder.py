@@ -3,10 +3,10 @@
 from types import ModuleType
 
 from pyrig.dev.artifacts.builder import builder
-from pyrig.dev.configs.base.base import CopyModuleConfigFile
+from pyrig.dev.configs.base.base import CopyModuleOnlyDocstringConfigFile
 
 
-class BuilderConfigFile(CopyModuleConfigFile):
+class BuilderConfigFile(CopyModuleOnlyDocstringConfigFile):
     """Config File subclass that creates the dirs folder."""
 
     @classmethod
