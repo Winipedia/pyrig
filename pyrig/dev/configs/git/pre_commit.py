@@ -8,7 +8,6 @@ from typing import Any
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.poetry.poetry import (
-    POETRY_ARG,
     POETRY_RUN_ARGS,
     get_script_from_args,
 )
@@ -42,8 +41,6 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         **kwargs: Any,
     ) -> dict[str, Any]:
         """Get a hook."""
-        if args[0] != POETRY_ARG:
-            args = POETRY_RUN_ARGS + args
         return {
             "id": name,
             "name": name,
@@ -61,10 +58,6 @@ class PreCommitConfigConfigFile(YamlConfigFile):
             cls.get_hook(
                 "check-package-manager-config",
                 ["poetry", "check", "--strict"],
-            ),
-            cls.get_hook(
-                "install-dependencies",
-                ["poetry", "install", "--with", "dev"],
             ),
             cls.get_hook(
                 "lint-code",

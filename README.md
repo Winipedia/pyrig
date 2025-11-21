@@ -151,10 +151,10 @@ git push
    This command performs the following steps in order:
    1. Writes dev dependencies to `pyproject.toml`
    2. Updates dependencies to install dev dependencies
-   3. Creates the project root structure (source and test packages)
+   3. Creates the project root structure (source and test packages) via `create-root`
    4. Generates test skeletons for all source code
    5. Runs all pre-commit hooks
-   6. Executes the test suite (which also installs pre-commit hooks)
+   6. Executes the test suite (which runs `create-root` again via autouse fixture and installs pre-commit hooks)
    7. Installs dependencies to activate CLI commands
 
 6. **Commit and push changes**
@@ -276,7 +276,6 @@ Automatically created and configured with the following pre-commit hooks:
 
 - `check-package-manager-config`: poetry check --strict
 - `install-dependencies`: poetry install --with dev (keeps dependencies up-to-date automatically)
-- `create-root`: pyrig create-root
 - `lint-code`: ruff check --fix
 - `format-code`: ruff format
 - `check-static-types`: mypy --exclude-gitignore
@@ -285,6 +284,8 @@ Automatically created and configured with the following pre-commit hooks:
 The `install-dependencies` hook ensures that your local environment stays synchronized with the latest dependencies defined in `pyproject.toml` before each commit.
 
 Pre-commit hooks are automatically installed during the test session via an autouse session fixture that verifies pre-commit is properly configured.
+
+**Note**: The `create-root` command is NOT a pre-commit hook. Instead, it runs automatically as part of the `assert_config_files_are_correct` autouse session fixture, ensuring all configuration files are created and validated before tests run.
 
 #### `.gitignore`
 
@@ -699,7 +700,7 @@ The following autouse session fixtures are automatically applied to every test r
 - `assert_no_unit_test_package_usage`: Prevents usage of the `unittest` package (enforces pytest), use pytest-mock instead for mocking
 
 **ConfigFile Machinery Enforcement**:
-- `assert_config_files_are_correct`: Runs the ConfigFile Machinery to verify all configuration files are correct and automatically fixes them if needed
+- `assert_config_files_are_correct`: Runs the ConfigFile Machinery (via `create-root`) to verify all configuration files are correct and automatically fixes them if needed. This is where `create-root` runs automatically, ensuring all configs are created and validated before tests.
 - `assert_dev_dependencies_config_is_correct`: Validates dev dependencies configuration and automatically updates the config file if incorrect (pyrig internal only)
 
 **Pre-commit Integration**:

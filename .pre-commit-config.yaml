@@ -7,33 +7,27 @@ repos:
     language: system
     always_run: true
     pass_filenames: false
-  - id: install-dependencies
-    name: install-dependencies
-    entry: poetry install --with dev
-    language: system
-    always_run: true
-    pass_filenames: false
   - id: lint-code
     name: lint-code
-    entry: poetry run ruff check --fix
+    entry: ruff check --fix
     language: system
     always_run: true
     pass_filenames: false
   - id: format-code
     name: format-code
-    entry: poetry run ruff format
+    entry: ruff format
     language: system
     always_run: true
     pass_filenames: false
   - id: check-static-types
     name: check-static-types
-    entry: poetry run mypy --exclude-gitignore
+    entry: mypy --exclude-gitignore
     language: system
     always_run: true
     pass_filenames: false
   - id: check-security
     name: check-security
-    entry: poetry run bandit -c pyproject.toml -r .
+    entry: bandit -c pyproject.toml -r .
     language: system
     always_run: true
     pass_filenames: false
