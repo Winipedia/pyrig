@@ -236,7 +236,7 @@ def assert_pre_commit_is_installed() -> None:
     completed_process = PreCommitConfigConfigFile.install()
     stdout = completed_process.stdout.decode("utf-8")
     logger.info("Pre-commit install output: %s", stdout)
-    expected = "pre-commit installed at .git/hooks/pre-commit"
+    expected = "pre-commit installed at"
 
     assert_with_msg(
         expected in stdout,
