@@ -219,6 +219,16 @@ def assert_dependencies_are_up_to_date() -> None:
     stdout = completed_process.stdout.decode("utf-8")
     logger.info("Poetry self update output: %s", stdout)
 
+    # install the dependencies
+    completed_process = PyprojectConfigFile.install_dependencies(check=True)
+    stdout = completed_process.stdout.decode("utf-8")
+    logger.info("Poetry install output: %s", stdout)
+    expected = "No dependencies to install"
+    assert_with_msg(
+        expected in stdout,
+        f"Expected {expected} in poetry install output, got {stdout}",
+    )
+
     # update the dependencies
     completed_process = PyprojectConfigFile.update_dependencies(check=True)
     # if there were updates raise an error
