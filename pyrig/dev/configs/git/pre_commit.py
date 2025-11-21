@@ -36,12 +36,12 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         args: list[str],
         *,
         language: str = "system",
-        always_run: bool = True,
         pass_filenames: bool = False,
+        always_run: bool = True,
         **kwargs: Any,
     ) -> dict[str, Any]:
         """Get a hook."""
-        return {
+        hook: dict[str, Any] = {
             "id": name,
             "name": name,
             "entry": get_script_from_args(args),
@@ -50,6 +50,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
             "pass_filenames": pass_filenames,
             **kwargs,
         }
+        return hook
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:

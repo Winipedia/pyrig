@@ -275,17 +275,20 @@ Automatically created and set to the lowest supported Python version. Used by py
 Automatically created and configured with the following pre-commit hooks:
 
 - `check-package-manager-config`: poetry check --strict
-- `install-dependencies`: poetry install --with dev (keeps dependencies up-to-date automatically)
 - `lint-code`: ruff check --fix
 - `format-code`: ruff format
 - `check-static-types`: mypy --exclude-gitignore
 - `check-security`: bandit -c pyproject.toml -r .
 
-The `install-dependencies` hook ensures that your local environment stays synchronized with the latest dependencies defined in `pyproject.toml` before each commit.
+These hooks run automatically before each commit to ensure code quality and consistency.
 
 Pre-commit hooks are automatically installed during the test session via an autouse session fixture that verifies pre-commit is properly configured.
 
-**Note**: The `create-root` command is NOT a pre-commit hook. Instead, it runs automatically as part of the `assert_config_files_are_correct` autouse session fixture, ensuring all configuration files are created and validated before tests run.
+**Note**: Heavy operations like `install-dependencies` and `create-root` are NOT pre-commit hooks. Instead, they run automatically as part of autouse session fixtures during test execution:
+- `create-root` runs in `assert_config_files_are_correct` to ensure all configuration files are created and validated
+- Dependency updates run in `assert_dependencies_are_up_to_date` to keep dependencies current
+
+This keeps commits fast while still ensuring these operations run regularly during development.
 
 #### `.gitignore`
 
