@@ -28,6 +28,7 @@ Built for Python 3.12+ projects using Poetry and GitHub, pyrig automatically gen
 ## Features
 
 - **Zero-Configuration Setup**: Opinionated, best-practice configurations for Python development tools
+- **ConfigFile Machinery**: Automated system for discovering, creating, validating, and updating all configuration files
 - **Automatic Test Generation**: Creates test skeletons that mirror your source code structure
 - **Intelligent Fixture System**: Automatic discovery and loading of pytest fixtures across all packages
 - **Strict Type Checking**: Enforces mypy strict mode with comprehensive type coverage
@@ -165,15 +166,65 @@ git push
 
 ---
 
-## Configuration Files
+## The ConfigFile Machinery
 
-All configuration files are subclasses of `pyrig.dev.configs.base.base.ConfigFile` and are automatically created and managed by pyrig. You can add custom configs by subclassing `ConfigFile` and adding it to `pkg/dev/configs/**`. All subclasses in this folder are automatically discovered and initialized (created if not exists, updated if not correct).
+The ConfigFile Machinery is pyrig's automated system for managing all configuration files in your project. All configuration files are subclasses of `pyrig.dev.configs.base.base.ConfigFile` and are automatically created and managed by pyrig. You can add custom configs by subclassing `ConfigFile` and adding it to `pkg/dev/configs/**`. All subclasses in this folder are automatically discovered and initialized (created if not exists, updated if not correct).
 
-**Note**: If you do not wish to have a specific config file managed by pyrig, you can make the file empty and pyrig will not overwrite it, however the file must exist.
+**How the Machinery Works**:
 
-### Config File Types
+1. **Automatic Discovery**: Scans all `dev/configs/` directories across all packages depending on pyrig
+2. **Automatic Initialization**: Creates missing config files based on their class definitions
+3. **Automatic Validation**: Checks existing config files against their expected content
+4. **Automatic Updates**: Updates config files when their definitions change
+5. **Automatic Enforcement**: Session fixture ensures all configs are correct before tests run
 
-pyrig provides several base classes for different types of configuration files:
+**Note**: If you do not wish to have a specific config file managed by the machinery, you can make the file empty and pyrig will not overwrite it, however the file must exist.
+
+### Extending Configuration Files
+
+The ConfigFile Machinery uses a **subset validation algorithm** that allows you to extend configuration files with your own custom settings while still maintaining the base configuration required by pyrig.
+
+**How Subset Validation Works**:
+
+The machinery validates that the expected configuration (defined by the `ConfigFile` class) is a **nested subset** of the actual configuration file. This means:
+
+- **Dictionaries**: All keys from the expected config must exist in the actual config, but the actual config can have additional keys
+- **Lists**: All items from the expected config must exist in the actual config (order doesn't matter), but the actual config can have additional items
+- **Values**: Expected values must match actual values exactly (unless they are nested structures)
+
+**What This Means for You**:
+
+You can freely extend any managed configuration file with your own custom settings, as long as you keep all the settings that pyrig requires. The machinery will:
+
+1. **Validate**: Check that all required settings are present
+2. **Add Missing**: Automatically add any missing required settings
+3. **Preserve Custom**: Keep all your custom settings intact
+
+**Example**:
+
+If pyrig's `pyproject.toml` config requires:
+```toml
+[tool.mypy]
+strict = true
+warn_redundant_casts = true
+```
+
+You can extend it with:
+```toml
+[tool.mypy]
+strict = true
+warn_redundant_casts = true
+exclude = ["tests/fixtures/"]  # Your custom setting
+plugins = ["pydantic.mypy"]     # Your custom setting
+```
+
+The machinery will validate that `strict` and `warn_redundant_casts` are present, but won't touch your custom `exclude` and `plugins` settings.
+
+In fact I suggest defining your own subclass of `PyprojectConfigFile` in your own `dev/configs/python/pyproject.py` file and adding your custom settings there. This way you can easily update your custom settings and the files can be generated automatically. But that is up to your discretion and preferences.
+
+### ConfigFile Types
+
+The ConfigFile Machinery provides several base classes for different types of configuration files:
 
 - **`ConfigFile`**: Base class for all config files
 - **`CopyModuleConfigFile`**: Copies entire module content to a config file
@@ -184,11 +235,13 @@ pyrig provides several base classes for different types of configuration files:
 
 The `CopyModuleOnlyDocstringConfigFile` is particularly useful for creating configuration files that mirror source modules but only contain documentation, keeping the generated files clean and focused.
 
-### Managed Configuration Files
+### Configuration Files Managed by the Machinery
+
+The ConfigFile Machinery automatically manages the following configuration files:
 
 #### `pyproject.toml`
 
-Stores project metadata and dependencies. pyrig automatically adds essential dev dependencies (ruff, mypy, pytest, pre-commit) and configures them with the strictest possible settings to enforce best practices.
+Stores project metadata and dependencies. The machinery automatically adds essential dev dependencies (ruff, mypy, pytest, pre-commit) and configures them with the strictest possible settings to enforce best practices.
 
 - **Dependency Management**: All dependencies use `*` as the version to stay up-to-date
 - **Version Constraints**: Use dictionary syntax for specific constraints: `{"version": "*", "python": "<3.15"}`
@@ -387,7 +440,7 @@ Automatically created configuration file that manages the `resources/__init__.py
 
 #### `pkg/dev/configs/testing/fixtures/`
 
-Automatically created configuration files that manage the fixture system structure. These config files ensure that fixture modules are properly created with appropriate documentation:
+Configuration files managed by the ConfigFile Machinery that handle the fixture system structure. These config files ensure that fixture modules are properly created with appropriate documentation:
 
 - **`fixture.py`**: Manages the main `pkg/dev/tests/fixtures/fixture.py` file
 - **`scopes/session.py`**: Manages session-level fixture configuration
@@ -645,8 +698,8 @@ The following autouse session fixtures are automatically applied to every test r
 **Code Quality Enforcement**:
 - `assert_no_unit_test_package_usage`: Prevents usage of the `unittest` package (enforces pytest), use pytest-mock instead for mocking
 
-**Configuration Enforcement**:
-- `assert_config_files_are_correct`: Verifies all configuration files are correct and automatically fixes them if needed
+**ConfigFile Machinery Enforcement**:
+- `assert_config_files_are_correct`: Runs the ConfigFile Machinery to verify all configuration files are correct and automatically fixes them if needed
 - `assert_dev_dependencies_config_is_correct`: Validates dev dependencies configuration and automatically updates the config file if incorrect (pyrig internal only)
 
 **Pre-commit Integration**:
@@ -808,7 +861,7 @@ pyrig supports a powerful multi-package architecture where multiple packages can
 
 When you run pyrig commands or tests, it automatically discovers and executes components from ALL packages that depend on pyrig:
 
-1. **Config Files**: All `ConfigFile` subclasses from all `dev/configs/` directories
+1. **ConfigFile Machinery**: All `ConfigFile` subclasses from all `dev/configs/` directories
 2. **Builders**: All `Builder` subclasses from all `dev/artifacts/builder/` directories
 3. **Fixtures**: All pytest fixtures from all `dev/tests/fixtures/` directories
 4. **Resources**: All files from all `dev/artifacts/resources/` directories
