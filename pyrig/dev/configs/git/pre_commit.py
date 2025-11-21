@@ -67,10 +67,6 @@ class PreCommitConfigConfigFile(YamlConfigFile):
                 ["poetry", "install", "--with", "dev"],
             ),
             cls.get_hook(
-                "create-root",
-                ["pyrig", "create-root"],
-            ),
-            cls.get_hook(
                 "lint-code",
                 ["ruff", "check", "--fix"],
             ),

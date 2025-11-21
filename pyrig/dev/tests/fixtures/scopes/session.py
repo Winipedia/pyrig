@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pyrig
+from pyrig.dev.cli.subcommands import create_root
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import (
@@ -59,8 +60,9 @@ def assert_config_files_are_correct() -> None:
     """
     subclasses = ConfigFile.get_all_subclasses()
     all_correct = all(subclass.is_correct() for subclass in subclasses)
-    # subclasses of ConfigFile
-    ConfigFile.init_config_files()
+
+    if not all_correct:
+        create_root()
 
     assert_with_msg(
         all_correct,
