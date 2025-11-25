@@ -236,6 +236,19 @@ class TestPyprojectConfigFile:
             "Expected get_dev_dependencies to return a set",
         )
 
+    def test_get_standard_dev_dependencies(
+        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
+    ) -> None:
+        """Test method for get_standard_dev_dependencies."""
+        my_test_pyproject_config_file()
+        standard_dev_deps = (
+            my_test_pyproject_config_file.get_standard_dev_dependencies()
+        )
+        assert_with_msg(
+            isinstance(standard_dev_deps, dict),
+            "Expected get_standard_dev_dependencies to return a set",
+        )
+
     def test_get_authors(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:

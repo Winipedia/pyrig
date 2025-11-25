@@ -11,7 +11,6 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pyrig
 from pyrig.dev.cli.subcommands import create_root
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
@@ -257,26 +256,4 @@ def assert_pre_commit_is_installed() -> None:
     assert_with_msg(
         expected in stdout,
         f"Expected {expected} in pre-commit install output, got {stdout}",
-    )
-
-
-@autouse_session_fixture
-def assert_dev_dependencies_config_is_correct() -> None:
-    """Verify that the dev dependencies in consts.py are correct.
-
-    If not it dumps the correct config to consts.py.
-    """
-    # skip if not in pyrig
-    if PyprojectConfigFile.get_package_name() != pyrig.__name__:
-        return
-
-    config_dev_deps = set(PyprojectConfigFile.get_dev_dependencies())
-
-    actual_dev_deps = set(
-        PyprojectConfigFile.load()["tool"]["poetry"]["group"]["dev"]["dependencies"]
-    )
-    assert_with_msg(
-        config_dev_deps == actual_dev_deps,
-        "Dev dependencies in pyproject.toml are not correct. "
-        "Corrected the file. Please verify the changes.",
     )

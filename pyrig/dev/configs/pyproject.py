@@ -92,6 +92,7 @@ class PyprojectConfigFile(TomlConfigFile):
                         "dev": {
                             "dependencies": cls.make_dependency_to_version_dict(
                                 cls.get_dev_dependencies(),
+                                additional=cls.get_standard_dev_dependencies(),
                             )
                         }
                     },
@@ -207,9 +208,9 @@ class PyprojectConfigFile(TomlConfigFile):
         return all_deps
 
     @classmethod
-    def get_dev_dependencies(cls) -> dict[str, str | dict[str, str]]:
-        """Get the dev dependencies."""
-        dev_deps: dict[str, str | dict[str, str]] = {
+    def get_standard_dev_dependencies(cls) -> dict[str, str | dict[str, str]]:
+        """Get the standard dev dependencies."""
+        standard_dev_dependencies: dict[str, str | dict[str, str]] = {
             "ruff": "*",
             "pre-commit": "*",
             "mypy": "*",
@@ -224,6 +225,13 @@ class PyprojectConfigFile(TomlConfigFile):
             "types-pyinstaller": "*",
             "pyinstaller": {"version": "*", "python": "<3.15"},
         }
+        # sort the dependencies
+        return dict(sorted(standard_dev_dependencies.items()))
+
+    @classmethod
+    def get_dev_dependencies(cls) -> dict[str, str | dict[str, str]]:
+        """Get the dev dependencies."""
+        dev_deps: dict[str, str | dict[str, str]] = {}
         old_tool_dev_deps = (
             cls.load().get("tool", {}).get("poetry", {}).get("dev-dependencies", {})
         )
