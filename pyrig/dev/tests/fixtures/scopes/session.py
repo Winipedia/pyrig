@@ -8,7 +8,6 @@ autouse mechanism @pytest.fixture(scope="session", autouse=True).
 """
 
 import logging
-import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -32,8 +31,6 @@ from pyrig.src.modules.package import (
     walk_package,
 )
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.poetry import dev_deps
-from pyrig.src.project.poetry.dev_deps import DEV_DEPENDENCIES
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
@@ -273,27 +270,13 @@ def assert_dev_dependencies_config_is_correct() -> None:
     if PyprojectConfigFile.get_package_name() != pyrig.__name__:
         return
 
-    expected_dev_deps = PyprojectConfigFile.get_dev_dependencies()
-    actual_dev_deps = DEV_DEPENDENCIES
+    config_dev_deps = set(PyprojectConfigFile.get_dev_dependencies())
 
-    correct = expected_dev_deps == actual_dev_deps
-    if correct:
-        return
-
-    path = to_path(module_name=dev_deps, is_package=False)
-    content = path.read_text()
-    # replace DEV_DEPENDENCIES = {.*} with the correct value with re
-    pattern = r"DEV_DEPENDENCIES: dict\[str, str \| dict\[str, str\]\] = \{.*?\}"
-
-    replacement = (
-        f"DEV_DEPENDENCIES: dict[str, str | dict[str, str]] = {expected_dev_deps}"
+    actual_dev_deps = set(
+        PyprojectConfigFile.load()["tool"]["poetry"]["group"]["dev"]["dependencies"]
     )
-
-    new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
-    path.write_text(new_content)
-
     assert_with_msg(
-        correct,
-        "Dev dependencies in consts.py are not correct. "
+        config_dev_deps == actual_dev_deps,
+        "Dev dependencies in pyproject.toml are not correct. "
         "Corrected the file. Please verify the changes.",
     )

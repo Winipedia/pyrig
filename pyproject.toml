@@ -33,18 +33,19 @@ typer = "*"
 pillow = "*"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "*"
-pre-commit = "*"
-mypy = "*"
-pytest = "*"
 bandit = "*"
-types-setuptools = "*"
-types-tqdm = "*"
-types-defusedxml = "*"
-types-pyyaml = "*"
+mypy = "*"
+pre-commit = "*"
+pytest = "*"
 pytest-mock = "*"
+ruff = "*"
+types-defusedxml = "*"
 types-networkx = "*"
 types-pyinstaller = "*"
+types-pyyaml = "*"
+types-setuptools = "*"
+types-tqdm = "*"
+
 
 [tool.poetry.group.dev.dependencies.pyinstaller]
 version = "*"

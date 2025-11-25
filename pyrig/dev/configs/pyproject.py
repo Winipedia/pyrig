@@ -11,7 +11,6 @@ from packaging.version import Version
 from pyrig.dev.configs.base.base import TomlConfigFile
 from pyrig.dev.configs.python.experiment import ExperimentConfigFile
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.poetry.dev_deps import DEV_DEPENDENCIES
 from pyrig.src.project.poetry.versions import VersionConstraint
 from pyrig.src.testing.convention import TEST_MODULE_PREFIX, TESTS_PACKAGE_NAME
 
@@ -93,7 +92,6 @@ class PyprojectConfigFile(TomlConfigFile):
                         "dev": {
                             "dependencies": cls.make_dependency_to_version_dict(
                                 cls.get_dev_dependencies(),
-                                additional=DEV_DEPENDENCIES,
                             )
                         }
                     },
@@ -211,9 +209,25 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def get_dev_dependencies(cls) -> dict[str, str | dict[str, str]]:
         """Get the dev dependencies."""
-        dev_deps: dict[str, str | dict[str, str]] = (
+        dev_deps: dict[str, str | dict[str, str]] = {
+            "ruff": "*",
+            "pre-commit": "*",
+            "mypy": "*",
+            "pytest": "*",
+            "bandit": "*",
+            "types-setuptools": "*",
+            "types-tqdm": "*",
+            "types-defusedxml": "*",
+            "types-pyyaml": "*",
+            "pytest-mock": "*",
+            "types-networkx": "*",
+            "types-pyinstaller": "*",
+            "pyinstaller": {"version": "*", "python": "<3.15"},
+        }
+        old_tool_dev_deps = (
             cls.load().get("tool", {}).get("poetry", {}).get("dev-dependencies", {})
         )
+        dev_deps.update(old_tool_dev_deps)
         tool_dev_deps = (
             cls.load()
             .get("tool", {})
@@ -223,7 +237,9 @@ class PyprojectConfigFile(TomlConfigFile):
             .get("dependencies", {})
         )
         dev_deps.update(tool_dev_deps)
-        return dev_deps
+
+        # make dev deps sorted
+        return dict(sorted(dev_deps.items()))
 
     @classmethod
     def get_dependencies(cls) -> dict[str, str | dict[str, str]]:
@@ -238,7 +254,8 @@ class PyprojectConfigFile(TomlConfigFile):
 
         tool_deps = cls.load().get("tool", {}).get("poetry", {}).get("dependencies", {})
         deps.update(tool_deps)
-        return deps
+        # make deps sorted
+        return dict(sorted(deps.items()))
 
     @classmethod
     def get_authors(cls) -> list[dict[str, str]]:
