@@ -148,15 +148,6 @@ git push
    poetry run pyrig init
    ```
 
-   This command performs the following steps in order:
-   1. Writes dev dependencies to `pyproject.toml`
-   2. Updates dependencies to install dev dependencies
-   3. Creates the project root structure (source and test packages) via `create-root`
-   4. Generates test skeletons for all source code
-   5. Runs all pre-commit hooks
-   6. Executes the test suite (which runs `create-root` again via autouse fixture and installs pre-commit hooks)
-   7. Installs dependencies to activate CLI commands
-
 6. **Commit and push changes**
    ```bash
    git add .
@@ -166,47 +157,33 @@ git push
 
 ---
 
-## The ConfigFile Machinery
+## ConfigFile Machinery
 
-The ConfigFile Machinery is pyrig's automated system for managing all configuration files in your project. All configuration files are subclasses of `pyrig.dev.configs.base.base.ConfigFile` and are automatically created and managed by pyrig. You can add custom configs by subclassing `ConfigFile` and adding it to `pkg/dev/configs/**`. All subclasses in this folder are automatically discovered and initialized (created if not exists, updated if not correct).
+The ConfigFile Machinery is pyrig's automated system for managing all configuration files. All configuration files are subclasses of `pyrig.dev.configs.base.base.ConfigFile` and are automatically discovered from `pkg/dev/configs/**` directories across all packages depending on pyrig.
 
-**How the Machinery Works**:
+**Key Features**:
 
-1. **Automatic Discovery**: Scans all `dev/configs/` directories across all packages depending on pyrig
-2. **Automatic Initialization**: Creates missing config files based on their class definitions
-3. **Automatic Validation**: Checks existing config files against their expected content
-4. **Automatic Updates**: Updates config files when their definitions change
-5. **Automatic Enforcement**: Session fixture ensures all configs are correct before tests run
+- **Automatic Discovery**: Scans all `dev/configs/` directories across all packages depending on pyrig
+- **Automatic Initialization**: Creates missing config files based on their class definitions
+- **Automatic Validation**: Checks existing config files against their expected content
+- **Automatic Updates**: Updates config files when their definitions change
+- **Intelligent Subclass Discovery**: Only executes the most specific (leaf) implementations. If you subclass an existing config, only your custom subclass will be executed, preventing duplicates and ensuring your customizations take precedence.
 
-**Subclass Discovery Behavior**:
-
-The machinery uses intelligent subclass discovery that only executes the most specific (leaf) implementations. If you create a custom config by subclassing an existing config class, only your custom subclass will be executed, not the parent class. This prevents duplicate config file creation and ensures that your customizations take precedence.
-
-**Note**: If you do not wish to have a specific config file managed by the machinery, you can make the file empty and pyrig will not overwrite it, however the file must exist.
+**Note**: To prevent pyrig from managing a specific config file, make the file empty (the file must exist).
 
 ### Extending Configuration Files
 
-The ConfigFile Machinery uses a **subset validation algorithm** that allows you to extend configuration files with your own custom settings while still maintaining the base configuration required by pyrig.
+The ConfigFile Machinery uses a **subset validation algorithm** that allows you to extend configuration files with custom settings while maintaining pyrig's required settings.
 
-**How Subset Validation Works**:
+**Subset Validation Rules**:
 
-The machinery validates that the expected configuration (defined by the `ConfigFile` class) is a **nested subset** of the actual configuration file. This means:
-
-- **Dictionaries**: All keys from the expected config must exist in the actual config, but the actual config can have additional keys
-- **Lists**: All items from the expected config must exist in the actual config (order doesn't matter), but the actual config can have additional items
-- **Values**: Expected values must match actual values exactly (unless they are nested structures)
-
-**What This Means for You**:
-
-You can freely extend any managed configuration file with your own custom settings, as long as you keep all the settings that pyrig requires. The machinery will:
-
-1. **Validate**: Check that all required settings are present
-2. **Add Missing**: Automatically add any missing required settings
-3. **Preserve Custom**: Keep all your custom settings intact
+- **Dictionaries**: All required keys must exist, but you can add additional keys
+- **Lists**: All required items must exist (order doesn't matter), but you can add additional items
+- **Values**: Required values must match exactly (unless they are nested structures)
 
 **Example**:
 
-If pyrig's `pyproject.toml` config requires:
+If pyrig requires:
 ```toml
 [tool.mypy]
 strict = true
@@ -222,22 +199,16 @@ exclude = ["tests/fixtures/"]  # Your custom setting
 plugins = ["pydantic.mypy"]     # Your custom setting
 ```
 
-The machinery will validate that `strict` and `warn_redundant_casts` are present, but won't touch your custom `exclude` and `plugins` settings.
-
-In fact I suggest defining your own subclass of `PyprojectConfigFile` in your own `dev/configs/python/pyproject.py` file and adding your custom settings there. This way you can easily update your custom settings and the files can be generated automatically. When you subclass an existing config, only your subclass will be executed (not the parent), ensuring your customizations take full control. But that is up to your discretion and preferences.
+**Recommended Approach**: Subclass existing configs (e.g., `PyprojectConfigFile`) in your own `dev/configs/python/pyproject.py` file. When you subclass an existing config, only your subclass executes, ensuring your customizations take full control.
 
 ### ConfigFile Types
 
-The ConfigFile Machinery provides several base classes for different types of configuration files:
-
 - **`ConfigFile`**: Base class for all config files
 - **`CopyModuleConfigFile`**: Copies entire module content to a config file
-- **`CopyModuleOnlyDocstringConfigFile`**: Copies only the docstring from a module (useful for creating stub files with documentation)
+- **`CopyModuleOnlyDocstringConfigFile`**: Copies only the docstring from a module
 - **`PythonConfigFile`**: For Python source files
 - **`YamlConfigFile`**: For YAML configuration files
 - **`JsonConfigFile`**: For JSON configuration files
-
-The `CopyModuleOnlyDocstringConfigFile` is particularly useful for creating configuration files that mirror source modules but only contain documentation, keeping the generated files clean and focused.
 
 ### Configuration Files Managed by the Machinery
 
@@ -245,38 +216,35 @@ The ConfigFile Machinery automatically manages the following configuration files
 
 #### `pyproject.toml`
 
-Stores project metadata and dependencies. The machinery automatically adds essential dev dependencies (ruff, mypy, pytest, pre-commit) and configures them with the strictest possible settings to enforce best practices.
+Stores project metadata and dependencies. Automatically adds essential dev dependencies (ruff, mypy, pytest, pre-commit) with strict settings.
 
-- **Dependency Management**: All dependencies use `*` as the version to stay up-to-date
-- **Version Constraints**: Use dictionary syntax for specific constraints: `{"version": "*", "python": "<3.15"}`
-- **Dependency Locations**:
-  - Dependencies: `tool.poetry.dependencies`
-  - Dev dependencies: `tool.poetry.group.dev.dependencies`
-- **Naming Convention**: Enforces that GitHub repo name and cwd name are equal; hyphens in repo names are converted to underscores in package names
+- All dependencies use `*` as the version to stay up-to-date
+- Use dictionary syntax for specific constraints: `{"version": "*", "python": "<3.15"}`
+- Enforces that GitHub repo name and cwd name are equal; hyphens in repo names are converted to underscores in package names
 
 #### `pkg/py.typed`
 
-Automatically created to indicate that the package supports type checking, as pyrig uses mypy and enforces typing.
+Indicates that the package supports type checking.
 
 #### `README.md`
 
-Automatically created with the requirement that it starts with `# <project_name>`. The rest of the content is up to you. Future versions may include skeleton functionality based on project structure.
+Must start with `# <project_name>`. The rest of the content is up to you.
 
 #### `LICENCE`
 
-Automatically created as an empty file for you to add your own license (e.g., MIT).
+Empty file for you to add your own license.
 
 #### `experiment.py`
 
-Automatically created as an empty file for experimentation. It is ignored by git and intended for trying out new things, not for production code.
+Empty file for experimentation. Git-ignored, not for production code.
 
 #### `.python-version`
 
-Automatically created and set to the lowest supported Python version. Used by pyenv to set the Python version for the project.
+Set to the lowest supported Python version. Used by pyenv.
 
 #### `.pre-commit-config.yaml`
 
-Automatically created and configured with the following pre-commit hooks:
+Configured with the following hooks:
 
 - `check-package-manager-config`: poetry check --strict
 - `lint-code`: ruff check --fix
@@ -284,205 +252,101 @@ Automatically created and configured with the following pre-commit hooks:
 - `check-static-types`: mypy --exclude-gitignore
 - `check-security`: bandit -c pyproject.toml -r .
 
-These hooks run automatically before each commit to ensure code quality and consistency.
+Automatically installed during test session via autouse fixture.
 
-Pre-commit hooks are automatically installed during the test session via an autouse session fixture that verifies pre-commit is properly configured.
-
-**Note**: Heavy operations like `install-dependencies` and `create-root` are NOT pre-commit hooks. Instead, they run automatically as part of autouse session fixtures during test execution:
-- `create-root` runs in `assert_config_files_are_correct` to ensure all configuration files are created and validated
-- Dependency updates run in `assert_dependencies_are_up_to_date` to keep dependencies current
-
-This keeps commits fast while still ensuring these operations run regularly during development.
+**Note**: Heavy operations like `install-dependencies` and `create-root` run as autouse session fixtures during test execution, not as pre-commit hooks, to keep commits fast.
 
 #### `.gitignore`
 
-Automatically created by pulling the latest version of [github/python.gitignore](https://github.com/github/gitignore/blob/main/Python.gitignore) and adding project-specific ignores (e.g., experiment.py).
+Pulls the latest [github/python.gitignore](https://github.com/github/gitignore/blob/main/Python.gitignore) and adds project-specific ignores.
 
 #### `.env`
 
-Automatically created as an empty file for environment variables. It is ignored by git and used by python-dotenv to load environment variables.
+Empty file for environment variables. Git-ignored, used by python-dotenv.
 
 #### `.github/workflows/health_check.yaml`
 
-Automatically created to run the health check workflow via GitHub Actions.
-
 - **Triggers**: workflow_dispatch, pull_request, schedule (daily)
-- **Purpose**: Runs a matrix of tests on different operating systems and supported Python versions to ensure cross-platform compatibility
+- **Purpose**: Matrix testing across different OS and Python versions
 
 #### `.github/workflows/release.yaml`
 
-Automatically created to run the release workflow via GitHub Actions.
-
 - **Triggers**: workflow_dispatch, commit to main, schedule (weekly)
-- **Process**:
-  1. Runs the health check workflow
-  2. Creates a tag for the release and builds a changelog
-  3. Creates a release on GitHub
-  4. Builds artifacts (if a builder class is implemented) and uploads them to the release
-  5. Commits the tag and possible dependency updates to `pyproject.toml` and `poetry.lock`
-- **Synchronization**: Keeps tags, poetry version, and PyPI (if PYPI_TOKEN is configured) in sync
+- **Process**: Runs health check, creates tag and changelog, creates GitHub release, builds and uploads artifacts, commits updates
+- **Synchronization**: Keeps tags, poetry version, and PyPI in sync
 
 #### `.github/workflows/publish.yaml`
 
-Automatically created to run the publish workflow via GitHub Actions.
-
-- **Trigger**: Successful completion of the release workflow
-- **Purpose**: Publishes the package to PyPI with poetry
-- **Note**: If you do not want to publish to PyPI, empty the file and pyrig will not overwrite it, but will add a simple workflow that does nothing
+- **Trigger**: Successful completion of release workflow
+- **Purpose**: Publishes the package to PyPI
+- **Note**: Empty the file to disable PyPI publishing
 
 #### `pkg/main.py`
 
-Automatically created as the main entry point for your application. This file is used by PyInstaller to build standalone executables and can also be run directly.
+Main entry point for your application. Used by PyInstaller for building executables.
 
-- **Purpose**: Provides a clear entry point for your application
-- **Usage**: Implement your application logic in the `main()` function
-- **CLI Integration**: Can be called with `poetry run your-pkg-name main` or `python -m your-pkg-name`
-- **PyInstaller**: Automatically used as the entry point for building executables
-
-**Example**:
-```python
-# In pkg/main.py
-def main() -> None:
-    """Main entrypoint for the project."""
-    print("Hello from your application!")
-    # Add your application logic here
-
-if __name__ == "__main__":
-    main()
-```
+- **Usage**: `poetry run your-pkg-name main` or `python -m your-pkg-name`
 
 #### `pkg/src/`
 
-Automatically created as a subfolder within your package to organize your source code. This separates your application code from development infrastructure (`dev/`) and configuration files.
-
-- **Purpose**: Clear separation between source code and development tooling
-- **Structure**: Place your modules, classes, and functions here
-- **Organization**: Helps maintain a clean project structure
-
-**Example Structure**:
-```
-your_project/
-├── main.py              # Entry point
-├── src/                 # Your source code goes here
-│   ├── __init__.py
-│   ├── models.py
-│   ├── services.py
-│   └── utils.py
-└── dev/                 # Development infrastructure
-    ├── cli/
-    ├── configs/
-    └── artifacts/
-```
+Subfolder for organizing your source code, separating it from development infrastructure (`dev/`).
 
 #### `pkg/dev/subcommands.py`
 
-Automatically created for defining custom CLI subcommands. Any function in this file is automatically added as a subcommand to your project's CLI.
+Define custom CLI subcommands. Any function in this file is automatically added as a subcommand.
 
-- **Example**: A function named `run` can be executed with `poetry run your-pkg-name run`
-- **Implementation**: pyrig automatically detects your package name, imports your subcommands.py file, and adds all functions as subcommands using typer
-- **Entry Point**: Configured in `tool.poetry.scripts` in pyproject.toml
-
-**Try it**: Add a print statement to a function in subcommands.py and run it with `poetry run your-pkg-name <func_name>`.
-
-**Example Usage**:
+**Example**:
 ```python
-# In pkg/dev/subcommands.py
 def hello(name: str = "World") -> None:
     """Say hello to someone."""
     print(f"Hello, {name}!")
 
-# Run with:
-# poetry run your-pkg-name hello --name Alice
+# Run with: poetry run your-pkg-name hello --name Alice
 ```
 
 #### `pkg/dev/configs/configs.py`
 
-Define custom configuration files here. Any subclass of `pyrig.dev.configs.base.base.ConfigFile` is automatically discovered and initialized (created if not exists, updated if not correct). Configs can be defined in any file in the `pkg/dev/configs` folder.
+Define custom configuration files. Any subclass of `ConfigFile` is automatically discovered and initialized. Configs can be defined in any file in the `pkg/dev/configs` folder.
 
-**Automatic Discovery**: Config files are discovered from:
-- Your project's `pkg/dev/configs/` directory
-- All `dev/configs/` directories from packages depending on pyrig
-
-This means if you have multiple packages that depend on pyrig, all their config files will be automatically initialized.
-
-**Subclass Behavior**: If you subclass an existing `ConfigFile` (e.g., to customize pyrig's built-in configs), only your most specific subclass will be executed. Parent classes that have been subclassed are automatically excluded from execution, preventing duplicate config file creation.
-
-**Note**: The configs.py file must exist. Deleting config files is pointless as they will be recreated by the create-root hook or by pytest session fixture.
+**Subclass Behavior**: If you subclass an existing `ConfigFile`, only your most specific subclass will be executed, preventing duplicates.
 
 #### `pkg/dev/artifacts/builder/builder.py`
 
-Automatically created for defining build scripts. Any subclass of `pyrig.dev.artifacts.builder.base.base.Builder` is automatically discovered and executed. Builders can be defined in any file in the `pkg/dev/artifacts/builder` folder.
+Define build scripts. Any subclass of `Builder` is automatically discovered and executed. Builders can be defined in any file in the `pkg/dev/artifacts/builder` folder.
 
-**Automatic Discovery**: Builders are discovered from:
-- Your project's `pkg/dev/artifacts/builder/` directory
-- All `dev/artifacts/builder/` directories from packages depending on pyrig
-
-This means if you have multiple packages that depend on pyrig, all their builders will be automatically executed when you run `pyrig build`.
-
-**Subclass Behavior**: If you subclass an existing `Builder` (e.g., to customize `PyInstallerBuilder`), only your most specific subclass will be executed. Parent builder classes that have been subclassed are automatically excluded from execution, preventing duplicate builds.
-
-**Note**: The builder.py file must exist. Deleting builder classes is pointless as they will be recreated by the create-root hook or by pytest session fixture.
+**Subclass Behavior**: If you subclass an existing `Builder`, only your most specific subclass will be executed, preventing duplicate builds.
 
 #### `pkg/dev/artifacts/resources/`
 
-Automatically created directory for storing static resources (images, data files, etc.) that need to be included in your application. This directory is automatically included in PyInstaller builds.
+Directory for storing static resources (images, data files, etc.). Automatically included in PyInstaller builds.
 
-- **Purpose**: Centralized location for application resources
-- **PyInstaller Integration**: All files in this directory are automatically included in built executables
-- **Automatic Discovery**: Resources from ALL packages depending on pyrig are automatically discovered and included
-- **Resource Access**: Use `pyrig.dev.artifacts.resources.resource.get_resource_path()` to access resources at runtime
-- **Custom Resources**: Override `get_additional_resource_pkgs()` in your PyInstallerBuilder to include additional resource packages beyond the automatic discovery
+- **Resource Access**: Use `get_resource_path()` to access resources at runtime
+- **Automatic Discovery**: Resources from all packages depending on pyrig are automatically included
 
-**Example Usage**:
+**Example**:
 ```python
 from pyrig.dev.artifacts.resources.resource import get_resource_path
 import your_project.dev.artifacts.resources as resources
 
-# Access a resource file
 config_path = get_resource_path("config.json", resources)
 data = config_path.read_text()
 ```
 
-**Automatic Resource Discovery**:
-If you have multiple packages in your project that depend on pyrig, all their `dev/artifacts/resources/` directories will be automatically included in PyInstaller builds without any additional configuration.
-
 #### `pkg/dev/configs/python/resources_init.py`
 
-Automatically created configuration file that manages the `resources/__init__.py` file. This ensures the resources package is properly initialized and can be imported by your application.
+Manages the `resources/__init__.py` file to ensure proper package initialization.
 
 #### `pkg/dev/configs/testing/fixtures/`
 
-Configuration files managed by the ConfigFile Machinery that handle the fixture system structure. These config files ensure that fixture modules are properly created with appropriate documentation:
-
-- **`fixture.py`**: Manages the main `pkg/dev/tests/fixtures/fixture.py` file
-- **`scopes/session.py`**: Manages session-level fixture configuration
-- **`scopes/package.py`**: Manages package-level fixture configuration
-- **`scopes/module.py`**: Manages module-level fixture configuration
-- **`scopes/class_.py`**: Manages class-level fixture configuration
-- **`scopes/function.py`**: Manages function-level fixture configuration
-
-These configuration files use `CopyModuleOnlyDocstringConfigFile` to create stub files with documentation from pyrig's internal fixture modules, providing a template for your custom fixtures.
+Configuration files that manage the fixture system structure (fixture.py, scopes/session.py, scopes/package.py, scopes/module.py, scopes/class_.py, scopes/function.py).
 
 #### `tests/conftest.py`
 
-Automatically created and configured to run pytest plugins. It uses pyrig's multi-package architecture to automatically discover and load fixtures from ALL packages that depend on pyrig:
-
-**How it works**:
-- Uses `get_same_modules_from_deps_depen_on_dep()` to find all `fixtures` modules across all packages depending on pyrig
-- Automatically discovers all Python files within these fixtures packages
-- Adds them to `pytest_plugins` for automatic loading
-
-**What this means**:
-- All fixtures from `pyrig.dev.tests.fixtures/` are automatically available
-- All fixtures from your project's `pkg/dev/tests/fixtures/` (if created) are automatically available
-- All fixtures from any other package depending on pyrig are automatically available
-- No manual imports needed - fixtures are globally available across all tests
-
-This powerful mechanism allows you to define reusable fixtures in your project's fixture modules that are automatically plugged into the entire test suite.
+Automatically discovers and loads fixtures from all packages depending on pyrig. Fixtures are globally available across all tests without manual imports.
 
 #### `tests/test_zero.py`
 
-An empty test file to ensure pytest does not complain about missing tests during initial setup.
+Empty test file to ensure pytest doesn't complain about missing tests during initial setup.
 
 ---
 
@@ -591,143 +455,65 @@ pyrig uses pytest as the test framework, which is automatically added as a dev d
 
 ### Test Structure
 
-pyrig enforces comprehensive testing by generating test skeletons for all functions and classes in the source code. It follows a mirror structure of the source package in the tests package:
+pyrig generates test skeletons that mirror your source code structure:
 
-- **Module Level**: For every module in your package, there is a corresponding module in `tests`
-- **Class Level**: For every class in a module, there is a corresponding class in the test module
-- **Function Level**: For every function in a class, there is a corresponding test function in the test class
-
-**Example Structure**:
-```
-your_project/
-├── your_project/
-│   ├── __init__.py
-│   ├── main.py              # Main entry point
-│   └── src/
-│       ├── __init__.py
-│       ├── calculator.py    # Source module
-│       └── utils.py         # Source module
-└── tests/
-    ├── __init__.py
-    ├── test_your_project/
-    │   ├── test_main.py         # Test for main.py
-    │   └── test_src/
-    │       ├── test_calculator.py   # Mirror test module
-    │       └── test_utils.py        # Mirror test module
-    └── conftest.py
-```
+- **Module Level**: Each source module has a corresponding test module
+- **Class Level**: Each source class has a corresponding test class
+- **Function Level**: Each source function/method has a corresponding test function
 
 ### Automatic Test Generation
 
-pyrig automatically generates test skeletons in two ways:
-
-1. **Manual Generation**: Run `poetry run pyrig create-tests` to generate all missing tests
-2. **Automatic Generation**: When you run `pytest`, an autouse session fixture automatically creates missing test modules, classes, and functions
+1. **Manual**: Run `poetry run pyrig create-tests`
+2. **Automatic**: An autouse session fixture creates missing tests when you run `pytest`
 
 #### Fixture System
 
-pyrig provides a powerful fixture system that automatically discovers and loads fixtures from all packages depending on pyrig through the `conftest.py` mechanism.
+pyrig automatically discovers and loads fixtures from all packages depending on pyrig.
 
-**How Fixture Discovery Works**:
-
-The `tests/conftest.py` file uses `get_same_modules_from_deps_depen_on_dep()` to:
-1. Find all packages that depend on pyrig
-2. Locate the `fixtures` module in each package's `dev/tests/` directory
-3. Recursively discover all Python files within these fixtures packages
-4. Add them to `pytest_plugins` for automatic loading
-
-This means fixtures are automatically shared across:
-- pyrig's internal fixtures (`pyrig.dev.tests.fixtures/`)
-- Your project's fixtures (`your_project.dev.tests.fixtures/`)
-- Any other package's fixtures that depends on pyrig
-
-**Built-in Fixtures** (from `pyrig.dev.tests.fixtures/`):
-- `config_file_factory` - Factory for creating test config file classes with `tmp_path`
-- `builder_factory` - Factory for creating test builder classes with `tmp_path`
-
-**Built-in Autouse Fixtures** (from `pyrig.dev.tests.fixtures/scopes/`):
-- `session.py` - Session-level autouse fixtures (run once per test session)
-- `package.py` - Package-level autouse fixtures
-- `module.py` - Module-level autouse fixtures
-- `class_.py` - Class-level autouse fixtures
-- `function.py` - Function-level autouse fixtures
+**Built-in Fixtures**:
+- `config_file_factory` - Factory for creating test config file classes
+- `builder_factory` - Factory for creating test builder classes
 
 **Creating Custom Fixtures**:
 
-Create custom fixtures by adding a `pkg/dev/tests/fixtures/` directory:
+Add a `pkg/dev/tests/fixtures/` directory:
 
 ```
-your_project/
-└── dev/
-    └── tests/
-        └── fixtures/
-            ├── __init__.py
-            ├── fixture.py          # Custom fixtures
-            └── scopes/
-                ├── __init__.py
-                ├── session.py      # Session-level autouse fixtures
-                ├── module.py       # Module-level autouse fixtures
-                └── ...
+your_project/dev/tests/fixtures/
+├── __init__.py
+├── fixture.py          # Custom fixtures
+└── scopes/
+    ├── __init__.py
+    ├── session.py      # Session-level autouse fixtures
+    └── ...
 ```
 
-**Important Notes**:
+**Notes**:
 - All fixtures are automatically discovered - no manual imports needed
-- Autouse fixtures must still be decorated with `@pytest.fixture(autouse=True)` or use pyrig's convenience decorators (`@autouse_session_fixture`, etc.)
-- The fixture discovery happens at pytest collection time
-- Fixtures from all packages are available to all tests across the entire test suite
-- **Breaking Change**: The old `tests/base/` structure has been removed. Fixtures are now defined in `pkg/dev/tests/fixtures/` instead of `tests/base/fixtures/`. This change enables the multi-package fixture discovery architecture.
+- Autouse fixtures must be decorated with `@pytest.fixture(autouse=True)` or `@autouse_session_fixture`
+- Fixtures from all packages are available to all tests
 
-**Generated Test Example**:
-```python
-# If you have this in your_project/src/calculator.py:
-class Calculator:
-    def add(self, a: int, b: int) -> int:
-        return a + b
+### Autouse Session Fixtures
 
-# pyrig generates this in tests/test_your_project/test_src/test_calculator.py:
-class TestCalculator:
-    def test_add(self) -> None:
-        """Test func for add."""
-        raise NotImplementedError
-```
+Autouse session fixtures automatically enforce code quality and project conventions:
 
-### Automatic Test Enforcement with Autouse Session Fixtures
+**Project Structure**:
+- `assert_no_namespace_packages`: Ensures all packages have `__init__.py` files
+- `assert_all_src_code_in_one_package`: Verifies all source code is in a single package
+- `assert_src_package_correctly_named`: Checks package name matches `pyproject.toml`
 
-pyrig automatically enforces code quality and project conventions through a suite of autouse session fixtures that run once per test session. These fixtures are automatically plugged in via `tests/conftest.py` and ensure your project maintains best practices.
+**Test Coverage**:
+- `assert_all_modules_tested`: Creates missing test modules, classes, and functions
 
-#### Session-Level Fixtures
+**Code Quality**:
+- `assert_no_unit_test_package_usage`: Prevents usage of `unittest` package (enforces pytest)
 
-The following autouse session fixtures are automatically applied to every test run:
+**ConfigFile Machinery**:
+- `assert_config_files_are_correct`: Verifies and fixes all configuration files
 
-**Project Structure Enforcement**:
-- `assert_no_namespace_packages`: Ensures all packages have `__init__.py` files. If namespace packages are found, automatically creates `__init__.py` files for them and fails the test to alert you to verify the changes.
-- `assert_all_src_code_in_one_package`: Verifies that all source code is in a single package (besides the tests package)
-- `assert_src_package_correctly_named`: Checks that the source package name matches the project name in `pyproject.toml`
-
-**Test Coverage Enforcement**:
-- `assert_all_modules_tested`: Automatically creates missing test modules, classes, and functions for any untested code. If tests are missing, they are generated and the fixture fails to alert you.
-
-**Code Quality Enforcement**:
-- `assert_no_unit_test_package_usage`: Prevents usage of the `unittest` package (enforces pytest), use pytest-mock instead for mocking
-
-**ConfigFile Machinery Enforcement**:
-- `assert_config_files_are_correct`: Runs the ConfigFile Machinery (via `create-root`) to verify all configuration files are correct and automatically fixes them if needed. This is where `create-root` runs automatically, ensuring all configs are created and validated before tests.
-- `assert_dev_dependencies_config_is_correct`: Validates dev dependencies configuration and automatically updates the config file if incorrect (pyrig internal only)
-
-**Pre-commit Integration**:
-- `assert_pre_commit_is_installed`: Runs `pre-commit install` to ensure pre-commit hooks are properly installed and configured
-
-**Dependency Management**:
-- `assert_dependencies_are_up_to_date`: Runs `poetry self update` and `poetry update --with dev` to ensure dependencies are current and poetry is up to date. These are here because they are too slow for pre-commit, but I like having this done automatically. Updates occur regularly but not too often to justify the wait time, so I added them as an autouse session fixture.
-
-These fixtures run automatically before your tests execute, ensuring that:
-1. Your project structure follows best practices
-2. All code has corresponding test skeletons
-3. Configuration files are up-to-date
-4. Dependencies are synchronized
-5. Code quality standards are maintained
-
-**Note**: These fixtures are designed to fail fast and provide clear error messages when conventions are violated, helping you maintain a clean and well-structured codebase.
+**Pre-commit & Dependencies**:
+- `assert_pre_commit_is_installed`: Ensures pre-commit hooks are installed
+- `assert_dependencies_are_up_to_date`: Runs `poetry self update` and `poetry update --with dev`
 
 ### Running Tests
 
@@ -744,11 +530,8 @@ poetry run pytest --cov=your_project
 
 ### Disabling Tests
 
-If you do not want tests for a specific module, you must manually empty the test file. This way pytest never loads it and the autouse module fixture does not trigger. This is purposely made difficult to enforce best practices and comprehensive test coverage.
-
-**To disable tests for a module**:
+To disable tests for a specific module, empty the test file:
 ```bash
-# Empty the test file (but keep the file)
 echo "" > tests/test_your_project/test_src/test_calculator.py
 ```
 
@@ -756,9 +539,7 @@ echo "" > tests/test_your_project/test_src/test_calculator.py
 
 ## Building Artifacts
 
-pyrig provides an extensible build system for creating distributable artifacts. All builders are subclasses of `pyrig.dev.artifacts.builder.base.base.Builder`.
-
-**Subclass Discovery**: When you run `pyrig build`, the system automatically discovers all `Builder` subclasses across all packages depending on pyrig. If you subclass an existing builder (e.g., to customize `PyInstallerBuilder`), only your most specific subclass will be executed, not the parent class. This ensures that customizations take full control without duplicate builds.
+pyrig provides an extensible build system. All builders are subclasses of `Builder`. When you run `pyrig build`, the system automatically discovers all `Builder` subclasses. If you subclass an existing builder, only your most specific subclass executes.
 
 ### Basic Builder
 
@@ -788,92 +569,49 @@ Artifacts are placed in the `artifacts/` directory with platform-specific naming
 
 ### PyInstaller Builder
 
-pyrig includes a `PyInstallerBuilder` class for creating standalone executables. The `main.py` file is automatically created in your source package during initialization.
+pyrig includes a `PyInstallerBuilder` class for creating standalone executables.
 
-1. **Implement your main function** in `your_project/main.py` (automatically created):
-   ```python
-   # your_project/main.py
-   def main() -> None:
-       print("Hello from your app!")
-       # Add your application logic here
-
-   if __name__ == "__main__":
-       main()
-   ```
-
+1. **Implement your main function** in `your_project/main.py`
 2. **Create an icon.png file** at `your_project/dev/artifacts/resources/icon.png` (256x256 recommended)
-
-3. **Add any additional resources** to `your_project/dev/artifacts/resources/` (optional):
-   - Configuration files
-   - Images, icons, or other assets
-   - Data files needed at runtime
-
+3. **Add resources** to `your_project/dev/artifacts/resources/` (optional)
 4. **Subclass PyInstallerBuilder** in `your_project/dev/artifacts/builder/builder.py`:
    ```python
-   from types import ModuleType
    from pyrig.dev.artifacts.builder.base.base import PyInstallerBuilder
 
    class MyAppBuilder(PyInstallerBuilder):
        """Build standalone executable with PyInstaller."""
-
-       @classmethod
-       def get_additional_resource_pkgs(cls) -> list[ModuleType]:
-           """Specify additional resource packages to include.
-
-           Resources are automatically included from:
-           - your_project/dev/artifacts/resources/ (your project's resources)
-           - All dev/artifacts/resources/ from packages depending on pyrig
-
-           Override this method only if you need to include additional
-           resource packages beyond the automatic discovery.
-           """
-           # Example: import your_project.data as data
-           # return [data]
-           return []
    ```
 
-5. **Build the executable**:
+5. **Build**:
    ```bash
    poetry run pyrig build
    ```
 
 The builder automatically:
 - Creates a single executable file
-- Converts icon.png to platform-specific format (ico for Windows, icns for macOS)
-- **Auto-discovers and includes resources** from:
-  - `your_project/dev/artifacts/resources/` (your project's resources)
-  - All `dev/artifacts/resources/` directories from packages depending on pyrig
-  - Additional resource packages specified in `get_additional_resource_pkgs()`
-- Names the output with platform suffix (e.g., `your-project-Windows.exe`, `your-project-Linux`)
-
-**PyInstaller Options**:
-- `--onefile`: Single executable (default)
-- `--noconsole`: No console window (default)
-- Platform-specific icons handled automatically
+- Converts icon.png to platform-specific format
+- Auto-discovers and includes resources from all packages depending on pyrig
+- Names output with platform suffix (e.g., `your-project-Windows.exe`)
 
 ### Accessing Resources in Built Executables
 
-When your application is built with PyInstaller, use the `get_resource_path()` function to access resources:
+Use `get_resource_path()` to access resources:
 
 ```python
 from pyrig.dev.artifacts.resources.resource import get_resource_path
 import your_project.dev.artifacts.resources as resources
 
-def load_config() -> dict:
-    """Load configuration from resources."""
-    config_path = get_resource_path("config.json", resources)
-    return json.loads(config_path.read_text())
+config_path = get_resource_path("config.json", resources)
+data = json.loads(config_path.read_text())
 ```
 
-This function works both in development and in PyInstaller-built executables by using `importlib.resources`, which handles the `_MEIPASS` temporary directory automatically.
+### Multi-Package Architecture
 
-### Advanced: Multi-Package Architecture
+pyrig supports multi-package architecture where multiple packages can depend on pyrig and automatically share configurations, builders, fixtures, and resources.
 
-pyrig supports a powerful multi-package architecture where multiple packages can depend on pyrig and automatically share their configurations, builders, fixtures, and resources. This is powered by the `get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep()` and `get_same_modules_from_deps_depen_on_dep()` utility functions.
+**Automatic Discovery**:
 
-**Automatic Discovery Across Packages**:
-
-When you run pyrig commands or tests, it automatically discovers and executes components from ALL packages that depend on pyrig:
+When you run pyrig commands or tests, it discovers components from all packages depending on pyrig:
 
 1. **ConfigFile Machinery**: All `ConfigFile` subclasses from all `dev/configs/` directories
 2. **Builders**: All `Builder` subclasses from all `dev/artifacts/builder/` directories
@@ -882,107 +620,16 @@ When you run pyrig commands or tests, it automatically discovers and executes co
 
 **Intelligent Subclass Discovery**:
 
-The discovery mechanism uses a `discard_parents=True` strategy for configs and builders. This means:
-- Only the most specific (leaf) subclasses are executed
-- If you subclass a config or builder in your project, only your subclass runs (not the parent)
-- This prevents duplicate execution and ensures customizations take full control
-- Fixtures use a different discovery mechanism (`get_same_modules_from_deps_depen_on_dep()`) that loads all fixture modules without filtering by inheritance
+- Only the most specific (leaf) subclasses are executed for configs and builders
+- If you subclass a config or builder, only your subclass runs (not the parent)
+- Fixtures use a different mechanism that loads all fixture modules without filtering
 
-**Example Multi-Package Scenario**:
-```
-my-app/                           # Main application (depends on pyrig)
-├── my_app/
-│   └── dev/
-│       ├── configs/
-│       │   └── configs.py        # App-specific configs
-│       ├── artifacts/
-│       │   ├── builder/
-│       │   │   └── builder.py    # App builder
-│       │   └── resources/
-│       │       └── app_icon.png
-│       ├── tests/
-│       │   └── fixtures/
-│       │       └── fixture.py    # App-specific fixtures
-│       └── cli/
-│           └── subcommands.py
-
-my-lib/                           # Shared library (depends on pyrig)
-├── my_lib/
-│   └── dev/
-│       ├── configs/
-│       │   └── configs.py        # Library configs
-│       ├── tests/
-│       │   └── fixtures/
-│       │       └── fixture.py    # Library-specific fixtures
-│       └── artifacts/
-│           └── resources/
-│               └── lib_config.json
-```
-
-**What Happens Automatically**:
-
-- **`pyrig init`**: Initializes config files from both `my-app` and `my-lib`
-- **`pyrig build`**: Executes builders from both packages and includes resources from both
-- **`pyrig create-root`**: Creates root structure for both packages
-- **`pytest`**: Loads fixtures from both `my-app` and `my-lib` (and pyrig)
-- **PyInstaller builds**: Includes resources from both `my-app` and `my-lib`
-
-This architecture enables:
+This enables:
 - **Modular development**: Split your project into multiple packages with shared infrastructure
 - **Reusable components**: Share configs, builders, fixtures, and resources across projects
-- **Clean separation**: Each package manages its own development infrastructure
 - **Zero configuration**: Everything works automatically through dependency discovery
 
-### Understanding the Discovery Mechanism
 
-pyrig uses two main discovery strategies depending on the component type:
-
-#### 1. Subclass Discovery with `discard_parents=True` (Configs & Builders)
-
-Used by: `ConfigFile` and `Builder` classes
-
-**How it works**:
-1. Scans all packages that depend on pyrig
-2. Finds all subclasses of the base class (e.g., `ConfigFile`, `Builder`)
-3. Filters to only non-abstract classes
-4. **Discards parent classes that have children** - only keeps leaf classes
-
-**Why this matters**:
-```python
-# In pyrig's internal configs:
-class PyprojectConfigFile(ConfigFile):
-    # Base implementation
-    pass
-
-# In your project's dev/configs/python/pyproject.py:
-class MyCustomPyprojectConfig(PyprojectConfigFile):
-    # Your customizations
-    pass
-
-# Result: Only MyCustomPyprojectConfig executes
-# PyprojectConfigFile is automatically excluded because it has a child
-```
-
-This prevents:
-- Duplicate config file creation
-- Duplicate builds
-- Parent implementations overriding your customizations
-
-#### 2. Module Discovery (Fixtures)
-
-Used by: Pytest fixtures
-
-**How it works**:
-1. Scans all packages that depend on pyrig
-2. Finds all `dev/tests/fixtures/` modules
-3. Loads ALL Python files from these modules
-4. No inheritance filtering - all fixtures are loaded
-
-**Why this is different**:
-Fixtures don't need inheritance filtering because:
-- Multiple fixtures with the same name will cause pytest to error
-- Fixtures are meant to be additive, not overriding
-- Each package can define its own unique fixtures
 
 ---
 
@@ -990,101 +637,55 @@ Fixtures don't need inheritance filtering because:
 
 ### Example 1: Complete Project Structure
 
-After running `pyrig init`, your project will look like this:
+After running `pyrig init`:
 
 ```
 your-project/
-├── .env                          # Environment variables (git-ignored)
-├── .gitignore                    # Git ignore rules
-├── .pre-commit-config.yaml       # Pre-commit hooks configuration
-├── .python-version               # Python version for pyenv
-├── experiment.py                 # Experimentation file (git-ignored)
-├── LICENSE                       # License file
-├── poetry.lock                   # Poetry lock file
-├── pyproject.toml                # Project configuration
-├── README.md                     # Project documentation
-├── .github/
-│   └── workflows/
-│       ├── health_check.yaml     # CI testing workflow
-│       ├── publish.yaml          # PyPI publishing workflow
-│       └── release.yaml          # Release workflow
-├── your_project/                 # Source package
-│   ├── __init__.py
-│   ├── main.py                   # Main entry point (auto-created)
-│   ├── py.typed                  # Type checking marker
-│   ├── src/                      # Source code folder
-│   │   └── __init__.py
-│   └── dev/                      # Development infrastructure
-│       ├── __init__.py
-│       ├── artifacts/
-│       │   ├── builder/
-│       │   │   └── builder.py    # Build scripts
-│       │   └── resources/        # Static resources (auto-created)
-│       │       └── __init__.py
-│       ├── cli/
-│       │   └── subcommands.py    # CLI commands
-│       ├── configs/
-│       │   └── configs.py        # Custom config files
-│       └── tests/                # Optional: Custom test fixtures
-│           └── fixtures/         # Custom fixtures for your project
-│               ├── __init__.py
-│               ├── fixture.py    # Define custom fixtures here
-│               └── scopes/       # Scope-specific autouse fixtures
-│                   ├── __init__.py
-│                   ├── session.py
-│                   └── ...
-└── tests/                        # Test package
-    ├── __init__.py
-    ├── conftest.py               # Pytest configuration (auto-discovers fixtures)
-    ├── test_zero.py              # Empty test placeholder
-    └── test_your_project/        # Mirror of source structure
-        ├── __init__.py
-        └── test_dev/
-            └── ...               # Tests for the dev package
-                
-        
+├── .env, .gitignore, .pre-commit-config.yaml, .python-version
+├── experiment.py, LICENSE, poetry.lock, pyproject.toml, README.md
+├── .github/workflows/
+│   ├── health_check.yaml, publish.yaml, release.yaml
+├── your_project/
+│   ├── __init__.py, main.py, py.typed
+│   ├── src/
+│   └── dev/
+│       ├── artifacts/builder/, artifacts/resources/
+│       ├── cli/subcommands.py
+│       ├── configs/configs.py
+│       └── tests/fixtures/
+└── tests/
+    ├── conftest.py, test_zero.py
+    └── test_your_project/
 ```
 
 ### Example 2: Adding a Custom Config File
 
 ```python
-# In your_project/dev/configs/configs.py
 from pathlib import Path
-from typing import Any
 from pyrig.dev.configs.base.base import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
-    """Custom YAML configuration file."""
-
     @classmethod
     def get_filename(cls) -> str:
         return "myconfig"
 
     @classmethod
     def get_parent_path(cls) -> Path:
-        return Path("config")  # Creates config/myconfig.yaml
+        return Path("config")
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
-        return {
-            "setting1": "value1",
-            "setting2": "value2",
-        }
+        return {"setting1": "value1", "setting2": "value2"}
 ```
 
 ### Example 3: Custom CLI Command
 
 ```python
-# In your_project/dev/cli/subcommands.py
-import typer
-
-def deploy(environment: str = typer.Option("staging", help="Deployment environment")) -> None:
-    """Deploy the application to specified environment."""
+def deploy(environment: str = "staging") -> None:
+    """Deploy the application."""
     print(f"Deploying to {environment}...")
-    # Your deployment logic here
 
-# Run with:
-# poetry run your-project deploy --environment production
+# Run with: poetry run your-project deploy --environment production
 ```
 
 ---
@@ -1093,71 +694,44 @@ def deploy(environment: str = typer.Option("staging", help="Deployment environme
 
 ### Common Issues
 
-#### Issue: `poetry run pyrig` command not found
-
-**Solution**: Make sure you've installed dependencies:
+#### `poetry run pyrig` command not found
 ```bash
 poetry install
 ```
 
-#### Issue: Pre-commit hooks failing
-
-**Solution**: Install pre-commit hooks:
+#### Pre-commit hooks failing
 ```bash
 poetry run pre-commit install
-# Or run hooks manually
 poetry run pre-commit run --all-files
 ```
 
-#### Issue: Tests not being generated automatically
-
-**Solution**: Make sure your test files are not empty. If a test file is empty, pytest won't load it and the autouse fixture won't trigger. Run:
+#### Tests not being generated automatically
 ```bash
 poetry run pyrig create-tests
 ```
 
-#### Issue: GitHub Actions failing with permission errors
+#### GitHub Actions permission errors
+Ensure `REPO_TOKEN` secret has: `contents:read and write`, `administration:read and write`
 
-**Solution**: Ensure your `REPO_TOKEN` secret has the correct permissions:
-- `contents:read and write`
-- `administration:read and write`
-
-#### Issue: MyPy errors after initialization
-
-**Solution**: pyrig enforces strict type checking. Add type hints to your code:
+#### MyPy errors
+Add type hints:
 ```python
-# Before
-def add(a, b):
-    return a + b
-
-# After
 def add(a: int, b: int) -> int:
     return a + b
 ```
 
-#### Issue: Dependency conflicts
-
-**Solution**: Update dependencies:
+#### Dependency conflicts
 ```bash
 poetry update --with dev
 ```
 
-#### Issue: PyInstaller build fails
+#### PyInstaller build fails
+1. Ensure `main.py` exists and has `main()` function implemented
+2. Ensure `icon.png` exists at `your_project/dev/artifacts/resources/icon.png`
 
-**Solution**:
-1. Ensure `main.py` exists in your source package (automatically created by `pyrig init`)
-2. Ensure you've implemented the `main()` function in `main.py`
-3. Ensure `icon.png` exists at `your_project/dev/artifacts/resources/icon.png`
-4. Check that all resource packages specified in `get_additional_resource_pkgs()` exist and are importable
-
-#### Issue: Resources not found in built executable
-
-**Solution**: Use `get_resource_path()` to access resources instead of hardcoded paths:
+#### Resources not found in built executable
+Use `get_resource_path()`:
 ```python
-# Wrong - won't work in built executable
-path = Path("your_project/dev/artifacts/resources/config.json")
-
-# Correct - works in both development and built executable
 from pyrig.dev.artifacts.resources.resource import get_resource_path
 import your_project.dev.artifacts.resources as resources
 path = get_resource_path("config.json", resources)
@@ -1167,41 +741,17 @@ path = get_resource_path("config.json", resources)
 
 ## Contributing
 
-Contributions are welcome! Here's how you can help:
-
-1. **Report Issues**: Found a bug? [Open an issue](https://github.com/winipedia/pyrig/issues)
-2. **Suggest Features**: Have an idea? [Start a discussion](https://github.com/winipedia/pyrig/discussions)
-3. **Submit Pull Requests**:
-   - Fork the repository
-   - Create a feature branch (`git checkout -b feature/amazing-feature`)
-   - Make your changes
-   - Run tests (`poetry run pytest`)
-   - Run pre-commit hooks (`poetry run pre-commit run --all-files`)
-   - Commit your changes (`git commit -m 'feat: add amazing feature'`)
-   - Push to the branch (`git push origin feature/amazing-feature`)
-   - Open a Pull Request
+1. **Report Issues**: [Open an issue](https://github.com/winipedia/pyrig/issues)
+2. **Suggest Features**: [Start a discussion](https://github.com/winipedia/pyrig/discussions)
+3. **Submit Pull Requests**: Fork, create feature branch, make changes, run tests, commit, push, open PR
 
 ### Development Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/winipedia/pyrig.git
 cd pyrig
-
-# Install dependencies
 poetry install --with dev
-
-# Install pre-commit hooks
-poetry run pre-commit install
-
-# Run tests
 poetry run pytest
-
-# Run type checking
-poetry run mypy .
-
-# Run linting
-poetry run ruff check .
 ```
 
 ---
@@ -1214,22 +764,9 @@ Copyright (c) 2025 Winipedia
 
 ---
 
-## Links and Resources
+## Links
 
-- **Repository**: [https://github.com/winipedia/pyrig](https://github.com/winipedia/pyrig)
-- **Issues**: [https://github.com/winipedia/pyrig/issues](https://github.com/winipedia/pyrig/issues)
-- **Discussions**: [https://github.com/winipedia/pyrig/discussions](https://github.com/winipedia/pyrig/discussions)
-- **PyPI**: [https://pypi.org/project/pyrig/](https://pypi.org/project/pyrig/)
-
-### Built With
-
-- [Poetry](https://python-poetry.org/) - Dependency management
-- [Ruff](https://github.com/astral-sh/ruff) - Linting and formatting
-- [mypy](https://mypy-lang.org/) - Static type checking
-- [pytest](https://pytest.org/) - Testing framework
-- [pre-commit](https://pre-commit.com/) - Git hook management
-- [Typer](https://typer.tiangolo.com/) - CLI framework
-- [PyInstaller](https://pyinstaller.org/) - Executable builder
-- [Bandit](https://bandit.readthedocs.io/) - Security linting
+- **Repository**: [github.com/winipedia/pyrig](https://github.com/winipedia/pyrig)
+- **PyPI**: [pypi.org/project/pyrig](https://pypi.org/project/pyrig/)
 
 ---
