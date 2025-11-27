@@ -10,7 +10,7 @@ import inspect
 from collections.abc import Callable
 from importlib import import_module
 from types import ModuleType
-from typing import Any
+from typing import Any, overload
 
 from pyrig.src.modules.function import is_func
 from pyrig.src.modules.inspection import get_def_line, get_obj_members
@@ -93,7 +93,10 @@ def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
 
 
 def get_all_subclasses(
-    cls: type, load_package_before: ModuleType | None = None
+    cls: type,
+    load_package_before: ModuleType | None = None,
+    *,
+    discard_parents: bool = False,
 ) -> set[type]:
     """Get all subclasses of a class.
 
@@ -103,9 +106,10 @@ def get_all_subclasses(
     Args:
         cls: The class to find subclasses of
         load_package_before: If provided,
-        walks the package before loading the subclasses
-        This is useful when the subclasses are defined in other modules that need
-        to be imported before they can be found by __subclasses__
+            walks the package before loading the subclasses
+            This is useful when the subclasses are defined in other modules that need
+            to be imported before they can be found by __subclasses__
+        discard_parents: If True, only keeps the most recent child class of each branch
 
     Returns:
         A list of subclasses of the given class
@@ -117,7 +121,8 @@ def get_all_subclasses(
 
     if load_package_before:
         _ = list(walk_package(load_package_before))
-    subclasses_set = set(cls.__subclasses__())
+    subclasses_set = {cls}
+    subclasses_set.update(cls.__subclasses__())
     for subclass in cls.__subclasses__():
         subclasses_set.update(get_all_subclasses(subclass))
     if load_package_before is not None:
@@ -125,13 +130,18 @@ def get_all_subclasses(
         subclasses_set = {
             subclass
             for subclass in subclasses_set
-            if subclass.__module__.startswith(load_package_before.__name__)
+            if load_package_before.__name__ in subclass.__module__
         }
+    if discard_parents:
+        subclasses_set = discard_parent_classes(subclasses_set)
     return subclasses_set
 
 
 def get_all_nonabstract_subclasses(
-    cls: type, load_package_before: ModuleType | None = None
+    cls: type,
+    load_package_before: ModuleType | None = None,
+    *,
+    discard_parents: bool = False,
 ) -> set[type]:
     """Get all non-abstract subclasses of a class.
 
@@ -142,9 +152,10 @@ def get_all_nonabstract_subclasses(
     Args:
         cls: The class to find subclasses of
         load_package_before: If provided,
-        walks the package before loading the subclasses
-        This is useful when the subclasses are defined in other modules that need
-        to be imported before they can be found by __subclasses__
+            walks the package before loading the subclasses
+            This is useful when the subclasses are defined in other modules that need
+            to be imported before they can be found by __subclasses__
+        discard_parents: If True, only keeps the most recent child class of each branch
 
     Returns:
         A list of non-abstract subclasses of the given class
@@ -152,32 +163,46 @@ def get_all_nonabstract_subclasses(
     """
     return {
         subclass
-        for subclass in get_all_subclasses(cls, load_package_before=load_package_before)
+        for subclass in get_all_subclasses(
+            cls,
+            load_package_before=load_package_before,
+            discard_parents=discard_parents,
+        )
         if not inspect.isabstract(subclass)
     }
 
 
 def init_all_nonabstract_subclasses(
-    cls: type, load_package_before: ModuleType | None = None
+    cls: type,
+    load_package_before: ModuleType | None = None,
+    *,
+    discard_parents: bool = False,
 ) -> None:
     """Initialize all non-abstract subclasses of a class.
 
     Args:
         cls: The class to find subclasses of
         load_package_before: If provided,
-        walks the package before loading the subclasses
-        This is useful when the subclasses are defined in other modules that need
-        to be imported before they can be found by __subclasses__
+            walks the package before loading the subclasses
+            This is useful when the subclasses are defined in other modules that need
+            to be imported before they can be found by __subclasses__
+        discard_parents: If True, only keeps the most recent child class of each branch
 
     """
     for subclass in get_all_nonabstract_subclasses(
-        cls, load_package_before=load_package_before
+        cls,
+        load_package_before=load_package_before,
+        discard_parents=discard_parents,
     ):
         subclass()
 
 
 def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
-    cls: type, dep: ModuleType, load_package_before: ModuleType
+    cls: type,
+    dep: ModuleType,
+    load_package_before: ModuleType,
+    *,
+    discard_parents: bool = False,
 ) -> list[type]:
     """Get all non-abstract subclasses of a class from a module in all deps.
 
@@ -189,9 +214,10 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
         cls: The class to find subclasses of
         dep: The dependency to find subclasses of
         load_package_before: If provided,
-        walks the package before loading the subclasses
-        This is useful when the subclasses are defined in other modules that need
-        to be imported before they can be found by __subclasses__
+            walks the package before loading the subclasses
+            This is useful when the subclasses are defined in other modules that need
+            to be imported before they can be found by __subclasses__
+        discard_parents: If True, only keeps the most recent child class of each branch
 
     Returns:
         A list of non-abstract subclasses of the given class
@@ -203,8 +229,39 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
     )
 
     subclasses: list[type] = []
-    for load_package_before_pkg in get_same_modules_from_deps_depen_on_dep(
-        load_package_before, dep
-    ):
-        subclasses.extend(get_all_nonabstract_subclasses(cls, load_package_before_pkg))
+    for pkg in get_same_modules_from_deps_depen_on_dep(load_package_before, dep):
+        subclasses.extend(
+            get_all_nonabstract_subclasses(
+                cls,
+                load_package_before=pkg,
+                discard_parents=discard_parents,
+            )
+        )
+    # as these are different modules and pks we need to discard parents again
+    if discard_parents:
+        subclasses = discard_parent_classes(subclasses)
     return subclasses
+
+
+@overload
+def discard_parent_classes(classes: list[type]) -> list[type]: ...
+
+
+@overload
+def discard_parent_classes(classes: set[type]) -> set[type]: ...
+
+
+def discard_parent_classes(classes: list[type] | set[type]) -> list[type] | set[type]:
+    """Discard parent classes from a list of classes.
+
+    Args:
+        classes: The classes to discard parent classes from
+
+    Returns:
+        A list of classes with parent classes discarded
+
+    """
+    for cls in classes.copy():
+        if any(child in classes for child in cls.__subclasses__()):
+            classes.remove(cls)
+    return classes

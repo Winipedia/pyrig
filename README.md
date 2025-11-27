@@ -178,6 +178,10 @@ The ConfigFile Machinery is pyrig's automated system for managing all configurat
 4. **Automatic Updates**: Updates config files when their definitions change
 5. **Automatic Enforcement**: Session fixture ensures all configs are correct before tests run
 
+**Subclass Discovery Behavior**:
+
+The machinery uses intelligent subclass discovery that only executes the most specific (leaf) implementations. If you create a custom config by subclassing an existing config class, only your custom subclass will be executed, not the parent class. This prevents duplicate config file creation and ensures that your customizations take precedence.
+
 **Note**: If you do not wish to have a specific config file managed by the machinery, you can make the file empty and pyrig will not overwrite it, however the file must exist.
 
 ### Extending Configuration Files
@@ -220,7 +224,7 @@ plugins = ["pydantic.mypy"]     # Your custom setting
 
 The machinery will validate that `strict` and `warn_redundant_casts` are present, but won't touch your custom `exclude` and `plugins` settings.
 
-In fact I suggest defining your own subclass of `PyprojectConfigFile` in your own `dev/configs/python/pyproject.py` file and adding your custom settings there. This way you can easily update your custom settings and the files can be generated automatically. But that is up to your discretion and preferences.
+In fact I suggest defining your own subclass of `PyprojectConfigFile` in your own `dev/configs/python/pyproject.py` file and adding your custom settings there. This way you can easily update your custom settings and the files can be generated automatically. When you subclass an existing config, only your subclass will be executed (not the parent), ensuring your customizations take full control. But that is up to your discretion and preferences.
 
 ### ConfigFile Types
 
@@ -401,6 +405,8 @@ Define custom configuration files here. Any subclass of `pyrig.dev.configs.base.
 
 This means if you have multiple packages that depend on pyrig, all their config files will be automatically initialized.
 
+**Subclass Behavior**: If you subclass an existing `ConfigFile` (e.g., to customize pyrig's built-in configs), only your most specific subclass will be executed. Parent classes that have been subclassed are automatically excluded from execution, preventing duplicate config file creation.
+
 **Note**: The configs.py file must exist. Deleting config files is pointless as they will be recreated by the create-root hook or by pytest session fixture.
 
 #### `pkg/dev/artifacts/builder/builder.py`
@@ -412,6 +418,8 @@ Automatically created for defining build scripts. Any subclass of `pyrig.dev.art
 - All `dev/artifacts/builder/` directories from packages depending on pyrig
 
 This means if you have multiple packages that depend on pyrig, all their builders will be automatically executed when you run `pyrig build`.
+
+**Subclass Behavior**: If you subclass an existing `Builder` (e.g., to customize `PyInstallerBuilder`), only your most specific subclass will be executed. Parent builder classes that have been subclassed are automatically excluded from execution, preventing duplicate builds.
 
 **Note**: The builder.py file must exist. Deleting builder classes is pointless as they will be recreated by the create-root hook or by pytest session fixture.
 
@@ -750,6 +758,8 @@ echo "" > tests/test_your_project/test_src/test_calculator.py
 
 pyrig provides an extensible build system for creating distributable artifacts. All builders are subclasses of `pyrig.dev.artifacts.builder.base.base.Builder`.
 
+**Subclass Discovery**: When you run `pyrig build`, the system automatically discovers all `Builder` subclasses across all packages depending on pyrig. If you subclass an existing builder (e.g., to customize `PyInstallerBuilder`), only your most specific subclass will be executed, not the parent class. This ensures that customizations take full control without duplicate builds.
+
 ### Basic Builder
 
 Create custom builders by subclassing `Builder` in `pkg/dev/artifacts/builder/builder.py`:
@@ -870,6 +880,14 @@ When you run pyrig commands or tests, it automatically discovers and executes co
 3. **Fixtures**: All pytest fixtures from all `dev/tests/fixtures/` directories
 4. **Resources**: All files from all `dev/artifacts/resources/` directories
 
+**Intelligent Subclass Discovery**:
+
+The discovery mechanism uses a `discard_parents=True` strategy for configs and builders. This means:
+- Only the most specific (leaf) subclasses are executed
+- If you subclass a config or builder in your project, only your subclass runs (not the parent)
+- This prevents duplicate execution and ensures customizations take full control
+- Fixtures use a different discovery mechanism (`get_same_modules_from_deps_depen_on_dep()`) that loads all fixture modules without filtering by inheritance
+
 **Example Multi-Package Scenario**:
 ```
 my-app/                           # Main application (depends on pyrig)
@@ -914,6 +932,57 @@ This architecture enables:
 - **Reusable components**: Share configs, builders, fixtures, and resources across projects
 - **Clean separation**: Each package manages its own development infrastructure
 - **Zero configuration**: Everything works automatically through dependency discovery
+
+### Understanding the Discovery Mechanism
+
+pyrig uses two main discovery strategies depending on the component type:
+
+#### 1. Subclass Discovery with `discard_parents=True` (Configs & Builders)
+
+Used by: `ConfigFile` and `Builder` classes
+
+**How it works**:
+1. Scans all packages that depend on pyrig
+2. Finds all subclasses of the base class (e.g., `ConfigFile`, `Builder`)
+3. Filters to only non-abstract classes
+4. **Discards parent classes that have children** - only keeps leaf classes
+
+**Why this matters**:
+```python
+# In pyrig's internal configs:
+class PyprojectConfigFile(ConfigFile):
+    # Base implementation
+    pass
+
+# In your project's dev/configs/python/pyproject.py:
+class MyCustomPyprojectConfig(PyprojectConfigFile):
+    # Your customizations
+    pass
+
+# Result: Only MyCustomPyprojectConfig executes
+# PyprojectConfigFile is automatically excluded because it has a child
+```
+
+This prevents:
+- Duplicate config file creation
+- Duplicate builds
+- Parent implementations overriding your customizations
+
+#### 2. Module Discovery (Fixtures)
+
+Used by: Pytest fixtures
+
+**How it works**:
+1. Scans all packages that depend on pyrig
+2. Finds all `dev/tests/fixtures/` modules
+3. Loads ALL Python files from these modules
+4. No inheritance filtering - all fixtures are loaded
+
+**Why this is different**:
+Fixtures don't need inheritance filtering because:
+- Multiple fixtures with the same name will cause pytest to error
+- Fixtures are meant to be additive, not overriding
+- Each package can define its own unique fixtures
 
 ---
 
