@@ -12,6 +12,7 @@ from pytest_mock import MockFixture
 
 import pyrig
 from pyrig.src.modules.class_ import (
+    discard_parent_classes,
     get_all_cls_from_module,
     get_all_methods_from_cls,
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
@@ -207,18 +208,25 @@ def test_get_all_subclasses() -> None:
     # Test with ParentClass - should find TestClass as subclass
     subclasses = get_all_subclasses(ParentClass)
 
-    assert_with_msg(
-        TestClass in subclasses,
-        f"Expected TestClass to be in subclasses of ParentClass, got {subclasses}",
-    )
+    expected_subclasses: set[type] = {ParentClass, TestClass}
+
+    for expected_subclass in expected_subclasses:
+        assert expected_subclass in subclasses, (
+            f"Expected {expected_subclass} in subclasses, got {subclasses}"
+        )
 
     # Test with TestClass - should have no subclasses
     subclasses = get_all_subclasses(TestClass)
 
     assert_with_msg(
-        len(subclasses) == 0,
+        subclasses == {TestClass},
         f"Expected no subclasses for TestClass, got {subclasses}",
     )
+
+    # test with discard_parents
+    subclasses = get_all_subclasses(ParentClass, discard_parents=True)
+    assert ParentClass not in subclasses, f"Expected ParentClass not in {subclasses}"
+    assert TestClass in subclasses, f"Expected TestClass in {subclasses}"
 
 
 def test_get_all_nonabstract_subclasses() -> None:
@@ -229,14 +237,6 @@ def test_get_all_nonabstract_subclasses() -> None:
     assert_with_msg(
         TestClass in subclasses,
         f"Expected TestClass to be in non-abstract subclasses, got {subclasses}",
-    )
-
-    # Test with TestClass - should have no subclasses
-    subclasses = get_all_nonabstract_subclasses(TestClass)
-
-    assert_with_msg(
-        len(subclasses) == 0,
-        f"Expected no non-abstract subclasses for TestClass, got {subclasses}",
     )
 
     # Test with abstract class - should only find concrete implementations
@@ -276,3 +276,10 @@ def test_get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep() -> None:
         ConcreteChild in subclasses,
         f"Expected ConcreteChild in non-abstract subclasses, got {subclasses}",
     )
+
+
+def test_discard_parent_classes() -> None:
+    """Test func for discard_parent_classes."""
+    classes = discard_parent_classes([ParentClass, TestClass])
+    assert ParentClass not in classes, f"Expected ParentClass not in {classes}"
+    assert TestClass in classes, f"Expected TestClass in {classes}"

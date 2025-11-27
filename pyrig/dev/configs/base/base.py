@@ -158,7 +158,10 @@ class ConfigFile(ABC):
     def get_all_subclasses(cls) -> list[type["ConfigFile"]]:
         """Get all subclasses of ConfigFile."""
         return get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
-            cls, pyrig, configs
+            cls,
+            pyrig,
+            configs,
+            discard_parents=True,
         )
 
     @classmethod

@@ -1384,14 +1384,14 @@ files = [
 
 [[package]]
 name = "types-networkx"
-version = "3.5.0.20251106"
+version = "3.6.0.20251127"
 description = "Typing stubs for networkx"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "types_networkx-3.5.0.20251106-py3-none-any.whl", hash = "sha256:674c53111d5ca6cf96eb6ccd3152d0d52c2720b8ddea8082c7b0116a21347a30"},
-    {file = "types_networkx-3.5.0.20251106.tar.gz", hash = "sha256:2f17a53a35cf6dbbb031039c19bf0f127ec1b37f3530c57a517a0dd67a42e343"},
+    {file = "types_networkx-3.6.0.20251127-py3-none-any.whl", hash = "sha256:e83cd6b9ec381613a5f81f6020612989f77ebf4e501ce0e085e324a738d01143"},
+    {file = "types_networkx-3.6.0.20251127.tar.gz", hash = "sha256:df8c81f66247e9dcdbdc4e9827990befeb7cb14f9cfb36d401b1ec4ab834a6cc"},
 ]
 
 [package.dependencies]
@@ -1399,14 +1399,14 @@ numpy = ">=1.20"
 
 [[package]]
 name = "types-pyinstaller"
-version = "6.16.0.20250918"
+version = "6.17.0.20251127"
 description = "Typing stubs for pyinstaller"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "types_pyinstaller-6.16.0.20250918-py3-none-any.whl", hash = "sha256:1bf7bc3d9bc1a10a11851ba70439feb771ecc050b5a587188a49305d24336322"},
-    {file = "types_pyinstaller-6.16.0.20250918.tar.gz", hash = "sha256:0becf0bb2f6a419ff6ad0c0cfa483962a5f845ebc1bab92bf040d90a5f685b39"},
+    {file = "types_pyinstaller-6.17.0.20251127-py3-none-any.whl", hash = "sha256:3ea4428ad44afa1cffe969b544e390c3bc4a48ce4d7922a71d2f934702b98a35"},
+    {file = "types_pyinstaller-6.17.0.20251127.tar.gz", hash = "sha256:b95127a9cf5ad7a852d0c3f997f34feadeac1da02dfc0d95ed3cd57b671a53bf"},
 ]
 
 [[package]]
