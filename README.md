@@ -2,7 +2,7 @@
 
 **pyrig** is a Python development toolkit that helps you **rig up** your Python projects by standardizing project configurations and automating testing workflows. It eliminates boilerplate setup work by providing opinionated, best-practice configurations for linting, type checking, testing, and CI/CD—allowing you to focus on writing code instead of configuring tools.
 
-Built for Python 3.12+ projects using Poetry and GitHub, pyrig automatically generates project structure, creates test skeletons that mirror your source code, and maintains configuration files for tools like ruff, mypy, pytest, and pre-commit hooks.
+Built for Python 3.12+ projects using uv and GitHub, pyrig automatically generates project structure, creates test skeletons that mirror your source code, and maintains configuration files for tools like ruff, mypy, pytest, and pre-commit hooks.
 
 ---
 
@@ -35,7 +35,7 @@ Built for Python 3.12+ projects using Poetry and GitHub, pyrig automatically gen
 - **Code Quality Tools**: Pre-configured ruff (linting + formatting), mypy, bandit (security)
 - **CI/CD Workflows**: GitHub Actions workflows for health checks, releases, and publishing
 - **Repository Protection**: Automated GitHub branch protection and security settings
-- **Dependency Management**: Automatic dependency updates with Poetry
+- **Dependency Management**: Automatic dependency updates with uv
 - **Pre-commit Hooks**: Automated code quality checks before every commit with automatic installation
 - **Artifact Building**: Extensible build system with PyInstaller support
 - **Custom CLI**: Automatically generates CLI commands from your functions
@@ -47,7 +47,7 @@ Built for Python 3.12+ projects using Poetry and GitHub, pyrig automatically gen
 ## Requirements
 
 - **Python**: 3.12 or higher
-- **Poetry**: Package and dependency manager
+- **uv**: Package and dependency manager
 - **Git**: Version control
 - **GitHub**: For full CI/CD and repository protection features (optional but recommended)
 
@@ -60,7 +60,7 @@ Built for Python 3.12+ projects using Poetry and GitHub, pyrig automatically gen
 ```bash
 pip install pyrig
 # or
-poetry add pyrig
+uv add pyrig
 ```
 
 **Note**: pyrig should be added as a regular dependency, not a dev dependency, because the CLI and utility functions require runtime availability. While pyrig manages dev dependencies for tools like ruff, mypy, and pytest, it keeps itself as a regular dependency to ensure full functionality in all environments.
@@ -70,7 +70,7 @@ poetry add pyrig
 ```bash
 git clone https://github.com/winipedia/pyrig.git
 cd pyrig
-poetry install
+uv sync
 ```
 
 ---
@@ -83,14 +83,14 @@ poetry install
 git clone https://github.com/your-username/your-project.git
 cd your-project
 
-# Initialize Poetry project
-poetry init
+# Initialize uv project
+uv init --python 3.12 # 3.12 is the minimum supported version
 
 # Add pyrig
-poetry add pyrig
+uv add pyrig
 
 # Initialize pyrig (creates all config files, tests, and runs setup)
-poetry run pyrig init
+uv run pyrig init
 
 # Commit and push
 git add .
@@ -120,24 +120,24 @@ git push
    cd your-project
    ```
 
-2. **Install Poetry** (if not already installed)
+2. **Install uv** (if not already installed)
    ```bash
-   curl -sSL https://install.python-poetry.org | python3 -
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
-3. **Initialize Poetry project**
+3. **Initialize uv project**
    ```bash
-   poetry init  # or poetry new
+   uv init --python 3.12
    ```
 
 4. **Add pyrig as a dependency**
    ```bash
-   poetry add pyrig
+   uv add pyrig
    ```
 
 5. **Run pyrig initialization**
    ```bash
-   poetry run pyrig init
+   uv run pyrig init
    ```
 
 6. **Commit and push changes**
@@ -238,7 +238,6 @@ Set to the lowest supported Python version. Used by pyenv.
 
 Configured with the following hooks:
 
-- `check-package-manager-config`: poetry check --strict
 - `lint-code`: ruff check --fix
 - `format-code`: ruff format
 - `check-static-types`: mypy --exclude-gitignore
@@ -265,7 +264,7 @@ Empty file for environment variables. Git-ignored, used by python-dotenv.
 
 - **Triggers**: workflow_dispatch, commit to main, schedule (weekly)
 - **Process**: Runs health check, creates tag and changelog, creates GitHub release, builds and uploads artifacts, commits updates
-- **Synchronization**: Keeps tags, poetry version, and PyPI in sync
+- **Synchronization**: Keeps tags, package version, and PyPI in sync
 
 #### `.github/workflows/publish.yaml`
 
@@ -277,7 +276,7 @@ Empty file for environment variables. Git-ignored, used by python-dotenv.
 
 Main entry point for your application. Used by PyInstaller for building executables.
 
-- **Usage**: `poetry run your-pkg-name main` or `python -m your-pkg-name`
+- **Usage**: `uv run your-pkg-name main` or `python -m your-pkg-name`
 
 #### `pkg/src/`
 
@@ -293,7 +292,7 @@ def hello(name: str = "World") -> None:
     """Say hello to someone."""
     print(f"Hello, {name}!")
 
-# Run with: poetry run your-pkg-name hello --name Alice
+# Run with: uv run your-pkg-name hello --name Alice
 ```
 
 #### `pkg/dev/configs/configs.py`
@@ -427,7 +426,7 @@ The repository protection is automatically applied during CI/CD workflows, but y
 export REPO_TOKEN=your_github_token  # or add it to your .env file; pyrig picks it up automatically
 
 # Run the protection command
-poetry run pyrig protect-repo
+uv run pyrig protect-repo
 ```
 
 **Required Token Permissions**:
@@ -455,7 +454,7 @@ pyrig generates test skeletons that mirror your source code structure:
 
 ### Automatic Test Generation
 
-1. **Manual**: Run `poetry run pyrig create-tests`
+1. **Manual**: Run `uv run pyrig create-tests`
 2. **Automatic**: An autouse session fixture creates missing tests when you run `pytest`
 
 #### Fixture System
@@ -505,19 +504,19 @@ Autouse session fixtures automatically enforce code quality and project conventi
 
 **Pre-commit & Dependencies**:
 - `assert_pre_commit_is_installed`: Ensures pre-commit hooks are installed
-- `assert_dependencies_are_up_to_date`: Runs `poetry self update` and `poetry update --with dev`
+- `assert_dependencies_are_up_to_date`: Runs `uv lock --upgrade` and `uv sync`
 
 ### Running Tests
 
 ```bash
 # Run all tests
-poetry run pytest
+uv run pytest
 
 # Run specific test file
-poetry run pytest tests/test_your_project/test_calculator.py
+uv run pytest tests/test_your_project/test_calculator.py
 
 # Run with coverage
-poetry run pytest --cov=your_project
+uv run pytest --cov=your_project
 ```
 
 ### Disabling Tests
@@ -554,7 +553,7 @@ class MyBuilder(Builder):
 
 **Build artifacts**:
 ```bash
-poetry run pyrig build
+uv run pyrig build
 ```
 
 Artifacts are placed in the `artifacts/` directory with platform-specific naming (e.g., `my_artifact-Linux.txt`, `my_artifact-Windows.txt`).
@@ -576,7 +575,7 @@ pyrig includes a `PyInstallerBuilder` class for creating standalone executables.
 
 5. **Build**:
    ```bash
-   poetry run pyrig build
+   uv run pyrig build
    ```
 
 The builder automatically:
@@ -634,7 +633,7 @@ After running `pyrig init`:
 ```
 your-project/
 ├── .env, .gitignore, .pre-commit-config.yaml, .python-version
-├── experiment.py, LICENSE, poetry.lock, pyproject.toml, README.md
+├── experiment.py, LICENSE, uv.lock, pyproject.toml, README.md
 ├── .github/workflows/
 │   ├── health_check.yaml, publish.yaml, release.yaml
 ├── your_project/
@@ -677,7 +676,7 @@ def deploy(environment: str = "staging") -> None:
     """Deploy the application."""
     print(f"Deploying to {environment}...")
 
-# Run with: poetry run your-project deploy --environment production
+# Run with: uv run your-project deploy --environment production
 ```
 
 ---
@@ -686,20 +685,20 @@ def deploy(environment: str = "staging") -> None:
 
 ### Common Issues
 
-#### `poetry run pyrig` command not found
+#### `uv run pyrig` command not found
 ```bash
-poetry install
+uv sync
 ```
 
 #### Pre-commit hooks failing
 ```bash
-poetry run pre-commit install
-poetry run pre-commit run --all-files
+uv run pre-commit install
+uv run pre-commit run --all-files
 ```
 
 #### Tests not being generated automatically
 ```bash
-poetry run pyrig create-tests
+uv run pyrig create-tests
 ```
 
 #### GitHub Actions permission errors
@@ -714,7 +713,7 @@ def add(a: int, b: int) -> int:
 
 #### Dependency conflicts
 ```bash
-poetry update --with dev
+uv lock --upgrade && uv sync
 ```
 
 #### PyInstaller build fails
@@ -742,8 +741,8 @@ path = get_resource_path("config.json", resources)
 ```bash
 git clone https://github.com/winipedia/pyrig.git
 cd pyrig
-poetry install --with dev
-poetry run pytest
+uv sync
+uv run pytest
 ```
 
 ---

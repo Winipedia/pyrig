@@ -3,7 +3,10 @@
 from typing import Any
 
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.git.github.github import get_github_repo_token
+from pyrig.src.git.github.github import (
+    get_github_repo_token,
+    get_repo_owner_and_name_from_git,
+)
 from pyrig.src.git.github.repo.repo import (
     DEFAULT_BRANCH,
     DEFAULT_RULESET_NAME,
@@ -21,15 +24,14 @@ def protect_repository() -> None:
 
 def set_secure_repo_settings() -> None:
     """Set standard settings for the repository."""
-    src_pkg_name = PyprojectConfigFile.get_project_name()
-    owner = PyprojectConfigFile.get_main_author_name()
+    owner, repo_name = get_repo_owner_and_name_from_git()
     token = get_github_repo_token()
-    repo = get_repo(token, owner, src_pkg_name)
+    repo = get_repo(token, owner, repo_name)
 
     toml_description = PyprojectConfigFile.get_project_description()
 
     repo.edit(
-        name=src_pkg_name,
+        name=repo_name,
         description=toml_description,
         default_branch=DEFAULT_BRANCH,
         delete_branch_on_merge=True,
@@ -53,7 +55,7 @@ def get_default_ruleset_params() -> dict[str, Any]:
         HealthCheckWorkflow,  # avoid circular import
     )
 
-    repo_name = PyprojectConfigFile.get_project_name()
+    owner, repo_name = get_repo_owner_and_name_from_git()
     token = get_github_repo_token()
 
     rules = get_rules_payload(
@@ -83,7 +85,7 @@ def get_default_ruleset_params() -> dict[str, Any]:
     )
 
     return {
-        "owner": PyprojectConfigFile.get_main_author_name(),
+        "owner": owner,
         "token": token,
         "repo_name": repo_name,
         "ruleset_name": DEFAULT_RULESET_NAME,

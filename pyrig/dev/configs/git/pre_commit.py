@@ -7,8 +7,8 @@ from typing import Any
 
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.poetry.poetry import (
-    POETRY_RUN_ARGS,
+from pyrig.src.project.mgt import (
+    PROJECT_MGT_RUN_ARGS,
     get_script_from_args,
 )
 
@@ -57,10 +57,6 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         """Get the config."""
         hooks: list[dict[str, Any]] = [
             cls.get_hook(
-                "check-package-manager-config",
-                ["poetry", "check", "--strict"],
-            ),
-            cls.get_hook(
                 "lint-code",
                 ["ruff", "check", "--fix"],
             ),
@@ -94,7 +90,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
     def install(cls) -> CompletedProcess[bytes]:
         """Installs the pre commits in the config."""
         logger.info("Running pre-commit install")
-        return run_subprocess([*POETRY_RUN_ARGS, "pre-commit", "install"])
+        return run_subprocess([*PROJECT_MGT_RUN_ARGS, "pre-commit", "install"])
 
     @classmethod
     def run_hooks(

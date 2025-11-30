@@ -32,6 +32,20 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
+    def test_should_remove_version_from_dep(self) -> None:
+        """Test method."""
+        should_remove = PyprojectConfigFile.should_remove_version_from_dep()
+        assert should_remove, "Expected should_remove_version_from_dep to return True"
+
+    def test_remove_version_from_dep(
+        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
+    ) -> None:
+        """Test method."""
+        my_test_pyproject_config_file()
+        dep = "dep (>=1.0.0,<2.0.0)"
+        new_dep = my_test_pyproject_config_file.remove_version_from_dep(dep)
+        assert new_dep == "dep", f"Expected {new_dep}, got {dep}"
+
     def test_get_project_description(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
@@ -163,22 +177,16 @@ class TestPyprojectConfigFile:
             "Expected package name to be pyrig",
         )
 
-    def test_make_dependency_to_version_dict(
+    def test_make_dependency_versions(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method for make_dependency_to_version_dict."""
         my_test_pyproject_config_file()
-        dependencies: dict[str, str | dict[str, str]] = {
-            "dep1": "*",
-            "dep2": ">=1.0.0,<2.0.0",
-        }
-        dep_to_version_dict = (
-            my_test_pyproject_config_file.make_dependency_to_version_dict(dependencies)
+        dependencies = ["dep1", "dep2 (>=1.0.0,<2.0.0)"]
+        deps_versions = my_test_pyproject_config_file.make_dependency_versions(
+            dependencies
         )
-        assert_with_msg(
-            isinstance(dep_to_version_dict, dict),
-            "Expected dep_to_version_dict to be equal to dependencies",
-        )
+        assert deps_versions == ["dep1", "dep2"], f"Expected {deps_versions}"
 
     def test_remove_wrong_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -188,17 +196,10 @@ class TestPyprojectConfigFile:
         config = my_test_pyproject_config_file.get_configs()
         # add wrong dependencies to config
         config["project"]["dependencies"] = ["wrong (>=1.0.0,<2.0.0)"]
-        config["tool"]["poetry"]["dev-dependencies"] = {"wrong": "*"}
-        cleaned_config = my_test_pyproject_config_file.remove_wrong_dependencies(config)
-        # assert wrong sections are removed
-        assert_with_msg(
-            "dependencies" not in cleaned_config["project"],
-            "Expected dev-dependencies section to be deleted",
-        )
-        assert_with_msg(
-            "dev-dependencies" not in cleaned_config["tool"]["poetry"],
-            "Expected dev-dependencies section to be deleted",
-        )
+        config["dependency-groups"]["dev"] = ["wrong-dev (>=1.0.0,<2.0.0)"]
+        my_test_pyproject_config_file.remove_wrong_dependencies(config)
+        assert config["project"]["dependencies"] == ["wrong"]
+        assert config["dependency-groups"]["dev"] == ["wrong-dev"]
 
     def test_get_all_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -207,10 +208,7 @@ class TestPyprojectConfigFile:
         my_test_pyproject_config_file()
         # get_all_dependencies should return a set (union of deps and dev_deps)
         all_deps = my_test_pyproject_config_file.get_all_dependencies()
-        assert_with_msg(
-            isinstance(all_deps, dict),
-            "Expected get_all_dependencies to return a set",
-        )
+        assert isinstance(all_deps, list), f"Expected list, got {type(all_deps)}"
 
     def test_get_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -220,10 +218,7 @@ class TestPyprojectConfigFile:
         # get_dependencies may raise if dependencies key doesn't exist
         # This is expected behavior for the test config
         deps = my_test_pyproject_config_file.get_dependencies()
-        assert_with_msg(
-            isinstance(deps, dict),
-            "Expected get_dependencies to return a set",
-        )
+        assert isinstance(deps, list), f"Expected list, got {type(deps)}"
 
     def test_get_dev_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -231,10 +226,7 @@ class TestPyprojectConfigFile:
         """Test method for get_dev_dependencies."""
         my_test_pyproject_config_file()
         dev_deps = my_test_pyproject_config_file.get_dev_dependencies()
-        assert_with_msg(
-            isinstance(dev_deps, dict),
-            "Expected get_dev_dependencies to return a set",
-        )
+        assert isinstance(dev_deps, list), f"Expected list, got {type(dev_deps)}"
 
     def test_get_standard_dev_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -244,68 +236,8 @@ class TestPyprojectConfigFile:
         standard_dev_deps = (
             my_test_pyproject_config_file.get_standard_dev_dependencies()
         )
-        assert_with_msg(
-            isinstance(standard_dev_deps, dict),
-            "Expected get_standard_dev_dependencies to return a set",
-        )
-
-    def test_get_authors(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
-    ) -> None:
-        """Test method for get_authors."""
-        my_test_pyproject_config_file()
-        config = my_test_pyproject_config_file.load()
-        # assert authors rn is empty list
-        assert_with_msg(
-            my_test_pyproject_config_file.get_authors() == [],
-            "Expected get_authors to return an empty list",
-        )
-        config["project"]["authors"] = [
-            {"name": "Test Author", "email": "test@example.com"}
-        ]
-        my_test_pyproject_config_file.dump(config)
-        authors = my_test_pyproject_config_file.get_authors()
-        assert_with_msg(
-            authors == [{"name": "Test Author", "email": "test@example.com"}],
-            "Expected get_authors to return a list with one author",
-        )
-
-    def test_get_main_author(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
-    ) -> None:
-        """Test method for get_main_author."""
-        my_test_pyproject_config_file()
-        config = my_test_pyproject_config_file.load()
-        # assert authors rn is empty list
-        with pytest.raises(IndexError, match=r"list index out of range"):
-            my_test_pyproject_config_file.get_main_author()
-        config["project"]["authors"] = [
-            {"name": "Test Author", "email": "test@example.com"}
-        ]
-        my_test_pyproject_config_file.dump(config)
-        main_author = my_test_pyproject_config_file.get_main_author()
-        assert_with_msg(
-            main_author == {"name": "Test Author", "email": "test@example.com"},
-            "Expected get_main_author to return the first author",
-        )
-
-    def test_get_main_author_name(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
-    ) -> None:
-        """Test method for get_main_author_name."""
-        my_test_pyproject_config_file()
-        config = my_test_pyproject_config_file.load()
-        # assert authors rn is empty list
-        with pytest.raises(IndexError, match=r"list index out of range"):
-            my_test_pyproject_config_file.get_main_author_name()
-        config["project"]["authors"] = [
-            {"name": "Test Author", "email": "test@example.com"}
-        ]
-        my_test_pyproject_config_file.dump(config)
-        main_author_name = my_test_pyproject_config_file.get_main_author_name()
-        assert_with_msg(
-            main_author_name == "Test Author",
-            "Expected get_main_author_name to return the first author name",
+        assert isinstance(standard_dev_deps, list), (
+            f"Expected list, got {type(standard_dev_deps)}"
         )
 
     def test_get_latest_possible_python_version(

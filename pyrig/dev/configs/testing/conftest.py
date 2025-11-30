@@ -5,6 +5,7 @@ from subprocess import CompletedProcess  # nosec: B404
 from pyrig.dev.configs.base.base import PythonTestsConfigFile
 from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.os.os import run_subprocess
+from pyrig.src.project.mgt import PROJECT_MGT_RUN_ARGS
 
 
 class ConftestConfigFile(PythonTestsConfigFile):
@@ -30,4 +31,4 @@ pytest_plugins = ["{make_obj_importpath(conftest)}"]
     @classmethod
     def run_tests(cls, *, check: bool = True) -> CompletedProcess[str]:
         """Run the tests."""
-        return run_subprocess(["poetry", "run", "pytest"], check=check)
+        return run_subprocess([*PROJECT_MGT_RUN_ARGS, "pytest"], check=check)

@@ -2,7 +2,7 @@
 
 from pyrig.dev.configs.base.base import PythonTestsConfigFile
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.poetry.poetry import get_poetry_run_module_args
+from pyrig.src.project.mgt import get_project_mgt_run_module_args
 from pyrig.src.testing import create_tests
 
 
@@ -31,4 +31,4 @@ def test_zero() -> None:
     @classmethod
     def create_tests(cls) -> None:
         """Create the tests."""
-        run_subprocess(get_poetry_run_module_args(create_tests))
+        run_subprocess(get_project_mgt_run_module_args(create_tests))

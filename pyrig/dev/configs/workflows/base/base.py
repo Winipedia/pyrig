@@ -11,7 +11,7 @@ from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.package import DependencyGraph, get_src_package
-from pyrig.src.project.poetry.poetry import get_poetry_run_pyrig_cli_cmd_script
+from pyrig.src.project.mgt import PROJECT_MGT, get_project_mgt_run_pyrig_cli_cmd_script
 from pyrig.src.string import (
     make_name_from_obj,
     split_on_uppercase,
@@ -406,10 +406,13 @@ class Workflow(YamlConfigFile):
         cls, python_version: str | None = None, *, repo_token: bool = False
     ) -> list[dict[str, Any]]:
         """Get the core setup steps."""
+        if python_version is None:
+            python_version = str(
+                PyprojectConfigFile.get_latest_possible_python_version()
+            )
         return [
             cls.step_checkout_repository(repo_token=repo_token),
-            cls.step_setup_python(python_version=python_version),
-            cls.step_setup_poetry(),
+            cls.step_setup_project_mgt(python_version=python_version),
         ]
 
     @classmethod
@@ -419,7 +422,6 @@ class Workflow(YamlConfigFile):
         """Get the core setup steps."""
         return [
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
-            cls.step_add_poetry_to_windows_path(),
             cls.step_install_python_dependencies(),
             *cls.steps_configure_keyring_if_needed(),
             cls.step_update_dependencies(),
@@ -485,7 +487,7 @@ class Workflow(YamlConfigFile):
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
         return cls.get_step(
             step_func=cls.step_run_tests,
-            run="poetry run pytest --log-cli-level=INFO",
+            run=f"{PROJECT_MGT} run pytest --log-cli-level=INFO",
             step=step,
         )
 
@@ -498,7 +500,7 @@ class Workflow(YamlConfigFile):
         """Get the patch version step."""
         return cls.get_step(
             step_func=cls.step_patch_version,
-            run="poetry version patch && git add pyproject.toml",
+            run="uv version --bump patch && git add pyproject.toml",
             step=step,
         )
 
@@ -511,7 +513,7 @@ class Workflow(YamlConfigFile):
         """Get the update dependencies step."""
         return cls.get_step(
             step_func=cls.step_update_dependencies,
-            run="poetry update --with dev",
+            run=f"{PROJECT_MGT} lock --upgrade",
             step=step,
         )
 
@@ -524,7 +526,7 @@ class Workflow(YamlConfigFile):
         """Get the add dependency updates to git step."""
         return cls.get_step(
             step_func=cls.step_add_dependency_updates_to_git,
-            run="git add pyproject.toml poetry.lock",
+            run="git add pyproject.toml uv.lock",
             step=step,
         )
 
@@ -585,42 +587,44 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
-    def step_setup_poetry(
+    def step_setup_project_mgt(
         cls,
         *,
+        python_version: str | None = None,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the setup poetry step."""
+        """Get the setup for project mgt like uv."""
         return cls.get_step(
-            step_func=cls.step_setup_poetry,
-            uses="snok/install-poetry@main",
+            step_func=cls.step_setup_project_mgt,
+            uses="astral-sh/setup-uv@main",
+            with_={"python-version": python_version},
             step=step,
         )
 
     @classmethod
-    def step_add_poetry_to_windows_path(
+    def step_add_uv_to_windows_path(
         cls,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the add poetry to path step."""
+        """Get the add uv to path step."""
         return cls.get_step(
-            step_func=cls.step_add_poetry_to_windows_path,
+            step_func=cls.step_add_uv_to_windows_path,
             run="echo 'C:/Users/runneradmin/.local/bin' >> $GITHUB_PATH",
             if_condition=f"{cls.insert_os()} == 'Windows'",
             step=step,
         )
 
     @classmethod
-    def step_add_pypi_token_to_poetry(
+    def step_build_wheel(
         cls,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the add pypi token to poetry step."""
+        """Get the build wheel step."""
         return cls.get_step(
-            step_func=cls.step_add_pypi_token_to_poetry,
-            run="poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}",
+            step_func=cls.step_build_wheel,
+            run=f"{PROJECT_MGT} build",
             step=step,
         )
 
@@ -633,7 +637,7 @@ class Workflow(YamlConfigFile):
         """Get the publish to pypi step."""
         return cls.get_step(
             step_func=cls.step_publish_to_pypi,
-            run="poetry publish --build",
+            run=f"{PROJECT_MGT} publish --token {cls.insert_repo_token()}",
             step=step,
         )
 
@@ -646,7 +650,7 @@ class Workflow(YamlConfigFile):
         """Get the install dependencies step."""
         return cls.get_step(
             step_func=cls.step_install_python_dependencies,
-            run="poetry install --with dev",
+            run=f"{PROJECT_MGT} sync",
             step=step,
         )
 
@@ -659,7 +663,7 @@ class Workflow(YamlConfigFile):
         """Get the setup keyring step."""
         return cls.get_step(
             step_func=cls.step_setup_keyring,
-            run='poetry run pip install keyrings.alt && poetry run python -c "import keyring; from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"',  # noqa: E501
+            run=f'{PROJECT_MGT} run pip install keyrings.alt && {PROJECT_MGT} run python -c "import keyring; from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"',  # noqa: E501
             step=step,
         )
 
@@ -672,7 +676,7 @@ class Workflow(YamlConfigFile):
         """Get the protect repository step."""
         return cls.get_step(
             step_func=cls.step_protect_repository,
-            run=get_poetry_run_pyrig_cli_cmd_script(
+            run=get_project_mgt_run_pyrig_cli_cmd_script(
                 cmd=protect_repo,
             ),
             env={"REPO_TOKEN": cls.insert_repo_token()},
@@ -693,20 +697,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_run_pre_commit_hooks,
-            run="poetry run pre-commit run --all-files",
-            step=step,
-        )
-
-    @classmethod
-    def step_add_version_patch(
-        cls,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Get the add version patch step."""
-        return cls.get_step(
-            step_func=cls.step_add_version_patch,
-            run="poetry version patch && git add pyproject.toml",
+            run="uv run pre-commit run --all-files",
             step=step,
         )
 
@@ -719,7 +710,7 @@ class Workflow(YamlConfigFile):
         """Get the commit changes step."""
         return cls.get_step(
             step_func=cls.step_commit_added_changes,
-            run="git commit --no-verify -m '[skip ci] CI/CD: Committing possible added changes (e.g.: pyproject.toml and poetry.lock)'",  # noqa: E501
+            run="git commit --no-verify -m '[skip ci] CI/CD: Committing possible added changes (e.g.: pyproject.toml)'",  # noqa: E501
             step=step,
         )
 
@@ -801,7 +792,7 @@ class Workflow(YamlConfigFile):
         """Get the build artifacts step."""
         return cls.get_step(
             step_func=cls.step_build_artifacts,
-            run=get_poetry_run_pyrig_cli_cmd_script(build),
+            run=get_project_mgt_run_pyrig_cli_cmd_script(build),
             step=step,
         )
 
@@ -884,7 +875,7 @@ class Workflow(YamlConfigFile):
     @classmethod
     def insert_version(cls) -> str:
         """Insert the version."""
-        return "v$(poetry version -s)"
+        return "v$(uv version --short)"
 
     @classmethod
     def insert_version_from_extract_version_step(cls) -> str:

@@ -2,9 +2,10 @@
 
 from github.Repository import Repository
 
-import pyrig
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.git.github.github import get_github_repo_token
+from pyrig.src.git.github.github import (
+    get_github_repo_token,
+    get_repo_owner_and_name_from_git,
+)
 from pyrig.src.git.github.repo.protect import get_default_ruleset_params
 from pyrig.src.git.github.repo.repo import (
     DEFAULT_RULESET_NAME,
@@ -67,10 +68,10 @@ def test_get_rules_payload() -> None:
 
 def test_get_repo() -> None:
     """Test func for get_repo."""
-    repo_name = PyprojectConfigFile.get_project_name()
+    owner, repo_name = get_repo_owner_and_name_from_git()
     repo = get_repo(
         get_github_repo_token(),
-        PyprojectConfigFile.get_main_author_name(),
+        owner,
         repo_name,
     )
     assert_with_msg(
@@ -87,8 +88,7 @@ def test_get_all_rulesets() -> None:
     """Test func for get_all_rulesets."""
     rulesets = get_all_rulesets(
         get_github_repo_token(),
-        PyprojectConfigFile.get_main_author_name(),
-        PyprojectConfigFile.get_project_name_from_pkg_name(pyrig.__name__),
+        *get_repo_owner_and_name_from_git(),
     )
     assert_with_msg(
         isinstance(rulesets, list),
@@ -100,8 +100,7 @@ def test_ruleset_exists() -> None:
     """Test func for ruleset_exists."""
     ruleset_id = ruleset_exists(
         get_github_repo_token(),
-        PyprojectConfigFile.get_main_author_name(),
-        PyprojectConfigFile.get_project_name_from_pkg_name(pyrig.__name__),
+        *get_repo_owner_and_name_from_git(),
         DEFAULT_RULESET_NAME,
     )
     assert_with_msg(

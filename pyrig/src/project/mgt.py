@@ -16,9 +16,9 @@ from pyrig.src.string import make_name_from_obj
 logger = logging.getLogger(__name__)
 
 
-POETRY_ARG = "poetry"
+PROJECT_MGT = "uv"
 
-POETRY_RUN_ARGS = [POETRY_ARG, "run"]
+PROJECT_MGT_RUN_ARGS = [PROJECT_MGT, "run"]
 
 RUN_PYTHON_MODULE_ARGS = ["python", "-m"]
 
@@ -37,17 +37,17 @@ def get_run_python_module_args(module: ModuleType) -> list[str]:
     return [*RUN_PYTHON_MODULE_ARGS, make_obj_importpath(module)]
 
 
-def get_poetry_run_module_args(module: ModuleType) -> list[str]:
+def get_project_mgt_run_module_args(module: ModuleType) -> list[str]:
     """Get the args to run a module."""
-    return [*POETRY_RUN_ARGS, *get_run_python_module_args(module)]
+    return [*PROJECT_MGT_RUN_ARGS, *get_run_python_module_args(module)]
 
 
-def get_poetry_run_cli_cmd_args(
+def get_project_mgt_run_cli_cmd_args(
     cmd: Callable[[], Any] | None = None, extra_args: list[str] | None = None
 ) -> list[str]:
     """Get the args to run the cli of the current project."""
     args = [
-        *POETRY_RUN_ARGS,
+        *PROJECT_MGT_RUN_ARGS,
         PyprojectConfigFile.get_project_name_from_pkg_name(get_src_package().__name__),
     ]
     if cmd is not None:
@@ -58,26 +58,26 @@ def get_poetry_run_cli_cmd_args(
     return args
 
 
-def get_poetry_run_pyrig_cli_cmd_args(
+def get_project_mgt_run_pyrig_cli_cmd_args(
     cmd: Callable[[], Any] | None = None,
     extra_args: list[str] | None = None,
 ) -> list[str]:
     """Get the args to run pyrig."""
-    args = get_poetry_run_cli_cmd_args(cmd, extra_args)
-    args[len(POETRY_RUN_ARGS)] = PyprojectConfigFile.get_project_name_from_pkg_name(
-        pyrig.__name__
+    args = get_project_mgt_run_cli_cmd_args(cmd, extra_args)
+    args[len(PROJECT_MGT_RUN_ARGS)] = (
+        PyprojectConfigFile.get_project_name_from_pkg_name(pyrig.__name__)
     )
     return args
 
 
-def get_poetry_run_cli_cmd_script(cmd: Callable[[], Any]) -> str:
+def get_project_mgt_run_cli_cmd_script(cmd: Callable[[], Any]) -> str:
     """Get the script to run pyrig."""
-    return get_script_from_args(get_poetry_run_cli_cmd_args(cmd))
+    return get_script_from_args(get_project_mgt_run_cli_cmd_args(cmd))
 
 
-def get_poetry_run_pyrig_cli_cmd_script(cmd: Callable[[], Any]) -> str:
+def get_project_mgt_run_pyrig_cli_cmd_script(cmd: Callable[[], Any]) -> str:
     """Get the script to run pyrig."""
-    return get_script_from_args(get_poetry_run_pyrig_cli_cmd_args(cmd))
+    return get_script_from_args(get_project_mgt_run_pyrig_cli_cmd_args(cmd))
 
 
 def get_python_module_script(module: ModuleType) -> str:
@@ -85,6 +85,6 @@ def get_python_module_script(module: ModuleType) -> str:
     return get_script_from_args(get_run_python_module_args(module))
 
 
-def get_poetry_run_module_script(module: ModuleType) -> str:
+def get_project_mgt_run_module_script(module: ModuleType) -> str:
     """Get the script to run a module."""
-    return get_script_from_args(get_poetry_run_module_args(module))
+    return get_script_from_args(get_project_mgt_run_module_args(module))
