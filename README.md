@@ -63,15 +63,7 @@ pip install pyrig
 poetry add pyrig
 ```
 
-**Note**: pyrig should be added as a regular dependency, not a dev dependency. 
-Some might argue it should be a dev dependency. I hav ethought about it, but
-decided against it for several reasons. 
-The CLI functionality requires pyrig availability at runtime. Also pyrig has a small but often useful utility functionality that is available at runtime if you should need it. Also in the future functionality of pyrig might be extended around other things every project needs and these could include things that require runtime availability. 
-Also pyrig decides itself what should be a dev dependency and what not. 
-You will see in the generated pyproject.toml file that pyrig adds many dev dependencies. 
-These are things that are only needed for development and testing and are not needed at runtime. 
-pyrig does not add itself to the dev dependencies because it is needed at runtime for some of the functionality. 
-You can add it as a dev dependency if you want, but all the functionality that requires pyrig at runtime will not be working then outside of the dev environment.
+**Note**: pyrig should be added as a regular dependency, not a dev dependency, because the CLI and utility functions require runtime availability. While pyrig manages dev dependencies for tools like ruff, mypy, and pytest, it keeps itself as a regular dependency to ensure full functionality in all environments.
 
 ### From Source
 
