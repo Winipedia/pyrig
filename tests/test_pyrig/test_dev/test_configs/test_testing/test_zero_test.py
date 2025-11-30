@@ -28,7 +28,7 @@ class TestZeroTestConfigFile:
 
     def test_create_tests(self, mocker: MockFixture) -> None:
         """Test method for create_tests."""
-        # mock run_subprocess to avoid actually running poetry run create-tests
+        # mock run_subprocess to avoid actually running run create-tests
         mock_run = mocker.patch(
             make_obj_importpath(zero_test) + ".run_subprocess",
             return_value=0,

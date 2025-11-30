@@ -13,16 +13,17 @@ from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.module import to_path
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.init import init
+from pyrig.src.project.mgt import PROJECT_MGT, PROJECT_MGT_RUN_ARGS
 from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.mark.skipif(
     platform.system() == "Windows",
-    reason="Test fails on Windows due to poetry add path fails",
+    reason="Test fails on Windows bc of github actions path stuff",
 )
 def test_init(tmp_path: Path) -> None:
     """Test func for init."""
-    # on Actions windows-latest temp path is on another drive so poetry add path fails
+    # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
     # now test that in an empty folder with a pyproject.toml file
     # with a folder src that the setup works
@@ -36,7 +37,7 @@ def test_init(tmp_path: Path) -> None:
     pyrig_temp_path = pyrig_temp_path.resolve()
     with chdir(pyrig_temp_path):
         # build the package
-        run_subprocess(["poetry", "build"])
+        run_subprocess([PROJECT_MGT, "build"])
 
     dist_files = list((pyrig_temp_path / "dist").glob("*.whl"))
     wheel_path = dist_files[-1].as_posix()
@@ -54,22 +55,20 @@ def test_init(tmp_path: Path) -> None:
         run_subprocess(["git", "config", "user.name", "Test User"])
 
     with chdir(src_project_dir):
-        # Create a clean environment dict without VIRTUAL_ENV to force poetry
+        # Create a clean environment dict without VIRTUAL_ENV to force
         # to create a new virtual environment instead of reusing the current one
         clean_env = os.environ.copy()
         clean_env.pop("VIRTUAL_ENV", None)
 
         run_subprocess(
-            ["poetry", "init", "--no-interaction", f"--python=>={python_version}"],
+            [PROJECT_MGT, "init", "--python", python_version],
             env=clean_env,
         )
-        # Explicitly create a new virtual environment using the current Python
-        run_subprocess(["poetry", "env", "use", python_version], env=clean_env)
 
         # Add pyrig wheel as a dependency
         run_subprocess(
             [
-                "poetry",
+                "uv",
                 "add",
                 wheel_path,
             ],
@@ -81,10 +80,12 @@ def test_init(tmp_path: Path) -> None:
             pyrig.__name__
         )
 
-        run_subprocess(["poetry", "run", project_name, init.__name__], env=clean_env)
+        run_subprocess(
+            [*PROJECT_MGT_RUN_ARGS, project_name, init.__name__], env=clean_env
+        )
 
         # test the cli can be called
-        res = run_subprocess(["poetry", "run", project_name, "--help"])
+        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, project_name, "--help"])
         stdout = res.stdout.decode("utf-8")
         assert_with_msg(
             project_name in stdout,
@@ -97,7 +98,9 @@ def test_init(tmp_path: Path) -> None:
         )
 
         # assert the pkgs own cli is available
-        res = run_subprocess(["poetry", "run", "src-project", "--help"], check=False)
+        res = run_subprocess(
+            [*PROJECT_MGT_RUN_ARGS, "src-project", "--help"], check=False
+        )
         stdout = res.stdout.decode("utf-8")
         expected = "src-project "
         assert_with_msg(
@@ -105,7 +108,7 @@ def test_init(tmp_path: Path) -> None:
             f"Expected {expected} in stdout, got {stdout}",
         )
         #  assert running the main command raises the NotImplementedError
-        res = run_subprocess(["poetry", "run", "src-project"], check=False)
+        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project"], check=False)
         stderr = res.stderr.decode("utf-8")
         assert_with_msg(
             "NotImplementedError" in stderr,

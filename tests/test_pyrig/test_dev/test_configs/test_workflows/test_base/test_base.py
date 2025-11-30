@@ -312,16 +312,16 @@ class TestWorkflow:
         result = my_test_workflow.step_setup_python()
         assert_with_msg("uses" in result, "Expected 'uses' in step")
 
-    def test_step_setup_poetry(self, my_test_workflow: type[Workflow]) -> None:
-        """Test method for step_setup_poetry."""
-        result = my_test_workflow.step_setup_poetry()
+    def test_step_setup_project_mgt(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method."""
+        result = my_test_workflow.step_setup_project_mgt()
         assert_with_msg("uses" in result, "Expected 'uses' in step")
 
-    def test_step_add_poetry_to_windows_path(
+    def test_step_add_uv_to_windows_path(
         self, my_test_workflow: type[Workflow]
     ) -> None:
-        """Test method for step_add_poetry_to_windows_path."""
-        result = my_test_workflow.step_add_poetry_to_windows_path()
+        """Test method."""
+        result = my_test_workflow.step_add_uv_to_windows_path()
         assert_with_msg("if" in result, "Expected 'if' in step")
 
     def test_step_patch_version(self, my_test_workflow: type[Workflow]) -> None:
@@ -341,11 +341,9 @@ class TestWorkflow:
         result = my_test_workflow.step_add_dependency_updates_to_git()
         assert_with_msg("run" in result, "Expected 'run' in step")
 
-    def test_step_add_pypi_token_to_poetry(
-        self, my_test_workflow: type[Workflow]
-    ) -> None:
-        """Test method for step_add_pypi_token_to_poetry."""
-        result = my_test_workflow.step_add_pypi_token_to_poetry()
+    def test_step_build_wheel(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for step_build_wheel."""
+        result = my_test_workflow.step_build_wheel()
         assert_with_msg("run" in result, "Expected 'run' in step")
 
     def test_step_publish_to_pypi(self, my_test_workflow: type[Workflow]) -> None:
@@ -378,11 +376,6 @@ class TestWorkflow:
     def test_step_run_pre_commit_hooks(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for step_run_pre_commit_hooks."""
         result = my_test_workflow.step_run_pre_commit_hooks()
-        assert_with_msg("run" in result, "Expected 'run' in step")
-
-    def test_step_add_version_patch(self, my_test_workflow: type[Workflow]) -> None:
-        """Test method for step_add_version_patch."""
-        result = my_test_workflow.step_add_version_patch()
         assert_with_msg("run" in result, "Expected 'run' in step")
 
     def test_step_commit_added_changes(self, my_test_workflow: type[Workflow]) -> None:
@@ -453,9 +446,7 @@ class TestWorkflow:
     def test_insert_version(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for insert_version."""
         result = my_test_workflow.insert_version()
-        assert_with_msg(
-            "poetry version" in result, "Expected 'poetry version' in result"
-        )
+        assert_with_msg("uv version" in result, "Expected 'uv version' in result")
 
     def test_insert_github_token(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for insert_github_token."""

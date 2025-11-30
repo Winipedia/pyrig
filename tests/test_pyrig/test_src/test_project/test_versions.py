@@ -2,7 +2,7 @@
 
 from packaging.version import Version
 
-from pyrig.src.project.poetry.versions import VersionConstraint
+from pyrig.src.project.versions import VersionConstraint
 from pyrig.src.testing.assertions import assert_with_msg
 
 

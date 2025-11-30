@@ -1,66 +1,82 @@
 [project]
 name = "pyrig"
-version = "1.1.36"
+version = "2.0.0"
 description = "A dev kit that standardizes configurations and testing"
 authors = [
-    {name = "Winipedia",email = "win.steveker@gmx.de"}
+    {name = "Winipedia", email = "win.steveker@gmx.de"},
 ]
-license = "MIT"
+license-files = [
+    "LICENSE",
+]
 readme = "README.md"
 requires-python = ">=3.12"
-dynamic = ["dependencies"]
-
+dependencies = [
+    "dotenv",
+    "networkx",
+    "packaging",
+    "pathspec",
+    "pillow",
+    "pygithub",
+    "pyyaml",
+    "setuptools",
+    "tomlkit",
+    "typer",
+]
 
 [project.scripts]
 pyrig = "pyrig.dev.cli.cli:main"
+
+[dependency-groups]
+dev = [
+    "bandit",
+    "mypy",
+    "pre-commit",
+    "pyinstaller",
+    "pytest",
+    "pytest-mock",
+    "ruff",
+    "types-defusedxml",
+    "types-networkx",
+    "types-pyinstaller",
+    "types-pyyaml",
+    "types-setuptools",
+    "types-tqdm",
+]
+
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = [
+    "uv_build",
+]
+build-backend = "uv_build"
 
-[[tool.poetry.packages]]
-include = "pyrig"
-
-[tool.poetry.dependencies]
-tomlkit = "*"
-pyyaml = "*"
-pygithub = "*"
-networkx = "*"
-setuptools = "*"
-packaging = "*"
-dotenv = "*"
-pathspec = "*"
-typer = "*"
-pillow = "*"
-
-[tool.poetry.group.dev.dependencies]
-bandit = "*"
-mypy = "*"
-pre-commit = "*"
-pytest = "*"
-pytest-mock = "*"
-ruff = "*"
-types-defusedxml = "*"
-types-networkx = "*"
-types-pyinstaller = "*"
-types-pyyaml = "*"
-types-setuptools = "*"
-types-tqdm = "*"
-
-
-[tool.poetry.group.dev.dependencies.pyinstaller]
-version = "*"
-python = "<3.15"
+[tool.uv.build-backend]
+module-name = "pyrig"
+module-root = ""
 
 [tool.ruff]
-exclude = [".*", "**/migrations/*.py"]
+exclude = [
+    ".*",
+    "**/migrations/*.py",
+]
 
 [tool.ruff.lint]
-select = ["ALL"]
-ignore = ["D203", "D213", "COM812", "ANN401"]
-fixable = ["ALL"]
+select = [
+    "ALL",
+]
+ignore = [
+    "D203",
+    "D213",
+    "COM812",
+    "ANN401",
+]
+fixable = [
+    "ALL",
+]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101"]
+"tests/**/*.py" = [
+    "S101",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -72,10 +88,17 @@ show_error_codes = true
 files = "."
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = [
+    "tests",
+]
 
 [tool.bandit]
-exclude_dirs = ["./experiment.py"]
+exclude_dirs = [
+    "./experiment.py",
+    ".*",
+]
 
 [tool.bandit.assert_used]
-skips = ["*test_*.py"]
+skips = [
+    "*test_*.py",
+]

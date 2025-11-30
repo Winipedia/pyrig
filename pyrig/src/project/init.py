@@ -1,15 +1,13 @@
-"""A script that can be called after you installed the package.
+"""Pyrigs init script.
 
-This script calls create tests, creates the pre-commit config, and
-creates the pyproject.toml file and some other things to set up a project.
-This package assumes you are using poetry and pre-commit.
-This script is intended to be called once at the beginning of a project.
+This script inits the project by calling all setup steps.
 """
 
 import logging
 from collections.abc import Callable
 from typing import Any
 
+from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.testing.conftest import ConftestConfigFile
@@ -20,8 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 SETUP_STEPS: list[Callable[..., Any]] = [
-    PyprojectConfigFile,  # write dev deps to pyproject.toml
-    PyprojectConfigFile.update_dependencies,  # to install dev deps
+    ConfigFile.init_priority_config_files,  # write dev deps to pyproject.toml
+    PyprojectConfigFile.install_dependencies,  # to install dev deps
+    PyprojectConfigFile.update_dependencies,  # to update dev deps
     create_root,
     create_tests,
     PreCommitConfigConfigFile.run_hooks,

@@ -1,9 +1,10 @@
-"""Config utilities for poetry and pyproject.toml."""
+"""Config utilities for pyproject.toml."""
 
+import re
 from functools import cache
 from pathlib import Path
 from subprocess import CompletedProcess  # nosec: B404
-from typing import Any, cast
+from typing import Any
 
 import requests
 from packaging.version import Version
@@ -11,7 +12,7 @@ from packaging.version import Version
 from pyrig.dev.configs.base.base import TomlConfigFile
 from pyrig.dev.configs.python.experiment import ExperimentConfigFile
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.poetry.versions import VersionConstraint
+from pyrig.src.project.versions import VersionConstraint
 from pyrig.src.testing.convention import TEST_MODULE_PREFIX, TESTS_PACKAGE_NAME
 
 
@@ -20,17 +21,12 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def dump(cls, config: dict[str, Any] | list[Any]) -> None:
-        """Dump the config file.
-
-        We remove the wrong dependencies from the config before dumping.
-        So we do not want dependencies under tool.poetry.dependencies but
-        under project.dependencies. And we do not want dev dependencies under
-        tool.poetry.dev-dependencies but under tool.poetry.group.dev.dependencies.
-        """
+        """Dump the config file."""
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to pyproject.toml file."
             raise TypeError(msg)
-        config = cls.remove_wrong_dependencies(config)
+        # remove the versions from the dependencies
+        cls.remove_wrong_dependencies(config)
         super().dump(config)
 
     @classmethod
@@ -69,33 +65,27 @@ class PyprojectConfigFile(TomlConfigFile):
             "project": {
                 "name": cls.get_project_name_from_cwd(),
                 "readme": "README.md",
-                "dynamic": ["dependencies"],
                 "scripts": {
                     cls.get_project_name(): f"{cli.__name__}:{cli.main.__name__}"
                 },
+                "dependencies": cls.make_dependency_versions(cls.get_dependencies()),
+            },
+            "dependency-groups": {
+                "dev": cls.make_dependency_versions(
+                    cls.get_dev_dependencies(),
+                    additional=cls.get_standard_dev_dependencies(),
+                )
             },
             "build-system": {
-                "requires": ["poetry-core>=2.0.0,<3.0.0"],
-                "build-backend": "poetry.core.masonry.api",
+                "requires": ["uv_build"],
+                "build-backend": "uv_build",
             },
             "tool": {
-                "poetry": {
-                    "packages": [
-                        {
-                            "include": cls.get_pkg_name_from_cwd(),
-                        }
-                    ],
-                    "dependencies": cls.make_dependency_to_version_dict(
-                        cls.get_dependencies()
-                    ),
-                    "group": {
-                        "dev": {
-                            "dependencies": cls.make_dependency_to_version_dict(
-                                cls.get_dev_dependencies(),
-                                additional=cls.get_standard_dev_dependencies(),
-                            )
-                        }
-                    },
+                "uv": {
+                    "build-backend": {
+                        "module-name": cls.get_pkg_name_from_cwd(),
+                        "module-root": "",
+                    }
                 },
                 "ruff": {
                     "exclude": [".*", "**/migrations/*.py"],
@@ -117,7 +107,10 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 "pytest": {"ini_options": {"testpaths": [TESTS_PACKAGE_NAME]}},
                 "bandit": {
-                    "exclude_dirs": ["./" + ExperimentConfigFile.get_path().as_posix()],
+                    "exclude_dirs": [
+                        "./" + ExperimentConfigFile.get_path().as_posix(),
+                        ".*",
+                    ],
                     "assert_used": {
                         "skips": [f"*{TEST_MODULE_PREFIX}*.py"],
                     },
@@ -126,11 +119,32 @@ class PyprojectConfigFile(TomlConfigFile):
         }
 
     @classmethod
-    def make_dependency_to_version_dict(
+    def should_remove_version_from_dep(cls) -> bool:
+        """Check if we should remove the version from the dependency.
+
+        We should remove the version if we are in a dev dependency and the dep
+        is in the standard dev dependencies.
+        Can be overridden by subclasses.
+        """
+        return True
+
+    @classmethod
+    def remove_wrong_dependencies(cls, config: dict[str, Any]) -> None:
+        """Remove the wrong dependencies from the config."""
+        # removes the versions from the dependencies
+        config["project"]["dependencies"] = cls.make_dependency_versions(
+            config["project"]["dependencies"]
+        )
+        config["dependency-groups"]["dev"] = cls.make_dependency_versions(
+            config["dependency-groups"]["dev"]
+        )
+
+    @classmethod
+    def make_dependency_versions(
         cls,
-        dependencies: dict[str, str | dict[str, str]],
-        additional: dict[str, str | dict[str, str]] | None = None,
-    ) -> dict[str, str | dict[str, str]]:
+        dependencies: list[str],
+        additional: list[str] | None = None,
+    ) -> list[str]:
         """Make a dependency to version dict.
 
         Args:
@@ -141,20 +155,25 @@ class PyprojectConfigFile(TomlConfigFile):
             Dependency to version dict
         """
         if additional is None:
-            additional = {}
-        dependencies.update(additional)
-        dep_to_version_dict: dict[str, str | dict[str, str]] = {}
-        for dep, version in dependencies.items():
-            at_file_dep = " @ file://"
+            additional = []
+        dependencies.extend(additional)
+        deps: list[str] = []
+        for dep in dependencies:
+            at_file_dep = "file://"
             if at_file_dep in dep:
-                dep_new, path = dep.split(at_file_dep)
-                dep_to_version_dict[dep_new] = {"path": path}
-                continue
-            if isinstance(version, dict):
-                dep_to_version_dict[dep] = version
-                continue
-            dep_to_version_dict[dep] = "*"
-        return dep_to_version_dict
+                new_dep = dep
+            elif cls.should_remove_version_from_dep():
+                # remove version if it exists by split re on first non alnum or _ -
+                new_dep = cls.remove_version_from_dep(dep)
+            else:
+                new_dep = dep
+            deps.append(new_dep)
+        return sorted(set(deps))
+
+    @classmethod
+    def remove_version_from_dep(cls, dep: str) -> str:
+        """Remove the version from a dependency."""
+        return re.split(r"[^a-zA-Z0-9_-]", dep)[0]
 
     @classmethod
     def get_package_name(cls) -> str:
@@ -178,112 +197,44 @@ class PyprojectConfigFile(TomlConfigFile):
         return str(cls.load().get("project", {}).get("name", ""))
 
     @classmethod
-    def remove_wrong_dependencies(cls, config: dict[str, Any]) -> dict[str, Any]:
-        """Remove the wrong dependencies from the config."""
-        # raise if the right sections do not exist
-        if config.get("tool", {}).get("poetry", {}).get("dependencies") is None:
-            msg = "No dependencies section in config"
-            raise ValueError(msg)
-
-        if (
-            config.get("tool", {}).get("poetry", {}).get("group", {}).get("dev", {})
-            is None
-        ):
-            msg = "No dev dependencies section in config"
-            raise ValueError(msg)
-
-        # remove the wrong dependencies sections if they exist
-        if config.get("project", {}).get("dependencies") is not None:
-            del config["project"]["dependencies"]
-        if config.get("tool", {}).get("poetry", {}).get("dev-dependencies") is not None:
-            del config["tool"]["poetry"]["dev-dependencies"]
-
-        return config
-
-    @classmethod
-    def get_all_dependencies(cls) -> dict[str, str | dict[str, str]]:
+    def get_all_dependencies(cls) -> list[str]:
         """Get all dependencies."""
         all_deps = cls.get_dependencies()
-        all_deps.update(cls.get_dev_dependencies())
+        all_deps.extend(cls.get_dev_dependencies())
         return all_deps
 
     @classmethod
-    def get_standard_dev_dependencies(cls) -> dict[str, str | dict[str, str]]:
+    def get_standard_dev_dependencies(cls) -> list[str]:
         """Get the standard dev dependencies."""
-        standard_dev_dependencies: dict[str, str | dict[str, str]] = {
-            "ruff": "*",
-            "pre-commit": "*",
-            "mypy": "*",
-            "pytest": "*",
-            "bandit": "*",
-            "types-setuptools": "*",
-            "types-tqdm": "*",
-            "types-defusedxml": "*",
-            "types-pyyaml": "*",
-            "pytest-mock": "*",
-            "types-networkx": "*",
-            "types-pyinstaller": "*",
-            "pyinstaller": {"version": "*", "python": "<3.15"},
-        }
+        standard_dev_dependencies: list[str] = [
+            "bandit",
+            "mypy",
+            "pre-commit",
+            "pytest",
+            "pytest-mock",
+            "ruff",
+            "types-defusedxml",
+            "types-networkx",
+            "types-pyinstaller",
+            "types-pyyaml",
+            "types-setuptools",
+            "types-tqdm",
+            "pyinstaller",
+        ]
         # sort the dependencies
-        return dict(sorted(standard_dev_dependencies.items()))
+        return sorted(standard_dev_dependencies)
 
     @classmethod
-    def get_dev_dependencies(cls) -> dict[str, str | dict[str, str]]:
+    def get_dev_dependencies(cls) -> list[str]:
         """Get the dev dependencies."""
-        dev_deps: dict[str, str | dict[str, str]] = {}
-        old_tool_dev_deps = (
-            cls.load().get("tool", {}).get("poetry", {}).get("dev-dependencies", {})
-        )
-        dev_deps.update(old_tool_dev_deps)
-        tool_dev_deps = (
-            cls.load()
-            .get("tool", {})
-            .get("poetry", {})
-            .get("group", {})
-            .get("dev", {})
-            .get("dependencies", {})
-        )
-        dev_deps.update(tool_dev_deps)
-
-        # make dev deps sorted
-        return dict(sorted(dev_deps.items()))
+        dev_deps: list[str] = cls.load().get("dependency-groups", {}).get("dev", [])
+        return dev_deps
 
     @classmethod
-    def get_dependencies(cls) -> dict[str, str | dict[str, str]]:
+    def get_dependencies(cls) -> list[str]:
         """Get the dependencies."""
-        deps_raw = set(cls.load().get("project", {}).get("dependencies", {}))
-        deps = {
-            d.split("(")[0].strip(): d.split("(")[1].split(")")[0].strip()
-            if "(" in d
-            else "*"
-            for d in deps_raw
-        }
-
-        tool_deps = cls.load().get("tool", {}).get("poetry", {}).get("dependencies", {})
-        deps.update(tool_deps)
-        # make deps sorted
-        return dict(sorted(deps.items()))
-
-    @classmethod
-    def get_authors(cls) -> list[dict[str, str]]:
-        """Get the authors."""
-        return cast(
-            "list[dict[str, str]]", cls.load().get("project", {}).get("authors", [])
-        )
-
-    @classmethod
-    def get_main_author(cls) -> dict[str, str]:
-        """Get the main author.
-
-        Assumes the main author is the first author.
-        """
-        return cls.get_authors()[0]
-
-    @classmethod
-    def get_main_author_name(cls) -> str:
-        """Get the main author name."""
-        return cls.get_main_author()["name"]
+        deps: list[str] = cls.load().get("project", {}).get("dependencies", [])
+        return deps
 
     @classmethod
     @cache
@@ -330,9 +281,13 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def update_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
         """Update the dependencies."""
-        return run_subprocess(["poetry", "update", "--with", "dev"], check=check)
+        from pyrig.src.project.mgt import PROJECT_MGT  # noqa: PLC0415
+
+        return run_subprocess([PROJECT_MGT, "lock", "--upgrade"], check=check)
 
     @classmethod
     def install_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
         """Install the dependencies."""
-        return run_subprocess(["poetry", "install", "--with", "dev"], check=check)
+        from pyrig.src.project.mgt import PROJECT_MGT  # noqa: PLC0415
+
+        return run_subprocess([PROJECT_MGT, "sync"], check=check)

@@ -1,6 +1,6 @@
 """Contains the publish workflow.
 
-This workflow is used to publish the package to PyPI with poetry.
+This workflow is used to publish the package to PyPI.
 """
 
 from typing import Any
@@ -13,7 +13,7 @@ class PublishWorkflow(Workflow):
     """Publish workflow.
 
     This workflow is triggered by the release workflow.
-    It publishes the package to PyPI with poetry.
+    It publishes the package to PyPI.
     """
 
     @classmethod
@@ -46,6 +46,6 @@ class PublishWorkflow(Workflow):
         """Get the publish steps."""
         return [
             *cls.steps_core_setup(),
-            cls.step_add_pypi_token_to_poetry(),
+            cls.step_build_wheel(),
             cls.step_publish_to_pypi(),
         ]

@@ -322,6 +322,33 @@ class TestConfigFile:
             "Expected my_test_config_file to be in actual",
         )
 
+    def test_get_priority_config_files(
+        self, my_test_config_file: type[ConfigFile]
+    ) -> None:
+        """Test method for get_priority_config_files."""
+        priority_config_files = my_test_config_file.get_priority_config_files()
+        for priority_config_file in priority_config_files:
+            assert issubclass(priority_config_file, ConfigFile), (
+                f"Expected priority_config_file to be a ConfigFile, "
+                f"got {priority_config_file}"
+            )
+
+    def test_init_priority_config_files(
+        self, my_test_config_file: type[ConfigFile], mocker: MockFixture
+    ) -> None:
+        """Test method for init_priority_config_files."""
+        # mock get_priority_config_files to return my_test_config_file
+        mocker.patch.object(
+            my_test_config_file,
+            my_test_config_file.get_priority_config_files.__name__,
+            return_value=[my_test_config_file],
+        )
+        my_test_config_file.init_priority_config_files()
+        assert_with_msg(
+            my_test_config_file.load() == my_test_config_file.get_configs(),
+            "Expected config to be correct",
+        )
+
     def test_init_config_files(
         self, my_test_config_file: type[ConfigFile], mocker: MockFixture
     ) -> None:
@@ -422,6 +449,22 @@ def my_test_toml_config_file(
 
 class TestTomlConfigFile:
     """Test class."""
+
+    def test_prettify_dict(
+        self, my_test_toml_config_file: type[TomlConfigFile]
+    ) -> None:
+        """Test method."""
+        expected = {"key": ["value"]}
+        actual = my_test_toml_config_file.prettify_dict({"key": ["value"]})
+        assert actual == expected, f"Expected {expected}, got {actual}"
+
+    def test_pretty_dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
+        """Test method."""
+        my_test_toml_config_file.pretty_dump({"key": ["value"]})
+        assert_with_msg(
+            my_test_toml_config_file.load() == {"key": ["value"]},
+            "Expected dump to work",
+        )
 
     def test_load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method for load."""

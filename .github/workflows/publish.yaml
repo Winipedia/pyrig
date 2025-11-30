@@ -21,17 +21,14 @@ jobs:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
-    - name: Setup Python
-      id: setup_python
-      uses: actions/setup-python@main
+    - name: Setup Project Mgt
+      id: setup_project_mgt
+      uses: astral-sh/setup-uv@main
       with:
         python-version: 3.14.0
-    - name: Setup Poetry
-      id: setup_poetry
-      uses: snok/install-poetry@main
-    - name: Add Pypi Token To Poetry
-      id: add_pypi_token_to_poetry
-      run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+    - name: Build Wheel
+      id: build_wheel
+      run: uv build
     - name: Publish To Pypi
       id: publish_to_pypi
-      run: poetry publish --build
+      run: uv publish --token ${{ secrets.REPO_TOKEN }}

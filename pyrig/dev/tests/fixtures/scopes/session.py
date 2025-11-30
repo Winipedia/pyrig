@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 from pyrig.dev.cli.subcommands import create_root
 from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
@@ -197,6 +198,8 @@ def assert_no_unit_test_package_usage() -> None:
 
     """
     for path in Path().rglob("*.py"):
+        if GitIgnoreConfigFile.path_is_in_gitignore(path):
+            continue
         assert_with_msg(
             "UnitTest".lower() not in path.read_text(encoding="utf-8"),
             f"Found unit test package usage in {path}. Use pytest instead.",
@@ -207,37 +210,37 @@ def assert_no_unit_test_package_usage() -> None:
 def assert_dependencies_are_up_to_date() -> None:
     """Verify that the dependencies are up to date.
 
-    This fixture runs once per test session and runs poetry update --with dev
+    This fixture runs once per test session
     to make sure the dependencies are up to date.
     """
-    # update poetry itself
-    completed_process = run_subprocess(["poetry", "self", "update"], check=True)
-    stdout = completed_process.stdout.decode("utf-8")
-    logger.info("Poetry self update output: %s", stdout)
+    # update project mgt
+    completed_process = run_subprocess(["uv", "self", "update"], check=True)
+    stderr = completed_process.stderr.decode("utf-8")
+    expected = "success: You're on the latest version of uv"
+    assert_with_msg(
+        expected in stderr,
+        f"Expected {expected} in uv self update output, got {stderr}",
+    )
 
     # install the dependencies
     completed_process = PyprojectConfigFile.install_dependencies(check=True)
-    stdout = completed_process.stdout.decode("utf-8")
-    logger.info("Poetry install output: %s", stdout)
-    expected = "No dependencies to install"
+    stderr = completed_process.stderr.decode("utf-8")
+    expected = "Resolved"
+    expected2 = "Audited"
     assert_with_msg(
-        expected in stdout,
-        f"Expected {expected} in poetry install output, got {stdout}",
+        expected in stderr and expected2 in stderr,
+        f"Expected {expected} and {expected2} in uv install output, got {stderr}",
     )
 
     # update the dependencies
     completed_process = PyprojectConfigFile.update_dependencies(check=True)
     # if there were updates raise an error
-    no_deps_updated_msg = "No dependencies to install or update"
-    stdout = completed_process.stdout.decode("utf-8")
-
-    msg = f"""This fixture runs poetry update --with dev to make sure the dependencies
-    are up to date. The following dependencies were updated:
-    {stdout}
-"""
+    expected = "Resolved"
+    expected2 = "packages"
+    stderr = completed_process.stderr.decode("utf-8")
     assert_with_msg(
-        no_deps_updated_msg in stdout,
-        msg,
+        expected in stderr and expected2 in stderr,
+        f"Expected {expected} and {expected2} in uv update output, got {stderr}",
     )
 
 

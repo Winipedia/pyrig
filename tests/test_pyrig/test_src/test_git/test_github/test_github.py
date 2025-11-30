@@ -2,8 +2,11 @@
 
 import os
 
+import pyrig
 from pyrig.src.git.github.github import (
     get_github_repo_token,
+    get_repo_owner_and_name_from_git,
+    get_repo_url_from_git,
     running_in_github_actions,
 )
 from pyrig.src.testing.assertions import assert_with_msg
@@ -45,3 +48,22 @@ def test_running_in_github_actions() -> None:
         running_in_github_actions() == is_running_og,
         "Expected is_running to be original value after reset",
     )
+
+
+def test_get_repo_url_from_git() -> None:
+    """Test func for get_repo_url_from_git."""
+    url = get_repo_url_from_git()
+    assert_with_msg(isinstance(url, str), f"Expected url to be str, got {type(url)}")
+
+    assert_with_msg("github.com" in url, f"Expected 'github.com' in url, got {url}")
+
+
+def test_get_repo_owner_and_name_from_git() -> None:
+    """Test func for get_repo_owner_and_name_from_git."""
+    owner, repo = get_repo_owner_and_name_from_git()
+    assert_with_msg(
+        isinstance(owner, str), f"Expected owner to be str, got {type(owner)}"
+    )
+
+    assert owner == "Winipedia", f"Expected owner to be 'Winipedia', got {owner}"
+    assert repo == pyrig.__name__, f"Expected repo to be 'pyrig', got {repo}"

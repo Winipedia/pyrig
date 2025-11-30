@@ -8,7 +8,7 @@ def main() -> None:
     msg = f"""Add your projects entrypoint code to this function.
 This function is automatically added to your cli by {pyrig.__name__}.
 You can call it with
-`poetry run your-pkg-name main`
+`your-pkg-name main`
 or via
 `python -m your-pkg-name`.
 """

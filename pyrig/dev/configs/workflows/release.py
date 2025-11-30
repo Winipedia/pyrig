@@ -6,10 +6,11 @@ This workflow is used to create a release on GitHub.
 from typing import Any
 
 from pyrig.dev.artifacts.builder.base.base import Builder
+from pyrig.dev.configs.workflows.base.base import Workflow
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 
 
-class ReleaseWorkflow(HealthCheckWorkflow):
+class ReleaseWorkflow(Workflow):
     """Release workflow.
 
     This workflow is triggered by a push to the main branch.
@@ -21,7 +22,6 @@ class ReleaseWorkflow(HealthCheckWorkflow):
     def get_workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers."""
         triggers = super().get_workflow_triggers()
-        del triggers["pull_request"]
         triggers.update(cls.on_push())
         triggers.update(cls.on_schedule(cron="0 6 * * 2"))
         return triggers
@@ -36,7 +36,7 @@ class ReleaseWorkflow(HealthCheckWorkflow):
     @classmethod
     def get_jobs(cls) -> dict[str, Any]:
         """Get the workflow jobs."""
-        jobs = super().get_jobs()
+        jobs = HealthCheckWorkflow.get_jobs()
         last_job_name = list(jobs.keys())[-1]
         jobs.update(cls.job_build(needs=[last_job_name]))
         jobs.update(cls.job_release())
@@ -80,7 +80,7 @@ class ReleaseWorkflow(HealthCheckWorkflow):
         return [
             *cls.steps_core_installed_setup(repo_token=True),
             cls.step_setup_git(),
-            cls.step_add_version_patch(),
+            cls.step_patch_version(),
             cls.step_run_pre_commit_hooks(),
             cls.step_commit_added_changes(),
             cls.step_push_commits(),

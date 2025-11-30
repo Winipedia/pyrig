@@ -167,6 +167,26 @@ class ConfigFile(ABC):
     @classmethod
     def init_config_files(cls) -> None:
         """Initialize all subclasses."""
+        cls.init_priority_config_files()
+
+        subclasses = cls.get_all_subclasses()
+        subclasses = [
+            subclass
+            for subclass in subclasses
+            if subclass not in cls.get_priority_config_files()
+        ]
+        for subclass in subclasses:
+            subclass()
+
+    @classmethod
+    def init_priority_config_files(cls) -> None:
+        """Initialize all subclasses."""
+        for subclass in cls.get_priority_config_files():
+            subclass()
+
+    @classmethod
+    def get_priority_config_files(cls) -> list[type["ConfigFile"]]:
+        """Get the priority config files."""
         # Some must be first:
         from pyrig.dev.configs.git.gitignore import (  # noqa: PLC0415
             GitIgnoreConfigFile,
@@ -180,32 +200,21 @@ class ConfigFile(ABC):
         from pyrig.dev.configs.python.configs import (  # noqa: PLC0415
             ConfigsConfigFile,
         )
-        from pyrig.dev.configs.python.src_init import (  # noqa: PLC0415
-            SrcInitConfigFile,
+        from pyrig.dev.configs.python.main import (  # noqa: PLC0415
+            MainConfigFile,
         )
         from pyrig.dev.configs.testing.conftest import (  # noqa: PLC0415
             ConftestConfigFile,
         )
-        from pyrig.dev.configs.testing.fixtures.fixture import (  # noqa: PLC0415
-            FixtureConfigFile,
-        )
 
-        priorities: list[type[ConfigFile]] = [
+        return [
             GitIgnoreConfigFile,
             PyprojectConfigFile,
-            SrcInitConfigFile,
+            MainConfigFile,
             ConfigsConfigFile,
             BuilderConfigFile,
-            FixtureConfigFile,
             ConftestConfigFile,
         ]
-        for subclass in priorities:
-            subclass()
-
-        subclasses = cls.get_all_subclasses()
-        subclasses = [subclass for subclass in subclasses if subclass not in priorities]
-        for subclass in subclasses:
-            subclass()
 
     @classmethod
     def get_module_name_replacing_start_module(
@@ -250,6 +259,27 @@ class TomlConfigFile(ConfigFile):
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to toml file."
             raise TypeError(msg)
+        cls.pretty_dump(config)
+
+    @classmethod
+    def prettify_dict(cls, config: dict[str, Any]) -> dict[str, Any]:
+        """Prettify a dict recursively. bx making lists multiline."""
+        for key, value in config.items():
+            if isinstance(value, list):
+                array = tomlkit.array()
+                array.multiline(multiline=True)
+                for item in value:
+                    array.append(item)
+                config[key] = array
+            elif isinstance(value, dict):
+                config[key] = cls.prettify_dict(value)
+        return config
+
+    @classmethod
+    def pretty_dump(cls, config: dict[str, Any]) -> None:
+        """Dump the config file."""
+        # trun all lists into multiline arrays
+        config = cls.prettify_dict(config)
         with cls.get_path().open("w") as f:
             tomlkit.dump(config, f, sort_keys=False)
 
