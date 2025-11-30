@@ -602,20 +602,6 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
-    def step_add_uv_to_windows_path(
-        cls,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Get the add uv to path step."""
-        return cls.get_step(
-            step_func=cls.step_add_uv_to_windows_path,
-            run="echo 'C:/Users/runneradmin/.local/bin' >> $GITHUB_PATH",
-            if_condition=f"{cls.insert_os()} == 'Windows'",
-            step=step,
-        )
-
-    @classmethod
     def step_build_wheel(
         cls,
         *,
@@ -637,7 +623,7 @@ class Workflow(YamlConfigFile):
         """Get the publish to pypi step."""
         return cls.get_step(
             step_func=cls.step_publish_to_pypi,
-            run=f"{PROJECT_MGT} publish --token {cls.insert_repo_token()}",
+            run=f"{PROJECT_MGT} publish --token {cls.insert_pypi_token()}",
             step=step,
         )
 
@@ -871,6 +857,11 @@ class Workflow(YamlConfigFile):
     def insert_repo_token(cls) -> str:
         """Insert the repository token."""
         return "${{ secrets.REPO_TOKEN }}"
+
+    @classmethod
+    def insert_pypi_token(cls) -> str:
+        """Insert the pypi token."""
+        return "${{ secrets.PYPI_TOKEN }}"
 
     @classmethod
     def insert_version(cls) -> str:

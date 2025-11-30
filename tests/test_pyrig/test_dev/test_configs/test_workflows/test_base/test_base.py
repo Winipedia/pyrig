@@ -317,13 +317,6 @@ class TestWorkflow:
         result = my_test_workflow.step_setup_project_mgt()
         assert_with_msg("uses" in result, "Expected 'uses' in step")
 
-    def test_step_add_uv_to_windows_path(
-        self, my_test_workflow: type[Workflow]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow.step_add_uv_to_windows_path()
-        assert_with_msg("if" in result, "Expected 'if' in step")
-
     def test_step_patch_version(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for step_patch_version."""
         result = my_test_workflow.step_patch_version()
@@ -442,6 +435,11 @@ class TestWorkflow:
             result == "${{ secrets.REPO_TOKEN }}",
             f"Expected '${{{{ secrets.REPO_TOKEN }}}}', got {result}",
         )
+
+    def test_insert_pypi_token(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for insert_pypi_token."""
+        result = my_test_workflow.insert_pypi_token()
+        assert result == "${{ secrets.PYPI_TOKEN }}"
 
     def test_insert_version(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for insert_version."""
