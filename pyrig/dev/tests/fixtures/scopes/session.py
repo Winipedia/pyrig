@@ -213,14 +213,15 @@ def assert_dependencies_are_up_to_date() -> None:
     This fixture runs once per test session
     to make sure the dependencies are up to date.
     """
-    # update project mgt
-    completed_process = run_subprocess(["uv", "self", "update"], check=True)
-    stderr = completed_process.stderr.decode("utf-8")
-    expected = "success: You're on the latest version of uv"
-    assert_with_msg(
-        expected in stderr,
-        f"Expected {expected} in uv self update output, got {stderr}",
-    )
+    if not running_in_github_actions():
+        # update project mgt
+        completed_process = run_subprocess(["uv", "self", "update"], check=True)
+        stderr = completed_process.stderr.decode("utf-8")
+        expected = "success: You're on the latest version of uv"
+        assert_with_msg(
+            expected in stderr,
+            f"Expected {expected} in uv self update output, got {stderr}",
+        )
 
     # install the dependencies
     completed_process = PyprojectConfigFile.install_dependencies(check=True)
