@@ -426,7 +426,6 @@ class Workflow(YamlConfigFile):
             cls.step_patch_version(),
             cls.step_update_dependencies(),
             cls.step_add_dependency_updates_to_git(),
-            *cls.steps_configure_keyring_if_needed(),
         ]
 
     @classmethod
