@@ -36,7 +36,7 @@ class ReleaseWorkflow(Workflow):
     @classmethod
     def get_jobs(cls) -> dict[str, Any]:
         """Get the workflow jobs."""
-        config_files = cls.get_all_subclasses()
+        config_files = HealthCheckWorkflow.get_all_subclasses()
         last_health_check_config: type[HealthCheckWorkflow] = next(
             config_file
             for config_file in config_files
