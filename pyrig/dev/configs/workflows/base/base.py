@@ -422,8 +422,8 @@ class Workflow(YamlConfigFile):
         """Get the core setup steps."""
         return [
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
-            cls.step_patch_version(),
             cls.step_install_python_dependencies(),
+            cls.step_patch_version(),
             *cls.steps_configure_keyring_if_needed(),
             cls.step_update_dependencies(),
             cls.step_add_dependency_updates_to_git(),
@@ -514,7 +514,7 @@ class Workflow(YamlConfigFile):
         """Get the update dependencies step."""
         return cls.get_step(
             step_func=cls.step_update_dependencies,
-            run=f"{PROJECT_MGT} lock --upgrade",
+            run=f"{PROJECT_MGT} lock --upgrade && {PROJECT_MGT} sync",
             step=step,
         )
 
