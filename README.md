@@ -203,7 +203,7 @@ plugins = ["pydantic.mypy"]     # Your custom setting
 - **`CopyModuleOnlyDocstringConfigFile`**: Copies only the docstring from a module
 - **`PythonConfigFile`**: For Python source files
 - **`YamlConfigFile`**: For YAML configuration files
-- **`JsonConfigFile`**: For JSON configuration files
+- **`TomlConfigFile`**: For TOML configuration files
 
 ### Configuration Files Managed by the Machinery
 
@@ -213,8 +213,18 @@ The ConfigFile Machinery automatically manages the following configuration files
 
 Stores project metadata and dependencies. Automatically adds essential dev dependencies (ruff, mypy, pytest, pre-commit) with strict settings.
 
-- All dependencies use `*` as the version to stay up-to-date
-- Use dictionary syntax for specific constraints: `{"version": "*", "python": "<3.15"}`
+- **Automatic Version Stripping**: By default, pyrig strips version constraints from all dependencies (e.g., `requests>=2.0` becomes `requests`). This ensures you always get the latest compatible versions when running `uv lock --upgrade`.
+- **When Updates Happen**: Dependencies are upgraded during `pyrig init` and via the `assert_dependencies_are_up_to_date` autouse session fixture (runs `uv sync`, then `uv lock --upgrade`).
+- **Disabling Version Stripping**: To keep specific version constraints, subclass `PyprojectConfigFile` and override `should_remove_version_from_dep()` to return `False`:
+  ```python
+  # your_project/dev/configs/pyproject.py
+  from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyprojectConfigFile
+
+  class PyprojectConfigFile(BasePyprojectConfigFile):
+      @classmethod
+      def should_remove_version_from_dep(cls) -> bool:
+          return False
+  ```
 - Enforces that GitHub repo name and cwd name are equal; hyphens in repo names are converted to underscores in package names
 
 #### `pkg/py.typed`
@@ -265,7 +275,7 @@ Empty file for environment variables. Git-ignored, used by python-dotenv.
 
 #### `.github/workflows/release.yaml`
 
-- **Triggers**: workflow_dispatch, commit to main, schedule (weekly)
+- **Triggers**: workflow_dispatch, commit to main, schedule (every Tuesday at 6 AM UTC)
 - **Process**: Runs health check, creates tag and changelog, creates GitHub release, builds and uploads artifacts, commits updates
 - **Synchronization**: Keeps tags, package version, and PyPI in sync
 
@@ -283,9 +293,9 @@ Main entry point for your application. Used by PyInstaller for building executab
 
 #### `pkg/src/`
 
-Subfolder for organizing your source code, separating it from development infrastructure (`dev/`).
+Subfolder for organizing your source code, separating it from development infrastructure (`dev/`). Automatically created with an `__init__.py` file.
 
-#### `pkg/dev/subcommands.py`
+#### `pkg/dev/cli/subcommands.py`
 
 Define custom CLI subcommands. Any function in this file is automatically added as a subcommand.
 
@@ -341,6 +351,10 @@ Automatically discovers and loads fixtures from all packages depending on pyrig.
 #### `tests/test_zero.py`
 
 Empty test file to ensure pytest doesn't complain about missing tests during initial setup.
+
+#### `tests/test_<pkg>/test_main.py`
+
+Auto-generated test file that verifies the CLI entry point works correctly by running `uv run <pkg-name> --help`.
 
 ---
 
@@ -503,7 +517,7 @@ Autouse session fixtures automatically enforce code quality and project conventi
 - `assert_no_unit_test_package_usage`: Prevents usage of `unittest` package (enforces pytest)
 
 **ConfigFile Machinery**:
-- `assert_config_files_are_correct`: Verifies and fixes all configuration files
+- `assert_root_is_correct`: Verifies and fixes all configuration files
 
 **Pre-commit & Dependencies**:
 - `assert_pre_commit_is_installed`: Ensures pre-commit hooks are installed
@@ -527,6 +541,38 @@ uv run pytest --cov=your_project
 To disable tests for a specific module, empty the test file:
 ```bash
 echo "" > tests/test_your_project/test_src/test_calculator.py
+```
+
+### Testing Utilities
+
+pyrig provides several testing utilities in `pyrig.src.testing`:
+
+**Assertions** (`pyrig.src.testing.assertions`):
+- `assert_with_msg(expr, msg)` - Assert with a custom error message
+- `assert_with_info(expr, expected, actual, msg)` - Assert with expected/actual values in the message
+- `assert_isabstrct_method(method)` - Assert that a method is abstract
+
+**Skip Decorators** (`pyrig.src.testing.skip`):
+- `@skip_fixture_test` - Skip tests for fixtures (cannot be called directly)
+- `@skip_in_github_actions` - Skip tests that cannot run in GitHub Actions
+
+**Fixture Scope Decorators** (`pyrig.src.testing.fixtures`):
+- `@function_fixture`, `@class_fixture`, `@module_fixture`, `@package_fixture`, `@session_fixture`
+- `@autouse_function_fixture`, `@autouse_class_fixture`, `@autouse_module_fixture`, `@autouse_package_fixture`, `@autouse_session_fixture`
+
+**Example**:
+```python
+from pyrig.src.testing.assertions import assert_with_msg
+from pyrig.src.testing.fixtures import session_fixture
+from pyrig.src.testing.skip import skip_in_github_actions
+
+@session_fixture
+def my_fixture() -> str:
+    return "test data"
+
+@skip_in_github_actions
+def test_local_only() -> None:
+    assert_with_msg(True, "This should pass")
 ```
 
 ---
@@ -559,7 +605,7 @@ class MyBuilder(Builder):
 uv run pyrig build
 ```
 
-Artifacts are placed in the `artifacts/` directory with platform-specific naming (e.g., `my_artifact-Linux.txt`, `my_artifact-Windows.txt`).
+Artifacts are placed in the `dist/` directory with platform-specific naming (e.g., `my_artifact-Linux.txt`, `my_artifact-Windows.txt`).
 
 ### PyInstaller Builder
 
@@ -570,10 +616,16 @@ pyrig includes a `PyInstallerBuilder` class for creating standalone executables.
 3. **Add resources** to `your_project/dev/artifacts/resources/` (optional)
 4. **Subclass PyInstallerBuilder** in `your_project/dev/artifacts/builder/builder.py`:
    ```python
+   from types import ModuleType
    from pyrig.dev.artifacts.builder.base.base import PyInstallerBuilder
 
    class MyAppBuilder(PyInstallerBuilder):
        """Build standalone executable with PyInstaller."""
+
+       @classmethod
+       def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+           """Return additional resource packages to include in the build."""
+           return []  # Add your custom resource packages here
    ```
 
 5. **Build**:
