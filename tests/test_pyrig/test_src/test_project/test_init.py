@@ -1,6 +1,8 @@
 """Tests module."""
 
+import logging
 import os
+import re
 import shutil
 from contextlib import chdir
 from pathlib import Path
@@ -12,6 +14,8 @@ from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.init import init
 from pyrig.src.project.mgt import PROJECT_MGT, PROJECT_MGT_RUN_ARGS
 from pyrig.src.testing.assertions import assert_with_msg
+
+logger = logging.getLogger(__name__)
 
 
 def test_init(tmp_path: Path) -> None:
@@ -33,7 +37,7 @@ def test_init(tmp_path: Path) -> None:
         run_subprocess([PROJECT_MGT, "build"])
 
     dist_files = list((pyrig_temp_path / "dist").glob("*.whl"))
-    wheel_path = dist_files[-1].as_posix()
+    wheel_path = dist_files[-1].resolve().as_posix()
 
     src_project_dir = tmp_path / "src-project"
     src_project_dir.mkdir()
@@ -67,6 +71,24 @@ def test_init(tmp_path: Path) -> None:
             ],
             env=clean_env,
         )
+
+        # uv add converts absolute paths to relative paths, which breaks when
+        # the project is copied to a different location (e.g., in the
+        # assert_src_runs_without_dev_deps fixture). We need to replace the
+        # relative path with an absolute path.
+        pyproject_toml = src_project_dir / "pyproject.toml"
+        pyproject_content = pyproject_toml.read_text(encoding="utf-8")
+        # Replace relative path with absolute path in tool.uv.sources
+        # e.g., { path = "../pyrig/dist/..." } -> { path = "/tmp/.../pyrig/dist/..." }
+        pyproject_content = re.sub(
+            r'pyrig = \{ path = "[^"]*" \}',
+            f'pyrig = {{ path = "{wheel_path}" }}',
+            pyproject_content,
+        )
+        pyproject_toml.write_text(pyproject_content, encoding="utf-8")
+
+        # Sync to update the lock file with the new absolute path
+        run_subprocess(["uv", "sync"], env=clean_env)
 
         # Verify pyrig was installed correctly
         project_name = PyprojectConfigFile.get_project_name_from_pkg_name(
