@@ -1,12 +1,9 @@
 """Tests module."""
 
 import os
-import platform
 import shutil
 from contextlib import chdir
 from pathlib import Path
-
-import pytest
 
 import pyrig
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
@@ -17,10 +14,6 @@ from pyrig.src.project.mgt import PROJECT_MGT, PROJECT_MGT_RUN_ARGS
 from pyrig.src.testing.assertions import assert_with_msg
 
 
-@pytest.mark.skipif(
-    platform.system() == "Windows",
-    reason="Test fails on Windows bc of github actions path stuff",
-)
 def test_init(tmp_path: Path) -> None:
     """Test func for init."""
     # on Actions windows-latest temp path is on another drive so add path fails
