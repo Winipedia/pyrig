@@ -11,6 +11,7 @@ from packaging.version import Version
 
 from pyrig.dev.configs.base.base import TomlConfigFile
 from pyrig.dev.configs.python.experiment import ExperimentConfigFile
+from pyrig.src.modules.package import DependencyGraph
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.versions import VersionConstraint
 from pyrig.src.testing.convention import TEST_MODULE_PREFIX, TESTS_PACKAGE_NAME
@@ -221,6 +222,9 @@ class PyprojectConfigFile(TomlConfigFile):
             "types-tqdm",
             "pyinstaller",
         ]
+        # add keyrings.alt if keyring is in dependencies
+        if "keyring" in DependencyGraph.get_all_dependencies():
+            standard_dev_dependencies.append("keyrings.alt")
         # sort the dependencies
         return sorted(standard_dev_dependencies)
 
