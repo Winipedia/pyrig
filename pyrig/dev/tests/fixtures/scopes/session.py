@@ -24,6 +24,7 @@ from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.experiment import ExperimentConfigFile
+from pyrig.dev.tests.utils.decorators import autouse_session_fixture
 from pyrig.src.git.github.github import running_in_github_actions
 from pyrig.src.modules.module import (
     import_module_with_default,
@@ -32,6 +33,7 @@ from pyrig.src.modules.module import (
 )
 from pyrig.src.modules.package import (
     find_packages,
+    get_modules_and_packages_from_package,
     get_src_package,
     walk_package,
 )
@@ -43,7 +45,6 @@ from pyrig.src.testing.convention import (
     make_untested_summary_error_msg,
 )
 from pyrig.src.testing.create_tests import create_tests
-from pyrig.src.testing.fixtures import autouse_session_fixture
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -122,11 +123,27 @@ def assert_all_src_code_in_one_package() -> None:
 
     """
     packages = find_packages(depth=0)
-    src_package = get_src_package().__name__
-    expected_packages = {TESTS_PACKAGE_NAME, src_package}
+    src_package = get_src_package()
+    src_package_name = src_package.__name__
+    expected_packages = {TESTS_PACKAGE_NAME, src_package_name}
     assert_with_msg(
         set(packages) == expected_packages,
         f"Expected only packages {expected_packages}, but found {packages}",
+    )
+
+    # assert the src package's only submodules are main, src and dev
+    subpackages, submodules = get_modules_and_packages_from_package(src_package)
+    subpackage_names = {p.__name__.split(".")[-1] for p in subpackages}
+    submodule_names = {m.__name__.split(".")[-1] for m in submodules}
+    expected_subpackages = {"src", "dev"}
+    expected_submodules = {"main"}
+    assert_with_msg(
+        subpackage_names == expected_subpackages,
+        f"Expected subpackages {expected_subpackages}, but found {subpackage_names}",
+    )
+    assert_with_msg(
+        submodule_names == expected_submodules,
+        f"Expected submodules {expected_submodules}, but found {submodule_names}",
     )
 
 
@@ -303,10 +320,11 @@ def assert_src_runs_without_dev_deps(
         shutil.copy(config, temp_project_path.parent)
 
     env = os.environ.copy()
+    env.pop("VIRTUAL_ENV", None)
 
     with chdir(tmp_path):
         # install deps
-        run_subprocess(["uv", "sync", "--no-dev"])
+        run_subprocess(["uv", "sync", "--no-dev"], env=env)
 
         # delete pyproject.toml and uv.lock and readme.md
         for config in configs:
@@ -315,15 +333,26 @@ def assert_src_runs_without_dev_deps(
 
         # assert pytest is not installed
         dev_dep = "pytest"
-        installed = run_subprocess(["uv", "run", "pip", "show", dev_dep], check=False)
+        installed = run_subprocess(
+            ["uv", "run", "pip", "show", dev_dep], check=False, env=env
+        )
         stderr = installed.stderr.decode("utf-8")
         dev_dep_not_installed = f"not found: {dev_dep}" in stderr
         assert_with_msg(
             dev_dep_not_installed,
             f"Expected {dev_dep} not to be installed",
         )
+        # check pytest is not importable
+        installed = run_subprocess(
+            ["uv", "run", "python", "-c", "import pytest"], check=False, env=env
+        )
+        stderr = installed.stderr.decode("utf-8")
+        assert_with_msg(
+            "ModuleNotFoundError" in stderr,
+            f"Expected ModuleNotFoundError in stderr, got {stderr}",
+        )
 
-        # run walk_package with src
+        # run walk_package with src and import all modules to catch dev dep imports
         cmd = [
             "uv",
             "run",
@@ -332,6 +361,7 @@ def assert_src_runs_without_dev_deps(
             "-c",
             (
                 "from importlib import import_module; "
+                "from pyrig import main; "
                 "from pyrig import src; "
                 "from pyrig.dev.configs.base.base import ConfigFile; "
                 "from pyrig.src.modules.package import get_src_package, walk_package; "
@@ -341,14 +371,17 @@ def assert_src_runs_without_dev_deps(
                 "pks=list(walk_package(src_module)); "
                 "assert_with_msg(isinstance(pks, list), 'Expected pks to be a list'); "
                 "assert_with_msg(len(pks) > 0, 'Expected pks to not be empty'); "
+                # also test that main can be called
+                "main_module=import_module(ConfigFile.get_module_name_replacing_start_module(main, src_package.__name__)); "  # noqa: E501
                 # add a print statement to see the output
                 "print('Success')"
             ),
         ]
 
-        completed_process = run_subprocess(cmd, env=env, check=True)
+        completed_process = run_subprocess(cmd, env=env, check=False)
         stdout = completed_process.stdout.decode("utf-8")
+        stderr = completed_process.stderr.decode("utf-8")
         assert_with_msg(
             "Success" in stdout,
-            f"Expected Success in stdout, got {stdout}",
+            f"Expected Success in stdout, got {stdout} and {stderr}",
         )
