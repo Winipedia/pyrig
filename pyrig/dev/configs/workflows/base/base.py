@@ -424,9 +424,9 @@ class Workflow(YamlConfigFile):
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
             cls.step_install_python_dependencies(),
             cls.step_patch_version(),
-            *cls.steps_configure_keyring_if_needed(),
             cls.step_update_dependencies(),
             cls.step_add_dependency_updates_to_git(),
+            *cls.steps_configure_keyring_if_needed(),
         ]
 
     @classmethod
