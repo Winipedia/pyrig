@@ -264,16 +264,22 @@ class TomlConfigFile(ConfigFile):
     @classmethod
     def prettify_dict(cls, config: dict[str, Any]) -> dict[str, Any]:
         """Prettify a dict recursively. bx making lists multiline."""
+        t = tomlkit.table()
+
         for key, value in config.items():
             if isinstance(value, list):
-                array = tomlkit.array()
-                array.multiline(multiline=True)
+                arr = tomlkit.array().multiline(multiline=True)
                 for item in value:
-                    array.append(item)
-                config[key] = array
+                    arr.append(item)
+                t.add(key, arr)
+
             elif isinstance(value, dict):
-                config[key] = cls.prettify_dict(value)
-        return config
+                t.add(key, cls.prettify_dict(value))
+
+            else:
+                t.add(key, value)
+
+        return t
 
     @classmethod
     def pretty_dump(cls, config: dict[str, Any]) -> None:

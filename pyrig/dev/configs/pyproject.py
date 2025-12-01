@@ -174,7 +174,7 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def remove_version_from_dep(cls, dep: str) -> str:
         """Remove the version from a dependency."""
-        return re.split(r"[^a-zA-Z0-9_-]", dep)[0]
+        return re.split(r"[^a-zA-Z0-9_.-]", dep)[0]
 
     @classmethod
     def get_package_name(cls) -> str:
