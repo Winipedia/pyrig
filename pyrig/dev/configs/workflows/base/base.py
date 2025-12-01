@@ -650,7 +650,7 @@ class Workflow(YamlConfigFile):
         """Get the setup keyring step."""
         return cls.get_step(
             step_func=cls.step_setup_keyring,
-            run=f'{PROJECT_MGT} pip install keyrings.alt && {PROJECT_MGT} run python -c "import keyring; from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"',  # noqa: E501
+            run=f'{PROJECT_MGT} run python -c "import keyring; from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"',  # noqa: E501
             step=step,
         )
 
