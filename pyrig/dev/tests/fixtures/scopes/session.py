@@ -8,8 +8,13 @@ autouse mechanism @pytest.fixture(scope="session", autouse=True).
 """
 
 import logging
+import os
+import shutil
+from contextlib import chdir
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+import pytest
 
 from pyrig.dev.cli.subcommands import create_root
 from pyrig.dev.configs.base.base import ConfigFile
@@ -261,3 +266,90 @@ def assert_pre_commit_is_installed() -> None:
         expected in stdout,
         f"Expected {expected} in pre-commit install output, got {stdout}",
     )
+
+
+@autouse_session_fixture
+def assert_src_runs_without_dev_deps(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> None:
+    """Verify that the source code runs without dev dependencies.
+
+    This fixture runs once per test session and checks that the source code
+    runs without dev dependencies.
+    """
+    tmp_path = tmp_path_factory.mktemp(assert_src_runs_without_dev_deps.__name__)
+    # copy the project folder to a temp directory
+    # run main.py from that directory
+    src_package = get_src_package()
+    src_package_file_str = src_package.__file__
+    if src_package_file_str is None:
+        msg = f"src_package.__file__ is None for {src_package}"
+        raise ValueError(msg)
+
+    project_path = Path(src_package_file_str).parent
+
+    temp_project_path = tmp_path / src_package.__name__
+
+    # shutil copy the project to tmp_path
+    shutil.copytree(project_path, temp_project_path)
+
+    # copy pyproject.toml and uv.lock to tmp_path
+    configs = [
+        "pyproject.toml",
+        "uv.lock",
+        "README.md",
+        "LICENSE",
+    ]
+    for config in configs:
+        shutil.copy(config, temp_project_path.parent)
+
+    env = os.environ.copy()
+
+    with chdir(tmp_path):
+        # install deps
+        run_subprocess(["uv", "sync", "--no-dev"])
+
+        # delete pyproject.toml and uv.lock and readme.md
+        for config in configs:
+            Path(config).unlink()
+        # python -m video_vault.main
+
+        # assert pytest is not installed
+        dev_dep = "pytest"
+        installed = run_subprocess(["uv", "run", "pip", "show", dev_dep], check=False)
+        stderr = installed.stderr.decode("utf-8")
+        dev_dep_not_installed = f"not found: {dev_dep}" in stderr
+        assert_with_msg(
+            dev_dep_not_installed,
+            f"Expected {dev_dep} not to be installed",
+        )
+
+        # run walk_package with src
+        cmd = [
+            "uv",
+            "run",
+            "--no-dev",
+            "python",
+            "-c",
+            (
+                "from importlib import import_module; "
+                "from pyrig import src; "
+                "from pyrig.dev.configs.base.base import ConfigFile; "
+                "from pyrig.src.modules.package import get_src_package, walk_package; "
+                "from pyrig.src.testing.assertions import assert_with_msg; "
+                "src_package=get_src_package(); "
+                "src_module=import_module(ConfigFile.get_module_name_replacing_start_module(src, src_package.__name__)); "  # noqa: E501
+                "pks=list(walk_package(src_module)); "
+                "assert_with_msg(isinstance(pks, list), 'Expected pks to be a list'); "
+                "assert_with_msg(len(pks) > 0, 'Expected pks to not be empty'); "
+                # add a print statement to see the output
+                "print('Success')"
+            ),
+        ]
+
+        completed_process = run_subprocess(cmd, env=env, check=True)
+        stdout = completed_process.stdout.decode("utf-8")
+        assert_with_msg(
+            "Success" in stdout,
+            f"Expected Success in stdout, got {stdout}",
+        )
