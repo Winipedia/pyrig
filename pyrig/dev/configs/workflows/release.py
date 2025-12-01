@@ -80,7 +80,6 @@ class ReleaseWorkflow(Workflow):
         return [
             *cls.steps_core_installed_setup(repo_token=True),
             cls.step_setup_git(),
-            cls.step_patch_version(),
             cls.step_run_pre_commit_hooks(),
             cls.step_commit_added_changes(),
             cls.step_push_commits(),

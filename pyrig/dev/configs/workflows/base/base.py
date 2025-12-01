@@ -422,6 +422,7 @@ class Workflow(YamlConfigFile):
         """Get the core setup steps."""
         return [
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
+            cls.step_patch_version(),
             cls.step_install_python_dependencies(),
             *cls.steps_configure_keyring_if_needed(),
             cls.step_update_dependencies(),
