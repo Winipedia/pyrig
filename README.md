@@ -503,25 +503,43 @@ your_project/dev/tests/fixtures/
 
 ### Autouse Session Fixtures
 
-Autouse session fixtures automatically enforce code quality and project conventions:
+Autouse session fixtures automatically enforce code quality and project conventions. These fixtures run once per test session before any tests execute.
 
-**Project Structure**:
-- `assert_no_namespace_packages`: Ensures all packages have `__init__.py` files
-- `assert_all_src_code_in_one_package`: Verifies all source code is in a single package
-- `assert_src_package_correctly_named`: Checks package name matches `pyproject.toml`
+#### `assert_root_is_correct`
 
-**Test Coverage**:
-- `assert_all_modules_tested`: Creates missing test modules, classes, and functions
+Verifies and fixes all configuration files managed by the ConfigFile Machinery. If any config file is missing or incorrect, it automatically creates or corrects it. When running in GitHub Actions, it also ensures `experiment.py` exists.
 
-**Code Quality**:
-- `assert_no_unit_test_package_usage`: Prevents usage of `unittest` package (enforces pytest)
+#### `assert_no_namespace_packages`
 
-**ConfigFile Machinery**:
-- `assert_root_is_correct`: Verifies and fixes all configuration files
+Ensures all packages have `__init__.py` files. If namespace packages are found (directories without `__init__.py`), they are automatically created. This prevents import issues and ensures proper package structure.
 
-**Pre-commit & Dependencies**:
-- `assert_pre_commit_is_installed`: Ensures pre-commit hooks are installed
-- `assert_dependencies_are_up_to_date`: Runs `uv lock --upgrade` and `uv sync`
+#### `assert_all_src_code_in_one_package`
+
+Verifies that all source code is in a single package alongside the `tests` package. Also ensures the source package only contains the expected structure: `src/` and `dev/` subpackages, and a `main.py` module. This enforces a clean project structure.
+
+#### `assert_src_package_correctly_named`
+
+Checks that the source package name matches the project name defined in `pyproject.toml`. Hyphens in the project name are converted to underscores for the package name.
+
+#### `assert_all_modules_tested`
+
+Creates missing test modules, classes, and functions. For every module in the source package, it ensures a corresponding test module exists in the `tests` directory. Missing test skeletons are automatically generated.
+
+#### `assert_no_unit_test_package_usage`
+
+Prevents usage of the `unittest` package by scanning all Python files for `unittest` imports or usage. This enforces pytest as the sole testing framework for consistency.
+
+#### `assert_dependencies_are_up_to_date`
+
+Keeps dependencies current by running `uv self update` (when not in CI), `uv lock --upgrade`, and `uv sync`. This ensures you always have the latest compatible versions of all dependencies.
+
+#### `assert_pre_commit_is_installed`
+
+Ensures pre-commit hooks are installed by running `pre-commit install`. This guarantees that code quality checks run automatically before every commit.
+
+#### `assert_src_runs_without_dev_deps`
+
+Verifies that the source code runs correctly without dev dependencies installed. This fixture creates a temporary environment with only production dependencies, imports all source modules, and confirms they load successfully. This catches accidental imports of dev-only packages (like `pytest`) in production code.
 
 ### Running Tests
 
@@ -552,21 +570,20 @@ pyrig provides several testing utilities in `pyrig.src.testing`:
 - `assert_with_info(expr, expected, actual, msg)` - Assert with expected/actual values in the message
 - `assert_isabstrct_method(method)` - Assert that a method is abstract
 
-**Skip Decorators** (`pyrig.src.testing.skip`):
+**Skip Decorators** (`pyrig.dev.tests.utils.decorators`):
 - `@skip_fixture_test` - Skip tests for fixtures (cannot be called directly)
 - `@skip_in_github_actions` - Skip tests that cannot run in GitHub Actions
 
-**Fixture Scope Decorators** (`pyrig.src.testing.fixtures`):
+**Fixture Scope Decorators** (`pyrig.dev.tests.utils.decorators`):
 - `@function_fixture`, `@class_fixture`, `@module_fixture`, `@package_fixture`, `@session_fixture`
 - `@autouse_function_fixture`, `@autouse_class_fixture`, `@autouse_module_fixture`, `@autouse_package_fixture`, `@autouse_session_fixture`
 
 **Example**:
 ```python
 from pyrig.src.testing.assertions import assert_with_msg
-from pyrig.src.testing.fixtures import session_fixture
-from pyrig.src.testing.skip import skip_in_github_actions
+from pyrig.dev.tests.utils.decorators import autouse_session_fixture, skip_in_github_actions
 
-@session_fixture
+@autouse_session_fixture
 def my_fixture() -> str:
     return "test data"
 

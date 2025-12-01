@@ -9,7 +9,7 @@ autouse mechanism @pytest.fixture(scope="class", autouse=True).
 
 import pytest
 
-from pyrig.src.testing.fixtures import autouse_class_fixture
+from pyrig.dev.tests.utils.decorators import autouse_class_fixture
 from pyrig.src.testing.utils import assert_no_untested_objs
 
 

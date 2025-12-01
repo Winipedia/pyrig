@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from pyrig.src.testing.fixtures import autouse_module_fixture
+from pyrig.dev.tests.utils.decorators import autouse_module_fixture
 from pyrig.src.testing.utils import assert_no_untested_objs
 
 if TYPE_CHECKING:
