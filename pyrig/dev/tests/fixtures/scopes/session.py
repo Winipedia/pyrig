@@ -223,16 +223,6 @@ def assert_dependencies_are_up_to_date() -> None:
             f"Expected {expected} in uv self update output, got {stderr}",
         )
 
-    # install the dependencies
-    completed_process = PyprojectConfigFile.install_dependencies(check=True)
-    stderr = completed_process.stderr.decode("utf-8")
-    expected = "Resolved"
-    expected2 = "Audited"
-    assert_with_msg(
-        expected in stderr and expected2 in stderr,
-        f"Expected {expected} and {expected2} in uv install output, got {stderr}",
-    )
-
     # update the dependencies
     completed_process = PyprojectConfigFile.update_dependencies(check=True)
     # if there were updates raise an error
@@ -242,6 +232,16 @@ def assert_dependencies_are_up_to_date() -> None:
     assert_with_msg(
         expected in stderr and expected2 in stderr,
         f"Expected {expected} and {expected2} in uv update output, got {stderr}",
+    )
+
+    # sync the dependencies
+    completed_process = PyprojectConfigFile.install_dependencies(check=True)
+    stderr = completed_process.stderr.decode("utf-8")
+    expected = "Resolved"
+    expected2 = "Audited"
+    assert_with_msg(
+        expected in stderr and expected2 in stderr,
+        f"Expected {expected} and {expected2} in uv install output, got {stderr}",
     )
 
 
