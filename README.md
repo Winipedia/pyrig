@@ -140,6 +140,8 @@ git push
    uv run pyrig init
    ```
 
+   **Note**: This will delete the root-level `main.py` created by `uv init` and replace it with a properly structured `your_project/main.py` inside the package.
+
 6. **Commit and push changes**
    ```bash
    git add .
