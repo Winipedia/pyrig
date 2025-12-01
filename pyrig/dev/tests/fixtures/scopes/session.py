@@ -296,7 +296,6 @@ def assert_src_runs_without_dev_deps(
     # copy pyproject.toml and uv.lock to tmp_path
     configs = [
         "pyproject.toml",
-        "uv.lock",
         "README.md",
         "LICENSE",
     ]
