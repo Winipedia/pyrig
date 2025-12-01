@@ -79,6 +79,7 @@ uv sync
 
 ```bash
 # Create a new GitHub repository
+# add REPO_TOKEN and PYPI_TOKEN to secrets as needed (more info below)
 # Clone it locally
 git clone https://github.com/your-username/your-project.git
 cd your-project
