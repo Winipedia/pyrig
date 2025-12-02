@@ -7,7 +7,7 @@ name: Health Check Workflow
     - synchronize
     - reopened
   schedule:
-  - cron: 0 6 * * *
+  - cron: 0 1 * * *
   push:
     branches:
     - main

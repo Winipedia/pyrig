@@ -168,14 +168,38 @@ class ConfigFile(ABC):
     def init_config_files(cls) -> None:
         """Initialize all subclasses."""
         cls.init_priority_config_files()
+        cls.init_ordered_config_files()
+
+        already_inited: set[type[ConfigFile]] = set(
+            cls.get_priority_config_files() + cls.get_ordered_config_files()
+        )
 
         subclasses = cls.get_all_subclasses()
         subclasses = [
-            subclass
-            for subclass in subclasses
-            if subclass not in cls.get_priority_config_files()
+            subclass for subclass in subclasses if subclass not in already_inited
         ]
         for subclass in subclasses:
+            subclass()
+
+    @classmethod
+    def get_ordered_config_files(cls) -> list[type["ConfigFile"]]:
+        """Get non priority config files that need a specific order."""
+        from pyrig.dev.configs.testing.conftest import (  # noqa: PLC0415
+            ConftestConfigFile,
+        )
+        from pyrig.dev.configs.testing.fixtures.fixture import (  # noqa: PLC0415
+            FixtureConfigFile,
+        )
+
+        return [
+            FixtureConfigFile,
+            ConftestConfigFile,
+        ]
+
+    @classmethod
+    def init_ordered_config_files(cls) -> None:
+        """Initialize all subclasses."""
+        for subclass in cls.get_ordered_config_files():
             subclass()
 
     @classmethod
@@ -203,8 +227,8 @@ class ConfigFile(ABC):
         from pyrig.dev.configs.python.main import (  # noqa: PLC0415
             MainConfigFile,
         )
-        from pyrig.dev.configs.testing.conftest import (  # noqa: PLC0415
-            ConftestConfigFile,
+        from pyrig.dev.configs.testing.zero_test import (  # noqa: PLC0415
+            ZeroTestConfigFile,
         )
 
         return [
@@ -213,7 +237,7 @@ class ConfigFile(ABC):
             MainConfigFile,
             ConfigsConfigFile,
             BuilderConfigFile,
-            ConftestConfigFile,
+            ZeroTestConfigFile,
         ]
 
     @classmethod

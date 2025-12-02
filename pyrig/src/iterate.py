@@ -5,11 +5,14 @@ including getting the length of an iterable with a default value.
 These utilities help with iterable operations and manipulations.
 """
 
+import logging
 from collections.abc import Callable, Iterable
 from typing import Any
 
+logger = logging.getLogger(__name__)
 
-def nested_structure_is_subset(
+
+def nested_structure_is_subset(  # noqa: C901
     subset: dict[Any, Any] | list[Any] | Any,
     superset: dict[Any, Any] | list[Any] | Any,
     on_false_dict_action: Callable[[dict[Any, Any], dict[Any, Any], Any], Any]
@@ -67,5 +70,23 @@ def nested_structure_is_subset(
             if on_false_action is not None:
                 on_false_action(subset, superset, key_or_index)
                 all_good = nested_structure_is_subset(subset, superset)
+
+                if not all_good:
+                    # make an informational log
+                    logger.info(
+                        """
+                        -------------------------------------------------------------------------------
+                        Subset:
+                        %s
+                        -------------------
+                        is not a subset of
+                        -------------------
+                        Superset:
+                        %s
+                        -------------------------------------------------------------------------------
+                        """,
+                        subset,
+                        superset,
+                    )
 
     return all_good

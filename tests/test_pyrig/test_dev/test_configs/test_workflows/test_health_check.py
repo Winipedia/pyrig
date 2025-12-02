@@ -21,6 +21,20 @@ def my_test_health_check_workflow(
 class TestHealthCheckWorkflow:
     """Test class."""
 
+    def test_get_staggered_cron(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflow]
+    ) -> None:
+        """Test method."""
+        result = my_test_health_check_workflow.get_staggered_cron()
+        assert len(result) > 0, "Expected cron to be non-empty"
+
+    def test_get_dependency_offset(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflow]
+    ) -> None:
+        """Test method."""
+        result = my_test_health_check_workflow.get_dependency_offset()
+        assert result >= 0, "Expected offset to be non-negative"
+
     def test_get_workflow_triggers(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
