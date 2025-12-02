@@ -20,6 +20,7 @@ class HealthCheckWorkflow(Workflow):
         """Get the workflow triggers."""
         triggers = super().get_workflow_triggers()
         triggers.update(cls.on_pull_request())
+        triggers.update(cls.on_push())
         triggers.update(cls.on_schedule(cron="0 6 * * *"))
         return triggers
 
