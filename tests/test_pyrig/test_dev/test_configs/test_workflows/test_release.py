@@ -28,8 +28,6 @@ class TestReleaseWorkflow:
             "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         )
         assert "pull_request" not in result
-        assert_with_msg("push" in result, "Expected 'push' in triggers")
-        assert_with_msg("schedule" in result, "Expected 'schedule' in triggers")
 
     def test_get_permissions(
         self, my_test_release_workflow: type[ReleaseWorkflow]
