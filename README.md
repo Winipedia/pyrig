@@ -270,14 +270,16 @@ Empty file for environment variables. Git-ignored, used by python-dotenv.
 
 #### `.github/workflows/health_check.yaml`
 
-- **Triggers**: workflow_dispatch, pull_request, schedule (daily)
+- **Triggers**: workflow_dispatch, pull_request, push to main, schedule (daily with staggered cron)
 - **Purpose**: Matrix testing across different OS and Python versions
+- **Staggered Cron Schedule**: To avoid test failures when multiple packages release on the same schedule, the cron time is staggered based on the package's position in the dependency chain. Packages with fewer dependencies on pyrig run earlier (starting at 1 AM UTC), with each additional dependency level adding 1 hour. This ensures that when dependencies release, dependent packages have time to pick up the new versions before their health checks run.
 
 #### `.github/workflows/release.yaml`
 
-- **Triggers**: workflow_dispatch, commit to main, schedule (every Tuesday at 6 AM UTC)
-- **Process**: Runs health check, creates tag and changelog, creates GitHub release, builds and uploads artifacts, commits updates
+- **Triggers**: workflow_dispatch, workflow_run (when health_check completes successfully on main)
+- **Process**: Creates tag and changelog, creates GitHub release, builds and uploads artifacts, commits updates
 - **Synchronization**: Keeps tags, package version, and PyPI in sync
+- **Note**: Only runs after health check passes on main branch, so health check steps are not duplicated
 
 #### `.github/workflows/publish.yaml`
 
