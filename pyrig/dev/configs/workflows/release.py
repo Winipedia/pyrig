@@ -13,17 +13,21 @@ from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 class ReleaseWorkflow(Workflow):
     """Release workflow.
 
-    This workflow is triggered by a push to the main branch.
-    It creates a tag for the release and builds a changelog.
-    With tag and changelog it creates a release on GitHub
+    This workflow is triggered when the health check workflow completes successfully
+    on the main branch. It builds artifacts, creates a tag and changelog,
+    and creates a release on GitHub.
     """
 
     @classmethod
     def get_workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers."""
         triggers = super().get_workflow_triggers()
-        triggers.update(cls.on_push())
-        triggers.update(cls.on_schedule(cron="0 6 * * 2"))
+        triggers.update(
+            cls.on_workflow_run(
+                workflows=[HealthCheckWorkflow.get_workflow_name()],
+                branches=["main"],
+            )
+        )
         return triggers
 
     @classmethod
@@ -36,24 +40,17 @@ class ReleaseWorkflow(Workflow):
     @classmethod
     def get_jobs(cls) -> dict[str, Any]:
         """Get the workflow jobs."""
-        config_files = HealthCheckWorkflow.get_all_subclasses()
-        last_health_check_config: type[HealthCheckWorkflow] = next(
-            config_file
-            for config_file in config_files
-            if issubclass(config_file, HealthCheckWorkflow)
-        )
-        jobs = last_health_check_config.get_jobs()
-        last_job_name = list(jobs.keys())[-1]
-        jobs.update(cls.job_build(needs=[last_job_name]))
+        jobs: dict[str, Any] = {}
+        jobs.update(cls.job_build())
         jobs.update(cls.job_release())
         return jobs
 
     @classmethod
-    def job_build(cls, needs: list[str] | None = None) -> dict[str, Any]:
+    def job_build(cls) -> dict[str, Any]:
         """Get the build job."""
         return cls.get_job(
             job_func=cls.job_build,
-            needs=needs,
+            if_condition=cls.if_workflow_run_is_success(),
             strategy=cls.strategy_matrix_os(),
             runs_on=cls.insert_matrix_os(),
             steps=cls.steps_build(),

@@ -215,11 +215,16 @@ class Workflow(YamlConfigFile):
         return {"pull_request": {"types": types}}
 
     @classmethod
-    def on_workflow_run(cls, workflows: list[str] | None = None) -> dict[str, Any]:
+    def on_workflow_run(
+        cls, workflows: list[str] | None = None, branches: list[str] | None = None
+    ) -> dict[str, Any]:
         """Get the workflow run trigger."""
         if workflows is None:
             workflows = [cls.get_workflow_name()]
-        return {"workflow_run": {"workflows": workflows, "types": ["completed"]}}
+        config: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
+        if branches is not None:
+            config["branches"] = branches
+        return {"workflow_run": config}
 
     # permissions
     @classmethod
