@@ -6,9 +6,11 @@ This workflow is used to run tests on pull requests.
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import networkx as nx
+
 import pyrig
 from pyrig.dev.configs.workflows.base.base import Workflow
-from pyrig.src.modules.package import DependencyGraph
+from pyrig.src.modules.package import DependencyGraph, get_src_package
 
 
 class HealthCheckWorkflow(Workflow):
@@ -52,8 +54,8 @@ class HealthCheckWorkflow(Workflow):
             The number of hours to offset from the base cron hour.
         """
         graph = DependencyGraph()
-        all_depending_on_pyrig = graph.get_all_depending_on(pyrig, include_self=False)
-        return len(all_depending_on_pyrig)
+        src_pkg = get_src_package()
+        return int(nx.shortest_path_length(graph, src_pkg.__name__, pyrig.__name__))
 
     @classmethod
     def get_jobs(cls) -> dict[str, Any]:
