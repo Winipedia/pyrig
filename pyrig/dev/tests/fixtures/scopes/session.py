@@ -237,11 +237,12 @@ def assert_dependencies_are_up_to_date() -> None:
     """
     if not running_in_github_actions():
         # update project mgt
-        completed_process = run_subprocess(["uv", "self", "update"], check=True)
+        completed_process = run_subprocess(["uv", "self", "update"], check=False)
         stderr = completed_process.stderr.decode("utf-8")
         expected = "success: You're on the latest version of uv"
+        expected_err = "GitHub API rate limit exceeded"
         assert_with_msg(
-            expected in stderr,
+            expected in stderr or expected_err in stderr,
             f"Expected {expected} in uv self update output, got {stderr}",
         )
 

@@ -333,6 +333,33 @@ class TestConfigFile:
                 f"got {priority_config_file}"
             )
 
+    def test_get_ordered_config_files(
+        self, my_test_config_file: type[ConfigFile]
+    ) -> None:
+        """Test method for get_ordered_config_files."""
+        ordered_config_files = my_test_config_file.get_ordered_config_files()
+        for ordered_config_file in ordered_config_files:
+            assert issubclass(ordered_config_file, ConfigFile), (
+                f"Expected ordered_config_file to be a ConfigFile, "
+                f"got {ordered_config_file}"
+            )
+
+    def test_init_ordered_config_files(
+        self, my_test_config_file: type[ConfigFile], mocker: MockFixture
+    ) -> None:
+        """Test method for init_ordered_config_files."""
+        # mock get_ordered_config_files to return my_test_config_file
+        mocker.patch.object(
+            my_test_config_file,
+            my_test_config_file.get_ordered_config_files.__name__,
+            return_value=[my_test_config_file],
+        )
+        my_test_config_file.init_ordered_config_files()
+        assert_with_msg(
+            my_test_config_file.load() == my_test_config_file.get_configs(),
+            "Expected config to be correct",
+        )
+
     def test_init_priority_config_files(
         self, my_test_config_file: type[ConfigFile], mocker: MockFixture
     ) -> None:

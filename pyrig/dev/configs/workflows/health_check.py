@@ -3,9 +3,12 @@
 This workflow is used to run tests on pull requests.
 """
 
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import pyrig
 from pyrig.dev.configs.workflows.base.base import Workflow
+from pyrig.src.modules.package import DependencyGraph
 
 
 class HealthCheckWorkflow(Workflow):
@@ -15,14 +18,42 @@ class HealthCheckWorkflow(Workflow):
     It runs tests on the pull request.
     """
 
+    BASE_CRON_HOUR = 1
+
     @classmethod
     def get_workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers."""
         triggers = super().get_workflow_triggers()
         triggers.update(cls.on_pull_request())
         triggers.update(cls.on_push())
-        triggers.update(cls.on_schedule(cron="0 6 * * *"))
+        triggers.update(cls.on_schedule(cron=cls.get_staggered_cron()))
         return triggers
+
+    @classmethod
+    def get_staggered_cron(cls) -> str:
+        """Get the staggered cron schedule based on dependency count.
+
+        Packages with more dependencies run later to avoid conflicts when
+        dependencies release right before dependent packages run their tests.
+        Base time is 1 AM, with 1 hour added for each dependency on pyrig.
+        """
+        offset = cls.get_dependency_offset()
+        base_time = datetime.now(tz=UTC).replace(
+            hour=cls.BASE_CRON_HOUR, minute=0, second=0, microsecond=0
+        )
+        scheduled_time = base_time + timedelta(hours=offset)
+        return f"0 {scheduled_time.hour} * * *"
+
+    @classmethod
+    def get_dependency_offset(cls) -> int:
+        """Get the hour offset based on the number of dependencies on pyrig.
+
+        Returns:
+            The number of hours to offset from the base cron hour.
+        """
+        graph = DependencyGraph()
+        all_depending_on_pyrig = graph.get_all_depending_on(pyrig, include_self=False)
+        return len(all_depending_on_pyrig)
 
     @classmethod
     def get_jobs(cls) -> dict[str, Any]:
