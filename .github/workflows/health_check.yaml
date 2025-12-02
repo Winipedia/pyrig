@@ -8,6 +8,9 @@ name: Health Check Workflow
     - reopened
   schedule:
   - cron: 0 6 * * *
+  push:
+    branches:
+    - main
 permissions: {}
 run-name: Health Check Workflow
 defaults:
