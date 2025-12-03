@@ -47,6 +47,8 @@ SETUP_STEPS: list[Callable[..., Any]] = [
 
 def init() -> None:
     """Set up the project."""
+    # for init set log level to info
+    logging.basicConfig(level=logging.INFO)
     for step in SETUP_STEPS:
         logger.info("Running setup step: %s", step.__name__)
         step()
