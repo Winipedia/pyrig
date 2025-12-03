@@ -9,6 +9,10 @@ from pyrig.src.testing.assertions import assert_with_msg
 class TestReadmeConfigFile:
     """Test class."""
 
+    def test_is_unwanted(self) -> None:
+        """Test method."""
+        assert not ReadmeConfigFile.is_unwanted()
+
     def test_get_filename(self) -> None:
         """Test method for get_filename."""
         assert_with_msg(

@@ -35,3 +35,9 @@ class ReadmeConfigFile(TextConfigFile):
 (This project uses [{PyprojectConfigFile.get_project_name_from_pkg_name(pyrig.__name__)}](https://github.com/Winipedia/{pyrig.__name__}))
 """
         return content
+
+    @classmethod
+    def is_unwanted(cls) -> bool:
+        """Check if the config file is unwanted."""
+        # README.md is never unwanted
+        return False
