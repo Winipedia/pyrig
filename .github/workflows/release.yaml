@@ -45,7 +45,7 @@ jobs:
       id: setup_project_mgt
       uses: astral-sh/setup-uv@main
       with:
-        python-version: 3.14.0
+        python-version: '3.14'
     - name: Install Python Dependencies
       id: install_python_dependencies
       run: uv sync

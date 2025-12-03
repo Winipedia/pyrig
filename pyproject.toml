@@ -12,7 +12,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "dotenv",
-    "networkx",
     "packaging",
     "pathspec",
     "pillow",
@@ -36,7 +35,6 @@ dev = [
     "pytest-mock",
     "ruff",
     "types-defusedxml",
-    "types-networkx",
     "types-pyinstaller",
     "types-pyyaml",
     "types-setuptools",

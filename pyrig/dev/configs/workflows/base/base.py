@@ -413,7 +413,7 @@ class Workflow(YamlConfigFile):
         """Get the core setup steps."""
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.get_latest_possible_python_version()
+                PyprojectConfigFile.get_latest_possible_python_version(level="minor")
             )
         return [
             cls.step_checkout_repository(repo_token=repo_token),
@@ -581,7 +581,7 @@ class Workflow(YamlConfigFile):
             step = {}
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.get_latest_possible_python_version()
+                PyprojectConfigFile.get_latest_possible_python_version(level="minor")
             )
 
         step.setdefault("with", {})["python-version"] = python_version
@@ -952,14 +952,15 @@ class Workflow(YamlConfigFile):
     def if_matrix_is_latest_python_version(cls) -> str:
         """Insert the matrix latest python version."""
         return cls.if_matrix_is_python_version(
-            str(PyprojectConfigFile.get_latest_possible_python_version())
+            str(PyprojectConfigFile.get_latest_possible_python_version(level="minor"))
         )
 
     @classmethod
     def if_matrix_is_os_and_latest_python_version(cls, os: str) -> str:
         """Insert the matrix os and latest python version."""
         return cls.if_matrix_is_os_and_python_version(
-            os, str(PyprojectConfigFile.get_latest_possible_python_version())
+            os,
+            str(PyprojectConfigFile.get_latest_possible_python_version(level="minor")),
         )
 
     @classmethod

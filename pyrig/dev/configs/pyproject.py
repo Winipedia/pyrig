@@ -4,7 +4,7 @@ import re
 from functools import cache
 from pathlib import Path
 from subprocess import CompletedProcess  # nosec: B404
-from typing import Any
+from typing import Any, Literal
 
 import requests
 from packaging.version import Version
@@ -12,7 +12,7 @@ from packaging.version import Version
 from pyrig.dev.configs.base.base import TomlConfigFile
 from pyrig.dev.configs.python.experiment import ExperimentConfigFile
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.versions import VersionConstraint
+from pyrig.src.project.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.testing.convention import TEST_MODULE_PREFIX, TESTS_PACKAGE_NAME
 
 
@@ -214,7 +214,6 @@ class PyprojectConfigFile(TomlConfigFile):
             "pytest-mock",
             "ruff",
             "types-defusedxml",
-            "types-networkx",
             "types-pyinstaller",
             "types-pyyaml",
             "types-setuptools",
@@ -249,14 +248,17 @@ class PyprojectConfigFile(TomlConfigFile):
         return Version(latest_version)
 
     @classmethod
-    def get_latest_possible_python_version(cls) -> Version:
+    def get_latest_possible_python_version(
+        cls, level: Literal["major", "minor", "micro"] = "micro"
+    ) -> Version:
         """Get the latest possible python version."""
         constraint = cls.load()["project"]["requires-python"]
         version_constraint = VersionConstraint(constraint)
         version = version_constraint.get_upper_inclusive()
         if version is None:
             version = cls.fetch_latest_python_version()
-        return version
+
+        return adjust_version_to_level(version, level)
 
     @classmethod
     def get_first_supported_python_version(cls) -> Version:

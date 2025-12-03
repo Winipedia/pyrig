@@ -6,6 +6,17 @@ from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 
 
+def adjust_version_to_level(
+    version: Version, level: Literal["major", "minor", "micro"]
+) -> Version:
+    """Adjust the version to the given level."""
+    if level == "major":
+        return Version(f"{version.major}")
+    if level == "minor":
+        return Version(f"{version.major}.{version.minor}")
+    return version
+
+
 class VersionConstraint:
     """Version class."""
 

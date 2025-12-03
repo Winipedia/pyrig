@@ -2,8 +2,24 @@
 
 from packaging.version import Version
 
-from pyrig.src.project.versions import VersionConstraint
+from pyrig.src.project.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.testing.assertions import assert_with_msg
+
+
+def test_adjust_version_to_level() -> None:
+    """Test method for adjust_version_to_level."""
+    version = Version("3.8.1")
+    new_version = adjust_version_to_level(version, "major")
+    expected = Version("3")
+    assert new_version == expected
+
+    assert str(new_version) == "3"
+
+    new_version = adjust_version_to_level(version, "minor")
+    expected = Version("3.8")
+    assert new_version == expected
+
+    assert str(new_version) == "3.8"
 
 
 class TestVersionConstraint:
