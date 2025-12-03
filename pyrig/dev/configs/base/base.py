@@ -105,8 +105,13 @@ class ConfigFile(ABC):
     ) -> None:
         """Add a missing dict value."""
         expected_val = expected_dict[key]
+        actual_val = actual_dict.get(key)
         actual_dict.setdefault(key, expected_val)
-        actual_dict[key].update(expected_val)
+
+        if isinstance(expected_val, dict) and isinstance(actual_val, dict):
+            actual_val.update(expected_val)
+        else:
+            actual_dict[key] = expected_val
 
     @staticmethod
     def insert_missing_list_val(
