@@ -23,7 +23,7 @@ from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
-from pyrig.dev.configs.python.experiment import ExperimentConfigFile
+from pyrig.dev.configs.python.experiment import DotExperimentConfigFile
 from pyrig.dev.tests.utils.decorators import autouse_session_fixture
 from pyrig.src.git.github.github import running_in_github_actions
 from pyrig.src.modules.module import (
@@ -66,7 +66,7 @@ def assert_root_is_correct() -> None:
     # if we are in CI then we must create experiment.py if it doesn't exist
     running_in_ci = running_in_github_actions()
     if running_in_ci:
-        ExperimentConfigFile()
+        DotExperimentConfigFile()
 
     subclasses = ConfigFile.get_all_subclasses()
     all_correct = all(subclass.is_correct() for subclass in subclasses)

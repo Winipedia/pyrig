@@ -10,7 +10,7 @@ import requests
 from packaging.version import Version
 
 from pyrig.dev.configs.base.base import TomlConfigFile
-from pyrig.dev.configs.python.experiment import ExperimentConfigFile
+from pyrig.dev.configs.python.experiment import DotExperimentConfigFile
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.testing.convention import TEST_MODULE_PREFIX, TESTS_PACKAGE_NAME
@@ -108,7 +108,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "pytest": {"ini_options": {"testpaths": [TESTS_PACKAGE_NAME]}},
                 "bandit": {
                     "exclude_dirs": [
-                        "./" + ExperimentConfigFile.get_path().as_posix(),
+                        "./" + DotExperimentConfigFile.get_path().as_posix(),
                         ".*",
                     ],
                     "assert_used": {

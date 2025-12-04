@@ -218,9 +218,11 @@ __marimo__/
 .vscode/
 
 # pyrig stuff
-# for walk_os_skipping_gitignore_patterns func
 .git/
-# for executing experimental code
-/experiment.py
-# pyrig stuff
-# for secrets used locally
+.experiment.py
+# others
+.env
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
