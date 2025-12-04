@@ -314,12 +314,12 @@ class ConfigFile(ABC):
         from pyrig.dev.configs.testing.conftest import (  # noqa: PLC0415
             ConftestConfigFile,
         )
-        from pyrig.dev.configs.testing.fixtures.fixture import (  # noqa: PLC0415
-            FixtureConfigFile,
+        from pyrig.dev.configs.testing.fixtures.fixtures_init import (  # noqa: PLC0415
+            FixturesInitConfigFile,
         )
 
         return [
-            FixtureConfigFile,
+            FixturesInitConfigFile,
             ConftestConfigFile,
         ]
 
