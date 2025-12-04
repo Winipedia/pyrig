@@ -19,14 +19,12 @@ from PIL import Image
 import pyrig
 from pyrig import main
 from pyrig.dev.artifacts import builder, resources
-from pyrig.dev.artifacts.resources.resource import (
-    get_all_resources_pkgs_from_deps_depen_on_dep,
-)
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.class_ import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
 from pyrig.src.modules.module import (
+    get_same_modules_from_deps_depen_on_dep,
     to_path,
 )
 from pyrig.src.modules.package import get_src_package
@@ -201,7 +199,7 @@ class PyInstallerBuilder(Builder):
     @classmethod
     def get_default_additional_resource_pkgs(cls) -> list[ModuleType]:
         """Get the default additional resource packages."""
-        return get_all_resources_pkgs_from_deps_depen_on_dep(dep=pyrig)
+        return get_same_modules_from_deps_depen_on_dep(resources, pyrig)
 
     @classmethod
     def get_all_resource_pkgs(cls) -> list[ModuleType]:
