@@ -2,7 +2,7 @@
 
 from types import ModuleType
 
-from pyrig.dev.artifacts.builders import builder
+from pyrig.dev.artifacts import builders
 from pyrig.dev.configs.base.base import InitConfigFile
 
 
@@ -12,4 +12,4 @@ class BuildersInitConfigFile(InitConfigFile):
     @classmethod
     def get_src_module(cls) -> ModuleType:
         """Get the source module."""
-        return builder
+        return builders

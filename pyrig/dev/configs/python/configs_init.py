@@ -5,7 +5,7 @@ All subclasses of ConfigFile in the configs package are automatically called.
 
 from types import ModuleType
 
-from pyrig.dev.configs import configs
+from pyrig.dev import configs
 from pyrig.dev.configs.base.base import InitConfigFile
 
 

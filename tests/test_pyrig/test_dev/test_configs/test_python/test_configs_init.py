@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.dev.configs import configs
+from pyrig.dev import configs
 from pyrig.dev.configs.python.configs_init import ConfigsInitConfigFile
 
 
