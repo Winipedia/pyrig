@@ -344,7 +344,7 @@ Manages the `resources/__init__.py` file to ensure proper package initialization
 
 #### `pkg/dev/configs/testing/fixtures/`
 
-Configuration files that manage the fixture system structure (fixture.py, scopes/session.py, scopes/package.py, scopes/module.py, scopes/class_.py, scopes/function.py).
+Configuration files that manage the fixture system structure (scopes/session.py, scopes/package.py, scopes/module.py, scopes/class_.py, scopes/function.py).
 
 #### `tests/conftest.py`
 
@@ -479,6 +479,7 @@ pyrig generates test skeletons that mirror your source code structure:
 #### Fixture System
 
 pyrig automatically discovers and loads fixtures from all packages depending on pyrig.
+As long as they are defined in a file under `pkg/dev/tests/fixtures/`, they are automatically available to all tests.
 
 **Built-in Fixtures**:
 - `config_file_factory` - Factory for creating test config file classes
@@ -491,7 +492,7 @@ Add a `pkg/dev/tests/fixtures/` directory:
 ```
 your_project/dev/tests/fixtures/
 ├── __init__.py
-├── fixture.py          # Custom fixtures
+├── # Custom fixtures files
 └── scopes/
     ├── __init__.py
     ├── session.py      # Session-level autouse fixtures
