@@ -1,12 +1,26 @@
-"""Package utilities for introspection and manipulation.
+"""Package discovery, traversal, and dependency graph analysis.
 
-This module provides comprehensive utility functions for working with Python packages,
-including package discovery, creation, traversal, and module extraction. It handles
-both regular packages and namespace packages, offering tools for filesystem operations
-and module imports related to package structures.
+This module provides utilities for working with Python packages, including
+package discovery, recursive traversal, and dependency graph analysis. The
+`DependencyGraph` class is central to pyrig's multi-package architecture,
+enabling automatic discovery of all packages that depend on pyrig.
 
-The utilities support both static package analysis and dynamic package manipulation,
-making them suitable for code generation, testing frameworks, and package management.
+Key capabilities:
+    - Package discovery: Find packages in a directory with depth filtering
+    - Package traversal: Walk through package hierarchies recursively
+    - Dependency analysis: Build and query the installed package dependency graph
+    - Package copying: Duplicate package structures for scaffolding
+
+The dependency graph enables pyrig to find all packages that depend on it,
+then discover ConfigFile implementations, Builder subclasses, and other
+extensible components in those packages.
+
+Example:
+    >>> from pyrig.src.modules.package import DependencyGraph
+    >>> graph = DependencyGraph()
+    >>> dependents = graph.get_all_depending_on("pyrig")
+    >>> [m.__name__ for m in dependents]
+    ['myapp', 'other_pkg']
 """
 
 import importlib.machinery
@@ -313,15 +327,43 @@ def get_main_package() -> ModuleType:
 
 
 class DependencyGraph(DiGraph):
-    """A directed graph representing Python package dependencies."""
+    """A directed graph of installed Python package dependencies.
+
+    Builds a graph where nodes are package names and edges represent
+    dependency relationships (package -> dependency). This enables
+    finding all packages that depend on a given package, which is
+    central to pyrig's multi-package discovery system.
+
+    The graph is built automatically on instantiation by scanning all
+    installed distributions via `importlib.metadata`.
+
+    Attributes:
+        Inherits all attributes from DiGraph.
+
+    Example:
+        >>> graph = DependencyGraph()
+        >>> # Find all packages that depend on pyrig
+        >>> dependents = graph.get_all_depending_on("pyrig")
+        >>> [m.__name__ for m in dependents]
+        ['myapp', 'other_pkg']
+    """
 
     def __init__(self) -> None:
-        """Initialize the dependency graph and build it immediately."""
+        """Initialize and build the dependency graph.
+
+        Scans all installed Python distributions and builds the dependency
+        graph immediately. Package names are normalized (lowercase, hyphens
+        replaced with underscores).
+        """
         super().__init__()
         self.build()
 
     def build(self) -> None:
-        """Build the graph from installed Python distributions."""
+        """Build the graph from installed Python distributions.
+
+        Iterates through all installed distributions, adding each as a node
+        and creating edges from each package to its dependencies.
+        """
         for dist in importlib.metadata.distributions():
             name = self.parse_distname_from_metadata(dist)
             self.add_node(name)
@@ -334,26 +376,57 @@ class DependencyGraph(DiGraph):
 
     @staticmethod
     def parse_distname_from_metadata(dist: importlib.metadata.Distribution) -> str:
-        """Extract the distribution name from its metadata."""
+        """Extract and normalize the distribution name from metadata.
+
+        Args:
+            dist: A distribution object from importlib.metadata.
+
+        Returns:
+            The normalized package name (lowercase, underscores).
+        """
         # replace - with _ to handle packages like pyrig
         name: str = dist.metadata["Name"]
         return DependencyGraph.normalize_package_name(name)
 
     @staticmethod
     def get_all_dependencies() -> list[str]:
-        """Get all dependencies."""
+        """Get all installed package names.
+
+        Returns:
+            A list of all installed package names, normalized.
+        """
         dists = importlib.metadata.distributions()
         # extract the name from the metadata
         return [DependencyGraph.parse_distname_from_metadata(dist) for dist in dists]
 
     @staticmethod
     def normalize_package_name(name: str) -> str:
-        """Normalize a package name."""
+        """Normalize a package name for consistent comparison.
+
+        Converts to lowercase and replaces hyphens with underscores,
+        matching Python's import name conventions.
+
+        Args:
+            name: The package name to normalize.
+
+        Returns:
+            The normalized package name.
+        """
         return name.lower().replace("-", "_").strip()
 
     @staticmethod
     def parse_pkg_name_from_req(req: str) -> str | None:
-        """Extract the bare dependency name from a requirement string."""
+        """Extract the bare package name from a requirement string.
+
+        Parses requirement strings like "requests>=2.0" or "numpy[extra]"
+        to extract just the package name.
+
+        Args:
+            req: A requirement string (e.g., "requests>=2.0,<3.0").
+
+        Returns:
+            The normalized package name, or None if parsing fails.
+        """
         # split on the first non alphanumeric character like >, <, =, etc.
         # keep - and _ for names like pyrig or pyrig
         dep = re.split(r"[^a-zA-Z0-9_-]", req.strip())[0].strip()
@@ -362,16 +435,28 @@ class DependencyGraph(DiGraph):
     def get_all_depending_on(
         self, package: ModuleType | str, *, include_self: bool = False
     ) -> list[ModuleType]:
-        """Return all packages that directly or indirectly depend on the given package.
+        """Find all packages that depend on the given package.
+
+        Traverses the dependency graph to find all packages that directly
+        or indirectly depend on the specified package. Results are sorted
+        by dependency count (packages with fewer dependencies first).
+
+        This is the primary method used by pyrig to discover all packages
+        in the ecosystem that extend pyrig's functionality.
 
         Args:
-            package: The module whose dependents should be found.
-            include_self: Whether to include the package itself in the result.
+            package: The package to find dependents of. Can be a module
+                object or a package name string.
+            include_self: If True, includes the target package itself
+                in the results.
 
         Returns:
-            A list of imported module objects representing dependents.
-            Order is that the the one that has the most deps is last and the one that
-            has the least deps is first.
+            A list of imported module objects for all dependent packages.
+            Sorted so packages with fewer dependencies come first.
+
+        Note:
+            Only returns packages that can be successfully imported.
+            Logs a warning if the target package is not in the graph.
         """
         # replace - with _ to handle packages like pyrig
         if isinstance(package, ModuleType):
@@ -394,7 +479,14 @@ Possibly the target is the current project itself."""
 
     @staticmethod
     def import_packages(names: Iterable[str]) -> list[ModuleType]:
-        """Attempt to import all module names that can be resolved."""
+        """Import packages by name, skipping those that cannot be imported.
+
+        Args:
+            names: Package names to import.
+
+        Returns:
+            A list of successfully imported module objects.
+        """
         modules: list[ModuleType] = []
         for name in names:
             spec = importlib.util.find_spec(name)
@@ -404,7 +496,21 @@ Possibly the target is the current project itself."""
 
 
 def import_pkg_from_path(package_dir: Path) -> ModuleType:
-    """Import a package from a path."""
+    """Import a package from a filesystem path.
+
+    Uses importlib machinery to load a package from its directory path,
+    rather than by its module name. Useful when the package is not yet
+    in sys.path or when you have a path but not the module name.
+
+    Args:
+        package_dir: Path to the package directory (must contain __init__.py).
+
+    Returns:
+        The imported package module.
+
+    Raises:
+        ValueError: If a module spec cannot be created for the path.
+    """
     from pyrig.src.modules.module import to_module_name  # noqa: PLC0415
 
     package_name = to_module_name(package_dir.resolve().relative_to(Path.cwd()))

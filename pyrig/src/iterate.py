@@ -1,9 +1,4 @@
-"""Iterating utilities for handling iterables.
-
-This module provides utility functions for working with iterables,
-including getting the length of an iterable with a default value.
-These utilities help with iterable operations and manipulations.
-"""
+"""Utilities for iterating over data structures."""
 
 import logging
 from collections.abc import Callable, Iterable
@@ -19,23 +14,43 @@ def nested_structure_is_subset(  # noqa: C901
     | None = None,
     on_false_list_action: Callable[[list[Any], list[Any], int], Any] | None = None,
 ) -> bool:
-    """Check if a dictionary is a nested subset of another dictionary.
+    """Check if a nested structure is a subset of another nested structure.
+
+    Performs deep comparison of nested dictionaries and lists to verify that
+    all keys/values in `subset` exist in `superset`. This enables validation
+    that required configuration values are present while allowing additional
+    values in the superset.
+
+    The comparison rules are:
+        - Dictionaries: All keys in subset must exist in superset with matching
+          values (superset may have additional keys).
+        - Lists: All items in subset must exist somewhere in superset
+          (order does not matter, superset may have additional items).
+        - Primitives: Must be exactly equal.
 
     Args:
-        subset: Dictionary to check
-        superset: Dictionary to check against
-        on_false_dict_action: Action to take on each false dict comparison
-            must return a bool to indicate if after action is still false
-        on_false_list_action: Action to take on each false list comparison
-            must return a bool to indicate if after action is still false
-
-    Each value of a key must be equal to the value of the same key in the superset.
-    If the value is dictionary, the function is called recursively.
-    If the value is list, each item must be in the list of the same key in the superset.
-    The order in lists does not matter.
+        subset: The structure that should be contained within superset.
+            Can be a dict, list, or primitive value.
+        superset: The structure to check against. Should contain all
+            elements from subset (and possibly more).
+        on_false_dict_action: Optional callback invoked when a dict comparison
+            fails. Receives (subset_dict, superset_dict, failing_key). Can
+            modify the structures to fix the mismatch; comparison is retried
+            after the action.
+        on_false_list_action: Optional callback invoked when a list comparison
+            fails. Receives (subset_list, superset_list, failing_index). Can
+            modify the structures to fix the mismatch; comparison is retried
+            after the action.
 
     Returns:
-        True if subset is a nested subset of superset, False otherwise
+        True if all elements in subset exist in superset with matching values,
+        False otherwise.
+
+    Note:
+        The optional action callbacks enable auto-correction behavior: when a
+        mismatch is found, the callback can modify the superset to include the
+        missing value, and the comparison is retried. This is used by ConfigFile
+        to automatically add missing required settings to config files.
     """
     if isinstance(subset, dict) and isinstance(superset, dict):
         iterable: Iterable[tuple[Any, Any]] = subset.items()

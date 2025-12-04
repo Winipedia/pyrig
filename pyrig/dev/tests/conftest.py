@@ -1,7 +1,14 @@
-"""Pytest configuration for pirig tests.
+"""Pytest configuration for pyrig tests.
 
-finds all the plugins in the tests directory and the package's testing module
-and adds them to pytest_plugins. This way defining reusable fixtures is easy.
+This module automatically discovers and registers pytest plugins from all
+packages that depend on pyrig. It finds fixtures modules across the dependency
+graph and adds them to pytest_plugins for automatic fixture availability.
+
+The discovery process:
+    1. Finds all packages depending on pyrig
+    2. Locates their fixtures modules
+    3. Collects all Python files within those modules
+    4. Registers them as pytest plugins
 """
 
 from pathlib import Path

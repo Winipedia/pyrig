@@ -1,4 +1,9 @@
-"""Has config utilities for pre-commit."""
+"""Configuration management for pre-commit hooks.
+
+This module provides the PreCommitConfigConfigFile class for managing
+the .pre-commit-config.yaml file. It configures local hooks for linting,
+formatting, type checking, and security scanning.
+"""
 
 import logging
 from pathlib import Path
@@ -16,17 +21,31 @@ logger = logging.getLogger(__name__)
 
 
 class PreCommitConfigConfigFile(YamlConfigFile):
-    """Config file for pre-commit."""
+    """Configuration file manager for .pre-commit-config.yaml.
+
+    Configures local pre-commit hooks for:
+        - ruff linting and formatting
+        - mypy type checking
+        - bandit security scanning
+    """
 
     @classmethod
     def get_filename(cls) -> str:
-        """Get the filename of the config file."""
+        """Get the pre-commit config filename.
+
+        Returns:
+            The string ".pre-commit-config".
+        """
         filename = super().get_filename()
         return f".{filename.replace('_', '-')}"
 
     @classmethod
     def get_parent_path(cls) -> Path:
-        """Get the path to the config file."""
+        """Get the project root directory.
+
+        Returns:
+            Path to the project root.
+        """
         return Path()
 
     @classmethod
@@ -40,7 +59,19 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         always_run: bool = True,
         **kwargs: Any,
     ) -> dict[str, Any]:
-        """Get a hook."""
+        """Create a pre-commit hook configuration.
+
+        Args:
+            name: Hook identifier and display name.
+            args: Command arguments for the hook.
+            language: Hook language (default: "system").
+            pass_filenames: Whether to pass filenames to the hook.
+            always_run: Whether to run on every commit.
+            **kwargs: Additional hook configuration options.
+
+        Returns:
+            Hook configuration dict.
+        """
         hook: dict[str, Any] = {
             "id": name,
             "name": name,
@@ -54,7 +85,12 @@ class PreCommitConfigConfigFile(YamlConfigFile):
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
-        """Get the config."""
+        """Get the expected pre-commit configuration.
+
+        Returns:
+            Configuration dict with local hooks for linting,
+            formatting, type checking, and security scanning.
+        """
         hooks: list[dict[str, Any]] = [
             cls.get_hook(
                 "lint-code",
@@ -83,12 +119,16 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         }
 
     def __init__(self) -> None:
-        """Init the file."""
+        """Initialize the pre-commit config file manager."""
         super().__init__()
 
     @classmethod
     def install(cls) -> CompletedProcess[bytes]:
-        """Installs the pre commits in the config."""
+        """Install pre-commit hooks into the git repository.
+
+        Returns:
+            The completed process result.
+        """
         logger.info("Running pre-commit install")
         return run_subprocess([*PROJECT_MGT_RUN_ARGS, "pre-commit", "install"])
 
@@ -102,7 +142,15 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         verbose: bool = True,
         check: bool = True,
     ) -> None:
-        """Runs the pre-commit hooks."""
+        """Run all pre-commit hooks.
+
+        Args:
+            with_install: Whether to install hooks first.
+            all_files: Whether to run on all files.
+            add_before_commit: Whether to git add files first.
+            verbose: Whether to show verbose output.
+            check: Whether to raise on hook failure.
+        """
         if add_before_commit:
             logger.info("Adding all files to git")
             run_subprocess(["git", "add", "."])

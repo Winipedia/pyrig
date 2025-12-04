@@ -1,12 +1,25 @@
-"""Testing conventions and utilities.
+"""Test naming conventions and object mapping utilities.
 
-This module provides functions and constants for managing test naming conventions,
-mapping between test objects and their corresponding implementation objects,
-and utilities for test discovery and validation.
+This module defines pyrig's test naming conventions and provides bidirectional
+mapping between source objects and their corresponding test objects. The
+conventions follow pytest standards:
 
-Returns:
-    Various utility functions and constants for testing conventions.
+    - Test functions: ``test_<function_name>``
+    - Test classes: ``Test<ClassName>``
+    - Test modules: ``test_<module_name>.py``
+    - Test package: ``tests/``
 
+Key functions:
+    - ``make_test_obj_name``: Generate test name from source object
+    - ``make_test_obj_importpath_from_obj``: Generate test import path
+    - ``get_test_obj_from_obj``: Get test object for a source object
+    - ``get_obj_from_test_obj``: Get source object for a test object
+
+Attributes:
+    TEST_FUNCTION_PREFIX: Prefix for test functions ("test_").
+    TEST_CLASS_PREFIX: Prefix for test classes ("Test").
+    TEST_MODULE_PREFIX: Prefix for test modules ("test_").
+    TESTS_PACKAGE_NAME: Name of the tests package ("tests").
 """
 
 from collections.abc import Callable, Iterable

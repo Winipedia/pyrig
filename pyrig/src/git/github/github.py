@@ -1,4 +1,19 @@
-"""GitHub utilities for working with GitHub repositories."""
+"""GitHub repository utilities for token management and URL parsing.
+
+This module provides utilities for working with GitHub repositories,
+including authentication token retrieval, GitHub Actions environment
+detection, and repository URL parsing.
+
+The token retrieval supports both environment variables and .env files,
+following a priority order that prefers environment variables for CI/CD
+compatibility.
+
+Example:
+    >>> from pyrig.src.git.github.github import get_repo_owner_and_name_from_git
+    >>> owner, repo = get_repo_owner_and_name_from_git()
+    >>> print(f"{owner}/{repo}")
+    myorg/myrepo
+"""
 
 import os
 
@@ -7,7 +22,27 @@ from pyrig.src.os.os import run_subprocess
 
 
 def get_github_repo_token() -> str:
-    """Get the GitHub token."""
+    """Retrieve the GitHub repository token for API authentication.
+
+    Attempts to find a GitHub token in the following order:
+    1. The `REPO_TOKEN` environment variable
+    2. The `REPO_TOKEN` key in the project's `.env` file
+
+    This priority order ensures CI/CD environments (which typically set
+    environment variables) work seamlessly while allowing local development
+    to use .env files.
+
+    Returns:
+        The GitHub token string.
+
+    Raises:
+        ValueError: If no token is found in either location, or if the
+            .env file doesn't exist when falling back to it.
+
+    Note:
+        The token should have appropriate permissions for the intended
+        operations (e.g., repo scope for branch protection rules).
+    """
     # try os env first
     token = os.getenv("REPO_TOKEN")
     if token:
@@ -28,12 +63,37 @@ def get_github_repo_token() -> str:
 
 
 def running_in_github_actions() -> bool:
-    """Check if we are running in a GitHub action."""
+    """Check if the code is running inside a GitHub Actions workflow.
+
+    GitHub Actions sets the `GITHUB_ACTIONS` environment variable to "true"
+    in all workflow runs. This function checks for that variable.
+
+    Returns:
+        True if running in GitHub Actions, False otherwise.
+
+    Example:
+        >>> if running_in_github_actions():
+        ...     print("Running in CI")
+        ... else:
+        ...     print("Running locally")
+    """
     return os.getenv("GITHUB_ACTIONS", "false") == "true"
 
 
 def get_repo_url_from_git() -> str:
-    """Get the repository url from git."""
+    """Get the remote origin URL from the local git repository.
+
+    Executes `git config --get remote.origin.url` to retrieve the URL
+    of the origin remote.
+
+    Returns:
+        The remote origin URL (e.g., "https://github.com/owner/repo.git"
+        or "git@github.com:owner/repo.git").
+
+    Raises:
+        subprocess.CalledProcessError: If not in a git repository or if
+            the origin remote is not configured.
+    """
     stdout: str = run_subprocess(
         ["git", "config", "--get", "remote.origin.url"]
     ).stdout.decode("utf-8")
@@ -41,7 +101,22 @@ def get_repo_url_from_git() -> str:
 
 
 def get_repo_owner_and_name_from_git() -> tuple[str, str]:
-    """Get the repository owner and name from git."""
+    """Extract the GitHub owner and repository name from the git remote.
+
+    Parses the remote origin URL to extract the owner (organization or user)
+    and repository name. Handles both HTTPS and SSH URL formats.
+
+    Returns:
+        A tuple of (owner, repository_name).
+
+    Raises:
+        subprocess.CalledProcessError: If the git remote cannot be read.
+
+    Example:
+        >>> owner, repo = get_repo_owner_and_name_from_git()
+        >>> print(f"{owner}/{repo}")
+        myorg/myrepo
+    """
     url = get_repo_url_from_git()
     parts = url.removesuffix(".git").split("/")
     # keep last two parts

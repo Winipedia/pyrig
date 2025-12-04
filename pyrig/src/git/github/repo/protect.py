@@ -1,4 +1,21 @@
-"""Script to protect the repo and branches of a repository."""
+"""Repository protection and security configuration.
+
+This module provides functions to configure secure repository settings and
+branch protection rulesets on GitHub. It implements pyrig's opinionated
+security defaults, including required reviews, status checks, and merge
+restrictions.
+
+The protection rules enforce:
+    - Required pull request reviews with code owner approval
+    - Required status checks (health check workflow must pass)
+    - Linear commit history (no merge commits)
+    - Signed commits
+    - No force pushes or deletions
+
+Example:
+    >>> from pyrig.src.git.github.repo.protect import protect_repository
+    >>> protect_repository()  # Applies all protection rules
+"""
 
 from typing import Any
 
@@ -17,13 +34,25 @@ from pyrig.src.git.github.repo.repo import (
 
 
 def protect_repository() -> None:
-    """Protect the repository."""
+    """Apply all security protections to the repository.
+
+    Configures both repository-level settings and branch protection
+    rulesets. This is the main entry point for securing a repository.
+    """
     set_secure_repo_settings()
     create_or_update_default_branch_ruleset()
 
 
 def set_secure_repo_settings() -> None:
-    """Set standard settings for the repository."""
+    """Configure repository-level settings for security and consistency.
+
+    Sets the following repository settings:
+        - Description from pyproject.toml
+        - Default branch to 'main'
+        - Delete branches on merge
+        - Allow update branch button
+        - Disable merge commits (squash and rebase only)
+    """
     owner, repo_name = get_repo_owner_and_name_from_git()
     token = get_github_repo_token()
     repo = get_repo(token, owner, repo_name)
@@ -43,14 +72,27 @@ def set_secure_repo_settings() -> None:
 
 
 def create_or_update_default_branch_ruleset() -> None:
-    """Add a branch protection rule to the repository."""
+    """Create or update the default branch protection ruleset.
+
+    Applies pyrig's standard protection rules to the default branch (main).
+    If a ruleset with the same name already exists, it is updated.
+    """
     create_or_update_ruleset(
         **get_default_ruleset_params(),
     )
 
 
 def get_default_ruleset_params() -> dict[str, Any]:
-    """Get the default ruleset parameters."""
+    """Build the parameter dictionary for the default branch ruleset.
+
+    Constructs the complete ruleset configuration including:
+        - Branch targeting (default branch only)
+        - Bypass permissions for repository admins
+        - All protection rules (reviews, status checks, etc.)
+
+    Returns:
+        A dictionary of parameters suitable for `create_or_update_ruleset()`.
+    """
     from pyrig.dev.configs.workflows.health_check import (  # noqa: PLC0415
         HealthCheckWorkflow,  # avoid circular import
     )

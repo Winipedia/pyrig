@@ -1,4 +1,22 @@
-"""Contains utilities for working with GitHub repositories."""
+"""GitHub repository API utilities and ruleset management.
+
+This module provides low-level utilities for interacting with the GitHub API,
+specifically for repository rulesets. It uses the PyGithub library for
+authentication and API calls.
+
+Rulesets are GitHub's newer mechanism for branch protection, offering more
+flexibility than the older branch protection rules. This module provides
+functions to create, update, and query rulesets.
+
+Attributes:
+    DEFAULT_BRANCH: The default branch name used by pyrig ("main").
+    DEFAULT_RULESET_NAME: The name of the default protection ruleset.
+
+Example:
+    >>> from pyrig.src.git.github.repo.repo import get_repo, create_or_update_ruleset
+    >>> repo = get_repo(token, "owner", "repo_name")
+    >>> rules = get_rules_payload(pull_request={"required_approving_review_count": 1})
+"""
 
 import logging
 from typing import Any, Literal
@@ -140,7 +158,25 @@ def create_or_update_ruleset(  # noqa: PLR0913
     | None = None,
     rules: list[dict[str, Any]] | None = None,
 ) -> Any:
-    """Create a ruleset for the repository."""
+    """Create or update a repository ruleset.
+
+    If a ruleset with the given name exists, it is updated. Otherwise,
+    a new ruleset is created.
+
+    Args:
+        token: GitHub API token with repo permissions.
+        owner: Repository owner (user or organization).
+        repo_name: Repository name.
+        ruleset_name: Name for the ruleset.
+        enforcement: Enforcement level ("active", "disabled", or "evaluate").
+        target: What the ruleset applies to ("branch", "tag", or "push").
+        bypass_actors: List of actors who can bypass the ruleset.
+        conditions: Branch/tag name patterns to include or exclude.
+        rules: List of rule objects from `get_rules_payload()`.
+
+    Returns:
+        The API response containing the created/updated ruleset.
+    """
     repo = get_repo(token, owner, repo_name)
     ruleset_id = ruleset_exists(
         token=token, owner=owner, repo_name=repo_name, ruleset_name=ruleset_name
@@ -175,7 +211,16 @@ def create_or_update_ruleset(  # noqa: PLR0913
 
 
 def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
-    """Get all rulesets for the repository."""
+    """Retrieve all rulesets defined for a repository.
+
+    Args:
+        token: GitHub API token.
+        owner: Repository owner.
+        repo_name: Repository name.
+
+    Returns:
+        A list of ruleset objects from the GitHub API.
+    """
     repo = get_repo(token, owner, repo_name)
     url = f"{repo.url}/rulesets"
     method = "GET"
@@ -191,14 +236,33 @@ def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
 
 
 def get_repo(token: str, owner: str, repo_name: str) -> Repository:
-    """Get the repository."""
+    """Get a PyGithub Repository object for API operations.
+
+    Args:
+        token: GitHub API token.
+        owner: Repository owner (user or organization).
+        repo_name: Repository name.
+
+    Returns:
+        A PyGithub Repository object.
+    """
     auth = Token(token)
     github = Github(auth=auth)
     return github.get_repo(f"{owner}/{repo_name}")
 
 
 def ruleset_exists(token: str, owner: str, repo_name: str, ruleset_name: str) -> int:
-    """Check if the main protection ruleset exists."""
+    """Check if a ruleset with the given name exists.
+
+    Args:
+        token: GitHub API token.
+        owner: Repository owner.
+        repo_name: Repository name.
+        ruleset_name: Name of the ruleset to check for.
+
+    Returns:
+        The ruleset ID if it exists, 0 otherwise.
+    """
     rulesets = get_all_rulesets(token, owner, repo_name)
     main_ruleset = next((rs for rs in rulesets if rs["name"] == ruleset_name), None)
     return main_ruleset["id"] if main_ruleset else 0

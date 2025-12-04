@@ -1,4 +1,15 @@
-"""Config utilities for pyproject.toml."""
+"""Configuration management for pyproject.toml.
+
+This module provides the PyprojectConfigFile class for managing the
+project's pyproject.toml file. It handles project metadata, dependencies,
+tool configurations (ruff, mypy, pytest, bandit), and build settings.
+
+The configuration enforces pyrig's opinionated defaults:
+    - All ruff rules enabled (with minimal exceptions)
+    - Strict mypy type checking
+    - Bandit security scanning
+    - uv as the build backend
+"""
 
 import re
 from functools import cache
@@ -16,11 +27,30 @@ from pyrig.src.testing.convention import TEST_MODULE_PREFIX, TESTS_PACKAGE_NAME
 
 
 class PyprojectConfigFile(TomlConfigFile):
-    """Config file for pyproject.toml."""
+    """Configuration file manager for pyproject.toml.
+
+    Manages the central project configuration including:
+        - Project metadata (name, description, dependencies)
+        - Build system configuration (uv)
+        - Tool configurations (ruff, mypy, pytest, bandit)
+        - CLI entry points
+
+    The class provides utilities for querying project information
+    and managing dependencies.
+    """
 
     @classmethod
     def dump(cls, config: dict[str, Any] | list[Any]) -> None:
-        """Dump the config file."""
+        """Write configuration to pyproject.toml.
+
+        Normalizes dependencies before writing.
+
+        Args:
+            config: The configuration dict to write.
+
+        Raises:
+            TypeError: If config is not a dict.
+        """
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to pyproject.toml file."
             raise TypeError(msg)
@@ -30,32 +60,51 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def get_parent_path(cls) -> Path:
-        """Get the path to the config file."""
+        """Get the project root directory.
+
+        Returns:
+            Path to the project root.
+        """
         return Path()
 
     @classmethod
     def get_project_name_from_cwd(cls) -> str:
-        """Get the repository name.
+        """Derive the project name from the current directory.
 
-        Is the parent folder the project ives in and should be the same as the
-        project name.
+        The project name is assumed to match the directory name.
+
+        Returns:
+            The current directory name.
         """
         cwd = Path.cwd()
         return cwd.name
 
     @classmethod
     def get_pkg_name_from_cwd(cls) -> str:
-        """Get the package name from the cwd."""
+        """Derive the package name from the current directory.
+
+        Returns:
+            The package name (directory name with hyphens as underscores).
+        """
         return cls.get_pkg_name_from_project_name(cls.get_project_name_from_cwd())
 
     @classmethod
     def get_project_description(cls) -> str:
-        """Get the project description."""
+        """Get the project description from pyproject.toml.
+
+        Returns:
+            The project description or empty string.
+        """
         return str(cls.load().get("project", {}).get("description", ""))
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
-        """Get the config."""
+        """Get the expected pyproject.toml configuration.
+
+        Returns:
+            Complete configuration dict with project metadata,
+            dependencies, build system, and tool configurations.
+        """
         from pyrig.dev.cli import (  # noqa: PLC0415
             cli,
         )
@@ -118,17 +167,22 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def should_remove_version_from_dep(cls) -> bool:
-        """Check if we should remove the version from the dependency.
+        """Determine whether to strip version specifiers from dependencies.
 
-        We should remove the version if we are in a dev dependency and the dep
-        is in the standard dev dependencies.
-        Can be overridden by subclasses.
+        Override in subclasses to preserve version specifiers.
+
+        Returns:
+            True to remove versions, False to preserve them.
         """
         return True
 
     @classmethod
     def remove_wrong_dependencies(cls, config: dict[str, Any]) -> None:
-        """Remove the wrong dependencies from the config."""
+        """Normalize dependencies by removing version specifiers.
+
+        Args:
+            config: The configuration dict to modify in place.
+        """
         # removes the versions from the dependencies
         config["project"]["dependencies"] = cls.make_dependency_versions(
             config["project"]["dependencies"]
@@ -143,14 +197,14 @@ class PyprojectConfigFile(TomlConfigFile):
         dependencies: list[str],
         additional: list[str] | None = None,
     ) -> list[str]:
-        """Make a dependency to version dict.
+        """Normalize and merge dependency lists.
 
         Args:
-            dependencies: Dependencies to add
-            additional: Additional dependencies to add
+            dependencies: Primary dependencies to process.
+            additional: Additional dependencies to merge.
 
         Returns:
-            Dependency to version dict
+            Sorted, deduplicated list of normalized dependencies.
         """
         if additional is None:
             additional = []
@@ -170,40 +224,77 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def remove_version_from_dep(cls, dep: str) -> str:
-        """Remove the version from a dependency."""
+        """Strip version specifier from a dependency string.
+
+        Args:
+            dep: Dependency string like "requests>=2.0".
+
+        Returns:
+            Package name without version (e.g., "requests").
+        """
         return re.split(r"[^a-zA-Z0-9_.-]", dep)[0]
 
     @classmethod
     def get_package_name(cls) -> str:
-        """Get the package name."""
+        """Get the Python package name (with underscores).
+
+        Returns:
+            The package name derived from the project name.
+        """
         project_name = cls.get_project_name()
         return cls.get_pkg_name_from_project_name(project_name)
 
     @classmethod
     def get_pkg_name_from_project_name(cls, project_name: str) -> str:
-        """Get the package name from the project name."""
+        """Convert a project name to a package name.
+
+        Args:
+            project_name: Project name with hyphens.
+
+        Returns:
+            Package name with underscores.
+        """
         return project_name.replace("-", "_")
 
     @classmethod
     def get_project_name_from_pkg_name(cls, pkg_name: str) -> str:
-        """Get the project name from the package name."""
+        """Convert a package name to a project name.
+
+        Args:
+            pkg_name: Package name with underscores.
+
+        Returns:
+            Project name with hyphens.
+        """
         return pkg_name.replace("_", "-")
 
     @classmethod
     def get_project_name(cls) -> str:
-        """Get the project name."""
+        """Get the project name from pyproject.toml.
+
+        Returns:
+            The project name or empty string.
+        """
         return str(cls.load().get("project", {}).get("name", ""))
 
     @classmethod
     def get_all_dependencies(cls) -> list[str]:
-        """Get all dependencies."""
+        """Get all dependencies (runtime and dev).
+
+        Returns:
+            Combined list of all dependencies.
+        """
         all_deps = cls.get_dependencies()
         all_deps.extend(cls.get_dev_dependencies())
         return all_deps
 
     @classmethod
     def get_standard_dev_dependencies(cls) -> list[str]:
-        """Get the standard dev dependencies."""
+        """Get pyrig's standard development dependencies.
+
+        Returns:
+            Sorted list of standard dev dependencies.
+        """
         standard_dev_dependencies: list[str] = [
             "bandit",
             "mypy",
@@ -223,20 +314,35 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def get_dev_dependencies(cls) -> list[str]:
-        """Get the dev dependencies."""
+        """Get development dependencies from pyproject.toml.
+
+        Returns:
+            List of dev dependencies.
+        """
         dev_deps: list[str] = cls.load().get("dependency-groups", {}).get("dev", [])
         return dev_deps
 
     @classmethod
     def get_dependencies(cls) -> list[str]:
-        """Get the dependencies."""
+        """Get runtime dependencies from pyproject.toml.
+
+        Returns:
+            List of runtime dependencies.
+        """
         deps: list[str] = cls.load().get("project", {}).get("dependencies", [])
         return deps
 
     @classmethod
     @cache
     def fetch_latest_python_version(cls) -> Version:
-        """Fetch the latest python version from python.org."""
+        """Fetch the latest stable Python version from endoflife.date.
+
+        Returns:
+            The latest stable Python version.
+
+        Raises:
+            requests.HTTPError: If the API request fails.
+        """
         url = "https://endoflife.date/api/python.json"
         resp = requests.get(url, timeout=10)
         resp.raise_for_status()
@@ -249,7 +355,14 @@ class PyprojectConfigFile(TomlConfigFile):
     def get_latest_possible_python_version(
         cls, level: Literal["major", "minor", "micro"] = "micro"
     ) -> Version:
-        """Get the latest possible python version."""
+        """Get the latest Python version allowed by requires-python.
+
+        Args:
+            level: Version precision (major, minor, or micro).
+
+        Returns:
+            The latest allowed Python version.
+        """
         constraint = cls.load()["project"]["requires-python"]
         version_constraint = VersionConstraint(constraint)
         version = version_constraint.get_upper_inclusive()
@@ -260,7 +373,14 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def get_first_supported_python_version(cls) -> Version:
-        """Get the first supported python version."""
+        """Get the minimum supported Python version.
+
+        Returns:
+            The minimum Python version from requires-python.
+
+        Raises:
+            ValueError: If no lower bound is specified.
+        """
         constraint = cls.load()["project"]["requires-python"]
         version_constraint = VersionConstraint(constraint)
         lower = version_constraint.get_lower_inclusive()
@@ -271,7 +391,11 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def get_supported_python_versions(cls) -> list[Version]:
-        """Get all supported python versions."""
+        """Get all supported Python minor versions.
+
+        Returns:
+            List of supported Python versions (e.g., [3.10, 3.11, 3.12]).
+        """
         constraint = cls.load()["project"]["requires-python"]
         version_constraint = VersionConstraint(constraint)
         return version_constraint.get_version_range(
@@ -280,14 +404,28 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def update_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
-        """Update the dependencies."""
+        """Update dependencies to their latest versions.
+
+        Args:
+            check: Whether to raise on non-zero exit code.
+
+        Returns:
+            The completed process result.
+        """
         from pyrig.src.project.mgt import PROJECT_MGT  # noqa: PLC0415
 
         return run_subprocess([PROJECT_MGT, "lock", "--upgrade"], check=check)
 
     @classmethod
     def install_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
-        """Install the dependencies."""
+        """Install project dependencies using uv sync.
+
+        Args:
+            check: Whether to raise on non-zero exit code.
+
+        Returns:
+            The completed process result.
+        """
         from pyrig.src.project.mgt import PROJECT_MGT  # noqa: PLC0415
 
         return run_subprocess([PROJECT_MGT, "sync"], check=check)

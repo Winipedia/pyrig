@@ -1,12 +1,26 @@
-"""Module utilities for introspection and manipulation.
+"""Module loading, path conversion, and cross-package discovery utilities.
 
-This module provides comprehensive utility functions for working with Python modules,
-including path conversions, module creation, object importing, and content extraction.
-It handles the complexities of Python's module system by providing a consistent API
-for module operations across different contexts (packages vs. standalone modules).
+This module provides comprehensive utilities for working with Python modules,
+including bidirectional path/module name conversion, dynamic module creation,
+object importing, and cross-package module discovery.
 
-The utilities support both runtime module manipulation and static analysis,
-making them suitable for code generation, testing frameworks, and dynamic imports.
+Key capabilities:
+    - Path conversion: Convert between filesystem paths and module names
+    - Module creation: Create new modules with proper package structure
+    - Object importing: Import objects from fully qualified import paths
+    - Cross-package discovery: Find equivalent modules across dependent packages
+
+The cross-package discovery (`get_same_modules_from_deps_depen_on_dep`) is
+central to pyrig's multi-package architecture, enabling automatic discovery
+of ConfigFile implementations and other extensible components across all
+packages that depend on pyrig.
+
+Example:
+    >>> from pyrig.src.modules.module import to_module_name, to_path
+    >>> to_module_name("src/package/module.py")
+    'src.package.module'
+    >>> to_path("src.package.module", is_package=False)
+    PosixPath('src/package/module.py')
 """
 
 import importlib.util
@@ -203,7 +217,22 @@ def create_module(
 
 
 def import_module_from_path(path: Path | str) -> ModuleType:
-    """Import a module from a path."""
+    """Import a module from a filesystem path.
+
+    Converts the path to a module name and imports it. Handles both regular
+    modules (.py files) and packages (directories with __init__.py).
+
+    Args:
+        path: Filesystem path to the module or package. Can be a Path object
+            or a string path.
+
+    Returns:
+        The imported module object.
+
+    Raises:
+        FileNotFoundError: If the path does not exist.
+        ValueError: If the module cannot be loaded.
+    """
     module_name = to_module_name(path)
     path = to_path(module_name, is_package=False)
     module = import_module_with_default(module_name)
@@ -217,7 +246,15 @@ def import_module_from_path(path: Path | str) -> ModuleType:
 def import_module_from_path_with_default(
     path: Path, default: Any = None
 ) -> ModuleType | Any:
-    """Import a module from a path."""
+    """Import a module from a path, returning a default on failure.
+
+    Args:
+        path: Filesystem path to the module.
+        default: Value to return if the module cannot be imported.
+
+    Returns:
+        The imported module, or `default` if import fails.
+    """
     try:
         return import_module_from_path(path)
     except FileNotFoundError:
@@ -225,7 +262,21 @@ def import_module_from_path_with_default(
 
 
 def import_module_from_file(path: Path) -> ModuleType:
-    """Import a module from a path."""
+    """Import a module directly from a .py file.
+
+    Uses `importlib.util` to create a module spec and load the module
+    from the specified file. The module is registered in `sys.modules`
+    with a name derived from its path relative to the current directory.
+
+    Args:
+        path: Path to the .py file to import.
+
+    Returns:
+        The imported module object.
+
+    Raises:
+        ValueError: If a module spec or loader cannot be created for the path.
+    """
     # name is dotted path relative to cwd
     name = to_module_name(path.resolve().relative_to(Path.cwd()))
     spec = importlib.util.spec_from_file_location(name, path)
@@ -551,15 +602,33 @@ def make_pkg_dir(path: Path) -> None:
 def get_same_modules_from_deps_depen_on_dep(
     module: ModuleType, dep: ModuleType
 ) -> list[ModuleType]:
-    """Get the same module from a dependency.
+    """Find equivalent modules across all packages depending on a dependency.
+
+    This is a key function for pyrig's multi-package architecture. Given a
+    module path within a dependency (e.g., `pyrig.dev.configs`), it finds
+    the equivalent module path in all packages that depend on that dependency
+    (e.g., `myapp.dev.configs`, `other_pkg.dev.configs`).
+
+    This enables automatic discovery of ConfigFile implementations, Builder
+    subclasses, and other extensible components across the entire ecosystem
+    of packages that depend on pyrig.
 
     Args:
-        module: The module to find the same module from
-        dep: The dependency to find the same module from
+        module: The module to use as a template (e.g., `pyrig.dev.configs`).
+        dep: The dependency package that other packages depend on (e.g., pyrig).
 
     Returns:
-        The same module from the dependency
+        A list of equivalent modules from all packages that depend on `dep`,
+        including the original module itself.
 
+    Example:
+        >>> import pyrig
+        >>> import pyrig.dev.configs
+        >>> modules = get_same_modules_from_deps_depen_on_dep(
+        ...     pyrig.dev.configs, pyrig
+        ... )
+        >>> [m.__name__ for m in modules]
+        ['pyrig.dev.configs', 'myapp.dev.configs', 'other_pkg.dev.configs']
     """
     module_name = module.__name__
     graph = DependencyGraph()

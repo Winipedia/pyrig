@@ -1,9 +1,29 @@
-"""Class utilities for introspection and manipulation.
+"""Class introspection and subclass discovery utilities.
 
-This module provides utility functions for working with Python classes,
-including extracting methods from classes and finding classes within modules.
-These utilities are particularly useful for reflection, testing,
-and dynamic code generation.
+This module provides utilities for inspecting Python classes, extracting their
+methods, and discovering subclasses across packages. The subclass discovery
+system is central to pyrig's plugin architecture, enabling automatic discovery
+of ConfigFile implementations, Builder subclasses, and other extensible
+components.
+
+Key features:
+    - Method extraction with optional parent class filtering
+    - Class discovery within modules
+    - Recursive subclass discovery with package loading
+    - Intelligent "leaf class" filtering via `discard_parents`
+
+The `discard_parents` feature is particularly important: when multiple packages
+define subclasses in a chain (e.g., BaseConfig -> PyrigConfig -> UserConfig),
+only the most specific (leaf) classes are kept. This enables clean override
+behavior where user customizations replace base implementations.
+
+Example:
+    >>> from pyrig.src.modules.class_ import get_all_nonabstract_subclasses
+    >>> subclasses = get_all_nonabstract_subclasses(
+    ...     ConfigFile,
+    ...     load_package_before=my_package.dev.configs,
+    ...     discard_parents=True
+    ... )
 """
 
 import inspect
@@ -22,21 +42,34 @@ def get_all_methods_from_cls(
     exclude_parent_methods: bool = False,
     include_annotate: bool = False,
 ) -> list[Callable[..., Any]]:
-    """Get all methods from a class.
+    """Extract all methods from a class.
 
-    Retrieves all methods (functions or methods) from a class. Can optionally
-    exclude methods inherited from parent classes.
+    Retrieves all method-like attributes from a class, including instance
+    methods, static methods, class methods, and properties. Methods are
+    returned sorted by their definition order in the source code.
+
+    This is used by pyrig to generate test skeletons for each method
+    in a class.
 
     Args:
-        class_: The class to extract methods from
-        exclude_parent_methods: If True, only include methods defined in this class,
-        excluding those inherited from parent classes
-        include_annotate: If False, exclude __annotate__ method
-        introduced in Python 3.14, defaults to False
+        class_: The class to extract methods from.
+        exclude_parent_methods: If True, only includes methods defined directly
+            in this class, excluding inherited methods. Useful when generating
+            tests only for new methods in a subclass.
+        include_annotate: If False (default), excludes `__annotate__` methods
+            introduced in Python 3.14.
 
     Returns:
-        A list of callable methods from the class
+        A list of callable method objects, sorted by their line number
+        in the source file.
 
+    Example:
+        >>> class MyClass:
+        ...     def method_a(self): pass
+        ...     def method_b(self): pass
+        >>> methods = get_all_methods_from_cls(MyClass)
+        >>> [m.__name__ for m in methods]
+        ['method_a', 'method_b']
     """
     from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
         get_module_of_obj,
@@ -62,17 +95,31 @@ def get_all_methods_from_cls(
 
 
 def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
-    """Get all classes defined in a module.
+    """Extract all classes defined directly in a module.
 
-    Retrieves all class objects that are defined directly in the specified module,
-    excluding imported classes.
+    Retrieves all class objects that are defined in the specified module,
+    excluding classes imported from other modules. Classes are returned
+    sorted by their definition order.
+
+    This is used by pyrig to discover classes for test skeleton generation.
 
     Args:
-        module: The module to extract classes from
+        module: The module to extract classes from. Can be a module object
+            or a fully qualified module name string.
 
     Returns:
-        A list of class types defined in the module
+        A list of class types defined in the module, sorted by their
+        definition order in the source file.
 
+    Note:
+        Handles edge cases like Rust-backed classes (e.g., cryptography's
+        AESGCM) that may not have standard `__module__` attributes.
+
+    Example:
+        >>> import my_module
+        >>> classes = get_all_cls_from_module(my_module)
+        >>> [c.__name__ for c in classes]
+        ['ClassA', 'ClassB']
     """
     from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
         get_module_of_obj,
@@ -98,22 +145,35 @@ def get_all_subclasses(
     *,
     discard_parents: bool = False,
 ) -> set[type]:
-    """Get all subclasses of a class.
+    """Recursively discover all subclasses of a class.
 
-    Retrieves all classes that are subclasses of the specified class.
-    Also returns subclasses of subclasses (recursive).
+    Finds all direct and indirect subclasses of the given class. Because
+    Python's `__subclasses__()` only returns classes that have been imported,
+    you can optionally specify a package to walk (import) before discovery.
 
     Args:
-        cls: The class to find subclasses of
-        load_package_before: If provided,
-            walks the package before loading the subclasses
-            This is useful when the subclasses are defined in other modules that need
-            to be imported before they can be found by __subclasses__
-        discard_parents: If True, only keeps the most recent child class of each branch
+        cls: The base class to find subclasses of.
+        load_package_before: Optional package to walk before discovery. All
+            modules in this package will be imported, ensuring any subclasses
+            defined there are registered with Python's subclass tracking.
+            When provided, results are filtered to only include classes from
+            this package.
+        discard_parents: If True, removes parent classes from the result when
+            both a parent and its child are present. This keeps only the most
+            specific (leaf) classes, enabling clean override behavior.
 
     Returns:
-        A list of subclasses of the given class
+        A set of all subclasses (including the original class itself when
+        `load_package_before` is not specified).
 
+    Example:
+        >>> class Base: pass
+        >>> class Child(Base): pass
+        >>> class GrandChild(Child): pass
+        >>> get_all_subclasses(Base)
+        {Base, Child, GrandChild}
+        >>> get_all_subclasses(Base, discard_parents=True)
+        {GrandChild}
     """
     from pyrig.src.modules.package import (  # noqa: PLC0415  # avoid circular import
         walk_package,
@@ -143,23 +203,32 @@ def get_all_nonabstract_subclasses(
     *,
     discard_parents: bool = False,
 ) -> set[type]:
-    """Get all non-abstract subclasses of a class.
+    """Find all concrete (non-abstract) subclasses of a class.
 
-    Retrieves all classes that are subclasses of the specified class,
-    excluding abstract classes. Also returns subclasses of subclasses
-    (recursive).
+    Similar to `get_all_subclasses`, but filters out abstract classes
+    (those with unimplemented abstract methods). This is the primary
+    function used by pyrig to discover implementations of ConfigFile,
+    Builder, and other extensible base classes.
 
     Args:
-        cls: The class to find subclasses of
-        load_package_before: If provided,
-            walks the package before loading the subclasses
-            This is useful when the subclasses are defined in other modules that need
-            to be imported before they can be found by __subclasses__
-        discard_parents: If True, only keeps the most recent child class of each branch
+        cls: The base class to find subclasses of.
+        load_package_before: Optional package to walk before discovery.
+            See `get_all_subclasses` for details.
+        discard_parents: If True, keeps only leaf classes when a parent
+            and child are both present.
 
     Returns:
-        A list of non-abstract subclasses of the given class
+        A set of all non-abstract subclasses.
 
+    Example:
+        >>> from abc import ABC, abstractmethod
+        >>> class Base(ABC):
+        ...     @abstractmethod
+        ...     def method(self): pass
+        >>> class Concrete(Base):
+        ...     def method(self): pass
+        >>> get_all_nonabstract_subclasses(Base)
+        {Concrete}
     """
     return {
         subclass
@@ -178,16 +247,21 @@ def init_all_nonabstract_subclasses(
     *,
     discard_parents: bool = False,
 ) -> None:
-    """Initialize all non-abstract subclasses of a class.
+    """Discover and instantiate all concrete subclasses of a class.
+
+    Finds all non-abstract subclasses and calls their default constructor
+    (no arguments). This is used by pyrig's ConfigFile and Builder systems
+    to automatically initialize all discovered implementations.
 
     Args:
-        cls: The class to find subclasses of
-        load_package_before: If provided,
-            walks the package before loading the subclasses
-            This is useful when the subclasses are defined in other modules that need
-            to be imported before they can be found by __subclasses__
-        discard_parents: If True, only keeps the most recent child class of each branch
+        cls: The base class to find and instantiate subclasses of.
+        load_package_before: Optional package to walk before discovery.
+        discard_parents: If True, only instantiates leaf classes.
 
+    Note:
+        All subclasses must have a no-argument `__init__` or be classes
+        that can be called with no arguments (e.g., using `__init_subclass__`
+        or `__new__` for initialization).
     """
     for subclass in get_all_nonabstract_subclasses(
         cls,
@@ -204,25 +278,38 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
     *,
     discard_parents: bool = False,
 ) -> list[type]:
-    """Get all non-abstract subclasses of a class from a module in all deps.
+    """Find non-abstract subclasses across all packages depending on a dependency.
 
-    Retrieves all classes that are subclasses of the specified class,
-    excluding abstract classes. Also returns subclasses of subclasses
-    (recursive).
+    This is the core discovery function for pyrig's multi-package architecture.
+    It finds all packages that depend on `dep`, looks for the same relative
+    module path as `load_package_before` in each, and discovers subclasses
+    of `cls` in those modules.
+
+    For example, if `dep` is pyrig and `load_package_before` is
+    `pyrig.dev.configs`, this will find `myapp.dev.configs` in any package
+    that depends on pyrig, and discover ConfigFile subclasses there.
 
     Args:
-        cls: The class to find subclasses of
-        dep: The dependency to find subclasses of
-        load_package_before: If provided,
-            walks the package before loading the subclasses
-            This is useful when the subclasses are defined in other modules that need
-            to be imported before they can be found by __subclasses__
-        discard_parents: If True, only keeps the most recent child class of each branch
+        cls: The base class to find subclasses of.
+        dep: The dependency package that other packages depend on (e.g., pyrig).
+        load_package_before: The module path within `dep` to use as a template
+            for finding equivalent modules in dependent packages.
+        discard_parents: If True, keeps only leaf classes when inheritance
+            chains span multiple packages.
 
     Returns:
-        A list of non-abstract subclasses of the given class
-        Order is garanteed only that classes from the same module are grouped together
+        A list of all discovered non-abstract subclasses. Classes from the
+        same module are grouped together, but ordering between packages
+        depends on the dependency graph traversal order.
 
+    Example:
+        >>> # Find all ConfigFile implementations across the ecosystem
+        >>> subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
+        ...     ConfigFile,
+        ...     pyrig,
+        ...     pyrig.dev.configs,
+        ...     discard_parents=True
+        ... )
     """
     from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
         get_same_modules_from_deps_depen_on_dep,
@@ -252,14 +339,27 @@ def discard_parent_classes(classes: set[type]) -> set[type]: ...
 
 
 def discard_parent_classes(classes: list[type] | set[type]) -> list[type] | set[type]:
-    """Discard parent classes from a list of classes.
+    """Remove parent classes when their children are also present.
+
+    Filters a collection of classes to keep only "leaf" classes - those
+    that have no subclasses in the collection. This enables clean override
+    behavior: if you subclass a ConfigFile, only your subclass will be used.
 
     Args:
-        classes: The classes to discard parent classes from
+        classes: A list or set of class types to filter. Modified in place.
 
     Returns:
-        A list of classes with parent classes discarded
+        The same collection with parent classes removed. The return type
+        matches the input type (list or set).
 
+    Example:
+        >>> class A: pass
+        >>> class B(A): pass
+        >>> class C(B): pass
+        >>> discard_parent_classes({A, B, C})
+        {C}
+        >>> discard_parent_classes([A, C])  # B not in list, so A stays
+        [A, C]
     """
     for cls in classes.copy():
         if any(child in classes for child in cls.__subclasses__()):

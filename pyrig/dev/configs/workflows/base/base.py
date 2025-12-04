@@ -1,4 +1,9 @@
-"""Contains base utilities for git workflows."""
+"""Base class for GitHub Actions workflow configuration.
+
+This module provides the Workflow base class that all workflow
+configuration files inherit from. It includes utilities for
+building jobs, steps, triggers, and matrix strategies.
+"""
 
 from abc import abstractmethod
 from collections.abc import Callable
@@ -19,7 +24,20 @@ from pyrig.src.string import (
 
 
 class Workflow(YamlConfigFile):
-    """Base class for workflows."""
+    """Abstract base class for GitHub Actions workflow configuration.
+
+    Provides a declarative API for building workflow YAML files with
+    jobs, steps, triggers, and matrix strategies. Subclasses must
+    implement get_jobs() to define the workflow's jobs.
+
+    Attributes:
+        UBUNTU_LATEST: Runner label for Ubuntu.
+        WINDOWS_LATEST: Runner label for Windows.
+        MACOS_LATEST: Runner label for macOS.
+        ARTIFACTS_DIR_NAME: Directory name for build artifacts.
+        ARTIFACTS_PATTERN: Glob pattern for artifact files.
+        EMPTY_CONFIG: Minimal valid workflow for empty configurations.
+    """
 
     UBUNTU_LATEST = "ubuntu-latest"
     WINDOWS_LATEST = "windows-latest"
@@ -47,7 +65,11 @@ class Workflow(YamlConfigFile):
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
-        """Get the workflow config."""
+        """Build the complete workflow configuration.
+
+        Returns:
+            Dict with name, triggers, permissions, defaults, env, and jobs.
+        """
         return {
             "name": cls.get_workflow_name(),
             "on": cls.get_workflow_triggers(),
@@ -60,15 +82,22 @@ class Workflow(YamlConfigFile):
 
     @classmethod
     def get_parent_path(cls) -> Path:
-        """Get the path to the config file."""
+        """Get the parent directory for workflow files.
+
+        Returns:
+            Path to .github/workflows directory.
+        """
         return Path(".github/workflows")
 
     @classmethod
     def is_correct(cls) -> bool:
-        """Check if the config is correct.
+        """Check if the workflow configuration is correct.
 
-        Needs some special handling since workflow files cannot be empty.
-        We need a workflow that will never trigger and even if doesnt do anything.
+        Handles the special case where workflow files cannot be empty.
+        If empty, writes a minimal valid workflow that never triggers.
+
+        Returns:
+            True if configuration matches expected state.
         """
         correct = super().is_correct()
         if cls.get_path().read_text(encoding="utf-8") == "":
@@ -82,37 +111,59 @@ class Workflow(YamlConfigFile):
     @classmethod
     @abstractmethod
     def get_jobs(cls) -> dict[str, Any]:
-        """Get the workflow jobs."""
+        """Get the workflow jobs.
+
+        Subclasses must implement this to define their jobs.
+
+        Returns:
+            Dict mapping job IDs to job configurations.
+        """
 
     @classmethod
     def get_workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers.
 
-        Can be overriden. Standard is workflow_dispatch.
+        Override to customize when the workflow runs.
+        Default is manual workflow_dispatch only.
+
+        Returns:
+            Dict of trigger configurations.
         """
         return cls.on_workflow_dispatch()
 
     @classmethod
     def get_permissions(cls) -> dict[str, Any]:
-        """Get the workflow permissions. Can be overriden.
+        """Get the workflow permissions.
 
-        Standard is no extra permissions.
+        Override to request additional permissions.
+        Default is no extra permissions.
+
+        Returns:
+            Dict of permission settings.
         """
         return {}
 
     @classmethod
     def get_defaults(cls) -> dict[str, Any]:
-        """Get the workflow defaults. Can be overriden.
+        """Get the workflow defaults.
 
-        Standard is bash.
+        Override to customize default settings.
+        Default uses bash shell.
+
+        Returns:
+            Dict of default settings.
         """
         return {"run": {"shell": "bash"}}
 
     @classmethod
     def get_global_env(cls) -> dict[str, Any]:
-        """Get the global env. Can be overriden.
+        """Get the global environment variables.
 
-        Standard is no global env.
+        Override to add environment variables.
+        Default disables Python bytecode writing.
+
+        Returns:
+            Dict of environment variables.
         """
         return {"PYTHONDONTWRITEBYTECODE": 1}
 
@@ -120,12 +171,20 @@ class Workflow(YamlConfigFile):
     # ----------------------------------------------------------------------------
     @classmethod
     def get_workflow_name(cls) -> str:
-        """Get the workflow name."""
+        """Generate a human-readable workflow name from the class name.
+
+        Returns:
+            Class name split on uppercase letters and joined with spaces.
+        """
         return " ".join(split_on_uppercase(cls.__name__))
 
     @classmethod
     def get_run_name(cls) -> str:
-        """Get the run name."""
+        """Get the display name for workflow runs.
+
+        Returns:
+            The workflow name by default.
+        """
         return cls.get_workflow_name()
 
     # Build Utilities
@@ -142,20 +201,20 @@ class Workflow(YamlConfigFile):
         steps: list[dict[str, Any]] | None = None,
         job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get a job.
+        """Build a job configuration.
 
         Args:
-        job_func: The function that represents the job. Used to generate the name.
-        job: The job to update. Defaults to a new job.
-        needs: The needs of the job.
-        strategy: The strategy of the job. like matrix
-        permissions: The permissions of the job.
-        runs_on: The runs-on of the job. Defaults to ubuntu-latest.
-        if_condition: The if condition of the job.
-        steps: The steps of the job.
+            job_func: Function representing the job, used to generate the ID.
+            needs: List of job IDs this job depends on.
+            strategy: Matrix or other strategy configuration.
+            permissions: Job-level permissions.
+            runs_on: Runner label. Defaults to ubuntu-latest.
+            if_condition: Conditional expression for job execution.
+            steps: List of step configurations.
+            job: Existing job dict to update.
 
         Returns:
-        The job.
+            Dict mapping job ID to job configuration.
         """
         name = cls.make_id_from_func(job_func)
         if job is None:
@@ -177,14 +236,28 @@ class Workflow(YamlConfigFile):
 
     @classmethod
     def make_name_from_func(cls, func: Callable[..., Any]) -> str:
-        """Make a name from a function."""
+        """Generate a human-readable name from a function.
+
+        Args:
+            func: Function to extract name from.
+
+        Returns:
+            Formatted name with prefix removed.
+        """
         name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
         prefix = split_on_uppercase(name)[0]
         return name.removeprefix(prefix).strip()
 
     @classmethod
     def make_id_from_func(cls, func: Callable[..., Any]) -> str:
-        """Make an id from a function."""
+        """Generate a job/step ID from a function name.
+
+        Args:
+            func: Function to extract ID from.
+
+        Returns:
+            Function name with prefix removed.
+        """
         name = func.__name__
         prefix = name.split("_")[0]
         return name.removeprefix(f"{prefix}_")
@@ -192,24 +265,49 @@ class Workflow(YamlConfigFile):
     # triggers
     @classmethod
     def on_workflow_dispatch(cls) -> dict[str, Any]:
-        """Get the workflow dispatch trigger."""
+        """Create a manual workflow dispatch trigger.
+
+        Returns:
+            Trigger configuration for manual runs.
+        """
         return {"workflow_dispatch": {}}
 
     @classmethod
     def on_push(cls, branches: list[str] | None = None) -> dict[str, Any]:
-        """Get the push trigger."""
+        """Create a push trigger.
+
+        Args:
+            branches: Branches to trigger on. Defaults to ["main"].
+
+        Returns:
+            Trigger configuration for push events.
+        """
         if branches is None:
             branches = ["main"]
         return {"push": {"branches": branches}}
 
     @classmethod
     def on_schedule(cls, cron: str) -> dict[str, Any]:
-        """Get the schedule trigger."""
+        """Create a scheduled trigger.
+
+        Args:
+            cron: Cron expression for the schedule.
+
+        Returns:
+            Trigger configuration for scheduled runs.
+        """
         return {"schedule": [{"cron": cron}]}
 
     @classmethod
     def on_pull_request(cls, types: list[str] | None = None) -> dict[str, Any]:
-        """Get the pull request trigger."""
+        """Create a pull request trigger.
+
+        Args:
+            types: PR event types. Defaults to opened, synchronize, reopened.
+
+        Returns:
+            Trigger configuration for pull request events.
+        """
         if types is None:
             types = ["opened", "synchronize", "reopened"]
         return {"pull_request": {"types": types}}
@@ -218,7 +316,15 @@ class Workflow(YamlConfigFile):
     def on_workflow_run(
         cls, workflows: list[str] | None = None, branches: list[str] | None = None
     ) -> dict[str, Any]:
-        """Get the workflow run trigger."""
+        """Create a workflow run trigger.
+
+        Args:
+            workflows: Workflow names to trigger on. Defaults to this workflow.
+            branches: Branches to filter on.
+
+        Returns:
+            Trigger configuration for workflow completion events.
+        """
         if workflows is None:
             workflows = [cls.get_workflow_name()]
         config: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
@@ -229,7 +335,14 @@ class Workflow(YamlConfigFile):
     # permissions
     @classmethod
     def permission_content(cls, permission: str = "read") -> dict[str, Any]:
-        """Get the content read permission."""
+        """Create a contents permission configuration.
+
+        Args:
+            permission: Permission level (read, write, none).
+
+        Returns:
+            Dict with contents permission.
+        """
         return {"contents": permission}
 
     # Steps
@@ -244,19 +357,19 @@ class Workflow(YamlConfigFile):
         env: dict[str, Any] | None = None,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get a step.
+        """Build a step configuration.
 
         Args:
-        step_func: The function that represents the step. Used to generate the name.
-        run: The run command.
-        if_condition: The if condition.
-        uses: The uses command.
-        with_: The with command.
-        env: The env command.
-        step: The step to update. Defaults to a new step.
+            step_func: Function representing the step, used to generate name/ID.
+            run: Shell command to execute.
+            if_condition: Conditional expression for step execution.
+            uses: GitHub Action to use.
+            with_: Input parameters for the action.
+            env: Environment variables for the step.
+            step: Existing step dict to update.
 
         Returns:
-        The step.
+            Step configuration dict.
         """
         if step is None:
             step = {}
@@ -288,7 +401,17 @@ class Workflow(YamlConfigFile):
         matrix: dict[str, list[Any]] | None = None,
         strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get a strategy for os and python version."""
+        """Create a strategy with OS and Python version matrix.
+
+        Args:
+            os: List of OS runners. Defaults to all major platforms.
+            python_version: List of Python versions. Defaults to supported versions.
+            matrix: Additional matrix dimensions.
+            strategy: Additional strategy options.
+
+        Returns:
+            Strategy configuration with OS and Python matrix.
+        """
         return cls.strategy_matrix(
             matrix=cls.matrix_os_and_python_version(
                 os=os, python_version=python_version, matrix=matrix
@@ -303,7 +426,16 @@ class Workflow(YamlConfigFile):
         matrix: dict[str, list[Any]] | None = None,
         strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get a strategy for python version."""
+        """Create a strategy with Python version matrix.
+
+        Args:
+            python_version: List of Python versions. Defaults to supported versions.
+            matrix: Additional matrix dimensions.
+            strategy: Additional strategy options.
+
+        Returns:
+            Strategy configuration with Python version matrix.
+        """
         return cls.strategy_matrix(
             matrix=cls.matrix_python_version(
                 python_version=python_version, matrix=matrix
@@ -318,7 +450,16 @@ class Workflow(YamlConfigFile):
         matrix: dict[str, list[Any]] | None = None,
         strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get a strategy for os."""
+        """Create a strategy with OS matrix.
+
+        Args:
+            os: List of OS runners. Defaults to all major platforms.
+            matrix: Additional matrix dimensions.
+            strategy: Additional strategy options.
+
+        Returns:
+            Strategy configuration with OS matrix.
+        """
         return cls.strategy_matrix(
             matrix=cls.matrix_os(os=os, matrix=matrix), strategy=strategy
         )
@@ -330,7 +471,15 @@ class Workflow(YamlConfigFile):
         strategy: dict[str, Any] | None = None,
         matrix: dict[str, list[Any]] | None = None,
     ) -> dict[str, Any]:
-        """Get a matrix strategy."""
+        """Create a matrix strategy configuration.
+
+        Args:
+            strategy: Base strategy options.
+            matrix: Matrix dimensions.
+
+        Returns:
+            Strategy configuration with matrix.
+        """
         if strategy is None:
             strategy = {}
         if matrix is None:
@@ -344,7 +493,14 @@ class Workflow(YamlConfigFile):
         *,
         strategy: dict[str, Any],
     ) -> dict[str, Any]:
-        """Get a strategy."""
+        """Finalize a strategy configuration.
+
+        Args:
+            strategy: Strategy configuration to finalize.
+
+        Returns:
+            Strategy with fail-fast defaulting to True.
+        """
         strategy["fail-fast"] = strategy.pop("fail-fast", True)
         return strategy
 
@@ -355,7 +511,16 @@ class Workflow(YamlConfigFile):
         python_version: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
     ) -> dict[str, Any]:
-        """Get a matrix for os and python version."""
+        """Create a matrix with OS and Python version dimensions.
+
+        Args:
+            os: List of OS runners. Defaults to all major platforms.
+            python_version: List of Python versions. Defaults to supported versions.
+            matrix: Additional matrix dimensions.
+
+        Returns:
+            Matrix configuration with os and python-version.
+        """
         if matrix is None:
             matrix = {}
         os_matrix = cls.matrix_os(os=os, matrix=matrix)["os"]
@@ -373,7 +538,15 @@ class Workflow(YamlConfigFile):
         os: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
     ) -> dict[str, Any]:
-        """Get a matrix for os."""
+        """Create a matrix with OS dimension.
+
+        Args:
+            os: List of OS runners. Defaults to Ubuntu, Windows, macOS.
+            matrix: Additional matrix dimensions.
+
+        Returns:
+            Matrix configuration with os.
+        """
         if os is None:
             os = [cls.UBUNTU_LATEST, cls.WINDOWS_LATEST, cls.MACOS_LATEST]
         if matrix is None:
@@ -388,7 +561,15 @@ class Workflow(YamlConfigFile):
         python_version: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
     ) -> dict[str, Any]:
-        """Get a matrix for python version."""
+        """Create a matrix with Python version dimension.
+
+        Args:
+            python_version: List of Python versions. Defaults to supported versions.
+            matrix: Additional matrix dimensions.
+
+        Returns:
+            Matrix configuration with python-version.
+        """
         if python_version is None:
             python_version = [
                 str(v) for v in PyprojectConfigFile.get_supported_python_versions()
@@ -400,7 +581,14 @@ class Workflow(YamlConfigFile):
 
     @classmethod
     def get_matrix(cls, matrix: dict[str, list[Any]]) -> dict[str, Any]:
-        """Get a matrix."""
+        """Return the matrix configuration.
+
+        Args:
+            matrix: Matrix dimensions.
+
+        Returns:
+            The matrix configuration unchanged.
+        """
         return matrix
 
     # Workflow Steps
@@ -410,7 +598,15 @@ class Workflow(YamlConfigFile):
     def steps_core_setup(
         cls, python_version: str | None = None, *, repo_token: bool = False
     ) -> list[dict[str, Any]]:
-        """Get the core setup steps."""
+        """Get the core setup steps for any workflow.
+
+        Args:
+            python_version: Python version to use. Defaults to latest supported.
+            repo_token: Whether to use REPO_TOKEN for checkout.
+
+        Returns:
+            List with checkout and project management setup steps.
+        """
         if python_version is None:
             python_version = str(
                 PyprojectConfigFile.get_latest_possible_python_version(level="minor")
@@ -424,7 +620,15 @@ class Workflow(YamlConfigFile):
     def steps_core_installed_setup(
         cls, python_version: str | None = None, *, repo_token: bool = False
     ) -> list[dict[str, Any]]:
-        """Get the core setup steps."""
+        """Get core setup steps with dependency installation.
+
+        Args:
+            python_version: Python version to use. Defaults to latest supported.
+            repo_token: Whether to use REPO_TOKEN for checkout.
+
+        Returns:
+            List with setup, install, and dependency update steps.
+        """
         return [
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
             cls.step_install_python_dependencies(),
@@ -437,7 +641,15 @@ class Workflow(YamlConfigFile):
     def steps_core_matrix_setup(
         cls, python_version: str | None = None, *, repo_token: bool = False
     ) -> list[dict[str, Any]]:
-        """Get the core matrix setup steps."""
+        """Get core setup steps for matrix jobs.
+
+        Args:
+            python_version: Python version to use. Defaults to matrix value.
+            repo_token: Whether to use REPO_TOKEN for checkout.
+
+        Returns:
+            List with full setup steps for matrix execution.
+        """
         return [
             *cls.steps_core_installed_setup(
                 python_version=python_version, repo_token=repo_token
@@ -446,7 +658,11 @@ class Workflow(YamlConfigFile):
 
     @classmethod
     def steps_configure_keyring_if_needed(cls) -> list[dict[str, Any]]:
-        """Get the keyring steps if keyring is in dependencies."""
+        """Get keyring configuration steps if keyring is a dependency.
+
+        Returns:
+            List with keyring setup step if needed, empty otherwise.
+        """
         steps: list[dict[str, Any]] = []
         if "keyring" in DependencyGraph.get_all_dependencies():
             steps.append(cls.step_setup_keyring())
@@ -459,7 +675,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the aggregate matrix results step."""
+        """Create a step that aggregates matrix job results.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step configuration for result aggregation.
+        """
         return cls.get_step(
             step_func=cls.step_aggregate_matrix_results,
             run="echo 'Aggregating matrix results into one job.'",
@@ -472,7 +695,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the no build script step."""
+        """Create a placeholder step when no builders are defined.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that echoes a skip message.
+        """
         return cls.get_step(
             step_func=cls.step_no_builder_defined,
             run="echo 'No non-abstract builders defined. Skipping build.'",
@@ -485,7 +715,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the run tests step."""
+        """Create a step that runs pytest.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step configuration for running tests.
+        """
         if step is None:
             step = {}
         if PyprojectConfigFile.get_package_name() == pyrig.__name__:
@@ -502,7 +739,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the patch version step."""
+        """Create a step that bumps the patch version.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that increments version and stages pyproject.toml.
+        """
         return cls.get_step(
             step_func=cls.step_patch_version,
             run="uv version --bump patch && git add pyproject.toml",
@@ -515,7 +759,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the update dependencies step."""
+        """Create a step that updates and syncs dependencies.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs uv lock --upgrade and sync.
+        """
         return cls.get_step(
             step_func=cls.step_update_dependencies,
             run=f"{PROJECT_MGT} lock --upgrade && {PROJECT_MGT} sync",
@@ -528,7 +779,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the add dependency updates to git step."""
+        """Create a step that stages dependency file changes.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that stages pyproject.toml and uv.lock.
+        """
         return cls.get_step(
             step_func=cls.step_add_dependency_updates_to_git,
             run="git add pyproject.toml uv.lock",
@@ -543,7 +801,16 @@ class Workflow(YamlConfigFile):
         fetch_depth: int | None = None,
         repo_token: bool = False,
     ) -> dict[str, Any]:
-        """Get the checkout step."""
+        """Create a step that checks out the repository.
+
+        Args:
+            step: Existing step dict to update.
+            fetch_depth: Git fetch depth. None for full history.
+            repo_token: Whether to use REPO_TOKEN for authentication.
+
+        Returns:
+            Step using actions/checkout.
+        """
         if step is None:
             step = {}
         if fetch_depth is not None:
@@ -562,7 +829,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the setup git step."""
+        """Create a step that configures git user for commits.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that sets git user.email and user.name.
+        """
         return cls.get_step(
             step_func=cls.step_setup_git,
             run='git config --global user.email "github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]"',  # noqa: E501
@@ -576,7 +850,15 @@ class Workflow(YamlConfigFile):
         step: dict[str, Any] | None = None,
         python_version: str | None = None,
     ) -> dict[str, Any]:
-        """Get the setup python step."""
+        """Create a step that sets up Python.
+
+        Args:
+            step: Existing step dict to update.
+            python_version: Python version to install. Defaults to latest.
+
+        Returns:
+            Step using actions/setup-python.
+        """
         if step is None:
             step = {}
         if python_version is None:
@@ -598,7 +880,15 @@ class Workflow(YamlConfigFile):
         python_version: str | None = None,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the setup for project mgt like uv."""
+        """Create a step that sets up the project management tool (uv).
+
+        Args:
+            python_version: Python version to configure.
+            step: Existing step dict to update.
+
+        Returns:
+            Step using astral-sh/setup-uv.
+        """
         return cls.get_step(
             step_func=cls.step_setup_project_mgt,
             uses="astral-sh/setup-uv@main",
@@ -612,7 +902,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the build wheel step."""
+        """Create a step that builds the Python wheel.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs uv build.
+        """
         return cls.get_step(
             step_func=cls.step_build_wheel,
             run=f"{PROJECT_MGT} build",
@@ -625,7 +922,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the publish to pypi step."""
+        """Create a step that publishes the package to PyPI.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs uv publish with PYPI_TOKEN.
+        """
         return cls.get_step(
             step_func=cls.step_publish_to_pypi,
             run=f"{PROJECT_MGT} publish --token {cls.insert_pypi_token()}",
@@ -638,7 +942,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the install dependencies step."""
+        """Create a step that installs Python dependencies.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs uv sync.
+        """
         return cls.get_step(
             step_func=cls.step_install_python_dependencies,
             run=f"{PROJECT_MGT} sync",
@@ -651,7 +962,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the setup keyring step."""
+        """Create a step that configures keyring for CI.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that sets up PlaintextKeyring for CI environments.
+        """
         return cls.get_step(
             step_func=cls.step_setup_keyring,
             run=f'{PROJECT_MGT} run python -c "import keyring; from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"',  # noqa: E501
@@ -664,7 +982,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the protect repository step."""
+        """Create a step that applies repository protection rules.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs the pyrig protect-repo command.
+        """
         return cls.get_step(
             step_func=cls.step_protect_repository,
             run=get_project_mgt_run_pyrig_cli_cmd_script(
@@ -680,11 +1005,16 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the run pre-commit hooks step.
+        """Create a step that runs pre-commit hooks.
 
-        Patching version is useful to have at least a minimal version bump when
-        creating a release and it also makes sure git stash pop does not fail when
-        there are no changes.
+        Ensures code quality checks pass before commits. Also useful
+        for ensuring git stash pop doesn't fail when there are no changes.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs pre-commit on all files.
         """
         return cls.get_step(
             step_func=cls.step_run_pre_commit_hooks,
@@ -698,7 +1028,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the commit changes step."""
+        """Create a step that commits staged changes.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that commits with [skip ci] prefix.
+        """
         return cls.get_step(
             step_func=cls.step_commit_added_changes,
             run="git commit --no-verify -m '[skip ci] CI/CD: Committing possible added changes (e.g.: pyproject.toml)'",  # noqa: E501
@@ -711,7 +1048,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the push changes step."""
+        """Create a step that pushes commits to the remote.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs git push.
+        """
         return cls.get_step(
             step_func=cls.step_push_commits,
             run="git push",
@@ -724,7 +1068,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the tag and push step."""
+        """Create a step that creates and pushes a version tag.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that creates a git tag and pushes it.
+        """
         return cls.get_step(
             step_func=cls.step_create_and_push_tag,
             run=f"git tag {cls.insert_version()} && git push origin {cls.insert_version()}",  # noqa: E501
@@ -738,7 +1089,15 @@ class Workflow(YamlConfigFile):
         folder: str,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the create folder step."""
+        """Create a step that creates a directory.
+
+        Args:
+            folder: Directory name to create.
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs mkdir (cross-platform).
+        """
         # should work on all OSs
         return cls.get_step(
             step_func=cls.step_create_folder,
@@ -753,7 +1112,15 @@ class Workflow(YamlConfigFile):
         folder: str = Builder.ARTIFACTS_DIR_NAME,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the create artifacts folder step."""
+        """Create a step that creates the artifacts directory.
+
+        Args:
+            folder: Directory name. Defaults to ARTIFACTS_DIR_NAME.
+            step: Existing step dict to update.
+
+        Returns:
+            Step that creates the artifacts folder.
+        """
         return cls.step_create_folder(folder=folder, step=step)
 
     @classmethod
@@ -764,7 +1131,16 @@ class Workflow(YamlConfigFile):
         path: str | Path = ARTIFACTS_DIR_NAME,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the upload artifacts step."""
+        """Create a step that uploads build artifacts.
+
+        Args:
+            name: Artifact name. Defaults to package-os format.
+            path: Path to upload. Defaults to artifacts directory.
+            step: Existing step dict to update.
+
+        Returns:
+            Step using actions/upload-artifact.
+        """
         if name is None:
             name = cls.insert_artifact_name()
         return cls.get_step(
@@ -780,7 +1156,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the build artifacts step."""
+        """Create a step that builds project artifacts.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs the pyrig build command.
+        """
         return cls.get_step(
             step_func=cls.step_build_artifacts,
             run=get_project_mgt_run_pyrig_cli_cmd_script(build),
@@ -795,7 +1178,16 @@ class Workflow(YamlConfigFile):
         path: str | Path = ARTIFACTS_DIR_NAME,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the download artifacts step."""
+        """Create a step that downloads build artifacts.
+
+        Args:
+            name: Artifact name to download. None downloads all.
+            path: Path to download to. Defaults to artifacts directory.
+            step: Existing step dict to update.
+
+        Returns:
+            Step using actions/download-artifact.
+        """
         # omit name downloads all by default
         with_: dict[str, Any] = {"path": str(path)}
         if name is not None:
@@ -814,7 +1206,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the build changelog step."""
+        """Create a step that generates a changelog.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step using release-changelog-builder-action.
+        """
         return cls.get_step(
             step_func=cls.step_build_changelog,
             uses="mikepenz/release-changelog-builder-action@develop",
@@ -828,7 +1227,14 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Get the extract version step."""
+        """Create a step that extracts the version to GITHUB_OUTPUT.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that outputs the version for later steps.
+        """
         return cls.get_step(
             step_func=cls.step_extract_version,
             run=f'echo "version={cls.insert_version()}" >> $GITHUB_OUTPUT',
@@ -842,7 +1248,15 @@ class Workflow(YamlConfigFile):
         step: dict[str, Any] | None = None,
         artifacts_pattern: str = ARTIFACTS_PATTERN,
     ) -> dict[str, Any]:
-        """Get the create release step."""
+        """Create a step that creates a GitHub release.
+
+        Args:
+            step: Existing step dict to update.
+            artifacts_pattern: Glob pattern for release artifacts.
+
+        Returns:
+            Step using ncipollo/release-action.
+        """
         version = cls.insert_version_from_extract_version_step()
         return cls.get_step(
             step_func=cls.step_create_release,
@@ -860,22 +1274,38 @@ class Workflow(YamlConfigFile):
     # ----------------------------------------------------------------------------
     @classmethod
     def insert_repo_token(cls) -> str:
-        """Insert the repository token."""
+        """Get the GitHub expression for REPO_TOKEN secret.
+
+        Returns:
+            GitHub Actions expression for secrets.REPO_TOKEN.
+        """
         return "${{ secrets.REPO_TOKEN }}"
 
     @classmethod
     def insert_pypi_token(cls) -> str:
-        """Insert the pypi token."""
+        """Get the GitHub expression for PYPI_TOKEN secret.
+
+        Returns:
+            GitHub Actions expression for secrets.PYPI_TOKEN.
+        """
         return "${{ secrets.PYPI_TOKEN }}"
 
     @classmethod
     def insert_version(cls) -> str:
-        """Insert the version."""
+        """Get a shell expression for the current version.
+
+        Returns:
+            Shell command that outputs the version with v prefix.
+        """
         return "v$(uv version --short)"
 
     @classmethod
     def insert_version_from_extract_version_step(cls) -> str:
-        """Insert the version from the extract version step."""
+        """Get the GitHub expression for version from extract step.
+
+        Returns:
+            GitHub Actions expression referencing the extract_version output.
+        """
         # make dynamic with cls.make_id_from_func(cls.step_extract_version)
         return (
             "${{ "
@@ -885,7 +1315,11 @@ class Workflow(YamlConfigFile):
 
     @classmethod
     def insert_changelog(cls) -> str:
-        """Insert the changelog."""
+        """Get the GitHub expression for changelog from build step.
+
+        Returns:
+            GitHub Actions expression referencing the build_changelog output.
+        """
         return (
             "${{ "
             f"steps.{cls.make_id_from_func(cls.step_build_changelog)}.outputs.changelog"
@@ -894,70 +1328,135 @@ class Workflow(YamlConfigFile):
 
     @classmethod
     def insert_github_token(cls) -> str:
-        """Insert the GitHub token."""
+        """Get the GitHub expression for GITHUB_TOKEN.
+
+        Returns:
+            GitHub Actions expression for secrets.GITHUB_TOKEN.
+        """
         return "${{ secrets.GITHUB_TOKEN }}"
 
     @classmethod
     def insert_repository_name(cls) -> str:
-        """Insert the repository name."""
+        """Get the GitHub expression for repository name.
+
+        Returns:
+            GitHub Actions expression for the repository name.
+        """
         return "${{ github.event.repository.name }}"
 
     @classmethod
     def insert_ref_name(cls) -> str:
-        """Insert the ref name."""
+        """Get the GitHub expression for the ref name.
+
+        Returns:
+            GitHub Actions expression for github.ref_name.
+        """
         return "${{ github.ref_name }}"
 
     @classmethod
     def insert_repository_ownwer(cls) -> str:
-        """Insert the repository owner."""
+        """Get the GitHub expression for repository owner.
+
+        Returns:
+            GitHub Actions expression for github.repository_owner.
+        """
         return "${{ github.repository_owner }}"
 
     @classmethod
     def insert_os(cls) -> str:
-        """Insert the os."""
+        """Get the GitHub expression for runner OS.
+
+        Returns:
+            GitHub Actions expression for runner.os.
+        """
         return "${{ runner.os }}"
 
     @classmethod
     def insert_matrix_os(cls) -> str:
-        """Insert the matrix os."""
+        """Get the GitHub expression for matrix OS value.
+
+        Returns:
+            GitHub Actions expression for matrix.os.
+        """
         return "${{ matrix.os }}"
 
     @classmethod
     def insert_matrix_python_version(cls) -> str:
-        """Insert the matrix python version."""
+        """Get the GitHub expression for matrix Python version.
+
+        Returns:
+            GitHub Actions expression for matrix.python-version.
+        """
         return "${{ matrix.python-version }}"
 
     @classmethod
     def insert_artifact_name(cls) -> str:
-        """Insert the artifact name."""
+        """Generate an artifact name based on package and OS.
+
+        Returns:
+            Artifact name in format: package-os.
+        """
         return f"{get_src_package().__name__}-{cls.insert_os()}"
 
     # ifs
     @classmethod
     def if_matrix_is_os(cls, os: str) -> str:
-        """Insert the matrix os."""
+        """Create a condition for matching a specific OS.
+
+        Args:
+            os: OS runner label to match.
+
+        Returns:
+            Condition expression for matrix.os comparison.
+        """
         return f"matrix.os == '{os}'"
 
     @classmethod
     def if_matrix_is_python_version(cls, python_version: str) -> str:
-        """Insert the matrix python version."""
+        """Create a condition for matching a specific Python version.
+
+        Args:
+            python_version: Python version to match.
+
+        Returns:
+            Condition expression for matrix.python-version comparison.
+        """
         return f"matrix.python-version == '{python_version}'"
 
     @classmethod
     def if_matrix_is_os_and_python_version(cls, os: str, python_version: str) -> str:
-        """Insert the matrix os and python version."""
+        """Create a condition for matching OS and Python version.
+
+        Args:
+            os: OS runner label to match.
+            python_version: Python version to match.
+
+        Returns:
+            Combined condition expression.
+        """
         return f"{cls.if_matrix_is_os(os)} && {cls.if_matrix_is_python_version(python_version)}"  # noqa: E501
 
     @classmethod
     def if_matrix_is_latest_python_version(cls) -> str:
-        """Insert the matrix latest python version."""
+        """Create a condition for matching the latest Python version.
+
+        Returns:
+            Condition expression for latest supported Python.
+        """
         return cls.if_matrix_is_python_version(
             str(PyprojectConfigFile.get_latest_possible_python_version(level="minor"))
         )
 
     @classmethod
     def if_matrix_is_os_and_latest_python_version(cls, os: str) -> str:
-        """Insert the matrix os and latest python version."""
+        """Create a condition for matching OS and latest Python.
+
+        Args:
+            os: OS runner label to match.
+
+        Returns:
+            Combined condition expression.
+        """
         return cls.if_matrix_is_os_and_python_version(
             os,
             str(PyprojectConfigFile.get_latest_possible_python_version(level="minor")),
@@ -965,5 +1464,9 @@ class Workflow(YamlConfigFile):
 
     @classmethod
     def if_workflow_run_is_success(cls) -> str:
-        """Insert the if workflow run is success."""
+        """Create a condition for successful workflow run.
+
+        Returns:
+            GitHub Actions expression checking workflow_run conclusion.
+        """
         return "${{ github.event.workflow_run.conclusion == 'success' }}"

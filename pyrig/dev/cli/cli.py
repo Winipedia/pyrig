@@ -1,4 +1,17 @@
-"""This module contains the CLI entrypoint."""
+"""CLI entry point and command registration.
+
+This module provides the main CLI entry point for pyrig projects. It uses
+Typer to build a command-line interface and automatically discovers
+subcommands from the project's subcommands module.
+
+The CLI supports both pyrig's built-in commands and project-specific
+commands defined in the consuming project's subcommands module.
+
+Example:
+    $ uv run pyrig init
+    $ uv run pyrig create-root
+    $ uv run pyrig build
+"""
 
 import sys
 from pathlib import Path
@@ -13,10 +26,16 @@ from pyrig.src.modules.function import get_all_functions_from_module
 from pyrig.src.modules.module import import_module_from_path
 
 app = typer.Typer()
+"""The main Typer application instance."""
 
 
 def add_subcommands() -> None:
-    """Add subcommands to the CLI."""
+    """Discover and register all CLI subcommands.
+
+    Dynamically loads the main module and subcommands module for the
+    current project, registering all public functions as CLI commands.
+    This enables projects depending on pyrig to define their own commands.
+    """
     # extract project name from sys.argv[0]
     project_name = Path(sys.argv[0]).name
     pkg_name = PyprojectConfigFile.get_pkg_name_from_project_name(project_name)
@@ -41,6 +60,10 @@ def add_subcommands() -> None:
 
 
 def main() -> None:
-    """Entry point for the CLI."""
+    """Entry point for the CLI.
+
+    Registers all subcommands and invokes the Typer application.
+    This function is called by the console script entry point.
+    """
     add_subcommands()
     app()

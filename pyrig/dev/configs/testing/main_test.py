@@ -1,4 +1,8 @@
-"""Has the test for main in src."""
+"""Configuration for the test_main.py test file.
+
+This module provides the MainTestConfigFile class for creating
+a test file that verifies the CLI entry point works correctly.
+"""
 
 from pathlib import Path
 
@@ -10,11 +14,19 @@ from pyrig.src.testing.convention import make_test_obj_importpath_from_obj
 
 
 class MainTestConfigFile(PythonPackageConfigFile):
-    """Config file for test_main.py."""
+    """Configuration file manager for test_main.py.
+
+    Creates a test file that verifies the CLI entry point
+    responds correctly to --help.
+    """
 
     @classmethod
     def get_parent_path(cls) -> Path:
-        """Get the path to the config file."""
+        """Get the test directory path.
+
+        Returns:
+            Path to the tests/pkg_name/src directory.
+        """
         test_module_path = to_path(
             make_test_obj_importpath_from_obj(main), is_package=False
         ).parent
@@ -28,12 +40,20 @@ class MainTestConfigFile(PythonPackageConfigFile):
 
     @classmethod
     def get_filename(cls) -> str:
-        """Get the filename of the config file."""
+        """Get the test filename.
+
+        Returns:
+            The string "test_main".
+        """
         return "test_main"
 
     @classmethod
     def get_content_str(cls) -> str:
-        """Get the config."""
+        """Get the test file content.
+
+        Returns:
+            Python code with a test that verifies CLI --help works.
+        """
         return '''"""test module."""
 
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
@@ -51,8 +71,11 @@ def test_main() -> None:
 
     @classmethod
     def is_correct(cls) -> bool:
-        """Check if the config is correct.
+        """Check if the test file is valid.
 
-        Allow modifications to the test func.
+        Allows modifications as long as test_main function exists.
+
+        Returns:
+            True if the file contains a test_main function.
         """
         return super().is_correct() or "def test_main" in cls.get_file_content()

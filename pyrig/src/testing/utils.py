@@ -1,12 +1,15 @@
-"""Testing utilities for introspection and validation.
+"""Test coverage validation utilities.
 
-This module provides utility functions for working with tests, including:
-- Asserting that all objects in the source have corresponding test objects
-- Generating the content for a conftest.py file
+This module provides utilities for validating test coverage by ensuring
+that all source objects have corresponding test objects. The main function
+``assert_no_untested_objs`` can be used in conftest.py to automatically
+detect missing tests and generate skeleton test files.
 
-Returns:
-    Various utility functions for testing introspection and validation.
-
+Example:
+    In conftest.py:
+        >>> from pyrig.src.testing.utils import assert_no_untested_objs
+        >>> def test_coverage(test_module):
+        ...     assert_no_untested_objs(test_module)
 """
 
 import logging

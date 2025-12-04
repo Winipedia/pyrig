@@ -1,6 +1,25 @@
-"""Pyrigs init script.
+"""Project initialization orchestration.
 
-This script inits the project by calling all setup steps.
+This module provides the main initialization flow for pyrig projects.
+The `init()` function runs a series of setup steps to fully configure
+a new project, including:
+
+1. Writing priority config files (pyproject.toml with dev dependencies)
+2. Installing dependencies with uv
+3. Creating project structure (source and test directories)
+4. Running pre-commit hooks for initial formatting
+5. Running tests to verify setup
+6. Re-installing to activate CLI entry points
+
+The initialization process is idempotent and can be re-run safely.
+
+Example:
+    Run from command line:
+        $ uv run pyrig init
+
+    Or programmatically:
+        >>> from pyrig.src.project.init import init
+        >>> init()
 """
 
 import logging
@@ -20,14 +39,22 @@ logger = logging.getLogger(__name__)
 
 
 def run_create_root() -> None:
-    """Run create root."""
+    """Execute the create-root CLI command via subprocess.
+
+    Invokes `uv run pyrig create-root` to generate all config files
+    and the project directory structure.
+    """
     from pyrig.dev.cli.subcommands import create_root  # noqa: PLC0415
 
     run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(create_root))
 
 
 def run_create_tests() -> None:
-    """Run create tests."""
+    """Execute the create-tests CLI command via subprocess.
+
+    Invokes `uv run pyrig create-tests` to generate test skeleton
+    files that mirror the source code structure.
+    """
     from pyrig.dev.cli.subcommands import create_tests  # noqa: PLC0415
 
     run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(create_tests))
@@ -43,10 +70,25 @@ SETUP_STEPS: list[Callable[..., Any]] = [
     ConftestConfigFile.run_tests,
     PyprojectConfigFile.install_dependencies,  # to activate cli
 ]
+"""Ordered list of setup steps executed during project initialization."""
 
 
 def init() -> None:
-    """Set up the project."""
+    """Initialize a pyrig project by running all setup steps.
+
+    Executes each step in `SETUP_STEPS` sequentially, logging progress.
+    This is the main entry point for the `pyrig init` command.
+
+    The steps include:
+        1. Write priority config files (pyproject.toml)
+        2. Install dependencies
+        3. Update dependencies to latest
+        4. Create project structure
+        5. Generate test skeletons
+        6. Run pre-commit hooks
+        7. Run tests
+        8. Re-install to activate CLI
+    """
     # for init set log level to info
     logging.basicConfig(level=logging.INFO)
     for step in SETUP_STEPS:

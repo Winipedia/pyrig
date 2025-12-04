@@ -1,6 +1,8 @@
-"""Contains the pull request workflow.
+"""GitHub Actions workflow for health checks and CI.
 
-This workflow is used to run tests on pull requests.
+This module provides the HealthCheckWorkflow class for creating
+a workflow that runs on pull requests, pushes, and scheduled intervals
+to verify code quality and run tests.
 """
 
 from datetime import UTC, datetime, timedelta
@@ -12,17 +14,22 @@ from pyrig.src.modules.package import DependencyGraph, get_src_package
 
 
 class HealthCheckWorkflow(Workflow):
-    """Pull request workflow.
+    """Workflow for continuous integration health checks.
 
-    This workflow is triggered by a pull request.
-    It runs tests on the pull request.
+    Triggers on pull requests, pushes to main, and scheduled intervals.
+    Runs linting, type checking, security scanning, and tests across
+    a matrix of OS and Python versions.
     """
 
     BASE_CRON_HOUR = 1
 
     @classmethod
     def get_workflow_triggers(cls) -> dict[str, Any]:
-        """Get the workflow triggers."""
+        """Get the workflow triggers.
+
+        Returns:
+            Triggers for pull requests, pushes, and scheduled runs.
+        """
         triggers = super().get_workflow_triggers()
         triggers.update(cls.on_pull_request())
         triggers.update(cls.on_push())
@@ -31,11 +38,13 @@ class HealthCheckWorkflow(Workflow):
 
     @classmethod
     def get_staggered_cron(cls) -> str:
-        """Get the staggered cron schedule based on dependency count.
+        """Get a staggered cron schedule based on dependency depth.
 
-        Packages with more dependencies run later to avoid conflicts when
-        dependencies release right before dependent packages run their tests.
-        Base time is 1 AM, with 1 hour added for each dependency on pyrig.
+        Packages with more dependencies run later to avoid conflicts
+        when dependencies release right before dependent packages.
+
+        Returns:
+            Cron expression with hour offset based on dependency depth.
         """
         offset = cls.get_dependency_offset()
         base_time = datetime.now(tz=UTC).replace(
@@ -46,10 +55,10 @@ class HealthCheckWorkflow(Workflow):
 
     @classmethod
     def get_dependency_offset(cls) -> int:
-        """Get the hour offset based on the number of dependencies on pyrig.
+        """Calculate hour offset based on dependency depth to pyrig.
 
         Returns:
-            The number of hours to offset from the base cron hour.
+            Number of hours to offset from base cron hour.
         """
         graph = DependencyGraph()
         src_pkg = get_src_package()
@@ -57,7 +66,11 @@ class HealthCheckWorkflow(Workflow):
 
     @classmethod
     def get_jobs(cls) -> dict[str, Any]:
-        """Get the workflow jobs."""
+        """Get the workflow jobs.
+
+        Returns:
+            Dict with matrix and aggregation jobs.
+        """
         jobs: dict[str, Any] = {}
         jobs.update(cls.job_health_check_matrix())
         jobs.update(cls.job_health_check())
@@ -65,7 +78,11 @@ class HealthCheckWorkflow(Workflow):
 
     @classmethod
     def job_health_check_matrix(cls) -> dict[str, Any]:
-        """Get the health check matrix job."""
+        """Get the matrix job that runs across OS and Python versions.
+
+        Returns:
+            Job configuration for matrix testing.
+        """
         return cls.get_job(
             job_func=cls.job_health_check_matrix,
             strategy=cls.strategy_matrix_os_and_python_version(),
@@ -75,7 +92,11 @@ class HealthCheckWorkflow(Workflow):
 
     @classmethod
     def job_health_check(cls) -> dict[str, Any]:
-        """Get the health check job."""
+        """Get the aggregation job that depends on matrix completion.
+
+        Returns:
+            Job configuration for result aggregation.
+        """
         return cls.get_job(
             job_func=cls.job_health_check,
             needs=[cls.make_id_from_func(cls.job_health_check_matrix)],
@@ -84,7 +105,11 @@ class HealthCheckWorkflow(Workflow):
 
     @classmethod
     def steps_health_check_matrix(cls) -> list[dict[str, Any]]:
-        """Get the health check matrix steps."""
+        """Get the steps for the matrix health check job.
+
+        Returns:
+            List of steps for setup, linting, and testing.
+        """
         return [
             *cls.steps_core_matrix_setup(
                 python_version=cls.insert_matrix_python_version()
@@ -96,7 +121,11 @@ class HealthCheckWorkflow(Workflow):
 
     @classmethod
     def steps_aggregate_matrix_results(cls) -> list[dict[str, Any]]:
-        """Get the aggregate matrix results step."""
+        """Get the steps for aggregating matrix results.
+
+        Returns:
+            List with the aggregation step.
+        """
         return [
             cls.step_aggregate_matrix_results(),
         ]

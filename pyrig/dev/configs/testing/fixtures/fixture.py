@@ -1,4 +1,8 @@
-"""Config file for fixture.py."""
+"""Configuration for the fixture.py base fixture file.
+
+This module provides the FixtureConfigFile class for creating
+a fixture.py file where users can define custom test fixtures.
+"""
 
 from types import ModuleType
 
@@ -7,9 +11,17 @@ from pyrig.dev.tests.fixtures import fixture
 
 
 class FixtureConfigFile(CopyModuleOnlyDocstringConfigFile):
-    """Config file for fixture.py."""
+    """Configuration file manager for fixture.py.
+
+    Creates a fixture.py file with only the docstring from pyrig's
+    fixture module, allowing users to add custom fixtures.
+    """
 
     @classmethod
     def get_src_module(cls) -> ModuleType:
-        """Get the source module."""
+        """Get the source module to copy docstring from.
+
+        Returns:
+            The pyrig.dev.tests.fixtures.fixture module.
+        """
         return fixture

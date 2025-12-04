@@ -1,4 +1,23 @@
-"""Contains utilities for working with versions."""
+"""Version parsing and constraint utilities.
+
+This module provides utilities for working with Python version specifiers
+and constraints. It wraps the `packaging` library to provide convenient
+methods for extracting version bounds and generating version ranges.
+
+The main class `VersionConstraint` parses PEP 440 version specifiers
+(e.g., ">=3.8,<3.12") and provides methods to:
+    - Get inclusive/exclusive lower and upper bounds
+    - Generate lists of versions within a constraint
+    - Adjust version precision (major/minor/micro)
+
+Example:
+    >>> from pyrig.src.project.versions import VersionConstraint
+    >>> vc = VersionConstraint(">=3.8,<3.12")
+    >>> vc.get_lower_inclusive()
+    <Version('3.8')>
+    >>> vc.get_version_range(level="minor")
+    [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
+"""
 
 from typing import Literal
 
@@ -9,7 +28,19 @@ from packaging.version import Version
 def adjust_version_to_level(
     version: Version, level: Literal["major", "minor", "micro"]
 ) -> Version:
-    """Adjust the version to the given level."""
+    """Truncate a version to the specified precision level.
+
+    Args:
+        version: The version to adjust.
+        level: The precision level to truncate to.
+
+    Returns:
+        A new Version with components beyond the level removed.
+
+    Example:
+        >>> adjust_version_to_level(Version("3.11.5"), "minor")
+        <Version('3.11')>
+    """
     if level == "major":
         return Version(f"{version.major}")
     if level == "minor":
@@ -18,10 +49,33 @@ def adjust_version_to_level(
 
 
 class VersionConstraint:
-    """Version class."""
+    """Parser and analyzer for PEP 440 version constraints.
+
+    Parses version specifier strings (e.g., ">=3.8,<3.12") and provides
+    methods to extract bounds and generate version ranges. Handles both
+    inclusive and exclusive bounds, converting between them as needed.
+
+    Attributes:
+        constraint: The original constraint string.
+        spec: The cleaned specifier string (quotes stripped).
+        sset: The parsed SpecifierSet from the packaging library.
+        lower_inclusive: The effective lower bound (inclusive).
+        upper_exclusive: The effective upper bound (exclusive).
+
+    Example:
+        >>> vc = VersionConstraint(">=3.8,<3.12")
+        >>> vc.get_lower_inclusive()
+        <Version('3.8')>
+        >>> vc.get_upper_exclusive()
+        <Version('3.12')>
+    """
 
     def __init__(self, constraint: str) -> None:
-        """Initialize the version."""
+        """Initialize a VersionConstraint from a specifier string.
+
+        Args:
+            constraint: A PEP 440 version specifier string (e.g., ">=3.8,<3.12").
+        """
         self.constraint = constraint
         self.spec = self.constraint.strip().strip('"').strip("'")
         self.sset = SpecifierSet(self.spec)

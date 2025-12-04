@@ -1,4 +1,9 @@
-"""Config utilities for .gitignore."""
+"""Configuration management for .gitignore files.
+
+This module provides the GitIgnoreConfigFile class for managing the
+project's .gitignore file. It fetches GitHub's standard Python gitignore
+and adds pyrig-specific patterns.
+"""
 
 import os
 from pathlib import Path
@@ -14,31 +19,61 @@ from pyrig.dev.configs.python.experiment import DotExperimentConfigFile
 
 
 class GitIgnoreConfigFile(ConfigFile):
-    """Config file for .gitignore."""
+    """Configuration file manager for .gitignore.
+
+    Creates a comprehensive .gitignore file by combining:
+        - GitHub's standard Python.gitignore
+        - VS Code workspace files
+        - pyrig-specific patterns
+        - Common cache directories
+    """
 
     @classmethod
     def get_filename(cls) -> str:
-        """Get the filename of the config file."""
+        """Get an empty filename to produce ".gitignore".
+
+        Returns:
+            Empty string so the path becomes ".gitignore".
+        """
         return ""  # so it builds the path .gitignore and not gitignore.gitignore
 
     @classmethod
     def get_parent_path(cls) -> Path:
-        """Get the path to the config file."""
+        """Get the project root directory.
+
+        Returns:
+            Path to the project root.
+        """
         return Path()
 
     @classmethod
     def get_file_extension(cls) -> str:
-        """Get the file extension of the config file."""
+        """Get the gitignore file extension.
+
+        Returns:
+            The string "gitignore".
+        """
         return "gitignore"
 
     @classmethod
     def load(cls) -> list[str]:
-        """Load the config file."""
+        """Load the .gitignore file as a list of patterns.
+
+        Returns:
+            List of gitignore patterns, one per line.
+        """
         return cls.get_path().read_text(encoding="utf-8").splitlines()
 
     @classmethod
     def dump(cls, config: list[str] | dict[str, Any]) -> None:
-        """Dump the config file."""
+        """Write patterns to the .gitignore file.
+
+        Args:
+            config: List of gitignore patterns.
+
+        Raises:
+            TypeError: If config is not a list.
+        """
         if not isinstance(config, list):
             msg = f"Cannot dump {config} to .gitignore file."
             raise TypeError(msg)
@@ -46,7 +81,13 @@ class GitIgnoreConfigFile(ConfigFile):
 
     @classmethod
     def get_configs(cls) -> list[str]:
-        """Get the config."""
+        """Get the expected .gitignore patterns.
+
+        Combines GitHub's Python gitignore with pyrig-specific patterns.
+
+        Returns:
+            List of gitignore patterns.
+        """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
         needed = [
             *cls.get_github_python_gitignore(),
@@ -74,7 +115,14 @@ class GitIgnoreConfigFile(ConfigFile):
 
     @classmethod
     def get_github_python_gitignore(cls) -> list[str]:
-        """Get the standard github python gitignore."""
+        """Fetch GitHub's standard Python gitignore patterns.
+
+        Returns:
+            List of patterns from GitHub's Python.gitignore.
+
+        Raises:
+            RuntimeError: If fetch fails and no .gitignore exists.
+        """
         url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
         res = requests.get(url, timeout=10)
         if not res.ok:
@@ -86,14 +134,13 @@ class GitIgnoreConfigFile(ConfigFile):
 
     @classmethod
     def path_is_in_gitignore(cls, relative_path: str | Path) -> bool:
-        """Check if a path matches any pattern in the .gitignore file.
+        """Check if a path matches any pattern in .gitignore.
 
         Args:
-            relative_path: The path to check, relative to the repository root
+            relative_path: Path to check, relative to repository root.
 
         Returns:
-            True if the path matches any pattern in .gitignore, False otherwise
-
+            True if the path matches any gitignore pattern.
         """
         gitignore_path = cls.get_path()
         if not gitignore_path.exists():
