@@ -58,6 +58,13 @@ class GitIgnoreConfigFile(ConfigFile):
             ".git/",
             "# for executing experimental code",
             "/" + ExperimentConfigFile.get_path().as_posix(),
+            "# for dev env secrets",
+            "/" + DotEnvConfigFile.get_path().as_posix(),
+            "# for dev deps and others",
+            ".mypy_cache/",
+            ".pytest_cache/",
+            ".ruff_cache/",
+            ".venv/",
         ]
 
         dotenv_path = DotEnvConfigFile.get_path().as_posix()
