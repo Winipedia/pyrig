@@ -1,0 +1,13 @@
+"""module."""
+
+from pyrig.dev.configs import configs
+from pyrig.dev.configs.python.configs_init import ConfigsInitConfigFile
+
+
+class TestConfigsInitConfigFile:
+    """Test class."""
+
+    def test_get_src_module(self) -> None:
+        """Test method for get_src_module."""
+        module = ConfigsInitConfigFile.get_src_module()
+        assert module == configs
