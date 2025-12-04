@@ -1,25 +1,86 @@
 # pyrig
 
-**pyrig** is a Python development toolkit that helps you **rig up** your Python projects by standardizing project configurations and automating testing workflows. It eliminates boilerplate setup work by providing opinionated, best-practice configurations for linting, type checking, testing, and CI/CD—allowing you to focus on writing code instead of configuring tools.
+[![PyPI](https://img.shields.io/pypi/v/pyrig)](https://pypi.org/project/pyrig/)
+[![Python](https://img.shields.io/pypi/pyversions/pyrig)](https://pypi.org/project/pyrig/)
+[![License](https://img.shields.io/github/license/winipedia/pyrig)](https://github.com/winipedia/pyrig/blob/main/LICENSE)
+[![CI](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml/badge.svg)](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml)
 
-Built for Python 3.12+ projects using uv and GitHub, pyrig automatically generates project structure, creates test skeletons that mirror your source code, and maintains configuration files for tools like ruff, mypy, pytest, and pre-commit hooks.
+**pyrig** is a Python development toolkit that helps you **rig up** your Python projects by standardizing project configurations and automating testing workflows.
+
+---
+
+## Why pyrig?
+
+**The problem:** Starting a new Python project means hours of setup — configuring linters, type checkers, CI/CD, pre-commit hooks, test infrastructure, and keeping it all in sync across projects.
+
+**The solution:** pyrig handles it all automatically:
+
+- **One command setup** — `uv run pyrig init` creates everything
+- **Self-maintaining** — configs stay in sync, tests auto-generate, dependencies auto-update
+- **Best practices enforced** — strict typing, all ruff rules, security scanning, branch protection
+
+**Before pyrig:**
+```
+- Create pyproject.toml manually
+- Configure ruff, mypy, pytest, bandit
+- Write GitHub Actions workflows
+- Set up pre-commit hooks
+- Create test file structure
+- Keep everything in sync... forever
+```
+
+**After pyrig:**
+```bash
+uv add pyrig && uv run pyrig init  # Done. Everything works.
+```
+
+---
+
+## Quick Start
+
+```bash
+# 1. Create and clone a new GitHub repo
+git clone https://github.com/your-username/my-project.git
+cd my-project
+
+# 2. Initialize with uv and add pyrig
+uv init 
+uv add pyrig
+
+# 3. Run pyrig init (creates everything)
+uv run pyrig init
+
+# 4. Start coding - your project is ready
+# - Write code in my_project/src/
+# - Tests auto-generate when you run pytest
+# - Pre-commit hooks auto-install
+# - CI/CD workflows are ready
+
+# 5. Commit and push
+git add . && git commit -m "chore: init project" && git push
+```
+
+**That's it.** Your project now has linting, type checking, testing, CI/CD, and branch protection — all configured and working.
 
 ---
 
 ## Table of Contents
 
-- [Features](#features)
+- [Why pyrig?](#why-pyrig)
+- [Quick Start](#quick-start)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Quick Start](#quick-start)
+- [Architecture](#architecture)
 - [Initialization](#initialization)
-- [Configuration Files](#configuration-files)
+- [ConfigFile Machinery](#configfile-machinery)
 - [CLI Commands](#cli-commands)
 - [Repository Protection](#repository-protection)
 - [Testing](#testing)
 - [Building Artifacts](#building-artifacts)
-- [Examples](#examples)
+- [Migrating Existing Projects](#migrating-existing-projects)
 - [Troubleshooting](#troubleshooting)
+- [FAQ](#faq)
+- [Alternatives Comparison](#alternatives-comparison)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -75,29 +136,38 @@ uv sync
 
 ---
 
-## Quick Start
+## Architecture
 
-```bash
-# Create a new GitHub repository
-# add REPO_TOKEN and PYPI_TOKEN to secrets as needed (more info below)
-# Clone it locally
-git clone https://github.com/your-username/your-project.git
-cd your-project
+pyrig organizes your project into a clean, consistent structure:
 
-# Initialize uv project
-uv init --python 3.12 # 3.12 is the minimum supported version
-
-# Add pyrig
-uv add pyrig
-
-# Initialize pyrig (creates all config files, tests, and runs setup)
-uv run pyrig init
-
-# Commit and push
-git add .
-git commit -m "chore: init project with pyrig"
-git push
 ```
+my-project/
+├── .github/workflows/          # CI/CD (health checks, releases, publishing)
+├── my_project/                # Your package
+│   ├── main.py                 # Entry point (CLI, PyInstaller)
+│   ├── src/                    # Your source code goes here
+│   │   ├── __init__.py
+│   │   └── calculator.py       # Example: your modules
+│   └── dev/                    # Development infrastructure and pyrig stuff
+│       ├── cli/subcommands.py  # Custom CLI commands
+│       ├── configs/            # Config file definitions
+│       ├── artifacts/          # Build scripts & resources
+│       └── tests/fixtures/     # Pytest fixtures
+├── tests/                      # Test files (auto-generated)
+│   ├── conftest.py
+│   └── test_my_project/
+│       └── test_src/
+│           └── test_calculator.py
+├── pyproject.toml              # Project config (managed by pyrig)
+└── .pre-commit-config.yaml     # Pre-commit hooks (managed by pyrig)
+```
+
+**Key concepts:**
+- **`src/`** — Your production code lives here
+- **`dev/`** — Development and pyrig infrastructure
+- **`tests/`** — Mirrors `src/` structure, auto-generated skeletons
+- **ConfigFile Machinery** — Auto-discovers and manages all config files
+- **Subclass overrides** — Customize any config by subclassing it
 
 ---
 
@@ -128,7 +198,7 @@ git push
 
 3. **Initialize uv project**
    ```bash
-   uv init --python 3.12
+   uv init 
    ```
 
 4. **Add pyrig as a dependency**
@@ -370,19 +440,20 @@ pyrig --help
 
 Usage: pyrig [OPTIONS] COMMAND [ARGS]...
 
-╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────╮
-│ --install-completion          Install completion for the current shell.                             │
-│ --show-completion             Show completion for the current shell, to copy it or customize the    │
-│                               installation.                                                         │
-│ --help                        Show this message and exit.                                           │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Commands ──────────────────────────────────────────────────────────────────────────────────────────╮
-│ create-root    Creates the root of the project.                                                     │
-│ create-tests   Create all test files for the project.                                               │
-│ init           Set up the project.                                                                  │
-│ build          Build all artifacts.                                                                 │
-│ protect-repo   Protect the repository.                                                              │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────╮
+│ --install-completion          Install completion for the current shell.                            │
+│ --show-completion             Show completion for the current shell, to copy it or customize the   │
+│                               installation.                                                        │
+│ --help                        Show this message and exit.                                          │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ─────────────────────────────────────────────────────────────────────────────────────────╮
+│ main           Main entrypoint for the project.                                                    │
+│ create-root    Creates the root of the project.                                                    │
+│ create-tests   Create all test files for the project.                                              │
+│ init           Set up the project.                                                                 │
+│ build          Build all artifacts.                                                                │
+│ protect-repo   Protect the repository.                                                             │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 ---
@@ -664,7 +735,7 @@ The builder automatically:
 Use `get_resource_path()` to access resources:
 
 ```python
-from pyrig.dev.artifacts.resources.resource import get_resource_path
+from pyrig.src.resource import get_resource_path
 import your_project.dev.artifacts.resources as resources
 
 config_path = get_resource_path("config.json", resources)
@@ -701,39 +772,75 @@ This enables:
 
 ## Examples
 
-### Example 1: Complete Project Structure
+### Example 1: Building a Calculator CLI
 
-After running `pyrig init`:
+Let's build a real calculator CLI to see pyrig in action:
 
+```bash
+# Create project
+git clone https://github.com/you/calc-cli.git && cd calc-cli
+uv init  && uv add pyrig
+uv run pyrig init
 ```
-your-project/
-├── .env, .experiment.py, .gitignore, .pre-commit-config.yaml, .python-version
-├── LICENSE, uv.lock, pyproject.toml, README.md
-├── .github/workflows/
-│   ├── health_check.yaml, publish.yaml, release.yaml
-├── your_project/
-│   ├── __init__.py, main.py, py.typed
-│   ├── src/
-│   └── dev/
-│       ├── artifacts/builders/, artifacts/resources/
-│       ├── cli/subcommands.py
-│       ├── configs/
-│       └── tests/fixtures/
-└── tests/
-    ├── conftest.py, test_zero.py
-    └── test_your_project/
+
+Now add your code:
+
+```python
+# calc_cli/src/calculator.py
+def add(a: float, b: float) -> float:
+    """Add two numbers."""
+    return a + b
+
+def multiply(a: float, b: float) -> float:
+    """Multiply two numbers."""
+    return a * b
+```
+
+```python
+# calc_cli/dev/cli/subcommands.py
+from calc_cli.src.calculator import add, multiply
+
+def calc_add(a: float, b: float) -> None:
+    """Add two numbers and print the result."""
+    print(f"{a} + {b} = {add(a, b)}")
+
+def calc_multiply(a: float, b: float) -> None:
+    """Multiply two numbers and print the result."""
+    print(f"{a} × {b} = {multiply(a, b)}")
+```
+
+Run tests (pyrig auto-generates test skeletons):
+
+```bash
+uv run pytest
+# Creates tests/test_calc_cli/test_src/test_calculator.py with:
+# - test_add()
+# - test_multiply()
+```
+
+Use your CLI:
+
+```bash
+uv run calc-cli calc-add 2 3       # Output: 2 + 3 = 5.0
+uv run calc-cli calc-multiply 4 5  # Output: 4 × 5 = 20.0
 ```
 
 ### Example 2: Adding a Custom Config File
 
+Create a YAML config that pyrig manages automatically:
+
 ```python
+# calc_cli/dev/configs/settings.py
 from pathlib import Path
+from typing import Any
 from pyrig.dev.configs.base.base import YamlConfigFile
 
-class MyConfigFile(YamlConfigFile):
+class SettingsConfigFile(YamlConfigFile):
+    """Manages config/settings.yaml for the calculator."""
+
     @classmethod
     def get_filename(cls) -> str:
-        return "myconfig"
+        return "settings"
 
     @classmethod
     def get_parent_path(cls) -> Path:
@@ -741,17 +848,32 @@ class MyConfigFile(YamlConfigFile):
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
-        return {"setting1": "value1", "setting2": "value2"}
+        return {
+            "precision": 2,
+            "default_operation": "add",
+            "history_enabled": True,
+        }
 ```
 
-### Example 3: Custom CLI Command
+Run tests — pyrig creates `config/settings.yaml` automatically.
+
+### Example 3: Building an Executable
 
 ```python
-def deploy(environment: str = "staging") -> None:
-    """Deploy the application."""
-    print(f"Deploying to {environment}...")
+# calc_cli/dev/artifacts/builders/calculator_builder.py
+from pyrig.dev.artifacts.builders.base.base import PyInstallerBuilder
 
-# Run with: uv run your-project deploy --environment production
+class CalculatorBuilder(PyInstallerBuilder):
+    """Build standalone calculator executable."""
+
+    @classmethod
+    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+        return []  # Add any custom resource packages here
+```
+
+```bash
+uv run pyrig build  # Creates dist/calculator executable
+# or juts let the CI/CD do it for you by pushing to main
 ```
 
 ---
@@ -760,48 +882,14 @@ def deploy(environment: str = "staging") -> None:
 
 ### Common Issues
 
-#### `uv run pyrig` command not found
+#### `pyrig some-cmd` command not found
 ```bash
-uv sync
-```
-
-#### Pre-commit hooks failing
-```bash
-uv run pre-commit install
-uv run pre-commit run --all-files
-```
-
-#### Tests not being generated automatically
-```bash
-uv run pyrig create-tests
+# make sure you run in venv
+uv run pyrig some-cmd
 ```
 
 #### GitHub Actions permission errors
 Ensure `REPO_TOKEN` secret has: `contents:read and write`, `administration:read and write`
-
-#### MyPy errors
-Add type hints:
-```python
-def add(a: int, b: int) -> int:
-    return a + b
-```
-
-#### Dependency conflicts
-```bash
-uv lock --upgrade && uv sync
-```
-
-#### PyInstaller build fails
-1. Ensure `main.py` exists and has `main()` function implemented
-2. Ensure `icon.png` exists at `your_project/dev/artifacts/resources/icon.png`
-
-#### Resources not found in built executable
-Use `get_resource_path()`:
-```python
-from pyrig.dev.artifacts.resources.resource import get_resource_path
-import your_project.dev.artifacts.resources as resources
-path = get_resource_path("config.json", resources)
-```
 
 ---
 
