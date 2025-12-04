@@ -10,7 +10,7 @@ import requests
 import pyrig
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
-from pyrig.dev.configs.python.experiment import ExperimentConfigFile
+from pyrig.dev.configs.python.experiment import DotExperimentConfigFile
 
 
 class GitIgnoreConfigFile(ConfigFile):
@@ -54,13 +54,10 @@ class GitIgnoreConfigFile(ConfigFile):
             ".vscode/",
             "",
             f"# {pyrig.__name__} stuff",
-            "# for walk_os_skipping_gitignore_patterns func",
             ".git/",
-            "# for executing experimental code",
-            "/" + ExperimentConfigFile.get_path().as_posix(),
-            "# for dev env secrets",
-            "/" + DotEnvConfigFile.get_path().as_posix(),
-            "# for dev deps and others",
+            DotExperimentConfigFile.get_path().as_posix(),
+            "# others",
+            DotEnvConfigFile.get_path().as_posix(),
             ".mypy_cache/",
             ".pytest_cache/",
             ".ruff_cache/",

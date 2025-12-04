@@ -92,6 +92,7 @@ testpaths = [
 
 [tool.bandit]
 exclude_dirs = [
+    "./.experiment.py",
     "./experiment.py",
     ".*",
 ]

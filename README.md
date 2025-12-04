@@ -239,7 +239,7 @@ Must start with `# <project_name>`. The rest of the content is up to you.
 
 Empty file for you to add your own license.
 
-#### `experiment.py`
+#### `.experiment.py`
 
 Empty file for experimentation. Git-ignored, not for production code.
 
@@ -331,7 +331,7 @@ Directory for storing static resources (images, data files, etc.). Automatically
 
 **Example**:
 ```python
-from pyrig.dev.artifacts.resources.resource import get_resource_path
+from pyrig.src.resource import get_resource_path
 import your_project.dev.artifacts.resources as resources
 
 config_path = get_resource_path("config.json", resources)
@@ -509,7 +509,7 @@ Autouse session fixtures automatically enforce code quality and project conventi
 
 #### `assert_root_is_correct`
 
-Verifies and fixes all configuration files managed by the ConfigFile Machinery. If any config file is missing or incorrect, it automatically creates or corrects it. When running in GitHub Actions, it also ensures `experiment.py` exists.
+Verifies and fixes all configuration files managed by the ConfigFile Machinery. If any config file is missing or incorrect, it automatically creates or corrects it. When running in GitHub Actions, it also ensures `.experiment.py` exists.
 
 #### `assert_no_namespace_packages`
 
@@ -706,8 +706,8 @@ After running `pyrig init`:
 
 ```
 your-project/
-├── .env, .gitignore, .pre-commit-config.yaml, .python-version
-├── experiment.py, LICENSE, uv.lock, pyproject.toml, README.md
+├── .env, .experiment.py, .gitignore, .pre-commit-config.yaml, .python-version
+├── LICENSE, uv.lock, pyproject.toml, README.md
 ├── .github/workflows/
 │   ├── health_check.yaml, publish.yaml, release.yaml
 ├── your_project/

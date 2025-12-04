@@ -5,11 +5,16 @@ from pathlib import Path
 from pyrig.dev.configs.base.base import PythonConfigFile
 
 
-class ExperimentConfigFile(PythonConfigFile):
+class DotExperimentConfigFile(PythonConfigFile):
     """Config file for experiment.py.
 
     Is at root level and in .gitignore for experimentation.
     """
+
+    @classmethod
+    def get_filename(cls) -> str:
+        """Get the filename of the config file."""
+        return ".experiment"
 
     @classmethod
     def get_parent_path(cls) -> Path:
