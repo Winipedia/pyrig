@@ -225,11 +225,11 @@ class ConfigFile(ABC):
         from pyrig.dev.configs.pyproject import (  # noqa: PLC0415
             PyprojectConfigFile,
         )
-        from pyrig.dev.configs.python.builder import (  # noqa: PLC0415
-            BuilderConfigFile,
+        from pyrig.dev.configs.python.builders_init import (  # noqa: PLC0415
+            BuildersInitConfigFile,
         )
-        from pyrig.dev.configs.python.configs import (  # noqa: PLC0415
-            ConfigsConfigFile,
+        from pyrig.dev.configs.python.configs_init import (  # noqa: PLC0415
+            ConfigsInitConfigFile,
         )
         from pyrig.dev.configs.python.main import (  # noqa: PLC0415
             MainConfigFile,
@@ -242,8 +242,8 @@ class ConfigFile(ABC):
             GitIgnoreConfigFile,
             PyprojectConfigFile,
             MainConfigFile,
-            ConfigsConfigFile,
-            BuilderConfigFile,
+            ConfigsInitConfigFile,
+            BuildersInitConfigFile,
             ZeroTestConfigFile,
         ]
 
@@ -447,6 +447,22 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         content = super().get_content_str()
         parts = content.split('"""', 2)
         return '"""' + parts[1] + '"""\n'
+
+
+class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
+    """Config file for __init__.py."""
+
+    @classmethod
+    def get_filename(cls) -> str:
+        """Get the filename of the config file."""
+        return "__init__"
+
+    @classmethod
+    def get_parent_path(cls) -> Path:
+        """Get the path to the config file."""
+        path = super().get_parent_path()
+        # this path will be parent of the init file
+        return path / get_isolated_obj_name(cls.get_src_module())
 
 
 class TypedConfigFile(ConfigFile):

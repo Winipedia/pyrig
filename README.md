@@ -310,15 +310,15 @@ def hello(name: str = "World") -> None:
 # Run with: uv run your-pkg-name hello --name Alice
 ```
 
-#### `pkg/dev/configs/configs.py`
+#### `pkg/dev/configs/`
 
 Define custom configuration files. Any subclass of `ConfigFile` is automatically discovered and initialized. Configs can be defined in any file in the `pkg/dev/configs` folder.
 
 **Subclass Behavior**: If you subclass an existing `ConfigFile`, only your most specific subclass will be executed, preventing duplicates.
 
-#### `pkg/dev/artifacts/builder/builder.py`
+#### `pkg/dev/artifacts/builders/`
 
-Define build scripts. Any subclass of `Builder` is automatically discovered and executed. Builders can be defined in any file in the `pkg/dev/artifacts/builder` folder.
+Define build scripts. Any subclass of `Builder` is automatically discovered and executed. Builders can be defined in any file in the `pkg/dev/artifacts/builders` folder.
 
 **Subclass Behavior**: If you subclass an existing `Builder`, only your most specific subclass will be executed, preventing duplicate builds.
 
@@ -602,11 +602,11 @@ pyrig provides an extensible build system. All builders are subclasses of `Build
 
 ### Basic Builder
 
-Create custom builders by subclassing `Builder` in `pkg/dev/artifacts/builder/builder.py`:
+Create custom builders by subclassing `Builder` in `pkg/dev/artifacts/builders/`:
 
 ```python
 from pathlib import Path
-from pyrig.dev.artifacts.builder.base.base import Builder
+from pyrig.dev.artifacts.builders.base.base import Builder
 
 class MyBuilder(Builder):
     """Custom builder for creating artifacts."""
@@ -633,10 +633,10 @@ pyrig includes a `PyInstallerBuilder` class for creating standalone executables.
 1. **Implement your main function** in `your_project/main.py`
 2. **Create an icon.png file** at `your_project/dev/artifacts/resources/icon.png` (256x256 recommended)
 3. **Add resources** to `your_project/dev/artifacts/resources/` (optional)
-4. **Subclass PyInstallerBuilder** in `your_project/dev/artifacts/builder/builder.py`:
+4. **Subclass PyInstallerBuilder** in `your_project/dev/artifacts/builders/`:
    ```python
    from types import ModuleType
-   from pyrig.dev.artifacts.builder.base.base import PyInstallerBuilder
+   from pyrig.dev.artifacts.builders.base.base import PyInstallerBuilder
 
    class MyAppBuilder(PyInstallerBuilder):
        """Build standalone executable with PyInstaller."""
@@ -679,7 +679,7 @@ pyrig supports multi-package architecture where multiple packages can depend on 
 When you run pyrig commands or tests, it discovers components from all packages depending on pyrig:
 
 1. **ConfigFile Machinery**: All `ConfigFile` subclasses from all `dev/configs/` directories
-2. **Builders**: All `Builder` subclasses from all `dev/artifacts/builder/` directories
+2. **Builders**: All `Builder` subclasses from all `dev/artifacts/builders/` directories
 3. **Fixtures**: All pytest fixtures from all `dev/tests/fixtures/` directories
 4. **Resources**: All files from all `dev/artifacts/resources/` directories
 
@@ -714,9 +714,9 @@ your-project/
 │   ├── __init__.py, main.py, py.typed
 │   ├── src/
 │   └── dev/
-│       ├── artifacts/builder/, artifacts/resources/
+│       ├── artifacts/builders/, artifacts/resources/
 │       ├── cli/subcommands.py
-│       ├── configs/configs.py
+│       ├── configs/
 │       └── tests/fixtures/
 └── tests/
     ├── conftest.py, test_zero.py

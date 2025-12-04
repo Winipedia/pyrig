@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.dev.artifacts.builder.base.base import Builder
+from pyrig.dev.artifacts.builders.base.base import Builder
 from pyrig.dev.configs.base.base import ConfigFile
 
 

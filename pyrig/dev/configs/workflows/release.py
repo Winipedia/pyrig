@@ -5,7 +5,7 @@ This workflow is used to create a release on GitHub.
 
 from typing import Any
 
-from pyrig.dev.artifacts.builder.base.base import Builder
+from pyrig.dev.artifacts.builders.base.base import Builder
 from pyrig.dev.configs.workflows.base.base import Workflow
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 

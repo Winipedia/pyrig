@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import pyrig
-from pyrig.dev.artifacts.builder.base.base import Builder
+from pyrig.dev.artifacts.builders.base.base import Builder
 from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
