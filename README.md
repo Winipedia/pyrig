@@ -1,7 +1,7 @@
 # pyrig
 
 [![PyPI](https://img.shields.io/pypi/v/pyrig)](https://pypi.org/project/pyrig/)
-[![Python](https://img.shields.io/pypi/pyversions/pyrig)](https://pypi.org/project/pyrig/)
+[![Python](https://img.shields.io/badge/python-3.12+-blue)](https://pypi.org/project/pyrig/)
 [![License](https://img.shields.io/github/license/winipedia/pyrig)](https://github.com/winipedia/pyrig/blob/main/LICENSE)
 [![CI/CD](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml/badge.svg)](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml)
 
