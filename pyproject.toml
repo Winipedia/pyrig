@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "2.0.38"
+version = "2.0.39"
 description = "A dev kit that standardizes configurations and testing"
 authors = [
     {name = "Winipedia", email = "win.steveker@gmx.de"},
