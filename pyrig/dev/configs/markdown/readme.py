@@ -7,11 +7,11 @@ managing the project's README.md file with a standard header.
 from pathlib import Path
 
 import pyrig
-from pyrig.dev.configs.base.base import TextConfigFile
+from pyrig.dev.configs.base.base import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 
 
-class ReadmeConfigFile(TextConfigFile):
+class ReadmeConfigFile(MarkdownConfigFile):
     """Configuration file manager for README.md.
 
     Creates a README.md file with the project name as a header.
@@ -35,15 +35,6 @@ class ReadmeConfigFile(TextConfigFile):
             Path to the project root.
         """
         return Path()
-
-    @classmethod
-    def get_file_extension(cls) -> str:
-        """Get the markdown file extension.
-
-        Returns:
-            The string "md".
-        """
-        return "md"
 
     @classmethod
     def get_content_str(cls) -> str:

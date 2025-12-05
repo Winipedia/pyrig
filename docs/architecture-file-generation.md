@@ -17,6 +17,8 @@ your-project/
 ├── .gitignore                     # Git ignore patterns
 ├── .pre-commit-config.yaml        # Pre-commit hooks configuration
 ├── .python-version                # Python version for pyenv
+├── docs/
+│   └── index.md                   # Documentation index
 ├── LICENSE                        # License file (user fills in)
 ├── README.md                      # Project readme with header
 ├── pyproject.toml                 # Central project configuration
@@ -85,7 +87,9 @@ ConfigFile (ABC)
 │
 ├── TextConfigFile
 │   ├── LicenceConfigFile             → LICENSE
-│   ├── ReadmeConfigFile              → README.md
+│   ├── MarkdownConfigFile
+│   │   ├── ReadmeConfigFile          → README.md
+│   │   └── IndexConfigFile           → docs/index.md
 │   └── PythonConfigFile
 │       ├── DotExperimentConfigFile   → .experiment.py
 │       ├── PythonTestsConfigFile
@@ -245,6 +249,7 @@ Also pyrig just inits the most recent leave of a class tree. So pyrigs own `Heal
 | `pyproject.toml` | `PyprojectConfigFile` | Central project configuration (dependencies, tools, metadata) |
 | `LICENSE` | `LicenceConfigFile` | License file with placeholder for user to fill |
 | `README.md` | `ReadmeConfigFile` | Project readme with header |
+| `docs/index.md` | `IndexConfigFile` | Documentation index |
 
 ### GitHub Workflows
 

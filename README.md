@@ -137,6 +137,8 @@ my_project/
 ├── .gitignore                        # Git ignore patterns
 ├── .pre-commit-config.yaml           # Pre-commit hooks configuration
 ├── .python-version                   # Python version for pyenv/uv
+├── docs/
+│   └── index.md                      # Documentation index
 ├── LICENSE                           # License file
 ├── README.md                         # Project readme
 ├── pyproject.toml                    # Central project configuration

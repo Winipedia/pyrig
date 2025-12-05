@@ -15,7 +15,7 @@ import requests
 import pyrig
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
-from pyrig.dev.configs.python.experiment import DotExperimentConfigFile
+from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 
 
 class GitIgnoreConfigFile(ConfigFile):

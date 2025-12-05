@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.dev.configs.readme import ReadmeConfigFile
+from pyrig.dev.configs.markdown.readme import ReadmeConfigFile
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -34,11 +34,4 @@ class TestReadmeConfigFile:
         assert_with_msg(
             isinstance(content_str, str),
             "Expected non-empty string",
-        )
-
-    def test_get_file_extension(self) -> None:
-        """Test method for get_file_extension."""
-        assert_with_msg(
-            ReadmeConfigFile.get_file_extension() == "md",
-            "Expected md",
         )

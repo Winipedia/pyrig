@@ -43,7 +43,7 @@ from pyrig.src.graph import DiGraph
 
 logger = logging.getLogger(__name__)
 
-DOCS_PACKAGE_NAME = "docs"
+DOCS_DIR_NAME = "docs"
 
 
 def get_src_package() -> ModuleType:
@@ -67,9 +67,7 @@ def get_src_package() -> ModuleType:
     package_names = find_packages(depth=0, include_namespace_packages=False)
     package_paths = [to_path(p, is_package=True) for p in package_names]
     pkg = next(
-        p
-        for p in package_paths
-        if p.name not in {TESTS_PACKAGE_NAME, DOCS_PACKAGE_NAME}
+        p for p in package_paths if p.name not in {TESTS_PACKAGE_NAME, DOCS_DIR_NAME}
     )
 
     return import_pkg_from_path(pkg)
