@@ -3,122 +3,193 @@
 [![PyPI](https://img.shields.io/pypi/v/pyrig)](https://pypi.org/project/pyrig/)
 [![Python](https://img.shields.io/pypi/pyversions/pyrig)](https://pypi.org/project/pyrig/)
 [![License](https://img.shields.io/github/license/winipedia/pyrig)](https://github.com/winipedia/pyrig/blob/main/LICENSE)
-[![CI](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml/badge.svg)](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml)
+[![CI/CD](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml/badge.svg)](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml)
 
-**pyrig** is a Python development toolkit that helps you **rig up** your Python projects by standardizing project configurations and automating testing workflows.
+A Python development toolkit that standardizes project configuration and automates development workflows and standards.
 
----
-
-## Why pyrig?
-
-**The problem:** Starting a new Python project means hours of setup — configuring linters, type checkers, CI/CD, pre-commit hooks, test infrastructure, and keeping it all in sync across projects.
-
-**The solution:** pyrig handles it all automatically:
-
-- **One command setup** — `uv run pyrig init` creates everything
-- **Self-maintaining** — configs stay in sync, tests auto-generate, dependencies auto-update
-- **Best practices enforced** — strict typing, all ruff rules, security scanning, branch protection
-
-**Before pyrig:**
-```
-- Create pyproject.toml manually
-- Configure ruff, mypy, pytest, bandit
-- Write GitHub Actions workflows
-- Set up pre-commit hooks
-- Create test file structure
-- Create Config files (e.g. pyproject.toml, .pre-commit-config.yaml, gitignore, etc.)
-- Create CLI entry points if needed
-- Create build scripts if needed
-- Keep everything in sync... forever
-```
-
-**After pyrig:**
-```bash
-uv add pyrig && uv run pyrig init  # Done. Everything works.
-```
-
----
-
-## Quick Start
+## How to Use
 
 ```bash
-# 1. Create and clone a new GitHub repo
-git clone https://github.com/your-username/my-project.git
-cd my-project
-
-# 2. Initialize with uv and add pyrig
-uv init 
+# start a new project
+uv init
 uv add pyrig
-
-# 3. Run pyrig init (creates everything)
 uv run pyrig init
-
-# 4. Start coding - your project is ready
-# - Write code in my_project/src/
-# - Tests auto-generate when you run pytest
-# - Pre-commit hooks auto-install
-# - CI/CD workflows are ready
-
-# 5. Commit and push
-git add . && git commit -m "chore: init project" && git push
 ```
 
-**That's it.** Your project now has linting, type checking, testing, CI/CD, and branch protection and much more — all configured and working.
+## Overview
 
----
+pyrig eliminates the repetitive setup work involved in starting Python projects. A single command generates a complete project structure with pre-configured tooling:
+
+- **Linting and formatting** with ruff (all rules enabled)
+- **Static type checking** with mypy (strict mode)
+- **Security scanning** with bandit
+- **Test infrastructure** with pytest
+- **Pre-commit hooks** for automated quality checks
+- **GitHub Actions workflows** for CI/CD
+- **Branch protection** via GitHub rulesets
+
+The generated configuration stays synchronized automatically. When you run tests, pyrig validates that all config files match expected values and generates test skeletons for any untested code.
 
 ## Features
 
-### Architecture/File Generation
-Pyrig generates your entire project structure, configs, and CI/CD via its Config File Machinery. 
+### Configuration Management
 
-### Testing
-Pyrig automatically generates test skeletons for all functions and classes that are missing tests. 
+pyrig uses a ConfigFile system to manage project files. Each configuration file type (TOML, YAML, text, Python) has a corresponding class that defines the expected content. During initialization and test runs, pyrig ensures actual files match their expected configurations.
 
-### Autouse Fixtures
-Pyrig provides a variety of autouse fixtures that run automatically before every test. They assert certain quality standards and conventions.
+Some examples:
+- `pyproject.toml` (project metadata, tool configs)
+- `.pre-commit-config.yaml`
+- `.gitignore`
+- `.github/workflows/` (health check, release, publish)
+- `conftest.py` and test fixtures
+
+### Test Generation
+
+pyrig automatically generates test file skeletons that mirror your source structure:
+
+```
+my_project/src/utils.py    →    tests/test_my_project/test_src/test_utils.py
+```
+
+Each function, class, and method gets a corresponding test stub that raises `NotImplementedError`. Autouse fixtures enforce that all code has tests—if something is untested, the test run fails with a clear message.
 
 ### CLI System
-Pyrig provides a CLI system that automatically generates a CLI from your `main.py` and `subcommands.py`.
 
-### Multi-Package Support
-Pyrig automatically discovers all packages that depend on it, enabling shared configs, builders, fixtures, and resources across the ecosystem.
+Projects using pyrig get a CLI automatically. Commands are defined as functions in `your_project/dev/cli/subcommands.py`:
 
-### CI/CD
-Pyrig provides GitHub Actions workflows for continuous integration and delivery.
+```python
+def deploy() -> None:
+    """Deploy the application."""
+    ...
+```
+
+This becomes available as `your-project deploy`. Function names convert from snake_case to kebab-case.
+
+Built-in pyrig commands:
+- `pyrig init` — Initialize project structure
+- `pyrig create-root` — Regenerate config files
+- `pyrig create-tests` — Generate missing test files
+- `pyrig build` — Create distributable artifacts
+- `pyrig protect-repo` — Apply GitHub branch protection
+
+### Multi-Package Architecture
+
+pyrig supports a plugin-style architecture where dependent packages can extend its functionality. Packages that depend on pyrig can define their own:
+
+- ConfigFile subclasses (custom configuration files)
+- Builder subclasses (custom artifact builders)
+- Pytest fixtures (shared test utilities)
+- CLI commands (additional tooling)
+
+pyrig discovers these extensions automatically by traversing the dependency graph. This enables base packages that enforce organizational standards across multiple projects.
+
+### CI/CD Integration
+
+Three GitHub Actions workflows are generated:
+
+1. **Health Check** — Runs on every push and PR
+   - Executes pre-commit hooks (ruff, mypy, bandit)
+   - Runs the full test suite
+   - Tests across a matrix of 3 OS × 3 Python versions
+   - Updates branch protection rules
+
+2. **Release** — Triggers on health check success (main branch)
+   - Optionally builds artifacts across OS matrix
+   - Bumps version number
+   - Commits and oushes version bump and dependency updates
+   - Generates a changelog from PR history
+   - Creates a GitHub release
+
+3. **Publish** — Triggers on release creation
+   - Builds distribution packages
+   - Publishes to PyPI
 
 ### Dependency Management
-Pyrig automatically manages dependencies and keeps them up to date via uv.
+
+pyrig uses [uv](https://github.com/astral-sh/uv) for package management with a version-free approach:
+
+- Dependencies in `pyproject.toml` omit version specifiers
+- Exact versions are tracked in `uv.lock`
+- CI automatically runs `uv lock --upgrade` to keep dependencies current
 
 ### Security
-Pyrig enforces security best practices via bandit and branch protection rulesets.
 
-> For detailed documentation on each feature, see the [docs](docs/) directory.
+Security is enforced at multiple levels:
 
----
+- **Bandit** scans code for common vulnerabilities before each commit
+- **Branch protection** requires PR reviews, signed commits, and passing CI
+- **Required status checks** prevent merging without green builds
+- **Linear history** is enforced (squash or rebase merging only)
+
+## Project Structure
+
+After running `pyrig init`, your project will have this structure:
+
+```
+my_project/
+├── .env                              # Environment variables (gitignored)
+├── .experiment.py                    # Local experimentation file (gitignored)
+├── .github/
+│   └── workflows/
+│       ├── health_check.yaml         # CI: tests, linting, type checking
+│       ├── publish.yaml              # Publish to PyPI after release
+│       └── release.yaml              # Create GitHub releases
+├── .gitignore                        # Git ignore patterns
+├── .pre-commit-config.yaml           # Pre-commit hooks configuration
+├── .python-version                   # Python version for pyenv/uv
+├── LICENSE                           # License file
+├── README.md                         # Project readme
+├── pyproject.toml                    # Central project configuration
+├── uv.lock                           # Locked dependencies
+│
+├── my_project/                       # Source package
+│   ├── __init__.py
+│   ├── main.py                       # CLI entry point
+│   ├── py.typed                      # PEP 561 type marker
+│   ├── dev/
+│   │   ├── artifacts/
+│   │   │   ├── builders/             # Custom artifact builders
+│   │   │   └── resources/            # Build resources (icons, etc.)
+│   │   ├── cli/
+│   │   │   └── subcommands.py        # Custom CLI commands
+│   │   ├── configs/                  # Custom ConfigFile classes
+│   │   └── tests/
+│   │       └── fixtures/
+│   │           └── scopes/           # Fixtures by scope
+│   │               ├── class_.py
+│   │               ├── function.py
+│   │               ├── module.py
+│   │               ├── package.py
+│   │               └── session.py
+│   └── src/                          # Your source code goes here
+│
+└── tests/
+    ├── conftest.py                   # Pytest configuration
+    ├── test_zero.py                  # Placeholder test
+    └── test_my_project/              # Auto-generated test structure
+```
 
 ## Requirements
 
-- **uv**: Package and dependency manager
-- **Git**: Version control
-- **GitHub**: For full CI/CD and repository protection features (optional but recommended)
+- Python 3.12+
+- [uv](https://github.com/astral-sh/uv) package manager
+- Git
+- GitHub (for CI/CD and branch protection features)
 
----
+## Documentation
 
-**Note**: pyrig should be added as a regular dependency, not a dev dependency, because the CLI and utility functions require runtime availability. While pyrig manages dev dependencies for tools like ruff, mypy, and pytest, it keeps itself as a regular dependency to ensure full functionality in all environments.
+Detailed documentation is available in the [docs/](docs/) directory:
 
----
+- [Architecture and File Generation](docs/architecture-file-generation.md)
+- [Testing and Test Generation](docs/testing-test-generation.md)
+- [Autouse Fixtures](docs/autouse-fixtures-validation.md)
+- [CLI System](docs/cli-command-line-interface.md)
+- [Builder System](docs/builder-system.md)
+- [CI/CD Integration](docs/cicd-continuous-integration.md)
+- [Dependency Management](docs/dependency-management.md)
+- [Multi-Package Support](docs/multi-package-support.md)
+- [Security](docs/security.md)
+
 ## License
 
-pyrig is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
-
-Copyright (c) 2025 Winipedia
-
----
-
-## Links
-
-- **Repository**: [github.com/winipedia/pyrig](https://github.com/winipedia/pyrig)
-- **PyPI**: [pypi.org/project/pyrig](https://pypi.org/project/pyrig/)
-
----
+MIT License. See [LICENSE](LICENSE) for details.
