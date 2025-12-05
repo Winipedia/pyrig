@@ -32,6 +32,7 @@ from pyrig.src.modules.module import (
     to_path,
 )
 from pyrig.src.modules.package import (
+    DOCS_PACKAGE_NAME,
     find_packages,
     get_modules_and_packages_from_package,
     get_src_package,
@@ -125,9 +126,10 @@ def assert_all_src_code_in_one_package() -> None:
     packages = find_packages(depth=0)
     src_package = get_src_package()
     src_package_name = src_package.__name__
-    expected_packages = {TESTS_PACKAGE_NAME, src_package_name}
+    expected_packages = {TESTS_PACKAGE_NAME, src_package_name, DOCS_PACKAGE_NAME}
+    # pkgs must be subset of expected_packages
     assert_with_msg(
-        set(packages) == expected_packages,
+        set(packages).issubset(expected_packages),
         f"Expected only packages {expected_packages}, but found {packages}",
     )
 

@@ -84,10 +84,9 @@ class Builder(ABC):
                 directory after the build completes.
         """
 
-    @classmethod
-    def __init__(cls) -> None:
+    def __init__(self) -> None:
         """Initialize the builder and trigger the build process."""
-        cls.build()
+        self.__class__.build()
 
     @classmethod
     def get_artifacts_dir(cls) -> Path:

@@ -43,6 +43,8 @@ from pyrig.src.graph import DiGraph
 
 logger = logging.getLogger(__name__)
 
+DOCS_PACKAGE_NAME = "docs"
+
 
 def get_src_package() -> ModuleType:
     """Identify and return the main source package of the project.
@@ -64,7 +66,11 @@ def get_src_package() -> ModuleType:
 
     package_names = find_packages(depth=0, include_namespace_packages=False)
     package_paths = [to_path(p, is_package=True) for p in package_names]
-    pkg = next(p for p in package_paths if p.name != TESTS_PACKAGE_NAME)
+    pkg = next(
+        p
+        for p in package_paths
+        if p.name not in {TESTS_PACKAGE_NAME, DOCS_PACKAGE_NAME}
+    )
 
     return import_pkg_from_path(pkg)
 
