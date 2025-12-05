@@ -50,14 +50,7 @@ your-project/
 │   │   └── tests/
 │   │       ├── __init__.py
 │   │       └── fixtures/
-│   │           ├── __init__.py
-│   │           └── scopes/
-│   │               ├── __init__.py
-│   │               ├── class_.py      # Class-scoped fixtures
-│   │               ├── function.py    # Function-scoped fixtures
-│   │               ├── module.py      # Module-scoped fixtures
-│   │               ├── package.py     # Package-scoped fixtures
-│   │               └── session.py     # Session-scoped fixtures
+│   │           └── __init__.py        # Custom fixtures (auto-discovered)
 │   └── src/
 │       └── __init__.py            # Core utilities go here
 │
@@ -101,8 +94,7 @@ ConfigFile (ABC)
 │           │   └── MainConfigFile    → main.py
 │           └── CopyModuleOnlyDocstringConfigFile
 │               ├── SubcommandsConfigFile → subcommands.py
-│               ├── InitConfigFile (various) → __init__.py files
-│               └── Scope Fixtures    → function.py, class_.py, etc.
+│               └── InitConfigFile (various) → __init__.py files
 │
 ├── TypedConfigFile
 │   └── PyTypedConfigFile             → py.typed
@@ -284,13 +276,8 @@ Also pyrig just inits the most recent leave of a class tree. So pyrigs own `Heal
 | File | Class | Purpose |
 |------|-------|---------|
 | `{pkg}/dev/tests/fixtures/__init__.py` | `FixturesInitConfigFile` | Fixtures package |
-| `{pkg}/dev/tests/fixtures/scopes/function.py` | `FunctionScopeConfigFile` | Function-scoped fixtures (run per test) |
-| `{pkg}/dev/tests/fixtures/scopes/class_.py` | `ClassScopeConfigFile` | Class-scoped fixtures (run per test class) |
-| `{pkg}/dev/tests/fixtures/scopes/module.py` | `ModuleScopeConfigFile` | Module-scoped fixtures (run per test module) |
-| `{pkg}/dev/tests/fixtures/scopes/package.py` | `PackageScopeConfigFile` | Package-scoped fixtures (run per test package) |
-| `{pkg}/dev/tests/fixtures/scopes/session.py` | `SessionScopeConfigFile` | Session-scoped fixtures (run once per test session) |
 
-Fixtures are shared across all packages that depend on pyrig. Meaning if you define an autouse session fixture in your package, it will be available in all other packages that depend on pyrig and automatically run before every test in every package. Scopes are for autouse fixtures. But any fixture that is defined in any file under `dev/tests/fixtures` will be available in all packages that depend on pyrig and added as plug in to pytest. For example you can use pyrigs `config_file_factory` to create a test for your config files. It is automatically available in all packages that depend on pyrig.
+Any fixture defined in any file under `dev/tests/fixtures/` is automatically discovered and added as a pytest plugin. This means fixtures are shared across all packages that depend on pyrig. For example, pyrig's `config_file_factory` fixture is automatically available in all dependent packages. E.g. If you define an autouse session fixture in your package, it will run before every test in every dependent package. 
 
 ## Creating Custom ConfigFile Classes
 

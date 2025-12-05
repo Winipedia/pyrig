@@ -156,13 +156,7 @@ my_project/
 │   │   │   └── subcommands.py        # Custom CLI commands
 │   │   ├── configs/                  # Custom ConfigFile classes
 │   │   └── tests/
-│   │       └── fixtures/
-│   │           └── scopes/           # Fixtures by scope
-│   │               ├── class_.py
-│   │               ├── function.py
-│   │               ├── module.py
-│   │               ├── package.py
-│   │               └── session.py
+│   │       └── fixtures/             # Custom fixtures (auto-discovered)
 │   └── src/                          # Your source code goes here
 │
 └── tests/

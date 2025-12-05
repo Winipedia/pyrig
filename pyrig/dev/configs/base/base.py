@@ -314,7 +314,7 @@ class ConfigFile(ABC):
         from pyrig.dev.configs.testing.conftest import (  # noqa: PLC0415
             ConftestConfigFile,
         )
-        from pyrig.dev.configs.testing.fixtures.fixtures_init import (  # noqa: PLC0415
+        from pyrig.dev.configs.testing.fixtures_init import (  # noqa: PLC0415
             FixturesInitConfigFile,
         )
 

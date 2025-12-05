@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.dev.configs.testing.fixtures.fixtures_init import FixturesInitConfigFile
+from pyrig.dev.configs.testing.fixtures_init import FixturesInitConfigFile
 from pyrig.dev.tests import fixtures
 
 

@@ -546,7 +546,7 @@ This pattern means:
 You can add your own autouse fixtures following pyrig's patterns:
 
 ```python
-# your_project/dev/tests/fixtures/scopes/session.py
+# your_project/dev/tests/fixtures/my_fixtures.py
 from pyrig.dev.tests.utils.decorators import autouse_session_fixture
 from pyrig.src.testing.assertions import assert_with_msg
 

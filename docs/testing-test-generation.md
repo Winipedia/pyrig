@@ -214,15 +214,10 @@ your_project/
     └── tests/
         └── fixtures/
             ├── __init__.py
-            ├── factories.py           # Factory fixtures for testing
-            └── scopes/
-                ├── __init__.py
-                ├── function.py         # Function-scoped fixtures
-                ├── class_.py           # Class-scoped fixtures
-                ├── module.py           # Module-scoped fixtures
-                ├── package.py          # Package-scoped fixtures
-                └── session.py          # Session-scoped fixtures
+            └── *.py                    # All .py files here are auto-discovered as pytest plugins
 ```
+
+Any fixture file you create under `dev/tests/fixtures/` is automatically discovered and available in tests. You can organize fixtures however you like - by scope, by feature, or any other structure.
 
 ### Built-in Session Fixtures
 
@@ -263,7 +258,7 @@ def assert_all_methods_tested(request):
 ### Basic Scoped Fixture
 
 ```python
-# your_project/dev/tests/fixtures/scopes/session.py
+# your_project/dev/tests/fixtures/my_fixtures.py
 from pyrig.dev.tests.utils.decorators import session_fixture
 
 @session_fixture
@@ -277,7 +272,7 @@ def database_connection():
 ### Autouse Fixture
 
 ```python
-# your_project/dev/tests/fixtures/scopes/function.py
+# your_project/dev/tests/fixtures/my_fixtures.py
 from pyrig.dev.tests.utils.decorators import autouse_function_fixture
 
 @autouse_function_fixture
