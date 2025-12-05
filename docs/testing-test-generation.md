@@ -233,7 +233,7 @@ pyrig includes several session-scoped fixtures that run automatically:
 | `assert_root_is_correct` | Validates all ConfigFile settings are correct |
 | `assert_no_namespace_packages` | Ensures all packages have `__init__.py` |
 | `assert_all_src_code_in_one_package` | Enforces single source package structure |
-| `assert_src_package_correctly_named` | Verifies package matches project name |
+| `assert_src_package_correctly_named` | Verifies consistent naming across project folder, package, and pyproject.toml |
 | `assert_all_modules_tested` | Creates missing test modules |
 | `assert_no_unit_test_package_usage` | Enforces pytest over unittest |
 | `assert_dependencies_are_up_to_date` | Updates dependencies before tests |

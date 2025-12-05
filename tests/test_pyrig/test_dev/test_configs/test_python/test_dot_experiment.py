@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.dev.configs.python.experiment import DotExperimentConfigFile
+from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.src.testing.assertions import assert_with_msg
 
 

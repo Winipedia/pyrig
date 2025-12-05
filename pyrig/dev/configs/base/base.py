@@ -590,6 +590,23 @@ class TextConfigFile(ConfigFile):
         return cls.load()[cls.CONTENT_KEY]
 
 
+class MarkdownConfigFile(TextConfigFile):
+    """Abstract base class for Markdown configuration files.
+
+    Attributes:
+        CONTENT_KEY: Dictionary key used to store file content.
+    """
+
+    @classmethod
+    def get_file_extension(cls) -> str:
+        """Get the Markdown file extension.
+
+        Returns:
+            The string "md".
+        """
+        return "md"
+
+
 class PythonConfigFile(TextConfigFile):
     """Abstract base class for Python source file configuration.
 

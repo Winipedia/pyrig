@@ -99,20 +99,26 @@ AssertionError: Expected subpackages {'src', 'dev'}, but found {'src', 'dev', 'u
 
 ### `assert_src_package_correctly_named`
 
-**Purpose:** Verifies the source package name matches the project name in `pyproject.toml`.
+**Purpose:** Verifies consistent naming across the project folder, source package, and `pyproject.toml`.
 
 **What it checks:**
-- Source package name equals `PyprojectConfigFile.get_package_name()`
+1. Current working directory name matches the project name in `pyproject.toml`
+2. Source package name matches the name derived from the cwd (via `get_pkg_name_from_project_name`)
+3. Source package name equals `PyprojectConfigFile.get_package_name()`
 
 **Auto-fix behavior:** None — fails immediately.
 
-**Example error:**
+**Example errors:**
+```
+AssertionError: Expected cwd name to be my_project, but it is my-project
+```
 ```
 AssertionError: Expected source package to be named my_project, but it is named my_proj
 ```
 
 **How to fix:**
-- Rename your source package directory to match `pyproject.toml`
+- Ensure your project folder name matches the project name in `pyproject.toml`
+- Rename your source package directory to match the expected name
 - Or update `pyproject.toml` to match your package name
 
 ---
@@ -581,7 +587,7 @@ pyrig's autouse fixtures provide automatic quality gates:
 | `assert_root_is_correct` | Session | Yes | Config files match expected state |
 | `assert_no_namespace_packages` | Session | Yes | All packages have `__init__.py` |
 | `assert_all_src_code_in_one_package` | Session | No | Single source package structure |
-| `assert_src_package_correctly_named` | Session | No | Package name matches project |
+| `assert_src_package_correctly_named` | Session | No | Consistent naming across folder, package, and config |
 | `assert_all_modules_tested` | Session | Yes | All modules have test modules |
 | `assert_no_unit_test_package_usage` | Session | No | No unittest usage |
 | `assert_dependencies_are_up_to_date` | Session | Yes | Dependencies are current |

@@ -23,7 +23,7 @@ from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
-from pyrig.dev.configs.python.experiment import DotExperimentConfigFile
+from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.tests.utils.decorators import autouse_session_fixture
 from pyrig.src.git.github.github import running_in_github_actions
 from pyrig.src.modules.module import (
@@ -32,7 +32,7 @@ from pyrig.src.modules.module import (
     to_path,
 )
 from pyrig.src.modules.package import (
-    DOCS_PACKAGE_NAME,
+    DOCS_DIR_NAME,
     find_packages,
     get_modules_and_packages_from_package,
     get_src_package,
@@ -95,6 +95,9 @@ def assert_no_namespace_packages() -> None:
     packages = find_packages(depth=None)
     namespace_packages = find_packages(depth=None, include_namespace_packages=True)
 
+    # remove the docs folder
+    namespace_packages.remove(DOCS_DIR_NAME)
+
     any_namespace_packages = set(namespace_packages) - set(packages)
     if any_namespace_packages:
         # make init files for all namespace packages
@@ -126,7 +129,7 @@ def assert_all_src_code_in_one_package() -> None:
     packages = find_packages(depth=0)
     src_package = get_src_package()
     src_package_name = src_package.__name__
-    expected_packages = {TESTS_PACKAGE_NAME, src_package_name, DOCS_PACKAGE_NAME}
+    expected_packages = {TESTS_PACKAGE_NAME, src_package_name, DOCS_DIR_NAME}
     # pkgs must be subset of expected_packages
     assert_with_msg(
         set(packages).issubset(expected_packages),
@@ -160,9 +163,25 @@ def assert_src_package_correctly_named() -> None:
         AssertionError: If the source package is not correctly named
 
     """
+    cwd_name = Path.cwd().name
+    project_name = PyprojectConfigFile.get_project_name()
+    assert_with_msg(
+        cwd_name == project_name,
+        f"Expected cwd name to be {project_name}, but it is {cwd_name}",
+    )
+
+    src_package_name = get_src_package().__name__
+    src_package_name_from_cwd = PyprojectConfigFile.get_pkg_name_from_project_name(
+        cwd_name
+    )
+    assert_with_msg(
+        src_package_name == src_package_name_from_cwd,
+        f"Expected source package to be named {src_package_name_from_cwd}, "
+        f"but it is named {src_package_name}",
+    )
+
     src_package = get_src_package().__name__
-    config = PyprojectConfigFile
-    expected_package = config.get_package_name()
+    expected_package = PyprojectConfigFile.get_package_name()
     assert_with_msg(
         src_package == expected_package,
         f"Expected source package to be named {expected_package}, "
