@@ -469,9 +469,9 @@ class TestWorkflow:
             "github.ref_name" in result, "Expected 'github.ref_name' in result"
         )
 
-    def test_insert_repository_ownwer(self, my_test_workflow: type[Workflow]) -> None:
-        """Test method for insert_repository_ownwer."""
-        result = my_test_workflow.insert_repository_ownwer()
+    def test_insert_repository_owner(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for insert_repository_owner."""
+        result = my_test_workflow.insert_repository_owner()
         assert_with_msg(
             "github.repository_owner" in result,
             "Expected 'github.repository_owner' in result",

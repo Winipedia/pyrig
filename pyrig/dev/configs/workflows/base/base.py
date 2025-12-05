@@ -1354,7 +1354,7 @@ class Workflow(YamlConfigFile):
         return "${{ github.ref_name }}"
 
     @classmethod
-    def insert_repository_ownwer(cls) -> str:
+    def insert_repository_owner(cls) -> str:
         """Get the GitHub expression for repository owner.
 
         Returns:
