@@ -1,5 +1,6 @@
 # pyrig
 
+[![built with pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=python&logoColor=white)](https://github.com/Winipedia/pyrig)
 [![PyPI](https://img.shields.io/pypi/v/pyrig)](https://pypi.org/project/pyrig/)
 [![Python](https://img.shields.io/badge/python-3.12+-blue)](https://pypi.org/project/pyrig/)
 [![License](https://img.shields.io/github/license/winipedia/pyrig)](https://github.com/winipedia/pyrig/blob/main/LICENSE)

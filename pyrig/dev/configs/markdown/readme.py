@@ -45,9 +45,10 @@ class ReadmeConfigFile(MarkdownConfigFile):
         """
         content = f"""# {PyprojectConfigFile.get_project_name()}
 """
-        if PyprojectConfigFile.get_project_name() != pyrig.__name__:
-            content += f"""
-(This project uses [{PyprojectConfigFile.get_project_name_from_pkg_name(pyrig.__name__)}](https://github.com/Winipedia/{pyrig.__name__}))
+        badge_url = "https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=python&logoColor=white"
+        repo_url = f"https://github.com/Winipedia/{pyrig.__name__}"
+        content += f"""
+[![built with pyrig]({badge_url})]({repo_url})
 """
         return content
 
