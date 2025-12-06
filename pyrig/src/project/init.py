@@ -26,6 +26,7 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
+import pyrig
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
@@ -60,6 +61,17 @@ def run_create_tests() -> None:
     run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(create_tests))
 
 
+def commit_initial_changes() -> None:
+    """Commit all initial changes.
+
+    This commits all changes made during initialization in a single commit.
+    """
+    # changes were added by the run pre-commit hooks step
+    run_subprocess(
+        ["git", "commit", "--no-verify", "-m", f"{pyrig.__name__}: Initial commit"]
+    )
+
+
 SETUP_STEPS: list[Callable[..., Any]] = [
     ConfigFile.init_priority_config_files,  # write dev deps to pyproject.toml
     PyprojectConfigFile.install_dependencies,  # to install dev deps
@@ -69,6 +81,7 @@ SETUP_STEPS: list[Callable[..., Any]] = [
     PreCommitConfigConfigFile.run_hooks,
     ConftestConfigFile.run_tests,
     PyprojectConfigFile.install_dependencies,  # to activate cli
+    commit_initial_changes,
 ]
 """Ordered list of setup steps executed during project initialization."""
 

@@ -59,6 +59,7 @@ uv run pyrig init
 6. Runs pre-commit hooks for initial formatting
 7. Runs tests to verify setup
 8. Re-installs to activate CLI entry points
+9. Commits all changes with "pyrig: Initial commit"
 
 **When to use:**
 - Initial project setup after cloning

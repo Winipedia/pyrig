@@ -389,6 +389,7 @@ SETUP_STEPS = [
     PreCommitConfigConfigFile.run_hooks,        # Format code
     ConftestConfigFile.run_tests,               # Verify setup
     PyprojectConfigFile.install_dependencies,   # Activate CLI entry points
+    commit_initial_changes,                     # Git commit all changes
 ]
 ```
 

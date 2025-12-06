@@ -54,6 +54,7 @@ SETUP_STEPS = [
     PreCommitConfigConfigFile.run_hooks,
     ConftestConfigFile.run_tests,
     PyprojectConfigFile.install_dependencies,
+    commit_initial_changes,     # Git commit all changes
 ]
 ```
 
