@@ -414,7 +414,9 @@ class PyprojectConfigFile(TomlConfigFile):
         """
         from pyrig.src.project.mgt import PROJECT_MGT  # noqa: PLC0415
 
-        return run_subprocess([PROJECT_MGT, "lock", "--upgrade"], check=check)
+        return run_subprocess(
+            [PROJECT_MGT, "lock", "--upgrade", "&&", PROJECT_MGT, "sync"], check=check
+        )
 
     @classmethod
     def install_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
