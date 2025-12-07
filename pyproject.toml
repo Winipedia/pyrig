@@ -1,7 +1,7 @@
 [project]
 name = "pyrig"
 version = "2.1.4"
-description = "A dev kit that standardizes configurations and testing"
+description = "A toolkit that standardizes Python project configuration and automates development workflows (CI, testing, linting, and packaging)."
 authors = [
     {name = "Winipedia"},
 ]
