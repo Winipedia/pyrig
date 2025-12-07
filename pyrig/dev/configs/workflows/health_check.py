@@ -21,7 +21,7 @@ class HealthCheckWorkflow(Workflow):
     a matrix of OS and Python versions.
     """
 
-    BASE_CRON_HOUR = 1
+    BASE_CRON_HOUR = 0
 
     @classmethod
     def get_workflow_triggers(cls) -> dict[str, Any]:
