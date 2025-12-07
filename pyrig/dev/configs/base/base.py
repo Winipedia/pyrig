@@ -717,6 +717,18 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         parts = content.split('"""', 2)
         return '"""' + parts[1] + '"""\n'
 
+    @classmethod
+    def is_correct(cls) -> bool:
+        """Check if the file contains the source docstring.
+
+        Returns:
+            True if the docstring is present in the file.
+        """
+        docstring = cls.get_content_str().strip()
+        # remove the triple quotes from the docstring
+        docstring = docstring[3:-3]
+        return docstring in cls.get_file_content() or super().is_correct()
+
 
 class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
     """Config file for creating __init__.py files.
