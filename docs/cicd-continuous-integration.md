@@ -409,6 +409,28 @@ class HealthCheckWorkflow(Base):
         )
 ```
 
+## Version & Description Synchronization
+
+- **Version is authoritative in `pyproject.toml`:** The `project.version` field in `pyproject.toml` is the canonical source of truth for releases. pyrig's CI uses the `uv` project manager to keep this value in sync across tags, GitHub releases, and PyPI:
+  - The Health Check workflow runs `uv version --bump <level>` (e.g. `patch`) which updates `pyproject.toml` and stages the change for commit.
+  - The Release workflow creates and pushes a git tag using `git tag v$(uv version --short)` (so the tag is derived from the `pyproject.toml` version), and then creates a GitHub release for that tag.
+  - The Publish workflow runs `uv build` and `uv publish` which build the distribution from `pyproject.toml` (including the same version) and upload it to PyPI. This ensures the published PyPI artifact, the Git tag, and the `pyproject.toml` version remain consistent.
+
+- **GitHub repository description sync:** pyrig updates the GitHub repository description from `pyproject.toml` when the `protect-repo` command runs.
+  - The Health Check workflow executes `uv run pyrig protect-repo`, which calls `protect_repository()` in `pyrig.src.git.github.repo.protect`.
+  - `protect_repository()` obtains the description via `PyprojectConfigFile.get_project_description()` (reads `project.description` from `pyproject.toml`) and calls the GitHub API to update the repository's `description` field (requires `REPO_TOKEN`).
+  - Because this runs as part of the Health Check, the GitHub repo description is refreshed whenever the Health Check workflow runs successfully and `protect-repo` is executed.
+
+- **PyPI description / long description:** The text shown on PyPI is taken from the package metadata created during `uv build`:
+  - `pyproject.toml` provides `project.description` (short description) and `project.readme` (long description source, e.g., `README.md`).
+  - When `uv build` creates the distribution, the packaging metadata includes those fields (and the README content); `uv publish` uploads that metadata to PyPI, so PyPI displays the same description/README that the package ships with.
+
+Notes and recommendations:
+
+- Make sure `REPO_TOKEN` and `PYPI_TOKEN` are configured as GitHub repository secrets so CI can update repository settings and publish packages.
+- If you prefer the GitHub repository description to remain independent, avoid running `protect-repo` in CI or adjust `pyproject.toml` accordingly before the Health Check step that runs `protect-repo`.
+- For custom versioning behavior (e.g., tagging schemes, pre-releases), consult `uv`'s versioning and publish options since `uv` is used to bump, build, and publish releases.
+
 ## Regenerating Workflows
 
 After modifying workflow classes, regenerate the YAML files:
