@@ -24,7 +24,7 @@ pyrig eliminates the repetitive setup work involved in starting Python projects.
 - **Linting and formatting** with ruff (all rules enabled)
 - **Static type checking** with mypy (strict mode)
 - **Security scanning** with bandit
-- **Test infrastructure** with pytest
+- **Test infrastructure** with pytest and coverage enforcement
 - **Pre-commit hooks** for automated quality checks
 - **GitHub Actions workflows** for CI/CD
 - **Branch protection** via GitHub rulesets

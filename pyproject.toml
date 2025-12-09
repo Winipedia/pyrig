@@ -32,6 +32,7 @@ dev = [
     "pre-commit",
     "pyinstaller",
     "pytest",
+    "pytest-cov",
     "pytest-mock",
     "ruff",
     "types-defusedxml",
@@ -86,6 +87,7 @@ show_error_codes = true
 files = "."
 
 [tool.pytest.ini_options]
+addopts = "--cov=pyrig --cov-report=term-missing --cov-fail-under=80"
 testpaths = [
     "tests",
 ]

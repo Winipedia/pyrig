@@ -32,6 +32,8 @@ from pyrig.src.modules.module import (
     make_obj_importpath,
 )
 
+COVERAGE_THRESHOLD = 80
+
 TEST_FUNCTION_PREFIX = "test_"
 
 TEST_CLASS_PREFIX = "Test"

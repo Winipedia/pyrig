@@ -23,7 +23,11 @@ from packaging.version import Version
 from pyrig.dev.configs.base.base import TomlConfigFile
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.versions import VersionConstraint, adjust_version_to_level
-from pyrig.src.testing.convention import TEST_MODULE_PREFIX, TESTS_PACKAGE_NAME
+from pyrig.src.testing.convention import (
+    COVERAGE_THRESHOLD,
+    TEST_MODULE_PREFIX,
+    TESTS_PACKAGE_NAME,
+)
 
 
 class PyprojectConfigFile(TomlConfigFile):
@@ -153,7 +157,12 @@ class PyprojectConfigFile(TomlConfigFile):
                     "show_error_codes": True,
                     "files": ".",
                 },
-                "pytest": {"ini_options": {"testpaths": [TESTS_PACKAGE_NAME]}},
+                "pytest": {
+                    "ini_options": {
+                        "testpaths": [TESTS_PACKAGE_NAME],
+                        "addopts": f"--cov={cls.get_package_name()} --cov-report=term-missing --cov-fail-under={COVERAGE_THRESHOLD}",  # noqa: E501
+                    }
+                },
                 "bandit": {
                     "exclude_dirs": [
                         ".*",
@@ -301,6 +310,7 @@ class PyprojectConfigFile(TomlConfigFile):
             "pre-commit",
             "pytest",
             "pytest-mock",
+            "pytest-cov",
             "ruff",
             "types-defusedxml",
             "types-pyinstaller",

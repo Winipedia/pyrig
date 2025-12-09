@@ -105,11 +105,11 @@ For creating standalone executables, extend `PyInstallerBuilder`:
 
 ```python
 from types import ModuleType
-from pyrig.dev.artifacts.builders.base.base import PyInstallerBuilder
+from pyrig.dev.artifacts.builders.pyinstaller import PyInstallerBuilder
 
 class MyAppBuilder(PyInstallerBuilder):
     """Builds a standalone executable for my application."""
-    
+
     @classmethod
     def get_additional_resource_pkgs(cls) -> list[ModuleType]:
         """Return packages containing resources to bundle."""
@@ -174,7 +174,7 @@ For executable creation:
 ```python
 # your_project/dev/artifacts/builders/app_builder.py
 from types import ModuleType
-from pyrig.dev.artifacts.builders.base.base import PyInstallerBuilder
+from pyrig.dev.artifacts.builders.pyinstaller import PyInstallerBuilder
 
 import my_project.resources
 
