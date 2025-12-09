@@ -56,17 +56,11 @@ class MainTestConfigFile(PythonPackageConfigFile):
         """
         return '''"""test module."""
 
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.os.os import run_subprocess
 
-
-def test_main() -> None:
+def test_main(main_test_fixture: None) -> None:
     """Test func for main."""
-    project_name = PyprojectConfigFile.get_project_name()
-    stdout = run_subprocess(["uv", "run", project_name, "--help"]).stdout.decode(
-        "utf-8"
-    )
-    assert project_name in stdout
+    # can be called via cli
+    assert main_test_fixture is None
 '''
 
     @classmethod

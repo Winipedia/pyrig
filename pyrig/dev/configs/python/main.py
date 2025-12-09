@@ -38,15 +38,11 @@ class MainConfigFile(CopyModuleConfigFile):
         """Check if the main.py file is valid.
 
         Allows modifications as long as the file contains a main function
-        and the standard __name__ == '__main__' guard.
 
         Returns:
             True if the file has required structure.
         """
-        return super().is_correct() or (
-            "def main" in cls.get_file_content()
-            and 'if __name__ == "__main__":' in cls.get_file_content()
-        )
+        return super().is_correct() or ("def main" in cls.get_file_content())
 
     @classmethod
     def delete_root_main(cls) -> None:

@@ -24,4 +24,4 @@ class TestMainTestConfigFile:
         """Test method for get_content_str."""
         content_str = MainTestConfigFile.get_content_str()
         assert len(content_str) > 0
-        assert "def test_main()" in content_str
+        assert "def test_main" in content_str

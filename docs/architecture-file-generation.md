@@ -255,7 +255,7 @@ Also pyrig just inits the most recent leave of a class tree. So pyrigs own `Heal
 
 | File | Class | Purpose |
 |------|-------|---------|
-| `{pkg}/main.py` | `MainConfigFile` | CLI entry point, copied from pyrig's main.py |
+| `{pkg}/main.py` | `MainConfigFile` | CLI entry point containing `main()` function |
 | `{pkg}/py.typed` | `PyTypedConfigFile` | PEP 561 marker for typed packages |
 | `{pkg}/dev/cli/subcommands.py` | `SubcommandsConfigFile` | Custom CLI subcommands |
 | `{pkg}/dev/configs/__init__.py` | `ConfigsInitConfigFile` | Custom ConfigFile classes |

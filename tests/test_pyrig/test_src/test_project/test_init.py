@@ -154,12 +154,7 @@ def test_init(tmp_path: Path) -> None:
             f"Expected {expected} in stdout, got {stdout}",
         )
         #  assert running the main command raises the NotImplementedError
-        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project"], check=False)
-        stderr = res.stderr.decode("utf-8")
-        assert_with_msg(
-            "NotImplementedError" in stderr,
-            f"Expected NotImplementedError in stderr, got {stderr}",
-        )
+        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project"])
 
     pkg_dir = src_project_dir / "src_project"
     assert_with_msg(

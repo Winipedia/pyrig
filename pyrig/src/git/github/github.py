@@ -85,6 +85,9 @@ def get_repo_url_from_git() -> str:
 
     Executes `git config --get remote.origin.url` to retrieve the URL
     of the origin remote.
+    Url can be:
+        - https://github.com/owner/repo.git
+        - git@github.com:owner/repo.git
 
     Returns:
         The remote origin URL (e.g., "https://github.com/owner/repo.git"
@@ -121,4 +124,6 @@ def get_repo_owner_and_name_from_git() -> tuple[str, str]:
     parts = url.removesuffix(".git").split("/")
     # keep last two parts
     owner, repo = parts[-2:]
+    if ":" in owner:
+        owner = owner.split(":")[-1]
     return owner, repo
