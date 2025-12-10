@@ -170,23 +170,22 @@ def get_obj_from_test_obj(
     return import_obj_from_importpath(obj_importpath)
 
 
-def make_untested_summary_error_msg(
-    untested_objs: Iterable[str],
+def make_summary_error_msg(
+    errors_locations: Iterable[str],
 ) -> str:
-    """Create an error message summarizing untested objects.
+    """Create an error message summarizing multiple error locations.
 
     Args:
-        untested_objs: Collection of import paths for untested objects
+        errors_locations: Collection of error locations
 
     Returns:
-        A formatted error message listing all untested objects
-
+        A formatted error message listing all error locations
     """
     msg = """
-    Found untested objects:
+    Found errors at:
     """
-    for untested in untested_objs:
+    for error_location in errors_locations:
         msg += f"""
-        - {untested}
+        - {error_location}
         """
     return msg

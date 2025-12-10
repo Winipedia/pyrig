@@ -26,8 +26,8 @@ from pyrig.src.os.os import run_subprocess
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     get_obj_from_test_obj,
+    make_summary_error_msg,
     make_test_obj_importpath_from_obj,
-    make_untested_summary_error_msg,
 )
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ def assert_no_untested_objs() -> Callable[
             make_test_skeletons()
 
         msg = f"""Found missing tests. Tests skeletons were automatically created for:
-        {make_untested_summary_error_msg(missing_test_obj_path_to_obj.keys())}
+        {make_summary_error_msg(missing_test_obj_path_to_obj.keys())}
     """
 
         assert_with_msg(

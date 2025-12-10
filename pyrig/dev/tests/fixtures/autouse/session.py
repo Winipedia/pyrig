@@ -50,8 +50,8 @@ from pyrig.src.os.os import run_subprocess
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
+    make_summary_error_msg,
     make_test_obj_importpath_from_obj,
-    make_untested_summary_error_msg,
 )
 
 if TYPE_CHECKING:
@@ -227,7 +227,7 @@ def assert_all_modules_tested() -> None:
         make_test_skeletons()
 
     msg = f"""Found missing tests. Tests skeletons were automatically created for:
-    {make_untested_summary_error_msg(missing_tests_to_module.keys())}
+    {make_summary_error_msg(missing_tests_to_module.keys())}
 """
     assert_with_msg(
         not missing_tests_to_module,
@@ -448,7 +448,7 @@ def assert_src_does_not_use_dev() -> None:
             usages.append(f"{path}: {is_dev_used.group()}")
 
     msg = f"""Found dev usage in src:
-    {make_untested_summary_error_msg(usages)}
+    {make_summary_error_msg(usages)}
 """
     assert_with_msg(
         not usages,

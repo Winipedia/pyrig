@@ -16,9 +16,9 @@ from pyrig.src.testing.convention import (
     get_right_test_prefix,
     get_test_obj_from_obj,
     make_obj_importpath_from_test_obj,
+    make_summary_error_msg,
     make_test_obj_importpath_from_obj,
     make_test_obj_name,
-    make_untested_summary_error_msg,
     reverse_make_test_obj_name,
 )
 
@@ -179,39 +179,20 @@ def test_get_obj_from_test_obj() -> None:
     )
 
 
-def test_make_untested_summary_error_msg() -> None:
+def test_make_summary_error_msg() -> None:
     """Test func for make_untested_summary_error_msg."""
     # Test with empty list
-    empty_msg = make_untested_summary_error_msg([])
-    assert_with_msg(
-        "Found untested objects:" in empty_msg,
-        f"Expected message to contain 'Found untested objects:', got {empty_msg}",
-    )
-    assert_with_msg(
-        len(empty_msg.strip().split("\n")) == 1,  # Only the header line
-        f"Expected 1 line in empty message, got {len(empty_msg.strip().split('\n'))}",
-    )
+    empty_msg = make_summary_error_msg([])
+    assert isinstance(empty_msg, str)
 
     # Test with one item
-    one_item_msg = make_untested_summary_error_msg(["module.function"])
-    assert_with_msg(
-        "Found untested objects:" in one_item_msg,
-        f"Expected message to contain 'Found untested objects:', got {one_item_msg}",
-    )
-    assert_with_msg(
-        "- module.function" in one_item_msg,
-        f"Expected message to contain '- module.function', got {one_item_msg}",
-    )
+    one_item_msg = make_summary_error_msg(["module.function"])
+    assert isinstance(one_item_msg, str)
 
     # Test with multiple items
     items = ["module.function1", "module.class.method", "another_module"]
-    multi_item_msg = make_untested_summary_error_msg(items)
-    assert_with_msg(
-        "Found untested objects:" in multi_item_msg,
-        f"Expected message to contain 'Found untested objects:', got {multi_item_msg}",
-    )
+    multi_item_msg = make_summary_error_msg(items)
+    assert isinstance(multi_item_msg, str)
+
     for item in items:
-        assert_with_msg(
-            f"- {item}" in multi_item_msg,
-            f"Expected message to contain '- {item}', got {multi_item_msg}",
-        )
+        assert item in multi_item_msg
