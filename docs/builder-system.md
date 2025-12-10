@@ -257,13 +257,13 @@ Place your builders in the correct location:
 your_project/
 ├── dev/
 │   └── artifacts/
-│       ├── builders/
-│       │   ├── __init__.py
-│       │   ├── my_builder.py      # Your builder implementations
-│       │   └── app_builder.py
-│       └── resources/
+│       └── builders/
 │           ├── __init__.py
-│           └── icon.png           # Application icon (256x256 recommended)
+│           ├── my_builder.py      # Your builder implementations
+│           └── app_builder.py
+├── resources/
+│   ├── __init__.py
+│   └── icon.png                   # Application icon (256x256 recommended)
 ├── src/
 └── pyproject.toml
 ```
@@ -424,7 +424,7 @@ def get_add_datas(cls) -> list[tuple[Path, Path]]:
 
 Place your icon at:
 ```
-your_project/dev/artifacts/resources/icon.png
+your_project/resources/icon.png
 ```
 
 Recommended specifications:
@@ -482,7 +482,7 @@ def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
 **Cause**: Icon file missing.
 
 **Solution**:
-1. Create `dev/artifacts/resources/icon.png`
+1. Create `resources/icon.png`
 2. Or override `get_app_icon_png_path()`
 
 ### Artifacts not appearing in release

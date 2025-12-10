@@ -27,8 +27,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 import pyrig
-from pyrig import main
-from pyrig.dev.artifacts import builders, resources
+from pyrig import main, resources
+from pyrig.dev.artifacts import builders
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.class_ import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,

@@ -13,7 +13,7 @@ from types import ModuleType
 from PIL import Image
 
 import pyrig
-from pyrig.dev.artifacts import resources
+from pyrig import resources
 from pyrig.dev.artifacts.builders.base.base import Builder
 from pyrig.src.modules.module import get_same_modules_from_deps_depen_on_dep
 

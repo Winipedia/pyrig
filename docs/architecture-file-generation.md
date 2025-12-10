@@ -38,10 +38,8 @@ your-project/
 │   │   ├── __init__.py
 │   │   ├── artifacts/
 │   │   │   ├── __init__.py
-│   │   │   ├── builders/
-│   │   │   │   └── __init__.py    # Custom builders go here
-│   │   │   └── resources/
-│   │   │       └── __init__.py    # Build resources go here
+│   │   │   └── builders/
+│   │   │       └── __init__.py    # Custom builders go here
 │   │   ├── cli/
 │   │   │   ├── __init__.py
 │   │   │   └── subcommands.py     # Custom CLI commands
@@ -50,7 +48,9 @@ your-project/
 │   │   └── tests/
 │   │       ├── __init__.py
 │   │       └── fixtures/
-│   │           └── __init__.py        # Custom fixtures (auto-discovered)
+│   │           └── __init__.py    # Custom fixtures (auto-discovered)
+│   ├── resources/
+│   │   └── __init__.py            # Build resources (icons, etc.) go here
 │   └── src/
 │       └── __init__.py            # Core utilities go here
 │
@@ -260,7 +260,7 @@ Also pyrig just inits the most recent leave of a class tree. So pyrigs own `Heal
 | `{pkg}/dev/cli/subcommands.py` | `SubcommandsConfigFile` | Custom CLI subcommands |
 | `{pkg}/dev/configs/__init__.py` | `ConfigsInitConfigFile` | Custom ConfigFile classes |
 | `{pkg}/dev/artifacts/builders/__init__.py` | `BuildersInitConfigFile` | Custom artifact builders |
-| `{pkg}/dev/artifacts/resources/__init__.py` | `ResourcesInitConfigFile` | Build resources |
+| `{pkg}/resources/__init__.py` | `ResourcesInitConfigFile` | Build resources |
 | `{pkg}/src/__init__.py` | `SrcInitConfigFile` | Core utilities |
 
 ### Test Files

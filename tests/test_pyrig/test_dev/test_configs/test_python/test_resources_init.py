@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.dev.artifacts import resources
+from pyrig import resources
 from pyrig.dev.configs.python.resources_init import ResourcesInitConfigFile
 
 

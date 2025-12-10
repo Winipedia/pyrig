@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 import pyrig
-from pyrig import dev, src
+from pyrig import dev, main, resources, src
 from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.create_tests import make_test_skeletons
 from pyrig.dev.cli.commands.make_inits import get_namespace_packages, make_init_files
@@ -33,6 +33,7 @@ from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.tests.utils.decorators import autouse_session_fixture
 from pyrig.src.git.github.github import running_in_github_actions
 from pyrig.src.modules.module import (
+    get_isolated_obj_name,
     get_module_name_replacing_start_module,
     import_module_with_default,
 )
@@ -128,6 +129,7 @@ def assert_all_src_code_in_one_package() -> None:
     src_package = get_src_package()
     src_package_name = src_package.__name__
     expected_packages = {TESTS_PACKAGE_NAME, src_package_name, DOCS_DIR_NAME}
+
     # pkgs must be subset of expected_packages
     assert_with_msg(
         set(packages).issubset(expected_packages),
@@ -138,8 +140,16 @@ def assert_all_src_code_in_one_package() -> None:
     subpackages, submodules = get_modules_and_packages_from_package(src_package)
     subpackage_names = {p.__name__.split(".")[-1] for p in subpackages}
     submodule_names = {m.__name__.split(".")[-1] for m in submodules}
-    expected_subpackages = {"src", "dev"}
-    expected_submodules = {"main"}
+
+    expected_subpackages = {
+        get_isolated_obj_name(sub_pkg)
+        for sub_pkg in [
+            dev,
+            src,
+            resources,
+        ]
+    }
+    expected_submodules = {get_isolated_obj_name(main)}
     assert_with_msg(
         subpackage_names == expected_subpackages,
         f"Expected subpackages {expected_subpackages}, but found {subpackage_names}",
