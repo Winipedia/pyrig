@@ -104,6 +104,7 @@ class GitIgnoreConfigFile(ConfigFile):
             ".pytest_cache/",
             ".ruff_cache/",
             ".venv/",
+            "dist/",
         ]
 
         dotenv_path = DotEnvConfigFile.get_path().as_posix()
