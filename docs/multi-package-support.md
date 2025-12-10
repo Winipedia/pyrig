@@ -63,7 +63,7 @@ The key insight is that dependent packages mirror pyrig's directory structure. p
 
 ```
 pyrig/dev/configs/          →  your_project/dev/configs/
-pyrig/dev/artifacts/builders/ →  your_project/dev/artifacts/builders/
+pyrig/dev/builders/         →  your_project/dev/builders/
 pyrig/dev/tests/fixtures/   →  your_project/dev/tests/fixtures/
 ```
 
@@ -128,22 +128,21 @@ When `pyrig mkroot` runs, it discovers and initializes all ConfigFile subclasses
 
 ### 2. Builder Extensions
 
-Custom builders are discovered in `your_project/dev/artifacts/builders/`:
+Custom builders are discovered in `your_project/dev/builders/`:
 
 ```
 your_project/
 └── dev/
-    └── artifacts/
-        └── builders/
-            ├── __init__.py
-            └── custom_builder.py   ← Your Builder classes go here
+    └── builders/
+        ├── __init__.py
+        └── custom_builder.py   ← Your Builder classes go here
 ```
 
 **Example: Custom Builder**
 
 ```python
-# your_project/dev/artifacts/builders/custom_builder.py
-from pyrig.dev.artifacts.builders.base.base import Builder
+# your_project/dev/builders/custom_builder.py
+from pyrig.dev.builders.base.base import Builder
 from pathlib import Path
 
 class MyCustomBuilder(Builder):
@@ -259,7 +258,7 @@ def get_non_abstract_subclasses(cls) -> list[type["Builder"]]:
     return get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
         cls,
         pyrig,
-        builders,  # pyrig.dev.artifacts.builders
+        builders,  # pyrig.dev.builders
         discard_parents=True,
     )
 ```
@@ -411,7 +410,7 @@ for cls in subclasses:
 ### Check Which Builders Are Discovered
 
 ```python
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
 
 subclasses = Builder.get_non_abstract_subclasses()
 for cls in subclasses:
@@ -489,7 +488,7 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
 | Extension Point | Location | Discovery Method |
 |----------------|----------|------------------|
 | ConfigFile | `dev/configs/*.py` | `ConfigFile.get_all_subclasses()` |
-| Builder | `dev/artifacts/builders/*.py` | `Builder.get_non_abstract_subclasses()` |
+| Builder | `dev/builders/*.py` | `Builder.get_non_abstract_subclasses()` |
 | Fixtures | `dev/tests/fixtures/*.py` | `conftest.py` pytest_plugins |
 | CLI Commands | `dev/cli/subcommands.py` | `get_all_functions_from_module()` |
 

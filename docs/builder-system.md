@@ -105,7 +105,7 @@ For creating standalone executables, extend `PyInstallerBuilder`:
 
 ```python
 from types import ModuleType
-from pyrig.dev.artifacts.builders.pyinstaller import PyInstallerBuilder
+from pyrig.dev.builders.pyinstaller import PyInstallerBuilder
 
 class MyAppBuilder(PyInstallerBuilder):
     """Builds a standalone executable for my application."""
@@ -142,12 +142,12 @@ class MyAppBuilder(PyInstallerBuilder):
 
 ### Basic Builder
 
-Create a builder in `your_project/dev/artifacts/builders/`:
+Create a builder in `your_project/dev/builders/`:
 
 ```python
-# your_project/dev/artifacts/builders/my_builder.py
+# your_project/dev/builders/my_builder.py
 from pathlib import Path
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
 
 class MyBuilder(Builder):
     """Creates custom artifacts for my project."""
@@ -172,9 +172,9 @@ class MyBuilder(Builder):
 For executable creation:
 
 ```python
-# your_project/dev/artifacts/builders/app_builder.py
+# your_project/dev/builders/app_builder.py
 from types import ModuleType
-from pyrig.dev.artifacts.builders.pyinstaller import PyInstallerBuilder
+from pyrig.dev.builders.pyinstaller import PyInstallerBuilder
 
 import my_project.resources
 
@@ -220,7 +220,7 @@ class MyAppBuilder(PyInstallerBuilder):
 pyrig automatically discovers all non-abstract Builder subclasses:
 
 ```python
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
 
 # Get all discovered builders
 builders = Builder.get_non_abstract_subclasses()
@@ -244,7 +244,7 @@ def get_non_abstract_subclasses(cls) -> list[type["Builder"]]:
 
 The discovery:
 1. Finds all packages depending on pyrig
-2. Locates `dev/artifacts/builders/` in each package
+2. Locates `dev/builders/` in each package
 3. Imports all modules in those directories
 4. Returns all non-abstract Builder subclasses
 5. Discards parent classes (only returns leaf implementations)
@@ -256,14 +256,13 @@ Place your builders in the correct location:
 ```
 your_project/
 ├── dev/
-│   └── artifacts/
-│       └── builders/
-│           ├── __init__.py
-│           ├── my_builder.py      # Your builder implementations
-│           └── app_builder.py
+│   └── builders/
+│       ├── __init__.py
+│       ├── my_builder.py      # Your builder implementations
+│       └── app_builder.py
 ├── resources/
 │   ├── __init__.py
-│   └── icon.png                   # Application icon (256x256 recommended)
+│   └── icon.png               # Application icon (256x256 recommended)
 ├── src/
 └── pyproject.toml
 ```
@@ -290,7 +289,7 @@ uv run pyrig build
 This calls:
 
 ```python
-# pyrig/dev/artifacts/build.py
+# pyrig/dev/cli/commands/build_artifacts.py
 def build_artifacts() -> None:
     """Build all artifacts by invoking all registered Builder subclasses."""
     Builder.init_all_non_abstract_subclasses()
@@ -460,7 +459,7 @@ def get_app_icon_path(cls, temp_dir: Path) -> Path:
 **Cause**: No concrete Builder subclasses found.
 
 **Solution**:
-1. Create a builder in `dev/artifacts/builders/`
+1. Create a builder in `dev/builders/`
 2. Ensure it's not marked `ABC`
 3. Ensure `__init__.py` exists
 
@@ -491,7 +490,7 @@ def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
 
 **Solution**:
 1. Check workflow logs for errors
-2. Verify builders are discovered: `uv run python -c "from pyrig.dev.artifacts.builders.base.base import Builder; print(Builder.get_non_abstract_subclasses())"`
+2. Verify builders are discovered: `uv run python -c "from pyrig.dev.builders.base.base import Builder; print(Builder.get_non_abstract_subclasses())"`
 3. Run `uv run pyrig build` locally to test
 
 ### Large executable size
@@ -516,7 +515,7 @@ def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
 | **create_artifacts()** | Method to implement for custom artifacts |
 | **get_additional_resource_pkgs()** | Method to specify resources to bundle |
 | **Discovery** | Automatic via `get_non_abstract_subclasses()` |
-| **Location** | `your_project/dev/artifacts/builders/` |
+| **Location** | `your_project/dev/builders/` |
 | **Output** | `dist/` with platform-suffixed names |
 | **CI/CD** | Build across OS matrix, attach to releases |
 

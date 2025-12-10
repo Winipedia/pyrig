@@ -5,7 +5,7 @@ IMPORTANT: All funcs in this file will be added as subcommands.
 So best to define the logic elsewhere and just call it here in a wrapper.
 """
 
-from pyrig.dev.artifacts.build import build_artifacts
+from pyrig.dev.cli.commands.build_artifacts import build_artifacts
 from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.create_tests import make_test_skeletons
 from pyrig.dev.cli.commands.init_project import init_project

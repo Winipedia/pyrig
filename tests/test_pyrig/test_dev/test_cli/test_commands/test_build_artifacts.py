@@ -2,8 +2,8 @@
 
 from pytest_mock import MockFixture
 
-from pyrig.dev.artifacts.build import build_artifacts
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
+from pyrig.dev.cli.commands.build_artifacts import build_artifacts
 from pyrig.src.modules.module import make_obj_importpath
 
 

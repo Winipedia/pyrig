@@ -151,8 +151,7 @@ my_project/
 │   ├── main.py                       # CLI entry point
 │   ├── py.typed                      # PEP 561 type marker
 │   ├── dev/
-│   │   ├── artifacts/
-│   │   │   └── builders/             # Custom artifact builders
+│   │   ├── builders/                 # Custom artifact builders
 │   │   ├── cli/
 │   │   │   └── subcommands.py        # Custom CLI commands
 │   │   ├── configs/                  # Custom ConfigFile classes
