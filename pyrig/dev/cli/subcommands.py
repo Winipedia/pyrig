@@ -6,11 +6,11 @@ So best to define the logic elsewhere and just call it here in a wrapper.
 """
 
 from pyrig.dev.artifacts.build import build_artifacts
-from pyrig.src.git.github.repo.protect import protect_repository
-from pyrig.src.project.create_root import make_project_root
-from pyrig.src.project.init_project import init_project
-from pyrig.src.project.make_inits import make_init_files
-from pyrig.src.testing.create_tests import make_test_skeletons
+from pyrig.dev.cli.commands.create_root import make_project_root
+from pyrig.dev.cli.commands.create_tests import make_test_skeletons
+from pyrig.dev.cli.commands.init_project import init_project
+from pyrig.dev.cli.commands.make_inits import make_init_files
+from pyrig.dev.cli.commands.protect_repo import protect_repository
 
 
 def mkroot() -> None:

@@ -21,6 +21,10 @@ import requests
 from packaging.version import Version
 
 from pyrig.dev.configs.base.base import TomlConfigFile
+from pyrig.src.modules.package import (
+    get_pkg_name_from_project_name,
+    get_project_name_from_cwd,
+)
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.testing.convention import (
@@ -72,25 +76,13 @@ class PyprojectConfigFile(TomlConfigFile):
         return Path()
 
     @classmethod
-    def get_project_name_from_cwd(cls) -> str:
-        """Derive the project name from the current directory.
-
-        The project name is assumed to match the directory name.
-
-        Returns:
-            The current directory name.
-        """
-        cwd = Path.cwd()
-        return cwd.name
-
-    @classmethod
     def get_pkg_name_from_cwd(cls) -> str:
         """Derive the package name from the current directory.
 
         Returns:
             The package name (directory name with hyphens as underscores).
         """
-        return cls.get_pkg_name_from_project_name(cls.get_project_name_from_cwd())
+        return get_pkg_name_from_project_name(get_project_name_from_cwd())
 
     @classmethod
     def get_project_description(cls) -> str:
@@ -115,7 +107,7 @@ class PyprojectConfigFile(TomlConfigFile):
 
         return {
             "project": {
-                "name": cls.get_project_name_from_cwd(),
+                "name": get_project_name_from_cwd(),
                 "readme": "README.md",
                 "scripts": {
                     cls.get_project_name(): f"{cli.__name__}:{cli.main.__name__}"
@@ -251,31 +243,7 @@ class PyprojectConfigFile(TomlConfigFile):
             The package name derived from the project name.
         """
         project_name = cls.get_project_name()
-        return cls.get_pkg_name_from_project_name(project_name)
-
-    @classmethod
-    def get_pkg_name_from_project_name(cls, project_name: str) -> str:
-        """Convert a project name to a package name.
-
-        Args:
-            project_name: Project name with hyphens.
-
-        Returns:
-            Package name with underscores.
-        """
-        return project_name.replace("-", "_")
-
-    @classmethod
-    def get_project_name_from_pkg_name(cls, pkg_name: str) -> str:
-        """Convert a package name to a project name.
-
-        Args:
-            pkg_name: Package name with underscores.
-
-        Returns:
-            Project name with hyphens.
-        """
-        return pkg_name.replace("_", "-")
+        return get_pkg_name_from_project_name(project_name)
 
     @classmethod
     def get_project_name(cls) -> str:

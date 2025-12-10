@@ -7,14 +7,20 @@ with @autouse_class_fixture from pyrig.src.testing.fixtures or with pytest's
 autouse mechanism @pytest.fixture(scope="class", autouse=True).
 """
 
+from collections.abc import Callable
+from types import ModuleType
+from typing import Any
+
 import pytest
 
 from pyrig.dev.tests.utils.decorators import autouse_class_fixture
-from pyrig.src.testing.utils import assert_no_untested_objs
 
 
 @autouse_class_fixture
-def assert_all_methods_tested(request: pytest.FixtureRequest) -> None:
+def assert_all_methods_tested(
+    request: pytest.FixtureRequest,
+    assert_no_untested_objs: Callable[[ModuleType | type | Callable[..., Any]], None],
+) -> None:
     """Verify that all methods in a class have corresponding tests.
 
     This fixture runs automatically for each test class and checks that every
@@ -23,6 +29,8 @@ def assert_all_methods_tested(request: pytest.FixtureRequest) -> None:
 
     Args:
         request: The pytest fixture request object containing the current class
+        assert_no_untested_objs: The assert_no_untested_objs fixture asserts
+            that all objects have corresponding tests
 
     Raises:
         AssertionError: If any method in the source class lacks a test

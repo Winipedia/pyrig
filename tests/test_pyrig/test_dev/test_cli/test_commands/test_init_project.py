@@ -10,15 +10,16 @@ from pathlib import Path
 from pytest_mock import MockFixture
 
 import pyrig
-from pyrig.dev.cli.subcommands import init
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.modules.module import to_path
-from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.init_project import (
+from pyrig.dev.cli.commands.init_project import (
     commit_initial_changes,
     run_create_root,
     run_create_tests,
 )
+from pyrig.dev.cli.subcommands import init
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.src.modules.module import to_path
+from pyrig.src.modules.package import get_project_name_from_pkg_name
+from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import PROJECT_MGT, PROJECT_MGT_RUN_ARGS
 from pyrig.src.testing.assertions import assert_with_msg
 
@@ -122,9 +123,7 @@ def test_init_project(tmp_path: Path) -> None:
         run_subprocess(["uv", "sync"], env=clean_env)
 
         # Verify pyrig was installed correctly
-        project_name = PyprojectConfigFile.get_project_name_from_pkg_name(
-            pyrig.__name__
-        )
+        project_name = get_project_name_from_pkg_name(pyrig.__name__)
 
         run_subprocess(
             [*PROJECT_MGT_RUN_ARGS, project_name, init.__name__],

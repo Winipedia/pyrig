@@ -1,6 +1,6 @@
 """Tests for pyrig.src.projects.project module."""
 
-from pyrig.src.project.create_root import (
+from pyrig.dev.cli.commands.create_root import (
     make_project_root,
 )
 

@@ -255,6 +255,35 @@ AssertionError: Expected Success in stdout, got ... and ModuleNotFoundError: No 
 
 ---
 
+### `assert_src_does_not_use_dev`
+
+**Purpose:** Verifies that source code (`src/`) does not import any code from `dev/`.
+
+**What it checks:**
+- Scans all `.py` files in the `src/` directory
+- Searches for imports of any `dev` module from packages depending on pyrig
+- Uses regex pattern matching to detect `{package}.dev` imports
+
+**Auto-fix behavior:** None — fails immediately.
+
+**Example error:**
+```
+AssertionError: Found dev usage in src:
+    - /path/to/your_project/src/utils.py: your_project.dev
+```
+
+**Why this matters:**
+- Enforces clean separation between production (`src/`) and development (`dev/`) code
+- Ensures `src/` code can run without dev dependencies installed
+- Prevents accidental coupling between runtime and development tooling
+
+**How to fix:**
+- Remove imports of `dev` modules from `src/` files
+- Move dev-dependent code to the `dev/` directory
+- Use dependency injection or configuration instead of direct imports
+
+---
+
 ## Module-Scoped Fixtures
 
 Module fixtures run once per test module, before any tests in that module execute.
@@ -281,9 +310,15 @@ AssertionError: Found missing tests. Tests skeletons were automatically created 
 ```
 
 **How it works:**
+
+The fixture receives `assert_no_untested_objs` as a fixture parameter (a session-scoped fixture that provides the validation function):
+
 ```python
 @autouse_module_fixture
-def assert_all_funcs_and_classes_tested(request: pytest.FixtureRequest) -> None:
+def assert_all_funcs_and_classes_tested(
+    request: pytest.FixtureRequest,
+    assert_no_untested_objs: Callable[[ModuleType | type | Callable[..., Any]], None],
+) -> None:
     module: ModuleType = request.module
     assert_no_untested_objs(module)
 ```
@@ -316,9 +351,15 @@ AssertionError: Found missing tests. Tests skeletons were automatically created 
 ```
 
 **How it works:**
+
+The fixture receives `assert_no_untested_objs` as a fixture parameter:
+
 ```python
 @autouse_class_fixture
-def assert_all_methods_tested(request: pytest.FixtureRequest) -> None:
+def assert_all_methods_tested(
+    request: pytest.FixtureRequest,
+    assert_no_untested_objs: Callable[[ModuleType | type | Callable[..., Any]], None],
+) -> None:
     class_ = request.node.cls
     if class_ is None:
         return
@@ -362,36 +403,46 @@ Actual: {actual}
     assert_with_msg(expr, msg)
 ```
 
-### `assert_no_untested_objs`
+### `assert_no_untested_objs` (Session Fixture)
 
-The core validation function used by module and class fixtures:
+A session-scoped fixture that provides the core validation function used by module and class fixtures. Located in `pyrig.dev.tests.fixtures.assertions`.
 
 ```python
-def assert_no_untested_objs(
-    test_obj: ModuleType | type | Callable[..., Any],
-) -> None:
-    # Get test objects
-    test_objs = get_objs_from_obj(test_obj)
-    test_objs_paths = {make_obj_importpath(obj) for obj in test_objs}
+@session_fixture
+def assert_no_untested_objs() -> Callable[
+    [ModuleType | type | Callable[..., Any]], None
+]:
+    """Fixture that provides a function to assert all objects have tests."""
 
-    # Get source objects
-    obj = get_obj_from_test_obj(test_obj)
-    objs = get_objs_from_obj(obj)
+    def _assert_no_untested_objs(
+        test_obj: ModuleType | type | Callable[..., Any],
+    ) -> None:
+        # Get test objects
+        test_objs = get_objs_from_obj(test_obj)
+        test_objs_paths = {make_obj_importpath(obj) for obj in test_objs}
 
-    # Find missing tests
-    missing_test_obj_path_to_obj = {
-        test_path: obj
-        for test_path, obj in test_obj_path_to_obj.items()
-        if test_path not in test_objs_paths
-    }
+        # Get source objects
+        obj = get_obj_from_test_obj(test_obj)
+        objs = get_objs_from_obj(obj)
 
-    # Auto-fix: generate skeletons
-    if missing_test_obj_path_to_obj:
-        make_test_skeletons()
+        # Find missing tests
+        missing_test_obj_path_to_obj = {
+            test_path: obj
+            for test_path, obj in test_obj_path_to_obj.items()
+            if test_path not in test_objs_paths
+        }
 
-    # Fail with message
-    assert_with_msg(not missing_test_obj_path_to_obj, msg)
+        # Auto-fix: generate skeletons
+        if missing_test_obj_path_to_obj:
+            make_test_skeletons()
+
+        # Fail with message
+        assert_with_msg(not missing_test_obj_path_to_obj, msg)
+
+    return _assert_no_untested_objs
 ```
+
+This fixture is injected into the module and class fixtures, allowing them to call the validation function.
 
 ---
 
@@ -411,7 +462,8 @@ Test Session Start
 │   ├── assert_no_unit_test_package_usage
 │   ├── assert_dependencies_are_up_to_date
 │   ├── assert_pre_commit_is_installed
-│   └── assert_src_runs_without_dev_deps
+│   ├── assert_src_runs_without_dev_deps
+│   └── assert_src_does_not_use_dev
 │
 ├── For Each Test Module:
 │   ├── Module Fixture: assert_all_funcs_and_classes_tested
@@ -593,6 +645,7 @@ pyrig's autouse fixtures provide automatic quality gates:
 | `assert_dependencies_are_up_to_date` | Session | Yes | Dependencies are current |
 | `assert_pre_commit_is_installed` | Session | Yes | Pre-commit hooks installed |
 | `assert_src_runs_without_dev_deps` | Session | No | No dev deps in prod code |
+| `assert_src_does_not_use_dev` | Session | No | No dev imports in src code |
 | `assert_all_funcs_and_classes_tested` | Module | Yes | All functions/classes tested |
 | `assert_all_methods_tested` | Class | Yes | All methods tested |
 

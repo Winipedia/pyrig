@@ -28,8 +28,7 @@ from types import ModuleType
 from typing import Any
 
 import pyrig
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.modules.package import get_src_package
+from pyrig.src.modules.package import get_project_name_from_pkg_name, get_src_package
 from pyrig.src.string import make_name_from_obj
 
 logger = logging.getLogger(__name__)
@@ -103,7 +102,7 @@ def get_project_mgt_run_cli_cmd_args(
     """
     args = [
         *PROJECT_MGT_RUN_ARGS,
-        PyprojectConfigFile.get_project_name_from_pkg_name(get_src_package().__name__),
+        get_project_name_from_pkg_name(get_src_package().__name__),
     ]
     if cmd is not None:
         name = make_name_from_obj(cmd, capitalize=False)
@@ -130,9 +129,7 @@ def get_project_mgt_run_pyrig_cli_cmd_args(
         A list of arguments: ["uv", "run", "pyrig", "subcommand", ...].
     """
     args = get_project_mgt_run_cli_cmd_args(cmd, extra_args)
-    args[len(PROJECT_MGT_RUN_ARGS)] = (
-        PyprojectConfigFile.get_project_name_from_pkg_name(pyrig.__name__)
-    )
+    args[len(PROJECT_MGT_RUN_ARGS)] = get_project_name_from_pkg_name(pyrig.__name__)
     return args
 
 

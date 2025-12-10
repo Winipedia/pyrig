@@ -5,10 +5,10 @@ a minimal test file that ensures pytest runs even when no other
 tests exist.
 """
 
+from pyrig.dev.cli.commands import create_tests
 from pyrig.dev.configs.base.base import PythonTestsConfigFile
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import get_project_mgt_run_module_args
-from pyrig.src.testing import create_tests
 
 
 class ZeroTestConfigFile(PythonTestsConfigFile):

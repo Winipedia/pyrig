@@ -285,13 +285,13 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
     module path as `load_package_before` in each, and discovers subclasses
     of `cls` in those modules.
 
-    For example, if `dep` is pyrig and `load_package_before` is
-    `pyrig.dev.configs`, this will find `myapp.dev.configs` in any package
-    that depends on pyrig, and discover ConfigFile subclasses there.
+    For example, if `dep` is smth and `load_package_before` is
+    `smth.dev.configs`, this will find `myapp.dev.configs` in any package
+    that depends on smth, and discover ConfigFile subclasses there.
 
     Args:
         cls: The base class to find subclasses of.
-        dep: The dependency package that other packages depend on (e.g., pyrig).
+        dep: The dependency package that other packages depend on (e.g., pyrig or smth).
         load_package_before: The module path within `dep` to use as a template
             for finding equivalent modules in dependent packages.
         discard_parents: If True, keeps only leaf classes when inheritance
@@ -306,8 +306,8 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
         >>> # Find all ConfigFile implementations across the ecosystem
         >>> subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
         ...     ConfigFile,
-        ...     pyrig,
-        ...     pyrig.dev.configs,
+        ...     smth,
+        ...     smth.dev.configs,
         ...     discard_parents=True
         ... )
     """

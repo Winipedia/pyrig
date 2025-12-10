@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.git.github.repo.protect import (
+from pyrig.dev.cli.commands.protect_repo import (
     create_or_update_default_branch_ruleset,
     get_default_ruleset_params,
     protect_repository,

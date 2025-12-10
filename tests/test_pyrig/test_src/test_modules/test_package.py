@@ -24,6 +24,9 @@ from pyrig.src.modules.package import (
     find_packages_as_modules,
     get_main_package,
     get_modules_and_packages_from_package,
+    get_pkg_name_from_project_name,
+    get_project_name_from_cwd,
+    get_project_name_from_pkg_name,
     get_src_package,
     import_pkg_from_path,
     module_is_package,
@@ -554,3 +557,32 @@ def test_import_pkg_from_path(tmp_path: Path) -> None:
             package.__name__ == "test_package.subdir",
             f"Expected package name to be test_package.subdir, got {package.__name__}",
         )
+
+
+def test_get_pkg_name_from_project_name() -> None:
+    """Test function."""
+    project_name = "test-project"
+    pkg_name = get_pkg_name_from_project_name(project_name)
+    expected_pkg_name = "test_project"
+    assert pkg_name == expected_pkg_name, (
+        f"Expected {expected_pkg_name}, got {pkg_name}"
+    )
+
+
+def test_get_project_name_from_pkg_name() -> None:
+    """Test function."""
+    pkg_name = "test_project"
+    project_name = get_project_name_from_pkg_name(pkg_name)
+    expected_project_name = "test-project"
+    assert project_name == expected_project_name, (
+        f"Expected {expected_project_name}, got {project_name}"
+    )
+
+
+def test_get_project_name_from_cwd() -> None:
+    """Test function."""
+    project_name = get_project_name_from_cwd()
+    expected_project_name = pyrig.__name__
+    assert project_name == expected_project_name, (
+        f"Expected {expected_project_name}, got {project_name}"
+    )

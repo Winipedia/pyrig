@@ -3,7 +3,7 @@
 from contextlib import chdir
 from pathlib import Path
 
-from pyrig.src.project.make_inits import get_namespace_packages, make_init_files
+from pyrig.dev.cli.commands.make_inits import get_namespace_packages, make_init_files
 
 
 def test_get_namespace_packages(tmp_path: Path) -> None:

@@ -9,13 +9,20 @@ autouse mechanism @pytest.fixture(scope="session", autouse=True).
 
 import logging
 import os
+import re
 import shutil
 from contextlib import chdir
+from importlib import import_module
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 
+import pyrig
+from pyrig import dev, src
+from pyrig.dev.cli.commands.create_root import make_project_root
+from pyrig.dev.cli.commands.create_tests import make_test_skeletons
+from pyrig.dev.cli.commands.make_inits import get_namespace_packages, make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
@@ -26,25 +33,25 @@ from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.tests.utils.decorators import autouse_session_fixture
 from pyrig.src.git.github.github import running_in_github_actions
 from pyrig.src.modules.module import (
+    get_module_name_replacing_start_module,
     import_module_with_default,
 )
 from pyrig.src.modules.package import (
     DOCS_DIR_NAME,
+    DependencyGraph,
     find_packages,
     get_modules_and_packages_from_package,
+    get_pkg_name_from_project_name,
     get_src_package,
     walk_package,
 )
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.create_root import make_project_root
-from pyrig.src.project.make_inits import get_namespace_packages, make_init_files
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
     make_test_obj_importpath_from_obj,
     make_untested_summary_error_msg,
 )
-from pyrig.src.testing.create_tests import make_test_skeletons
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -162,9 +169,7 @@ def assert_src_package_correctly_named() -> None:
     )
 
     src_package_name = get_src_package().__name__
-    src_package_name_from_cwd = PyprojectConfigFile.get_pkg_name_from_project_name(
-        cwd_name
-    )
+    src_package_name_from_cwd = get_pkg_name_from_project_name(cwd_name)
     assert_with_msg(
         src_package_name == src_package_name_from_cwd,
         f"Expected source package to be named {src_package_name_from_cwd}, "
@@ -376,16 +381,16 @@ def assert_src_runs_without_dev_deps(
                 "from importlib import import_module; "
                 "from pyrig import main; "
                 "from pyrig import src; "
-                "from pyrig.dev.configs.base.base import ConfigFile; "
+                "from pyrig.src.modules.module import get_module_name_replacing_start_module; "  # noqa: E501
                 "from pyrig.src.modules.package import get_src_package, walk_package; "
                 "from pyrig.src.testing.assertions import assert_with_msg; "
                 "src_package=get_src_package(); "
-                "src_module=import_module(ConfigFile.get_module_name_replacing_start_module(src, src_package.__name__)); "  # noqa: E501
+                "src_module=import_module(get_module_name_replacing_start_module(src, src_package.__name__)); "  # noqa: E501
                 "pks=list(walk_package(src_module)); "
                 "assert_with_msg(isinstance(pks, list), 'Expected pks to be a list'); "
                 "assert_with_msg(len(pks) > 0, 'Expected pks to not be empty'); "
                 # also test that main can be called
-                "main_module=import_module(ConfigFile.get_module_name_replacing_start_module(main, src_package.__name__)); "  # noqa: E501
+                "main_module=import_module(get_module_name_replacing_start_module(main, src_package.__name__)); "  # noqa: E501
                 # add a print statement to see the output
                 "print('Success')"
             ),
@@ -398,3 +403,44 @@ def assert_src_runs_without_dev_deps(
             "Success" in stdout,
             f"Expected Success in stdout, got {stdout} and {stderr}",
         )
+
+
+@autouse_session_fixture
+def assert_src_does_not_use_dev() -> None:
+    """Verify that the source code does not import any code from dev.
+
+    This tests that the src folder has no code that depends on dev code.
+    """
+    src_package = get_src_package()
+
+    src_src_pkg_name = get_module_name_replacing_start_module(src, src_package.__name__)
+
+    src_src_pkg = import_module(src_src_pkg_name)
+
+    pkgs_depending_on_pyrig = DependencyGraph().get_all_depending_on(
+        pyrig, include_self=True
+    )
+
+    possible_dev_usages = [
+        get_module_name_replacing_start_module(dev, pkg.__name__)
+        for pkg in pkgs_depending_on_pyrig
+    ]
+
+    possible_dev_usages_pattern = r"\b(" + "|".join(possible_dev_usages) + r")\b"
+
+    usages: list[str] = []
+    folder_path = Path(src_src_pkg.__path__[0])
+    for path in folder_path.rglob("*.py"):
+        content = path.read_text(encoding="utf-8")
+
+        is_dev_used = re.search(possible_dev_usages_pattern, content)
+        if is_dev_used:
+            usages.append(f"{path}: {is_dev_used.group()}")
+
+    msg = f"""Found dev usage in src:
+    {make_untested_summary_error_msg(usages)}
+"""
+    assert_with_msg(
+        not usages,
+        msg,
+    )

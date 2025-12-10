@@ -2,11 +2,11 @@
 
 from github.Repository import Repository
 
+from pyrig.dev.cli.commands.protect_repo import get_default_ruleset_params
 from pyrig.src.git.github.github import (
     get_github_repo_token,
     get_repo_owner_and_name_from_git,
 )
-from pyrig.src.git.github.repo.protect import get_default_ruleset_params
 from pyrig.src.git.github.repo.repo import (
     DEFAULT_RULESET_NAME,
     create_or_update_ruleset,

@@ -605,7 +605,7 @@ def get_same_modules_from_deps_depen_on_dep(
     """Find equivalent modules across all packages depending on a dependency.
 
     This is a key function for pyrig's multi-package architecture. Given a
-    module path within a dependency (e.g., `pyrig.dev.configs`), it finds
+    module path within a dependency (e.g.,  smth.dev.configs`), it finds
     the equivalent module path in all packages that depend on that dependency
     (e.g., `myapp.dev.configs`, `other_pkg.dev.configs`).
 
@@ -614,21 +614,21 @@ def get_same_modules_from_deps_depen_on_dep(
     of packages that depend on pyrig.
 
     Args:
-        module: The module to use as a template (e.g., `pyrig.dev.configs`).
-        dep: The dependency package that other packages depend on (e.g., pyrig).
+        module: The module to use as a template (e.g., `smth.dev.configs`).
+        dep: The dependency package that other packages depend on (e.g., pyrig or smth).
 
     Returns:
         A list of equivalent modules from all packages that depend on `dep`,
         including the original module itself.
 
     Example:
-        >>> import pyrig
-        >>> import pyrig.dev.configs
+        >>> import smth
+        >>> from smth.dev import configs
         >>> modules = get_same_modules_from_deps_depen_on_dep(
-        ...     pyrig.dev.configs, pyrig
+        ...     configs, smth
         ... )
         >>> [m.__name__ for m in modules]
-        ['pyrig.dev.configs', 'myapp.dev.configs', 'other_pkg.dev.configs']
+        ['smth.dev.configs', 'myapp.dev.configs', 'other_pkg.dev.configs']
     """
     module_name = module.__name__
     graph = DependencyGraph()
@@ -640,3 +640,19 @@ def get_same_modules_from_deps_depen_on_dep(
         pkg_module = import_module_from_path(pkg_module_name)
         modules.append(pkg_module)
     return modules
+
+
+def get_module_name_replacing_start_module(
+    module: ModuleType, new_start_module_name: str
+) -> str:
+    """Replace the root module name in a module's fully qualified name.
+
+    Args:
+        module: The module whose name to transform.
+        new_start_module_name: The new root module name.
+
+    Returns:
+        The transformed module name.
+    """
+    module_current_start = module.__name__.split(".")[0]
+    return module.__name__.replace(module_current_start, new_start_module_name, 1)
