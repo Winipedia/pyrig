@@ -384,8 +384,8 @@ SETUP_STEPS = [
     ConfigFile.init_priority_config_files,      # Write pyproject.toml
     PyprojectConfigFile.install_dependencies,   # uv sync (install dev deps)
     PyprojectConfigFile.update_dependencies,    # uv lock --upgrade
-    run_create_root,                            # Create project structure
-    run_create_tests,                           # Generate test files
+    run_mkroot,                                 # Create project structure
+    run_mktests,                                # Generate test files
     PreCommitConfigConfigFile.run_hooks,        # Format code
     ConftestConfigFile.run_tests,               # Verify setup
     PyprojectConfigFile.install_dependencies,   # Activate CLI entry points

@@ -45,9 +45,9 @@ def run_create_root() -> None:
     Invokes `uv run pyrig create-root` to generate all config files
     and the project directory structure.
     """
-    from pyrig.dev.cli.subcommands import create_root  # noqa: PLC0415
+    from pyrig.dev.cli.subcommands import mkroot  # noqa: PLC0415
 
-    run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(create_root))
+    run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(mkroot))
 
 
 def run_create_tests() -> None:
@@ -56,9 +56,9 @@ def run_create_tests() -> None:
     Invokes `uv run pyrig create-tests` to generate test skeleton
     files that mirror the source code structure.
     """
-    from pyrig.dev.cli.subcommands import create_tests  # noqa: PLC0415
+    from pyrig.dev.cli.subcommands import mktests  # noqa: PLC0415
 
-    run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(create_tests))
+    run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(mktests))
 
 
 def commit_initial_changes() -> None:
@@ -86,7 +86,7 @@ SETUP_STEPS: list[Callable[..., Any]] = [
 """Ordered list of setup steps executed during project initialization."""
 
 
-def init() -> None:
+def init_project() -> None:
     """Initialize a pyrig project by running all setup steps.
 
     Executes each step in `SETUP_STEPS` sequentially, logging progress.

@@ -9,7 +9,7 @@ all registered config file types.
 from pyrig.dev.configs.base.base import ConfigFile
 
 
-def create_root() -> None:
+def make_project_root() -> None:
     """Create all configuration files and project structure.
 
     Discovers all ConfigFile subclasses and initializes each one,

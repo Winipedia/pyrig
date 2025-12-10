@@ -124,7 +124,7 @@ class MyCustomConfigFile(TomlConfigFile):
         }
 ```
 
-When `pyrig create-root` runs, it discovers and initializes all ConfigFile subclasses.
+When `pyrig mkroot` runs, it discovers and initializes all ConfigFile subclasses.
 
 ### 2. Builder Extensions
 

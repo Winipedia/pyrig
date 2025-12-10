@@ -29,7 +29,7 @@ Session fixtures run once at the beginning of the test session. They validate pr
 - All generated config files exist and contain required settings
 
 **Auto-fix behavior:**
-- If any ConfigFile is incorrect, runs `create_root()` to regenerate configs
+- If any ConfigFile is incorrect, runs `make_project_root()` to regenerate configs
 - Then fails so you can verify the changes
 
 **Example error:**
@@ -132,7 +132,7 @@ AssertionError: Expected source package to be named my_project, but it is named 
 - For each module in source: `tests/test_{package}/test_{module}.py` exists
 
 **Auto-fix behavior:**
-- Runs `create_tests()` to generate missing test modules
+- Runs `make_test_skeletons()` to generate missing test modules
 - Fails with a list of created test files
 
 **Example error:**
@@ -269,7 +269,7 @@ Module fixtures run once per test module, before any tests in that module execut
 - Verifies each source object has a corresponding test object
 
 **Auto-fix behavior:**
-- Runs `create_tests()` to generate missing test skeletons
+- Runs `make_test_skeletons()` to generate missing test skeletons
 - Fails with a list of created tests
 
 **Example error:**
@@ -304,7 +304,7 @@ Class fixtures run once per test class, before any test methods in that class ex
 - Verifies each source method has a corresponding test method
 
 **Auto-fix behavior:**
-- Runs `create_tests()` to generate missing test method skeletons
+- Runs `make_test_skeletons()` to generate missing test method skeletons
 - Fails with a list of created test methods
 
 **Example error:**
@@ -387,7 +387,7 @@ def assert_no_untested_objs(
 
     # Auto-fix: generate skeletons
     if missing_test_obj_path_to_obj:
-        create_tests()
+        make_test_skeletons()
 
     # Fail with message
     assert_with_msg(not missing_test_obj_path_to_obj, msg)

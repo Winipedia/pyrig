@@ -27,7 +27,7 @@ from pyrig.src.testing.convention import (
     make_test_obj_importpath_from_obj,
     make_untested_summary_error_msg,
 )
-from pyrig.src.testing.create_tests import create_tests
+from pyrig.src.testing.create_tests import make_test_skeletons
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ def assert_no_untested_objs(
 
     # get the modules of these obj
     if missing_test_obj_path_to_obj:
-        create_tests()
+        make_test_skeletons()
 
     msg = f"""Found missing tests. Tests skeletons were automatically created for:
     {make_untested_summary_error_msg(missing_test_obj_path_to_obj.keys())}

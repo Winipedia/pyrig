@@ -68,8 +68,9 @@ This becomes available as `your-project deploy`. Function names convert from sna
 
 Built-in pyrig commands:
 - `pyrig init` — Initialize project structure
-- `pyrig create-root` — Regenerate config files
-- `pyrig create-tests` — Generate missing test files
+- `pyrig mkroot` — Regenerate config files
+- `pyrig mktests` — Generate missing test files
+- `pyrig mkinits` — Create missing `__init__.py` files
 - `pyrig build` — Create distributable artifacts
 - `pyrig protect-repo` — Apply GitHub branch protection
 

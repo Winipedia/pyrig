@@ -15,8 +15,9 @@ pyrig provides a CLI that is:
 | Command | Description |
 |---------|-------------|
 | `pyrig init` | Full project initialization (configs, structure, tests, hooks) |
-| `pyrig create-root` | Create project structure and config files |
-| `pyrig create-tests` | Generate test skeletons for untested code |
+| `pyrig mkroot` | Create project structure and config files |
+| `pyrig mktests` | Generate test skeletons for untested code |
+| `pyrig mkinits` | Create missing `__init__.py` files |
 | `pyrig build` | Build all artifacts via Builder subclasses |
 | `pyrig protect-repo` | Set up GitHub branch protection and security |
 | `pyrig main` | Run the project's main entry point |
@@ -54,8 +55,8 @@ uv run pyrig init
 1. Writes priority config files (pyproject.toml with dev dependencies)
 2. Installs dependencies with `uv sync`
 3. Updates dependencies to latest versions
-4. Creates project structure via `create-root`
-5. Generates test skeletons via `create-tests`
+4. Creates project structure via `mkroot`
+5. Generates test skeletons via `mktests`
 6. Runs pre-commit hooks for initial formatting
 7. Runs tests to verify setup
 8. Re-installs to activate CLI entry points
@@ -68,12 +69,12 @@ uv run pyrig init
 
 ---
 
-### `pyrig create-root`
+### `pyrig mkroot`
 
 Creates the project structure and all configuration files.
 
 ```bash
-uv run pyrig create-root
+uv run pyrig mkroot
 ```
 
 **What it does:**
@@ -88,12 +89,12 @@ uv run pyrig create-root
 
 ---
 
-### `pyrig create-tests`
+### `pyrig mktests`
 
 Generates test skeletons for all untested functions and classes.
 
 ```bash
-uv run pyrig create-tests
+uv run pyrig mktests
 ```
 
 **What it does:**
@@ -106,6 +107,26 @@ uv run pyrig create-tests
 - After adding new source files
 - To quickly scaffold tests for new code
 - As part of development workflow
+
+---
+
+### `pyrig mkinits`
+
+Creates missing `__init__.py` files for all packages.
+
+```bash
+uv run pyrig mkinits
+```
+
+**What it does:**
+- Finds all namespace packages (directories without `__init__.py`)
+- Creates empty `__init__.py` files for them
+- Does not overwrite existing files
+
+**When to use:**
+- After adding new directories/packages
+- To fix namespace package issues
+- When imports fail due to missing `__init__.py`
 
 ---
 
@@ -219,21 +240,26 @@ All functions in `subcommands.py` automatically become CLI commands:
 ```python
 # pyrig/dev/cli/subcommands.py
 
-def create_root() -> None:
+def mkroot() -> None:
     """Creates the root of the project."""
-    create_root_cmd()
+    make_project_root()
 
-def create_tests() -> None:
+def mktests() -> None:
     """Create all test files for the project."""
-    create_tests_cmd()
+    make_test_skeletons()
+
+def mkinits() -> None:
+    """Create all __init__.py files for the project."""
+    make_init_files()
 ```
 
 Becomes:
 ```
 $ pyrig --help
 Commands:
-  create-root   Creates the root of the project.
-  create-tests  Create all test files for the project.
+  mkroot   Creates the root of the project.
+  mktests  Create all test files for the project.
+  mkinits  Create all __init__.py files for the project.
   ...
 ```
 
@@ -241,8 +267,9 @@ Commands:
 
 | Python Function | CLI Command |
 |----------------|-------------|
-| `create_root()` | `create-root` |
-| `create_tests()` | `create-tests` |
+| `mkroot()` | `mkroot` |
+| `mktests()` | `mktests` |
+| `mkinits()` | `mkinits` |
 | `protect_repo()` | `protect-repo` |
 | `init()` | `init` |
 
@@ -282,7 +309,7 @@ When your project depends on pyrig, it gets its own separate CLI. Your project's
 - The `main` command (from your `main.py`)
 - Any custom commands you define in your `subcommands.py`
 
-**Important:** pyrig's commands (`init`, `create-root`, `create-tests`, etc.) are only available via `pyrig`, not via your project's CLI. You always use `uv run pyrig <command>` for pyrig operations.
+**Important:** pyrig's commands (`init`, `mkroot`, `mktests`, `mkinits`, etc.) are only available via `pyrig`, not via your project's CLI. You always use `uv run pyrig <command>` for pyrig operations.
 
 ### How It Works
 
@@ -328,8 +355,9 @@ For pyrig operations, you still use pyrig directly:
 $ uv run pyrig --help
 Commands:
   init          Set up the project.
-  create-root   Creates the root of the project.
-  create-tests  Create all test files for the project.
+  mkroot        Creates the root of the project.
+  mktests       Create all test files for the project.
+  mkinits       Create all __init__.py files for the project.
   build         Build all artifacts.
   protect-repo  Protect the repository.
   main          Main entrypoint for the project.
@@ -423,7 +451,7 @@ uv run pyrig init
 
 ```bash
 # After adding new source files
-uv run pyrig create-tests
+uv run pyrig mktests
 
 # Before committing
 uv run pytest
@@ -433,7 +461,7 @@ uv run pytest
 
 ```bash
 # Regenerate all config files
-uv run pyrig create-root
+uv run pyrig mkroot
 ```
 
 ### After Adding Custom Builders
@@ -462,16 +490,16 @@ from pyrig.src.project.mgt import (
     get_project_mgt_run_cli_cmd_args,
     get_project_mgt_run_pyrig_cli_cmd_args,
 )
-from pyrig.dev.cli.subcommands import create_tests
+from pyrig.dev.cli.subcommands import mktests
 from pyrig.src.os.os import run_subprocess
 
 # Build args for pyrig CLI command
-args = get_project_mgt_run_pyrig_cli_cmd_args(create_tests)
-# Returns: ['uv', 'run', 'pyrig', 'create-tests']
+args = get_project_mgt_run_pyrig_cli_cmd_args(mktests)
+# Returns: ['uv', 'run', 'pyrig', 'mktests']
 
 # Build args for your project's CLI command
-args = get_project_mgt_run_cli_cmd_args(create_tests)
-# Returns: ['uv', 'run', 'your-project', 'create-tests']
+args = get_project_mgt_run_cli_cmd_args(mktests)
+# Returns: ['uv', 'run', 'your-project', 'mktests']
 
 # Execute the command
 run_subprocess(args)
@@ -541,7 +569,6 @@ def my_command() -> None:
 
 **Reference:**
 ```
-create_root()   → create-root
 protect_repo()  → protect-repo
 do_something()  → do-something
 ```

@@ -12,7 +12,6 @@ from typing import Any, ClassVar
 
 import pyrig
 from pyrig.dev.artifacts.builders.base.base import Builder
-from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.package import DependencyGraph, get_src_package
@@ -990,6 +989,8 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that runs the pyrig protect-repo command.
         """
+        from pyrig.dev.cli.subcommands import protect_repo  # noqa: PLC0415
+
         return cls.get_step(
             step_func=cls.step_protect_repository,
             run=get_project_mgt_run_pyrig_cli_cmd_script(
@@ -1164,6 +1165,8 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that runs the pyrig build command.
         """
+        from pyrig.dev.cli.subcommands import build  # noqa: PLC0415
+
         return cls.get_step(
             step_func=cls.step_build_artifacts,
             run=get_project_mgt_run_pyrig_cli_cmd_script(build),
