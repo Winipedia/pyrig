@@ -99,6 +99,7 @@ class GitIgnoreConfigFile(ConfigFile):
             DotExperimentConfigFile.get_path().as_posix(),
             "# others",
             DotEnvConfigFile.get_path().as_posix(),
+            ".coverage",
             ".mypy_cache/",
             ".pytest_cache/",
             ".ruff_cache/",
