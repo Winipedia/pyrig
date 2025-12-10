@@ -178,8 +178,3 @@ class TestBuilder:
         """Test method for get_main_path."""
         result = my_test_builder.get_main_path()
         assert_with_msg(result.name == "main.py", "Expected main.py")
-
-    def test_get_call_main_path(self, my_test_builder: type[Builder]) -> None:
-        """Test method for get_call_main_path."""
-        result = my_test_builder.get_call_main_path()
-        assert_with_msg(result.name == "call_main.py", "Expected call_main.py")

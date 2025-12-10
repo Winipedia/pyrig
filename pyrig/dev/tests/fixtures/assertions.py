@@ -1,5 +1,7 @@
 """Fixtures that assert some state or condition."""
 
+import runpy
+import sys
 from importlib import import_module
 
 import pytest
@@ -44,3 +46,10 @@ def main_test_fixture(mocker: MockerFixture) -> None:
         main_mock.call_count == 1,
         f"Expected main to be called, got {main_mock.call_count}",
     )
+
+    # must run main module directly as __main__
+    # so that pytest-cov sees that it calls main
+    # remove module if already imported, so run_module reloads it
+    del sys.modules[main_module_name]
+    # run module as __main__, pytest-cov will see it
+    runpy.run_module(main_module_name, run_name="__main__")

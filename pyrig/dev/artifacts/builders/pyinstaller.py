@@ -131,7 +131,7 @@ class PyInstallerBuilder(Builder):
         temp_dir = temp_artifacts_dir.parent
 
         options = [
-            str(cls.get_call_main_path()),
+            str(cls.get_main_path()),
             "--name",
             cls.get_app_name(),
             "--clean",

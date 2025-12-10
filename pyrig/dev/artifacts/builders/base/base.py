@@ -37,7 +37,6 @@ from pyrig.src.modules.module import (
     to_path,
 )
 from pyrig.src.modules.package import get_src_package
-from pyrig.src.project import call_main
 
 
 class Builder(ABC):
@@ -255,12 +254,3 @@ class Builder(ABC):
         return to_path(resources, is_package=True).relative_to(
             to_path(pyrig, is_package=True)
         )
-
-    @classmethod
-    def get_call_main_path(cls) -> Path:
-        """Get the absolute path to the call_main.py entry point.
-
-        Returns:
-            Path to the call_main.py file in the source package.
-        """
-        return to_path(call_main, is_package=False)
