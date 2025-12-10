@@ -1,6 +1,6 @@
 """Test module."""
 
-from pyrig.dev.artifacts import builders
+from pyrig.dev import builders
 from pyrig.dev.configs.python.builders_init import BuildersInitConfigFile
 
 

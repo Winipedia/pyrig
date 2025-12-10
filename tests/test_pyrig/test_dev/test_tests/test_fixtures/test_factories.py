@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.src.testing.assertions import assert_with_msg
 

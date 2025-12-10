@@ -36,10 +36,8 @@ your-project/
 │   │
 │   ├── dev/
 │   │   ├── __init__.py
-│   │   ├── artifacts/
-│   │   │   ├── __init__.py
-│   │   │   └── builders/
-│   │   │       └── __init__.py    # Custom builders go here
+│   │   ├── builders/
+│   │   │   └── __init__.py        # Custom builders go here
 │   │   ├── cli/
 │   │   │   ├── __init__.py
 │   │   │   └── subcommands.py     # Custom CLI commands
@@ -116,7 +114,7 @@ These files must exist before other config files can be created:
 2. **PyprojectConfigFile** — Creates `pyproject.toml` with project metadata needed by other configs
 3. **MainConfigFile** — Creates `main.py` entry point
 4. **ConfigsInitConfigFile** — Creates `dev/configs/__init__.py` for custom configs
-5. **BuildersInitConfigFile** — Creates `dev/artifacts/builders/__init__.py` for custom builders
+5. **BuildersInitConfigFile** — Creates `dev/builders/__init__.py` for custom builders
 6. **ZeroTestConfigFile** — Creates `test_zero.py` so pytest has at least one test
 
 ### Ordered Files (Second)
@@ -259,7 +257,7 @@ Also pyrig just inits the most recent leave of a class tree. So pyrigs own `Heal
 | `{pkg}/py.typed` | `PyTypedConfigFile` | PEP 561 marker for typed packages |
 | `{pkg}/dev/cli/subcommands.py` | `SubcommandsConfigFile` | Custom CLI subcommands |
 | `{pkg}/dev/configs/__init__.py` | `ConfigsInitConfigFile` | Custom ConfigFile classes |
-| `{pkg}/dev/artifacts/builders/__init__.py` | `BuildersInitConfigFile` | Custom artifact builders |
+| `{pkg}/dev/builders/__init__.py` | `BuildersInitConfigFile` | Custom artifact builders |
 | `{pkg}/resources/__init__.py` | `ResourcesInitConfigFile` | Build resources |
 | `{pkg}/src/__init__.py` | `SrcInitConfigFile` | Core utilities |
 

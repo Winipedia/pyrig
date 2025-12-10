@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import pyrig
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.package import DependencyGraph, get_src_package

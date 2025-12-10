@@ -6,7 +6,7 @@ the dev/artifacts/builders directory structure with an __init__.py file.
 
 from types import ModuleType
 
-from pyrig.dev.artifacts import builders
+from pyrig.dev import builders
 from pyrig.dev.configs.base.base import InitConfigFile
 
 
@@ -22,6 +22,6 @@ class BuildersInitConfigFile(InitConfigFile):
         """Get the source module to mirror.
 
         Returns:
-            The pyrig.dev.artifacts.builders module.
+            The pyrig.dev.builders module.
         """
         return builders

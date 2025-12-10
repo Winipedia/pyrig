@@ -4,7 +4,7 @@ This module provides the main entry point for building all project
 artifacts. It discovers all Builder subclasses and invokes each one.
 """
 
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
 
 
 def build_artifacts() -> None:

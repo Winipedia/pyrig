@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from pytest_mock import MockFixture
 
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
 from pyrig.src.testing.assertions import assert_with_msg
 
 

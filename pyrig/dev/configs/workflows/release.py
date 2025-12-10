@@ -7,7 +7,7 @@ GitHub releases after successful health checks.
 
 from typing import Any
 
-from pyrig.dev.artifacts.builders.base.base import Builder
+from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.workflows.base.base import Workflow
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 
