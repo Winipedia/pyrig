@@ -7,7 +7,7 @@ artifacts. It discovers all Builder subclasses and invokes each one.
 from pyrig.dev.artifacts.builders.base.base import Builder
 
 
-def build() -> None:
+def build_artifacts() -> None:
     """Build all artifacts by invoking all registered Builder subclasses.
 
     Discovers all non-abstract Builder subclasses across all packages

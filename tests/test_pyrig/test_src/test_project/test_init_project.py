@@ -10,12 +10,12 @@ from pathlib import Path
 from pytest_mock import MockFixture
 
 import pyrig
+from pyrig.dev.cli.subcommands import init
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.module import to_path
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.init import (
+from pyrig.src.project.init_project import (
     commit_initial_changes,
-    init,
     run_create_root,
     run_create_tests,
 )
@@ -49,7 +49,7 @@ def test_commit_initial_changes(mocker: MockFixture) -> None:
     mock_run.assert_called_once()
 
 
-def test_init(tmp_path: Path) -> None:
+def test_init_project(tmp_path: Path) -> None:
     """Test func for init."""
     # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
@@ -127,7 +127,8 @@ def test_init(tmp_path: Path) -> None:
         )
 
         run_subprocess(
-            [*PROJECT_MGT_RUN_ARGS, project_name, init.__name__], env=clean_env
+            [*PROJECT_MGT_RUN_ARGS, project_name, init.__name__],
+            env=clean_env,
         )
 
         # test the cli can be called

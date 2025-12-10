@@ -32,7 +32,7 @@ from pyrig.src.testing.convention import (
 )
 
 
-def create_tests() -> None:
+def make_test_skeletons() -> None:
     """Create all test files for the project.
 
     This function orchestrates the test creation process by first setting up the base

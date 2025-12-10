@@ -291,7 +291,7 @@ This calls:
 
 ```python
 # pyrig/dev/artifacts/build.py
-def build() -> None:
+def build_artifacts() -> None:
     """Build all artifacts by invoking all registered Builder subclasses."""
     Builder.init_all_non_abstract_subclasses()
 ```

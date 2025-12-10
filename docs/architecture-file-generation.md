@@ -4,7 +4,7 @@ This document describes pyrig's ConfigFile system — the core mechanism that au
 
 ## Overview
 
-When you run `pyrig init` or `pyrig create-root`, pyrig discovers all `ConfigFile` subclasses and initializes them, creating a complete project structure. The system supports multiple file formats (YAML, TOML, Python, plain text) and ensures configurations stay consistent while respecting user customizations.
+When you run `pyrig init` or `pyrig mkroot`, pyrig discovers all `ConfigFile` subclasses and initializes them, creating a complete project structure. The system supports multiple file formats (YAML, TOML, Python, plain text) and ensures configurations stay consistent while respecting user customizations.
 
 ## Generated Project Structure
 
@@ -309,7 +309,7 @@ class MyCustomConfigFile(YamlConfigFile):
         }
 ```
 
-The next time `pyrig init` or `pyrig create-root` runs, your custom config file will be automatically discovered and created.
+The next time `pyrig init` or `pyrig mkroot` runs, your custom config file will be automatically discovered and created.
 
 ## Key Design Decisions
 

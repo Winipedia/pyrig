@@ -13,15 +13,15 @@ from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.create_tests import (
     create_test_module,
     create_test_package,
-    create_tests,
     create_tests_for_package,
     get_test_classes_content,
     get_test_functions_content,
     get_test_module_content,
+    make_test_skeletons,
 )
 
 
-def test_create_tests(mocker: MockFixture) -> None:
+def test_make_test_skeletons(mocker: MockFixture) -> None:
     """Test func for create_tests."""
     # Mock the two main functions that create_tests calls to verify orchestration
 
@@ -30,7 +30,7 @@ def test_create_tests(mocker: MockFixture) -> None:
     )
 
     # Call the function
-    create_tests()
+    make_test_skeletons()
 
     src_count = mock_create_tests_for_src_package.call_count
 

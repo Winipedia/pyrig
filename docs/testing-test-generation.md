@@ -43,15 +43,15 @@ Tests are generated in three scenarios:
 
 ### 1. During `pyrig init`
 
-The full initialization runs `create_tests` as part of its setup steps:
+The full initialization runs `make_test_skeletons` as part of its setup steps:
 
 ```python
 SETUP_STEPS = [
     ConfigFile.init_priority_config_files,
     PyprojectConfigFile.install_dependencies,
     PyprojectConfigFile.update_dependencies,
-    run_create_root,
-    run_create_tests,           # ← Generates test skeletons
+    run_mkroot,
+    run_mktests,           # ← Generates test skeletons
     PreCommitConfigConfigFile.run_hooks,
     ConftestConfigFile.run_tests,
     PyprojectConfigFile.install_dependencies,
@@ -59,12 +59,12 @@ SETUP_STEPS = [
 ]
 ```
 
-### 2. Running `pyrig create-tests`
+### 2. Running `pyrig mktests`
 
 You can manually trigger test generation:
 
 ```bash
-uv run pyrig create-tests
+uv run pyrig mktests
 ```
 
 ### 3. Automatically During pytest
@@ -81,7 +81,7 @@ def assert_all_modules_tested():
                 make_test_obj_importpath_from_obj(module)
             )
             if test_module is None:
-                create_tests()  # Auto-generate missing tests
+                make_test_skeletons()  # Auto-generate missing tests
 
 # Module fixture: checks all functions/classes have tests
 @autouse_module_fixture
@@ -94,7 +94,7 @@ def assert_all_funcs_and_classes_tested(request):
 ### Step 1: Walk the Source Package
 
 ```python
-def create_tests():
+def make_test_skeletons():
     create_tests_for_package(get_src_package())
 
 def create_tests_for_package(package):

@@ -16,7 +16,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from pyrig.dev.cli.subcommands import create_root
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
@@ -28,8 +27,6 @@ from pyrig.dev.tests.utils.decorators import autouse_session_fixture
 from pyrig.src.git.github.github import running_in_github_actions
 from pyrig.src.modules.module import (
     import_module_with_default,
-    make_init_module,
-    to_path,
 )
 from pyrig.src.modules.package import (
     DOCS_DIR_NAME,
@@ -39,13 +36,15 @@ from pyrig.src.modules.package import (
     walk_package,
 )
 from pyrig.src.os.os import run_subprocess
+from pyrig.src.project.create_root import make_project_root
+from pyrig.src.project.make_inits import get_namespace_packages, make_init_files
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
     make_test_obj_importpath_from_obj,
     make_untested_summary_error_msg,
 )
-from pyrig.src.testing.create_tests import create_tests
+from pyrig.src.testing.create_tests import make_test_skeletons
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -73,7 +72,7 @@ def assert_root_is_correct() -> None:
     all_correct = all(subclass.is_correct() for subclass in subclasses)
 
     if not all_correct:
-        create_root()
+        make_project_root()
 
     assert_with_msg(
         all_correct,
@@ -92,17 +91,9 @@ def assert_no_namespace_packages() -> None:
         AssertionError: If any namespace packages are found
 
     """
-    packages = find_packages(depth=None)
-    namespace_packages = find_packages(depth=None, include_namespace_packages=True)
-
-    # remove the docs folder
-    namespace_packages.remove(DOCS_DIR_NAME)
-
-    any_namespace_packages = set(namespace_packages) - set(packages)
+    any_namespace_packages = get_namespace_packages()
     if any_namespace_packages:
-        # make init files for all namespace packages
-        for package in any_namespace_packages:
-            make_init_module(to_path(package, is_package=True))
+        make_init_files()
 
     msg = f"""Found {len(any_namespace_packages)} namespace packages.
     Created __init__.py files for them.
@@ -218,7 +209,7 @@ def assert_all_modules_tested() -> None:
                 missing_tests_to_module[test_module_name] = module
 
     if missing_tests_to_module:
-        create_tests()
+        make_test_skeletons()
 
     msg = f"""Found missing tests. Tests skeletons were automatically created for:
     {make_untested_summary_error_msg(missing_tests_to_module.keys())}

@@ -5,33 +5,41 @@ IMPORTANT: All funcs in this file will be added as subcommands.
 So best to define the logic elsewhere and just call it here in a wrapper.
 """
 
-from pyrig.dev.artifacts.build import build as build_cmd
-from pyrig.src.git.github.repo.protect import (
-    protect_repository as protect_repo_cmd,
-)
-from pyrig.src.project.create_root import create_root as create_root_cmd
-from pyrig.src.project.init import init as init_cmd
-from pyrig.src.testing.create_tests import create_tests as create_tests_cmd
+from pyrig.dev.artifacts.build import build_artifacts
+from pyrig.src.git.github.repo.protect import protect_repository
+from pyrig.src.project.create_root import make_project_root
+from pyrig.src.project.init_project import init_project
+from pyrig.src.project.make_inits import make_init_files
+from pyrig.src.testing.create_tests import make_test_skeletons
 
 
-def create_root() -> None:
+def mkroot() -> None:
     """Creates the root of the project.
 
     This inits all ConfigFiles and creates __init__.py files for the src
     and tests package where they are missing. It does not overwrite any
     existing files.
     """
-    create_root_cmd()
+    make_project_root()
 
 
-def create_tests() -> None:
+def mktests() -> None:
     """Create all test files for the project.
 
     This generates test skeletons for all functions and classes in the src
     package. It does not overwrite any existing tests.
     Tests are also automatically generated when missing by running pytest.
     """
-    create_tests_cmd()
+    make_test_skeletons()
+
+
+def mkinits() -> None:
+    """Create all __init__.py files for the project.
+
+    This creates __init__.py files for all packages and modules
+    that are missing them. It does not overwrite any existing files.
+    """
+    make_init_files()
 
 
 def init() -> None:
@@ -41,7 +49,7 @@ def init() -> None:
     It will init all config files, create the root, create tests, and run
     all pre-commit hooks and tests.
     """
-    init_cmd()
+    init_project()
 
 
 def build() -> None:
@@ -49,7 +57,7 @@ def build() -> None:
 
     Invokes every subclass of Builder in the builder package.
     """
-    build_cmd()
+    build_artifacts()
 
 
 def protect_repo() -> None:
@@ -57,4 +65,4 @@ def protect_repo() -> None:
 
     This will set secure repo settings and add a branch protection rulesets.
     """
-    protect_repo_cmd()
+    protect_repository()
