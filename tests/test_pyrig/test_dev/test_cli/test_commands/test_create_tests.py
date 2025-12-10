@@ -7,10 +7,8 @@ from types import ModuleType
 
 from pytest_mock import MockFixture
 
-from pyrig.src.modules.module import import_module_from_path, make_obj_importpath
-from pyrig.src.testing import create_tests as create_tests_module
-from pyrig.src.testing.assertions import assert_with_msg
-from pyrig.src.testing.create_tests import (
+from pyrig.dev.cli.commands import create_tests as create_tests_module
+from pyrig.dev.cli.commands.create_tests import (
     create_test_module,
     create_test_package,
     create_tests_for_package,
@@ -19,6 +17,8 @@ from pyrig.src.testing.create_tests import (
     get_test_module_content,
     make_test_skeletons,
 )
+from pyrig.src.modules.module import import_module_from_path, make_obj_importpath
+from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_make_test_skeletons(mocker: MockFixture) -> None:

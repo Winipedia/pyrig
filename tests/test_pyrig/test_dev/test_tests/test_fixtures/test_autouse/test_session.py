@@ -58,3 +58,9 @@ def test_assert_pre_commit_is_installed() -> None:
 def test_assert_src_runs_without_dev_deps() -> None:
     """Test function."""
     raise NotImplementedError
+
+
+@skip_fixture_test
+def test_assert_src_does_not_use_dev() -> None:
+    """Test function."""
+    raise NotImplementedError

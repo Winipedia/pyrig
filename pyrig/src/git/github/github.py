@@ -16,8 +16,10 @@ Example:
 """
 
 import os
+from pathlib import Path
 
-from pyrig.dev.configs.dot_env import DotEnvConfigFile
+from dotenv import dotenv_values
+
 from pyrig.src.os.os import run_subprocess
 
 
@@ -49,11 +51,11 @@ def get_github_repo_token() -> str:
         return token
 
     # try .env next
-    dotenv_path = DotEnvConfigFile.get_path()
+    dotenv_path = Path(".env")
     if not dotenv_path.exists():
         msg = f"Expected {dotenv_path} to exist"
         raise ValueError(msg)
-    dotenv = DotEnvConfigFile.load()
+    dotenv = dotenv_values(dotenv_path)
     token = dotenv.get("REPO_TOKEN")
     if token:
         return token

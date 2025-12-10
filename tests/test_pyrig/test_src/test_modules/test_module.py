@@ -23,6 +23,7 @@ from pyrig.src.modules.module import (
     get_executing_module,
     get_isolated_obj_name,
     get_module_content_as_str,
+    get_module_name_replacing_start_module,
     get_module_of_obj,
     get_objs_from_obj,
     get_same_modules_from_deps_depen_on_dep,
@@ -678,4 +679,16 @@ def test_get_same_modules_from_deps_depen_on_dep() -> None:
     assert_with_msg(
         src in modules,
         f"Expected pyrig.src in modules, got {modules}",
+    )
+
+
+def test_get_module_name_replacing_start_module(mocker: MockFixture) -> None:
+    """Test function."""
+    mock_module = mocker.MagicMock(spec=ModuleType)
+    mock_module.__name__ = "some.module.name"
+    new_name = get_module_name_replacing_start_module(mock_module, "new")
+    expected_new_name = "new.module.name"
+    assert_with_msg(
+        new_name == expected_new_name,
+        f"Expected {expected_new_name}, got {new_name}",
     )

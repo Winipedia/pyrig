@@ -7,19 +7,20 @@ with @autouse_module_fixture from pyrig.src.testing.fixtures or with pytest's
 autouse mechanism @pytest.fixture(scope="module", autouse=True).
 """
 
-from typing import TYPE_CHECKING
+from collections.abc import Callable
+from types import ModuleType
+from typing import Any
 
 import pytest
 
 from pyrig.dev.tests.utils.decorators import autouse_module_fixture
-from pyrig.src.testing.utils import assert_no_untested_objs
-
-if TYPE_CHECKING:
-    from types import ModuleType
 
 
 @autouse_module_fixture
-def assert_all_funcs_and_classes_tested(request: pytest.FixtureRequest) -> None:
+def assert_all_funcs_and_classes_tested(
+    request: pytest.FixtureRequest,
+    assert_no_untested_objs: Callable[[ModuleType | type | Callable[..., Any]], None],
+) -> None:
     """Verify that all functions and classes in a module have corresponding tests.
 
     This fixture runs automatically for each test module and checks that every
@@ -28,6 +29,8 @@ def assert_all_funcs_and_classes_tested(request: pytest.FixtureRequest) -> None:
 
     Args:
         request: The pytest fixture request object containing the current module
+        assert_no_untested_objs: The assert_no_untested_objs fixture asserts
+            that all objects have corresponding tests
 
     Raises:
         AssertionError: If any function or class in the source module lacks a test

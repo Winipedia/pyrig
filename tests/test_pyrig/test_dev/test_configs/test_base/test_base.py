@@ -85,22 +85,6 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
-    def test_get_module_name_replacing_start_module(
-        self,
-        my_test_config_file: type[ConfigFile],
-        mocker: MockFixture,
-    ) -> None:
-        """Test method for get_module_name_replacing_start_module."""
-        mock_module = mocker.MagicMock(spec=ModuleType)
-        mock_module.__name__ = "pkg1.pkg2.pkg3"
-
-        new_start_module_name = "new_pkg1"
-        expected = "new_pkg1.pkg2.pkg3"
-        actual = my_test_config_file.get_module_name_replacing_start_module(
-            mock_module, new_start_module_name
-        )
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
-
     def test_get_parent_path(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for get_parent_path."""
         expected = Path("parent_dir")

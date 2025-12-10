@@ -111,9 +111,6 @@ def get_modules_and_packages_from_package(
         All discovered modules and packages are imported during this process.
 
     """
-    from pyrig.dev.configs.git.gitignore import (  # noqa: PLC0415
-        GitIgnoreConfigFile,
-    )
     from pyrig.src.modules.module import (  # noqa: PLC0415
         import_module_from_path,
         to_path,
@@ -126,8 +123,7 @@ def get_modules_and_packages_from_package(
     modules: list[ModuleType] = []
     for _finder, name, is_pkg in modules_and_packages:
         path = to_path(name, is_package=is_pkg)
-        if GitIgnoreConfigFile.path_is_in_gitignore(path):
-            continue
+
         mod = import_module_from_path(path)
         if is_pkg:
             packages.append(mod)
@@ -528,3 +524,39 @@ def import_pkg_from_path(package_dir: Path) -> ModuleType:
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)
     return module
+
+
+def get_pkg_name_from_project_name(project_name: str) -> str:
+    """Convert a project name to a package name.
+
+    Args:
+        project_name: Project name with hyphens.
+
+    Returns:
+        Package name with underscores.
+    """
+    return project_name.replace("-", "_")
+
+
+def get_project_name_from_pkg_name(pkg_name: str) -> str:
+    """Convert a package name to a project name.
+
+    Args:
+        pkg_name: Package name with underscores.
+
+    Returns:
+        Project name with hyphens.
+    """
+    return pkg_name.replace("_", "-")
+
+
+def get_project_name_from_cwd() -> str:
+    """Derive the project name from the current directory.
+
+    The project name is assumed to match the directory name.
+
+    Returns:
+        The current directory name.
+    """
+    cwd = Path.cwd()
+    return cwd.name

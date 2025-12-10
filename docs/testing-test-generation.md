@@ -85,7 +85,7 @@ def assert_all_modules_tested():
 
 # Module fixture: checks all functions/classes have tests
 @autouse_module_fixture
-def assert_all_funcs_and_classes_tested(request):
+def assert_all_funcs_and_classes_tested(request, assert_no_untested_objs):
     assert_no_untested_objs(request.module)
 ```
 
@@ -236,12 +236,13 @@ pyrig includes several session-scoped fixtures that run automatically:
 | `assert_dependencies_are_up_to_date` | Updates dependencies before tests |
 | `assert_pre_commit_is_installed` | Ensures pre-commit hooks are installed |
 | `assert_src_runs_without_dev_deps` | Verifies source works without dev dependencies |
+| `assert_src_does_not_use_dev` | Ensures src code doesn't import dev code |
 
 ### Built-in Module Fixtures
 
 ```python
 @autouse_module_fixture
-def assert_all_funcs_and_classes_tested(request):
+def assert_all_funcs_and_classes_tested(request, assert_no_untested_objs):
     """Verify all functions and classes in source have corresponding tests."""
     assert_no_untested_objs(request.module)
 ```
@@ -250,7 +251,7 @@ def assert_all_funcs_and_classes_tested(request):
 
 ```python
 @autouse_class_fixture
-def assert_all_methods_tested(request):
+def assert_all_methods_tested(request, assert_no_untested_objs):
     """Verify all methods in source class have corresponding tests."""
     assert_no_untested_objs(request.node.cls)
 ```

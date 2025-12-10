@@ -48,6 +48,7 @@ from pyrig.src.modules.class_ import (
 from pyrig.src.modules.module import (
     get_isolated_obj_name,
     get_module_content_as_str,
+    get_module_name_replacing_start_module,
     make_pkg_dir,
     to_path,
 )
@@ -374,22 +375,6 @@ class ConfigFile(ABC):
             ZeroTestConfigFile,
         ]
 
-    @classmethod
-    def get_module_name_replacing_start_module(
-        cls, module: ModuleType, new_start_module_name: str
-    ) -> str:
-        """Replace the root module name in a module's fully qualified name.
-
-        Args:
-            module: The module whose name to transform.
-            new_start_module_name: The new root module name.
-
-        Returns:
-            The transformed module name.
-        """
-        module_current_start = module.__name__.split(".")[0]
-        return module.__name__.replace(module_current_start, new_start_module_name, 1)
-
 
 class YamlConfigFile(ConfigFile):
     """Abstract base class for YAML configuration files.
@@ -673,7 +658,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         from pyrig.dev.configs.pyproject import PyprojectConfigFile  # noqa: PLC0415
 
         src_module = cls.get_src_module()
-        new_module_name = cls.get_module_name_replacing_start_module(
+        new_module_name = get_module_name_replacing_start_module(
             src_module, PyprojectConfigFile.get_package_name()
         )
         return to_path(new_module_name, is_package=True).parent
