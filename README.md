@@ -152,13 +152,13 @@ my_project/
 │   ├── py.typed                      # PEP 561 type marker
 │   ├── dev/
 │   │   ├── artifacts/
-│   │   │   ├── builders/             # Custom artifact builders
-│   │   │   └── resources/            # Build resources (icons, etc.)
+│   │   │   └── builders/             # Custom artifact builders
 │   │   ├── cli/
 │   │   │   └── subcommands.py        # Custom CLI commands
 │   │   ├── configs/                  # Custom ConfigFile classes
 │   │   └── tests/
 │   │       └── fixtures/             # Custom fixtures (auto-discovered)
+│   ├── resources/                    # Build resources (icons, etc.)
 │   └── src/                          # Your source code goes here
 │
 └── tests/
