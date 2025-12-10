@@ -9,6 +9,8 @@ from pytest_mock import MockerFixture
 
 from pyrig import main
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.dev.configs.python.main import MainConfigFile
+from pyrig.src.modules.module import get_module_content_as_str
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.testing.assertions import assert_with_msg
 
@@ -52,4 +54,9 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     # remove module if already imported, so run_module reloads it
     del sys.modules[main_module_name]
     # run module as __main__, pytest-cov will see it
-    runpy.run_module(main_module_name, run_name="__main__")
+    # run only if file content is the same as pyrig.main
+    main_module_content = get_module_content_as_str(main_module)
+    config_main_module_content = MainConfigFile.get_content_str()
+
+    if main_module_content == config_main_module_content:
+        runpy.run_module(main_module_name, run_name="__main__")
