@@ -1,0 +1,32 @@
+name: Build
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+    - Health Check
+    types:
+    - completed
+    branches:
+    - main
+permissions: {}
+run-name: Build
+defaults:
+  run:
+    shell: bash
+env:
+  PYTHONDONTWRITEBYTECODE: 1
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - windows-latest
+        - macos-latest
+      fail-fast: true
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - name: No Builder Defined
+      id: no_builder_defined
+      run: echo 'No non-abstract builders defined. Skipping build.'

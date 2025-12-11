@@ -104,7 +104,7 @@ pyrig discovers these extensions automatically by traversing the dependency grap
 
 ### CI/CD Integration
 
-Three GitHub Actions workflows are generated:
+Four GitHub Actions workflows are generated:
 
 1. **Health Check** — Runs on every push and PR
    - Executes pre-commit hooks (ruff, mypy, bandit)
@@ -112,14 +112,18 @@ Three GitHub Actions workflows are generated:
    - Tests across a matrix of 3 OS × 3 Python versions
    - Updates branch protection rules
 
-2. **Release** — Triggers on health check success (main branch)
-   - Optionally builds artifacts across OS matrix
+2. **Build** — Triggers on health check success (main branch)
+   - Builds artifacts across OS matrix
+   - Uploads artifacts for downstream workflows
+
+3. **Release** — Triggers on build success
+   - Downloads artifacts from build workflow
    - Bumps version number
    - Commits and pushes version bump and dependency updates
    - Generates a changelog from PR history
    - Creates a GitHub release
 
-3. **Publish** — Triggers on release creation
+4. **Publish** — Triggers on release creation
    - Builds distribution packages
    - Publishes to PyPI
 
@@ -151,8 +155,9 @@ my_project/
 ├── .github/
 │   └── workflows/
 │       ├── health_check.yaml         # CI: tests, linting, type checking
-│       ├── publish.yaml              # Publish to PyPI after release
-│       └── release.yaml              # Create GitHub releases
+│       ├── build.yaml                # Build artifacts across OS matrix
+│       ├── release.yaml              # Create GitHub releases
+│       └── publish.yaml              # Publish to PyPI after release
 ├── .gitignore                        # Git ignore patterns
 ├── .pre-commit-config.yaml           # Pre-commit hooks configuration
 ├── .python-version                   # Python version for pyenv/uv

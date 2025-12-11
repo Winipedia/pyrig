@@ -26,8 +26,9 @@ your-project/
 ├── .github/
 │   └── workflows/
 │       ├── health_check.yaml      # CI: tests, linting, type checking
+│       ├── build.yaml             # Build artifacts after health check on main
 │       ├── publish.yaml           # Publish to PyPI after release
-│       └── release.yaml           # Create GitHub releases
+│       └── release.yaml           # Create GitHub releases after build
 │
 ├── your_project/                  # Source package (matches project name)
 │   ├── __init__.py
@@ -70,6 +71,7 @@ ConfigFile (ABC)
 │   ├── PreCommitConfigConfigFile     → .pre-commit-config.yaml
 │   └── Workflow (ABC)
 │       ├── HealthCheckWorkflow       → health_check.yaml
+│       ├── BuildWorkflow             → build.yaml
 │       ├── PublishWorkflow           → publish.yaml
 │       └── ReleaseWorkflow           → release.yaml
 │
@@ -246,7 +248,8 @@ Also pyrig just inits the most recent leave of a class tree. So pyrigs own `Heal
 | File | Class | Purpose |
 |------|-------|---------|
 | `.github/workflows/health_check.yaml` | `HealthCheckWorkflow` | CI pipeline: tests, linting, type checking across OS/Python matrix. Will also run on every Pull Request as a required check |
-| `.github/workflows/release.yaml` | `ReleaseWorkflow` | Creates GitHub releases after health check passes on main |
+| `.github/workflows/build.yaml` | `BuildWorkflow` | Builds artifacts after health check passes on main, uploads for downstream workflows |
+| `.github/workflows/release.yaml` | `ReleaseWorkflow` | Creates GitHub releases after build passes, downloads artifacts from build workflow |
 | `.github/workflows/publish.yaml` | `PublishWorkflow` | Publishes to PyPI after successful release |
 
 ### Source Package Files

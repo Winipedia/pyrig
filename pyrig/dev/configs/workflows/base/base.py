@@ -8,7 +8,7 @@ building jobs, steps, triggers, and matrix strategies.
 from abc import abstractmethod
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any
 
 import pyrig
 from pyrig.dev.builders.base.base import Builder
@@ -35,7 +35,6 @@ class Workflow(YamlConfigFile):
         MACOS_LATEST: Runner label for macOS.
         ARTIFACTS_DIR_NAME: Directory name for build artifacts.
         ARTIFACTS_PATTERN: Glob pattern for artifact files.
-        EMPTY_CONFIG: Minimal valid workflow for empty configurations.
     """
 
     UBUNTU_LATEST = "ubuntu-latest"
@@ -45,22 +44,18 @@ class Workflow(YamlConfigFile):
     ARTIFACTS_DIR_NAME = Builder.ARTIFACTS_DIR_NAME
     ARTIFACTS_PATTERN = f"{ARTIFACTS_DIR_NAME}/*"
 
-    EMPTY_CONFIG: ClassVar[dict[str, Any]] = {
-        "on": {
-            "workflow_dispatch": {},
-        },
-        "jobs": {
-            "empty": {
-                "runs-on": "ubuntu-latest",
-                "steps": [
-                    {
-                        "name": "Empty Step",
-                        "run": "echo 'Empty Step'",
-                    }
-                ],
-            },
-        },
-    }
+    @classmethod
+    def load(cls) -> dict[str, Any]:
+        """Load and parse the workflow configuration file.
+
+        Returns:
+            The parsed workflow configuration as a dict.
+        """
+        content = super().load()
+        if not isinstance(content, dict):
+            msg = f"Expected dict, got {type(content)}"
+            raise TypeError(msg)
+        return content
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
@@ -99,11 +94,21 @@ class Workflow(YamlConfigFile):
             True if configuration matches expected state.
         """
         correct = super().is_correct()
-        if cls.get_path().read_text(encoding="utf-8") == "":
-            # dump a dispatch in there for on and an empty job for jobs
-            cls.dump(cls.EMPTY_CONFIG)
 
-        return correct or cls.load() == cls.EMPTY_CONFIG
+        if cls.get_path().read_text(encoding="utf-8") == "":
+            config = cls.get_configs()
+            jobs = config["jobs"]
+            for job in jobs.values():
+                job["steps"] = [cls.step_opt_out_of_workflow()]
+            cls.dump(config)
+
+        config = cls.load()
+        jobs = config["jobs"]
+        opted_out = all(
+            job["steps"] == [cls.step_opt_out_of_workflow()] for job in jobs.values()
+        )
+
+        return correct or opted_out
 
     # Overridable Workflow Parts
     # ----------------------------------------------------------------------------
@@ -671,6 +676,26 @@ class Workflow(YamlConfigFile):
 
     # Single Step
     @classmethod
+    def step_opt_out_of_workflow(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that opts out of the workflow.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that echoes an opt-out message.
+        """
+        return cls.get_step(
+            step_func=cls.step_opt_out_of_workflow,
+            run=f"echo 'Opting out of {cls.get_workflow_name()} workflow.'",
+            step=step,
+        )
+
+    @classmethod
     def step_aggregate_matrix_results(
         cls,
         *,
@@ -1206,6 +1231,42 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
+    def step_download_artifacts_from_workflow_run(
+        cls,
+        *,
+        name: str | None = None,
+        path: str | Path = ARTIFACTS_DIR_NAME,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that downloads artifacts from triggering workflow run.
+
+        Uses the github.event.workflow_run.id to download artifacts from
+        the workflow that triggered this workflow (via workflow_run event).
+
+        Args:
+            name: Artifact name to download. None downloads all.
+            path: Path to download to. Defaults to artifacts directory.
+            step: Existing step dict to update.
+
+        Returns:
+            Step using actions/download-artifact with run-id parameter.
+        """
+        with_: dict[str, Any] = {
+            "path": str(path),
+            "run-id": cls.insert_workflow_run_id(),
+            "github-token": cls.insert_github_token(),
+        }
+        if name is not None:
+            with_["name"] = name
+        with_["merge-multiple"] = "true"
+        return cls.get_step(
+            step_func=cls.step_download_artifacts_from_workflow_run,
+            uses="actions/download-artifact@main",
+            with_=with_,
+            step=step,
+        )
+
+    @classmethod
     def step_build_changelog(
         cls,
         *,
@@ -1366,6 +1427,18 @@ class Workflow(YamlConfigFile):
             GitHub Actions expression for github.repository_owner.
         """
         return "${{ github.repository_owner }}"
+
+    @classmethod
+    def insert_workflow_run_id(cls) -> str:
+        """Get the GitHub expression for triggering workflow run ID.
+
+        Used when downloading artifacts from the workflow that triggered
+        this workflow via workflow_run event.
+
+        Returns:
+            GitHub Actions expression for github.event.workflow_run.id.
+        """
+        return "${{ github.event.workflow_run.id }}"
 
     @classmethod
     def insert_os(cls) -> str:
