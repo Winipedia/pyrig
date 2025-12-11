@@ -175,7 +175,8 @@ class Workflow(YamlConfigFile):
         Returns:
             Class name split on uppercase letters and joined with spaces.
         """
-        return " ".join(split_on_uppercase(cls.__name__))
+        name = cls.__name__.removesuffix(Workflow.__name__)
+        return " ".join(split_on_uppercase(name))
 
     @classmethod
     def get_run_name(cls) -> str:

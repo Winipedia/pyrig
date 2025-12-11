@@ -76,24 +76,6 @@ class PyprojectConfigFile(TomlConfigFile):
         return Path()
 
     @classmethod
-    def get_pkg_name_from_cwd(cls) -> str:
-        """Derive the package name from the current directory.
-
-        Returns:
-            The package name (directory name with hyphens as underscores).
-        """
-        return get_pkg_name_from_project_name(get_project_name_from_cwd())
-
-    @classmethod
-    def get_project_description(cls) -> str:
-        """Get the project description from pyproject.toml.
-
-        Returns:
-            The project description or empty string.
-        """
-        return str(cls.load().get("project", {}).get("description", ""))
-
-    @classmethod
     def get_configs(cls) -> dict[str, Any]:
         """Get the expected pyproject.toml configuration.
 
@@ -108,7 +90,13 @@ class PyprojectConfigFile(TomlConfigFile):
         return {
             "project": {
                 "name": get_project_name_from_cwd(),
+                "version": cls.get_project_version(),
+                "description": cls.get_project_description(),
                 "readme": "README.md",
+                "requires-python": cls.get_project_requires_python(),
+                "classifiers": [
+                    *cls.make_python_version_classifiers(),
+                ],
                 "scripts": {
                     cls.get_project_name(): f"{cli.__name__}:{cli.main.__name__}"
                 },
@@ -191,6 +179,54 @@ class PyprojectConfigFile(TomlConfigFile):
         config["dependency-groups"]["dev"] = cls.make_dependency_versions(
             config["dependency-groups"]["dev"]
         )
+
+    @classmethod
+    def get_pkg_name_from_cwd(cls) -> str:
+        """Derive the package name from the current directory.
+
+        Returns:
+            The package name (directory name with hyphens as underscores).
+        """
+        return get_pkg_name_from_project_name(get_project_name_from_cwd())
+
+    @classmethod
+    def get_project_description(cls) -> str:
+        """Get the project description from pyproject.toml.
+
+        Returns:
+            The project description or empty string.
+        """
+        return str(cls.load().get("project", {}).get("description", ""))
+
+    @classmethod
+    def get_project_version(cls) -> str:
+        """Get the project version from pyproject.toml.
+
+        Returns:
+            The project version or empty string.
+        """
+        return str(cls.load().get("project", {}).get("version", ""))
+
+    @classmethod
+    def make_python_version_classifiers(cls) -> list[str]:
+        """Make the Python version classifiers.
+
+        Returns:
+            List of Python version classifiers.
+        """
+        versions = cls.get_supported_python_versions()
+        return [
+            f"Programming Language :: Python :: {v.major}.{v.minor}" for v in versions
+        ]
+
+    @classmethod
+    def get_project_requires_python(cls, default: str = ">=3.12") -> str:
+        """Get the project's requires-python from pyproject.toml.
+
+        Returns:
+            The project's requires-python or empty string.
+        """
+        return str(cls.load().get("project", {}).get("requires-python", default))
 
     @classmethod
     def make_dependency_versions(
@@ -359,7 +395,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Raises:
             ValueError: If no lower bound is specified.
         """
-        constraint = cls.load()["project"]["requires-python"]
+        constraint = cls.get_project_requires_python()
         version_constraint = VersionConstraint(constraint)
         lower = version_constraint.get_lower_inclusive()
         if lower is None:
@@ -374,7 +410,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Returns:
             List of supported Python versions (e.g., [3.10, 3.11, 3.12]).
         """
-        constraint = cls.load()["project"]["requires-python"]
+        constraint = cls.get_project_requires_python()
         version_constraint = VersionConstraint(constraint)
         return version_constraint.get_version_range(
             level="minor", upper_default=cls.fetch_latest_python_version()

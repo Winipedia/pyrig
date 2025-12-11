@@ -1,13 +1,14 @@
-name: Publish Workflow
+name: Publish
 'on':
   workflow_dispatch: {}
   workflow_run:
     workflows:
+    - Release
     - Release Workflow
     types:
     - completed
 permissions: {}
-run-name: Publish Workflow
+run-name: Publish
 defaults:
   run:
     shell: bash

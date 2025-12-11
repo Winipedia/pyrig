@@ -9,6 +9,24 @@ from pyrig.src.testing.assertions import assert_with_msg
 class TestReadmeConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert ReadmeConfigFile().is_correct()
+
+    def test_get_badges(self) -> None:
+        """Test method."""
+        badges = ReadmeConfigFile.get_badges()
+        assert isinstance(badges, dict), f"Expected dict, got {type(badges)}"
+        for badge_category, badge_list in badges.items():
+            assert isinstance(badge_category, str), (
+                f"Expected string, got {type(badge_category)}"
+            )
+            assert isinstance(badge_list, list), (
+                f"Expected list, got {type(badge_list)}"
+            )
+            for badge in badge_list:
+                assert badge.startswith("[!")
+
     def test_is_unwanted(self) -> None:
         """Test method."""
         assert not ReadmeConfigFile.is_unwanted()

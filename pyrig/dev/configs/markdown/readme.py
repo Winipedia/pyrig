@@ -9,6 +9,7 @@ from pathlib import Path
 import pyrig
 from pyrig.dev.configs.base.base import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.src.git.github.github import get_repo_owner_and_name_from_git
 
 
 class ReadmeConfigFile(MarkdownConfigFile):
@@ -43,14 +44,23 @@ class ReadmeConfigFile(MarkdownConfigFile):
         Returns:
             Markdown content with project name and optional pyrig reference.
         """
-        content = f"""# {PyprojectConfigFile.get_project_name()}
+        project_name = PyprojectConfigFile.get_project_name()
+        badges = cls.get_badges()
+        badges_str = ""
+        for badge_category, badge_list in badges.items():
+            badges_str += f"<!-- {badge_category} -->\n"
+            badges_str += "\n".join(badge_list) + "\n"
+        description = PyprojectConfigFile.get_project_description()
+        return f"""# {project_name}
+
+{badges_str}
+
+---
+
+> {description}
+
+---
 """
-        badge_url = f"https://img.shields.io/badge/built%20with-{pyrig.__name__}-3776AB?logo=python&logoColor=white"
-        repo_url = f"https://github.com/Winipedia/{pyrig.__name__}"
-        content += f"""
-[![built with {pyrig.__name__}]({badge_url})]({repo_url})
-"""
-        return content
 
     @classmethod
     def is_unwanted(cls) -> bool:
@@ -61,3 +71,55 @@ class ReadmeConfigFile(MarkdownConfigFile):
         """
         # README.md is never unwanted
         return False
+
+    @classmethod
+    def is_correct(cls) -> bool:
+        """Check if the README.md file is valid.
+
+        Returns:
+            True if the file has required structure.
+        """
+        badges = cls.get_badges()
+        all_badges_in_file = all(badge in cls.get_file_content() for badge in badges)
+        description_in_file = (
+            PyprojectConfigFile.get_project_description() in cls.get_file_content()
+        )
+        project_name_in_file = (
+            PyprojectConfigFile.get_project_name() in cls.get_file_content()
+        )
+        return super().is_correct() or (
+            all_badges_in_file and description_in_file and project_name_in_file
+        )
+
+    @classmethod
+    def get_badges(cls) -> dict[str, list[str]]:
+        """Get the badges for the README.md file.
+
+        Returns:
+            List of badge markdown strings.
+        """
+        repo_owner, repo_name = get_repo_owner_and_name_from_git(check_repo_url=False)
+        project_name = PyprojectConfigFile.get_project_name()
+        return {
+            "tooling": [
+                f"[![{pyrig.__name__}](https://img.shields.io/badge/built%20with-{pyrig.__name__}-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/{pyrig.__name__})",
+                "[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)",
+                "[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)",
+            ],
+            "code-quality": [
+                "[![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)",
+                "[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)",
+                "[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)",
+                "[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)",
+                "[![coverage](https://img.shields.io/badge/coverage-90%25+-brightgreen.svg?logo=codecov&logoColor=white)](https://github.com/winipedia/pyrig)",
+            ],
+            "package-info": [
+                f"[![PyPI](https://img.shields.io/pypi/v/{project_name}?logo=pypi&logoColor=white)](https://pypi.org/project/{project_name}/)",
+                f"[![Python](https://img.shields.io/pypi/pyversions/{project_name})](https://pypi.org/project/{project_name}/)",
+                f"[![License](https://img.shields.io/github/license/{repo_owner}/{repo_name})](https://github.com/{repo_owner}/{repo_name}/blob/main/LICENSE)",
+            ],
+            "ci/cd": [
+                f"[![CI](https://img.shields.io/github/actions/workflow/status/{repo_owner}/{repo_name}/health_check.yaml?label=CI&logo=github)](https://github.com/{repo_owner}/{repo_name}/actions/workflows/health_check.yaml)",
+                f"[![CD](https://img.shields.io/github/actions/workflow/status/{repo_owner}/{repo_name}/release.yaml?label=CD&logo=github)](https://github.com/{repo_owner}/{repo_name}/actions/workflows/release.yaml)",
+            ],
+        }

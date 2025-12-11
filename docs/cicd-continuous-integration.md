@@ -6,9 +6,9 @@ pyrig provides a complete CI/CD pipeline through auto-generated GitHub Actions w
 
 pyrig's CI/CD system consists of three chained workflows:
 
-1. **Health Check Workflow** — Runs tests and quality checks across multiple OS and Python versions
-2. **Release Workflow** — Creates version tags and GitHub releases after successful health checks
-3. **Publish Workflow** — Publishes the package to PyPI after successful releases
+1. **Health Check** — Runs tests and quality checks across multiple OS and Python versions
+2. **Release** — Creates version tags and GitHub releases after successful health checks
+3. **Publish** — Publishes the package to PyPI after successful releases
 
 Key characteristics:
 
@@ -29,7 +29,7 @@ Key characteristics:
                     │
                     ▼
     ┌───────────────────────────────┐
-    │    Health Check Workflow      │
+    │         Health Check          │
     │  ┌─────────────────────────┐  │
     │  │   Matrix: 3 OS × 3 Py   │  │
     │  │   • Ubuntu + 3.12/13/14 │  │
@@ -50,7 +50,7 @@ Key characteristics:
                     │ (on main branch, success)
                     ▼
     ┌───────────────────────────────┐
-    │      Release Workflow         │
+    │            Release            │
     │  Jobs:                        │
     │  • Build artifacts (matrix)   │
     │  • Create version tag         │
@@ -61,7 +61,7 @@ Key characteristics:
                     │ (success)
                     ▼
     ┌───────────────────────────────┐
-    │      Publish Workflow         │
+    │            Publish            │
     │  Steps:                       │
     │  • Build wheel                │
     │  • Publish to PyPI            │
@@ -78,9 +78,9 @@ The workflows are defined as Python classes that generate YAML files:
 | `ReleaseWorkflow` | `.github/workflows/release.yaml` | Version tagging and GitHub releases |
 | `PublishWorkflow` | `.github/workflows/publish.yaml` | PyPI publishing |
 
-## Health Check Workflow
+## Health Check
 
-The health check workflow is the primary CI workflow that validates code quality.
+The Health Check workflow is the primary CI workflow that validates code quality.
 
 ### Triggers
 
@@ -153,19 +153,19 @@ def get_staggered_cron(cls) -> str:
 
 The offset is calculated based on the shortest path length in the dependency graph to pyrig.
 
-## Release Workflow
+## Release
 
-The release workflow creates version tags and GitHub releases.
+The Release workflow creates version tags and GitHub releases.
 
 ### Trigger
 
-Triggers when the Health Check Workflow completes successfully on the main branch:
+Triggers when the Health Check workflow completes successfully on the main branch:
 
 ```yaml
 on:
   workflow_run:
     workflows:
-      - Health Check Workflow
+      - Health Check
     types:
       - completed
     branches:
@@ -190,19 +190,19 @@ on:
 8. Generate changelog from PR history
 9. Create GitHub release with artifacts
 
-## Publish Workflow
+## Publish
 
-The publish workflow publishes the package to PyPI.
+The Publish workflow publishes the package to PyPI.
 
 ### Trigger
 
-Triggers when the Release Workflow completes successfully:
+Triggers when the Release workflow completes successfully:
 
 ```yaml
 on:
   workflow_run:
     workflows:
-      - Release Workflow
+      - Release
     types:
       - completed
 ```
@@ -238,7 +238,7 @@ A ruleset named "main protection" is created with these rules:
 | Rule | Configuration |
 |------|---------------|
 | **Pull Request Required** | 1 approving review, code owner review required, dismiss stale reviews |
-| **Status Checks** | Health Check Workflow must pass |
+| **Status Checks** | Health Check must pass |
 | **Linear History** | Required (no merge commits) |
 | **Signed Commits** | Required |
 | **No Force Push** | Enabled |

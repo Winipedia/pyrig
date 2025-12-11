@@ -21,6 +21,11 @@ dependencies = [
     "tomlkit",
     "typer",
 ]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 
 [project.scripts]
 pyrig = "pyrig.dev.cli.cli:main"
@@ -87,7 +92,7 @@ show_error_codes = true
 files = "."
 
 [tool.pytest.ini_options]
-addopts = "--cov=pyrig --cov-report=term-missing --cov-fail-under=80"
+addopts = "--cov=pyrig --cov-report=term-missing --cov-fail-under=90"
 testpaths = [
     "tests",
 ]

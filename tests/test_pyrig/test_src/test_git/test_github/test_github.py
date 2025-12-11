@@ -4,6 +4,7 @@ import os
 
 import pyrig
 from pyrig.src.git.github.github import (
+    get_git_username,
     get_github_repo_token,
     get_repo_owner_and_name_from_git,
     get_repo_url_from_git,
@@ -67,3 +68,12 @@ def test_get_repo_owner_and_name_from_git() -> None:
 
     assert owner == "Winipedia", f"Expected owner to be 'Winipedia', got {owner}"
     assert repo == pyrig.__name__, f"Expected repo to be 'pyrig', got {repo}"
+
+
+def test_get_git_username() -> None:
+    """Test function."""
+    username = get_git_username()
+    assert isinstance(username, str), (
+        f"Expected username to be str, got {type(username)}"
+    )
+    assert len(username) > 0, "Expected username to be non-empty"

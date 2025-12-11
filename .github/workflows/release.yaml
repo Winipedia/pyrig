@@ -1,8 +1,9 @@
-name: Release Workflow
+name: Release
 'on':
   workflow_dispatch: {}
   workflow_run:
     workflows:
+    - Health Check
     - Health Check Workflow
     types:
     - completed
@@ -10,7 +11,7 @@ name: Release Workflow
     - main
 permissions:
   contents: write
-run-name: Release Workflow
+run-name: Release
 defaults:
   run:
     shell: bash

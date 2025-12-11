@@ -1,12 +1,29 @@
 # pyrig
 
-[![built with pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=python&logoColor=white)](https://github.com/Winipedia/pyrig)
-[![PyPI](https://img.shields.io/pypi/v/pyrig)](https://pypi.org/project/pyrig/)
-[![Python](https://img.shields.io/badge/python-3.12+-blue)](https://pypi.org/project/pyrig/)
-[![License](https://img.shields.io/github/license/winipedia/pyrig)](https://github.com/winipedia/pyrig/blob/main/LICENSE)
-[![CI/CD](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml/badge.svg)](https://github.com/winipedia/pyrig/actions/workflows/health_check.yaml)
+<!-- tooling -->
+[![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
+<!-- code-quality -->
+[![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
+[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
+[![coverage](https://img.shields.io/badge/coverage-90%25+-brightgreen.svg?logo=codecov&logoColor=white)](https://github.com/winipedia/pyrig)
+<!-- package-info -->
+[![PyPI](https://img.shields.io/pypi/v/pyrig?logo=pypi&logoColor=white)](https://pypi.org/project/pyrig/)
+[![Python](https://img.shields.io/pypi/pyversions/pyrig)](https://pypi.org/project/pyrig/)
+[![License](https://img.shields.io/github/license/Winipedia/pyrig)](https://github.com/Winipedia/pyrig/blob/main/LICENSE)
+<!-- ci/cd -->
+[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yaml?label=CI&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/health_check.yaml)
+[![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yaml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yaml)
 
-A Python development toolkit that standardizes project configuration and automates development workflows and standards.
+---
+
+> A Python toolkit that standardizes and automates project setup, configuration and development.
+
+---
+
 
 ## How to Use
 
@@ -98,7 +115,7 @@ Three GitHub Actions workflows are generated:
 2. **Release** — Triggers on health check success (main branch)
    - Optionally builds artifacts across OS matrix
    - Bumps version number
-   - Commits and oushes version bump and dependency updates
+   - Commits and pushes version bump and dependency updates
    - Generates a changelog from PR history
    - Creates a GitHub release
 

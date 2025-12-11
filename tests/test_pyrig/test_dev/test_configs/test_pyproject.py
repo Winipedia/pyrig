@@ -32,6 +32,25 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
+    def test_get_project_requires_python(self) -> None:
+        """Test method."""
+        requires_python = PyprojectConfigFile.get_project_requires_python()
+        assert isinstance(requires_python, str), (
+            f"Expected str, got {type(requires_python)}"
+        )
+
+    def test_get_project_version(self) -> None:
+        """Test method."""
+        version = PyprojectConfigFile.get_project_version()
+        assert isinstance(version, str), f"Expected str, got {type(version)}"
+
+    def test_make_python_version_classifiers(self) -> None:
+        """Test method."""
+        classifiers = PyprojectConfigFile.make_python_version_classifiers()
+        assert isinstance(classifiers, list), f"Expected list, got {type(classifiers)}"
+        for classifier in classifiers:
+            assert isinstance(classifier, str), f"Expected str, got {type(classifier)}"
+
     def test_should_remove_version_from_dep(self) -> None:
         """Test method."""
         should_remove = PyprojectConfigFile.should_remove_version_from_dep()

@@ -9,7 +9,7 @@ pyrig enforces a strict testing discipline: every module, class, and function in
 The system consists of four integrated parts:
 1. **Test Generation** — Creates test files mirroring source structure
 2. **Structural Validation** — Fails tests when test stubs are missing
-3. **Code Coverage** — Enforces minimum coverage threshold (80% by default)
+3. **Code Coverage** — Enforces minimum coverage threshold (90% by default)
 4. **Fixture System** — Provides scoped fixtures for setup/teardown
 
 ## Source-to-Test Mapping
@@ -378,7 +378,7 @@ Tests are configured in `pyproject.toml`:
 ```toml
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=your_project --cov-report=term-missing --cov-fail-under=80"
+addopts = "--cov=your_project --cov-report=term-missing --cov-fail-under=90"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101"]  # Allow assert statements in tests
@@ -387,7 +387,7 @@ addopts = "--cov=your_project --cov-report=term-missing --cov-fail-under=80"
 pyrig automatically configures pytest-cov with:
 - **Coverage reporting** for your package
 - **Term-missing report** showing which lines aren't covered
-- **80% minimum threshold** that fails CI if not met
+- **90% minimum threshold** that fails CI if not met
 
 ## The Zero Test
 
@@ -433,10 +433,10 @@ TOTAL                                59     15    75%
 
 ### Coverage Threshold
 
-pyrig enforces an 80% minimum coverage threshold. If coverage drops below this, tests fail:
+pyrig enforces a 90% minimum coverage threshold. If coverage drops below this, tests fail:
 
 ```
-FAIL Required test coverage of 80% not reached. Total coverage: 75.00%
+FAIL Required test coverage of 90% not reached. Total coverage: 85.00%
 ```
 
 This threshold is defined in `pyrig.src.testing.convention.COVERAGE_THRESHOLD` and can be referenced in custom configurations.
@@ -448,7 +448,7 @@ These are complementary systems:
 | System | What It Checks | When It Fails |
 |--------|----------------|---------------|
 | **Test Generation** | Every function/class has a test stub | Missing `test_` function or `Test` class |
-| **Code Coverage** | Tests actually execute source code | Less than 80% of lines executed |
+| **Code Coverage** | Tests actually execute source code | Less than 90% of lines executed |
 
 A test stub that just raises `NotImplementedError` will fail coverage because it doesn't execute the source code it's supposed to test.
 

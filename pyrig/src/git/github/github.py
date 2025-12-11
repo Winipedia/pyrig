@@ -20,6 +20,7 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
+from pyrig.src.modules.package import get_project_name_from_cwd
 from pyrig.src.os.os import run_subprocess
 
 
@@ -82,7 +83,7 @@ def running_in_github_actions() -> bool:
     return os.getenv("GITHUB_ACTIONS", "false") == "true"
 
 
-def get_repo_url_from_git() -> str:
+def get_repo_url_from_git(*, check: bool = True) -> str:
     """Get the remote origin URL from the local git repository.
 
     Executes `git config --get remote.origin.url` to retrieve the URL
@@ -90,6 +91,9 @@ def get_repo_url_from_git() -> str:
     Url can be:
         - https://github.com/owner/repo.git
         - git@github.com:owner/repo.git
+
+    Args:
+        check: Whether to check succes in subprocess.
 
     Returns:
         The remote origin URL (e.g., "https://github.com/owner/repo.git"
@@ -100,16 +104,36 @@ def get_repo_url_from_git() -> str:
             the origin remote is not configured.
     """
     stdout: str = run_subprocess(
-        ["git", "config", "--get", "remote.origin.url"]
+        ["git", "config", "--get", "remote.origin.url"], check=check
     ).stdout.decode("utf-8")
     return stdout.strip()
 
 
-def get_repo_owner_and_name_from_git() -> tuple[str, str]:
+def get_git_username() -> str:
+    """Get the git username from the local git config.
+
+    Executes `git config --get user.name` to retrieve the username.
+
+    Returns:
+        The git username.
+
+    Raises:
+        subprocess.CalledProcessError: If the username cannot be read.
+    """
+    stdout: str = run_subprocess(["git", "config", "--get", "user.name"]).stdout.decode(
+        "utf-8"
+    )
+    return stdout.strip()
+
+
+def get_repo_owner_and_name_from_git(*, check_repo_url: bool = True) -> tuple[str, str]:
     """Extract the GitHub owner and repository name from the git remote.
 
     Parses the remote origin URL to extract the owner (organization or user)
     and repository name. Handles both HTTPS and SSH URL formats.
+
+    Args:
+        check_repo_url: Whether to check succes in subprocess.
 
     Returns:
         A tuple of (owner, repository_name).
@@ -122,7 +146,13 @@ def get_repo_owner_and_name_from_git() -> tuple[str, str]:
         >>> print(f"{owner}/{repo}")
         myorg/myrepo
     """
-    url = get_repo_url_from_git()
+    url = get_repo_url_from_git(check=check_repo_url)
+    if not url:
+        # we default to git username and repo name from cwd
+        owner = get_git_username()
+        repo = get_project_name_from_cwd()
+        return owner, repo
+
     parts = url.removesuffix(".git").split("/")
     # keep last two parts
     owner, repo = parts[-2:]
