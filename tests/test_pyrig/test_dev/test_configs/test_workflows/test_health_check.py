@@ -100,12 +100,6 @@ class TestHealthCheckWorkflow:
             "Expected workflow to be correct when empty",
         )
 
-        loaded_config = test_workflow.load()
-        assert_with_msg(
-            loaded_config == HealthCheckWorkflow.EMPTY_CONFIG,
-            "Expected empty workflow to have EMPTY_CONFIG after is_correct check",
-        )
-
         proper_config = test_workflow.get_configs()
         test_workflow.dump(proper_config)
         assert_with_msg(

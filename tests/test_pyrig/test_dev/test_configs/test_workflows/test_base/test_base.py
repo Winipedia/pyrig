@@ -48,6 +48,12 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_load(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for load."""
+        my_test_workflow()
+        actual = my_test_workflow.load()
+        assert isinstance(actual, dict)
+
     def test_steps_core_installed_setup(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for steps_core_installed_setup."""
         result = my_test_workflow.steps_core_installed_setup()
@@ -91,6 +97,11 @@ class TestWorkflow:
             result == "${{ runner.os }}",
             f"Expected '${{{{ runner.os }}}}', got {result}",
         )
+
+    def test_insert_workflow_run_id(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method."""
+        result = my_test_workflow.insert_workflow_run_id()
+        assert isinstance(result, str)
 
     def test_get_configs(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for get_configs."""
@@ -284,6 +295,11 @@ class TestWorkflow:
         result = my_test_workflow.steps_core_matrix_setup()
         assert_with_msg(len(result) > 0, "Expected steps to be non-empty")
 
+    def test_step_opt_out_of_workflow(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for step_opt_out_of_workflow."""
+        result = my_test_workflow.step_opt_out_of_workflow()
+        assert_with_msg("run" in result, "Expected 'run' in step")
+
     def test_step_aggregate_matrix_results(
         self, my_test_workflow: type[Workflow]
     ) -> None:
@@ -411,6 +427,13 @@ class TestWorkflow:
     def test_step_download_artifacts(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for step_download_artifacts."""
         result = my_test_workflow.step_download_artifacts()
+        assert_with_msg("uses" in result, "Expected 'uses' in step")
+
+    def test_step_download_artifacts_from_workflow_run(
+        self, my_test_workflow: type[Workflow]
+    ) -> None:
+        """Test method for step_download_artifacts_from_workflow_run."""
+        result = my_test_workflow.step_download_artifacts_from_workflow_run()
         assert_with_msg("uses" in result, "Expected 'uses' in step")
 
     def test_step_build_changelog(self, my_test_workflow: type[Workflow]) -> None:
@@ -569,20 +592,13 @@ class TestWorkflow:
 
     def test_is_correct(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for is_correct."""
-        # Test that an empty file is considered correct (gets EMPTY_CONFIG)
+        # Test that an empty file is considered correct
         test_workflow = my_test_workflow()
         workflow_path = test_workflow.get_path()
         workflow_path.write_text("")
         assert_with_msg(
             test_workflow.is_correct(),
             "Expected workflow to be correct when empty",
-        )
-
-        # Test that after is_correct on empty file, it has EMPTY_CONFIG
-        loaded_config = test_workflow.load()
-        assert_with_msg(
-            loaded_config == Workflow.EMPTY_CONFIG,
-            "Expected empty workflow to have EMPTY_CONFIG after is_correct check",
         )
 
         # Test that a workflow with proper config is correct

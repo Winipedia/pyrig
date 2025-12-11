@@ -297,14 +297,27 @@ steps:
     run: git add pyproject.toml uv.lock
 ```
 
-### Release Workflow Steps
+### Build Workflow Steps
 
-The release workflow builds and publishes:
+The build workflow builds artifacts after health check passes on main:
 
 ```yaml
 steps:
   - name: Build Wheel
     run: uv build
+
+  - name: Upload Artifacts
+    uses: actions/upload-artifact@main
+```
+
+### Release Workflow Steps
+
+The release workflow creates releases after build passes:
+
+```yaml
+steps:
+  - name: Download Artifacts
+    uses: actions/download-artifact@main
 
   - name: Create And Push Tag
     run: git tag v$(uv version --short) && git push origin v$(uv version --short)

@@ -18,21 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-    - name: Checkout Repository
-      id: checkout_repository
-      uses: actions/checkout@main
-    - name: Setup Git
-      id: setup_git
-      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        && git config --global user.name "github-actions[bot]"
-    - name: Setup Project Mgt
-      id: setup_project_mgt
-      uses: astral-sh/setup-uv@main
-      with:
-        python-version: '3.14'
-    - name: Build Wheel
-      id: build_wheel
-      run: uv build
-    - name: Publish To Pypi
-      id: publish_to_pypi
-      run: uv publish --token ${{ secrets.PYPI_TOKEN }}
+    - name: Opt Out Of Workflow
+      id: opt_out_of_workflow
+      run: echo 'Opting out of Publish workflow.'

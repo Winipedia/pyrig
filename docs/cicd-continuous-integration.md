@@ -4,11 +4,12 @@ pyrig provides a complete CI/CD pipeline through auto-generated GitHub Actions w
 
 ## Overview
 
-pyrig's CI/CD system consists of three chained workflows:
+pyrig's CI/CD system consists of four chained workflows:
 
 1. **Health Check** — Runs tests and quality checks across multiple OS and Python versions
-2. **Release** — Creates version tags and GitHub releases after successful health checks
-3. **Publish** — Publishes the package to PyPI after successful releases
+2. **Build** — Builds artifacts across OS matrix after successful health checks on main
+3. **Release** — Creates version tags and GitHub releases after successful builds
+4. **Publish** — Publishes the package to PyPI after successful releases
 
 Key characteristics:
 
@@ -50,10 +51,31 @@ Key characteristics:
                     │ (on main branch, success)
                     ▼
     ┌───────────────────────────────┐
+    │             Build             │
+    │  ┌─────────────────────────┐  │
+    │  │   Matrix: 3 OS          │  │
+    │  │   • Ubuntu              │  │
+    │  │   • Windows             │  │
+    │  │   • macOS               │  │
+    │  └─────────────────────────┘  │
+    │  Steps:                       │
+    │  • Checkout                   │
+    │  • Setup uv                   │
+    │  • Build artifacts            │
+    │  • Upload artifacts           │
+    └───────────────────────────────┘
+                    │
+                    │ (success)
+                    ▼
+    ┌───────────────────────────────┐
     │            Release            │
-    │  Jobs:                        │
-    │  • Build artifacts (matrix)   │
+    │  Steps:                       │
+    │  • Checkout                   │
+    │  • Run pre-commit hooks       │
+    │  • Commit changes             │
+    │  • Push commits               │
     │  • Create version tag         │
+    │  • Download artifacts         │
     │  • Generate changelog         │
     │  • Create GitHub release      │
     └───────────────────────────────┘
@@ -75,6 +97,7 @@ The workflows are defined as Python classes that generate YAML files:
 | Workflow Class | Generated File | Purpose |
 |----------------|----------------|---------|
 | `HealthCheckWorkflow` | `.github/workflows/health_check.yaml` | CI testing and quality checks |
+| `BuildWorkflow` | `.github/workflows/build.yaml` | Artifact building across OS matrix |
 | `ReleaseWorkflow` | `.github/workflows/release.yaml` | Version tagging and GitHub releases |
 | `PublishWorkflow` | `.github/workflows/publish.yaml` | PyPI publishing |
 
@@ -153,9 +176,9 @@ def get_staggered_cron(cls) -> str:
 
 The offset is calculated based on the shortest path length in the dependency graph to pyrig.
 
-## Release
+## Build
 
-The Release workflow creates version tags and GitHub releases.
+The Build workflow builds artifacts across the OS matrix after successful health checks.
 
 ### Trigger
 
@@ -172,12 +195,38 @@ on:
       - main
 ```
 
-### Jobs
+### Job
 
 **Build Job** (matrix across OS):
 - Runs only if health check succeeded
 - Builds artifacts using custom `Builder` subclasses
-- Uploads artifacts for the release
+- Uploads artifacts for the release workflow
+
+### Steps
+
+1. **Checkout Repository** — Clone the repository
+2. **Setup Project Mgt** — Install uv package manager
+3. **Build Artifacts** — Run custom `Builder` subclasses
+4. **Upload Artifacts** — Upload built artifacts for downstream workflows
+
+## Release
+
+The Release workflow creates version tags and GitHub releases.
+
+### Trigger
+
+Triggers when the Build workflow completes successfully:
+
+```yaml
+on:
+  workflow_run:
+    workflows:
+      - Build
+    types:
+      - completed
+```
+
+### Job
 
 **Release Job**:
 1. Checkout with `REPO_TOKEN` for push permissions
@@ -186,9 +235,24 @@ on:
 4. Commit any changes (e.g., version bump)
 5. Push commits to main
 6. Create and push version tag
-7. Download build artifacts
+7. Download build artifacts from triggering workflow
 8. Generate changelog from PR history
 9. Create GitHub release with artifacts
+
+### Cross-Workflow Artifact Download
+
+The Release workflow downloads artifacts from the Build workflow using the `run-id` parameter:
+
+```yaml
+- uses: actions/download-artifact@main
+  with:
+    path: artifacts
+    run-id: ${{ github.event.workflow_run.id }}
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    merge-multiple: 'true'
+```
+
+This requires the `actions: read` permission to access artifacts from the triggering workflow.
 
 ## Publish
 
@@ -448,6 +512,7 @@ your_project/
 ├── .github/
 │   └── workflows/
 │       ├── health_check.yaml    # Generated
+│       ├── build.yaml           # Generated
 │       ├── release.yaml         # Generated
 │       └── publish.yaml         # Generated
 ├── your_project/
@@ -515,6 +580,7 @@ your_project/
 | Component | Description |
 |-----------|-------------|
 | **Health Check** | Matrix testing across 3 OS × 3 Python versions |
+| **Build** | Artifact building across 3 OS matrix |
 | **Release** | Automated version tagging and GitHub releases |
 | **Publish** | PyPI publishing with `uv publish` |
 | **Branch Protection** | Enforced reviews, status checks, and linear history |

@@ -38,20 +38,13 @@ class TestReleaseWorkflow:
         assert_with_msg(
             result["contents"] == "write", "Expected 'contents' to be 'write'"
         )
+        assert_with_msg("actions" in result, "Expected 'actions' in permissions")
+        assert_with_msg(result["actions"] == "read", "Expected 'actions' to be 'read'")
 
     def test_get_jobs(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
         """Test method for get_jobs."""
         result = my_test_release_workflow.get_jobs()
         assert_with_msg(len(result) > 0, "Expected jobs to be non-empty")
-
-    def test_job_build(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
-        """Test method for job_build."""
-        result = my_test_release_workflow.job_build()
-        assert_with_msg(len(result) == 1, "Expected job to have one key")
-        job_name = next(iter(result.keys()))
-        assert_with_msg("steps" in result[job_name], "Expected 'steps' in job")
-        assert_with_msg("strategy" in result[job_name], "Expected 'strategy' in job")
-        assert_with_msg("runs-on" in result[job_name], "Expected 'runs-on' in job")
 
     def test_job_release(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
         """Test method for job_release."""
@@ -59,12 +52,6 @@ class TestReleaseWorkflow:
         assert_with_msg(len(result) == 1, "Expected job to have one key")
         job_name = next(iter(result.keys()))
         assert_with_msg("steps" in result[job_name], "Expected 'steps' in job")
-        assert_with_msg("needs" in result[job_name], "Expected 'needs' in job")
-
-    def test_steps_build(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
-        """Test method for steps_build."""
-        result = my_test_release_workflow.steps_build()
-        assert_with_msg(len(result) > 0, "Expected steps to be non-empty")
 
     def test_steps_release(
         self, my_test_release_workflow: type[ReleaseWorkflow]
@@ -81,12 +68,6 @@ class TestReleaseWorkflow:
         assert_with_msg(
             test_workflow.is_correct(),
             "Expected workflow to be correct when empty",
-        )
-
-        loaded_config = test_workflow.load()
-        assert_with_msg(
-            loaded_config == ReleaseWorkflow.EMPTY_CONFIG,
-            "Expected empty workflow to have EMPTY_CONFIG after is_correct check",
         )
 
         proper_config = test_workflow.get_configs()

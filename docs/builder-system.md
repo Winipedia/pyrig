@@ -297,10 +297,10 @@ def build_artifacts() -> None:
 
 ### In CI/CD
 
-The release workflow automatically builds artifacts across all OS:
+The build workflow automatically builds artifacts across all OS:
 
 ```yaml
-# .github/workflows/release.yaml
+# .github/workflows/build.yaml
 jobs:
   build:
     strategy:
@@ -321,11 +321,11 @@ jobs:
         path: dist/*
 ```
 
-## Release Workflow Integration
+## Build Workflow Integration
 
 ### Build Job
 
-If builders are defined, the release workflow:
+If builders are defined, the build workflow:
 
 ```python
 @classmethod
@@ -343,7 +343,7 @@ def steps_build(cls) -> list[dict[str, Any]]:
 
 ### Release Job
 
-Artifacts are downloaded and attached to the GitHub release:
+The release workflow downloads artifacts from the build workflow and attaches them to the GitHub release:
 
 ```yaml
 - name: Download Artifacts
@@ -351,6 +351,8 @@ Artifacts are downloaded and attached to the GitHub release:
   with:
     path: dist
     merge-multiple: 'true'
+    run-id: ${{ github.event.workflow_run.id }}
+    github-token: ${{ secrets.GITHUB_TOKEN }}
 
 - name: Create Release
   uses: ncipollo/release-action@main
