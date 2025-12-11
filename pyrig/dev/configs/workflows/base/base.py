@@ -613,6 +613,7 @@ class Workflow(YamlConfigFile):
             )
         return [
             cls.step_checkout_repository(repo_token=repo_token),
+            cls.step_setup_git(),
             cls.step_setup_project_mgt(python_version=python_version),
         ]
 

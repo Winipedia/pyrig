@@ -22,8 +22,16 @@ jobs:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
+    - name: Setup Git
+      id: setup_git
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        && git config --global user.name "github-actions[bot]"
     - name: Setup Project Mgt
       id: setup_project_mgt
+      run: uv build
       uses: astral-sh/setup-uv@main
       with:
         python-version: '3.14'
