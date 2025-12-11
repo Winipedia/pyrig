@@ -7,7 +7,6 @@ successful health checks on main branch.
 
 from typing import Any
 
-from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.workflows.base.base import Workflow
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 
@@ -69,9 +68,6 @@ class BuildWorkflow(Workflow):
         Returns:
             List of build steps, or placeholder if no builders defined.
         """
-        non_abstract_builders = Builder.get_non_abstract_subclasses()
-        if not non_abstract_builders:
-            return [cls.step_no_builder_defined()]
         return [
             *cls.steps_core_matrix_setup(),
             cls.step_build_artifacts(),

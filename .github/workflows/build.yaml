@@ -27,6 +27,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-    - name: No Builder Defined
-      id: no_builder_defined
-      run: echo 'No non-abstract builders defined. Skipping build.'
+    - name: Opt Out Of Workflow
+      id: opt_out_of_workflow
+      run: echo 'Opting out of Build workflow.'
