@@ -240,17 +240,17 @@ def test_get_all_nonabstract_subclasses() -> None:
     )
 
     # Test with abstract class - should only find concrete implementations
-    subclasses = get_all_nonabstract_subclasses(AbstractParent)
+    subclasses2 = get_all_nonabstract_subclasses(AbstractParent)
 
     assert_with_msg(
-        ConcreteChild in subclasses,
-        f"Expected ConcreteChild in non-abstract subclasses, got {subclasses}",
+        ConcreteChild in subclasses2,
+        f"Expected ConcreteChild in non-abstract subclasses, got {subclasses2}",
     )
 
     assert_with_msg(
-        AnotherAbstractChild not in subclasses,
+        AnotherAbstractChild not in subclasses2,
         f"Expected AnotherAbstractChild NOT in non-abstract subclasses, "
-        f"got {subclasses}",
+        f"got {subclasses2}",
     )
 
 
