@@ -12,11 +12,12 @@
 [![coverage](https://img.shields.io/badge/coverage-90%25+-brightgreen.svg?logo=codecov&logoColor=white)](https://github.com/winipedia/pyrig)
 <!-- package-info -->
 [![PyPI](https://img.shields.io/pypi/v/pyrig?logo=pypi&logoColor=white)](https://pypi.org/project/pyrig/)
-[![Python](https://img.shields.io/pypi/pyversions/pyrig)](https://pypi.org/project/pyrig/)
+[![Python](https://img.shields.io/badge/python-3.12|3.13|3.14-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/github/license/Winipedia/pyrig)](https://github.com/Winipedia/pyrig/blob/main/LICENSE)
 <!-- ci/cd -->
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yaml?label=CI&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/health_check.yaml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yaml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yaml)
+
 
 ---
 

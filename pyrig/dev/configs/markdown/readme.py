@@ -100,6 +100,8 @@ class ReadmeConfigFile(MarkdownConfigFile):
         """
         repo_owner, repo_name = get_repo_owner_and_name_from_git(check_repo_url=False)
         project_name = PyprojectConfigFile.get_project_name()
+        python_versions = PyprojectConfigFile.get_supported_python_versions()
+        joined_python_versions = "|".join(str(v) for v in python_versions)
         return {
             "tooling": [
                 f"[![{pyrig.__name__}](https://img.shields.io/badge/built%20with-{pyrig.__name__}-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/{pyrig.__name__})",
@@ -115,7 +117,7 @@ class ReadmeConfigFile(MarkdownConfigFile):
             ],
             "package-info": [
                 f"[![PyPI](https://img.shields.io/pypi/v/{project_name}?logo=pypi&logoColor=white)](https://pypi.org/project/{project_name}/)",
-                f"[![Python](https://img.shields.io/pypi/pyversions/{project_name})](https://pypi.org/project/{project_name}/)",
+                f"[![Python](https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white)](https://www.python.org/)",
                 f"[![License](https://img.shields.io/github/license/{repo_owner}/{repo_name})](https://github.com/{repo_owner}/{repo_name}/blob/main/LICENSE)",
             ],
             "ci/cd": [
