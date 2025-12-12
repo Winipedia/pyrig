@@ -76,6 +76,7 @@ jobs:
       with:
         files: coverage.xml
         fail_ci_if_error: 'true'
+        token: ${{ secrets.REPO_TOKEN }}
   health_check:
     needs:
     - health_check_matrix
