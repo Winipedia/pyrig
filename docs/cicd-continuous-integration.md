@@ -147,6 +147,8 @@ Each matrix job executes these steps:
 9. **Run Tests** — Execute `uv run pytest --log-cli-level=INFO --cov-report=xml`
 10. **Upload Coverage Report** — Upload coverage to Codecov with `codecov/codecov-action`
 
+> **Note:** The coverage upload step is optional and will not fail the workflow if unsuccessful. You need a Codecov account even for public repositories to upload without a token. For private repositories, you need a [Codecov](https://codecov.io) token account and must add a `CODECOV_TOKEN` to your repository secrets and add it to the with clause of the step.
+
 ### Aggregation Job
 
 After all matrix jobs complete, an aggregation job runs to provide a single status check:
@@ -401,7 +403,7 @@ The `Workflow` class provides pre-built steps:
 | `step_setup_project_mgt()` | Setup uv with astral-sh/setup-uv |
 | `step_install_python_dependencies()` | Run `uv sync` |
 | `step_run_tests()` | Run `uv run pytest --cov-report=xml` |
-| `step_upload_coverage_report()` | Upload coverage to Codecov |
+| `step_upload_coverage_report()` | Upload coverage to Codecov (optional, won't fail CI) |
 | `step_run_pre_commit_hooks()` | Run `uv run pre-commit run --all-files` |
 | `step_protect_repository()` | Run `uv run pyrig protect-repo` |
 | `step_build_wheel()` | Run `uv build` |

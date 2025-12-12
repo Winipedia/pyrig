@@ -769,6 +769,9 @@ class Workflow(YamlConfigFile):
 
         If the repository is private, the workflow will fail and
         a Codecov token has to be added to the repository secrets.
+        You need an account on Codecov for this.
+        This is why we fail_ci_if_error is not set to true.
+        This is an optional service and should not break the workflow.
 
         Args:
             step: Existing step dict to update.
@@ -781,7 +784,6 @@ class Workflow(YamlConfigFile):
             uses="codecov/codecov-action@main",
             with_={
                 "files": "coverage.xml",
-                "fail_ci_if_error": "true",
             },
             step=step,
         )
