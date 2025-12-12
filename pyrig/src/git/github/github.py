@@ -162,16 +162,15 @@ def get_repo_owner_and_name_from_git(*, check_repo_url: bool = True) -> tuple[st
     return owner, repo
 
 
-def git_has_unstaged_changes() -> bool:
+def get_git_unstaged_changes() -> str:
     """Check if the git repository has uncommitted changes.
 
     Returns:
-        True if there are uncommitted changes, False otherwise.
+        The output of git diff
     """
-    return (
-        run_subprocess(["git", "diff-index", "--quiet", "HEAD"], check=False).returncode
-        != 0
-    )
+    completed_process = run_subprocess(["git", "diff"])
+    unstaged_changes: str = completed_process.stdout.decode("utf-8")
+    return unstaged_changes
 
 
 def git_add_file(path: Path, *, check: bool = True) -> CompletedProcess[bytes]:
