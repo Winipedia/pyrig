@@ -139,12 +139,12 @@ def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
     return sorted(classes, key=get_def_line)
 
 
-def get_all_subclasses(
-    cls: type,
+def get_all_subclasses[T: type](
+    cls: T,
     load_package_before: ModuleType | None = None,
     *,
     discard_parents: bool = False,
-) -> set[type]:
+) -> set[T]:
     """Recursively discover all subclasses of a class.
 
     Finds all direct and indirect subclasses of the given class. Because
@@ -181,7 +181,7 @@ def get_all_subclasses(
 
     if load_package_before:
         _ = list(walk_package(load_package_before))
-    subclasses_set = {cls}
+    subclasses_set: set[T] = {cls}
     subclasses_set.update(cls.__subclasses__())
     for subclass in cls.__subclasses__():
         subclasses_set.update(get_all_subclasses(subclass))
@@ -197,12 +197,12 @@ def get_all_subclasses(
     return subclasses_set
 
 
-def get_all_nonabstract_subclasses(
-    cls: type,
+def get_all_nonabstract_subclasses[T: type](
+    cls: T,
     load_package_before: ModuleType | None = None,
     *,
     discard_parents: bool = False,
-) -> set[type]:
+) -> set[T]:
     """Find all concrete (non-abstract) subclasses of a class.
 
     Similar to `get_all_subclasses`, but filters out abstract classes
@@ -241,8 +241,8 @@ def get_all_nonabstract_subclasses(
     }
 
 
-def init_all_nonabstract_subclasses(
-    cls: type,
+def init_all_nonabstract_subclasses[T: type](
+    cls: T,
     load_package_before: ModuleType | None = None,
     *,
     discard_parents: bool = False,
@@ -271,13 +271,13 @@ def init_all_nonabstract_subclasses(
         subclass()
 
 
-def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
-    cls: type,
+def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
+    cls: T,
     dep: ModuleType,
     load_package_before: ModuleType,
     *,
     discard_parents: bool = False,
-) -> list[type]:
+) -> list[T]:
     """Find non-abstract subclasses across all packages depending on a dependency.
 
     This is the core discovery function for pyrig's multi-package architecture.
@@ -315,7 +315,7 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
         get_same_modules_from_deps_depen_on_dep,
     )
 
-    subclasses: list[type] = []
+    subclasses: list[T] = []
     for pkg in get_same_modules_from_deps_depen_on_dep(load_package_before, dep):
         subclasses.extend(
             get_all_nonabstract_subclasses(
@@ -331,14 +331,16 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
 
 
 @overload
-def discard_parent_classes(classes: list[type]) -> list[type]: ...
+def discard_parent_classes[T: type](classes: list[T]) -> list[T]: ...
 
 
 @overload
-def discard_parent_classes(classes: set[type]) -> set[type]: ...
+def discard_parent_classes[T: type](classes: set[T]) -> set[T]: ...
 
 
-def discard_parent_classes(classes: list[type] | set[type]) -> list[type] | set[type]:
+def discard_parent_classes[T: type](
+    classes: list[T] | set[T],
+) -> list[T] | set[T]:
     """Remove parent classes when their children are also present.
 
     Filters a collection of classes to keep only "leaf" classes - those
