@@ -301,9 +301,8 @@ acme_pyrig/
         ├── configs/
         │   ├── internal_lint.py    # Company linting config
         │   └── security.py         # Security scanning config
-        ├── artifacts/
-        │   └── builders/
-        │       └── compliance.py   # Compliance artifact builder
+        ├── builders/
+        │   └── compliance.py       # Compliance artifact builder
         └── tests/
             └── fixtures/
                 └── company.py      # Company-wide test fixtures
