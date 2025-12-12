@@ -348,7 +348,7 @@ def import_obj_from_importpath(
             raise
         module_name, obj_name = importpath.rsplit(".", 1)
         module = import_module(module_name)
-        obj: Callable[..., Any] | type | ModuleType = getattr(module, obj_name)
+        obj: Callable[..., Any] | type = getattr(module, obj_name)
         return obj
 
 

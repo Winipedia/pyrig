@@ -50,7 +50,7 @@ def split_on_uppercase(string: str) -> list[str]:
 
 
 def make_name_from_obj(
-    package: ModuleType | Callable[..., Any] | type | str,
+    obj: ModuleType | Callable[..., Any] | type | str,
     split_on: str = "_",
     join_on: str = "-",
     *,
@@ -63,7 +63,7 @@ def make_name_from_obj(
     labels, or documentation titles from function/class/module names.
 
     Args:
-        package: The object to extract a name from. Can be a module, callable,
+        obj: The object to extract a name from. Can be a module, callable,
             class, or string. For non-string objects, uses the last component
             of `__name__` (e.g., "my_module" from "package.my_module").
         split_on: Character(s) to split the name on. Defaults to underscore
@@ -86,11 +86,15 @@ def make_name_from_obj(
         >>> make_name_from_obj(os.path)
         'Path'
     """
-    if not isinstance(package, str):
-        package_name = package.__name__.split(".")[-1]
+    if not isinstance(obj, str):
+        name = getattr(obj, "__name__", "")
+        if not name:
+            msg = f"Cannot extract name from {obj}"
+            raise ValueError(msg)
+        obj_name: str = name.split(".")[-1]
     else:
-        package_name = package
-    parts = package_name.split(split_on)
+        obj_name = obj
+    parts = obj_name.split(split_on)
     if capitalize:
         parts = [part.capitalize() for part in parts]
     return join_on.join(parts)

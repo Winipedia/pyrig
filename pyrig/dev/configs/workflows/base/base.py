@@ -263,7 +263,10 @@ class Workflow(YamlConfigFile):
         Returns:
             Function name with prefix removed.
         """
-        name = func.__name__
+        name = getattr(func, "__name__", "")
+        if not name:
+            msg = f"Cannot extract name from {func}"
+            raise ValueError(msg)
         prefix = name.split("_")[0]
         return name.removeprefix(f"{prefix}_")
 

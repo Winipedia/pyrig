@@ -144,6 +144,11 @@ Each matrix job executes these steps:
 6. **Add Dependency Updates To Git** — Stage changes with `git add pyproject.toml uv.lock`
 7. **Protect Repository** — Apply branch protection rules (requires `REPO_TOKEN`)
 8. **Run Pre Commit Hooks** — Execute `uv run pre-commit run --all-files`
+   - Lint code with ruff
+   - Format code with ruff
+   - Check types with ty
+   - Check static types with mypy
+   - Check security with bandit
 9. **Run Tests** — Execute `uv run pytest --log-cli-level=INFO --cov-report=xml`
 10. **Upload Coverage Report** — Upload coverage to Codecov with `codecov/codecov-action`
 
@@ -408,6 +413,17 @@ The `Workflow` class provides pre-built steps:
 | `step_protect_repository()` | Run `uv run pyrig protect-repo` |
 | `step_build_wheel()` | Run `uv build` |
 | `step_publish_to_pypi()` | Run `uv publish` |
+
+### Type Checking Strategy
+
+pyrig uses a dual type checking approach:
+
+- **ty** — A modern, fast type checker that provides quick feedback
+- **mypy** — The established standard for Python type checking (strict mode)
+
+Both type checkers run as part of the pre-commit hooks in CI. This ensures maximum type safety and helps catch different categories of type errors.
+
+> **Future Direction:** We plan to transition to using only `ty` once it matures further. For now, both type checkers are maintained to provide comprehensive type coverage during `ty`'s early development phase.
 
 ## Customizing Workflows
 

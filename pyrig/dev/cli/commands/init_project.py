@@ -35,6 +35,7 @@ from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import (
     get_project_mgt_run_pyrig_cli_cmd_args,
 )
+from pyrig.src.string import make_name_from_obj
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +106,7 @@ def init_project() -> None:
     # for init set log level to info
     logging.basicConfig(level=logging.INFO)
     for step in SETUP_STEPS:
-        logger.info("Running setup step: %s", step.__name__)
+        step_name = make_name_from_obj(step, join_on=" ")
+        logger.info("Running setup step: %s", step_name)
         step()
     logger.info("Setup complete!")

@@ -40,6 +40,7 @@ dev = [
     "pytest-cov",
     "pytest-mock",
     "ruff",
+    "ty",
     "types-defusedxml",
     "types-pyinstaller",
     "types-pyyaml",

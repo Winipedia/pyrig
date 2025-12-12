@@ -6,6 +6,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
 <!-- code-quality -->
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![ty](https://img.shields.io/badge/type%20checked-ty-1674b1.svg)](https://github.com/leontrolski/ty)
 [![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
@@ -40,12 +41,14 @@ uv run pyrig init
 pyrig eliminates the repetitive setup work involved in starting Python projects. A single command generates a complete project structure with pre-configured tooling:
 
 - **Linting and formatting** with ruff (all rules enabled)
-- **Static type checking** with mypy (strict mode)
+- **Static type checking** with ty and mypy (strict mode)
 - **Security scanning** with bandit
 - **Test infrastructure** with pytest and coverage enforcement
 - **Pre-commit hooks** for automated quality checks
 - **GitHub Actions workflows** for CI/CD
 - **Branch protection** via GitHub rulesets
+
+> **Note on Type Checking:** pyrig currently uses both `ty` (a modern, fast type checker) and `mypy` (the established standard). In the future, we plan to transition to using only `ty` once it matures further. For now, both type checkers run in pre-commit hooks and CI to ensure maximum type safety.
 
 The generated configuration stays synchronized automatically. When you run tests, pyrig validates that all config files match expected values and generates test skeletons for any untested code.
 
@@ -108,7 +111,7 @@ pyrig discovers these extensions automatically by traversing the dependency grap
 Four GitHub Actions workflows are generated:
 
 1. **Health Check** — Runs on every push and PR
-   - Executes pre-commit hooks (ruff, mypy, bandit)
+   - Executes pre-commit hooks (ruff, ty, mypy, bandit)
    - Runs the full test suite
    - Tests across a matrix of 3 OS × 3 Python versions
    - Uploads coverage reports to Codecov

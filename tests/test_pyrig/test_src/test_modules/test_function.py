@@ -182,11 +182,11 @@ def test_get_all_functions_from_module() -> None:
     for func in functions:
         assert_with_msg(
             callable(func),
-            f"Expected function {func.__name__} to be callable",
+            f"Expected function {func} to be callable",
         )
 
     # Verify functions have __name__ attribute
-    function_names = [func.__name__ for func in functions]
+    function_names = [getattr(func, "__name__", None) for func in functions]
     expected_functions = [
         "is_func_or_method",
         "is_func",
@@ -222,7 +222,7 @@ def test_get_all_functions_from_module() -> None:
     for func in functions:
         assert_with_msg(
             callable(func),
-            f"Expected function {func.__name__} to be callable",
+            f"Expected function {func} to be callable",
         )
 
 

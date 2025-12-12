@@ -24,7 +24,7 @@ Attributes:
 
 from collections.abc import Callable, Iterable
 from types import ModuleType
-from typing import Any
+from typing import Any, overload
 
 from pyrig.src.modules.module import (
     get_isolated_obj_name,
@@ -136,6 +136,18 @@ def make_obj_importpath_from_test_obj(
     test_parts = test_parts[1:]
     parts = [reverse_make_test_obj_name(part) for part in test_parts]
     return ".".join(parts)
+
+
+@overload
+def get_test_obj_from_obj(obj: type) -> type: ...
+
+
+@overload
+def get_test_obj_from_obj(obj: Callable[..., Any]) -> Callable[..., Any]: ...
+
+
+@overload
+def get_test_obj_from_obj(obj: ModuleType) -> ModuleType: ...
 
 
 def get_test_obj_from_obj(

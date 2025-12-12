@@ -101,6 +101,10 @@ class PreCommitConfigConfigFile(YamlConfigFile):
                 ["ruff", "format"],
             ),
             cls.get_hook(
+                "check-types",
+                ["ty", "check"],
+            ),
+            cls.get_hook(
                 "check-static-types",
                 ["mypy", "--exclude-gitignore"],
             ),
