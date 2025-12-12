@@ -1,6 +1,7 @@
 """tests for pyrig.src.git.github.github module."""
 
 import os
+from pathlib import Path
 
 import pyrig
 from pyrig.src.git.github.github import (
@@ -8,6 +9,8 @@ from pyrig.src.git.github.github import (
     get_github_repo_token,
     get_repo_owner_and_name_from_git,
     get_repo_url_from_git,
+    git_add_file,
+    git_has_unstaged_changes,
     running_in_github_actions,
 )
 from pyrig.src.testing.assertions import assert_with_msg
@@ -77,3 +80,20 @@ def test_get_git_username() -> None:
         f"Expected username to be str, got {type(username)}"
     )
     assert len(username) > 0, "Expected username to be non-empty"
+
+
+def test_git_has_unstaged_changes() -> None:
+    """Test function."""
+    assert isinstance(git_has_unstaged_changes(), bool), (
+        "Expected git_has_unstaged_changes to return bool"
+    )
+
+
+def test_git_add_file() -> None:
+    """Test function."""
+    no_file = Path("non_existent_file.txt")
+    assert not no_file.exists(), "Expected file not to exist"
+    completed_process = git_add_file(no_file, check=False)
+    stderr = completed_process.stderr.decode("utf-8")
+    assert "fatal: pathspec 'non_existent_file.txt' did not match any files" in stderr
+    assert not no_file.exists(), "Expected file not to exist after git add"

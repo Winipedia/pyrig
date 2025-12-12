@@ -20,6 +20,57 @@ These fixtures run automatically — no configuration required. When they detect
 
 Session fixtures run once at the beginning of the test session. They validate project-wide settings.
 
+### `assert_no_unstaged_changes`
+
+**Purpose:** Ensures there are no uncommitted changes before and after the test session (GitHub Actions only).
+
+**What it checks:**
+- Before tests: Verifies no unstaged changes exist in the git repository
+- After tests: Verifies no unstaged changes were introduced during the test session
+- Only runs when `running_in_github_actions()` returns `True`
+
+**Auto-fix behavior:** None — fails immediately if unstaged changes are detected.
+
+**Example errors:**
+```
+AssertionError: Found unstaged changes before test session. Please commit or stash them.
+```
+```
+AssertionError: Found unstaged changes after test session. Please commit or stash them.
+```
+
+**Why this matters:**
+- Prevents accidental uncommitted changes in CI pipelines
+- Ensures test runs don't modify files without committing them
+- Catches auto-generated files that should be committed (e.g., updated resource files)
+- Maintains clean git history in automated workflows
+
+**How to fix:**
+- Before tests: Commit or stash any uncommitted changes
+- After tests: Investigate what files were modified during the test run and commit them if appropriate
+
+**Implementation:**
+```python
+@autouse_session_fixture
+def assert_no_unstaged_changes() -> Generator[None, None, None]:
+    """Verify that there are no unstaged changes."""
+    in_github_actions = running_in_github_actions()
+
+    if in_github_actions:
+        assert_with_msg(
+            not git_has_unstaged_changes(),
+            "Found unstaged changes before test session. Please commit or stash them.",
+        )
+    yield
+    if in_github_actions:
+        assert_with_msg(
+            not git_has_unstaged_changes(),
+            "Found unstaged changes after test session. Please commit or stash them.",
+        )
+```
+
+---
+
 ### `assert_root_is_correct`
 
 **Purpose:** Validates that all ConfigFile settings match the expected state.
@@ -454,6 +505,7 @@ The fixtures execute in a specific order based on scope:
 Test Session Start
 │
 ├── Session Fixtures (run once)
+│   ├── assert_no_unstaged_changes (before tests, GitHub Actions only)
 │   ├── assert_root_is_correct
 │   ├── assert_no_namespace_packages
 │   ├── assert_all_src_code_in_one_package
@@ -474,6 +526,7 @@ Test Session Start
 │       └── Test Methods Execute
 │
 └── Test Session End
+    └── assert_no_unstaged_changes (after tests, GitHub Actions only)
 ```
 
 ---
@@ -636,6 +689,7 @@ pyrig's autouse fixtures provide automatic quality gates:
 
 | Fixture | Scope | Auto-Fix | Purpose |
 |---------|-------|----------|---------|
+| `assert_no_unstaged_changes` | Session | No | No uncommitted changes (GitHub Actions only) |
 | `assert_root_is_correct` | Session | Yes | Config files match expected state |
 | `assert_no_namespace_packages` | Session | Yes | All packages have `__init__.py` |
 | `assert_all_src_code_in_one_package` | Session | No | Single source package structure |

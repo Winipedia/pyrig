@@ -350,6 +350,9 @@ class ConfigFile(ABC):
         from pyrig.dev.configs.git.gitignore import (  # noqa: PLC0415
             GitIgnoreConfigFile,
         )
+        from pyrig.dev.configs.licence import (  # noqa: PLC0415
+            LicenceConfigFile,
+        )
         from pyrig.dev.configs.pyproject import (  # noqa: PLC0415
             PyprojectConfigFile,
         )
@@ -369,6 +372,7 @@ class ConfigFile(ABC):
         return [
             GitIgnoreConfigFile,
             PyprojectConfigFile,
+            LicenceConfigFile,
             MainConfigFile,
             ConfigsInitConfigFile,
             BuildersInitConfigFile,
@@ -456,10 +460,20 @@ class TomlConfigFile(ConfigFile):
 
         for key, value in config.items():
             if isinstance(value, list):
-                arr = tomlkit.array().multiline(multiline=True)
-                for item in value:
-                    arr.append(item)
-                t.add(key, arr)
+                # Check if all items are dicts - use inline tables for those
+                if value and all(isinstance(item, dict) for item in value):
+                    arr = tomlkit.array()
+                    for item in value:
+                        inline_table = tomlkit.inline_table()
+                        inline_table.update(item)
+                        arr.append(inline_table)
+                    t.add(key, arr)
+                else:
+                    # For non-dict items, use multiline arrays
+                    arr = tomlkit.array().multiline(multiline=True)
+                    for item in value:
+                        arr.append(item)
+                    t.add(key, arr)
 
             elif isinstance(value, dict):
                 t.add(key, cls.prettify_dict(value))

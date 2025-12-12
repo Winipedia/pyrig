@@ -18,6 +18,7 @@ dependencies = [
     "pygithub",
     "pyyaml",
     "setuptools",
+    "tenacity",
     "tomlkit",
     "typer",
 ]

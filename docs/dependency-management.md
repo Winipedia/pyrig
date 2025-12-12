@@ -52,6 +52,18 @@ dependencies = [
     # Note: No version specifiers
 ]
 
+# pyrig's own runtime dependencies include:
+# - dotenv: Environment variable management
+# - packaging: Version parsing and comparison
+# - pathspec: .gitignore pattern matching
+# - pillow: Image processing for icons
+# - pygithub: GitHub API integration
+# - pyyaml: YAML file handling
+# - setuptools: Package building utilities
+# - tenacity: Retry and exponential backoff for network resilience
+# - tomlkit: TOML file handling with formatting preservation
+# - typer: CLI framework
+
 [project.scripts]
 your-project = "your_project.dev.cli.cli:main"
 
@@ -175,6 +187,7 @@ def get_standard_dev_dependencies(cls) -> list[str]:
         "mypy",         # Type checking (strict mode)
         "pre-commit",   # Git hooks
         "pytest",       # Testing
+        "pytest-cov",   # Test coverage
         "pytest-mock",  # Test mocking
         "ruff",         # Linting and formatting
         "ty",           # Type checking (modern, fast)
@@ -387,19 +400,33 @@ versions = constraint.get_version_range(level="minor")
 
 ### Fetching Latest Python Version
 
-pyrig can fetch the latest stable Python version:
+pyrig can fetch the latest stable Python version from the endoflife.date API:
 
 ```python
 @classmethod
+@return_resource_content_on_fetch_error(resource_name="LATEST_PYTHON_VERSION")
 @cache
-def fetch_latest_python_version(cls) -> Version:
-    """Fetch the latest stable Python version from endoflife.date."""
+def fetch_latest_python_version(cls) -> str:
+    """Fetch the latest stable Python version from endoflife.date.
+
+    Falls back to local resource file if fetch fails.
+    """
     url = "https://endoflife.date/api/python.json"
     resp = requests.get(url, timeout=10)
     resp.raise_for_status()
     data = resp.json()
-    return Version(data[0]["latest"])
+    return data[0]["latest"]
+
+@classmethod
+def get_latest_python_version(
+    cls, level: Literal["major", "minor", "micro"] = "minor"
+) -> Version:
+    """Get the latest stable Python version as a Version object."""
+    latest_version = Version(cls.fetch_latest_python_version())
+    return adjust_version_to_level(latest_version, level)
 ```
+
+The `@return_resource_content_on_fetch_error` decorator ensures that if the API is unavailable, pyrig falls back to a cached version stored in `pyrig/resources/LATEST_PYTHON_VERSION`. This provides offline capability and resilience to network failures.
 
 ## Project Initialization
 

@@ -73,18 +73,26 @@ def commit_initial_changes() -> None:
     )
 
 
+def run_all_hooks() -> None:
+    """Run all pre-commit hooks.
+
+    This runs all pre-commit hooks to ensure the codebase is
+    in a clean, linted, and formatted state.
+    """
+    PreCommitConfigConfigFile.run_hooks(add_before_commit=True)
+
+
 SETUP_STEPS: list[Callable[..., Any]] = [
     ConfigFile.init_priority_config_files,  # write dev deps to pyproject.toml
     PyprojectConfigFile.install_dependencies,  # to install dev deps
     PyprojectConfigFile.update_dependencies,  # to update dev deps
     run_create_root,
     run_create_tests,
-    PreCommitConfigConfigFile.run_hooks,
+    run_all_hooks,
     ConftestConfigFile.run_tests,
     PyprojectConfigFile.install_dependencies,  # to activate cli
     commit_initial_changes,
 ]
-"""Ordered list of setup steps executed during project initialization."""
 
 
 def init_project() -> None:

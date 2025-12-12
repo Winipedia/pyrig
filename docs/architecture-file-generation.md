@@ -19,7 +19,7 @@ your-project/
 ├── .python-version                # Python version for pyenv
 ├── docs/
 │   └── index.md                   # Documentation index
-├── LICENSE                        # License file (user fills in)
+├── LICENSE                        # MIT License (auto-generated with year and owner)
 ├── README.md                      # Project readme with header
 ├── pyproject.toml                 # Central project configuration
 │
@@ -114,10 +114,11 @@ These files must exist before other config files can be created:
 
 1. **GitIgnoreConfigFile** — Creates `.gitignore` so other files know what to exclude
 2. **PyprojectConfigFile** — Creates `pyproject.toml` with project metadata needed by other configs
-3. **MainConfigFile** — Creates `main.py` entry point
-4. **ConfigsInitConfigFile** — Creates `dev/configs/__init__.py` for custom configs
-5. **BuildersInitConfigFile** — Creates `dev/builders/__init__.py` for custom builders
-6. **ZeroTestConfigFile** — Creates `test_zero.py` so pytest has at least one test
+3. **LicenceConfigFile** — Creates `LICENSE` with MIT license template (auto-populated with year and repo owner)
+4. **MainConfigFile** — Creates `main.py` entry point
+5. **ConfigsInitConfigFile** — Creates `dev/configs/__init__.py` for custom configs
+6. **BuildersInitConfigFile** — Creates `dev/builders/__init__.py` for custom builders
+7. **ZeroTestConfigFile** — Creates `test_zero.py` so pytest has at least one test
 
 ### Ordered Files (Second)
 
@@ -239,7 +240,7 @@ Also pyrig just inits the most recent leave of a class tree. So pyrigs own `Heal
 | `.env` | `DotEnvConfigFile` | Environment variables (gitignored) |
 | `.experiment.py` | `DotExperimentConfigFile` | Local experimentation file (gitignored) |
 | `pyproject.toml` | `PyprojectConfigFile` | Central project configuration (dependencies, tools, metadata) |
-| `LICENSE` | `LicenceConfigFile` | License file with placeholder for user to fill |
+| `LICENSE` | `LicenceConfigFile` | MIT License auto-generated with current year and repository owner |
 | `README.md` | `ReadmeConfigFile` | Project readme with header |
 | `docs/index.md` | `IndexConfigFile` | Documentation index |
 
@@ -311,6 +312,50 @@ class MyCustomConfigFile(YamlConfigFile):
 ```
 
 The next time `pyrig init` or `pyrig mkroot` runs, your custom config file will be automatically discovered and created.
+
+## Network Resilience and Offline Capability
+
+Pyrig fetches certain resources from the internet during initialization (e.g., GitHub's Python .gitignore template, MIT license text, latest Python version). To ensure pyrig works reliably even without internet access or when external services are unavailable, it implements a **resource fallback system**.
+
+### How It Works
+
+1. **Decorator-based retry**: Functions that fetch remote resources are decorated with `@return_resource_content_on_fetch_error(resource_name)`
+2. **Automatic fallback**: If a network request fails (timeout, connection error, HTTP error), the decorator catches the exception and returns content from a local resource file
+3. **Auto-update mechanism**: When running in pyrig itself (not a dependent package), successful fetches automatically update the resource files with fresh content
+
+### Resource Files
+
+Pyrig includes the following fallback resource files in `pyrig/resources/`:
+
+| Resource File | Purpose | Fetched From |
+|---------------|---------|--------------|
+| `GITIGNORE` | GitHub's standard Python .gitignore template | `https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore` |
+| `MIT_LICENSE_TEMPLATE` | MIT license template with `[year]` and `[fullname]` placeholders | `https://api.github.com/licenses/mit` |
+| `LATEST_PYTHON_VERSION` | Latest stable Python version | `https://endoflife.date/api/python.json` |
+
+### Example Usage
+
+```python
+from pyrig.src.decorators import return_resource_content_on_fetch_error
+
+@return_resource_content_on_fetch_error(resource_name="GITIGNORE")
+def get_github_python_gitignore_as_str(cls) -> str:
+    """Fetch GitHub's standard Python gitignore patterns.
+
+    Falls back to local resource file if fetch fails.
+    """
+    url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
+    res = requests.get(url, timeout=10)
+    res.raise_for_status()
+    return res.text
+```
+
+### Benefits
+
+- **Offline initialization**: Projects can be initialized without internet access
+- **Resilience to service outages**: GitHub API or other services being down won't break pyrig
+- **Always up-to-date**: When online, pyrig fetches the latest versions and updates its resource files
+- **Consistent behavior**: Fallback resources ensure predictable behavior across environments
 
 ## Key Design Decisions
 
