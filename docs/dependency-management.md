@@ -63,6 +63,7 @@ dev = [
     "pytest",
     "pytest-mock",
     "ruff",
+    "ty",
     # Type stubs and other dev tools
 ]
 
@@ -171,11 +172,12 @@ pyrig automatically includes standard development dependencies:
 def get_standard_dev_dependencies(cls) -> list[str]:
     return sorted([
         "bandit",       # Security scanning
-        "mypy",         # Type checking
+        "mypy",         # Type checking (strict mode)
         "pre-commit",   # Git hooks
         "pytest",       # Testing
         "pytest-mock",  # Test mocking
         "ruff",         # Linting and formatting
+        "ty",           # Type checking (modern, fast)
         "pyinstaller",  # Executable building
         # Type stubs
         "types-defusedxml",
@@ -187,6 +189,17 @@ def get_standard_dev_dependencies(cls) -> list[str]:
 ```
 
 These are placed in `[dependency-groups].dev` and installed with `uv sync`.
+
+### Type Checking Tools
+
+pyrig includes two type checkers:
+
+- **ty** — A modern, fast type checker that provides quick feedback during development
+- **mypy** — The established standard for Python type checking, configured in strict mode
+
+Both run as part of pre-commit hooks and CI. This dual approach ensures comprehensive type coverage while `ty` continues to mature.
+
+> **Note:** In the future, pyrig plans to transition to using only `ty` once it reaches a more mature state. For now, both type checkers are maintained to provide maximum type safety.
 
 ## Version Bumping
 

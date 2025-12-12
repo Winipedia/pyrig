@@ -67,7 +67,7 @@ def config_file_factory[T: ConfigFile](
                 path = super().get_path()
                 return Path(tmp_path / path)
 
-        return TestConfigFile
+        return TestConfigFile  # ty:ignore[invalid-return-type]
 
     return _make_test_config
 
@@ -113,6 +113,6 @@ def builder_factory[T: Builder](tmp_path: Path) -> Callable[[type[T]], type[T]]:
                 """
                 return Path(tmp_path / cls.ARTIFACTS_DIR_NAME)
 
-        return TestBuilder
+        return TestBuilder  # ty:ignore[invalid-return-type]
 
     return _make_test_builder

@@ -327,7 +327,7 @@ def test_import_obj_from_importpath() -> None:
     result = import_obj_from_importpath("sys")
 
     assert_with_msg(
-        result.__name__ == "sys" and hasattr(result, "path"),
+        result == sys and hasattr(result, "path"),
         f"Expected sys module, got {result}",
     )
 
@@ -439,7 +439,7 @@ class TestClass2:
         class_objs = get_objs_from_obj(test_objs_module.TestClass1)
 
         # Should contain at least the method1
-        method_names = [obj.__name__ for obj in class_objs]
+        method_names = [getattr(obj, "__name__", None) for obj in class_objs]
         assert_with_msg(
             "method1" in method_names,
             f"Expected 'method1' in class methods, got {method_names}",

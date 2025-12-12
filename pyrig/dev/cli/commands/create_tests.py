@@ -7,7 +7,6 @@ NotImplementedError to indicate tests that need to be written.
 """
 
 from types import ModuleType
-from typing import cast
 
 from pyrig.src.modules.class_ import (
     get_all_cls_from_module,
@@ -101,7 +100,7 @@ def get_test_module_content(module: ModuleType) -> str:
     3. Adds test classes for all classes in the source module
 
     """
-    test_module = cast("ModuleType", (get_test_obj_from_obj(module)))
+    test_module = get_test_obj_from_obj(module)
     test_module_content = get_module_content_as_str(test_module)
 
     test_module_content = get_test_functions_content(

@@ -234,7 +234,7 @@ Also pyrig just inits the most recent leave of a class tree. So pyrigs own `Heal
 | File | Class | Purpose |
 |------|-------|---------|
 | `.gitignore` | `GitIgnoreConfigFile` | Git ignore patterns for Python projects, virtual environments, build artifacts |
-| `.pre-commit-config.yaml` | `PreCommitConfigConfigFile` | Pre-commit hooks for ruff, mypy, and bandit |
+| `.pre-commit-config.yaml` | `PreCommitConfigConfigFile` | Pre-commit hooks for ruff, ty, mypy, and bandit |
 | `.python-version` | `DotPythonVersionConfigFile` | Python version for pyenv and uv |
 | `.env` | `DotEnvConfigFile` | Environment variables (gitignored) |
 | `.experiment.py` | `DotExperimentConfigFile` | Local experimentation file (gitignored) |

@@ -27,6 +27,7 @@ pyrig's security model includes:
   │   Pre-commit Hooks  │
   │  • Ruff linting     │
   │  • Ruff formatting  │
+  │  • Ty type check    │
   │  • Mypy type check  │
   │  • Bandit security  │◄── Security scan before commit
   └─────────────────────┘
@@ -321,6 +322,13 @@ repos:
     always_run: true
     pass_filenames: false
 
+  - id: check-types
+    name: check-types
+    entry: ty check
+    language: system
+    always_run: true
+    pass_filenames: false
+
   - id: check-static-types
     name: check-static-types
     entry: mypy --exclude-gitignore
@@ -496,7 +504,7 @@ def get_default_ruleset_params() -> dict[str, Any]:
 |-----------------|----------------|-------------|
 | **Static Analysis** | Bandit in pyproject.toml | Pre-commit + CI |
 | **Code Quality** | Ruff linting and formatting | Pre-commit + CI |
-| **Type Safety** | Mypy strict mode | Pre-commit + CI |
+| **Type Safety** | Ty and Mypy (strict mode) | Pre-commit + CI |
 | **Code Review** | GitHub PR requirements | Branch ruleset |
 | **Signed Commits** | GPG signature verification | Branch ruleset |
 | **Status Checks** | Health check workflow | Branch ruleset |

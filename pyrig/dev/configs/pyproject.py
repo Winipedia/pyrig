@@ -316,6 +316,7 @@ class PyprojectConfigFile(TomlConfigFile):
             "pytest-mock",
             "pytest-cov",
             "ruff",
+            "ty",
             "types-defusedxml",
             "types-pyinstaller",
             "types-pyyaml",

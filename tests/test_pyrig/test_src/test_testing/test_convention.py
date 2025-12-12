@@ -7,6 +7,7 @@ import sys
 
 import pytest
 
+from pyrig.src.modules.module import import_module_from_path
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TEST_CLASS_PREFIX,
@@ -20,6 +21,9 @@ from pyrig.src.testing.convention import (
     make_test_obj_importpath_from_obj,
     make_test_obj_name,
     reverse_make_test_obj_name,
+)
+from tests.test_pyrig.test_src.test_modules.test_module import (
+    test_import_module_from_path,
 )
 
 
@@ -161,10 +165,10 @@ def test_make_obj_importpath_from_test_obj() -> None:
 
 def test_get_test_obj_from_obj() -> None:
     """Test func for get_test_obj_from_obj."""
-    test_obj = get_test_obj_from_obj(get_test_obj_from_obj)
-    expected = test_get_test_obj_from_obj
+    test_obj = get_test_obj_from_obj(import_module_from_path)
+    expected = test_import_module_from_path
     assert_with_msg(
-        test_obj.__name__ == expected.__name__,
+        test_obj == expected,
         f"Expected '{expected}', got {test_obj}",
     )
 
