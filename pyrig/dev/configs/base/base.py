@@ -462,7 +462,7 @@ class TomlConfigFile(ConfigFile):
             if isinstance(value, list):
                 # Check if all items are dicts - use inline tables for those
                 if value and all(isinstance(item, dict) for item in value):
-                    arr = tomlkit.array()
+                    arr = tomlkit.array().multiline(multiline=True)
                     for item in value:
                         inline_table = tomlkit.inline_table()
                         inline_table.update(item)
