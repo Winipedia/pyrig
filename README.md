@@ -61,9 +61,19 @@ pyrig uses a ConfigFile system to manage project files. Each configuration file 
 Some examples:
 - `pyproject.toml` (project metadata, tool configs)
 - `.pre-commit-config.yaml`
-- `.gitignore`
+- `.gitignore` (fetched from GitHub with offline fallback)
+- `LICENSE` (auto-generated MIT license with year and owner)
 - `.github/workflows/` (health check, release, publish)
 - `conftest.py` and test fixtures
+
+### Network Resilience and Offline Capability
+
+pyrig works reliably even without internet access. External resources (GitHub's .gitignore template, MIT license text, latest Python version) are fetched when online but fall back to cached local resources when offline or when services are unavailable. This ensures:
+
+- Projects can be initialized offline
+- Service outages don't break pyrig
+- Consistent behavior across all environments
+- Automatic resource updates when online
 
 ### Test Generation
 

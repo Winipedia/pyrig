@@ -11,6 +11,7 @@ from subprocess import CompletedProcess  # nosec: B404
 from typing import Any
 
 from pyrig.dev.configs.base.base import YamlConfigFile
+from pyrig.src.git.github.github import git_add_file
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import (
     PROJECT_MGT_RUN_ARGS,
@@ -142,7 +143,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         *,
         with_install: bool = True,
         all_files: bool = True,
-        add_before_commit: bool = True,
+        add_before_commit: bool = False,
         verbose: bool = True,
         check: bool = True,
     ) -> None:
@@ -157,7 +158,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         """
         if add_before_commit:
             logger.info("Adding all files to git")
-            run_subprocess(["git", "add", "."])
+            git_add_file(Path())
         if with_install:
             cls.install()
         logger.info("Running pre-commit run")

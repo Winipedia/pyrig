@@ -21,7 +21,10 @@ import requests
 from packaging.version import Version
 
 from pyrig.dev.configs.base.base import TomlConfigFile
+from pyrig.src.decorators import return_resource_content_on_fetch_error
+from pyrig.src.git.github.github import get_repo_owner_and_name_from_git
 from pyrig.src.modules.package import (
+    get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
     get_project_name_from_cwd,
 )
@@ -87,12 +90,18 @@ class PyprojectConfigFile(TomlConfigFile):
             cli,
         )
 
+        repo_owner, _ = get_repo_owner_and_name_from_git(check_repo_url=False)
+
         return {
             "project": {
                 "name": get_project_name_from_cwd(),
                 "version": cls.get_project_version(),
                 "description": cls.get_project_description(),
                 "readme": "README.md",
+                "authors": [
+                    {"name": repo_owner},
+                ],
+                "license-files": ["LICENSE"],
                 "requires-python": cls.get_project_requires_python(),
                 "classifiers": [
                     *cls.make_python_version_classifiers(),
@@ -115,7 +124,7 @@ class PyprojectConfigFile(TomlConfigFile):
             "tool": {
                 "uv": {
                     "build-backend": {
-                        "module-name": cls.get_pkg_name_from_cwd(),
+                        "module-name": get_pkg_name_from_cwd(),
                         "module-root": "",
                     }
                 },
@@ -179,15 +188,6 @@ class PyprojectConfigFile(TomlConfigFile):
         config["dependency-groups"]["dev"] = cls.make_dependency_versions(
             config["dependency-groups"]["dev"]
         )
-
-    @classmethod
-    def get_pkg_name_from_cwd(cls) -> str:
-        """Derive the package name from the current directory.
-
-        Returns:
-            The package name (directory name with hyphens as underscores).
-        """
-        return get_pkg_name_from_project_name(get_project_name_from_cwd())
 
     @classmethod
     def get_project_description(cls) -> str:
@@ -348,8 +348,9 @@ class PyprojectConfigFile(TomlConfigFile):
         return deps
 
     @classmethod
+    @return_resource_content_on_fetch_error(resource_name="LATEST_PYTHON_VERSION")
     @cache
-    def fetch_latest_python_version(cls) -> Version:
+    def fetch_latest_python_version(cls) -> str:
         """Fetch the latest stable Python version from endoflife.date.
 
         Returns:
@@ -361,10 +362,24 @@ class PyprojectConfigFile(TomlConfigFile):
         url = "https://endoflife.date/api/python.json"
         resp = requests.get(url, timeout=10)
         resp.raise_for_status()
-        data = resp.json()
+        data: list[dict[str, str]] = resp.json()
         # first element has metadata for latest stable
-        latest_version = data[0]["latest"]
-        return Version(latest_version)
+        return data[0]["latest"]
+
+    @classmethod
+    def get_latest_python_version(
+        cls, level: Literal["major", "minor", "micro"] = "minor"
+    ) -> Version:
+        """Fetch the latest stable Python version from endoflife.date.
+
+        Returns:
+            The latest stable Python version as a string.
+
+        Raises:
+            requests.HTTPError: If the API request fails.
+        """
+        latest_version = Version(cls.fetch_latest_python_version())
+        return adjust_version_to_level(latest_version, level)
 
     @classmethod
     def get_latest_possible_python_version(
@@ -382,7 +397,7 @@ class PyprojectConfigFile(TomlConfigFile):
         version_constraint = VersionConstraint(constraint)
         version = version_constraint.get_upper_inclusive()
         if version is None:
-            version = cls.fetch_latest_python_version()
+            version = cls.get_latest_python_version()
 
         return adjust_version_to_level(version, level)
 
@@ -414,7 +429,7 @@ class PyprojectConfigFile(TomlConfigFile):
         constraint = cls.get_project_requires_python()
         version_constraint = VersionConstraint(constraint)
         return version_constraint.get_version_range(
-            level="minor", upper_default=cls.fetch_latest_python_version()
+            level="minor", upper_default=cls.get_latest_python_version()
         )
 
     @classmethod

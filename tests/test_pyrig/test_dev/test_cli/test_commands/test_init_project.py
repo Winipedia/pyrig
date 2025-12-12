@@ -12,6 +12,7 @@ from pytest_mock import MockFixture
 import pyrig
 from pyrig.dev.cli.commands.init_project import (
     commit_initial_changes,
+    run_all_hooks,
     run_create_root,
     run_create_tests,
 )
@@ -48,6 +49,14 @@ def test_commit_initial_changes(mocker: MockFixture) -> None:
     mock_run = mocker.patch("subprocess.run")
     commit_initial_changes()
     mock_run.assert_called_once()
+
+
+def test_run_all_hooks(mocker: MockFixture) -> None:
+    """Test func for run_all_hooks."""
+    # mock the real underlying subprocess.run from subprocess pkg
+    mock_run = mocker.patch("subprocess.run")
+    run_all_hooks()
+    mock_run.assert_called()
 
 
 def test_init_project(tmp_path: Path) -> None:

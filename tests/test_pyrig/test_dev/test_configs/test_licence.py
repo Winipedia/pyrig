@@ -9,6 +9,24 @@ from pyrig.src.testing.assertions import assert_with_msg
 class TestLicenceConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert LicenceConfigFile().is_correct()
+
+    def test_get_mit_license(self) -> None:
+        """Test method."""
+        mit_license = LicenceConfigFile.get_mit_license()
+        assert "MIT License" in mit_license
+
+    def test_get_mit_license_with_year_and_owner(self) -> None:
+        """Test method."""
+        mit_license = LicenceConfigFile.get_mit_license_with_year_and_owner()
+        assert "MIT License" in mit_license
+        assert "Winipedia" in mit_license
+
+        assert "[year]" not in mit_license
+        assert "[fullname]" not in mit_license
+
     def test_get_filename(self) -> None:
         """Test method for get_filename."""
         # Should return LICENSE
@@ -44,7 +62,4 @@ class TestLicenceConfigFile:
     def test_get_content_str(self) -> None:
         """Test method for get_content_str."""
         # Should return empty string
-        assert_with_msg(
-            LicenceConfigFile.get_content_str() == "",
-            "Expected ''",
-        )
+        assert isinstance(LicenceConfigFile.get_content_str(), str)

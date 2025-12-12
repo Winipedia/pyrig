@@ -29,6 +29,16 @@ def my_test_gitignore_config_file(
 class TestGitIgnoreConfigFile:
     """Test class."""
 
+    def test_get_github_python_gitignore_as_str(self) -> None:
+        """Test method."""
+        github_gitignore = GitIgnoreConfigFile.get_github_python_gitignore_as_str()
+        assert "__pycache__/" in github_gitignore
+
+    def test_get_github_python_gitignore_as_list(self) -> None:
+        """Test method."""
+        github_gitignore = GitIgnoreConfigFile.get_github_python_gitignore_as_list()
+        assert "__pycache__/" in github_gitignore
+
     def test_get_filename(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
     ) -> None:
@@ -112,16 +122,6 @@ class TestGitIgnoreConfigFile:
         assert_with_msg(
             any("__pycache__" in item for item in configs),
             "Expected __pycache__ pattern in configs",
-        )
-
-    def test_get_github_python_gitignore(
-        self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
-    ) -> None:
-        """Test method for get_github_python_gitignore."""
-        patterns = my_test_gitignore_config_file.get_github_python_gitignore()
-        assert_with_msg(
-            len(patterns) > 0,
-            "Expected patterns to be non-empty",
         )
 
     def test_path_is_in_gitignore(self, mocker: MockFixture) -> None:

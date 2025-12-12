@@ -64,3 +64,9 @@ def test_assert_src_runs_without_dev_deps() -> None:
 def test_assert_src_does_not_use_dev() -> None:
     """Test function."""
     raise NotImplementedError
+
+
+@skip_fixture_test
+def test_assert_no_unstaged_changes() -> None:
+    """Test function."""
+    raise NotImplementedError

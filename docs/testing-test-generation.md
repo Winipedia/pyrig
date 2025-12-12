@@ -227,6 +227,7 @@ pyrig includes several session-scoped fixtures that run automatically:
 
 | Fixture | Purpose |
 |---------|---------|
+| `assert_no_unstaged_changes` | Ensures no uncommitted changes before/after test session (GitHub Actions only) |
 | `assert_root_is_correct` | Validates all ConfigFile settings are correct |
 | `assert_no_namespace_packages` | Ensures all packages have `__init__.py` |
 | `assert_all_src_code_in_one_package` | Enforces single source package structure |

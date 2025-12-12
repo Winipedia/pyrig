@@ -11,6 +11,7 @@ import logging
 import os
 import re
 import shutil
+from collections.abc import Generator
 from contextlib import chdir
 from importlib import import_module
 from pathlib import Path
@@ -31,7 +32,10 @@ from pyrig.dev.configs.pyproject import (
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.tests.utils.decorators import autouse_session_fixture
-from pyrig.src.git.github.github import running_in_github_actions
+from pyrig.src.git.github.github import (
+    git_has_unstaged_changes,
+    running_in_github_actions,
+)
 from pyrig.src.modules.module import (
     get_isolated_obj_name,
     get_module_name_replacing_start_module,
@@ -58,6 +62,33 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 logger = logging.getLogger(__name__)
+
+
+@autouse_session_fixture
+def assert_no_unstaged_changes() -> Generator[None, None, None]:
+    """Verify that there are no unstaged changes.
+
+    Checks before and after the test session if there are unstaged changes.
+    If there are unstaged changes before the test session, it fails.
+    If there are unstaged changes after the test session, it fails.
+
+    Raises:
+        AssertionError: If there are unstaged changes
+
+    """
+    in_github_actions = running_in_github_actions()
+
+    if in_github_actions:
+        assert_with_msg(
+            not git_has_unstaged_changes(),
+            "Found unstaged changes before test session. Please commit or stash them.",
+        )
+    yield
+    if in_github_actions:
+        assert_with_msg(
+            not git_has_unstaged_changes(),
+            "Found unstaged changes after test session. Please commit or stash them.",
+        )
 
 
 @autouse_session_fixture

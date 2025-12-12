@@ -32,6 +32,13 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
+    def test_get_latest_python_version(self) -> None:
+        """Test method."""
+        latest_version = PyprojectConfigFile.get_latest_python_version()
+        assert isinstance(latest_version, Version), (
+            f"Expected Version, got {type(latest_version)}"
+        )
+
     def test_get_project_requires_python(self) -> None:
         """Test method."""
         requires_python = PyprojectConfigFile.get_project_requires_python()
@@ -140,17 +147,6 @@ class TestPyprojectConfigFile:
         package_name = my_test_pyproject_config_file.get_package_name()
         assert_with_msg(
             len(package_name) > 0,
-            "Expected package name to be non-empty",
-        )
-
-    def test_get_pkg_name_from_cwd(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
-    ) -> None:
-        """Test method for get_pkg_name_from_cwd."""
-        my_test_pyproject_config_file()
-        pkg_name = my_test_pyproject_config_file.get_pkg_name_from_cwd()
-        assert_with_msg(
-            len(pkg_name) > 0,
             "Expected package name to be non-empty",
         )
 
@@ -279,7 +275,7 @@ class TestPyprojectConfigFile:
     ) -> None:
         """Test method for fetch_latest_python_version."""
         my_test_pyproject_config_file()
-        latest_version = my_test_pyproject_config_file.fetch_latest_python_version()
+        latest_version = my_test_pyproject_config_file.get_latest_python_version()
         assert_with_msg(
             latest_version >= Version("3.13"),
             "Expected fetch_latest_python_version to return a version >= 3.11",

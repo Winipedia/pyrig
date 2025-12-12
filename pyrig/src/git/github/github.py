@@ -17,6 +17,7 @@ Example:
 
 import os
 from pathlib import Path
+from subprocess import CompletedProcess  # nosec: B404
 
 from dotenv import dotenv_values
 
@@ -159,3 +160,31 @@ def get_repo_owner_and_name_from_git(*, check_repo_url: bool = True) -> tuple[st
     if ":" in owner:
         owner = owner.split(":")[-1]
     return owner, repo
+
+
+def git_has_unstaged_changes() -> bool:
+    """Check if the git repository has uncommitted changes.
+
+    Returns:
+        True if there are uncommitted changes, False otherwise.
+    """
+    return (
+        run_subprocess(["git", "diff-index", "--quiet", "HEAD"], check=False).returncode
+        != 0
+    )
+
+
+def git_add_file(path: Path, *, check: bool = True) -> CompletedProcess[bytes]:
+    """Add a file to the git index.
+
+    Args:
+        path: Path to the file to add.
+        check: Whether to check succes in subprocess.
+
+    Returns:
+        The completed process result.
+    """
+    # make path relative to cwd if it is absolute
+    if path.is_absolute():
+        path = path.relative_to(Path.cwd())
+    return run_subprocess(["git", "add", str(path)], check=check)

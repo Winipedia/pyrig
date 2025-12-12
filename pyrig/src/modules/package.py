@@ -560,3 +560,12 @@ def get_project_name_from_cwd() -> str:
     """
     cwd = Path.cwd()
     return cwd.name
+
+
+def get_pkg_name_from_cwd() -> str:
+    """Derive the package name from the current directory.
+
+    Returns:
+        The package name (directory name with hyphens as underscores).
+    """
+    return get_pkg_name_from_project_name(get_project_name_from_cwd())

@@ -16,6 +16,7 @@ import pyrig
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
+from pyrig.src.decorators import return_resource_content_on_fetch_error
 
 
 class GitIgnoreConfigFile(ConfigFile):
@@ -90,7 +91,7 @@ class GitIgnoreConfigFile(ConfigFile):
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
         needed = [
-            *cls.get_github_python_gitignore(),
+            *cls.get_github_python_gitignore_as_list(),
             "# vscode stuff",
             ".vscode/",
             "",
@@ -117,7 +118,23 @@ class GitIgnoreConfigFile(ConfigFile):
         return existing + needed
 
     @classmethod
-    def get_github_python_gitignore(cls) -> list[str]:
+    @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
+    def get_github_python_gitignore_as_str(cls) -> str:
+        """Fetch GitHub's standard Python gitignore patterns.
+
+        Returns:
+            String of patterns from GitHub's Python.gitignore.
+
+        Raises:
+            RuntimeError: If fetch fails and no .gitignore exists.
+        """
+        url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
+        res = requests.get(url, timeout=10)
+        res.raise_for_status()
+        return res.text
+
+    @classmethod
+    def get_github_python_gitignore_as_list(cls) -> list[str]:
         """Fetch GitHub's standard Python gitignore patterns.
 
         Returns:
@@ -126,14 +143,8 @@ class GitIgnoreConfigFile(ConfigFile):
         Raises:
             RuntimeError: If fetch fails and no .gitignore exists.
         """
-        url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
-        res = requests.get(url, timeout=10)
-        if not res.ok:
-            if not Path(".gitignore").exists():
-                msg = f"Failed to fetch {url}. Cannot create .gitignore."
-                raise RuntimeError(msg)
-            return []
-        return res.text.splitlines()
+        gitignore_str = cls.get_github_python_gitignore_as_str()
+        return gitignore_str.splitlines()
 
     @classmethod
     def path_is_in_gitignore(cls, relative_path: str | Path) -> bool:
