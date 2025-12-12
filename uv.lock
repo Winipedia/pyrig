@@ -759,7 +759,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "2.1.30"
+version = "2.1.31"
 source = { editable = "." }
 dependencies = [
     { name = "dotenv" },
