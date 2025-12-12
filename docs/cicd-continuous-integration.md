@@ -46,6 +46,7 @@ Key characteristics:
     │  • Protect repository         │
     │  • Run pre-commit hooks       │
     │  • Run tests                  │
+    │  • Upload coverage to Codecov │
     └───────────────────────────────┘
                     │
                     │ (on main branch, success)
@@ -143,7 +144,8 @@ Each matrix job executes these steps:
 6. **Add Dependency Updates To Git** — Stage changes with `git add pyproject.toml uv.lock`
 7. **Protect Repository** — Apply branch protection rules (requires `REPO_TOKEN`)
 8. **Run Pre Commit Hooks** — Execute `uv run pre-commit run --all-files`
-9. **Run Tests** — Execute `uv run pytest --log-cli-level=INFO`
+9. **Run Tests** — Execute `uv run pytest --log-cli-level=INFO --cov-report=xml`
+10. **Upload Coverage Report** — Upload coverage to Codecov with `codecov/codecov-action`
 
 ### Aggregation Job
 
@@ -398,7 +400,8 @@ The `Workflow` class provides pre-built steps:
 | `step_checkout_repository()` | Checkout with actions/checkout |
 | `step_setup_project_mgt()` | Setup uv with astral-sh/setup-uv |
 | `step_install_python_dependencies()` | Run `uv sync` |
-| `step_run_tests()` | Run `uv run pytest` |
+| `step_run_tests()` | Run `uv run pytest --cov-report=xml` |
+| `step_upload_coverage_report()` | Upload coverage to Codecov |
 | `step_run_pre_commit_hooks()` | Run `uv run pre-commit run --all-files` |
 | `step_protect_repository()` | Run `uv run pyrig protect-repo` |
 | `step_build_wheel()` | Run `uv build` |

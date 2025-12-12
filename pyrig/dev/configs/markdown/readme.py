@@ -10,6 +10,7 @@ import pyrig
 from pyrig.dev.configs.base.base import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.git.github.github import get_repo_owner_and_name_from_git
+from pyrig.src.git.github.repo.repo import DEFAULT_BRANCH
 
 
 class ReadmeConfigFile(MarkdownConfigFile):
@@ -113,7 +114,7 @@ class ReadmeConfigFile(MarkdownConfigFile):
                 "[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)",
                 "[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)",
                 "[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)",
-                "[![coverage](https://img.shields.io/badge/coverage-90%25+-brightgreen.svg?logo=codecov&logoColor=white)](https://github.com/winipedia/pyrig)",
+                f"[![codecov](https://codecov.io/gh/{repo_owner}/{repo_name}/branch/{DEFAULT_BRANCH}/graph/badge.svg)](https://codecov.io/gh/{repo_owner}/{repo_name})",
             ],
             "package-info": [
                 f"[![PyPI](https://img.shields.io/pypi/v/{project_name}?logo=pypi&logoColor=white)](https://pypi.org/project/{project_name}/)",

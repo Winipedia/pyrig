@@ -9,7 +9,7 @@
 [![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
-[![coverage](https://img.shields.io/badge/coverage-90%25+-brightgreen.svg?logo=codecov&logoColor=white)](https://github.com/winipedia/pyrig)
+[![codecov](https://codecov.io/gh/Winipedia/pyrig/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/pyrig)
 <!-- package-info -->
 [![PyPI](https://img.shields.io/pypi/v/pyrig?logo=pypi&logoColor=white)](https://pypi.org/project/pyrig/)
 [![Python](https://img.shields.io/badge/python-3.12|3.13|3.14-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -111,6 +111,7 @@ Four GitHub Actions workflows are generated:
    - Executes pre-commit hooks (ruff, mypy, bandit)
    - Runs the full test suite
    - Tests across a matrix of 3 OS × 3 Python versions
+   - Uploads coverage reports to Codecov
    - Updates branch protection rules
 
 2. **Build** — Triggers on health check success (main branch)
