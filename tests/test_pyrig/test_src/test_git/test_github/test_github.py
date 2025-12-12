@@ -5,12 +5,12 @@ from pathlib import Path
 
 import pyrig
 from pyrig.src.git.github.github import (
+    get_git_unstaged_changes,
     get_git_username,
     get_github_repo_token,
     get_repo_owner_and_name_from_git,
     get_repo_url_from_git,
     git_add_file,
-    git_has_unstaged_changes,
     running_in_github_actions,
 )
 from pyrig.src.testing.assertions import assert_with_msg
@@ -82,10 +82,10 @@ def test_get_git_username() -> None:
     assert len(username) > 0, "Expected username to be non-empty"
 
 
-def test_git_has_unstaged_changes() -> None:
+def test_get_git_unstaged_changes() -> None:
     """Test function."""
-    assert isinstance(git_has_unstaged_changes(), bool), (
-        "Expected git_has_unstaged_changes to return bool"
+    assert isinstance(get_git_unstaged_changes(), str), (
+        "Expected get_git_unstaged_changes to return str"
     )
 
 

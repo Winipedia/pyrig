@@ -33,7 +33,7 @@ from pyrig.dev.configs.pyproject import (
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.tests.utils.decorators import autouse_session_fixture
 from pyrig.src.git.github.github import (
-    git_has_unstaged_changes,
+    get_git_unstaged_changes,
     running_in_github_actions,
 )
 from pyrig.src.modules.module import (
@@ -78,16 +78,23 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
     """
     in_github_actions = running_in_github_actions()
 
+    msg = (
+        "Found unstaged changes. Please commit or stash them. "
+        "Unstaged changes: {unstaged_changes}"
+    )
+
     if in_github_actions:
+        unstaged_changes = get_git_unstaged_changes()
         assert_with_msg(
-            not git_has_unstaged_changes(),
-            "Found unstaged changes before test session. Please commit or stash them.",
+            not unstaged_changes,
+            msg=msg.format(unstaged_changes=unstaged_changes),
         )
     yield
     if in_github_actions:
+        unstaged_changes = get_git_unstaged_changes()
         assert_with_msg(
-            not git_has_unstaged_changes(),
-            "Found unstaged changes after test session. Please commit or stash them.",
+            not unstaged_changes,
+            msg=msg.format(unstaged_changes=unstaged_changes),
         )
 
 
