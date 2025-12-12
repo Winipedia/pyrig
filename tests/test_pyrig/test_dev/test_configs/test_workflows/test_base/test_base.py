@@ -382,6 +382,13 @@ class TestWorkflow:
         result = my_test_workflow.step_run_tests()
         assert_with_msg("run" in result, "Expected 'run' in step")
 
+    def test_step_upload_coverage_report(
+        self, my_test_workflow: type[Workflow]
+    ) -> None:
+        """Test method for step_upload_coverage_report."""
+        result = my_test_workflow.step_upload_coverage_report()
+        assert_with_msg("uses" in result, "Expected 'uses' in step")
+
     def test_step_run_pre_commit_hooks(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for step_run_pre_commit_hooks."""
         result = my_test_workflow.step_run_pre_commit_hooks()

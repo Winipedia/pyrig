@@ -755,7 +755,34 @@ class Workflow(YamlConfigFile):
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
         return cls.get_step(
             step_func=cls.step_run_tests,
-            run=f"{PROJECT_MGT} run pytest --log-cli-level=INFO",
+            run=f"{PROJECT_MGT} run pytest --log-cli-level=INFO --cov-report=xml",
+            step=step,
+        )
+
+    @classmethod
+    def step_upload_coverage_report(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that uploads the coverage report.
+
+        If the repository is private, the workflow will fail and
+        a Codecov token has to be added to the repository secrets.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step configuration for uploading coverage report.
+        """
+        return cls.get_step(
+            step_func=cls.step_upload_coverage_report,
+            uses="codecov/codecov-action@main",
+            with_={
+                "files": "coverage.xml",
+                "fail_ci_if_error": "true",
+            },
             step=step,
         )
 
