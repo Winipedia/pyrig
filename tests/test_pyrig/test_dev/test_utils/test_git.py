@@ -3,16 +3,16 @@
 from github.Repository import Repository
 
 from pyrig.dev.cli.commands.protect_repo import get_default_ruleset_params
-from pyrig.dev.utils.git.repo import (
+from pyrig.dev.utils.git import (
     DEFAULT_RULESET_NAME,
     create_or_update_ruleset,
     get_all_rulesets,
+    get_github_repo_token,
     get_repo,
     get_rules_payload,
     ruleset_exists,
 )
 from pyrig.src.git.git import (
-    get_github_repo_token,
     get_repo_owner_and_name_from_git,
 )
 from pyrig.src.testing.assertions import assert_with_msg
@@ -113,4 +113,12 @@ def test_create_or_update_ruleset() -> None:
     """Test func for create_or_update_ruleset."""
     create_or_update_ruleset(
         **get_default_ruleset_params(),
+    )
+
+
+def test_get_github_repo_token() -> None:
+    """Test func for get_github_token."""
+    token = get_github_repo_token()
+    assert_with_msg(
+        isinstance(token, str), f"Expected token to be str, got {type(token)}"
     )

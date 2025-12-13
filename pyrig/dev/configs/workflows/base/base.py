@@ -14,9 +14,9 @@ import pyrig
 from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.dev.utils.packages import get_src_package
 from pyrig.src.modules.package import (
     DependencyGraph,
-    get_src_package,
 )
 from pyrig.src.project.mgt import (
     PROJECT_MGT,

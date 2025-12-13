@@ -3,7 +3,7 @@
 tests.test_pyrig.test_testing.test_tests.test_base.test_scopes.test_session
 """
 
-from pyrig.dev.utils.tests.decorators import skip_fixture_test
+from pyrig.dev.utils.testing import skip_fixture_test
 
 
 @skip_fixture_test

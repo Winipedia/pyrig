@@ -32,7 +32,8 @@ from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
-from pyrig.dev.utils.tests.decorators import autouse_session_fixture
+from pyrig.dev.utils.packages import find_packages, get_src_package
+from pyrig.dev.utils.testing import autouse_session_fixture
 from pyrig.src.git.git import (
     get_git_unstaged_changes,
     running_in_github_actions,
@@ -45,11 +46,9 @@ from pyrig.src.modules.module import (
 from pyrig.src.modules.package import (
     DOCS_DIR_NAME,
     DependencyGraph,
-    find_packages,
     get_modules_and_packages_from_package,
     get_pkg_name_from_project_name,
     get_project_name_from_pkg_name,
-    get_src_package,
     walk_package,
 )
 from pyrig.src.os.os import run_subprocess
@@ -434,6 +433,7 @@ def assert_src_runs_without_dev_deps(
             "ModuleNotFoundError" in stderr,
             f"Expected ModuleNotFoundError in stderr, got {stderr}",
         )
+        src_pkg_name = get_src_package().__name__
 
         # run walk_package with src and import all modules to catch dev dep imports
         cmd = [
@@ -448,15 +448,15 @@ def assert_src_runs_without_dev_deps(
                 "from pyrig import main; "
                 "from pyrig import src; "
                 "from pyrig.src.modules.module import get_module_name_replacing_start_module; "  # noqa: E501
-                "from pyrig.src.modules.package import get_src_package, walk_package; "
+                "from pyrig.src.modules.package import walk_package; "
                 "from pyrig.src.testing.assertions import assert_with_msg; "
-                "src_package=get_src_package(); "
-                "src_module=import_module(get_module_name_replacing_start_module(src, src_package.__name__)); "  # noqa: E501
+                f"import {src_pkg_name}; "
+                f"src_module=import_module(get_module_name_replacing_start_module(src, {src_pkg_name}.__name__)); "  # noqa: E501
                 "pks=list(walk_package(src_module)); "
                 "assert_with_msg(isinstance(pks, list), 'Expected pks to be a list'); "
                 "assert_with_msg(len(pks) > 0, 'Expected pks to not be empty'); "
                 # also test that main can be called
-                "main_module=import_module(get_module_name_replacing_start_module(main, src_package.__name__)); "  # noqa: E501
+                f"main_module=import_module(get_module_name_replacing_start_module(main, {src_pkg_name}.__name__)); "  # noqa: E501
                 # add a print statement to see the output
                 "print('Success')"
             ),

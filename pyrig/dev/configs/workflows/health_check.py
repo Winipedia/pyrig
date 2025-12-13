@@ -10,7 +10,8 @@ from typing import Any
 
 import pyrig
 from pyrig.dev.configs.workflows.base.base import Workflow
-from pyrig.src.modules.package import DependencyGraph, get_src_package
+from pyrig.dev.utils.packages import get_src_package
+from pyrig.src.modules.package import DependencyGraph
 
 
 class HealthCheckWorkflow(Workflow):

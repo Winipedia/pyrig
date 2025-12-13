@@ -7,21 +7,12 @@ import pyrig
 from pyrig.src.git.git import (
     get_git_unstaged_changes,
     get_git_username,
-    get_github_repo_token,
     get_repo_owner_and_name_from_git,
     get_repo_url_from_git,
     git_add_file,
     running_in_github_actions,
 )
 from pyrig.src.testing.assertions import assert_with_msg
-
-
-def test_get_github_repo_token() -> None:
-    """Test func for get_github_token."""
-    token = get_github_repo_token()
-    assert_with_msg(
-        isinstance(token, str), f"Expected token to be str, got {type(token)}"
-    )
 
 
 def test_running_in_github_actions() -> None:

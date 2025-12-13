@@ -23,6 +23,7 @@ from packaging.version import Version
 from pyrig.dev.cli.commands.init_project import STANDARD_DEV_DEPS
 from pyrig.dev.configs.base.base import TomlConfigFile
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
+from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.git.git import get_repo_owner_and_name_from_git
 from pyrig.src.modules.package import (
     get_pkg_name_from_cwd,
@@ -30,7 +31,6 @@ from pyrig.src.modules.package import (
     get_project_name_from_cwd,
 )
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.testing.convention import (
     COVERAGE_THRESHOLD,
     TESTS_PACKAGE_NAME,

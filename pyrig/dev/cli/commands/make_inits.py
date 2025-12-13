@@ -1,7 +1,8 @@
 """A func that creates __init__.py files for all packages and modules."""
 
+from pyrig.dev.utils.packages import find_packages
 from pyrig.src.modules.module import make_init_module, to_path
-from pyrig.src.modules.package import DOCS_DIR_NAME, find_packages
+from pyrig.src.modules.package import DOCS_DIR_NAME
 
 
 def get_namespace_packages() -> list[str]:

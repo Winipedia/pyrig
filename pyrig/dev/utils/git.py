@@ -19,8 +19,11 @@ Example:
 """
 
 import logging
+import os
+from pathlib import Path
 from typing import Any, Literal
 
+from dotenv import dotenv_values
 from github import Github
 from github.Auth import Token
 from github.Repository import Repository
@@ -266,3 +269,44 @@ def ruleset_exists(token: str, owner: str, repo_name: str, ruleset_name: str) ->
     rulesets = get_all_rulesets(token, owner, repo_name)
     main_ruleset = next((rs for rs in rulesets if rs["name"] == ruleset_name), None)
     return main_ruleset["id"] if main_ruleset else 0
+
+
+def get_github_repo_token() -> str:
+    """Retrieve the GitHub repository token for API authentication.
+
+    Attempts to find a GitHub token in the following order:
+    1. The `REPO_TOKEN` environment variable
+    2. The `REPO_TOKEN` key in the project's `.env` file
+
+    This priority order ensures CI/CD environments (which typically set
+    environment variables) work seamlessly while allowing local development
+    to use .env files.
+
+    Returns:
+        The GitHub token string.
+
+    Raises:
+        ValueError: If no token is found in either location, or if the
+            .env file doesn't exist when falling back to it.
+
+    Note:
+        The token should have appropriate permissions for the intended
+        operations (e.g., repo scope for branch protection rules).
+    """
+    # try os env first
+    token = os.getenv("REPO_TOKEN")
+    if token:
+        return token
+
+    # try .env next
+    dotenv_path = Path(".env")
+    if not dotenv_path.exists():
+        msg = f"Expected {dotenv_path} to exist"
+        raise ValueError(msg)
+    dotenv = dotenv_values(dotenv_path)
+    token = dotenv.get("REPO_TOKEN")
+    if token:
+        return token
+
+    msg = f"Expected REPO_TOKEN in {dotenv_path}"
+    raise ValueError(msg)

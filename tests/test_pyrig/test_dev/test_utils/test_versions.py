@@ -2,7 +2,7 @@
 
 from packaging.version import Version
 
-from pyrig.src.project.versions import VersionConstraint, adjust_version_to_level
+from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.testing.assertions import assert_with_msg
 
 

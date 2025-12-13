@@ -11,13 +11,6 @@ license-files = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dotenv",
-    "packaging",
-    "pathspec",
-    "pyyaml",
-    "setuptools",
-    "tenacity",
-    "tomlkit",
     "typer",
 ]
 classifiers = [
@@ -32,6 +25,7 @@ pyrig = "pyrig.dev.cli.cli:main"
 [dependency-groups]
 dev = [
     "bandit",
+    "dotenv",
     "mypy",
     "pillow",
     "pre-commit",
@@ -40,7 +34,11 @@ dev = [
     "pytest",
     "pytest-cov",
     "pytest-mock",
+    "pyyaml",
     "ruff",
+    "setuptools",
+    "tenacity",
+    "tomlkit",
     "ty",
     "types-defusedxml",
     "types-pyinstaller",

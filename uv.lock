@@ -762,19 +762,13 @@ name = "pyrig"
 version = "2.1.34"
 source = { editable = "." }
 dependencies = [
-    { name = "dotenv" },
-    { name = "packaging" },
-    { name = "pathspec" },
-    { name = "pyyaml" },
-    { name = "setuptools" },
-    { name = "tenacity" },
-    { name = "tomlkit" },
     { name = "typer" },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "bandit" },
+    { name = "dotenv" },
     { name = "mypy" },
     { name = "pillow" },
     { name = "pre-commit" },
@@ -783,7 +777,11 @@ dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
+    { name = "pyyaml" },
     { name = "ruff" },
+    { name = "setuptools" },
+    { name = "tenacity" },
+    { name = "tomlkit" },
     { name = "ty" },
     { name = "types-defusedxml" },
     { name = "types-pyinstaller" },
@@ -793,20 +791,12 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "dotenv" },
-    { name = "packaging" },
-    { name = "pathspec" },
-    { name = "pyyaml" },
-    { name = "setuptools" },
-    { name = "tenacity" },
-    { name = "tomlkit" },
-    { name = "typer" },
-]
+requires-dist = [{ name = "typer" }]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "bandit" },
+    { name = "dotenv" },
     { name = "mypy" },
     { name = "pillow" },
     { name = "pre-commit" },
@@ -815,7 +805,11 @@ dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
+    { name = "pyyaml" },
     { name = "ruff" },
+    { name = "setuptools" },
+    { name = "tenacity" },
+    { name = "tomlkit" },
     { name = "ty" },
     { name = "types-defusedxml" },
     { name = "types-pyinstaller" },

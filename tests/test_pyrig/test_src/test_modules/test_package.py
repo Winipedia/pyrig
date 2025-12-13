@@ -13,6 +13,8 @@ import pytest
 from pytest_mock import MockFixture
 
 import pyrig
+from pyrig.dev.utils import packages
+from pyrig.dev.utils.packages import find_packages
 from pyrig.src.modules.module import (
     create_module,
     make_obj_importpath,
@@ -20,29 +22,17 @@ from pyrig.src.modules.module import (
 from pyrig.src.modules.package import (
     DependencyGraph,
     copy_package,
-    find_packages,
-    find_packages_as_modules,
     get_main_package,
     get_modules_and_packages_from_package,
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
     get_project_name_from_cwd,
     get_project_name_from_pkg_name,
-    get_src_package,
     import_pkg_from_path,
     module_is_package,
     walk_package,
 )
 from pyrig.src.testing.assertions import assert_with_msg
-
-
-def test_get_src_package() -> None:
-    """Test func for get_src_package."""
-    src_pkg = get_src_package()
-    assert_with_msg(
-        src_pkg.__name__ == pyrig.__name__,
-        f"Expected pyrig, got {src_pkg}",
-    )
 
 
 def test_module_is_package() -> None:
@@ -93,7 +83,7 @@ def test_find_packages(mocker: MockFixture) -> None:
     """Test func for find_packages."""
     # Mock setuptools find_packages
     mock_find_packages = mocker.patch(
-        "pyrig.src.modules.package._find_packages",
+        make_obj_importpath(packages) + "._find_packages",
         return_value=["package1", "package1.sub1", "package1.sub1.sub2", "package2"],
     )
 
@@ -125,7 +115,7 @@ def test_find_packages(mocker: MockFixture) -> None:
 def test_find_packages_with_namespace(mocker: MockFixture) -> None:
     """Test find_packages with namespace packages."""
     mock_find_namespace = mocker.patch(
-        "pyrig.src.modules.package._find_namespace_packages",
+        make_obj_importpath(packages) + "._find_namespace_packages",
         return_value=["ns_package1", "ns_package2"],
     )
 
@@ -145,7 +135,7 @@ def test_find_packages_with_gitignore_filtering(mocker: MockFixture) -> None:
     """Test find_packages with gitignore patterns that should exclude packages."""
     # Mock setuptools find_packages to return only packages not excluded by gitignore
     mock_find_packages = mocker.patch(
-        "pyrig.src.modules.package._find_packages",
+        make_obj_importpath(packages) + "._find_packages",
         return_value=[
             "package1",
             "package2",
@@ -170,34 +160,6 @@ __pycache__/
     expected_exclude = ["dist", "build", "__pycache__"]
     mock_find_packages.assert_called_with(
         where=".", exclude=expected_exclude, include=("*",)
-    )
-
-
-def test_find_packages_as_modules(mocker: MockFixture) -> None:
-    """Test func for find_packages_as_modules."""
-    # Mock find_packages
-    mock_find_packages = mocker.patch(
-        make_obj_importpath(find_packages),
-        return_value=["package1", "package2"],
-    )
-
-    # Mock import_module
-    mock_package1 = ModuleType("package1")
-    mock_package2 = ModuleType("package2")
-    mock_import = mocker.patch("pyrig.src.modules.package.import_module")
-    mock_import.side_effect = [mock_package1, mock_package2]
-
-    result = find_packages_as_modules(depth=1, include_namespace_packages=True)
-    expected = [mock_package1, mock_package2]
-    assert_with_msg(result == expected, f"Expected {expected}, got {result}")
-
-    # The function should call find_packages with exclude=None (default parameter)
-    mock_find_packages.assert_called_once_with(
-        depth=1,
-        include_namespace_packages=True,
-        where=".",
-        exclude=None,
-        include=("*",),
     )
 
 

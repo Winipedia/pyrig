@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 STANDARD_DEV_DEPS: list[str] = [
     "bandit",
+    "dotenv",
     "mypy",
     "pillow",
     "pre-commit",
@@ -43,7 +44,11 @@ STANDARD_DEV_DEPS: list[str] = [
     "pytest",
     "pytest-mock",
     "pytest-cov",
+    "pyyaml",
     "ruff",
+    "setuptools",
+    "tenacity",
+    "tomlkit",
     "ty",
     "types-defusedxml",
     "types-pyinstaller",
