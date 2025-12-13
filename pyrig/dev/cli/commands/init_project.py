@@ -90,7 +90,6 @@ SETUP_STEPS: list[Callable[..., Any]] = [
     run_create_tests,
     run_all_hooks,
     ConftestConfigFile.run_tests,
-    PyprojectConfigFile.install_dependencies,  # to activate cli
     commit_initial_changes,
 ]
 
@@ -115,6 +114,6 @@ def init_project() -> None:
     logging.basicConfig(level=logging.INFO)
     for step in SETUP_STEPS:
         step_name = make_name_from_obj(step, join_on=" ")
-        logger.info("Running setup step: %s", step_name)
+        logger.info(step_name)
         step()
     logger.info("Setup complete!")
