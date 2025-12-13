@@ -140,6 +140,7 @@ def committing_initial_changes() -> None:
 
 SETUP_STEPS: list[Callable[..., Any]] = [
     adding_dev_dependencies,
+    syncing_venv,
     creating_priority_config_files,
     syncing_venv,
     creating_project_root,
