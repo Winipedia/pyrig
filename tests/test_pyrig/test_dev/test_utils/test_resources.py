@@ -5,8 +5,8 @@ from pathlib import Path
 from pytest_mock import MockFixture
 from requests import RequestException
 
-from pyrig.src import decorators
-from pyrig.src.decorators import (
+from pyrig.dev.utils import resources
+from pyrig.dev.utils.resources import (
     return_resource_content_on_fetch_error,
     return_resource_file_content_on_exceptions,
 )
@@ -21,7 +21,7 @@ def test_return_resource_file_content_on_exceptions(
     resource_path = tmp_path / "test_resource.txt"
 
     mocker.patch(
-        decorators.__name__ + "." + get_resource_path.__name__,
+        resources.__name__ + "." + get_resource_path.__name__,
         return_value=resource_path,
     )
     # create resource file
@@ -43,7 +43,7 @@ def test_return_resource_content_on_fetch_error(
     # mock pyrig.resources.get_resource_path to return tmp_path / "test_resource.txt"
     resource_path = tmp_path / "test_resource.txt"
     mocker.patch(
-        decorators.__name__ + "." + get_resource_path.__name__,
+        resources.__name__ + "." + get_resource_path.__name__,
         return_value=resource_path,
     )
     # create resource file

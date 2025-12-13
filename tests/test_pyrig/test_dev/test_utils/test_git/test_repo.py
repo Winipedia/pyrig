@@ -3,7 +3,7 @@
 from github.Repository import Repository
 
 from pyrig.dev.cli.commands.protect_repo import get_default_ruleset_params
-from pyrig.dev.cli.utils.repo import (
+from pyrig.dev.utils.git.repo import (
     DEFAULT_RULESET_NAME,
     create_or_update_ruleset,
     get_all_rulesets,

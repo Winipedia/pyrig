@@ -56,7 +56,7 @@ jobs:
       run: git add pyproject.toml uv.lock
     - name: Protect Repository
       id: protect_repository
-      run: pyrig protect_repo
+      run: pyrig protect-repo
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
     - name: Run Pre Commit Hooks

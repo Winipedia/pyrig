@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 
-from pyrig.dev.tests.utils.decorators import autouse_module_fixture
+from pyrig.dev.utils.tests.decorators import autouse_module_fixture
 
 
 @autouse_module_fixture

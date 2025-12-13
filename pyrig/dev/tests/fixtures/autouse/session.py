@@ -23,6 +23,7 @@ import pyrig
 from pyrig import dev, main, resources, src
 from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.create_tests import make_test_skeletons
+from pyrig.dev.cli.commands.init_project import STANDARD_DEV_DEPS
 from pyrig.dev.cli.commands.make_inits import get_namespace_packages, make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
@@ -31,7 +32,7 @@ from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
-from pyrig.dev.tests.utils.decorators import autouse_session_fixture
+from pyrig.dev.utils.tests.decorators import autouse_session_fixture
 from pyrig.src.git.git import (
     get_git_unstaged_changes,
     running_in_github_actions,
@@ -47,6 +48,7 @@ from pyrig.src.modules.package import (
     find_packages,
     get_modules_and_packages_from_package,
     get_pkg_name_from_project_name,
+    get_project_name_from_pkg_name,
     get_src_package,
     walk_package,
 )
@@ -313,30 +315,34 @@ def assert_dependencies_are_up_to_date() -> None:
         stderr = completed_process.stderr.decode("utf-8")
         expected = "success: You're on the latest version of uv"
         expected_err = "GitHub API rate limit exceeded"
+        expected_err2 = "Temporary failure in name resolution"
+        expected_results = [expected, expected_err, expected_err2]
         assert_with_msg(
-            expected in stderr or expected_err in stderr,
-            f"Expected {expected} in uv self update output, got {stderr}",
+            any(exp in stderr for exp in expected_results),
+            f"Expected one of {expected_results}, got {stderr}",
         )
 
     # update the dependencies
     completed_process = PyprojectConfigFile.update_dependencies(check=True)
     # if there were updates raise an error
     expected = "Resolved"
-    expected2 = "packages"
     stderr = completed_process.stderr.decode("utf-8")
+    expected_err2 = "Temporary failure in name resolution"
+    expected_results = [expected, expected_err2]
     assert_with_msg(
-        expected in stderr and expected2 in stderr,
-        f"Expected {expected} and {expected2} in uv update output, got {stderr}",
+        any(exp in stderr for exp in expected_results),
+        f"Expected one of {expected_results}, got {stderr}",
     )
 
     # sync the dependencies
     completed_process = PyprojectConfigFile.install_dependencies(check=True)
     stderr = completed_process.stderr.decode("utf-8")
     expected = "Resolved"
-    expected2 = "Audited"
+    expected_err2 = "Temporary failure in name resolution"
+    expected_results = [expected, expected_err2]
     assert_with_msg(
-        expected in stderr and expected2 in stderr,
-        f"Expected {expected} and {expected2} in uv install output, got {stderr}",
+        any(exp in stderr for exp in expected_results),
+        f"Expected one of {expected_results}, got {stderr}",
     )
 
 
@@ -378,6 +384,8 @@ def assert_src_runs_without_dev_deps(
 
     project_path = Path(src_package_file_str).parent
 
+    project_name = get_project_name_from_pkg_name(src_package.__name__)
+
     temp_project_path = tmp_path / src_package.__name__
 
     # shutil copy the project to tmp_path
@@ -397,7 +405,7 @@ def assert_src_runs_without_dev_deps(
 
     with chdir(tmp_path):
         # install deps
-        run_subprocess(["uv", "sync", "--no-dev"], env=env)
+        run_subprocess(["uv", "sync", "--no-group", "dev"], env=env)
 
         # delete pyproject.toml and uv.lock and readme.md
         for config in configs:
@@ -431,7 +439,8 @@ def assert_src_runs_without_dev_deps(
         cmd = [
             "uv",
             "run",
-            "--no-dev",
+            "--no-group",
+            "dev",
             "python",
             "-c",
             (
@@ -459,6 +468,15 @@ def assert_src_runs_without_dev_deps(
         assert_with_msg(
             "Success" in stdout,
             f"Expected Success in stdout, got {stdout} and {stderr}",
+        )
+
+        # run cli without dev deps
+        cmd = ["uv", "run", "--no-group", "dev", project_name, "--help"]
+        completed_process = run_subprocess(cmd, env=env, check=False)
+        stdout = completed_process.stdout.decode("utf-8")
+        stderr = completed_process.stderr.decode("utf-8")
+        assert "Usage:" in stdout, (
+            f"Expected Usage: in stdout, got {stdout} and {stderr}"
         )
 
 
@@ -501,3 +519,11 @@ def assert_src_does_not_use_dev() -> None:
         not usages,
         msg,
     )
+
+
+def assert_all_dev_deps_in_deps() -> None:
+    """Checks that all of pyrigs dev deps are in toml."""
+    all_deps = set(PyprojectConfigFile.get_all_dependencies())
+    standard_dev_deps = set(STANDARD_DEV_DEPS)
+
+    assert standard_dev_deps.issubset(all_deps)

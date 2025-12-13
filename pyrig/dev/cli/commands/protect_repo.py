@@ -19,14 +19,14 @@ Example:
 
 from typing import Any
 
-from pyrig.dev.cli.utils.repo import (
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.dev.utils.git.repo import (
     DEFAULT_BRANCH,
     DEFAULT_RULESET_NAME,
     create_or_update_ruleset,
     get_repo,
     get_rules_payload,
 )
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.git.git import (
     get_github_repo_token,
     get_repo_owner_and_name_from_git,

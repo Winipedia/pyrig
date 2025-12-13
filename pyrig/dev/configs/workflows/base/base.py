@@ -1396,7 +1396,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Shell command that outputs the version with v prefix.
         """
-        return f"v$({PROJECT_MGT}  version --short)"
+        return f"v$({PROJECT_MGT} version --short)"
 
     @classmethod
     def insert_version_from_extract_version_step(cls) -> str:

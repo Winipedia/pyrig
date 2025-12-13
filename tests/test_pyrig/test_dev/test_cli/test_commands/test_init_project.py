@@ -11,14 +11,19 @@ from pytest_mock import MockFixture
 
 import pyrig
 from pyrig.dev.cli.commands.init_project import (
-    commit_initial_changes,
-    run_all_hooks,
-    run_create_root,
-    run_create_tests,
+    adding_dev_dependencies,
+    committing_initial_changes,
+    creating_priority_config_files,
+    creating_project_root,
+    creating_test_files,
+    running_pre_commit_hooks,
+    running_tests,
+    syncing_venv,
 )
 from pyrig.dev.cli.subcommands import init
+from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.modules.module import to_path
+from pyrig.src.modules.module import make_obj_importpath, to_path
 from pyrig.src.modules.package import get_project_name_from_pkg_name
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import PROJECT_MGT, PROJECT_MGT_RUN_ARGS
@@ -27,35 +32,64 @@ from pyrig.src.testing.assertions import assert_with_msg
 logger = logging.getLogger(__name__)
 
 
-def test_run_create_root(mocker: MockFixture) -> None:
+def test_adding_dev_dependencies(mocker: MockFixture) -> None:
+    """Test function."""
+    mock = mocker.patch("subprocess.run")
+    adding_dev_dependencies()
+    mock.assert_called_once()
+
+
+def test_running_tests(mocker: MockFixture) -> None:
+    """Test function."""
+    mock = mocker.patch("subprocess.run")
+    running_tests()
+    mock.assert_called_once()
+
+
+def test_creating_priority_config_files(mocker: MockFixture) -> None:
+    """Test func."""
+    mock = mocker.patch(make_obj_importpath(ConfigFile.init_priority_config_files))
+    creating_priority_config_files()
+    mock.assert_called_once()
+
+
+def test_creating_project_root(mocker: MockFixture) -> None:
     """Test func for run_create_root."""
     # mock the real underlying subprocess.run from subprocess pkg
+    mock = mocker.patch("subprocess.run")
+    creating_project_root()
+    mock.assert_called_once()
+
+
+def test_syncing_venv(mocker: MockFixture) -> None:
+    """Test func for sync_venv."""
+    # mock the real underlying subprocess.run from subprocess pkg
     mock_run = mocker.patch("subprocess.run")
-    run_create_root()
+    syncing_venv()
     mock_run.assert_called_once()
 
 
-def test_run_create_tests(mocker: MockFixture) -> None:
+def test_creating_test_files(mocker: MockFixture) -> None:
     """Test func for run_create_tests."""
     # mock the real underlying subprocess.run from subprocess pkg
     mock_run = mocker.patch("subprocess.run")
-    run_create_tests()
+    creating_test_files()
     mock_run.assert_called_once()
 
 
-def test_commit_initial_changes(mocker: MockFixture) -> None:
+def test_committing_initial_changes(mocker: MockFixture) -> None:
     """Test func for commit_initial_changes."""
     # mock the real underlying subprocess.run from subprocess pkg
     mock_run = mocker.patch("subprocess.run")
-    commit_initial_changes()
+    committing_initial_changes()
     mock_run.assert_called_once()
 
 
-def test_run_all_hooks(mocker: MockFixture) -> None:
+def test_running_pre_commit_hooks(mocker: MockFixture) -> None:
     """Test func for run_all_hooks."""
     # mock the real underlying subprocess.run from subprocess pkg
     mock_run = mocker.patch("subprocess.run")
-    run_all_hooks()
+    running_pre_commit_hooks()
     mock_run.assert_called()
 
 

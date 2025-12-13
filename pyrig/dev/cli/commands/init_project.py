@@ -27,20 +27,61 @@ from collections.abc import Callable
 from typing import Any
 
 import pyrig
-from pyrig.dev.configs.base.base import ConfigFile
-from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.configs.testing.conftest import ConftestConfigFile
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.mgt import (
-    get_project_mgt_run_pyrig_cli_cmd_args,
-)
+from pyrig.src.project.mgt import PROJECT_MGT, get_pyrig_cli_cmd_args
 from pyrig.src.string import make_name_from_obj
 
 logger = logging.getLogger(__name__)
 
 
-def run_create_root() -> None:
+STANDARD_DEV_DEPS: list[str] = [
+    "bandit",
+    "mypy",
+    "pillow",
+    "pre-commit",
+    "pygithub",
+    "pytest",
+    "pytest-mock",
+    "pytest-cov",
+    "ruff",
+    "ty",
+    "types-defusedxml",
+    "types-pyinstaller",
+    "types-pyyaml",
+    "types-setuptools",
+    "types-tqdm",
+    "pyinstaller",
+]
+
+
+def adding_dev_dependencies() -> None:
+    """Install development dependencies.
+
+    This installs the dev dependencies listed in pyproject.toml.
+    """
+    run_subprocess([PROJECT_MGT, "add", "--group", "dev", *STANDARD_DEV_DEPS])
+
+
+def creating_priority_config_files() -> None:
+    """Create priority config files.
+
+    This creates the priority config files that are required for
+    the other setup steps.
+    """
+    from pyrig.dev.configs.base.base import ConfigFile  # noqa: PLC0415
+
+    ConfigFile.init_priority_config_files()
+
+
+def syncing_venv() -> None:
+    """Sync the virtual environment.
+
+    This installs the dependencies listed in pyproject.toml.
+    """
+    run_subprocess([PROJECT_MGT, "sync"])
+
+
+def creating_project_root() -> None:
     """Execute the create-root CLI command via subprocess.
 
     Invokes `uv run pyrig create-root` to generate all config files
@@ -48,10 +89,10 @@ def run_create_root() -> None:
     """
     from pyrig.dev.cli.subcommands import mkroot  # noqa: PLC0415
 
-    run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(mkroot))
+    run_subprocess(get_pyrig_cli_cmd_args(mkroot))
 
 
-def run_create_tests() -> None:
+def creating_test_files() -> None:
     """Execute the create-tests CLI command via subprocess.
 
     Invokes `uv run pyrig create-tests` to generate test skeleton
@@ -59,10 +100,34 @@ def run_create_tests() -> None:
     """
     from pyrig.dev.cli.subcommands import mktests  # noqa: PLC0415
 
-    run_subprocess(get_project_mgt_run_pyrig_cli_cmd_args(mktests))
+    run_subprocess(get_pyrig_cli_cmd_args(mktests))
 
 
-def commit_initial_changes() -> None:
+def running_pre_commit_hooks() -> None:
+    """Run all pre-commit hooks.
+
+    This runs all pre-commit hooks to ensure the codebase is
+    in a clean, linted, and formatted state.
+    """
+    from pyrig.dev.configs.git.pre_commit import (  # noqa: PLC0415
+        PreCommitConfigConfigFile,
+    )
+
+    PreCommitConfigConfigFile.run_hooks(add_before_commit=True)
+
+
+def running_tests() -> None:
+    """Run the test suite.
+
+    This executes the test suite to verify that everything is
+    working correctly after initialization.
+    """
+    from pyrig.dev.configs.testing.conftest import ConftestConfigFile  # noqa: PLC0415
+
+    ConftestConfigFile.run_tests()
+
+
+def committing_initial_changes() -> None:
     """Commit all initial changes.
 
     This commits all changes made during initialization in a single commit.
@@ -73,24 +138,15 @@ def commit_initial_changes() -> None:
     )
 
 
-def run_all_hooks() -> None:
-    """Run all pre-commit hooks.
-
-    This runs all pre-commit hooks to ensure the codebase is
-    in a clean, linted, and formatted state.
-    """
-    PreCommitConfigConfigFile.run_hooks(add_before_commit=True)
-
-
 SETUP_STEPS: list[Callable[..., Any]] = [
-    ConfigFile.init_priority_config_files,  # write dev deps to pyproject.toml
-    PyprojectConfigFile.install_dependencies,  # to install dev deps
-    PyprojectConfigFile.update_dependencies,  # to update dev deps
-    run_create_root,
-    run_create_tests,
-    run_all_hooks,
-    ConftestConfigFile.run_tests,
-    commit_initial_changes,
+    adding_dev_dependencies,
+    creating_priority_config_files,
+    syncing_venv,
+    creating_project_root,
+    creating_test_files,
+    running_pre_commit_hooks,
+    running_tests,
+    committing_initial_changes,
 ]
 
 
@@ -112,6 +168,7 @@ def init_project() -> None:
     """
     # for init set log level to info
     logging.basicConfig(level=logging.INFO)
+
     for step in SETUP_STEPS:
         step_name = make_name_from_obj(step, join_on=" ")
         logger.info(step_name)

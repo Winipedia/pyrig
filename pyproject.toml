@@ -80,7 +80,7 @@ fixable = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = [
+"**/tests/**/*.py" = [
     "S101",
 ]
 
@@ -106,5 +106,5 @@ exclude_dirs = [
 
 [tool.bandit.assert_used]
 skips = [
-    "*test_*.py",
+    "*/tests/*.py",
 ]

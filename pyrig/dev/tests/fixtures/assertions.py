@@ -15,7 +15,7 @@ from pyrig import main
 from pyrig.dev.cli.commands.create_tests import make_test_skeletons
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.python.main import MainConfigFile
-from pyrig.dev.tests.utils.decorators import session_fixture
+from pyrig.dev.utils.tests.decorators import session_fixture
 from pyrig.src.modules.module import (
     get_module_content_as_str,
     get_module_name_replacing_start_module,

@@ -20,8 +20,9 @@ from typing import Any, Literal
 import requests
 from packaging.version import Version
 
+from pyrig.dev.cli.commands.init_project import STANDARD_DEV_DEPS
 from pyrig.dev.configs.base.base import TomlConfigFile
-from pyrig.src.decorators import return_resource_content_on_fetch_error
+from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.src.git.git import get_repo_owner_and_name_from_git
 from pyrig.src.modules.package import (
     get_pkg_name_from_cwd,
@@ -32,7 +33,6 @@ from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.testing.convention import (
     COVERAGE_THRESHOLD,
-    TEST_MODULE_PREFIX,
     TESTS_PACKAGE_NAME,
 )
 
@@ -135,7 +135,7 @@ class PyprojectConfigFile(TomlConfigFile):
                         "ignore": ["D203", "D213", "COM812", "ANN401"],
                         "fixable": ["ALL"],
                         "per-file-ignores": {
-                            f"{TESTS_PACKAGE_NAME}/**/*.py": ["S101"],
+                            f"**/{TESTS_PACKAGE_NAME}/**/*.py": ["S101"],
                         },
                         "pydocstyle": {"convention": "google"},
                     },
@@ -157,7 +157,9 @@ class PyprojectConfigFile(TomlConfigFile):
                         ".*",
                     ],
                     "assert_used": {
-                        "skips": [f"*{TEST_MODULE_PREFIX}*.py"],
+                        "skips": [
+                            f"*/{TESTS_PACKAGE_NAME}/*.py",
+                        ],
                     },
                 },
             },
@@ -308,30 +310,8 @@ class PyprojectConfigFile(TomlConfigFile):
         Returns:
             Sorted list of standard dev dependencies.
         """
-        standard_dev_dependencies: list[str] = [
-            "bandit",
-            "mypy",
-            "pillow",
-            "pre-commit",
-            "pygithub",
-            "pytest",
-            "pytest-mock",
-            "pytest-cov",
-            "ruff",
-            "ty",
-            "types-defusedxml",
-            "types-pyinstaller",
-            "types-pyyaml",
-            "types-setuptools",
-            "types-tqdm",
-            "pyinstaller",
-        ]
         # remove if already in normal dependencies
-        standard_dev_dependencies = [
-            dep
-            for dep in standard_dev_dependencies
-            if dep not in cls.get_dependencies()
-        ]
+        standard_dev_dependencies = set(STANDARD_DEV_DEPS) - set(cls.get_dependencies())
         # sort the dependencies
         return sorted(standard_dev_dependencies)
 
