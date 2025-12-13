@@ -636,7 +636,7 @@ class Workflow(YamlConfigFile):
     def steps_core_installed_setup(
         cls,
         *,
-        no_dev: bool,
+        no_dev: bool = False,
         python_version: str | None = None,
         repo_token: bool = False,
     ) -> list[dict[str, Any]]:
@@ -661,7 +661,7 @@ class Workflow(YamlConfigFile):
     def steps_core_matrix_setup(
         cls,
         *,
-        no_dev: bool,
+        no_dev: bool = False,
         python_version: str | None = None,
         repo_token: bool = False,
     ) -> list[dict[str, Any]]:
@@ -997,7 +997,7 @@ class Workflow(YamlConfigFile):
     def step_install_python_dependencies(
         cls,
         *,
-        no_dev: bool,
+        no_dev: bool = False,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a step that installs Python dependencies.
