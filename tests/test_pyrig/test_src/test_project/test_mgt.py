@@ -2,6 +2,8 @@
 
 import pyrig
 from pyrig.src.project.mgt import (
+    get_project_mgt_run_pyrig_cli_cmd_args,
+    get_project_mgt_run_pyrig_cli_cmd_script,
     get_pyrig_cli_cmd_args,
     get_pyrig_cli_cmd_script,
     get_script_from_args,
@@ -44,3 +46,24 @@ def test_get_pyrig_cli_cmd_script() -> None:
     expected = f"{pyrig.__name__} {get_pyrig_cli_cmd_args.__name__.replace('_', '-')}"
 
     assert args == expected
+
+
+def test_get_project_mgt_run_pyrig_cli_cmd_args() -> None:
+    """Test function."""
+    args = get_project_mgt_run_pyrig_cli_cmd_args(get_pyrig_cli_cmd_args)
+    expected = [
+        "uv",
+        "run",
+        pyrig.__name__,
+        get_pyrig_cli_cmd_args.__name__.replace("_", "-"),
+    ]
+
+    assert args == expected
+
+
+def test_get_project_mgt_run_pyrig_cli_cmd_script() -> None:
+    """Test function."""
+    script = get_project_mgt_run_pyrig_cli_cmd_script(get_pyrig_cli_cmd_args)
+    expected = "uv run pyrig get-pyrig-cli-cmd-args"
+
+    assert script == expected
