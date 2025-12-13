@@ -311,6 +311,7 @@ class PyprojectConfigFile(TomlConfigFile):
         standard_dev_dependencies: list[str] = [
             "bandit",
             "mypy",
+            "pillow",
             "pre-commit",
             "pytest",
             "pytest-mock",

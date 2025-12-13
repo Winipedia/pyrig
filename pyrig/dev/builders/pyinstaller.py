@@ -11,6 +11,7 @@ from pathlib import Path
 from types import ModuleType
 
 from PIL import Image
+from PyInstaller.__main__ import run
 
 import pyrig
 from pyrig import resources
@@ -47,8 +48,6 @@ class PyInstallerBuilder(Builder):
         Args:
             temp_artifacts_dir: Directory where the executable will be created.
         """
-        from PyInstaller.__main__ import run  # noqa: PLC0415
-
         options = cls.get_pyinstaller_options(temp_artifacts_dir)
         run(options)
 

@@ -14,7 +14,6 @@ dependencies = [
     "dotenv",
     "packaging",
     "pathspec",
-    "pillow",
     "pygithub",
     "pyyaml",
     "setuptools",
@@ -35,6 +34,7 @@ pyrig = "pyrig.dev.cli.cli:main"
 dev = [
     "bandit",
     "mypy",
+    "pillow",
     "pre-commit",
     "pyinstaller",
     "pytest",
