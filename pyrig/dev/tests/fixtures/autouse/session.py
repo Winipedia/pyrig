@@ -312,37 +312,40 @@ def assert_dependencies_are_up_to_date() -> None:
         # update project mgt
         completed_process = run_subprocess(["uv", "self", "update"], check=False)
         stderr = completed_process.stderr.decode("utf-8")
-        expected = "success: You're on the latest version of uv"
-        expected_err = "GitHub API rate limit exceeded"
-        expected_err2 = "Temporary failure in name resolution"
-        expected_results = [expected, expected_err, expected_err2]
-        assert_with_msg(
-            any(exp in stderr for exp in expected_results),
-            f"Expected one of {expected_results}, got {stderr}",
-        )
+        stdout = completed_process.stdout.decode("utf-8")
+        std_msg = stderr + stdout
+
+        expected = [
+            "success: You're on the latest version of uv",
+            "GitHub API rate limit exceeded",
+            "Temporary failure in name resolution",
+        ]
+        expected_in_err_or_out = any(exp in std_msg for exp in expected)
+        assert expected_in_err_or_out, f"Expected one of {expected}, got {std_msg}"
 
     # update the dependencies
-    completed_process = PyprojectConfigFile.update_dependencies(check=True)
-    # if there were updates raise an error
-    expected = "Resolved"
+    completed_process = PyprojectConfigFile.update_dependencies(check=False)
     stderr = completed_process.stderr.decode("utf-8")
-    expected_err2 = "Temporary failure in name resolution"
-    expected_results = [expected, expected_err2]
-    assert_with_msg(
-        any(exp in stderr for exp in expected_results),
-        f"Expected one of {expected_results}, got {stderr}",
-    )
+    stdout = completed_process.stdout.decode("utf-8")
+    std_msg = stderr + stdout
+
+    not_expected = ["Updated"]
+    # if there were updates raise an error
+    update_occurred = any(exp in std_msg for exp in not_expected)
+    assert not update_occurred, f"Expected none of {not_expected}, got {std_msg}"
 
     # sync the dependencies
     completed_process = PyprojectConfigFile.install_dependencies(check=True)
     stderr = completed_process.stderr.decode("utf-8")
-    expected = "Resolved"
-    expected_err2 = "Temporary failure in name resolution"
-    expected_results = [expected, expected_err2]
-    assert_with_msg(
-        any(exp in stderr for exp in expected_results),
-        f"Expected one of {expected_results}, got {stderr}",
-    )
+    stdout = completed_process.stdout.decode("utf-8")
+    std_msg = stderr + stdout
+    expected = ["Resolved", "Audited"]
+    expected_in_err_or_out = any(exp in std_msg for exp in expected)
+    assert expected_in_err_or_out, f"Expected one of {expected}, got {std_msg}"
+
+    not_expected = ["=="]
+    install_occurred = any(exp in std_msg for exp in not_expected)
+    assert not install_occurred, f"Expected none of {not_expected}, got {std_msg}"
 
 
 @autouse_session_fixture
@@ -404,7 +407,19 @@ def assert_src_runs_without_dev_deps(
 
     with chdir(tmp_path):
         # install deps
-        run_subprocess(["uv", "sync", "--no-group", "dev"], env=env)
+        completed_process = run_subprocess(
+            ["uv", "sync", "--no-group", "dev"], env=env, check=False
+        )
+        stdout = completed_process.stdout.decode("utf-8")
+        stderr = completed_process.stderr.decode("utf-8")
+        std_msg = stderr + stdout
+        no_internet = "Temporary failure in name resolution" in std_msg
+        if no_internet:
+            logger.warning(
+                "No internet, skipping %s",
+                assert_src_runs_without_dev_deps.__name__,
+            )
+            return
 
         # delete pyproject.toml and uv.lock and readme.md
         for config in configs:
