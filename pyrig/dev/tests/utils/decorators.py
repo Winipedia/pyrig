@@ -22,7 +22,7 @@ import functools
 
 import pytest
 
-from pyrig.src.git.github.github import running_in_github_actions
+from pyrig.src.git.git import running_in_github_actions
 
 #: Skip marker for fixture tests that cannot be called directly.
 skip_fixture_test: pytest.MarkDecorator = functools.partial(

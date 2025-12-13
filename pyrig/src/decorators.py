@@ -13,7 +13,7 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
 import pyrig
 from pyrig import resources
-from pyrig.src.git.github.github import git_add_file
+from pyrig.src.git.git import git_add_file
 from pyrig.src.modules.package import get_pkg_name_from_cwd
 from pyrig.src.resource import get_resource_path
 

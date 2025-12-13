@@ -112,7 +112,8 @@ class HealthCheckWorkflow(Workflow):
         """
         return [
             *cls.steps_core_matrix_setup(
-                python_version=cls.insert_matrix_python_version()
+                python_version=cls.insert_matrix_python_version(),
+                no_dev=False,
             ),
             cls.step_protect_repository(),
             cls.step_run_pre_commit_hooks(),

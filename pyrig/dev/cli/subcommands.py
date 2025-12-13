@@ -5,13 +5,6 @@ IMPORTANT: All funcs in this file will be added as subcommands.
 So best to define the logic elsewhere and just call it here in a wrapper.
 """
 
-from pyrig.dev.cli.commands.build_artifacts import build_artifacts
-from pyrig.dev.cli.commands.create_root import make_project_root
-from pyrig.dev.cli.commands.create_tests import make_test_skeletons
-from pyrig.dev.cli.commands.init_project import init_project
-from pyrig.dev.cli.commands.make_inits import make_init_files
-from pyrig.dev.cli.commands.protect_repo import protect_repository
-
 
 def mkroot() -> None:
     """Creates the root of the project.
@@ -20,6 +13,8 @@ def mkroot() -> None:
     and tests package where they are missing. It does not overwrite any
     existing files.
     """
+    from pyrig.dev.cli.commands.create_root import make_project_root  # noqa: PLC0415
+
     make_project_root()
 
 
@@ -30,6 +25,8 @@ def mktests() -> None:
     package. It does not overwrite any existing tests.
     Tests are also automatically generated when missing by running pytest.
     """
+    from pyrig.dev.cli.commands.create_tests import make_test_skeletons  # noqa: PLC0415
+
     make_test_skeletons()
 
 
@@ -39,6 +36,8 @@ def mkinits() -> None:
     This creates __init__.py files for all packages and modules
     that are missing them. It does not overwrite any existing files.
     """
+    from pyrig.dev.cli.commands.make_inits import make_init_files  # noqa: PLC0415
+
     make_init_files()
 
 
@@ -49,6 +48,8 @@ def init() -> None:
     It will init all config files, create the root, create tests, and run
     all pre-commit hooks and tests.
     """
+    from pyrig.dev.cli.commands.init_project import init_project  # noqa: PLC0415
+
     init_project()
 
 
@@ -57,6 +58,8 @@ def build() -> None:
 
     Invokes every subclass of Builder in the builder package.
     """
+    from pyrig.dev.cli.commands.build_artifacts import build_artifacts  # noqa: PLC0415
+
     build_artifacts()
 
 
@@ -65,4 +68,6 @@ def protect_repo() -> None:
 
     This will set secure repo settings and add a branch protection rulesets.
     """
+    from pyrig.dev.cli.commands.protect_repo import protect_repository  # noqa: PLC0415
+
     protect_repository()

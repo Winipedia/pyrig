@@ -69,7 +69,7 @@ class BuildWorkflow(Workflow):
             List of build steps, or placeholder if no builders defined.
         """
         return [
-            *cls.steps_core_matrix_setup(),
+            *cls.steps_core_matrix_setup(no_dev=True),
             cls.step_build_artifacts(),
             cls.step_upload_artifacts(),
         ]

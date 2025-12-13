@@ -12,7 +12,7 @@ Key functions:
 
 Attributes:
     PROJECT_MGT: The project management tool name ("uv").
-    PROJECT_MGT_RUN_ARGS: Base args for running commands (["uv", "run"]).
+    PROJECT_MGT_RUN_ARGS: Base args for running commands ([*PROJECT_MGT_RUN_ARGS]).
     RUN_PYTHON_MODULE_ARGS: Base args for running Python modules.
 
 Example:
@@ -72,20 +72,40 @@ def get_run_python_module_args(module: ModuleType) -> list[str]:
     return [*RUN_PYTHON_MODULE_ARGS, make_obj_importpath(module)]
 
 
-def get_project_mgt_run_module_args(module: ModuleType) -> list[str]:
+def get_pyrig_cli_cmd_args(cmd: Callable[..., Any]) -> list[str]:
+    """Returns cli args for pyrig cmd execution."""
+    return [get_project_name_from_pkg_name(pyrig.__name__), cmd.__name__]  # ty:ignore[unresolved-attribute]
+
+
+def get_pyrig_cli_cmd_script(cmd: Callable[..., Any]) -> str:
+    """Returns cli script for pyrig cmd execution."""
+    args = get_pyrig_cli_cmd_args(cmd)
+    return get_script_from_args(args)
+
+
+def get_project_mgt_run_module_args(
+    module: ModuleType, *, no_sync: bool = True
+) -> list[str]:
     """Build arguments to run a module through the project manager.
 
     Args:
         module: The module to run.
+        no_sync: Whether to add the --no-sync flag.
 
     Returns:
-        A list of arguments: ["uv", "run", "python", "-m", "module.path"].
+        A list of arguments: [*PROJECT_MGT_RUN_ARGS, "python", "-m", "module.path"].
     """
-    return [*PROJECT_MGT_RUN_ARGS, *get_run_python_module_args(module)]
+    mgt_run_args = PROJECT_MGT_RUN_ARGS
+    if no_sync:
+        mgt_run_args.append("--no-sync")
+    return [*mgt_run_args, *get_run_python_module_args(module)]
 
 
 def get_project_mgt_run_cli_cmd_args(
-    cmd: Callable[[], Any] | None = None, extra_args: list[str] | None = None
+    cmd: Callable[[], Any] | None = None,
+    extra_args: list[str] | None = None,
+    *,
+    no_sync: bool = True,
 ) -> list[str]:
     """Build arguments to run a CLI command from the current project.
 
@@ -96,12 +116,17 @@ def get_project_mgt_run_cli_cmd_args(
         cmd: Optional CLI command function. If provided, its name is added
             as a subcommand (converted from snake_case to kebab-case).
         extra_args: Additional arguments to append to the command.
+        no_sync: wether to run with --no-sync flag
 
     Returns:
-        A list of arguments: ["uv", "run", "project-name", "subcommand", ...].
+        A list of arguments: [*PROJECT_MGT_RUN_ARGS, "project-name", "subcommand", ...].
     """
+    mgt_run_args = PROJECT_MGT_RUN_ARGS
+    if no_sync:
+        mgt_run_args.append("--no-sync")
+
     args = [
-        *PROJECT_MGT_RUN_ARGS,
+        *mgt_run_args,
         get_project_name_from_pkg_name(get_src_package().__name__),
     ]
     if cmd is not None:
@@ -115,6 +140,8 @@ def get_project_mgt_run_cli_cmd_args(
 def get_project_mgt_run_pyrig_cli_cmd_args(
     cmd: Callable[[], Any] | None = None,
     extra_args: list[str] | None = None,
+    *,
+    no_sync: bool = True,
 ) -> list[str]:
     """Build arguments to run a pyrig CLI command.
 
@@ -124,11 +151,12 @@ def get_project_mgt_run_pyrig_cli_cmd_args(
     Args:
         cmd: Optional CLI command function to invoke.
         extra_args: Additional arguments to append.
+        no_sync: wether to run with --no-sync flag
 
     Returns:
-        A list of arguments: ["uv", "run", "pyrig", "subcommand", ...].
+        A list of arguments: [*PROJECT_MGT_RUN_ARGS, "pyrig", "subcommand", ...].
     """
-    args = get_project_mgt_run_cli_cmd_args(cmd, extra_args)
+    args = get_project_mgt_run_cli_cmd_args(cmd, extra_args, no_sync=no_sync)
     args[len(PROJECT_MGT_RUN_ARGS)] = get_project_name_from_pkg_name(pyrig.__name__)
     return args
 
@@ -145,16 +173,21 @@ def get_project_mgt_run_cli_cmd_script(cmd: Callable[[], Any]) -> str:
     return get_script_from_args(get_project_mgt_run_cli_cmd_args(cmd))
 
 
-def get_project_mgt_run_pyrig_cli_cmd_script(cmd: Callable[[], Any]) -> str:
+def get_project_mgt_run_pyrig_cli_cmd_script(
+    cmd: Callable[[], Any], *, no_sync: bool = True
+) -> str:
     """Get a shell script string to run a pyrig CLI command.
 
     Args:
         cmd: The pyrig CLI command function to invoke.
+        no_sync: wether to run with --no-sync flag
 
     Returns:
         A shell-executable command string.
     """
-    return get_script_from_args(get_project_mgt_run_pyrig_cli_cmd_args(cmd))
+    return get_script_from_args(
+        get_project_mgt_run_pyrig_cli_cmd_args(cmd, no_sync=no_sync)
+    )
 
 
 def get_python_module_script(module: ModuleType) -> str:

@@ -56,7 +56,7 @@ class TestWorkflow:
 
     def test_steps_core_installed_setup(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for steps_core_installed_setup."""
-        result = my_test_workflow.steps_core_installed_setup()
+        result = my_test_workflow.steps_core_installed_setup(no_dev=True)
         assert_with_msg(len(result) > 0, "Expected steps to be non-empty")
 
     def test_steps_configure_keyring_if_needed(
@@ -292,7 +292,7 @@ class TestWorkflow:
 
     def test_steps_core_matrix_setup(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for steps_core_matrix_setup."""
-        result = my_test_workflow.steps_core_matrix_setup()
+        result = my_test_workflow.steps_core_matrix_setup(no_dev=True)
         assert_with_msg(len(result) > 0, "Expected steps to be non-empty")
 
     def test_step_opt_out_of_workflow(self, my_test_workflow: type[Workflow]) -> None:
@@ -338,11 +338,6 @@ class TestWorkflow:
         result = my_test_workflow.step_patch_version()
         assert_with_msg("run" in result, "Expected 'run' in step")
 
-    def test_step_update_dependencies(self, my_test_workflow: type[Workflow]) -> None:
-        """Test method for step_update_dependencies."""
-        result = my_test_workflow.step_update_dependencies()
-        assert_with_msg("run" in result, "Expected 'run' in step")
-
     def test_step_add_dependency_updates_to_git(
         self, my_test_workflow: type[Workflow]
     ) -> None:
@@ -364,7 +359,7 @@ class TestWorkflow:
         self, my_test_workflow: type[Workflow]
     ) -> None:
         """Test method for step_install_python_dependencies."""
-        result = my_test_workflow.step_install_python_dependencies()
+        result = my_test_workflow.step_install_python_dependencies(no_dev=True)
         assert_with_msg("run" in result, "Expected 'run' in step")
 
     def test_step_setup_keyring(self, my_test_workflow: type[Workflow]) -> None:

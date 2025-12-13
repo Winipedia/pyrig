@@ -5,10 +5,7 @@ a minimal test file that ensures pytest runs even when no other
 tests exist.
 """
 
-from pyrig.dev.cli.commands import create_tests
 from pyrig.dev.configs.base.base import PythonTestsConfigFile
-from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.mgt import get_project_mgt_run_module_args
 
 
 class ZeroTestConfigFile(PythonTestsConfigFile):
@@ -44,12 +41,3 @@ def test_zero() -> None:
     Exists so that when no tests are written yet the base fixtures are executed.
     """
 '''
-
-    @classmethod
-    def create_tests(cls) -> None:
-        """Generate test skeleton files for all source modules.
-
-        Runs pyrig's test creation module to generate test files
-        that mirror the source directory structure.
-        """
-        run_subprocess(get_project_mgt_run_module_args(create_tests))

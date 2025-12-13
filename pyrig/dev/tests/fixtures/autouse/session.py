@@ -32,7 +32,7 @@ from pyrig.dev.configs.pyproject import (
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.tests.utils.decorators import autouse_session_fixture
-from pyrig.src.git.github.github import (
+from pyrig.src.git.git import (
     get_git_unstaged_changes,
     running_in_github_actions,
 )
@@ -51,6 +51,7 @@ from pyrig.src.modules.package import (
     walk_package,
 )
 from pyrig.src.os.os import run_subprocess
+from pyrig.src.project.mgt import PROJECT_MGT_RUN_ARGS
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
@@ -115,15 +116,21 @@ def assert_root_is_correct() -> None:
         DotExperimentConfigFile()
 
     subclasses = ConfigFile.get_all_subclasses()
-    all_correct = all(subclass.is_correct() for subclass in subclasses)
+    incorrect_cfs = [cf for cf in subclasses if not cf.is_correct()]
 
-    if not all_correct:
+    if incorrect_cfs:
+        # init all per test run
         make_project_root()
 
-    assert_with_msg(
-        all_correct,
-        "Config files are not correct. Corrected the files. Please verify the changes.",
-    )
+    msg = f"""Found {len(incorrect_cfs)} incorrect ConfigFiles.
+    Attempted correcting them automatically.
+    Please verify the changes at the following paths:
+"""
+    for cf in incorrect_cfs:
+        msg += f"""
+        - {cf.get_path()}
+        """
+    assert_with_msg(not incorrect_cfs, msg)
 
 
 @autouse_session_fixture
@@ -400,7 +407,7 @@ def assert_src_runs_without_dev_deps(
         # assert pytest is not installed
         dev_dep = "pytest"
         installed = run_subprocess(
-            ["uv", "run", "pip", "show", dev_dep], check=False, env=env
+            [*PROJECT_MGT_RUN_ARGS, "pip", "show", dev_dep], check=False, env=env
         )
         stderr = installed.stderr.decode("utf-8")
         dev_dep_not_installed = f"not found: {dev_dep}" in stderr
@@ -410,7 +417,9 @@ def assert_src_runs_without_dev_deps(
         )
         # check pytest is not importable
         installed = run_subprocess(
-            ["uv", "run", "python", "-c", "import pytest"], check=False, env=env
+            [*PROJECT_MGT_RUN_ARGS, "python", "-c", "import pytest"],
+            check=False,
+            env=env,
         )
         stderr = installed.stderr.decode("utf-8")
         assert_with_msg(

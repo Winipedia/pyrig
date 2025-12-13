@@ -45,29 +45,26 @@ jobs:
       uses: astral-sh/setup-uv@main
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install Python Dependencies
-      id: install_python_dependencies
-      run: uv sync
     - name: Patch Version
       id: patch_version
       run: uv version --bump patch && git add pyproject.toml
-    - name: Update Dependencies
-      id: update_dependencies
-      run: uv lock --upgrade && uv sync
+    - name: Install Python Dependencies
+      id: install_python_dependencies
+      run: uv lock --upgrade && uv sync && .venv/bin/activate
     - name: Add Dependency Updates To Git
       id: add_dependency_updates_to_git
       run: git add pyproject.toml uv.lock
     - name: Protect Repository
       id: protect_repository
-      run: uv run pyrig protect-repo
+      run: pyrig protect_repo
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
     - name: Run Pre Commit Hooks
       id: run_pre_commit_hooks
-      run: uv run pre-commit run --all-files
+      run: pre-commit run --all-files
     - name: Run Tests
       id: run_tests
-      run: uv run pytest --log-cli-level=INFO --cov-report=xml
+      run: pytest --log-cli-level=INFO --cov-report=xml
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
     - name: Upload Coverage Report
