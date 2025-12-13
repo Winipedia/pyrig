@@ -42,6 +42,10 @@ RUN_PYTHON_MODULE_ARGS = ["python", "-m"]
 """Base arguments for running Python modules."""
 
 
+PROJECT_MGT_RUN_SCRIPT = " ".join(PROJECT_MGT_RUN_ARGS)
+"""Base script for running commands with the project manager."""
+
+
 def get_script_from_args(args: Iterable[str]) -> str:
     """Convert command arguments to a shell script string.
 
@@ -65,4 +69,15 @@ def get_pyrig_cli_cmd_args(cmd: Callable[..., Any]) -> list[str]:
 def get_pyrig_cli_cmd_script(cmd: Callable[..., Any]) -> str:
     """Returns cli script for pyrig cmd execution."""
     args = get_pyrig_cli_cmd_args(cmd)
+    return get_script_from_args(args)
+
+
+def get_project_mgt_run_pyrig_cli_cmd_args(cmd: Callable[..., Any]) -> list[str]:
+    """Returns cli args for pyrig cmd execution through project mgt."""
+    return [*PROJECT_MGT_RUN_ARGS, *get_pyrig_cli_cmd_args(cmd)]
+
+
+def get_project_mgt_run_pyrig_cli_cmd_script(cmd: Callable[..., Any]) -> str:
+    """Returns cli script for pyrig cmd execution through project mgt."""
+    args = get_project_mgt_run_pyrig_cli_cmd_args(cmd)
     return get_script_from_args(args)

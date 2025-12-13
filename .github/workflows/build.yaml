@@ -15,6 +15,7 @@ defaults:
     shell: bash
 env:
   PYTHONDONTWRITEBYTECODE: 1
+  UV_NO_SYNC: 1
 jobs:
   build:
     strategy:

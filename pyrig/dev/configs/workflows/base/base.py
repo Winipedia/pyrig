@@ -18,7 +18,11 @@ from pyrig.src.modules.package import (
     DependencyGraph,
     get_src_package,
 )
-from pyrig.src.project.mgt import PROJECT_MGT, get_pyrig_cli_cmd_script
+from pyrig.src.project.mgt import (
+    PROJECT_MGT,
+    PROJECT_MGT_RUN_SCRIPT,
+    get_project_mgt_run_pyrig_cli_cmd_script,
+)
 from pyrig.src.string import (
     make_name_from_obj,
     split_on_uppercase,
@@ -172,7 +176,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Dict of environment variables.
         """
-        return {"PYTHONDONTWRITEBYTECODE": 1}
+        return {"PYTHONDONTWRITEBYTECODE": 1, "UV_NO_SYNC": 1}
 
     # Workflow Conventions
     # ----------------------------------------------------------------------------
@@ -770,9 +774,10 @@ class Workflow(YamlConfigFile):
             step = {}
         if PyprojectConfigFile.get_package_name() == pyrig.__name__:
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
+        run = f"{PROJECT_MGT_RUN_SCRIPT} pytest --log-cli-level=INFO --cov-report=xml"
         return cls.get_step(
             step_func=cls.step_run_tests,
-            run="pytest --log-cli-level=INFO --cov-report=xml",
+            run=run,
             step=step,
         )
 
@@ -1008,8 +1013,7 @@ class Workflow(YamlConfigFile):
         install = f"{PROJECT_MGT} sync"
         if no_dev:
             install += " --no-group dev"
-        activate_venv = ".venv/bin/activate"
-        run = f"{upgrade} && {install} && {activate_venv}"
+        run = f"{upgrade} && {install}"
 
         return cls.get_step(
             step_func=cls.step_install_python_dependencies,
@@ -1033,7 +1037,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_setup_keyring,
-            run='python -c "import keyring; from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"',  # noqa: E501
+            run=f'{PROJECT_MGT_RUN_SCRIPT} python -c "import keyring; from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"',  # noqa: E501
             step=step,
         )
 
@@ -1055,7 +1059,7 @@ class Workflow(YamlConfigFile):
 
         return cls.get_step(
             step_func=cls.step_protect_repository,
-            run=get_pyrig_cli_cmd_script(protect_repo),
+            run=get_project_mgt_run_pyrig_cli_cmd_script(protect_repo),
             env={"REPO_TOKEN": cls.insert_repo_token()},
             step=step,
         )
@@ -1079,7 +1083,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_run_pre_commit_hooks,
-            run="pre-commit run --all-files",
+            run=f"{PROJECT_MGT_RUN_SCRIPT} pre-commit run --all-files",
             step=step,
         )
 
@@ -1229,7 +1233,7 @@ class Workflow(YamlConfigFile):
 
         return cls.get_step(
             step_func=cls.step_build_artifacts,
-            run=get_pyrig_cli_cmd_script(build),
+            run=get_project_mgt_run_pyrig_cli_cmd_script(build),
             step=step,
         )
 

@@ -13,6 +13,7 @@ defaults:
     shell: bash
 env:
   PYTHONDONTWRITEBYTECODE: 1
+  UV_NO_SYNC: 1
 jobs:
   publish:
     runs-on: ubuntu-latest
