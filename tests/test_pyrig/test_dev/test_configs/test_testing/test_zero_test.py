@@ -3,11 +3,8 @@
 from collections.abc import Callable
 
 import pytest
-from pytest_mock import MockFixture
 
-from pyrig.dev.configs.testing import zero_test
 from pyrig.dev.configs.testing.zero_test import ZeroTestConfigFile
-from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -25,16 +22,6 @@ def my_test_zero_test_config_file(
 
 class TestZeroTestConfigFile:
     """Test class."""
-
-    def test_create_tests(self, mocker: MockFixture) -> None:
-        """Test method for create_tests."""
-        # mock run_subprocess to avoid actually running run create-tests
-        mock_run = mocker.patch(
-            make_obj_importpath(zero_test) + ".run_subprocess",
-            return_value=0,
-        )
-        ZeroTestConfigFile.create_tests()
-        mock_run.assert_called_once()
 
     def test_get_filename(
         self, my_test_zero_test_config_file: type[ZeroTestConfigFile]

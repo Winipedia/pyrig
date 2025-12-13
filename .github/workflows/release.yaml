@@ -34,21 +34,18 @@ jobs:
       uses: astral-sh/setup-uv@main
       with:
         python-version: '3.14'
-    - name: Install Python Dependencies
-      id: install_python_dependencies
-      run: uv sync
     - name: Patch Version
       id: patch_version
       run: uv version --bump patch && git add pyproject.toml
-    - name: Update Dependencies
-      id: update_dependencies
-      run: uv lock --upgrade && uv sync
+    - name: Install Python Dependencies
+      id: install_python_dependencies
+      run: uv lock --upgrade && uv sync && .venv/bin/activate
     - name: Add Dependency Updates To Git
       id: add_dependency_updates_to_git
       run: git add pyproject.toml uv.lock
     - name: Run Pre Commit Hooks
       id: run_pre_commit_hooks
-      run: uv run pre-commit run --all-files
+      run: pre-commit run --all-files
     - name: Commit Added Changes
       id: commit_added_changes
       run: 'git commit --no-verify -m ''[skip ci] CI/CD: Committing possible added
@@ -58,10 +55,10 @@ jobs:
       run: git push
     - name: Create And Push Tag
       id: create_and_push_tag
-      run: git tag v$(uv version --short) && git push origin v$(uv version --short)
+      run: git tag v$(uv  version --short) && git push origin v$(uv  version --short)
     - name: Extract Version
       id: extract_version
-      run: echo "version=v$(uv version --short)" >> $GITHUB_OUTPUT
+      run: echo "version=v$(uv  version --short)" >> $GITHUB_OUTPUT
     - name: Download Artifacts From Workflow Run
       id: download_artifacts_from_workflow_run
       uses: actions/download-artifact@main

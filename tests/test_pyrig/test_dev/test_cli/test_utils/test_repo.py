@@ -3,17 +3,17 @@
 from github.Repository import Repository
 
 from pyrig.dev.cli.commands.protect_repo import get_default_ruleset_params
-from pyrig.src.git.github.github import (
-    get_github_repo_token,
-    get_repo_owner_and_name_from_git,
-)
-from pyrig.src.git.github.repo.repo import (
+from pyrig.dev.cli.utils.repo import (
     DEFAULT_RULESET_NAME,
     create_or_update_ruleset,
     get_all_rulesets,
     get_repo,
     get_rules_payload,
     ruleset_exists,
+)
+from pyrig.src.git.git import (
+    get_github_repo_token,
+    get_repo_owner_and_name_from_git,
 )
 from pyrig.src.testing.assertions import assert_with_msg
 

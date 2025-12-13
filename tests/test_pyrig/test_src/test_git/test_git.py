@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 import pyrig
-from pyrig.src.git.github.github import (
+from pyrig.src.git.git import (
     get_git_unstaged_changes,
     get_git_username,
     get_github_repo_token,

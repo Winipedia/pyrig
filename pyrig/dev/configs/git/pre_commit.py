@@ -11,7 +11,7 @@ from subprocess import CompletedProcess  # nosec: B404
 from typing import Any
 
 from pyrig.dev.configs.base.base import YamlConfigFile
-from pyrig.src.git.github.github import git_add_file
+from pyrig.src.git.git import git_add_file
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import (
     PROJECT_MGT_RUN_ARGS,

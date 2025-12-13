@@ -22,7 +22,7 @@ from packaging.version import Version
 
 from pyrig.dev.configs.base.base import TomlConfigFile
 from pyrig.src.decorators import return_resource_content_on_fetch_error
-from pyrig.src.git.github.github import get_repo_owner_and_name_from_git
+from pyrig.src.git.git import get_repo_owner_and_name_from_git
 from pyrig.src.modules.package import (
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
@@ -313,6 +313,7 @@ class PyprojectConfigFile(TomlConfigFile):
             "mypy",
             "pillow",
             "pre-commit",
+            "pygithub",
             "pytest",
             "pytest-mock",
             "pytest-cov",
@@ -324,6 +325,12 @@ class PyprojectConfigFile(TomlConfigFile):
             "types-setuptools",
             "types-tqdm",
             "pyinstaller",
+        ]
+        # remove if already in normal dependencies
+        standard_dev_dependencies = [
+            dep
+            for dep in standard_dev_dependencies
+            if dep not in cls.get_dependencies()
         ]
         # sort the dependencies
         return sorted(standard_dev_dependencies)

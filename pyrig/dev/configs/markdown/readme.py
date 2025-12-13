@@ -7,10 +7,10 @@ managing the project's README.md file with a standard header.
 from pathlib import Path
 
 import pyrig
+from pyrig.dev.cli.utils.repo import DEFAULT_BRANCH
 from pyrig.dev.configs.base.base import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.git.github.github import get_repo_owner_and_name_from_git
-from pyrig.src.git.github.repo.repo import DEFAULT_BRANCH
+from pyrig.src.git.git import get_repo_owner_and_name_from_git
 
 
 class ReadmeConfigFile(MarkdownConfigFile):

@@ -5,6 +5,7 @@ from types import ModuleType
 from pytest_mock import MockFixture
 
 from pyrig.src.project.mgt import (
+    PROJECT_MGT_RUN_ARGS,
     get_project_mgt_run_cli_cmd_args,
     get_project_mgt_run_cli_cmd_script,
     get_project_mgt_run_module_args,
@@ -59,7 +60,7 @@ def test_get_project_mgt_run_module_args(mocker: MockFixture) -> None:
     mock_module.__name__ = "test_module"
     result = get_project_mgt_run_module_args(mock_module)
     assert_with_msg(
-        result == ["uv", "run", "python", "-m", "test_module"],
+        result == [*PROJECT_MGT_RUN_ARGS, "python", "-m", "test_module"],
         f"Expected ['uv', 'run', 'python', '-m', 'test_module'], got {result}",
     )
 
@@ -99,7 +100,7 @@ def test_get_project_mgt_run_cli_cmd_args() -> None:
 
     result = get_project_mgt_run_cli_cmd_args(mock_cmd)
     assert_with_msg(
-        result == ["uv", "run", "pyrig", "mock-cmd"],
+        result == [*PROJECT_MGT_RUN_ARGS, "pyrig", "mock-cmd"],
         f"Expected ['uv', 'run', 'pyrig', 'mock-cmd'], got {result}",
     )
 
@@ -113,7 +114,7 @@ def test_get_project_mgt_run_pyrig_cli_cmd_args() -> None:
 
     result = get_project_mgt_run_pyrig_cli_cmd_args(mock_cmd)
     assert_with_msg(
-        result == ["uv", "run", "pyrig", "mock-cmd"],
+        result == [*PROJECT_MGT_RUN_ARGS, "pyrig", "mock-cmd"],
         f"Expected ['uv', 'run', 'pyrig', 'mock-cmd'], got {result}",
     )
 

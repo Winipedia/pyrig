@@ -5,11 +5,11 @@ from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
 
-import PyInstaller.__main__ as pyinstaller_main
 import pytest
 from PIL import Image
 from pytest_mock import MockFixture
 
+from pyrig.dev.builders import pyinstaller
 from pyrig.dev.builders.pyinstaller import PyInstallerBuilder
 from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.testing.assertions import assert_with_msg
@@ -135,7 +135,7 @@ class TestPyInstallerBuilder:
         mocker: MockFixture,
     ) -> None:
         """Test method for create_artifacts."""
-        mock_run = mocker.patch(make_obj_importpath(pyinstaller_main) + ".run")
+        mock_run = mocker.patch(make_obj_importpath(pyinstaller) + ".run")
         spy = mocker.spy(
             my_test_pyinstaller_builder,
             my_test_pyinstaller_builder.create_artifacts.__name__,
