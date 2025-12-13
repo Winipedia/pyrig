@@ -4,8 +4,6 @@ This module provides the ConftestConfigFile class for creating
 the tests/conftest.py file that configures pytest plugins.
 """
 
-from subprocess import CompletedProcess  # nosec: B404
-
 from pyrig.dev.configs.base.base import PythonTestsConfigFile
 from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.os.os import run_subprocess
@@ -41,13 +39,26 @@ pytest_plugins = ["{make_obj_importpath(conftest)}"]
 '''
 
     @classmethod
-    def run_tests(cls, *, check: bool = True) -> CompletedProcess[str]:
+    def is_correct(cls) -> bool:
+        """Check if the conftest.py file is valid.
+
+        Allows modifications as long as the file contains the required import.
+
+        Returns:
+            True if the file has required structure.
+        """
+        from pyrig.dev.tests import conftest  # noqa: PLC0415
+
+        return super().is_correct() or (
+            f'pytest_plugins = ["{make_obj_importpath(conftest)}"]'
+            in cls.get_file_content()
+        )
+
+    @classmethod
+    def run_tests(cls, *, check: bool = True) -> None:
         """Run the project's test suite using pytest.
 
         Args:
             check: Whether to raise on test failure.
-
-        Returns:
-            The completed process result.
         """
-        return run_subprocess([*PROJECT_MGT_RUN_ARGS, "pytest"], check=check)
+        run_subprocess([*PROJECT_MGT_RUN_ARGS, "pytest"], check=check)

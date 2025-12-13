@@ -16,7 +16,7 @@ import pyrig
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
-from pyrig.src.decorators import return_resource_content_on_fetch_error
+from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 
 
 class GitIgnoreConfigFile(ConfigFile):

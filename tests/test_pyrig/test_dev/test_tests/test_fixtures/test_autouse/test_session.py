@@ -3,7 +3,7 @@
 tests.test_pyrig.test_testing.test_tests.test_base.test_scopes.test_session
 """
 
-from pyrig.dev.tests.utils.decorators import skip_fixture_test
+from pyrig.dev.utils.tests.decorators import skip_fixture_test
 
 
 @skip_fixture_test
@@ -68,5 +68,11 @@ def test_assert_src_does_not_use_dev() -> None:
 
 @skip_fixture_test
 def test_assert_no_unstaged_changes() -> None:
+    """Test function."""
+    raise NotImplementedError
+
+
+@skip_fixture_test
+def test_assert_all_dev_deps_in_deps() -> None:
     """Test function."""
     raise NotImplementedError

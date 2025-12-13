@@ -26,6 +26,10 @@ def my_test_conftest_config_file(
 class TestConftestConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert ConftestConfigFile().is_correct()
+
     def test_get_content_str(
         self, my_test_conftest_config_file: type[ConftestConfigFile]
     ) -> None:
