@@ -12,6 +12,7 @@ from types import ModuleType
 
 from PIL import Image
 from PyInstaller.__main__ import run
+from PyInstaller.utils.hooks import collect_data_files
 
 import pyrig
 from pyrig import resources
@@ -90,31 +91,21 @@ class PyInstallerBuilder(Builder):
         ]
 
     @classmethod
-    def get_add_datas(cls) -> list[tuple[Path, Path]]:
+    def get_add_datas(cls) -> list[tuple[str, str]]:
         """Build the --add-data arguments for PyInstaller.
 
-        Traverses all resource packages and creates source/destination
-        path pairs for bundling.
+        Uses PyInstaller's collect_data_files to automatically gather
+        all data files from resource packages.
 
         Returns:
             List of (source_path, destination_path) tuples.
         """
-        add_datas: list[tuple[Path, Path]] = []
+        add_datas: list[tuple[str, str]] = []
         resources_pkgs = cls.get_all_resource_pkgs()
         for pkg in resources_pkgs:
-            pkg_path = Path(pkg.__path__[0])
-            # get the root of the pkg, which will be
-            # the path remove suufix get_resources_path_from_src_pkg
-            pkg_root = Path(
-                pkg_path.as_posix().removesuffix(
-                    cls.get_resources_path_from_src_pkg().as_posix()
-                )
-            ).parent
-            for path in [pkg_path, *pkg_path.rglob("*")]:
-                if path.is_file():
-                    continue
-                dest = path.relative_to(pkg_root)
-                add_datas.append((path, dest))
+            # collect_data_files returns list of (source, dest) tuples
+            pkg_datas = collect_data_files(pkg.__name__, include_py_files=True)
+            add_datas.extend(pkg_datas)
         return add_datas
 
     @classmethod
