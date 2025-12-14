@@ -310,10 +310,8 @@ class PyprojectConfigFile(TomlConfigFile):
         Returns:
             Sorted list of standard dev dependencies.
         """
-        # remove if already in normal dependencies
-        standard_dev_dependencies = set(STANDARD_DEV_DEPS) - set(cls.get_dependencies())
         # sort the dependencies
-        return sorted(standard_dev_dependencies)
+        return sorted(STANDARD_DEV_DEPS)
 
     @classmethod
     def get_dev_dependencies(cls) -> list[str]:
