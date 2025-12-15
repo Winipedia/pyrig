@@ -100,4 +100,7 @@ class BuildWorkflow(Workflow):
             cls.step_checkout_repository(),
             cls.step_install_container_engine(),
             cls.step_build_container_image(),
+            cls.step_make_dist_folder(),
+            cls.step_save_container_image(),
+            cls.step_upload_artifacts(),
         ]

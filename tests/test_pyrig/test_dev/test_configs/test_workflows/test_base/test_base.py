@@ -48,6 +48,16 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_step_save_container_image(self) -> None:
+        """Test method."""
+        step = Workflow.step_save_container_image()
+        assert "run" in step, f"Expected 'run' in step, got {step}"
+
+    def test_step_make_dist_folder(self) -> None:
+        """Test method."""
+        step = Workflow.step_make_dist_folder()
+        assert "run" in step, f"Expected 'run' in step, got {step}"
+
     def test_if_condition(self) -> None:
         """Test method."""
         condition = "condition"
