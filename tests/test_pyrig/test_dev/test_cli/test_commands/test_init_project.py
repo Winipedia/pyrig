@@ -23,6 +23,7 @@ from pyrig.dev.cli.commands.init_project import (
 from pyrig.dev.cli.subcommands import init
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.main import main
 from pyrig.src.modules.module import make_obj_importpath, to_path
 from pyrig.src.modules.package import get_project_name_from_pkg_name
 from pyrig.src.os.os import run_subprocess
@@ -196,8 +197,20 @@ def test_init_project(tmp_path: Path) -> None:
             expected in stdout.lower(),
             f"Expected {expected} in stdout, got {stdout}",
         )
-        #  assert running the main command raises the NotImplementedError
-        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project"])
+        #  assert running the main command works
+        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project", main.__name__])
+        stdout = res.stdout.decode("utf-8")
+        assert_with_msg(
+            "main" in stdout.lower(),
+            f"Expected 'main' in stdout, got {stdout}",
+        )
+
+        # asert callung version works
+        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project", "version"])
+        stdout = res.stdout.decode("utf-8")
+        assert f"{project_name} version 0.1.0" in stdout, (
+            f"Expected 'version' in stdout, got {stdout}"
+        )
 
     pkg_dir = src_project_dir / "src_project"
     assert_with_msg(
