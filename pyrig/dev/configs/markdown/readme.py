@@ -80,14 +80,15 @@ class ReadmeConfigFile(MarkdownConfigFile):
         Returns:
             True if the file has required structure.
         """
-        badges = cls.get_badges()
-        all_badges_in_file = all(badge in cls.get_file_content() for badge in badges)
+        file_content = cls.get_file_content()
+        badges = [
+            badge for _group, badges in cls.get_badges().items() for badge in badges
+        ]
+        all_badges_in_file = all(badge in file_content for badge in badges)
         description_in_file = (
-            PyprojectConfigFile.get_project_description() in cls.get_file_content()
+            PyprojectConfigFile.get_project_description() in file_content
         )
-        project_name_in_file = (
-            PyprojectConfigFile.get_project_name() in cls.get_file_content()
-        )
+        project_name_in_file = PyprojectConfigFile.get_project_name() in file_content
         return super().is_correct() or (
             all_badges_in_file and description_in_file and project_name_in_file
         )
