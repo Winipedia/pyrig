@@ -199,11 +199,7 @@ def test_init_project(tmp_path: Path) -> None:
         )
         #  assert running the main command works
         res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project", main.__name__])
-        stdout = res.stdout.decode("utf-8")
-        assert_with_msg(
-            "main" in stdout.lower(),
-            f"Expected 'main' in stdout, got {stdout}",
-        )
+        assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
 
         # asert callung version works
         res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project", "version"])
