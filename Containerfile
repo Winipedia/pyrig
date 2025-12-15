@@ -19,3 +19,5 @@ RUN uv sync --no-group dev
 RUN rm README.md LICENSE pyproject.toml uv.lock
 
 ENTRYPOINT ["uv", "run", "pyrig"]
+
+CMD ["main"]
