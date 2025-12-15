@@ -102,6 +102,8 @@ def test_init_project(tmp_path: Path) -> None:
     # with a folder src that the setup works
 
     # copy the pyrig package to tmp_path/pyrig with shutil
+    project_name = "src-project"
+
     pyrig_temp_path = tmp_path / PyprojectConfigFile.get_project_name()
     shutil.copytree(
         to_path(pyrig.__name__, is_package=True).parent,
@@ -115,7 +117,7 @@ def test_init_project(tmp_path: Path) -> None:
     dist_files = list((pyrig_temp_path / "dist").glob("*.whl"))
     wheel_path = dist_files[-1].resolve().as_posix()
 
-    src_project_dir = tmp_path / "src-project"
+    src_project_dir = tmp_path / project_name
     src_project_dir.mkdir()
 
     # Get the current Python version in major.minor format
@@ -167,19 +169,19 @@ def test_init_project(tmp_path: Path) -> None:
         run_subprocess(["uv", "sync"], env=clean_env)
 
         # Verify pyrig was installed correctly
-        project_name = get_project_name_from_pkg_name(pyrig.__name__)
+        pyrig_project_name = get_project_name_from_pkg_name(pyrig.__name__)
 
         run_subprocess(
-            [*PROJECT_MGT_RUN_ARGS, project_name, init.__name__],
+            [*PROJECT_MGT_RUN_ARGS, pyrig_project_name, init.__name__],
             env=clean_env,
         )
 
         # test the cli can be called
-        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, project_name, "--help"])
+        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, pyrig_project_name, "--help"])
         stdout = res.stdout.decode("utf-8")
         assert_with_msg(
-            project_name in stdout,
-            f"Expected {project_name} in stdout, got {stdout}",
+            pyrig_project_name in stdout,
+            f"Expected {pyrig_project_name} in stdout, got {stdout}",
         )
         # assert command is in stdout
         assert_with_msg(
@@ -189,10 +191,10 @@ def test_init_project(tmp_path: Path) -> None:
 
         # assert the pkgs own cli is available
         res = run_subprocess(
-            [*PROJECT_MGT_RUN_ARGS, "src-project", "--help"], check=False
+            [*PROJECT_MGT_RUN_ARGS, project_name, "--help"], check=False
         )
         stdout = res.stdout.decode("utf-8")
-        expected = "src-project "
+        expected = project_name
         assert_with_msg(
             expected in stdout.lower(),
             f"Expected {expected} in stdout, got {stdout}",
@@ -201,12 +203,11 @@ def test_init_project(tmp_path: Path) -> None:
         res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project", main.__name__])
         assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
 
-        # asert callung version works
-        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, "src-project", "version"])
+        # asert calling version works
+        res = run_subprocess([*PROJECT_MGT_RUN_ARGS, project_name, "version"])
         stdout = res.stdout.decode("utf-8")
-        assert f"{project_name} version 0.1.0" in stdout, (
-            f"Expected 'version' in stdout, got {stdout}"
-        )
+        expected = f"{project_name} version 0.1.0"
+        assert expected in stdout, f"Expected {expected} in stdout, got {stdout}"
 
     pkg_dir = src_project_dir / "src_project"
     assert_with_msg(
