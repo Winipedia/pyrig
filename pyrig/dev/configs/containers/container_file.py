@@ -10,7 +10,6 @@ from pathlib import Path
 
 from pyrig.dev.configs.base.base import TextConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.main import main
 from pyrig.src.project.mgt import PROJECT_MGT_RUN_ARGS
 
 
@@ -91,18 +90,17 @@ class ContainerfileConfigFile(TextConfigFile):
         project_name = PyprojectConfigFile.get_project_name()
         package_name = PyprojectConfigFile.get_package_name()
         app_user_name = "appuser"
-        cmd_args = [*PROJECT_MGT_RUN_ARGS, package_name, main.__name__]
+        cmd_args = [*PROJECT_MGT_RUN_ARGS, package_name]
         return [
             f"FROM python:{latest_python_version}-slim",
             f"WORKDIR /{project_name}",
             "COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv",
-            "ENV UV_NO_SYNC=1",
             "COPY README.md LICENSE pyproject.toml uv.lock ./",
             f"RUN useradd -m -u 1000 {app_user_name}",
             f"RUN chown -R {app_user_name}:{app_user_name} .",
             f"USER {app_user_name}",
             f"COPY --chown=appuser:appuser {package_name} {package_name}",
-            "RUN uv sync --no-group dev --frozen",
+            "RUN uv sync --no-group dev",
             "RUN rm README.md LICENSE pyproject.toml uv.lock",
-            f"CMD {json.dumps(cmd_args)}",
+            f"ENTRYPOINT {json.dumps(cmd_args)}",
         ]

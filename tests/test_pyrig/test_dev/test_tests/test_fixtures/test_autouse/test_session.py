@@ -76,3 +76,21 @@ def test_assert_no_unstaged_changes() -> None:
 def test_assert_all_dev_deps_in_deps() -> None:
     """Test function."""
     raise NotImplementedError
+
+
+@skip_fixture_test
+def test_assert_project_mgt_is_up_to_date() -> None:
+    """Test function."""
+    raise NotImplementedError
+
+
+@skip_fixture_test
+def test_assert_version_control_is_installed() -> None:
+    """Test function."""
+    raise NotImplementedError
+
+
+@skip_fixture_test
+def test_assert_container_engine_is_installed() -> None:
+    """Test function."""
+    raise NotImplementedError

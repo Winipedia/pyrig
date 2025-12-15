@@ -308,21 +308,6 @@ def assert_dependencies_are_up_to_date() -> None:
     This fixture runs once per test session
     to make sure the dependencies are up to date.
     """
-    if not running_in_github_actions():
-        # update project mgt
-        completed_process = run_subprocess(["uv", "self", "update"], check=False)
-        stderr = completed_process.stderr.decode("utf-8")
-        stdout = completed_process.stdout.decode("utf-8")
-        std_msg = stderr + stdout
-
-        expected = [
-            "success: You're on the latest version of uv",
-            "GitHub API rate limit exceeded",
-            "Temporary failure in name resolution",
-        ]
-        expected_in_err_or_out = any(exp in std_msg for exp in expected)
-        assert expected_in_err_or_out, f"Expected one of {expected}, got {std_msg}"
-
     # update the dependencies
     completed_process = PyprojectConfigFile.update_dependencies(check=False)
     stderr = completed_process.stderr.decode("utf-8")
@@ -332,7 +317,7 @@ def assert_dependencies_are_up_to_date() -> None:
     not_expected = ["Updated"]
     # if there were updates raise an error
     update_occurred = any(exp in std_msg for exp in not_expected)
-    assert not update_occurred, f"Expected none of {not_expected}, got {std_msg}"
+    assert not update_occurred, f"Expected none of {not_expected}, got: {std_msg}"
 
     # sync the dependencies
     completed_process = PyprojectConfigFile.install_dependencies(check=True)
@@ -341,11 +326,11 @@ def assert_dependencies_are_up_to_date() -> None:
     std_msg = stderr + stdout
     expected = ["Resolved", "Audited"]
     expected_in_err_or_out = any(exp in std_msg for exp in expected)
-    assert expected_in_err_or_out, f"Expected one of {expected}, got {std_msg}"
+    assert expected_in_err_or_out, f"Expected one of {expected}, got: {std_msg}"
 
     not_expected = ["=="]
     install_occurred = any(exp in std_msg for exp in not_expected)
-    assert not install_occurred, f"Expected none of {not_expected}, got {std_msg}"
+    assert not install_occurred, f"Expected none of {not_expected}, got: {std_msg}"
 
 
 @autouse_session_fixture
@@ -542,3 +527,51 @@ def assert_all_dev_deps_in_deps() -> None:
     standard_dev_deps = set(STANDARD_DEV_DEPS)
 
     assert standard_dev_deps.issubset(all_deps)
+
+
+def assert_project_mgt_is_up_to_date() -> None:
+    """Verify that the project management tool is up to date."""
+    if not running_in_github_actions():
+        # update project mgt
+        completed_process = run_subprocess(["uv", "self", "update"], check=False)
+        stderr = completed_process.stderr.decode("utf-8")
+        stdout = completed_process.stdout.decode("utf-8")
+        std_msg = stderr + stdout
+
+        expected = [
+            "success: You're on the latest version of uv",
+            "GitHub API rate limit exceeded",
+            "Temporary failure in name resolution",
+        ]
+        expected_in_err_or_out = any(exp in std_msg for exp in expected)
+        assert expected_in_err_or_out, f"Expected one of {expected}, got: {std_msg}"
+
+
+def assert_version_control_is_installed() -> None:
+    """Verify that git is installed.
+
+    As pyrig needs and expects git to be installed.
+    """
+    completed_process = run_subprocess(["git", "--version"], check=False)
+    stderr = completed_process.stderr.decode("utf-8")
+    stdout = completed_process.stdout.decode("utf-8")
+    std_msg = stderr + stdout
+    # use re expression to check if git version is in the output
+    git_is_installed = re.search(r"git version \d+\.\d+\.\d+", std_msg)
+
+    assert git_is_installed, f"Expected git to be installed, got: {std_msg}"
+
+
+def assert_container_engine_is_installed() -> None:
+    """Verify that podman is installed.
+
+    As pyrig needs and expects podman to be installed.
+    """
+    completed_process = run_subprocess(["podman", "--version"], check=False)
+    stderr = completed_process.stderr.decode("utf-8")
+    stdout = completed_process.stdout.decode("utf-8")
+    std_msg = stderr + stdout
+    # use re expression to check if podman version is in the output
+    podman_is_installed = re.search(r"podman version \d+\.\d+\.\d+", std_msg)
+
+    assert podman_is_installed, f"Expected podman to be installed, got: {std_msg}"

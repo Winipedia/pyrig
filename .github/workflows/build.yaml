@@ -28,6 +28,33 @@ jobs:
     runs-on: ${{ matrix.os }}
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-    - name: Opt Out Of Workflow
-      id: opt_out_of_workflow
-      run: echo 'Opting out of Build workflow.'
+    - name: Checkout Repository
+      id: checkout_repository
+      uses: actions/checkout@main
+    - name: Setup Git
+      id: setup_git
+      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        && git config --global user.name "github-actions[bot]"
+    - name: Setup Project Mgt
+      id: setup_project_mgt
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+    - name: Patch Version
+      id: patch_version
+      run: uv version --bump patch && git add pyproject.toml
+    - name: Install Python Dependencies
+      id: install_python_dependencies
+      run: uv lock --upgrade && uv sync
+    - name: Add Dependency Updates To Git
+      id: add_dependency_updates_to_git
+      run: git add pyproject.toml uv.lock
+    - name: Build Artifacts
+      id: build_artifacts
+      run: uv run pyrig build
+    - name: Upload Artifacts
+      id: upload_artifacts
+      uses: actions/upload-artifact@main
+      with:
+        name: pyrig-${{ runner.os }}
+        path: dist
