@@ -48,6 +48,18 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_step_install_container_engine(
+        self, my_test_workflow: type[Workflow]
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow.step_install_container_engine()
+        assert "uses" in result, f"Expected 'uses' in step, got {result}"
+
+    def test_step_build_container_image(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method."""
+        result = my_test_workflow.step_build_container_image()
+        assert "run" in result, f"Expected 'run' in step, got {result}"
+
     def test_load(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for load."""
         my_test_workflow()

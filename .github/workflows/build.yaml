@@ -17,7 +17,7 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
   UV_NO_SYNC: 1
 jobs:
-  build:
+  build_artifacts:
     strategy:
       matrix:
         os:
@@ -58,3 +58,18 @@ jobs:
       with:
         name: pyrig-${{ runner.os }}
         path: dist
+  build_container_image:
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - name: Checkout Repository
+      id: checkout_repository
+      uses: actions/checkout@main
+    - name: Install Container Engine
+      id: install_container_engine
+      uses: redhat-actions/podman-install@main
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build Container Image
+      id: build_container_image
+      run: podman build -t pyrig .
