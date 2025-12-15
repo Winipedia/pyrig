@@ -19,13 +19,11 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yaml?label=CI&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/health_check.yaml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yaml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yaml)
 
-
 ---
 
 > A Python toolkit that standardizes and automates project setup, configuration and development.
 
 ---
-
 
 ## How to Use
 

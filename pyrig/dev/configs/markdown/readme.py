@@ -51,6 +51,7 @@ class ReadmeConfigFile(MarkdownConfigFile):
         for badge_category, badge_list in badges.items():
             badges_str += f"<!-- {badge_category} -->\n"
             badges_str += "\n".join(badge_list) + "\n"
+        badges_str = badges_str.removesuffix("\n")
         description = PyprojectConfigFile.get_project_description()
         return f"""# {project_name}
 
