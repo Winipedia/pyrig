@@ -83,5 +83,5 @@ jobs:
       id: upload_artifacts
       uses: actions/upload-artifact@main
       with:
-        name: pyrig-${{ runner.os }}
+        name: container-image
         path: dist

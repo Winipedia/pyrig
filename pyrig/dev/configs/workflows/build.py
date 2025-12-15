@@ -102,5 +102,5 @@ class BuildWorkflow(Workflow):
             cls.step_build_container_image(),
             cls.step_make_dist_folder(),
             cls.step_save_container_image(),
-            cls.step_upload_artifacts(),
+            cls.step_upload_artifacts(name="container-image"),
         ]
