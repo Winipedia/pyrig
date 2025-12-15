@@ -59,6 +59,13 @@ jobs:
         name: pyrig-${{ runner.os }}
         path: dist
   build_container_image:
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - windows-latest
+        - macos-latest
+      fail-fast: true
     runs-on: ${{ matrix.os }}
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
