@@ -10,6 +10,7 @@ from pathlib import Path
 
 from pyrig.dev.configs.base.base import TextConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.main import main
 from pyrig.src.project.mgt import PROJECT_MGT_RUN_ARGS
 
 
@@ -90,7 +91,8 @@ class ContainerfileConfigFile(TextConfigFile):
         project_name = PyprojectConfigFile.get_project_name()
         package_name = PyprojectConfigFile.get_package_name()
         app_user_name = "appuser"
-        cmd_args = [*PROJECT_MGT_RUN_ARGS, package_name]
+        entrypoint_args = [*PROJECT_MGT_RUN_ARGS, package_name]
+        default_cmd_args = [main.__name__]
         return [
             f"FROM python:{latest_python_version}-slim",
             f"WORKDIR /{project_name}",
@@ -102,5 +104,8 @@ class ContainerfileConfigFile(TextConfigFile):
             f"COPY --chown=appuser:appuser {package_name} {package_name}",
             "RUN uv sync --no-group dev",
             "RUN rm README.md LICENSE pyproject.toml uv.lock",
-            f"ENTRYPOINT {json.dumps(cmd_args)}",
+            f"ENTRYPOINT {json.dumps(entrypoint_args)}",
+            # if the image is provided a different command, it will run that instead
+            # so adding a default is convenient without restricting usage
+            f"CMD {json.dumps(default_cmd_args)}",
         ]

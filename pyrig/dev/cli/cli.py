@@ -27,7 +27,7 @@ from pyrig.src.modules.module import (
 )
 from pyrig.src.modules.package import get_pkg_name_from_project_name
 
-app = typer.Typer()
+app = typer.Typer(no_args_is_help=True)
 """The main Typer application instance."""
 
 
