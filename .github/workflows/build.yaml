@@ -67,8 +67,8 @@ jobs:
         - macos-latest
       fail-fast: true
     runs-on: ${{ matrix.os }}
-    if: ${{ github.event.workflow_run.conclusion == 'success' }} && ${{ matrix.os
-      != 'macos-latest' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && matrix.os != 'macos-latest'
+      }}
     steps:
     - name: Checkout Repository
       id: checkout_repository

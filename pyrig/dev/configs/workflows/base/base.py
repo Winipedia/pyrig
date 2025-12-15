@@ -1569,10 +1569,10 @@ class Workflow(YamlConfigFile):
             Combined condition expression.
         """
         bare_conditions = [
-            condition.removeprefix("${{ ").removesuffix(" }}")
+            condition.strip().removeprefix("${{").removesuffix("}}").strip()
             for condition in conditions
         ]
-        return cls.if_condition(cls.if_condition(" && ".join(bare_conditions)))
+        return cls.if_condition(" && ".join(bare_conditions))
 
     @classmethod
     def if_condition(cls, condition: str) -> str:
