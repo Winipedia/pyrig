@@ -48,6 +48,13 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_if_condition(self) -> None:
+        """Test method."""
+        condition = "condition"
+        result = Workflow.if_condition(condition)
+        expected = "${{ condition }}"
+        assert result == expected, f"Expected '{expected}', got {result}"
+
     def test_combined_if(self) -> None:
         """Test method."""
         conditions = ["condition1", "condition2"]
@@ -565,53 +572,6 @@ class TestWorkflow:
         """Test method for insert_artifact_name."""
         result = my_test_workflow.insert_artifact_name()
         assert_with_msg(len(result) > 0, "Expected artifact name to be non-empty")
-
-    def test_if_matrix_is_os(self, my_test_workflow: type[Workflow]) -> None:
-        """Test method for if_matrix_is_os."""
-        result = my_test_workflow.if_matrix_is_os("ubuntu-latest")
-        assert_with_msg("matrix.os" in result, "Expected 'matrix.os' in result")
-
-    def test_if_matrix_is_python_version(
-        self, my_test_workflow: type[Workflow]
-    ) -> None:
-        """Test method for if_matrix_is_python_version."""
-        result = my_test_workflow.if_matrix_is_python_version("3.11")
-        assert_with_msg(
-            "matrix.python-version" in result,
-            "Expected 'matrix.python-version' in result",
-        )
-
-    def test_if_matrix_is_os_and_python_version(
-        self, my_test_workflow: type[Workflow]
-    ) -> None:
-        """Test method for if_matrix_is_os_and_python_version."""
-        result = my_test_workflow.if_matrix_is_os_and_python_version(
-            "ubuntu-latest", "3.11"
-        )
-        assert_with_msg("matrix.os" in result, "Expected 'matrix.os' in result")
-        assert_with_msg(
-            "matrix.python-version" in result,
-            "Expected 'matrix.python-version' in result",
-        )
-
-    def test_if_matrix_is_latest_python_version(
-        self, my_test_workflow: type[Workflow]
-    ) -> None:
-        """Test method for if_matrix_is_latest_python_version."""
-        result = my_test_workflow.if_matrix_is_latest_python_version()
-        assert_with_msg(
-            "matrix.python-version" in result,
-            "Expected 'matrix.python-version' in result",
-        )
-
-    def test_if_matrix_is_os_and_latest_python_version(
-        self, my_test_workflow: type[Workflow]
-    ) -> None:
-        """Test method for if_matrix_is_os_and_latest_python_version."""
-        result = my_test_workflow.if_matrix_is_os_and_latest_python_version(
-            "ubuntu-latest"
-        )
-        assert_with_msg("matrix.os" in result, "Expected 'matrix.os' in result")
 
     def test_if_workflow_run_is_success(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for if_workflow_run_is_success."""

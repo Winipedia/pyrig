@@ -1571,16 +1571,16 @@ class Workflow(YamlConfigFile):
         return " && ".join(conditions)
 
     @classmethod
-    def if_matrix_is_os(cls, os: str) -> str:
-        """Create a condition for matching a specific OS.
+    def if_condition(cls, condition: str) -> str:
+        """Wrap a condition in GitHub Actions expression syntax.
 
         Args:
-            os: OS runner label to match.
+            condition: Condition expression to wrap.
 
         Returns:
-            Condition expression for matrix.os comparison.
+            GitHub Actions expression for the condition.
         """
-        return f"matrix.os == '{os}'"
+        return f"${{{{ {condition} }}}}"
 
     @classmethod
     def if_matrix_is_not_os(cls, os: str) -> str:
@@ -1592,58 +1592,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Condition expression for matrix.os comparison.
         """
-        return f"matrix.os != '{os}'"
-
-    @classmethod
-    def if_matrix_is_python_version(cls, python_version: str) -> str:
-        """Create a condition for matching a specific Python version.
-
-        Args:
-            python_version: Python version to match.
-
-        Returns:
-            Condition expression for matrix.python-version comparison.
-        """
-        return f"matrix.python-version == '{python_version}'"
-
-    @classmethod
-    def if_matrix_is_os_and_python_version(cls, os: str, python_version: str) -> str:
-        """Create a condition for matching OS and Python version.
-
-        Args:
-            os: OS runner label to match.
-            python_version: Python version to match.
-
-        Returns:
-            Combined condition expression.
-        """
-        return f"{cls.if_matrix_is_os(os)} && {cls.if_matrix_is_python_version(python_version)}"  # noqa: E501
-
-    @classmethod
-    def if_matrix_is_latest_python_version(cls) -> str:
-        """Create a condition for matching the latest Python version.
-
-        Returns:
-            Condition expression for latest supported Python.
-        """
-        return cls.if_matrix_is_python_version(
-            str(PyprojectConfigFile.get_latest_possible_python_version(level="minor"))
-        )
-
-    @classmethod
-    def if_matrix_is_os_and_latest_python_version(cls, os: str) -> str:
-        """Create a condition for matching OS and latest Python.
-
-        Args:
-            os: OS runner label to match.
-
-        Returns:
-            Combined condition expression.
-        """
-        return cls.if_matrix_is_os_and_python_version(
-            os,
-            str(PyprojectConfigFile.get_latest_possible_python_version(level="minor")),
-        )
+        return cls.if_condition(f"matrix.os != '{os}'")
 
     @classmethod
     def if_workflow_run_is_success(cls) -> str:
@@ -1652,4 +1601,4 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression checking workflow_run conclusion.
         """
-        return "${{ github.event.workflow_run.conclusion == 'success' }}"
+        return cls.if_condition("github.event.workflow_run.conclusion == 'success'")
