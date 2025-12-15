@@ -776,7 +776,6 @@ class Workflow(YamlConfigFile):
             step_func=cls.step_install_container_engine,
             uses="redhat-actions/podman-install@main",
             with_={"github-token": cls.insert_github_token()},
-            if_condition=cls.if_matrix_is_not_os(cls.MACOS_LATEST),
             step=step,
         )
 
@@ -797,7 +796,50 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_build_container_image,
             run=f"podman build -t {PyprojectConfigFile.get_project_name()} .",
-            if_condition=cls.if_matrix_is_not_os(cls.MACOS_LATEST),
+            step=step,
+        )
+
+    @classmethod
+    def step_save_container_image(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that saves the container image to a file.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that saves the container image.
+        """
+        image_file = Path(f"{PyprojectConfigFile.get_project_name()}.tar")
+        image_path = Path(cls.ARTIFACTS_DIR_NAME) / image_file
+        return cls.get_step(
+            step_func=cls.step_save_container_image,
+            run=f"podman save -o {image_path} {image_file.stem}",
+            step=step,
+        )
+
+    @classmethod
+    def step_make_dist_folder(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that makes the dist folder.
+
+        Creates only if it does not exist.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that makes the dist folder.
+        """
+        return cls.get_step(
+            step_func=cls.step_make_dist_folder,
+            run=f"mkdir -p {Builder.ARTIFACTS_DIR_NAME}",
             step=step,
         )
 
