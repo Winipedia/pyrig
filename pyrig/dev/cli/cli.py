@@ -14,6 +14,7 @@ Example:
 """
 
 import sys
+from importlib.metadata import version as get_version
 from pathlib import Path
 
 import typer
@@ -25,10 +26,23 @@ from pyrig.src.modules.module import (
     get_module_name_replacing_start_module,
     import_module_from_path,
 )
-from pyrig.src.modules.package import get_pkg_name_from_project_name
+from pyrig.src.modules.package import (
+    get_pkg_name_from_project_name,
+)
 
 app = typer.Typer(no_args_is_help=True)
 """The main Typer application instance."""
+
+
+def get_project_name_from_argv() -> str:
+    """Get the project name."""
+    return Path(sys.argv[0]).name
+
+
+def get_pkg_name_from_argv() -> str:
+    """Get the project and package name."""
+    project_name = get_project_name_from_argv()
+    return get_pkg_name_from_project_name(project_name)
 
 
 def add_subcommands() -> None:
@@ -39,8 +53,7 @@ def add_subcommands() -> None:
     This enables projects depending on pyrig to define their own commands.
     """
     # extract project name from sys.argv[0]
-    project_name = Path(sys.argv[0]).name
-    pkg_name = get_pkg_name_from_project_name(project_name)
+    pkg_name = get_pkg_name_from_argv()
 
     main_module_name = get_module_name_replacing_start_module(pyrig_main, pkg_name)
     main_module = import_module_from_path(main_module_name)
@@ -57,6 +70,13 @@ def add_subcommands() -> None:
 
     for sub_cmd in sub_cmds:
         app.command()(sub_cmd)
+
+
+@app.command()
+def version() -> None:
+    """Display the version information."""
+    project_name = get_project_name_from_argv()
+    typer.echo(f"{project_name} version {get_version(project_name)}")
 
 
 def main() -> None:
