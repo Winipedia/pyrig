@@ -36,6 +36,24 @@ uv add pyrig
 uv run pyrig init
 ```
 
+## Philosophy
+
+pyrig is built on the following principles:
+
+1. **Opinionated Defaults**: pyrig enforces a set of best practices and standards across all projects.
+2. **Automation**: pyrig automates repetitive tasks like setting up CI/CD, managing dependencies, and enforcing standards.
+3. **Extensibility**: pyrig can be extended by dependent packages to enforce additional standards.
+4. **Simplicity**: pyrig should require minimal configuration to get started.
+5. **Consistency**: pyrig ensures all projects adhere to the same standards and best practices.
+6. **Stay up to date**: pyrig projects should stay up to date with the latest tools and best practices.
+
+Note:
+pyrig does it enforce specific tools, like e.g. uv, podman, git and github.
+We keep pyrig up to a standard where we think we are using the best tools for the job.
+E.g. We switched to uv but started with poetry for dependency management.
+If a genuine better tool comes along for a specific task, we will switch and enforce it.
+pyrigs most important principle is to stay up to date and do not stagnate on legacy code and tools.
+
 ## Overview
 
 pyrig eliminates the repetitive setup work involved in starting Python projects. A single command generates a complete project structure with pre-configured tooling:
