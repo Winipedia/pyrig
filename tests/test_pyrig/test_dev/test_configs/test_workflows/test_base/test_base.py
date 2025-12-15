@@ -58,15 +58,16 @@ class TestWorkflow:
     def test_combined_if(self) -> None:
         """Test method."""
         conditions = ["condition1", "condition2"]
+        conditions = [Workflow.if_condition(condition) for condition in conditions]
         result = Workflow.combined_if(*conditions)
-        expected = "condition1 && condition2"
+        expected = "${{ condition1 && condition2 }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
     def test_if_matrix_is_not_os(self) -> None:
         """Test method."""
         os = "ubuntu-latest"
         result = Workflow.if_matrix_is_not_os(os)
-        expected = f"matrix.os != '{os}'"
+        expected = "${{ matrix.os != 'ubuntu-latest' }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
     def test_step_install_container_engine(
