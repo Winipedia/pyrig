@@ -767,6 +767,20 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "pyrig-dev" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "typer" }]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pyrig-dev" }]
+
+[[package]]
+name = "pyrig-dev"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
     { name = "bandit" },
     { name = "dotenv" },
     { name = "mypy" },
@@ -789,33 +803,9 @@ dev = [
     { name = "types-setuptools" },
     { name = "types-tqdm" },
 ]
-
-[package.metadata]
-requires-dist = [{ name = "typer" }]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "bandit" },
-    { name = "dotenv" },
-    { name = "mypy" },
-    { name = "pillow" },
-    { name = "pre-commit" },
-    { name = "pygithub" },
-    { name = "pyinstaller" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-    { name = "pyyaml" },
-    { name = "ruff" },
-    { name = "setuptools" },
-    { name = "tenacity" },
-    { name = "tomlkit" },
-    { name = "ty" },
-    { name = "types-defusedxml" },
-    { name = "types-pyinstaller" },
-    { name = "types-pyyaml" },
-    { name = "types-setuptools" },
-    { name = "types-tqdm" },
+sdist = { url = "https://files.pythonhosted.org/packages/b5/18/39288d93da8a3d56b3acf28dd9d53d7f3aba80f5ad1615e28813d3ade307/pyrig_dev-0.1.1.tar.gz", hash = "sha256:2fde50e11f6ede6eaed9518c3d1c7e52951710f257f2956b76a1119c7108da98", size = 1982, upload-time = "2025-12-15T19:39:25.243Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/70/d3/ad5bf715f2bc6a516776f772f0c4a31d02b71d6e1d001e60cbd57a2d9005/pyrig_dev-0.1.1-py3-none-any.whl", hash = "sha256:35f8cfd04806aa6834d63ff2deaed8449f5cbc8d7672a4055fbcc9b8009bb4a1", size = 2111, upload-time = "2025-12-15T19:39:24.415Z" },
 ]
 
 [[package]]
