@@ -757,6 +757,49 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
+    def step_install_container_engine(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that installs the container engine.
+
+        We use podman as the container engine.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that installs podman.
+        """
+        return cls.get_step(
+            step_func=cls.step_install_container_engine,
+            uses="redhat-actions/podman-install@main",
+            with_={"github-token": cls.insert_github_token()},
+            step=step,
+        )
+
+    @classmethod
+    def step_build_container_image(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that builds the container image.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that builds the container image.
+        """
+        return cls.get_step(
+            step_func=cls.step_build_container_image,
+            run=f"podman build -t {PyprojectConfigFile.get_project_name()} .",
+            step=step,
+        )
+
+    @classmethod
     def step_run_tests(
         cls,
         *,

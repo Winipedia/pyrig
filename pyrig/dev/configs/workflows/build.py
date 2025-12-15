@@ -43,26 +43,41 @@ class BuildWorkflow(Workflow):
             Dict with build job.
         """
         jobs: dict[str, Any] = {}
-        jobs.update(cls.job_build())
+        jobs.update(cls.job_build_artifacts())
+        jobs.update(cls.job_build_container_image())
         return jobs
 
     @classmethod
-    def job_build(cls) -> dict[str, Any]:
+    def job_build_artifacts(cls) -> dict[str, Any]:
         """Get the build job that runs across OS matrix.
 
         Returns:
             Job configuration for building artifacts.
         """
         return cls.get_job(
-            job_func=cls.job_build,
+            job_func=cls.job_build_artifacts,
             if_condition=cls.if_workflow_run_is_success(),
             strategy=cls.strategy_matrix_os(),
             runs_on=cls.insert_matrix_os(),
-            steps=cls.steps_build(),
+            steps=cls.steps_build_artifacts(),
         )
 
     @classmethod
-    def steps_build(cls) -> list[dict[str, Any]]:
+    def job_build_container_image(cls) -> dict[str, Any]:
+        """Get the build job that builds the container image.
+
+        Returns:
+            Job configuration for building container image.
+        """
+        return cls.get_job(
+            job_func=cls.job_build_container_image,
+            if_condition=cls.if_workflow_run_is_success(),
+            runs_on=cls.insert_matrix_os(),
+            steps=cls.steps_build_container_image(),
+        )
+
+    @classmethod
+    def steps_build_artifacts(cls) -> list[dict[str, Any]]:
         """Get the steps for building artifacts.
 
         Returns:
@@ -72,4 +87,17 @@ class BuildWorkflow(Workflow):
             *cls.steps_core_matrix_setup(),
             cls.step_build_artifacts(),
             cls.step_upload_artifacts(),
+        ]
+
+    @classmethod
+    def steps_build_container_image(cls) -> list[dict[str, Any]]:
+        """Get the steps for building the container image.
+
+        Returns:
+            List of build steps.
+        """
+        return [
+            cls.step_checkout_repository(),
+            cls.step_install_container_engine(),
+            cls.step_build_container_image(),
         ]
