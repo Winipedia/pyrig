@@ -817,7 +817,7 @@ class Workflow(YamlConfigFile):
         image_path = Path(cls.ARTIFACTS_DIR_NAME) / image_file
         return cls.get_step(
             step_func=cls.step_save_container_image,
-            run=f"podman save -o {image_path} {image_file.stem}",
+            run=f"podman save -o {image_path.as_posix()} {image_file.stem}",
             step=step,
         )
 
