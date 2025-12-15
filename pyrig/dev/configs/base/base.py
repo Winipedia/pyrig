@@ -147,9 +147,18 @@ class ConfigFile(ABC):
         Returns:
             Complete path including filename and extension.
         """
-        return (
-            cls.get_parent_path() / f"{cls.get_filename()}.{cls.get_file_extension()}"
+        return cls.get_parent_path() / (
+            cls.get_filename() + cls.get_extension_sep() + cls.get_file_extension()
         )
+
+    @classmethod
+    def get_extension_sep(cls) -> str:
+        """Get the extension separator.
+
+        Returns:
+            The string ".".
+        """
+        return "."
 
     @classmethod
     def get_filename(cls) -> str:

@@ -85,6 +85,10 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
+    def test_get_extension_sep(self) -> None:
+        """Test method."""
+        assert ConfigFile.get_extension_sep() == "."
+
     def test_get_parent_path(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for get_parent_path."""
         expected = Path("parent_dir")
