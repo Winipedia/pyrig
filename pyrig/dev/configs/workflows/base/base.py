@@ -1557,6 +1557,19 @@ class Workflow(YamlConfigFile):
         return f"{get_src_package().__name__}-{cls.insert_os()}"
 
     # ifs
+    # ----------------------------------------------------------------------------
+    @classmethod
+    def combined_if(cls, *conditions: str) -> str:
+        """Combine multiple conditions with logical AND.
+
+        Args:
+            *conditions: Individual condition expressions.
+
+        Returns:
+            Combined condition expression.
+        """
+        return " && ".join(conditions)
+
     @classmethod
     def if_matrix_is_os(cls, os: str) -> str:
         """Create a condition for matching a specific OS.
@@ -1568,6 +1581,18 @@ class Workflow(YamlConfigFile):
             Condition expression for matrix.os comparison.
         """
         return f"matrix.os == '{os}'"
+
+    @classmethod
+    def if_matrix_is_not_os(cls, os: str) -> str:
+        """Create a condition for not matching a specific OS.
+
+        Args:
+            os: OS runner label to not match.
+
+        Returns:
+            Condition expression for matrix.os comparison.
+        """
+        return f"matrix.os != '{os}'"
 
     @classmethod
     def if_matrix_is_python_version(cls, python_version: str) -> str:
