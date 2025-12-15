@@ -71,10 +71,7 @@ class BuildWorkflow(Workflow):
         """
         return cls.get_job(
             job_func=cls.job_build_container_image,
-            if_condition=cls.combined_if(
-                cls.if_workflow_run_is_success(),
-                cls.if_matrix_is_not_os(cls.MACOS_LATEST),
-            ),
+            if_condition=cls.if_workflow_run_is_success(),
             strategy=cls.strategy_matrix_os(),
             runs_on=cls.insert_matrix_os(),
             steps=cls.steps_build_container_image(),

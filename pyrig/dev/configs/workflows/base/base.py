@@ -776,6 +776,7 @@ class Workflow(YamlConfigFile):
             step_func=cls.step_install_container_engine,
             uses="redhat-actions/podman-install@main",
             with_={"github-token": cls.insert_github_token()},
+            if_condition=cls.if_matrix_is_not_os(cls.MACOS_LATEST),
             step=step,
         )
 
@@ -796,6 +797,7 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_build_container_image,
             run=f"podman build -t {PyprojectConfigFile.get_project_name()} .",
+            if_condition=cls.if_matrix_is_not_os(cls.MACOS_LATEST),
             step=step,
         )
 

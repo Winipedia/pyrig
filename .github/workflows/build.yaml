@@ -67,17 +67,18 @@ jobs:
         - macos-latest
       fail-fast: true
     runs-on: ${{ matrix.os }}
-    if: ${{ github.event.workflow_run.conclusion == 'success' && matrix.os != 'macos-latest'
-      }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
     - name: Install Container Engine
       id: install_container_engine
+      if: ${{ matrix.os != 'macos-latest' }}
       uses: redhat-actions/podman-install@main
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Build Container Image
       id: build_container_image
       run: podman build -t pyrig .
+      if: ${{ matrix.os != 'macos-latest' }}
