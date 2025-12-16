@@ -14,7 +14,7 @@ The central configuration file for your Python project, containing project metad
 `pyproject.toml` is the heart of your pyrig project. It serves multiple critical functions:
 
 - **Project Metadata** - Defines your project's name, version, description, and authors
-- **Dependency Management** - Lists runtime and development dependencies (without version pins)
+- **Dependency Management** - Lists runtime and development dependencies
 - **Build Configuration** - Configures uv as the build backend
 - **Tool Configuration** - Centralizes settings for ruff, mypy, pytest, and bandit
 - **CLI Entry Points** - Defines command-line scripts for your package
@@ -117,11 +117,8 @@ Pyrig auto generates a LICENSE file with the MIT license. You can change this to
 - **Type:** array of strings
 - **Default:** `[]` (empty for new projects)
 - **Required:** No
-- **Purpose:** Runtime dependencies (no version specifiers)
-- **Why pyrig sets it:** Dependencies without versions; actual versions managed in `uv.lock`
-
-**Important:** pyrig automatically strips version specifiers from dependencies.
-Can be disabled by subclassing `PyprojectConfigFile` and overriding `should_remove_version_from_dep` to return `False` because this is a controversial convenience feature to automatically keep dependencies up to date.
+- **Purpose:** Runtime dependencies
+- **Why pyrig sets it:** Lists your project's runtime dependencies; versions managed in `uv.lock`
 
 ### `[dependency-groups]` - Development Dependencies
 
@@ -134,8 +131,6 @@ Modern dependency groups following PEP 735.
 - **Required:** Yes (for pyrig projects)
 - **Purpose:** Development-only dependencies (testing, linting, etc.)
 - **Why pyrig sets it:** Includes `pyrig-dev` which provides all development tools, like `pytest`, `ruff`, `mypy`, `bandit`, etc.
-
-**Important:** Like runtime dependencies, dev dependencies have their versions stripped.
 
 ### `[build-system]` - Build Configuration
 
@@ -401,19 +396,7 @@ As long as you do not chnage a setting that is defaulkt by pyrig, you can custom
 
 However I recommend overwriting config files via subclassing the relevant config file class rather than editing the file directly. This allows you to keep your customizations in sync with pyrig's latest standards and also allow pyrig to manage them.
 
-For exmaple if you want to change the version stripping behavior, you can subclass `PyprojectConfigFile` and override the `should_remove_version_from_dep` method.
-
-```python
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
-
-
-class CustomPyprojectConfigFile(PyprojectConfigFile):
-    @classmethod
-    def should_remove_version_from_dep(cls) -> bool:
-        return False
-```
-
-Or if you want to add a new dev dependency, you can subclass `PyprojectConfigFile` and override the `get_standard_dev_dependencies` method.
+For example, if you want to add a new dev dependency, you can subclass `PyprojectConfigFile` and override the `get_standard_dev_dependencies` method.
 
 ```python
 from pyrig.dev.configs.pyproject import PyprojectConfigFile

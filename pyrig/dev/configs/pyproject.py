@@ -166,17 +166,6 @@ class PyprojectConfigFile(TomlConfigFile):
         }
 
     @classmethod
-    def should_remove_version_from_dep(cls) -> bool:
-        """Determine whether to strip version specifiers from dependencies.
-
-        Override in subclasses to preserve version specifiers.
-
-        Returns:
-            True to remove versions, False to preserve them.
-        """
-        return True
-
-    @classmethod
     def remove_wrong_dependencies(cls, config: dict[str, Any]) -> None:
         """Normalize dependencies by removing version specifiers.
 
@@ -248,18 +237,7 @@ class PyprojectConfigFile(TomlConfigFile):
         if additional is None:
             additional = []
         dependencies.extend(additional)
-        deps: list[str] = []
-        for dep in dependencies:
-            at_file_dep = "file://"
-            if at_file_dep in dep:
-                new_dep = dep
-            elif cls.should_remove_version_from_dep():
-                # remove version if it exists by split re on first non alnum or _ -
-                new_dep = cls.remove_version_from_dep(dep)
-            else:
-                new_dep = dep
-            deps.append(new_dep)
-        return sorted(set(deps))
+        return sorted(set(dependencies))
 
     @classmethod
     def remove_version_from_dep(cls, dep: str) -> str:

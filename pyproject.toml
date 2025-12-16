@@ -11,7 +11,7 @@ license-files = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "typer",
+    "typer>=0.20.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3.12",
@@ -24,7 +24,7 @@ pyrig = "pyrig.dev.cli.cli:main"
 
 [dependency-groups]
 dev = [
-    "pyrig-dev",
+    "pyrig-dev>=0.1.1",
 ]
 
 [build-system]

@@ -253,24 +253,6 @@ class ProductionConfigFile(YamlConfigFile):
 
 You can extend pyrig's existing ConfigFile classes:
 
-### Example: Custom Dependency Management
-
-```python
-# my_awesome_project/dev/configs/custom_pyproject.py
-"""Custom pyproject.toml with different dependency handling."""
-
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
-
-
-class CustomPyprojectConfigFile(PyprojectConfigFile):
-    """Custom pyproject.toml that keeps version pins."""
-
-    @classmethod
-    def should_remove_version_from_dep(cls) -> bool:
-        """Keep version pins instead of removing them."""
-        return False
-```
-
 ### Example: Custom Pre-commit Hooks
 
 ```python
