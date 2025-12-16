@@ -73,6 +73,7 @@ jobs:
       uses: codecov/codecov-action@main
       with:
         files: coverage.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
   health_check:
     needs:
     - health_check_matrix

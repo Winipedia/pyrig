@@ -21,7 +21,7 @@
 
 ---
 
-> A Python toolkit that standardizes and automates project setup, configuration, and development workflows.
+> A Python toolkit that standardizes and automates project setup, configuration and development.
 
 ---
 
