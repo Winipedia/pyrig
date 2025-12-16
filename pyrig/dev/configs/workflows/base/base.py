@@ -893,6 +893,7 @@ class Workflow(YamlConfigFile):
             uses="codecov/codecov-action@main",
             with_={
                 "files": "coverage.xml",
+                "token": cls.insert_codecov_token(),
             },
             step=step,
         )
@@ -1524,6 +1525,15 @@ class Workflow(YamlConfigFile):
             GitHub Actions expression for secrets.GITHUB_TOKEN.
         """
         return "${{ secrets.GITHUB_TOKEN }}"
+
+    @classmethod
+    def insert_codecov_token(cls) -> str:
+        """Get the GitHub expression for CODECOV_TOKEN.
+
+        Returns:
+            GitHub Actions expression for secrets.CODECOV_TOKEN.
+        """
+        return "${{ secrets.CODECOV_TOKEN }}"
 
     @classmethod
     def insert_repository_name(cls) -> str:
