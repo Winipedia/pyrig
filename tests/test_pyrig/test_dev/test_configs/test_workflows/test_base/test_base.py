@@ -505,6 +505,12 @@ class TestWorkflow:
             f"Expected '${{{{ secrets.REPO_TOKEN }}}}', got {result}",
         )
 
+    def test_insert_codecov_token(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for insert_codecov_token."""
+        result = my_test_workflow.insert_codecov_token()
+        expected = "${{ secrets.CODECOV_TOKEN }}"
+        assert result == expected, f"Expected {expected}, got {result}"
+
     def test_insert_pypi_token(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for insert_pypi_token."""
         result = my_test_workflow.insert_pypi_token()
