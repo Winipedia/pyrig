@@ -1,0 +1,416 @@
+# IndexConfigFile
+
+## Overview
+
+**File Location:** `docs/index.md`
+**ConfigFile Class:** `IndexConfigFile`
+**File Type:** Markdown
+**Priority:** Standard
+
+Creates the documentation index file with a standard header. This file serves as the entry point for your project's documentation.
+
+## Purpose
+
+The `docs/index.md` file provides documentation structure:
+
+- **Documentation Entry Point** - First page users see in docs
+- **Navigation Hub** - Links to all documentation sections
+- **Professional Presentation** - Consistent documentation structure
+- **Extensibility** - You can add your own content
+- **Standard Location** - Follows common documentation conventions
+
+### Why pyrig manages this file
+
+pyrig creates `docs/index.md` to:
+1. **Immediate documentation** - Documentation structure from day one
+2. **Consistency** - All pyrig projects have similar docs structure
+3. **Best practices** - Standard documentation location
+4. **Extensibility** - Easy to add your own documentation
+5. **Professional appearance** - Clean, organized documentation
+
+The file is created during `pyrig init` with a minimal header. You add your own documentation content.
+
+## File Location
+
+The file is placed in the `docs` directory:
+
+```
+my-awesome-project/
+├── docs/
+│   ├── index.md  # <-- Here
+│   └── config-files/
+│       └── index.md
+├── my_awesome_project/
+│   └── __init__.py
+└── pyproject.toml
+```
+
+## File Structure
+
+### Minimal Header
+
+The file contains only a minimal header:
+
+```markdown
+# my-awesome-project Documentation
+```
+
+- **Type:** H1 heading
+- **Default:** `# {project_name} Documentation`
+- **Required:** Yes
+- **Purpose:** Identifies the documentation
+- **Why pyrig sets it:** Provides context for readers
+
+**That's it!** The rest is up to you.
+
+## Default Configuration
+
+For a project named `my-awesome-project`:
+
+**File location:** `docs/index.md`
+
+**File contents:**
+```markdown
+# my-awesome-project Documentation
+```
+
+**You add everything else below this header.**
+
+## Validation
+
+pyrig validates that `docs/index.md` exists and has the header:
+
+### Required Elements
+
+1. **Project name** - Must contain the project name
+2. **"Documentation" word** - Must contain "Documentation"
+
+### Flexible Validation
+
+pyrig allows you to add any content as long as the header exists.
+
+## Customization
+
+You can add your documentation structure below the header:
+
+### Example: Complete Documentation Index
+
+```markdown
+# my-awesome-project Documentation
+
+Welcome to the my-awesome-project documentation!
+
+## Getting Started
+
+New to my-awesome-project? Start here:
+
+- [Installation](getting-started/installation.md) - How to install
+- [Quick Start](getting-started/quick-start.md) - Your first steps
+- [Tutorial](getting-started/tutorial.md) - Step-by-step guide
+
+## User Guide
+
+- [Core Concepts](user-guide/concepts.md) - Understanding the basics
+- [Configuration](user-guide/configuration.md) - Configuring your project
+- [Best Practices](user-guide/best-practices.md) - Recommended patterns
+
+## API Reference
+
+- [API Overview](api/overview.md) - API structure
+- [Core Module](api/core.md) - Core functionality
+- [Utilities](api/utils.md) - Utility functions
+
+## Advanced Topics
+
+- [Architecture](advanced/architecture.md) - System design
+- [Performance](advanced/performance.md) - Optimization guide
+- [Extending](advanced/extending.md) - Plugin development
+
+## Configuration Files
+
+- [Configuration Files Reference](config-files/index.md) - All config files
+
+## Contributing
+
+- [Contributing Guide](contributing.md) - How to contribute
+- [Development Setup](development.md) - Setting up dev environment
+- [Code Style](code-style.md) - Coding standards
+
+## Changelog
+
+- [Changelog](changelog.md) - Version history
+```
+
+### Example: Minimal Documentation Index
+
+```markdown
+# my-awesome-project Documentation
+
+## Quick Links
+
+- [Getting Started](getting-started.md)
+- [API Reference](api-reference.md)
+- [Examples](examples.md)
+```
+
+### Example: Documentation with Sections
+
+```markdown
+# my-awesome-project Documentation
+
+Welcome! This documentation will help you get started with my-awesome-project.
+
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [Installation](#installation)
+3. [Usage](#usage)
+4. [API Reference](#api-reference)
+5. [Contributing](#contributing)
+
+## Introduction
+
+my-awesome-project is a Python library that...
+
+## Installation
+
+```bash
+pip install my-awesome-project
+```
+
+## Usage
+
+```python
+from my_awesome_project import AwesomeClass
+
+awesome = AwesomeClass()
+result = awesome.do_something()
+```
+
+## API Reference
+
+See [API Reference](api-reference.md) for detailed API documentation.
+
+## Contributing
+
+See [Contributing Guide](contributing.md) for how to contribute.
+```
+
+## Documentation Structure Recommendations
+
+### Recommended Directory Structure
+
+```
+docs/
+├── index.md                    # Main entry point
+├── getting-started.md          # Quick start guide
+├── installation.md             # Installation instructions
+├── tutorial.md                 # Step-by-step tutorial
+├── user-guide/
+│   ├── index.md
+│   ├── concepts.md
+│   ├── configuration.md
+│   └── best-practices.md
+├── api/
+│   ├── index.md
+│   ├── core.md
+│   └── utils.md
+├── advanced/
+│   ├── index.md
+│   ├── architecture.md
+│   └── performance.md
+├── config-files/               # Auto-generated by pyrig
+│   ├── index.md
+│   ├── pyproject.md
+│   └── ...
+├── contributing.md
+└── changelog.md
+```
+
+### Documentation Best Practices
+
+**✅ DO:**
+- **Start simple** - Begin with essential documentation
+- **Use clear headings** - Make navigation easy
+- **Include examples** - Show, don't just tell
+- **Link between pages** - Create a connected documentation web
+- **Keep it updated** - Documentation should match code
+
+**❌ DON'T:**
+- **Don't duplicate README** - Link to it instead
+- **Don't write everything at once** - Build incrementally
+- **Don't skip code examples** - Examples are crucial
+- **Don't forget navigation** - Make it easy to find things
+- **Don't let it get stale** - Update with code changes
+
+## Integration with README
+
+The README should link to the documentation index:
+
+```markdown
+# my-awesome-project
+
+<!-- badges -->
+
+---
+
+> An awesome Python project
+
+---
+
+## Documentation
+
+See [Documentation](docs/index.md) for full documentation.
+```
+
+## Integration with PyPI
+
+While PyPI shows the README, you can link to hosted documentation:
+
+```markdown
+# my-awesome-project
+
+## Documentation
+
+- **[Documentation](https://my-awesome-project.readthedocs.io/)** - Full documentation
+- **[GitHub](https://github.com/YourUsername/my-awesome-project)** - Source code
+```
+
+## Hosting Documentation
+
+### GitHub Pages
+
+Host documentation directly from your repository:
+
+1. **Enable GitHub Pages** in repository settings
+2. **Select source** - Choose `docs` folder from `main` branch
+3. **Access** - Documentation available at `https://yourusername.github.io/my-awesome-project/`
+
+### Read the Docs
+
+Host documentation on Read the Docs:
+
+1. **Sign up** at [readthedocs.org](https://readthedocs.org)
+2. **Import repository** - Connect your GitHub repository
+3. **Configure** - Add `.readthedocs.yaml` configuration
+4. **Access** - Documentation available at `https://my-awesome-project.readthedocs.io/`
+
+### MkDocs
+
+Use MkDocs for beautiful documentation:
+
+```bash
+# Install MkDocs
+uv add --dev mkdocs mkdocs-material
+
+# Create mkdocs.yml
+cat > mkdocs.yml << EOF
+site_name: my-awesome-project
+theme:
+  name: material
+docs_dir: docs
+EOF
+
+# Serve locally
+uv run mkdocs serve
+
+# Build for deployment
+uv run mkdocs build
+```
+
+## Related Files
+
+- **`README.md`** - Project README ([readme-file.md](readme-file.md))
+- **`docs/config-files/index.md`** - Config files documentation index
+- **`pyproject.toml`** - Project configuration ([pyproject.md](pyproject.md))
+
+## Common Issues
+
+### Issue: Documentation not rendering
+
+**Symptom:** Markdown not displaying correctly
+
+**Cause:** Incorrect Markdown syntax
+
+**Solution:**
+
+Use a Markdown linter:
+
+```bash
+# Install markdownlint
+uv add --dev markdownlint-cli
+
+# Lint documentation
+uv run markdownlint docs/
+```
+
+### Issue: Links broken
+
+**Symptom:** Links to other pages don't work
+
+**Cause:** Incorrect relative paths
+
+**Solution:**
+
+Use relative paths from the current file:
+
+```markdown
+<!-- From docs/index.md -->
+[Getting Started](getting-started.md)  # Good
+[Getting Started](docs/getting-started.md)  # Bad
+
+<!-- From docs/user-guide/concepts.md -->
+[Home](../index.md)  # Good
+[Home](index.md)  # Bad
+```
+
+### Issue: Want to use a different docs tool
+
+**Symptom:** Want to use Sphinx, MkDocs, etc.
+
+**Cause:** pyrig creates simple Markdown
+
+**Solution:**
+
+You can use any documentation tool. pyrig's `docs/index.md` is just a starting point:
+
+```bash
+# For Sphinx
+uv add --dev sphinx
+sphinx-quickstart docs
+
+# For MkDocs
+uv add --dev mkdocs
+mkdocs new .
+
+# Keep pyrig's docs/index.md or replace it
+```
+
+## Best Practices
+
+### ✅ DO
+
+- **Start with index.md** - Main entry point
+- **Organize by topic** - Group related documentation
+- **Use subdirectories** - Keep docs organized
+- **Include navigation** - Make it easy to find things
+- **Add examples** - Show how to use your project
+
+### ❌ DON'T
+
+- **Don't skip documentation** - It's essential
+- **Don't write walls of text** - Use headings and lists
+- **Don't forget to update** - Keep docs current
+- **Don't duplicate README** - Link to it instead
+- **Don't overcomplicate** - Start simple
+
+## See Also
+
+- [Markdown Guide](https://www.markdownguide.org/) - Markdown syntax
+- [GitHub Pages](https://pages.github.com/) - Free documentation hosting
+- [Read the Docs](https://readthedocs.org/) - Documentation hosting
+- [MkDocs](https://www.mkdocs.org/) - Static site generator
+- [Sphinx](https://www.sphinx-doc.org/) - Python documentation generator
+- [README.md](readme-file.md) - Project README
+- [Getting Started Guide](../getting-started.md) - Initial project setup
+
