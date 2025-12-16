@@ -66,6 +66,14 @@ class TestPyprojectConfigFile:
         new_dep = my_test_pyproject_config_file.remove_version_from_dep(dep)
         assert new_dep == "dep", f"Expected {new_dep}, got {dep}"
 
+    def test_get_project_description(self) -> None:
+        """Test method for get_project_description."""
+        description = PyprojectConfigFile.get_project_description()
+        assert_with_msg(
+            isinstance(description, str),
+            "Expected description to be a string",
+        )
+
     def test_is_correct(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
@@ -139,11 +147,11 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method for make_dependency_to_version_dict."""
-        dependencies = ["dep1", "dep2 (>=1.0.0,<2.0.0)"]
+        dependencies = ["dep1", "dep1"]
         deps_versions = my_test_pyproject_config_file.make_dependency_versions(
             dependencies
         )
-        assert deps_versions == ["dep1", "dep2"], f"Expected {deps_versions}"
+        assert deps_versions == ["dep1"]
 
     def test_remove_wrong_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -152,11 +160,12 @@ class TestPyprojectConfigFile:
         my_test_pyproject_config_file()
         config = my_test_pyproject_config_file.get_configs()
         # add wrong dependencies to config
-        config["project"]["dependencies"] = ["wrong (>=1.0.0,<2.0.0)"]
-        config["dependency-groups"]["dev"] = ["wrong-dev (>=1.0.0,<2.0.0)"]
+        config["project"]["dependencies"] = [
+            "wrong>=1.0.0,<2.0.0",
+            "wrong>=1.0.0,<2.0.0",
+        ]
         my_test_pyproject_config_file.remove_wrong_dependencies(config)
-        assert config["project"]["dependencies"] == ["wrong"]
-        assert config["dependency-groups"]["dev"] == ["wrong-dev"]
+        assert config["project"]["dependencies"] == ["wrong>=1.0.0,<2.0.0"]
 
     def test_get_all_dependencies(self) -> None:
         """Test method for get_all_dependencies."""

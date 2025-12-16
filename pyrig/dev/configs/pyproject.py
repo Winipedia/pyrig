@@ -236,6 +236,15 @@ class PyprojectConfigFile(TomlConfigFile):
         """
         if additional is None:
             additional = []
+        # remove all versions from the dependencies to compare them
+        stripped_dependencies = {
+            cls.remove_version_from_dep(dep) for dep in dependencies
+        }
+        additional = [
+            dep
+            for dep in additional
+            if cls.remove_version_from_dep(dep) not in stripped_dependencies
+        ]
         dependencies.extend(additional)
         return sorted(set(dependencies))
 

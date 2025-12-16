@@ -527,7 +527,14 @@ def assert_all_dev_deps_in_deps() -> None:
     all_deps = set(PyprojectConfigFile.get_all_dependencies())
     standard_dev_deps = set(STANDARD_DEV_DEPS)
 
-    assert standard_dev_deps.issubset(all_deps)
+    stripped_deps = {
+        PyprojectConfigFile.remove_version_from_dep(dep) for dep in all_deps
+    }
+    stripped_standard_dev_deps = {
+        PyprojectConfigFile.remove_version_from_dep(dep) for dep in standard_dev_deps
+    }
+
+    assert stripped_standard_dev_deps.issubset(stripped_deps)
 
 
 @autouse_session_fixture
