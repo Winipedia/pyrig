@@ -135,7 +135,6 @@ your-project/
 
 ## Requirements
 
-- Python 3.12 or later
 - Git (any recent version)
 - uv package manager
 - GitHub account (for CI/CD and repository protection)
