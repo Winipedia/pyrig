@@ -9,7 +9,9 @@ def get_namespace_packages() -> list[str]:
     """Get all namespace packages."""
     packages = find_packages(depth=None)
     namespace_packages = find_packages(depth=None, include_namespace_packages=True)
-    namespace_packages.remove(DOCS_DIR_NAME)
+    namespace_packages = [
+        p for p in namespace_packages if not p.startswith(DOCS_DIR_NAME)
+    ]
     return list(set(namespace_packages) - set(packages))
 
 

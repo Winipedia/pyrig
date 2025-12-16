@@ -774,7 +774,7 @@ dev = [
 requires-dist = [{ name = "typer" }]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pyrig-dev", specifier = ">=0.1.1" }]
+dev = [{ name = "pyrig-dev" }]
 
 [[package]]
 name = "pyrig-dev"
