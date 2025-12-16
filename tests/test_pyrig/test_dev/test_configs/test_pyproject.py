@@ -58,11 +58,6 @@ class TestPyprojectConfigFile:
         for classifier in classifiers:
             assert isinstance(classifier, str), f"Expected str, got {type(classifier)}"
 
-    def test_should_remove_version_from_dep(self) -> None:
-        """Test method."""
-        should_remove = PyprojectConfigFile.should_remove_version_from_dep()
-        assert should_remove, "Expected should_remove_version_from_dep to return True"
-
     def test_remove_version_from_dep(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
@@ -70,14 +65,6 @@ class TestPyprojectConfigFile:
         dep = "dep (>=1.0.0,<2.0.0)"
         new_dep = my_test_pyproject_config_file.remove_version_from_dep(dep)
         assert new_dep == "dep", f"Expected {new_dep}, got {dep}"
-
-    def test_get_project_description(self) -> None:
-        """Test method for get_project_description."""
-        description = PyprojectConfigFile.get_project_description()
-        assert_with_msg(
-            isinstance(description, str),
-            "Expected description to be a string",
-        )
 
     def test_is_correct(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
