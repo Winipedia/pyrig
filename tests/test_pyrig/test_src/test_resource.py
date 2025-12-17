@@ -3,7 +3,7 @@
 from contextlib import chdir
 from pathlib import Path
 
-from pyrig.src.modules.module import import_module_from_path
+from pyrig.src.modules.module import import_module_from_file
 from pyrig.src.resource import (
     get_resource_path,
 )
@@ -22,6 +22,6 @@ def test_get_resource_path(tmp_path: Path) -> None:
         relative_resource_path = resource_path.relative_to(tmp_path)
         resource_path.write_text("Hello World!")
         # import the pkg
-        pkg = import_module_from_path(pkg_path)
+        pkg = import_module_from_file(pkg_path)
 
         assert get_resource_path("resource.txt", pkg) == relative_resource_path

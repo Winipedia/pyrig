@@ -17,7 +17,7 @@ from pyrig.dev.cli.commands.create_tests import (
     get_test_module_content,
     make_test_skeletons,
 )
-from pyrig.src.modules.module import import_module_from_path, make_obj_importpath
+from pyrig.src.modules.module import import_module_from_file, make_obj_importpath
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -234,8 +234,8 @@ def test_function_a() -> None:
         test_file.write_text(test_module_content)
 
         # Import the modules
-        source_module = import_module_from_path(source_file)
-        test_module = import_module_from_path(test_file)
+        source_module = import_module_from_file(source_file)
+        test_module = import_module_from_file(test_file)
 
         # Call the function
         result = get_test_functions_content(
@@ -300,8 +300,8 @@ class TestCalculator:
         test_file = tmp_path / "test_module_test_classes_content.py"
         source_file.write_text(source_module_content)
         test_file.write_text(test_module_content)
-        source_module = import_module_from_path(source_file)
-        test_module = import_module_from_path(test_file)
+        source_module = import_module_from_file(source_file)
+        test_module = import_module_from_file(test_file)
         # assert inspect.getmembers retunr the classes
         members = inspect.getmembers(source_module, inspect.isclass)
         assert_with_msg(

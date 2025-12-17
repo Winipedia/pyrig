@@ -207,16 +207,12 @@ def create_module(
 
     make_dir_with_init_file(path if is_package else path.parent)
 
-    # use spec and importlib to import the module
-    if is_package:
-        return import_pkg_from_path(path)
-
-    if not path.exists():
+    if not path.exists() and not is_package:
         path.write_text(get_default_module_content())
     return import_module_from_file(path)
 
 
-def import_module_from_path(path: Path | str) -> ModuleType:
+def import_module_from_file(path: Path | str) -> ModuleType:
     """Import a module from a filesystem path.
 
     Converts the path to a module name and imports it. Handles both regular
@@ -240,10 +236,10 @@ def import_module_from_path(path: Path | str) -> ModuleType:
         return module
     if path.is_dir():
         return import_pkg_from_path(path)
-    return import_module_from_file(path)
+    return import_module_from_path(path)
 
 
-def import_module_from_path_with_default(
+def import_module_from_file_with_default(
     path: Path, default: Any = None
 ) -> ModuleType | Any:
     """Import a module from a path, returning a default on failure.
@@ -256,12 +252,12 @@ def import_module_from_path_with_default(
         The imported module, or `default` if import fails.
     """
     try:
-        return import_module_from_path(path)
+        return import_module_from_file(path)
     except FileNotFoundError:
         return default
 
 
-def import_module_from_file(path: Path) -> ModuleType:
+def import_module_from_path(path: Path) -> ModuleType:
     """Import a module directly from a .py file.
 
     Uses `importlib.util` to create a module spec and load the module
@@ -639,7 +635,7 @@ def get_same_modules_from_deps_depen_on_dep(
     modules: list[ModuleType] = []
     for pkg in pkgs:
         pkg_module_name = module_name.replace(dep.__name__, pkg.__name__, 1)
-        pkg_module = import_module_from_path(pkg_module_name)
+        pkg_module = import_module_from_file(pkg_module_name)
         modules.append(pkg_module)
         if isinstance(until_pkg, ModuleType) and pkg.__name__ == until_pkg.__name__:
             break

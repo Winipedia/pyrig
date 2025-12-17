@@ -1,6 +1,7 @@
 """Helper functions for working with Python packages."""
 
 from collections.abc import Iterable
+from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
@@ -8,7 +9,7 @@ from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
 from pyrig.src.modules.module import to_path
-from pyrig.src.modules.package import DOCS_DIR_NAME, import_pkg_from_path
+from pyrig.src.modules.package import DOCS_DIR_NAME
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
 
@@ -87,5 +88,6 @@ def get_src_package() -> ModuleType:
     pkg = next(
         p for p in package_paths if p.name not in {TESTS_PACKAGE_NAME, DOCS_DIR_NAME}
     )
+    pkg_name = pkg.name
 
-    return import_pkg_from_path(pkg)
+    return import_module(pkg_name)

@@ -82,7 +82,7 @@ def get_modules_and_packages_from_package(
 
     """
     from pyrig.src.modules.module import (  # noqa: PLC0415
-        import_module_from_path,
+        import_module_from_file,
         to_path,
     )
 
@@ -94,7 +94,7 @@ def get_modules_and_packages_from_package(
     for _finder, name, is_pkg in modules_and_packages:
         path = to_path(name, is_package=is_pkg)
 
-        mod = import_module_from_path(path)
+        mod = import_module_from_file(path)
         if is_pkg:
             packages.append(mod)
         else:
@@ -366,11 +366,13 @@ class DependencyGraph(DiGraph):
         Returns:
             A list of successfully imported module objects.
         """
+        from pyrig.src.modules.module import import_module_with_default  # noqa: PLC0415
+
         modules: list[ModuleType] = []
         for name in names:
-            spec = importlib.util.find_spec(name)
-            if spec is not None:
-                modules.append(importlib.import_module(name))
+            module = import_module_with_default(name)
+            if module is not None:
+                modules.append(module)
         return modules
 
 

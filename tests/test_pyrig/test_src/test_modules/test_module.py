@@ -28,8 +28,8 @@ from pyrig.src.modules.module import (
     get_objs_from_obj,
     get_same_modules_from_deps_depen_on_dep,
     import_module_from_file,
+    import_module_from_file_with_default,
     import_module_from_path,
-    import_module_from_path_with_default,
     import_module_with_default,
     import_obj_from_importpath,
     make_dir_with_init_file,
@@ -182,82 +182,6 @@ def test_create_module(tmp_path: Path) -> None:
         )
 
 
-def test_import_module_from_path(tmp_path: Path) -> None:
-    """Test func for import_module_from_path."""
-    # Create a temporary module file with known content
-    with chdir(tmp_path):
-        module_content = '''"""Test module."""
-
-def test_function() -> str:
-    """Test function."""
-    return "test"
-
-class TestClass:
-    """Test class."""
-    pass
-'''
-        module_file = tmp_path / "test_module.py"
-        module_file.write_text(module_content)
-        module = import_module_from_path(module_file)
-        assert_with_msg(
-            module.__name__ == "test_module", f"Expected module name, got {module}"
-        )
-        assert_with_msg(
-            module.test_function() == "test",
-            f"Expected test_function to return 'test', got {module.test_function()}",
-        )
-
-        # Test creating a package
-        package_dir = tmp_path / "test_package"
-        package_dir.mkdir()
-        init_file = package_dir / "__init__.py"
-        init_file.write_text('"""Test package."""\n')
-        package = import_module_from_path(package_dir)
-        assert_with_msg(
-            package.__name__ == "test_package", f"Expected package name, got {package}"
-        )
-
-        # test with deeper path
-        subdir = package_dir / "subdir"
-        subdir.mkdir()
-        init_file = subdir / "__init__.py"
-        init_file.write_text('"""Test package."""\n')
-        package = import_module_from_path(subdir)
-        assert_with_msg(
-            package.__name__ == "test_package.subdir",
-            f"Expected package name, got {package}",
-        )
-
-
-def test_import_module_from_path_with_default(tmp_path: Path) -> None:
-    """Test func for import_module_from_path_with_default."""
-    # Create a temporary module file with known content
-    with chdir(tmp_path):
-        module_content = '''"""Test module."""
-
-def test_function() -> str:
-    """Test function."""
-    return "test"
-
-class TestClass:
-    """Test class."""
-    pass
-'''
-
-        module_file = tmp_path / "test_module.py"
-        module_file.write_text(module_content)
-        module = import_module_from_path_with_default(module_file)
-        assert_with_msg(
-            module.__name__ == "test_module", f"Expected module name, got {module}"
-        )
-
-        non_existing_file = tmp_path / "non_existing.py"
-        module = import_module_from_path_with_default(
-            non_existing_file, default="default"
-        )
-        assert_with_msg(module == "default", f"Expected default, got {module}")
-
-
 def test_import_module_from_file(tmp_path: Path) -> None:
     """Test func for import_module_from_path."""
     # Create a temporary module file with known content
@@ -278,13 +202,89 @@ class TestClass:
         assert_with_msg(
             module.__name__ == "test_module", f"Expected module name, got {module}"
         )
+        assert_with_msg(
+            module.test_function() == "test",
+            f"Expected test_function to return 'test', got {module.test_function()}",
+        )
+
+        # Test creating a package
+        package_dir = tmp_path / "test_package"
+        package_dir.mkdir()
+        init_file = package_dir / "__init__.py"
+        init_file.write_text('"""Test package."""\n')
+        package = import_module_from_file(package_dir)
+        assert_with_msg(
+            package.__name__ == "test_package", f"Expected package name, got {package}"
+        )
+
+        # test with deeper path
+        subdir = package_dir / "subdir"
+        subdir.mkdir()
+        init_file = subdir / "__init__.py"
+        init_file.write_text('"""Test package."""\n')
+        package = import_module_from_file(subdir)
+        assert_with_msg(
+            package.__name__ == "test_package.subdir",
+            f"Expected package name, got {package}",
+        )
+
+
+def test_import_module_from_file_with_default(tmp_path: Path) -> None:
+    """Test func for import_module_from_path_with_default."""
+    # Create a temporary module file with known content
+    with chdir(tmp_path):
+        module_content = '''"""Test module."""
+
+def test_function() -> str:
+    """Test function."""
+    return "test"
+
+class TestClass:
+    """Test class."""
+    pass
+'''
+
+        module_file = tmp_path / "test_module.py"
+        module_file.write_text(module_content)
+        module = import_module_from_file_with_default(module_file)
+        assert_with_msg(
+            module.__name__ == "test_module", f"Expected module name, got {module}"
+        )
+
+        non_existing_file = tmp_path / "non_existing.py"
+        module = import_module_from_file_with_default(
+            non_existing_file, default="default"
+        )
+        assert_with_msg(module == "default", f"Expected default, got {module}")
+
+
+def test_import_module_from_path(tmp_path: Path) -> None:
+    """Test func for import_module_from_path."""
+    # Create a temporary module file with known content
+    with chdir(tmp_path):
+        module_content = '''"""Test module."""
+
+def test_function() -> str:
+    """Test function."""
+    return "test"
+
+class TestClass:
+    """Test class."""
+    pass
+'''
+        module_file = tmp_path / "test_module.py"
+        module_file.write_text(module_content)
+        module = import_module_from_path(module_file)
+        assert_with_msg(
+            module.__name__ == "test_module", f"Expected module name, got {module}"
+        )
 
         # test with deeper path
         subdir = tmp_path / "subdir"
         subdir.mkdir()
         module_file = subdir / "test_module.py"
         module_file.write_text(module_content)
-        module = import_module_from_file(module_file)
+        module = import_module_from_path(module_file)
         assert_with_msg(
             module.__name__ == "subdir.test_module",
             f"Expected module name, got {module}",
