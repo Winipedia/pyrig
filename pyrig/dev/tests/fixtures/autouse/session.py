@@ -360,8 +360,9 @@ def assert_src_runs_without_dev_deps(
     This fixture runs once per test session and checks that the source code
     runs without dev dependencies.
     """
+    project_name = PyprojectConfigFile.get_project_name()
     func_name = assert_src_runs_without_dev_deps.__name__  # ty:ignore[possibly-missing-attribute]
-    tmp_path = tmp_path_factory.mktemp(func_name)
+    tmp_path = tmp_path_factory.mktemp(func_name) / project_name
     # copy the project folder to a temp directory
     # run main.py from that directory
     src_package = get_src_package()
