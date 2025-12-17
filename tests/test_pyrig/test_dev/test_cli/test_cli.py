@@ -1,6 +1,6 @@
 """Contains a simple test for cli."""
 
-from pyrig.dev.cli.cli import get_pkg_name_from_argv, get_project_name_from_argv
+from pyrig.dev.cli.shared_subcommands import version
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import PROJECT_MGT_RUN_ARGS
 from pyrig.src.testing.assertions import assert_with_msg
@@ -17,6 +17,16 @@ def test_add_subcommands() -> None:
     )
 
 
+def test_add_shared_subcommands() -> None:
+    """Test function."""
+    result = run_subprocess([*PROJECT_MGT_RUN_ARGS, "pyrig", version.__name__])
+    stdout = result.stdout.decode("utf-8")
+    assert_with_msg(
+        "version" in stdout,
+        f"Expected version in stdout, got {stdout}",
+    )
+
+
 def test_main() -> None:
     """Test for the main cli entrypoint."""
     result = run_subprocess([*PROJECT_MGT_RUN_ARGS, "pyrig", "--help"])
@@ -24,22 +34,3 @@ def test_main() -> None:
         result.returncode == 0,
         "Expected returncode 0",
     )
-
-
-def test_get_project_name_from_argv() -> None:
-    """Test function."""
-    result = get_project_name_from_argv()
-    assert_with_msg(isinstance(result, str), "Expected string result")
-
-
-def test_get_pkg_name_from_argv() -> None:
-    """Test function."""
-    result = get_pkg_name_from_argv()
-    assert_with_msg(isinstance(result, str), "Expected string result")
-
-
-def test_version() -> None:
-    """Test function."""
-    result = run_subprocess([*PROJECT_MGT_RUN_ARGS, "pyrig", "version"])
-    stdout = result.stdout.decode("utf-8")
-    assert_with_msg("version" in stdout, f"Expected 'version' in stdout, got {stdout}")

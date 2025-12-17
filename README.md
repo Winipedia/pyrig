@@ -91,7 +91,11 @@ git push
 ```
 
 ## Documentation
+
 - **[Documentation Index](docs/index.md)** - Full documentation
+- **[Getting Started Guide](docs/getting-started.md)** - Complete guide to creating your first pyrig project
+- **[Multi-Package Architecture](docs/multi-package-architecture.md)** - Build package ecosystems with cross-package discovery
+- **[Configuration Files Reference](docs/config-files/index.md)** - Detailed documentation for every config file
 
 ## Technology Stack
 
