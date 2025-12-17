@@ -245,6 +245,104 @@ def test_user_creation(db_session, sample_user):
     assert db_session.query(User).count() == 1
 ```
 
+### Use Case 4: Shared CLI Commands
+
+**Scenario**: You want all your organization's projects to have common CLI commands like `deploy`, `security-scan`, and `lint-all`.
+
+**Solution**: Define shared commands in a base package.
+
+```python
+# company_tools/dev/cli/shared_subcommands.py
+"""Shared CLI commands for all company projects."""
+
+import typer
+from pyrig.dev.utils.cli import get_project_name_from_argv
+
+
+def deploy() -> None:
+    """Deploy the application to production."""
+    project_name = get_project_name_from_argv()
+    typer.echo(f"Deploying {project_name} to production...")
+    # Your deployment logic here
+
+
+def security_scan() -> None:
+    """Run security scanning on the project."""
+    typer.echo("Running security scan...")
+    from pyrig.src.os.os import run_subprocess
+
+    result = run_subprocess(["bandit", "-r", "."])
+    if result.returncode == 0:
+        typer.echo("✅ Security scan passed!")
+    else:
+        typer.echo("❌ Security issues found!")
+        raise typer.Exit(1)
+
+
+def lint_all() -> None:
+    """Run all linting tools."""
+    typer.echo("Running ruff...")
+    from pyrig.src.os.os import run_subprocess
+
+    run_subprocess(["ruff", "check", "."])
+    run_subprocess(["ruff", "format", "--check", "."])
+    typer.echo("✅ Linting complete!")
+```
+
+Now any project that depends on `company-tools`:
+```bash
+# In service-a
+uv add company-tools
+uv run service-a deploy
+# Deploying service-a to production...
+
+uv run service-a security-scan
+# Running security scan...
+# ✅ Security scan passed!
+
+uv run service-a lint-all
+# Running ruff...
+# ✅ Linting complete!
+
+# In service-b (also depends on company-tools)
+uv run service-b deploy
+# Deploying service-b to production...
+```
+
+**Built-in Example: The `version` Command**
+
+Pyrig itself includes a shared command as an example:
+
+```python
+# pyrig/dev/cli/shared_subcommands.py
+from importlib.metadata import version as get_version
+import typer
+from pyrig.dev.utils.cli import get_project_name_from_argv
+
+def version() -> None:
+    """Display the version information."""
+    project_name = get_project_name_from_argv()
+    typer.echo(f"{project_name} version {get_version(project_name)}")
+```
+
+This command is automatically available in **every package that depends on pyrig**:
+
+```bash
+# In pyrig itself
+uv run pyrig version
+# pyrig version 0.1.0
+
+# In your project
+uv run my-awesome-project version
+# my-awesome-project version 1.2.3
+
+# In any dependent package
+uv run other-service version
+# other-service version 2.0.0
+```
+
+See [shared_subcommands.py documentation](config-files/shared-subcommands.md) for more details.
+
 ## How Discovery Works
 
 ### ConfigFile Discovery
@@ -320,6 +418,59 @@ def pytest_configure(config):
         fixtures_module = f"{package.__name__}.dev.tests.fixtures"
         # Import and register all fixtures from that module
         # ...
+```
+
+### Shared Subcommand Discovery
+
+When you run your CLI (e.g., `uv run my-app --help`):
+
+1. **Build dependency graph**: Find all packages depending on pyrig
+2. **For each package**: Look for `<package>.dev.cli.shared_subcommands` module
+3. **Scan for functions**: Find all public functions in each module
+4. **Register commands**: Add them to the Typer app
+5. **Make them available**: Commands are now callable
+
+```python
+# From pyrig/dev/cli/cli.py
+def add_shared_subcommands() -> None:
+    """Discover and register all shared CLI subcommands.
+
+    This discovers all packages inheriting from pyrig and loads their
+    shared_subcommands modules, registering all public functions as CLI
+    commands.
+    """
+    package_name = get_pkg_name_from_argv()
+    package = import_module(package_name)
+
+    # Get all shared_subcommands modules from dependency chain
+    all_shared_subcommands_modules = get_same_modules_from_deps_depen_on_dep(
+        shared_subcommands,  # The module pattern to look for
+        pyrig,               # The dependency to search for
+        until_pkg=package,   # Stop at current package
+    )
+
+    # Register all functions from each module
+    for shared_subcommands_module in all_shared_subcommands_modules:
+        sub_cmds = get_all_functions_from_module(shared_subcommands_module)
+        for sub_cmd in sub_cmds:
+            app.command()(sub_cmd)
+```
+
+**Example Discovery Chain:**
+
+```
+When running: uv run my-app --help
+
+1. Discovers: pyrig.dev.cli.shared_subcommands
+   - Finds: version()
+
+2. Discovers: company_base.dev.cli.shared_subcommands
+   - Finds: deploy(), security_scan(), lint_all()
+
+3. Discovers: my_app.dev.cli.shared_subcommands
+   - Finds: (any shared commands defined in my_app)
+
+Result: All commands are available in my-app CLI
 ```
 
 ## Creating a Multi-Package Ecosystem

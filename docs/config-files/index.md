@@ -28,6 +28,7 @@ This directory contains detailed documentation for every configuration file mana
 - [dev/builders/__init__.py](builders-init.md) - BuildersInitConfigFile
 - [dev/configs/__init__.py](configs-init.md) - ConfigsInitConfigFile
 - [dev/cli/subcommands.py](subcommands.md) - SubcommandsConfigFile
+- [dev/cli/shared_subcommands.py](shared-subcommands.md) - SharedSubcommandsConfigFile
 - [dev/tests/fixtures/__init__.py](fixtures-init.md) - FixturesInitConfigFile
 - [src/__init__.py](src-init.md) - SrcInitConfigFile
 - [resources/__init__.py](resources-init.md) - ResourcesInitConfigFile

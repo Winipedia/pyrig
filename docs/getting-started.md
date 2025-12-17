@@ -146,7 +146,8 @@ my-awesome-project/
 │   │   │   └── __init__.py
 │   │   ├── cli/                 # CLI commands
 │   │   │   ├── __init__.py
-│   │   │   └── subcommands.py   # CLI subcommand definitions, all funcs defined here are automatically added as CLI commands via typer
+│   │   │   ├── subcommands.py   # Project-specific CLI commands (only available in this project)
+│   │   │   └── shared_subcommands.py  # Cross-package CLI commands (available in all dependent packages)
 │   │   ├── configs/             # Configuration file managers, subclasses of ConfigFile to adjust behavior and settings of ConfigFiles
 │   │   │   └── __init__.py
 │   │   ├── tests/               # Test infrastructure
@@ -561,6 +562,92 @@ uv run pyrig protect-repo  # Set up GitHub branch protection
 uv run pyrig --help        # Show all available commands
 uv run pyrig <command> --help  # Show help for a specific command
 ```
+
+## Creating Custom CLI Commands
+
+Pyrig provides two ways to add custom CLI commands to your project:
+
+### Project-Specific Commands
+
+Add commands to `{package}/dev/cli/subcommands.py` for commands that are **only available in this project**:
+
+```python
+# my_awesome_project/dev/cli/subcommands.py
+"""Subcommands for the CLI.
+
+They will be automatically imported and added to the CLI
+IMPORTANT: All funcs in this file will be added as subcommands.
+So best to define the logic elsewhere and just call it here in a wrapper.
+"""
+
+
+def migrate() -> None:
+    """Run database migrations."""
+    print("Running migrations...")
+    # Your migration logic here
+
+
+def seed_db() -> None:
+    """Seed the database with test data."""
+    print("Seeding database...")
+    # Your seeding logic here
+```
+
+Now these commands are available:
+```bash
+uv run my-awesome-project migrate
+# Running migrations...
+
+uv run my-awesome-project seed-db
+# Seeding database...
+```
+
+### Shared Commands (Multi-Package)
+
+Add commands to `{package}/dev/cli/shared_subcommands.py` for commands that should be **available in all packages that depend on yours**:
+
+```python
+# company_base/dev/cli/shared_subcommands.py
+"""Shared commands for the CLI.
+
+This module provides shared CLI commands that can be used by multiple
+packages in a multi-package architecture. These commands are automatically
+discovered and added to the CLI by pyrig.
+"""
+
+import typer
+
+
+def deploy() -> None:
+    """Deploy the application to production."""
+    from pyrig.dev.utils.cli import get_project_name_from_argv
+    project_name = get_project_name_from_argv()
+    typer.echo(f"Deploying {project_name} to production...")
+    # Your deployment logic here
+```
+
+Now **every package** that depends on `company-base` gets the `deploy` command:
+
+```bash
+# In service-a (depends on company-base)
+uv run service-a deploy
+# Deploying service-a to production...
+
+# In service-b (also depends on company-base)
+uv run service-b deploy
+# Deploying service-b to production...
+```
+
+**Built-in Example:** The `version` command is a shared subcommand from pyrig:
+
+```bash
+uv run my-awesome-project version
+# my-awesome-project version 1.0.0
+```
+
+See [Multi-Package Architecture](multi-package-architecture.md) and [shared_subcommands.py documentation](config-files/shared-subcommands.md) for more details.
+
+---
 
 If you run into issues:
 1. **Check existing documentation** - Browse the [docs/](.) directory
