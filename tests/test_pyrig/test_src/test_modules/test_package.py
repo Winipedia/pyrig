@@ -4,10 +4,11 @@ tests.test_pyrig.test_modules.test_package
 """
 
 import importlib.metadata
+import os
+import sys
 from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
-from typing import Any
 
 import pytest
 from pytest_mock import MockFixture
@@ -474,45 +475,18 @@ class TestDependencyGraph:
             f"pkg_a={pkg_a_index}",
         )
 
-    def test_import_packages(self, mocker: MockFixture) -> None:
+    def test_import_packages(self) -> None:
         """Test method for import_packages."""
-        # Mock importlib.util.find_spec
-        mock_find_spec = mocker.patch("importlib.util.find_spec")
-
         # Mock importlib.import_module
-        mock_sys = ModuleType("sys")
-        mock_os = ModuleType("os")
-        mock_import_module = mocker.patch("importlib.import_module")
-
-        def import_side_effect(name: str) -> ModuleType | None:
-            modules = {"sys": mock_sys, "os": mock_os}
-            return modules.get(name)
-
-        mock_import_module.side_effect = import_side_effect
-
-        # Set up find_spec to return spec for sys and os, None for nonexistent
-        def find_spec_side_effect(name: str) -> Any:
-            if name in {"sys", "os"}:
-                return mocker.MagicMock()  # Return a mock spec
-            return None
-
-        mock_find_spec.side_effect = find_spec_side_effect
 
         # Test importing existing packages
         result = DependencyGraph.import_packages({"sys", "os", "nonexistent"})
 
         expected_module_count = 2
-        assert_with_msg(
-            mock_sys in result,
-            f"Expected sys module in result, got {result}",
-        )
-        assert_with_msg(
-            mock_os in result,
-            f"Expected os module in result, got {result}",
-        )
-        assert_with_msg(
-            len(result) == expected_module_count,
-            f"Expected {expected_module_count} modules (sys, os), got {len(result)}",
+        assert sys in result, f"Expected sys module in result, got {result}"
+        assert os in result, f"Expected os module in result, got {result}"
+        assert len(result) == expected_module_count, (
+            f"Expected {expected_module_count} modules (sys, os), got {len(result)}"
         )
 
 
