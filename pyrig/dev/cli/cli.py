@@ -13,36 +13,23 @@ Example:
     $ uv run pyrig build
 """
 
-import sys
-from importlib.metadata import version as get_version
-from pathlib import Path
+from importlib import import_module
 
 import typer
 
+import pyrig
 from pyrig import main as pyrig_main
-from pyrig.dev.cli import subcommands
+from pyrig.dev.cli import shared_subcommands, subcommands
+from pyrig.dev.utils.cli import get_pkg_name_from_argv
 from pyrig.src.modules.function import get_all_functions_from_module
 from pyrig.src.modules.module import (
     get_module_name_replacing_start_module,
+    get_same_modules_from_deps_depen_on_dep,
     import_module_from_path,
-)
-from pyrig.src.modules.package import (
-    get_pkg_name_from_project_name,
 )
 
 app = typer.Typer(no_args_is_help=True)
 """The main Typer application instance."""
-
-
-def get_project_name_from_argv() -> str:
-    """Get the project name."""
-    return Path(sys.argv[0]).name
-
-
-def get_pkg_name_from_argv() -> str:
-    """Get the project and package name."""
-    project_name = get_project_name_from_argv()
-    return get_pkg_name_from_project_name(project_name)
 
 
 def add_subcommands() -> None:
@@ -72,11 +59,29 @@ def add_subcommands() -> None:
         app.command()(sub_cmd)
 
 
-@app.command()
-def version() -> None:
-    """Display the version information."""
-    project_name = get_project_name_from_argv()
-    typer.echo(f"{project_name} version {get_version(project_name)}")
+def add_shared_subcommands() -> None:
+    """Discover and register all shared CLI subcommands.
+
+    This discovers all packages inheriting from pyrig and loads their
+    shared_subcommands modules, registering all public functions as CLI
+    commands. This enables cross-package commands that are available
+    in all pyrig projects. Example is pyrigs version command that is
+    available in all pyrig projects.
+    So you can do:
+        uv run pyrig version -> pyrig version 0.1.0
+        uv run my-awesome-project version -> my-awesome-project version 0.1.0
+    """
+    package_name = get_pkg_name_from_argv()
+    package = import_module(package_name)
+    all_shared_subcommands_modules = get_same_modules_from_deps_depen_on_dep(
+        shared_subcommands,
+        pyrig,
+        until_pkg=package,
+    )
+    for shared_subcommands_module in all_shared_subcommands_modules:
+        sub_cmds = get_all_functions_from_module(shared_subcommands_module)
+        for sub_cmd in sub_cmds:
+            app.command()(sub_cmd)
 
 
 def main() -> None:
@@ -86,4 +91,5 @@ def main() -> None:
     This function is called by the console script entry point.
     """
     add_subcommands()
+    add_shared_subcommands()
     app()

@@ -600,7 +600,7 @@ def make_pkg_dir(path: Path) -> None:
 
 
 def get_same_modules_from_deps_depen_on_dep(
-    module: ModuleType, dep: ModuleType
+    module: ModuleType, dep: ModuleType, until_pkg: ModuleType | None = None
 ) -> list[ModuleType]:
     """Find equivalent modules across all packages depending on a dependency.
 
@@ -616,6 +616,8 @@ def get_same_modules_from_deps_depen_on_dep(
     Args:
         module: The module to use as a template (e.g., `smth.dev.configs`).
         dep: The dependency package that other packages depend on (e.g., pyrig or smth).
+        until_pkg: Optional package to stop at. If provided, only modules from
+            packages that depend on `until_pkg` will be returned.
 
     Returns:
         A list of equivalent modules from all packages that depend on `dep`,
@@ -639,6 +641,8 @@ def get_same_modules_from_deps_depen_on_dep(
         pkg_module_name = module_name.replace(dep.__name__, pkg.__name__, 1)
         pkg_module = import_module_from_path(pkg_module_name)
         modules.append(pkg_module)
+        if isinstance(until_pkg, ModuleType) and pkg.__name__ == until_pkg.__name__:
+            break
     return modules
 
 
