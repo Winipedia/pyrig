@@ -35,7 +35,7 @@
 - **Living Configuration** - Configs stay synchronized automatically, no manual maintenance
 - **Enforced Quality** - Strict linting, type checking, testing, and security scanning out of the box
 - **Always Current** - Automatic dependency updates and latest tool versions via CI/CD
-- **Multi-Package Support** - Build package ecosystems with cross-package discovery
+- **Multi-Package Support** - Build package ecosystems with cross-package discovery of ConfigFiles, Builders, fixtures, and CLI commands
 - **Extensible Architecture** - Plugin system for custom ConfigFiles and Builders
 
 ### Philosophy
@@ -77,6 +77,7 @@ That's it! You now have a fully configured project with:
 - GitHub Actions CI/CD workflows
 - Branch protection and repository security
 - Containerfile for deployment
+- Custom CLI commands via `dev/cli/subcommands.py` and `dev/cli/shared_subcommands.py`
 
 ### Next Steps
 

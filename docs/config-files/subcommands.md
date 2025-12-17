@@ -19,6 +19,45 @@ The `{package_name}/dev/cli/subcommands.py` file provides CLI extensibility:
 - **Best Practices** - Encourages separation of logic and CLI
 - **Documentation** - Docstrings become command help text
 
+## Subcommands vs Shared Subcommands
+
+**Key Difference:**
+
+| Feature | `subcommands.py` | `shared_subcommands.py` |
+|---------|------------------|-------------------------|
+| **Scope** | Project-specific only | Available in all dependent packages |
+| **Use Case** | Commands unique to this project | Commands shared across package ecosystem |
+| **Discovery** | Only in this package | Across all packages depending on pyrig |
+| **Example** | `migrate`, `seed-db`, `run-worker` | `version`, `deploy`, `security-scan` |
+
+**Use `subcommands.py` when:**
+- Command is specific to THIS project only
+- Command uses project-specific logic
+- You don't want other packages to inherit this command
+
+**Use `shared_subcommands.py` when:**
+- Building a base package with common commands
+- Creating organization-wide tooling
+- Commands should be available in ALL packages that depend on yours
+
+**Example:**
+
+```python
+# my_app/dev/cli/subcommands.py (project-specific)
+def migrate() -> None:
+    """Run database migrations for my_app."""
+    # Only available in my_app
+    pass
+
+# company_base/dev/cli/shared_subcommands.py (cross-package)
+def deploy() -> None:
+    """Deploy any application."""
+    # Available in ALL packages that depend on company_base
+    pass
+```
+
+See [shared_subcommands.py](shared-subcommands.md) for cross-package commands and [Multi-Package Architecture](../multi-package-architecture.md) for more details.
+
 ### Why pyrig manages this file
 
 pyrig creates `dev/cli/subcommands.py` to:
