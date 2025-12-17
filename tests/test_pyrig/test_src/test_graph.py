@@ -130,3 +130,60 @@ class TestDiGraph:
         # Non-existent node
         with pytest.raises(ValueError, match="Node not in graph"):
             graph.shortest_path_length("a", "x")
+
+    def test_topological_sort_subgraph(self) -> None:
+        """Test topological sorting of a subgraph."""
+        graph = DiGraph()
+        # Build graph: pyrig <- pkg1 <- pkg2
+        # (pkg2 depends on pkg1, pkg1 depends on pyrig)
+        graph.add_edge("pkg2", "pkg1")
+        graph.add_edge("pkg1", "pyrig")
+
+        # Sort should give: pyrig, pkg1, pkg2 (dependencies first)
+        result = graph.topological_sort_subgraph({"pyrig", "pkg1", "pkg2"})
+        assert result == ["pyrig", "pkg1", "pkg2"]
+
+        # Test with more complex graph
+        graph2 = DiGraph()
+        # a <- b <- d
+        # a <- c <- d
+        # (d depends on both b and c, both depend on a)
+        graph2.add_edge("b", "a")
+        graph2.add_edge("c", "a")
+        graph2.add_edge("d", "b")
+        graph2.add_edge("d", "c")
+
+        result2 = graph2.topological_sort_subgraph({"a", "b", "c", "d"})
+        # a must come first, d must come last
+        assert result2[0] == "a"
+        assert result2[-1] == "d"
+        # b and c can be in any order, but both before d
+        assert result2.index("b") < result2.index("d")
+        assert result2.index("c") < result2.index("d")
+
+    def test_topological_sort_subgraph_with_cycle(self) -> None:
+        """Test that topological sort raises error on cycles."""
+        graph = DiGraph()
+        # Create a cycle: a -> b -> c -> a
+        graph.add_edge("a", "b")
+        graph.add_edge("b", "c")
+        graph.add_edge("c", "a")
+
+        with pytest.raises(ValueError, match="Cycle detected"):
+            graph.topological_sort_subgraph({"a", "b", "c"})
+
+    def test_topological_sort_subgraph_empty(self) -> None:
+        """Test topological sort with empty set."""
+        graph = DiGraph()
+        graph.add_edge("a", "b")
+
+        result = graph.topological_sort_subgraph(set())
+        assert result == []
+
+    def test_topological_sort_subgraph_single_node(self) -> None:
+        """Test topological sort with single node."""
+        graph = DiGraph()
+        graph.add_node("a")
+
+        result = graph.topological_sort_subgraph({"a"})
+        assert result == ["a"]

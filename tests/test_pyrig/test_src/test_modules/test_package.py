@@ -401,28 +401,30 @@ class TestDependencyGraph:
 
         # Add nodes and edges manually
         # Structure: pkg_a -> pkg_b -> pkg_c
+        # (pkg_a depends on pkg_b, pkg_b depends on pkg_c)
         graph.add_node("pkg_a")
         graph.add_node("pkg_b")
         graph.add_node("pkg_c")
         graph.add_edge("pkg_a", "pkg_b")
         graph.add_edge("pkg_b", "pkg_c")
 
-        # Mock import_packages to return mock modules
+        # Mock import_packages to return mock modules in the order they're given
         mock_pkg_a = ModuleType("pkg_a")
         mock_pkg_b = ModuleType("pkg_b")
+        mock_pkg_c = ModuleType("pkg_c")
 
-        def mock_import_packages(names: set[str]) -> set[ModuleType]:
-            result = set()
-            if "pkg_a" in names:
-                result.add(mock_pkg_a)
-            if "pkg_b" in names:
-                result.add(mock_pkg_b)
+        def mock_import_packages(names: list[str]) -> list[ModuleType]:
+            result: list[ModuleType] = []
+            for name in names:
+                if name == "pkg_a":
+                    result.append(mock_pkg_a)
+                elif name == "pkg_b":
+                    result.append(mock_pkg_b)
+                elif name == "pkg_c":
+                    result.append(mock_pkg_c)
             return result
 
         mocker.patch.object(graph, "import_packages", side_effect=mock_import_packages)
-
-        # Create mock module for pkg_c
-        mock_pkg_c = ModuleType("pkg_c")
 
         # Test getting all packages depending on pkg_c
         result = graph.get_all_depending_on(mock_pkg_c, include_self=False)
@@ -438,18 +440,38 @@ class TestDependencyGraph:
             f"Expected pkg_b in dependents of pkg_c, got {result}",
         )
 
-        # Test with include_self=True
-        mocker.patch.object(
-            graph,
-            "import_packages",
-            side_effect=lambda names: mock_import_packages(names) | {mock_pkg_c}
-            if "pkg_c" in names
-            else mock_import_packages(names),
+        # Verify topological order: pkg_b should come before pkg_a
+        # (because pkg_a depends on pkg_b)
+        pkg_b_index = result.index(mock_pkg_b)
+        pkg_a_index = result.index(mock_pkg_a)
+        assert_with_msg(
+            pkg_b_index < pkg_a_index,
+            f"Expected pkg_b (index {pkg_b_index}) before pkg_a (index {pkg_a_index}) "
+            f"in topological order, got {[m.__name__ for m in result]}",
         )
+
+        # Test with include_self=True
         result = graph.get_all_depending_on(mock_pkg_c, include_self=True)
         assert_with_msg(
-            mock_pkg_c in result or len(result) >= expected_count,
+            mock_pkg_c in result,
             f"Expected pkg_c in result when include_self=True, got {result}",
+        )
+        assert_with_msg(
+            len(result) == expected_count + 1,
+            f"Expected {expected_count + 1} packages with include_self=True, "
+            f"got {len(result)}",
+        )
+
+        # Verify topological order with include_self:
+        # pkg_c should come first, then pkg_b, then pkg_a
+        pkg_c_index = result.index(mock_pkg_c)
+        pkg_b_index = result.index(mock_pkg_b)
+        pkg_a_index = result.index(mock_pkg_a)
+        assert_with_msg(
+            pkg_c_index < pkg_b_index < pkg_a_index,
+            f"Expected topological order: pkg_c, pkg_b, pkg_a. "
+            f"Got indices: pkg_c={pkg_c_index}, pkg_b={pkg_b_index}, "
+            f"pkg_a={pkg_a_index}",
         )
 
     def test_import_packages(self, mocker: MockFixture) -> None:

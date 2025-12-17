@@ -317,7 +317,7 @@ class DependencyGraph(DiGraph):
 
         Traverses the dependency graph to find all packages that directly
         or indirectly depend on the specified package. Results are sorted
-        by dependency count (packages with fewer dependencies first).
+        in topological order (dependencies before dependents).
 
         This is the primary method used by pyrig to discover all packages
         in the ecosystem that extend pyrig's functionality.
@@ -330,7 +330,9 @@ class DependencyGraph(DiGraph):
 
         Returns:
             A list of imported module objects for all dependent packages.
-            Sorted so packages with fewer dependencies come first.
+            Sorted in topological order so dependencies come before dependents.
+            For example: [pyrig, pkg1, pkg2] where pkg1 depends on pyrig and
+            pkg2 depends on pkg1.
 
         Note:
             Only returns packages that can be successfully imported.
@@ -341,17 +343,16 @@ class DependencyGraph(DiGraph):
             package = package.__name__
         target = package.lower()
         if target not in self:
-            msg = f"""Package '{target}' not found in dependency graph.
-Possibly the target is the current project itself."""
+            msg = f"""Package '{target}' not found in dependency graph."""
             logger.warning(msg)
             return []
 
-        dependents: list[str] = list(self.ancestors(target))
+        dependents_set = self.ancestors(target)
         if include_self:
-            dependents.insert(0, target)
+            dependents_set.add(target)
 
-        # sort by number of dependencies
-        dependents = sorted(dependents, key=lambda p: len(self[p]), reverse=True)
+        # Sort in topological order (dependencies before dependents)
+        dependents = self.topological_sort_subgraph(dependents_set)
 
         return self.import_packages(dependents)
 
