@@ -187,3 +187,69 @@ class DiGraph:
 
         msg = f"No path from {source} to {target}"
         raise ValueError(msg)
+
+    def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
+        """Topologically sort a subset of nodes in the graph.
+
+        Performs Kahn's algorithm for topological sorting on the specified
+        subset of nodes. The result is ordered such that dependencies come
+        before their dependents.
+
+        In the dependency graph, an edge A → B means "A depends on B".
+        The topological sort ensures B appears before A in the result.
+
+        This is useful for ordering packages by their dependency relationships,
+        ensuring that dependencies are processed before their dependents.
+
+        Args:
+            nodes: Set of node identifiers to sort. Only edges between nodes
+                in this set are considered.
+
+        Returns:
+            List of nodes in topological order (dependencies before dependents).
+            If multiple valid orderings exist, the result is deterministic but
+            arbitrary among the valid orderings.
+
+        Raises:
+            ValueError: If the subgraph contains a cycle, making topological
+                sort impossible.
+
+        Example:
+            >>> g = DiGraph()
+            >>> g.add_edge("pkg2", "pkg1")  # pkg2 depends on pkg1
+            >>> g.add_edge("pkg1", "pyrig")  # pkg1 depends on pyrig
+            >>> g.topological_sort_subgraph({"pyrig", "pkg1", "pkg2"})
+            ['pyrig', 'pkg1', 'pkg2']  # Dependencies first
+        """
+        # Count outgoing edges (dependencies) for each node in the subgraph
+        # Nodes with 0 outgoing edges have no dependencies
+        out_degree: dict[str, int] = dict.fromkeys(nodes, 0)
+
+        for node in nodes:
+            for dependency in self._edges.get(node, set()):
+                if dependency in nodes:
+                    out_degree[node] += 1
+
+        # Start with nodes that have no dependencies in the subgraph
+        queue = [node for node in nodes if out_degree[node] == 0]
+        result: list[str] = []
+
+        while queue:
+            # Sort queue for deterministic ordering
+            queue.sort()
+            node = queue.pop(0)
+            result.append(node)
+
+            # For each package that depends on this node (reverse edges)
+            for dependent in self._reverse_edges.get(node, set()):
+                if dependent in nodes:
+                    out_degree[dependent] -= 1
+                    if out_degree[dependent] == 0:
+                        queue.append(dependent)
+
+        # Check for cycles
+        if len(result) != len(nodes):
+            msg = "Cycle detected in subgraph, cannot topologically sort"
+            raise ValueError(msg)
+
+        return result
