@@ -140,6 +140,11 @@ class PyprojectConfigFile(TomlConfigFile):
                         "pydocstyle": {"convention": "google"},
                     },
                 },
+                "ty": {
+                    "terminal": {
+                        "error-on-warning": True,
+                    },
+                },
                 "mypy": {
                     "strict": True,
                     "warn_unreachable": True,

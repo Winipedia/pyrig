@@ -232,7 +232,7 @@ def import_module_from_file(path: Path | str) -> ModuleType:
     module_name = to_module_name(path)
     path = to_path(module_name, is_package=False)
     module = import_module_with_default(module_name)
-    if module is not None:
+    if isinstance(module, ModuleType):
         return module
     if path.is_dir():
         return import_pkg_from_path(path)

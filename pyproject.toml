@@ -65,6 +65,9 @@ fixable = [
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[tool.ty.terminal]
+error-on-warning = true
+
 [tool.mypy]
 strict = true
 warn_unreachable = true
