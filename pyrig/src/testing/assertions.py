@@ -7,8 +7,6 @@ specialized validation logic for common testing scenarios.
 
 from typing import Any
 
-from pyrig.src.modules.function import is_abstractmethod
-
 
 def assert_with_msg(expr: bool, msg: str) -> None:  # noqa: FBT001
     """Assert that an expression is true with a custom error message.
@@ -48,19 +46,3 @@ Actual: {actual}
 {msg}
 """
     assert_with_msg(expr, msg)
-
-
-def assert_isabstrct_method(method: Any) -> None:
-    """Assert that a method is an abstract method.
-
-    Args:
-        method: The method to check
-
-    Raises:
-        AssertionError: If the method is not an abstract method
-
-    """
-    assert_with_msg(
-        is_abstractmethod(method),
-        f"Expected {method} to be abstract method",
-    )

@@ -38,10 +38,6 @@ PROJECT_MGT = "uv"
 PROJECT_MGT_RUN_ARGS = [PROJECT_MGT, "run"]
 """Base arguments for running commands with the project manager."""
 
-RUN_PYTHON_MODULE_ARGS = ["python", "-m"]
-"""Base arguments for running Python modules."""
-
-
 PROJECT_MGT_RUN_SCRIPT = " ".join(PROJECT_MGT_RUN_ARGS)
 """Base script for running commands with the project manager."""
 

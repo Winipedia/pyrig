@@ -1,10 +1,7 @@
 """Tests module."""
 
-from abc import ABC, abstractmethod
-
 import pytest
 
-from pyrig.src.modules.function import is_abstractmethod
 from pyrig.src.testing.assertions import assert_with_info, assert_with_msg
 
 
@@ -95,28 +92,3 @@ def test_assert_with_info() -> None:
         assert_with_info(
             expr=False, expected="True", actual="False", msg=custom_message
         )
-
-
-def test_assert_isabstrct_method() -> None:
-    """Test func for assert_isabstrct_method."""
-
-    class AbstractClass(ABC):
-        """Abstract class for testing."""
-
-        @abstractmethod
-        def abstract_method(self) -> None:
-            pass
-
-        def concrete_method(self) -> None:
-            """Concrete method."""
-            return
-
-    is_abstract = is_abstractmethod(AbstractClass.abstract_method)
-    assert_with_msg(
-        is_abstract, "Expected abstract method to be identified as abstract"
-    )
-
-    is_abstract = is_abstractmethod(AbstractClass.concrete_method)
-    assert_with_msg(
-        not is_abstract, "Expected concrete method to not be identified as abstract"
-    )
