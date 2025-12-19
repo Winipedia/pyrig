@@ -137,7 +137,7 @@ def walk_package(
 def create_package(path: Path) -> ModuleType:
     """Create a package at the given path.
 
-    The given patz must not end with __init__.py.
+    The given path must not end with __init__.py.
 
     Args:
         path: The dir path to create the package at
