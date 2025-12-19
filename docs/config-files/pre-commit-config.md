@@ -142,8 +142,8 @@ repos:
   pass_filenames: false
 ```
 
-- **Purpose:** Runtime type checking with ty
-- **Tool:** ty (pyrig's type checker)
+- **Purpose:** Fast type checking with ty
+- **Tool:** ty (Astral's type checker)
 - **Auto-fix:** No (reports errors)
 - **When:** Every commit, all files
 

@@ -44,7 +44,7 @@ pyrig is designed to work with GitHub. You'll need:
    git config --global user.email "your.email@example.com"
    ```
    
-   **Important:** Your git username should match your GitHub username for pyrig to work garanteed correctly.
+   **Important:** Your git username should match your GitHub username for pyrig to work guaranteed correctly.
 
 3. **A GitHub Personal Access Token (PAT)** with the following permissions:
    - `administration:read` and `administration:write` (for repository protection)
@@ -59,7 +59,7 @@ pyrig is designed to work with GitHub. You'll need:
 1. Go to [GitHub](https://github.com/new) and create a new repository
 2. Choose a name for your project (e.g., `my-awesome-project`)
 3. Make it public or private (your choice)
-4. **Do not** initialize with README, .gitignore (pyrig will create these). LICENCE is fine if you do not want to use the MIT license, which pyrig uses by default.
+4. **Do not** initialize with README, .gitignore (pyrig will create these). LICENSE is fine if you do not want to use the MIT license, which pyrig uses by default.
 5. Click "Create repository"
 
 ### Step 2: Configure GitHub Secrets
@@ -666,7 +666,7 @@ If you run into issues:
 
 4. **Read error messages** - pyrig provides detailed, actionable error messages
 
-5. **Keep dependencies updated** - pyrig's CI  and autouse fixtures automatically update them
+5. **Keep dependencies updated** - Use `uv lock --upgrade` to update dependencies
 
 6. **Use type hints** - They catch bugs and improve code quality
 

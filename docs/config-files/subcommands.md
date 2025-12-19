@@ -411,14 +411,15 @@ $ uv run pyrig mkroot
 
 ```python
 def init() -> None:
-    """Initialize the project.
+    """Set up the project.
 
-    Sets up the complete project structure including configuration files,
-    directory structure, and dependencies.
+    This is the setup command when you created the project from scratch.
+    It will init all config files, create the root, create tests, and run
+    all pre-commit hooks and tests.
     """
-    from pyrig.dev.cli.commands.setup import setup_project
+    from pyrig.dev.cli.commands.init_project import init_project
 
-    setup_project()
+    init_project()
 ```
 
 ```bash
@@ -429,14 +430,13 @@ $ uv run pyrig init
 
 ```python
 def build() -> None:
-    """Build the project.
+    """Build all artifacts.
 
-    Runs all Builder subclasses to generate code, documentation, and
-    other artifacts.
+    Invokes every subclass of Builder in the builder package.
     """
-    from pyrig.dev.cli.commands.build import build_project
+    from pyrig.dev.cli.commands.build_artifacts import build_artifacts
 
-    build_project()
+    build_artifacts()
 ```
 
 ```bash
@@ -447,9 +447,11 @@ $ uv run pyrig build
 
 ```python
 def mktests() -> None:
-    """Create test skeletons.
+    """Create all test files for the project.
 
-    Generates test files for all modules that don't have tests yet.
+    This generates test skeletons for all functions and classes in the src
+    package. It does not overwrite any existing tests.
+    Tests are also automatically generated when missing by running pytest.
     """
     from pyrig.dev.cli.commands.create_tests import make_test_skeletons
 
@@ -464,17 +466,35 @@ $ uv run pyrig mktests
 
 ```python
 def mkinits() -> None:
-    """Create __init__.py files.
+    """Create all __init__.py files for the project.
 
-    Generates __init__.py files for all packages that don't have them.
+    This creates __init__.py files for all packages and modules
+    that are missing them. It does not overwrite any existing files.
     """
-    from pyrig.dev.cli.commands.create_inits import make_init_files
+    from pyrig.dev.cli.commands.make_inits import make_init_files
 
     make_init_files()
 ```
 
 ```bash
 $ uv run pyrig mkinits
+```
+
+### protect_repo
+
+```python
+def protect_repo() -> None:
+    """Protect the repository.
+
+    This will set secure repo settings and add a branch protection rulesets.
+    """
+    from pyrig.dev.cli.commands.protect_repo import protect_repository
+
+    protect_repository()
+```
+
+```bash
+$ uv run pyrig protect-repo
 ```
 
 ## Advanced Examples

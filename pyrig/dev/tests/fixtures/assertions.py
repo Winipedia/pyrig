@@ -109,7 +109,7 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     src_package_name = PyprojectConfigFile.get_package_name()
 
     cmds = [
-        DependencyManager.get_run_args(project_name, main.main.__name__),
+        DependencyManager.get_run_args(project_name, "--help"),
         DependencyManager.get_run_args(project_name, main.main.__name__, "--help"),
     ]
     success = False

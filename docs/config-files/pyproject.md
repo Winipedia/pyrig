@@ -58,7 +58,7 @@ Core metadata about your Python package following PEP 621 standards.
 - **Default:** Preserved from existing file, or empty string for new projects
 - **Required:** No (but recommended)
 - **Purpose:** One-line summary of your project
-- **Why pyrig sets it:** You should customize this to describe your project. The value will automatically be added to the README.md file and also synchronized to the GitHub repository description. If you chnage it the your Readme will be updated on the next `pyrig mkroot` or via pytest autouse fixtures.
+- **Why pyrig sets it:** You should customize this to describe your project. The value will automatically be added to the README.md file and also synchronized to the GitHub repository description. If you change it, your README will be updated on the next `pyrig mkroot` or via pytest autouse fixtures.
 
 #### `readme`
 
@@ -106,8 +106,8 @@ Pyrig auto generates a LICENSE file with the MIT license. You can change this to
 #### `scripts`
 
 - **Type:** object (mapping of command names to entry points)
-- **Default:** `{<project-name> = "<package>.dev.cli.cli:main"}`
-- **Example:** `{myproject = "myproject.dev.cli.cli:main"}`
+- **Default:** `{<project-name> = "pyrig.dev.cli.cli:main"}`
+- **Example:** `{myproject = "pyrig.dev.cli.cli:main"}`
 - **Required:** No
 - **Purpose:** Defines CLI commands installed with your package
 - **Why pyrig sets it:** Creates a CLI command matching your project name
@@ -392,7 +392,7 @@ skips = ["*/tests/*.py"]
 ```
 
 ## Customization
-As long as you do not chnage a setting that is defaulkt by pyrig, you can customize this file as you see fit. Pyrig will not overwrite your changes.
+As long as you do not change a setting that is default by pyrig, you can customize this file as you see fit. Pyrig will not overwrite your changes.
 
 However I recommend overwriting config files via subclassing the relevant config file class rather than editing the file directly. This allows you to keep your customizations in sync with pyrig's latest standards and also allow pyrig to manage them.
 

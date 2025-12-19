@@ -402,22 +402,26 @@ When pytest runs:
 1. **Load conftest.py**: Your `tests/conftest.py` registers `pyrig.dev.tests.conftest` as a plugin
 2. **Pyrig's conftest**: Discovers all packages depending on pyrig
 3. **For each package**: Look for `<package>.dev.tests.fixtures` module
-4. **Scan for fixtures**: Find all functions decorated with `@pytest.fixture`
-5. **Register fixtures**: Make them available to all tests
+4. **Scan for all Python files**: Find all `.py` files in the fixtures module
+5. **Register as plugins**: Add them to `pytest_plugins` for automatic fixture availability
 
 ```python
 # From pyrig/dev/tests/conftest.py
-def pytest_configure(config):
-    """Register all fixtures from packages depending on pyrig."""
-    # Discover all packages depending on pyrig
-    graph = DependencyGraph()
-    packages = graph.get_all_depending_on(pyrig, include_self=True)
+# Find the fixtures module in all packages that depend on pyrig
+fixtures_pkgs = get_same_modules_from_deps_depen_on_dep(fixtures, pyrig)
 
-    # For each package, find fixtures module
-    for package in packages:
-        fixtures_module = f"{package.__name__}.dev.tests.fixtures"
-        # Import and register all fixtures from that module
-        # ...
+pytest_plugin_paths: list[Path] = []
+for pkg in fixtures_pkgs:
+    # Get absolute and relative paths for the fixtures module
+    absolute_path = ModulePath.pkg_type_to_dir_path(pkg)
+    # Find all Python files in the fixtures module
+    for path in absolute_path.rglob("*.py"):
+        pytest_plugin_paths.append(path)
+
+# Convert paths to module names and register as pytest plugins
+pytest_plugins = [
+    ModulePath.relative_path_to_module_name(path) for path in pytest_plugin_paths
+]
 ```
 
 ### Shared Subcommand Discovery

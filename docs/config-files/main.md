@@ -151,7 +151,7 @@ The `main()` function is registered as a CLI command in `pyproject.toml`:
 
 ```toml
 [project.scripts]
-my-awesome-project = "my_awesome_project.dev.cli.cli:main"
+my-awesome-project = "pyrig.dev.cli.cli:main"  # pyrig handles calling it and adds your defined commands to the cli so you can call uv run my-awesome-project <command>
 ```
 
 The CLI framework (`dev/cli/cli.py`) automatically discovers and registers the `main()` function:
@@ -173,7 +173,7 @@ User runs: uv run my-awesome-project
     ↓
 pyproject.toml [project.scripts] entry point
     ↓
-my_awesome_project.dev.cli.cli:main
+pyrig.dev.cli.cli:main
     ↓
 CLI framework discovers and registers commands
     ↓

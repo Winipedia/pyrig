@@ -299,7 +299,7 @@ This allows you to modify the test, but `def test_main` must remain.
 ```toml
 # pyproject.toml
 [project.scripts]
-my-awesome-project = "my_awesome_project.cli:main"
+my-awesome-project = "pyrig.dev.cli.cli:main"
 ```
 
 ### Issue: Test fails with import error

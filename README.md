@@ -27,7 +27,7 @@
 
 ## What is pyrig?
 
-**pyrig** is an opinionated Python project framework that enforces best practices and keeps your projects up-to-date automatically. Unlike traditional project templates, pyrig is a living system that manages your entire development lifecycle. Pyrig makes project development seemless and keeps you focused on your code. It allows even in bigger project to not lose the overview. It opinionated and best practices approach allows you to always know what belongs where and where to find things. 
+**pyrig** is an opinionated Python project framework that enforces best practices and keeps your projects up-to-date automatically. Unlike traditional project templates, pyrig is a living system that manages your entire development lifecycle. Pyrig makes project development seamless and keeps you focused on your code. It allows even in bigger projects to not lose the overview. Its opinionated and best practices approach allows you to always know what belongs where and where to find things.
 
 ### Key Features
 
@@ -40,7 +40,7 @@
 
 ### Philosophy
 
-pyrig is designed for **serious, long-term Python projects** where code quality and maintainability matter. It makes opinionated choices about tooling and enforces best practices, so you can focus on building features instead of configuring tools and wondering whta is the best way to do something.
+pyrig is designed for **serious, long-term Python projects** where code quality and maintainability matter. It makes opinionated choices about tooling and enforces best practices, so you can focus on building features instead of configuring tools and wondering what is the best way to do something.
 
 ## Quick Start
 
