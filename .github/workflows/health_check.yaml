@@ -74,8 +74,7 @@ jobs:
       with:
         files: coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: '${{ secrets.CODECOV_TOKEN != '''' ? ''true'' : ''false''
-          }}'
+        fail_ci_if_error: ${{ secrets.CODECOV_TOKEN && 'true' || 'false' }}
   health_check:
     needs:
     - health_check_matrix

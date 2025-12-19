@@ -885,7 +885,7 @@ class Workflow(YamlConfigFile):
         """
         #  make fail_ci_if_error true if token exists and false if it doesn't
         fail_ci_if_error = cls.insert_var(
-            "secrets.CODECOV_TOKEN != '' ? 'true' : 'false'"
+            "${{ secrets.CODECOV_TOKEN && 'true' || 'false' }}"
         )
         return cls.get_step(
             step_func=cls.step_upload_coverage_report,
