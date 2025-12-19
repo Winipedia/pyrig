@@ -72,3 +72,14 @@ New to pyrig? Start here:
   - Poetry and PDM comparison
   - Feature matrix
   - Use case recommendations
+
+## Drawbacks and Trade-offs
+
+- **[Drawbacks and Trade-offs](drawbacks.md)** - Honest discussion of pyrig's limitations
+  - Runtime dev/ folder overhead
+  - Automatic CLI handling limitations
+  - Forced tool choices (uv, ruff, ty, mypy, pytest, Podman)
+  - Fixed project structure
+  - Strict quality enforcement
+  - GitHub-centric workflow
+  - When NOT to use pyrig
