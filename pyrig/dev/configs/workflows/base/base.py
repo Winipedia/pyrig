@@ -1693,5 +1693,8 @@ class Workflow(YamlConfigFile):
         condition_check = cls.insert_var(condition)
         # make a script that runs the command if the token is configured
         # and echos a message if it is not
-        msg = f"Skipping step due to failed condition: {condition}."
+        condition_as_str = (
+            condition_check.strip().removeprefix("${{").removesuffix("}}").strip()
+        )
+        msg = f"Skipping step due to failed condition: {condition_as_str}."
         return f'if [ {condition_check} ]; then {run}; else echo "{msg}"; fi'
