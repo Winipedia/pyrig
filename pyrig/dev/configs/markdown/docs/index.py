@@ -6,12 +6,12 @@ managing the project's docs/index.md file with a standard header.
 
 from pathlib import Path
 
-from pyrig.dev.configs.base.base import MarkdownConfigFile
+from pyrig.dev.configs.base.base import BadgesMarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.package import DOCS_DIR_NAME
 
 
-class IndexConfigFile(MarkdownConfigFile):
+class IndexConfigFile(BadgesMarkdownConfigFile):
     """Configuration file manager for docs/index.md.
 
     Creates a docs/index.md file with a standard header and
@@ -31,8 +31,11 @@ class IndexConfigFile(MarkdownConfigFile):
     def get_content_str(cls) -> str:
         """Get the index file content.
 
+        Just adds Documentation to the project name in header.
+
         Returns:
             Markdown content with a standard header and instructions.
         """
-        return f"""# {PyprojectConfigFile.get_project_name()} Documentation
-"""
+        content = super().get_content_str()
+        project_name = PyprojectConfigFile.get_project_name()
+        return content.replace(project_name, f"{project_name} Documentation", 1)

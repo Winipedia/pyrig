@@ -222,11 +222,11 @@ main()
 
 ## Documentation
 
-See [docs/index.md](docs/index.md) for full documentation.
+See the documentation for full details.
 
 ## Contributing
 
-Contributions welcome! Please read CONTRIBUTING.md first.
+Contributions welcome!
 
 ## License
 
@@ -321,10 +321,7 @@ print(result)
 
 ## Documentation
 
-- [Getting Started](docs/getting-started.md)
-- [API Reference](docs/api-reference.md)
-- [Examples](docs/examples.md)
-- [Contributing](CONTRIBUTING.md)
+See the documentation for full details.
 
 ## Requirements
 
@@ -358,11 +355,9 @@ Contributions are welcome! Please:
 4. Run tests and linting
 5. Submit a pull request
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see LICENSE for details.
 
 ## Acknowledgments
 
@@ -395,8 +390,6 @@ pip install my-awesome-project
 from my_awesome_project import main
 main()
 ```
-
-See [docs/index.md](docs/index.md) for full documentation.
 ```
 
 ## Related Files

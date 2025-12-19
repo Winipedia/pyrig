@@ -1,0 +1,6 @@
+site_name: pyrig
+nav:
+- Home: index.md
+plugins:
+- search
+- mermaid2

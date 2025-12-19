@@ -1096,6 +1096,27 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
+    def step_publish_documentation(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that publishes the documentation to GitHub Pages.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs uv publish-docs.
+        """
+        return cls.get_step(
+            step_func=cls.step_publish_documentation,
+            uses="mhausenblas/mkdocs-deploy-gh-pages@master",
+            env={"GITHUB_TOKEN": cls.insert_github_token()},
+            step=step,
+        )
+
+    @classmethod
     def step_install_python_dependencies(
         cls,
         *,

@@ -83,18 +83,18 @@ Your repository needs secrets for automation to work:
      - Value: Your Personal Access Token from prerequisites
      - Used for: Branch protection and repository management
 
-   - **`PYPI_TOKEN`** (Optional - publish step skipped if not configured)
+   - **`PYPI_TOKEN`** (Optional - publish command skipped if not configured)
      - Value: Your PyPI API token
      - Used for: Automated package publishing
      - [Get a PyPI token here](https://pypi.org/manage/account/token/)
      - I recommend after the first publish to revoke the original token and make a scoped one for that package only.
-     - **Note:** Workflows will run successfully without this - the publish step is simply skipped
+     - **Note:** Workflows will run successfully without this - the publish command prints a skip message instead
 
-   - **`CODECOV_TOKEN`** (Optional - coverage upload skipped if not configured)
+   - **`CODECOV_TOKEN`** (Optional - upload failures ignored if not configured)
      - Value: Your Codecov token
      - Used for: Code coverage reporting
      - Public repos don't need this if you connect your Codecov account
-     - **Note:** Workflows will run successfully without this - the coverage upload step is simply skipped
+     - **Note:** Workflows will run successfully without this - upload failures are silently ignored when token is missing
      - [Get a Codecov token here](https://codecov.io/)
 
 ### Step 3: Clone and Initialize Locally
@@ -624,7 +624,7 @@ uv run pytest
 1. **Missing secrets** - Add `REPO_TOKEN` to repository secrets
 
 2. **Tests passing locally but failing in CI**
-   - Check Python version matrix (CI tests 3.12, 3.13, 3.14)
+   - Check Python version matrix (CI tests all versions from `requires-python`)
    - Check for platform-specific code (Windows paths are a common issue)
 
 3. **Branch protection preventing merge**
@@ -776,7 +776,7 @@ See [Multi-Package Architecture](multi-package-architecture.md) and [shared_subc
 ---
 
 If you run into issues:
-1. **Check existing documentation** - Browse the [docs/](.) directory
+1. **Check existing documentation** - Browse the [docs/](index.md) directory
 
 2. **Open an issue** - [GitHub Issues](https://github.com/Winipedia/pyrig/issues)
 

@@ -864,7 +864,6 @@ graph TB
 - [Builder Documentation](config-files/builders-init.md) - Creating custom Builders
 - [Fixture Documentation](config-files/fixtures-init.md) - Creating custom fixtures
 - [Getting Started Guide](getting-started.md) - Initial project setup
-- [DependencyGraph API](../pyrig/src/modules/package.py) - Source code reference
 
 
 

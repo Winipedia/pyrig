@@ -19,6 +19,24 @@ def my_test_publish_workflow(
 class TestPublishWorkflow:
     """Test class."""
 
+    def test_get_permissions(self) -> None:
+        """Test method."""
+        permissions = PublishWorkflow.get_permissions()
+        assert "contents" in permissions, "Expected 'contents' in permissions"
+        assert permissions["contents"] == "write", "Expected 'contents' to be 'write'"
+
+    def test_job_publish_documentation(self) -> None:
+        """Test method."""
+        result = PublishWorkflow.job_publish_documentation()
+        assert len(result) == 1, f"Expected job to have one key, got {result}"
+        job_name = next(iter(result.keys()))
+        assert "steps" in result[job_name], "Expected 'steps' in job"
+
+    def test_steps_publish_documentation(self) -> None:
+        """Test method."""
+        result = PublishWorkflow.steps_publish_documentation()
+        assert len(result) > 0, f"Expected steps to be non-empty, got {result}"
+
     def test_get_workflow_triggers(
         self, my_test_publish_workflow: type[PublishWorkflow]
     ) -> None:

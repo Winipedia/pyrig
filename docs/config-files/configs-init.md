@@ -548,7 +548,7 @@ class EnvConfigFile(YamlConfigFile):
 
 ## See Also
 
-- [ConfigFile Documentation](../api/configfile.md) - ConfigFile API reference
+- [ConfigFile System](../configfile-system.md) - ConfigFile system documentation
 - [pyproject.toml](pyproject.md) - Main configuration file
 - [builders/__init__.py](builders-init.md) - Builders package init
 - [resources/__init__.py](resources-init.md) - Resources package init
