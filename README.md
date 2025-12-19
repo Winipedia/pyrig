@@ -29,6 +29,24 @@
 
 **pyrig** is an opinionated Python project framework that enforces best practices and keeps your projects up-to-date automatically. Unlike traditional project templates, pyrig is a living system that manages your entire development lifecycle. Pyrig makes project development seamless and keeps you focused on your code. It allows even in bigger projects to not lose the overview. Its opinionated and best practices approach allows you to always know what belongs where and where to find things.
 
+```mermaid
+graph LR
+    subgraph "Traditional Templates"
+        T1[Generate once] --> T2[Manual updates]
+        T2 --> T3[Config drift]
+        T3 --> T4[Maintenance burden]
+    end
+
+    subgraph "pyrig"
+        P1[Living system] --> P2[Auto-sync configs]
+        P2 --> P3[Always current]
+        P3 --> P4[Focus on code]
+    end
+
+    style T4 fill:#FF6B6B,color:#fff
+    style P4 fill:#2E7D32,color:#fff
+```
+
 ### Key Features
 
 - **Automated Setup** - Initialize production-ready projects in seconds with `pyrig init`
@@ -114,28 +132,69 @@ pyrig uses cutting-edge Python tooling:
 
 ## What Makes pyrig Different?
 
-Unlike cookiecutter, copier, or other project templates:
+```mermaid
+graph TB
+    subgraph "Other Templates"
+        O1[Generate once] --> O2[Manual sync]
+        O2 --> O3[Config drift]
+        O3 --> O4[Outdated tools]
+    end
 
-- **Living** - Configs stay synchronized automatically, not just at creation time
-- **Opinionated** - Best practices enforced, not suggested
-- **Comprehensive** - Handles everything from init to deployment
-- **Current** - Automatically updates to latest tools and standards
-- **Extensible** - Plugin architecture for custom functionality
+    subgraph "pyrig"
+        P1[Living system] --> P2[Auto-sync]
+        P2 --> P3[Always current]
+        P3 --> P4[Enforced quality]
+    end
+
+    style O4 fill:#FF6B6B,color:#fff
+    style P4 fill:#2E7D32,color:#fff
+```
+
+**Key Differences:**
+
+| Feature | Other Templates | pyrig |
+|---------|----------------|-------|
+| Configuration | One-time generation | Living, auto-syncing |
+| Best Practices | Suggested | Enforced |
+| Updates | Manual | Automatic via CI/CD |
+| Scope | Initial setup | Full lifecycle |
+| Extensibility | Limited | Plugin architecture |
 
 ## Project Structure
 
 pyrig creates a clean, organized structure:
 
-```
-your-project/
-├── <package>/
-│   ├── dev/        # Development tools (not in production)
-│   ├── src/        # Your application code
-│   └── resources/  # Static files
-├── tests/          # Test suite (mirrors src/)
-├── docs/           # Documentation
-├── .github/        # CI/CD workflows
-└── ...             # Config files
+```mermaid
+graph TB
+    Root[your-project/]
+
+    Root --> Pkg[package/]
+    Root --> Tests[tests/]
+    Root --> Docs[docs/]
+    Root --> GH[.github/workflows/]
+    Root --> Configs[Config Files]
+
+    Pkg --> Dev[dev/<br/>Development tools]
+    Pkg --> Src[src/<br/>Application code]
+    Pkg --> Res[resources/<br/>Static files]
+
+    Dev --> Builders[builders/]
+    Dev --> CLI[cli/]
+    Dev --> ConfigFiles[configs/]
+    Dev --> Fixtures[tests/fixtures/]
+
+    Tests --> TestPkg[test_package/<br/>Mirrors src/]
+    Tests --> Conftest[conftest.py]
+
+    GH --> Build[build.yaml]
+    GH --> Health[health_check.yaml]
+    GH --> Publish[publish.yaml]
+    GH --> Release[release.yaml]
+
+    style Src fill:#2E7D32,color:#fff
+    style Dev fill:#FF8C00
+    style Tests fill:#FF6B6B,color:#fff
+    style GH fill:#3776AB,color:#fff
 ```
 
 ## Requirements
