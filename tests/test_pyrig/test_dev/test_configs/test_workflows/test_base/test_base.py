@@ -45,6 +45,13 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_run_if_condition(self) -> None:
+        """Test method."""
+        run = "echo test"
+        condition = Workflow.insert_var("true")
+        result = Workflow.run_if_condition(run, condition)
+        assert f"if [ {condition} ]; then {run}" in result
+
     def test_if_pypi_token_configured(self) -> None:
         """Test method."""
         result = Workflow.if_pypi_token_configured()
