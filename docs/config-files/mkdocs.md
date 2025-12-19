@@ -43,7 +43,7 @@ theme:
 
 Pyrig creates a minimal configuration:
 
-**File location:** `mkdocs.yaml`
+**File location:** `mkdocs.yml`
 
 **File contents:**
 ```yaml
