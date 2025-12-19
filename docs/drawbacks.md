@@ -238,6 +238,8 @@ This means:
 # You can't easily change these without breaking pyrig
 ```
 
+**Will other tools be supported?** Very unlikely. pyrig's value comes from its opinions—supporting multiple tools would defeat the purpose. However, pyrig **will** switch tools when superior alternatives emerge (e.g., we switched from poetry to uv because uv is 10-100x faster and more reliable).
+
 ### Why It's Necessary
 
 Forcing specific tools is core to pyrig's philosophy:
@@ -313,14 +315,49 @@ Savings: 3 days + ongoing maintenance
 
 ### Mitigation
 
-If you absolutely need different tools:
+You can customize or opt-out of pyrig's tools:
 
-1. **Override specific configs** - Extend ConfigFiles to customize
-2. **Disable pre-commit hooks** - Use your own tools (not recommended)
-3. **Fork pyrig** - Modify tool choices (high maintenance)
-4. **Don't use pyrig** - If tool choice is critical, pyrig might not fit
+**Option 1: Empty Config Files**
+```python
+# In your package's dev/configs/custom.py
+from pyrig.dev.configs.base.base import ConfigFile
 
-**Important:** pyrig's value comes from its opinions. Fighting them defeats the purpose.
+class MyCustomConfigFile(ConfigFile):
+    @classmethod
+    def get_content_str(cls) -> str:
+        return ""  # Empty file - tool won't run
+```
+
+**Option 2: Override via Subclassing**
+```python
+# Override pyrig's ruff config to use black instead
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
+
+class CustomPyprojectConfigFile(PyprojectConfigFile):
+    @classmethod
+    def get_config_dict(cls) -> dict:
+        config = super().get_config_dict()
+        # Remove ruff, add black
+        del config["tool"]["ruff"]
+        config["dependency-groups"]["dev"].append("black")
+        return config
+```
+
+**Option 3: Add New Tools**
+```python
+# Add a new tool config entirely
+class PylintConfigFile(ConfigFile):
+    @classmethod
+    def get_content_str(cls) -> str:
+        return "[MASTER]\nload-plugins=..."
+```
+
+This way you can:
+- Replace pyrig's tools with your preferred alternatives
+- Add additional tools pyrig doesn't include
+- Disable specific tools you don't want
+
+**Trade-off:** You lose automatic updates and must maintain configs yourself.
 
 ## 4. Opinionated Project Structure
 
@@ -440,47 +477,82 @@ For prototyping:
 - Use `# type: ignore` and `# nosec` for exceptional cases
 - Accept that quality takes time, but saves time later
 
-## 6. GitHub-Centric Workflow
+## 6. GitHub-Only Platform
 
 ### The Drawback
 
-pyrig is designed specifically for GitHub:
+**pyrig only works with GitHub.** There is no support for GitLab, Bitbucket, or other platforms.
 
 - **GitHub Actions** - CI/CD workflows are GitHub-specific
 - **Branch Protection** - Uses GitHub API for repository settings
 - **GitHub username** - Required to match git username
-- **GitHub-specific features** - Pull requests, releases, etc.
+- **GitHub-specific features** - Pull requests, releases, protected branches
 
 This means:
 
-- **No GitLab/Bitbucket** - Workflows don't work on other platforms
-- **GitHub dependency** - Can't use pyrig without GitHub
-- **Limited CI options** - Can't easily use Jenkins, CircleCI, etc.
+- **No GitLab/Bitbucket** - pyrig will not work on other platforms
+- **GitHub dependency** - Can't use pyrig without a GitHub account and repository
+- **No alternative CI** - Can't use Jenkins, CircleCI, GitLab CI, etc.
+- **Vendor lock-in** - Your project is tied to GitHub's ecosystem
+
+**Will other platforms be supported?** Very unlikely. Supporting multiple platforms would:
+- Dilute the quality of integration
+- Increase complexity and maintenance burden
+- Violate pyrig's philosophy of deep integration with the best tools
+- Create a lowest-common-denominator experience
+
+However, if a platform emerges that is clearly superior to GitHub (better tooling, better API, better ecosystem), pyrig would consider switching—just as we switched from poetry to uv when uv proved to be 10-100x faster and more reliable.
 
 ### Why It's Necessary
 
-GitHub integration enables:
+GitHub-only design enables:
 
-1. **Automated CI/CD** - Workflows work out of the box
-2. **Branch Protection** - Automatic repository security
-3. **Release Automation** - Automatic releases with artifacts
-4. **Consistent Platform** - One platform, one way to work
+1. **Deep Integration** - Leverage GitHub's full feature set without compromise
+2. **Best-in-Class CI/CD** - GitHub Actions is modern, fast, and well-integrated
+3. **Automatic Security** - Branch protection, required reviews, status checks
+4. **Release Automation** - GitHub Releases with artifacts and changelogs
+5. **Consistent Experience** - One platform, one way to work, no edge cases
+
+**Philosophy:** pyrig chooses the best tools available and integrates deeply with them. GitHub is the industry standard (90%+ of open-source projects), has the best tooling, and provides the most comprehensive platform. Supporting other platforms would compromise this quality.
 
 ### The Advantages
 
-GitHub integration provides:
+GitHub-only provides:
 
-- **Zero CI/CD Setup** - Workflows work immediately
-- **Automatic Security** - Branch protection enforced
-- **Professional Releases** - Automated with changelogs and artifacts
-- **Industry Standard** - GitHub is the most popular platform
+- **Zero CI/CD Setup** - Workflows work immediately after `pyrig init`
+- **Automatic Security** - Branch protection enforced automatically
+- **Professional Releases** - Automated releases with changelogs and artifacts
+- **Industry Standard** - GitHub is where 90%+ of open-source Python lives
+- **Best Tooling** - GitHub Actions, Dependabot, CodeQL, etc.
+- **No Configuration Drift** - One platform means one set of configs
+
+**Real-world benefit:**
+```
+Multi-platform tool: 3 CI configs, 3 sets of docs, 3 different behaviors
+pyrig: 1 CI config, 1 set of docs, 1 consistent behavior
+
+Result: 3x less maintenance, 3x fewer bugs, 100% reliability
+```
 
 ### Mitigation
 
-For other platforms:
-- Adapt the workflow files to your platform (GitLab CI, etc.)
-- Skip `pyrig protect-repo` if not using GitHub
-- Use pyrig for structure, customize CI/CD separately
+If you need GitLab/Bitbucket, you have limited options:
+
+**Option 1: Adapt Workflows Manually**
+- Use pyrig's structure and ConfigFile system
+- Manually convert GitHub Actions to GitLab CI/Bitbucket Pipelines
+- Skip `pyrig protect-repo` (GitHub-specific)
+- High effort, loses automatic updates
+
+**Option 2: Use Different Tools**
+- cookiecutter, copier support multiple platforms
+- But you lose pyrig's living configuration system
+
+**Option 3: Migrate to GitHub**
+- Recommended if you want pyrig's full benefits
+- GitHub is the industry standard (90%+ of open-source Python)
+
+**Bottom line:** pyrig's GitHub requirement is a core design decision. However, if a clearly superior platform emerges, pyrig would consider switching (just as we switched from poetry to uv).
 
 ## When NOT to Use pyrig
 

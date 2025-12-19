@@ -310,8 +310,7 @@ class DependencyGraph(DiGraph):
         target = package.lower()
         if target not in self:
             msg = f"""Package '{target}' not found in dependency graph."""
-            logger.warning(msg)
-            return []
+            raise ValueError(msg)
 
         dependents_set = self.ancestors(target)
         if include_self:

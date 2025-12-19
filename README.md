@@ -25,6 +25,12 @@
 
 ---
 
+## ⚠️ Important: GitHub Required
+
+**pyrig only works with GitHub.** It does not support GitLab, Bitbucket, or other platforms. This is an intentional design decision to provide deep integration with GitHub's ecosystem (Actions, branch protection, releases). See [drawbacks documentation](docs/drawbacks.md#6-github-only-platform) for details.
+
+---
+
 ## What is pyrig?
 
 **pyrig** is an opinionated Python project framework that enforces best practices and keeps your projects up-to-date automatically. Unlike traditional project templates, pyrig is a living system that manages your entire development lifecycle. Pyrig makes project development seamless and keeps you focused on your code. It allows even in bigger projects to not lose the overview. Its opinionated and best practices approach allows you to always know what belongs where and where to find things.
@@ -60,13 +66,16 @@ graph LR
 
 pyrig is designed for **serious, long-term Python projects** where code quality and maintainability matter. It makes opinionated choices about tooling and enforces best practices, so you can focus on building features instead of configuring tools and wondering what is the best way to do something.
 
+**Core principle:** Use the best tools available that work correctly. pyrig chooses modern, fast, reliable tools and enforces them consistently across all projects. This eliminates tool debates and ensures every pyrig project follows the same high standards.
+
 ## Quick Start
 
 ### Prerequisites
 
+- **GitHub account and repository** - pyrig is GitHub-only (no GitLab/Bitbucket support)
 - **Git** with username matching your GitHub username
-- **uv** package manager
-- **Podman** (for containerization)
+- **uv** package manager (10-100x faster than pip)
+- **Podman** (for containerization, preferred over Docker)
 
 ### Installation
 
@@ -199,10 +208,27 @@ graph TB
 
 ## Requirements
 
-- Git (any recent version)
-- uv package manager
-- GitHub account (for CI/CD and repository protection)
-- Podman (optional, for containerization)
+- **Git** (any recent version)
+- **uv** package manager (10-100x faster than pip)
+- **GitHub account** (required - pyrig is GitHub-only)
+- **Podman** (optional, for containerization - preferred over Docker)
+
+## Tool Philosophy
+
+pyrig makes opinionated choices about tooling:
+
+- **Package Manager:** uv (10-100x faster than pip/poetry)
+- **Linter/Formatter:** ruff (10-100x faster than black/pylint)
+- **Type Checker:** ty + mypy (ty is fast, mypy is comprehensive)
+- **Testing:** pytest (industry standard)
+- **CI/CD:** GitHub Actions (best integration)
+- **Container:** Podman preferred (daemonless, rootless, more secure)
+
+**Why?** pyrig's philosophy is to use the best tools available that work correctly, and integrate deeply with them. This eliminates tool debates, ensures consistency, and provides the best performance.
+
+**Will other tools be supported?** Very unlikely—supporting multiple tools would defeat pyrig's purpose. However, pyrig **will** switch tools when superior alternatives emerge (e.g., we switched from poetry to uv because uv is 10-100x faster).
+
+**Can I customize?** Yes! You can override configs via subclassing or create empty config files to opt-out of specific tools. See [drawbacks documentation](docs/drawbacks.md#3-forced-tool-choices) for details.
 
 ## Contributing
 

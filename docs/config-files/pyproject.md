@@ -237,6 +237,24 @@ This is pyrig's most opinionated choice - enabling every single ruff rule ensure
 - **Purpose:** Docstring style convention
 - **Why pyrig sets it:** Google style is clean, readable, and widely adopted
 
+### `[tool.ty]` - Ty Type Checker
+
+Configuration for ty, a fast type checker by Astral (creators of ruff and uv).
+
+#### `terminal.error-on-warning`
+
+- **Type:** boolean
+- **Default:** `true`
+- **Required:** No
+- **Purpose:** Treat type warnings as errors
+- **Why pyrig sets it:** Enforces strict type checking for maximum code quality
+
+**About ty:**
+- ty is 10-100x faster than mypy for incremental checks
+- Developed by Astral (same team as ruff and uv)
+- Used alongside mypy: ty for fast feedback, mypy for comprehensive checking
+- Part of pyrig's philosophy: use the best tools available
+
 ### `[tool.mypy]` - Mypy Type Checker
 
 Configuration for mypy static type checker.
@@ -373,6 +391,9 @@ fixable = ["ALL"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ty.terminal]
+error-on-warning = true
 
 [tool.mypy]
 strict = true

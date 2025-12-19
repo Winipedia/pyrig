@@ -30,7 +30,17 @@ Before you begin, ensure you have the following installed and configured:
 
 ### GitHub Setup
 
-pyrig is designed to work with GitHub. You'll need:
+**pyrig requires GitHub.** It is GitHub-only and does not support GitLab, Bitbucket, or other platforms. This is an intentional design decision to provide the best possible integration with GitHub's ecosystem.
+
+**Why GitHub-only?**
+- GitHub Actions workflows are tightly integrated
+- Branch protection uses GitHub API
+- Release automation leverages GitHub features
+- Supporting multiple platforms would dilute quality and increase complexity
+
+**Future support for other platforms:** Unlikely. pyrig's philosophy is to use the best tools available and integrate deeply with them, rather than supporting the lowest common denominator across multiple platforms.
+
+You'll need:
 
 1. **A GitHub account** - [Sign up here](https://github.com/join) if you don't have one
 
@@ -38,13 +48,13 @@ pyrig is designed to work with GitHub. You'll need:
    ```bash
    # Check your git username
    git config --get user.name
-   
+
    # If it doesn't match your GitHub username, set it:
    git config --global user.name "YourGitHubUsername"
    git config --global user.email "your.email@example.com"
    ```
-   
-   **Important:** Your git username should match your GitHub username for pyrig to work guaranteed correctly.
+
+   **Important:** Your git username must match your GitHub username for pyrig to work correctly.
 
 3. **A GitHub Personal Access Token (PAT)** with the following permissions:
    - `administration:read` and `administration:write` (for repository protection)
@@ -125,7 +135,7 @@ flowchart TD
 
 **Step Details:**
 
-1. **Adding dev dependencies** - Installs `pyrig-dev` package (includes things like: ruff, mypy, pytest, bandit, pre-commit, etc.)
+1. **Adding dev dependencies** - Installs `pyrig-dev` package (a separate PyPI package containing all development tools: ruff, ty, mypy, pytest, bandit, pre-commit, etc. - this keeps pyrig itself lightweight)
 2. **Syncing venv** - Installs all dependencies
 3. **Creating priority config files** - Creates `pyproject.toml`, `.gitignore`, `LICENSE`, and other critical files
 4. **Syncing venv** (again) - Ensures new configs are applied
