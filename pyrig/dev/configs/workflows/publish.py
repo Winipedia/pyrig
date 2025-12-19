@@ -38,24 +38,26 @@ class PublishWorkflow(Workflow):
             Dict with the publish job.
         """
         jobs: dict[str, Any] = {}
-        jobs.update(cls.job_publish())
+        jobs.update(cls.job_publish_package())
         return jobs
 
     @classmethod
-    def job_publish(cls) -> dict[str, Any]:
+    def job_publish_package(cls) -> dict[str, Any]:
         """Get the publish job configuration.
 
         Returns:
             Job that builds and publishes to PyPI.
         """
         return cls.get_job(
-            job_func=cls.job_publish,
-            steps=cls.steps_publish(),
-            if_condition=cls.if_workflow_run_is_success(),
+            job_func=cls.job_publish_package,
+            steps=cls.steps_publish_package(),
+            if_condition=cls.combined_if(
+                cls.if_workflow_run_is_success(), cls.if_pypi_token_configured()
+            ),
         )
 
     @classmethod
-    def steps_publish(cls) -> list[dict[str, Any]]:
+    def steps_publish_package(cls) -> list[dict[str, Any]]:
         """Get the steps for publishing.
 
         Returns:

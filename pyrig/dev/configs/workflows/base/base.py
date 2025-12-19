@@ -885,7 +885,6 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_upload_coverage_report,
-            if_condition=cls.if_codecov_token_configured(),
             uses="codecov/codecov-action@main",
             with_={
                 "files": "coverage.xml",
@@ -1085,7 +1084,6 @@ class Workflow(YamlConfigFile):
             Step that runs uv publish with PYPI_TOKEN.
         """
         return cls.get_step(
-            if_condition=cls.if_pypi_token_configured(),
             step_func=cls.step_publish_to_pypi,
             run=str(DependencyManager.get_publish_args(cls.insert_pypi_token())),
             step=step,
