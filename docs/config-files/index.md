@@ -17,7 +17,7 @@ This directory contains detailed documentation for every configuration file mana
 - [LICENSE](license-file.md) - LicenceConfigFile
 - [README.md](readme-file.md) - ReadmeConfigFile
 - [Containerfile](container-file.md) - ContainerfileConfigFile
-- [mkdocs.yaml](mkdocs.md) - MkdocsConfigFile
+- [mkdocs.yml](mkdocs.md) - MkdocsConfigFile
 - [.env](dotenv.md) - DotEnvConfigFile
 - [.python-version](dotpythonversion.md) - DotPythonVersionConfigFile
 - [.experiment.py](dotexperiment.md) - DotExperimentConfigFile
