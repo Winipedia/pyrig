@@ -86,10 +86,6 @@ def get_modules_and_packages_from_package(
         All discovered modules and packages are imported during this process.
 
     """
-    from pyrig.src.modules.module import (  # noqa: PLC0415
-        import_module_with_file_fallback,
-    )
-
     modules_and_packages = list(
         pkgutil.iter_modules(package.__path__, prefix=package.__name__ + ".")
     )
@@ -336,8 +332,6 @@ class DependencyGraph(DiGraph):
         Returns:
             A list of successfully imported module objects.
         """
-        from pyrig.src.modules.module import import_module_with_default  # noqa: PLC0415
-
         modules: list[ModuleType] = []
         for name in names:
             module = import_module_with_default(name)
