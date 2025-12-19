@@ -70,7 +70,6 @@ jobs:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
     - name: Upload Coverage Report
       id: upload_coverage_report
-      if: ${{ secrets.CODECOV_TOKEN != '' }}
       uses: codecov/codecov-action@main
       with:
         files: coverage.xml

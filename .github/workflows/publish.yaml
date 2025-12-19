@@ -15,9 +15,10 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
   UV_NO_SYNC: 1
 jobs:
-  publish:
+  publish_package:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && secrets.PYPI_TOKEN
+      != '' }}
     steps:
     - name: Checkout Repository
       id: checkout_repository
@@ -35,6 +36,5 @@ jobs:
       id: build_wheel
       run: uv build
     - name: Publish To Pypi
-      if: ${{ secrets.PYPI_TOKEN != '' }}
       id: publish_to_pypi
       run: uv publish --token ${{ secrets.PYPI_TOKEN }}
