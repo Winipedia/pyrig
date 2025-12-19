@@ -106,6 +106,25 @@ uv run pyrig init
 
 The `pyrig init` command runs a few sequential steps:
 
+```mermaid
+flowchart TD
+    Start([pyrig init]) --> Step1[1. Add dev dependencies]
+    Step1 --> Step2[2. Sync venv]
+    Step2 --> Step3[3. Create priority config files]
+    Step3 --> Step4[4. Sync venv again]
+    Step4 --> Step5[5. Create project root]
+    Step5 --> Step6[6. Create test files]
+    Step6 --> Step7[7. Run pre-commit hooks]
+    Step7 --> Step8[8. Run tests]
+    Step8 --> Step9[9. Commit initial changes]
+    Step9 --> End([Ready to develop])
+
+    style Start fill:#3776AB,color:#fff
+    style End fill:#2E7D32,color:#fff
+```
+
+**Step Details:**
+
 1. **Adding dev dependencies** - Installs `pyrig-dev` package (includes things like: ruff, mypy, pytest, bandit, pre-commit, etc.)
 2. **Syncing venv** - Installs all dependencies
 3. **Creating priority config files** - Creates `pyproject.toml`, `.gitignore`, `LICENSE`, and other critical files
@@ -129,6 +148,56 @@ This will also setup main branch protection and other security settings for your
 ## Understanding Your Project Structure
 
 After initialization, your project will have this structure:
+
+```mermaid
+graph TB
+    subgraph "Project Root"
+        GH[.github/workflows/]
+        Docs[docs/]
+        Pkg[my_awesome_project/]
+        Tests[tests/]
+        Config[Config Files]
+    end
+
+    subgraph "Package Structure"
+        Dev[dev/]
+        Res[resources/]
+        Src[src/]
+        Main[main.py]
+    end
+
+    subgraph "Dev Tools"
+        Builders[builders/]
+        CLI[cli/]
+        Configs[configs/]
+        TestInfra[tests/fixtures/]
+    end
+
+    subgraph "Test Structure"
+        TestPkg[test_my_awesome_project/]
+        Conftest[conftest.py]
+    end
+
+    Pkg --> Dev
+    Pkg --> Res
+    Pkg --> Src
+    Pkg --> Main
+
+    Dev --> Builders
+    Dev --> CLI
+    Dev --> Configs
+    Dev --> TestInfra
+
+    Tests --> TestPkg
+    Tests --> Conftest
+
+    style Pkg fill:#3776AB,color:#fff
+    style Dev fill:#FF8C00
+    style Src fill:#2E7D32,color:#fff
+    style Tests fill:#FF6B6B,color:#fff
+```
+
+**Detailed Structure:**
 
 ```
 my-awesome-project/
@@ -197,6 +266,51 @@ my-awesome-project/
 ├── pyproject.toml               # Project configuration
 ├── README.md                    # Project documentation, badges are automatically added by pyrig (matching git and github username required if remote is not set)
 └── uv.lock                      # Dependency lock file
+```
+
+## Development Workflow
+
+Here's the typical development workflow with pyrig:
+
+```mermaid
+flowchart LR
+    subgraph "Write Code"
+        A[Write function/class] --> B[Save file]
+    end
+
+    subgraph "Generate Tests"
+        B --> C[pyrig mktests]
+        C --> D[Implement tests]
+    end
+
+    subgraph "Validate"
+        D --> E[pytest]
+        E --> F{Tests pass?}
+        F -->|No| D
+        F -->|Yes| G[git add .]
+    end
+
+    subgraph "Commit"
+        G --> H[git commit]
+        H --> I[Pre-commit hooks]
+        I --> J{Hooks pass?}
+        J -->|No| A
+        J -->|Yes| K[git push]
+    end
+
+    subgraph "CI/CD"
+        K --> L[GitHub Actions]
+        L --> M[Tests + Linting]
+        M --> N{CI pass?}
+        N -->|No| A
+        N -->|Yes| O[Merged]
+    end
+
+    style A fill:#3776AB,color:#fff
+    style E fill:#FF8C00
+    style H fill:#2E7D32,color:#fff
+    style L fill:#FF6B6B,color:#fff
+    style O fill:#4CAF50,color:#fff
 ```
 
 ## Your First Code

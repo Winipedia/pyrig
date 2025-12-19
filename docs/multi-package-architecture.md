@@ -4,6 +4,50 @@
 
 One of pyrig's most powerful features is its **multi-package architecture**: the ability to automatically discover and integrate ConfigFiles, Builders, and pytest fixtures across multiple packages in your ecosystem.
 
+```mermaid
+graph TB
+    subgraph "Package Ecosystem"
+        P[pyrig<br/>Base Framework]
+        B[company-base<br/>Shared Standards]
+        A1[service-a<br/>Microservice]
+        A2[service-b<br/>Microservice]
+        A3[cli-tool<br/>CLI Application]
+    end
+
+    subgraph "Shared Components"
+        C[ConfigFiles]
+        Bu[Builders]
+        F[Fixtures]
+        CLI[CLI Commands]
+    end
+
+    P --> B
+    B --> A1
+    B --> A2
+    B --> A3
+
+    P -.->|provides| C
+    P -.->|provides| Bu
+    P -.->|provides| F
+    P -.->|provides| CLI
+
+    B -.->|extends| C
+    B -.->|extends| Bu
+    B -.->|extends| F
+    B -.->|extends| CLI
+
+    A1 -.->|inherits all| C
+    A1 -.->|inherits all| Bu
+    A1 -.->|inherits all| F
+    A1 -.->|inherits all| CLI
+
+    style P fill:#3776AB,color:#fff
+    style B fill:#FF8C00
+    style A1 fill:#2E7D32,color:#fff
+    style A2 fill:#2E7D32,color:#fff
+    style A3 fill:#2E7D32,color:#fff
+```
+
 This enables you to:
 - **Share configuration** across multiple projects
 - **Build package ecosystems** with common tooling
@@ -42,12 +86,30 @@ When you run `pyrig init` or `pyrig build`, pyrig:
 4. **Initializes/executes them** in dependency order
 
 This means if you have:
-```
-pyrig (base framework)
-  ↑
-  └── shared-configs (your base package)
-        ↑
-        └── my-app (your application)
+
+```mermaid
+graph BT
+    A[my-app] -->|depends on| B[shared-configs]
+    B -->|depends on| P[pyrig]
+
+    subgraph "When my-app runs pyrig init"
+        C1[pyrig.dev.configs]
+        C2[shared_configs.dev.configs]
+        C3[my_app.dev.configs]
+    end
+
+    P -.->|provides| C1
+    B -.->|provides| C2
+    A -.->|provides| C3
+
+    C1 --> Result[All ConfigFiles<br/>discovered and used]
+    C2 --> Result
+    C3 --> Result
+
+    style P fill:#3776AB,color:#fff
+    style B fill:#FF8C00
+    style A fill:#2E7D32,color:#fff
+    style Result fill:#4CAF50,color:#fff
 ```
 
 When `my-app` runs `pyrig init`, it discovers and uses:
@@ -617,10 +679,26 @@ class AppSpecificStandardsConfigFile(CompanyStandardsConfigFile):
 
 Packages are discovered and processed in **dependency order** (packages with fewer dependencies first):
 
-```
-1. pyrig (no dependencies on other pyrig packages)
-2. my-company-pyrig-base (depends on pyrig)
-3. my-app (depends on my-company-pyrig-base)
+```mermaid
+graph LR
+    subgraph "Discovery Order"
+        direction LR
+        O1[1. pyrig] --> O2[2. company-base]
+        O2 --> O3[3. my-app]
+    end
+
+    subgraph "Dependency Chain"
+        direction BT
+        A[my-app<br/>2 dependencies] -->|depends on| B[company-base<br/>1 dependency]
+        B -->|depends on| P[pyrig<br/>0 dependencies]
+    end
+
+    style O1 fill:#3776AB,color:#fff
+    style O2 fill:#FF8C00
+    style O3 fill:#2E7D32,color:#fff
+    style P fill:#3776AB,color:#fff
+    style B fill:#FF8C00
+    style A fill:#2E7D32,color:#fff
 ```
 
 This ensures:
@@ -716,44 +794,66 @@ class ExtendedMyConfigFile(MyConfigFile):
 
 Here's a complete example of a company with multiple services:
 
+```mermaid
+graph TB
+    subgraph "company-pyrig-base"
+        BC[dev/configs/<br/>company_ruff.py<br/>company_security.py<br/>company_ci.py]
+        BB[dev/builders/<br/>compliance.py<br/>sbom.py]
+        BF[dev/tests/fixtures/<br/>database.py<br/>auth.py]
+    end
+
+    subgraph "service-a"
+        AC[dev/configs/<br/>service_a_config.py]
+        AB[dev/builders/<br/>api_docs.py]
+    end
+
+    subgraph "service-b"
+        SC[dev/configs/<br/>service_b_config.py]
+        SB[dev/builders/<br/>grpc_stubs.py]
+    end
+
+    subgraph "pyrig"
+        PC[dev/configs/<br/>pyproject.py<br/>gitignore.py<br/>...]
+        PB[dev/builders/<br/>pyinstaller.py]
+        PF[dev/tests/fixtures/<br/>...]
+    end
+
+    PC --> BC
+    PB --> BB
+    PF --> BF
+
+    BC --> AC
+    BB --> AB
+    BF --> AC
+
+    BC --> SC
+    BB --> SB
+    BF --> SC
+
+    style PC fill:#3776AB,color:#fff
+    style PB fill:#3776AB,color:#fff
+    style PF fill:#3776AB,color:#fff
+    style BC fill:#FF8C00
+    style BB fill:#FF8C00
+    style BF fill:#FF8C00
+    style AC fill:#2E7D32,color:#fff
+    style AB fill:#2E7D32,color:#fff
+    style SC fill:#2E7D32,color:#fff
+    style SB fill:#2E7D32,color:#fff
 ```
-company-pyrig-base (published to private PyPI)
-  ├── dev/configs/
-  │   ├── company_ruff.py      # Company linting standards
-  │   ├── company_security.py  # Security scanning config
-  │   └── company_ci.py        # CI/CD workflow templates
-  ├── dev/builders/
-  │   ├── compliance.py        # Compliance reports
-  │   └── sbom.py             # Software Bill of Materials
-  └── dev/tests/fixtures/
-      ├── database.py          # Shared DB fixtures
-      └── auth.py             # Auth fixtures
 
-service-a (depends on company-pyrig-base)
-  ├── dev/configs/
-  │   └── service_a_config.py  # Service-specific config
-  └── dev/builders/
-      └── api_docs.py          # API documentation builder
-
-service-b (depends on company-pyrig-base)
-  ├── dev/configs/
-  │   └── service_b_config.py  # Service-specific config
-  └── dev/builders/
-      └── grpc_stubs.py        # gRPC stub generator
-```
-
-When `service-a` runs `pyrig init`:
+**When `service-a` runs `pyrig init`:**
 - Gets all ConfigFiles from `pyrig`
 - Gets all ConfigFiles from `company-pyrig-base`
 - Gets all ConfigFiles from `service-a`
 - All are initialized in dependency order
 
-When `service-a` runs `pyrig build`:
+**When `service-a` runs `pyrig build`:**
 - Runs all Builders from `pyrig`
 - Runs all Builders from `company-pyrig-base` (compliance, SBOM)
 - Runs all Builders from `service-a` (API docs)
 
-When `service-a` runs tests:
+**When `service-a` runs tests:**
 - Has access to all fixtures from `pyrig`
 - Has access to all fixtures from `company-pyrig-base` (database, auth)
 - Has access to all fixtures from `service-a`
