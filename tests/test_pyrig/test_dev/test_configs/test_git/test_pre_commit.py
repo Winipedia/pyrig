@@ -4,12 +4,9 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from pytest_mock import MockFixture
 
 from pyrig.dev.configs.base.base import YamlConfigFile
-from pyrig.dev.configs.git import pre_commit
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
-from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -37,12 +34,6 @@ class TestPreCommitConfigConfigFile:
             hook["id"] == "test",
             f"Expected id to be 'test', got {hook['id']}",
         )
-
-    def test_run_hooks(self, mocker: MockFixture) -> None:
-        """Test method for run_hooks."""
-        mock_run = mocker.patch(make_obj_importpath(pre_commit) + ".run_subprocess")
-        PreCommitConfigConfigFile.run_hooks()
-        mock_run.assert_called()
 
     def test_get_filename(
         self, my_test_pre_commit_config_file: type[PreCommitConfigConfigFile]
@@ -105,27 +96,8 @@ class TestPreCommitConfigConfigFile:
         )
 
     def test___init__(
-        self,
-        my_test_pre_commit_config_file: type[PreCommitConfigConfigFile],
-        mocker: MockFixture,
+        self, my_test_pre_commit_config_file: type[PreCommitConfigConfigFile]
     ) -> None:
         """Test method for __init__."""
-        # Mock install to avoid running pre-commit install
-        mocker.patch.object(
-            my_test_pre_commit_config_file,
-            "install",
-        )
         # Create instance
         my_test_pre_commit_config_file()
-        # Verify instance was created successfully
-
-    def test_install(
-        self,
-        my_test_pre_commit_config_file: type[PreCommitConfigConfigFile],
-        mocker: MockFixture,
-    ) -> None:
-        """Test method for install."""
-        # Mock run_subprocess to avoid actually running pre-commit install
-        mock_run = mocker.patch(make_obj_importpath(pre_commit) + ".run_subprocess")
-        my_test_pre_commit_config_file.install()
-        mock_run.assert_called_once()

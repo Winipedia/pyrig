@@ -17,7 +17,12 @@ from pyrig.dev.cli.commands.create_tests import (
     get_test_module_content,
     make_test_skeletons,
 )
-from pyrig.src.modules.module import import_module_from_file, make_obj_importpath
+from pyrig.src.modules.module import (
+    create_module,
+    import_module_with_file_fallback,
+    make_obj_importpath,
+)
+from pyrig.src.modules.package import create_package
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -80,127 +85,46 @@ def test_create_tests_for_package(mocker: MockFixture) -> None:
     )
 
 
-def test_create_test_package(mocker: MockFixture) -> None:
+def test_create_test_package(tmp_path: Path) -> None:
     """Test func for create_test_package."""
-    # Mock the dependencies
-    mock_make_test_obj_importpath_from_obj = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".make_test_obj_importpath_from_obj"
-    )
-    mock_create_module = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".create_module"
-    )
-
-    # Create mock package
-    mock_package = mocker.MagicMock(spec=ModuleType)
-
-    # Set up mock return values
-    test_package_name = "tests.test_package"
-    mock_make_test_obj_importpath_from_obj.return_value = test_package_name
-
-    # Call the function
-    create_test_package(mock_package)
-
-    # Verify make_test_obj_importpath_from_obj was called with the package
-    mock_make_test_obj_importpath_from_obj.assert_called_once_with(mock_package)
-
-    # Verify create_module was called with the test package name and is_package=True
-    mock_create_module.assert_called_once_with(test_package_name, is_package=True)
+    package_name = create_test_package.__name__
+    package_path = tmp_path / package_name
+    with chdir(tmp_path):
+        package = create_package(package_path)
+        create_test_package(package)
+        test_package_path = tmp_path / f"tests/{test_create_test_package.__name__}"
+        assert test_package_path.exists()
 
 
-def test_create_test_module(mocker: MockFixture) -> None:
+def test_create_test_module(tmp_path: Path) -> None:
     """Test func for create_test_module."""
-    # Mock the dependencies
-    mock_make_test_obj_importpath_from_obj = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".make_test_obj_importpath_from_obj"
-    )
-    mock_create_module = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".create_module"
-    )
-    mock_to_path = mocker.patch(make_obj_importpath(create_tests_module) + ".to_path")
-    mock_get_test_module_content = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".get_test_module_content"
-    )
-
-    # Create mock module and path
-    mock_module = mocker.MagicMock(spec=ModuleType)
-    mock_test_module = mocker.MagicMock(spec=ModuleType)
-    mock_path = mocker.MagicMock()
-
-    # Set up mock return values
-    test_module_name = "tests.test_module"
-    test_content = "test module content"
-    mock_make_test_obj_importpath_from_obj.return_value = test_module_name
-    mock_create_module.return_value = mock_test_module
-    mock_to_path.return_value = mock_path
-    mock_get_test_module_content.return_value = test_content
-
-    # Call the function
-    create_test_module(mock_module)
-
-    # Verify make_test_obj_importpath_from_obj was called
-    mock_make_test_obj_importpath_from_obj.assert_called_once_with(mock_module)
-
-    # Verify create_module was called with correct parameters
-    mock_create_module.assert_called_once_with(test_module_name, is_package=False)
-
-    # Verify to_path was called with the test module
-    mock_to_path.assert_called_once_with(mock_test_module, is_package=False)
-
-    # Verify get_test_module_content was called
-    mock_get_test_module_content.assert_called_once_with(mock_module)
-
-    # Verify the content was written to the path
-    mock_path.write_text.assert_called_once_with(test_content)
+    # Create a real source module
+    module_name = create_test_module.__name__
+    module_path = tmp_path / f"{module_name}.py"
+    with chdir(tmp_path):
+        module = create_module(module_path)
+        create_test_module(module)
+        test_module_path = tmp_path / f"tests/{test_create_test_module.__name__}.py"
+        assert test_module_path.exists()
 
 
-def test_get_test_module_content(mocker: MockFixture) -> None:
+def test_get_test_module_content(tmp_path: Path) -> None:
     """Test func for get_test_module_content."""
-    # Mock the dependencies
-    mock_get_test_obj_from_obj = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".get_test_obj_from_obj"
-    )
-    mock_get_module_content_as_str = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".get_module_content_as_str"
-    )
-    mock_get_test_functions_content = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".get_test_functions_content"
-    )
-    mock_get_test_classes_content = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".get_test_classes_content"
-    )
+    module_name = test_get_test_module_content.__name__
+    module_path = tmp_path / f"{module_name}.py"
+    # write a function in the module
+    module_content = """
+def function_a() -> str:
+    return "a"
+"""
+    module_path.write_text(module_content)
+    with chdir(tmp_path):
+        # Create the modules
+        module = import_module_with_file_fallback(module_path)
+        create_test_module(module)
 
-    # Create mock modules
-    mock_module = mocker.MagicMock(spec=ModuleType)
-    mock_test_module = mocker.MagicMock(spec=ModuleType)
-
-    # Set up mock return values
-    initial_content = "initial test module content"
-    functions_content = "content with functions"
-    final_content = "final content with classes"
-
-    mock_get_test_obj_from_obj.return_value = mock_test_module
-    mock_get_module_content_as_str.return_value = initial_content
-    mock_get_test_functions_content.return_value = functions_content
-    mock_get_test_classes_content.return_value = final_content
-
-    # Call the function
-    result = get_test_module_content(mock_module)
-
-    # Verify the result
-    assert_with_msg(
-        result == final_content,
-        f"Expected final content, got {result}",
-    )
-
-    # Verify all functions were called in the correct order
-    mock_get_test_obj_from_obj.assert_called_once_with(mock_module)
-    mock_get_module_content_as_str.assert_called_once_with(mock_test_module)
-    mock_get_test_functions_content.assert_called_once_with(
-        mock_module, mock_test_module, initial_content
-    )
-    mock_get_test_classes_content.assert_called_once_with(
-        mock_module, mock_test_module, functions_content
-    )
+        test_module_content = get_test_module_content(module)
+        assert "def test_function_a" in test_module_content
 
 
 def test_get_test_functions_content(tmp_path: Path) -> None:
@@ -234,8 +158,8 @@ def test_function_a() -> None:
         test_file.write_text(test_module_content)
 
         # Import the modules
-        source_module = import_module_from_file(source_file)
-        test_module = import_module_from_file(test_file)
+        source_module = import_module_with_file_fallback(source_file)
+        test_module = import_module_with_file_fallback(test_file)
 
         # Call the function
         result = get_test_functions_content(
@@ -300,8 +224,8 @@ class TestCalculator:
         test_file = tmp_path / "test_module_test_classes_content.py"
         source_file.write_text(source_module_content)
         test_file.write_text(test_module_content)
-        source_module = import_module_from_file(source_file)
-        test_module = import_module_from_file(test_file)
+        source_module = import_module_with_file_fallback(source_file)
+        test_module = import_module_with_file_fallback(test_file)
         # assert inspect.getmembers retunr the classes
         members = inspect.getmembers(source_module, inspect.isclass)
         assert_with_msg(

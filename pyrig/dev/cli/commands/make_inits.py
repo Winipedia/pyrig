@@ -1,8 +1,8 @@
 """A func that creates __init__.py files for all packages and modules."""
 
 from pyrig.dev.utils.packages import find_packages
-from pyrig.src.modules.module import make_init_module, to_path
 from pyrig.src.modules.package import DOCS_DIR_NAME
+from pyrig.src.modules.path import ModulePath, make_init_module
 
 
 def get_namespace_packages() -> list[str]:
@@ -24,4 +24,5 @@ def make_init_files() -> None:
     if any_namespace_packages:
         # make init files for all namespace packages
         for package in any_namespace_packages:
-            make_init_module(to_path(package, is_package=True))
+            pkg_dir = ModulePath.pkg_name_to_relative_dir_path(package)
+            make_init_module(pkg_dir)

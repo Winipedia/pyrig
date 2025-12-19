@@ -14,7 +14,6 @@ The configuration enforces pyrig's opinionated defaults:
 import re
 from functools import cache
 from pathlib import Path
-from subprocess import CompletedProcess  # nosec: B404
 from typing import Any, Literal
 
 import requests
@@ -30,7 +29,6 @@ from pyrig.src.modules.package import (
     get_pkg_name_from_project_name,
     get_project_name_from_cwd,
 )
-from pyrig.src.os.os import run_subprocess
 from pyrig.src.testing.convention import (
     COVERAGE_THRESHOLD,
     TESTS_PACKAGE_NAME,
@@ -409,33 +407,3 @@ class PyprojectConfigFile(TomlConfigFile):
         return version_constraint.get_version_range(
             level="minor", upper_default=cls.get_latest_python_version()
         )
-
-    @classmethod
-    def update_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
-        """Update dependencies to their latest versions.
-
-        Args:
-            check: Whether to raise on non-zero exit code.
-
-        Returns:
-            The completed process result.
-        """
-        from pyrig.src.project.mgt import PROJECT_MGT  # noqa: PLC0415
-
-        upgrade_deps = run_subprocess([PROJECT_MGT, "lock", "--upgrade"], check=check)
-        _ = cls.install_dependencies(check=check)
-        return upgrade_deps
-
-    @classmethod
-    def install_dependencies(cls, *, check: bool = True) -> CompletedProcess[bytes]:
-        """Install project dependencies using uv sync.
-
-        Args:
-            check: Whether to raise on non-zero exit code.
-
-        Returns:
-            The completed process result.
-        """
-        from pyrig.src.project.mgt import PROJECT_MGT  # noqa: PLC0415
-
-        return run_subprocess([PROJECT_MGT, "sync"], check=check)

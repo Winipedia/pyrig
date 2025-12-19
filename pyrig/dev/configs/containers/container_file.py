@@ -11,7 +11,7 @@ from pathlib import Path
 from pyrig.dev.configs.base.base import TextConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.main import main
-from pyrig.src.project.mgt import PROJECT_MGT_RUN_ARGS
+from pyrig.src.project.mgt import DependencyManager
 
 
 class ContainerfileConfigFile(TextConfigFile):
@@ -91,7 +91,7 @@ class ContainerfileConfigFile(TextConfigFile):
         project_name = PyprojectConfigFile.get_project_name()
         package_name = PyprojectConfigFile.get_package_name()
         app_user_name = "appuser"
-        entrypoint_args = [*PROJECT_MGT_RUN_ARGS, package_name]
+        entrypoint_args = list(DependencyManager.get_run_args(project_name))
         default_cmd_args = [main.__name__]
         return [
             f"FROM python:{latest_python_version}-slim",

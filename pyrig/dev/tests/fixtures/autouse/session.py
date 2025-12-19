@@ -27,7 +27,6 @@ from pyrig.dev.cli.commands.init_project import STANDARD_DEV_DEPS
 from pyrig.dev.cli.commands.make_inits import get_namespace_packages, make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
-from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
@@ -52,7 +51,7 @@ from pyrig.src.modules.package import (
     walk_package,
 )
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.mgt import PROJECT_MGT_RUN_ARGS
+from pyrig.src.project.mgt import DependencyManager, PreCommit
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
@@ -309,7 +308,8 @@ def assert_dependencies_are_up_to_date() -> None:
     to make sure the dependencies are up to date.
     """
     # update the dependencies
-    completed_process = PyprojectConfigFile.update_dependencies(check=False)
+    args = DependencyManager.get_update_dependencies_args()
+    completed_process = args.run(check=False)
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
     std_msg = stderr + stdout
@@ -320,7 +320,8 @@ def assert_dependencies_are_up_to_date() -> None:
     assert not update_occurred, f"Expected none of {not_expected}, got: {std_msg}"
 
     # sync the dependencies
-    completed_process = PyprojectConfigFile.install_dependencies(check=True)
+    args = DependencyManager.get_install_dependencies_args()
+    completed_process = args.run(check=False)
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
     std_msg = stderr + stdout
@@ -340,7 +341,8 @@ def assert_pre_commit_is_installed() -> None:
     This fixture runs once per test session and runs pre-commit install
     to make sure pre-commit is installed.
     """
-    completed_process = PreCommitConfigConfigFile.install()
+    args = PreCommit.get_install_args()
+    completed_process = args.run()
     stdout = completed_process.stdout.decode("utf-8")
     logger.info("Pre-commit install output: %s", stdout)
     expected = "pre-commit installed at"
@@ -415,8 +417,10 @@ def assert_src_runs_without_dev_deps(
 
         # assert pytest is not installed
         dev_dep = "pytest"
-        installed = run_subprocess(
-            [*PROJECT_MGT_RUN_ARGS, "pip", "show", dev_dep], check=False, env=env
+        args = DependencyManager.get_run_args("pip", "show", dev_dep)
+        installed = args.run(
+            check=False,
+            env=env,
         )
         stderr = installed.stderr.decode("utf-8")
         dev_dep_not_installed = f"not found: {dev_dep}" in stderr
@@ -425,8 +429,8 @@ def assert_src_runs_without_dev_deps(
             f"Expected {dev_dep} not to be installed",
         )
         # check pytest is not importable
-        installed = run_subprocess(
-            [*PROJECT_MGT_RUN_ARGS, "python", "-c", "import pytest"],
+        args = DependencyManager.get_run_args("python", "-c", "import pytest")
+        installed = args.run(
             check=False,
             env=env,
         )

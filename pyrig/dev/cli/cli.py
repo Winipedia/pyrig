@@ -24,9 +24,10 @@ from pyrig.dev.utils.cli import get_pkg_name_from_argv
 from pyrig.src.modules.function import get_all_functions_from_module
 from pyrig.src.modules.module import (
     get_module_name_replacing_start_module,
-    get_same_modules_from_deps_depen_on_dep,
-    import_module_from_file,
+    import_module_with_file_fallback,
 )
+from pyrig.src.modules.package import get_same_modules_from_deps_depen_on_dep
+from pyrig.src.modules.path import ModulePath
 
 app = typer.Typer(no_args_is_help=True)
 """The main Typer application instance."""
@@ -43,15 +44,19 @@ def add_subcommands() -> None:
     pkg_name = get_pkg_name_from_argv()
 
     main_module_name = get_module_name_replacing_start_module(pyrig_main, pkg_name)
-    main_module = import_module_from_file(main_module_name)
+    main_module_path = ModulePath.module_name_to_relative_file_path(main_module_name)
+    main_module = import_module_with_file_fallback(main_module_path)
     app.command()(main_module.main)
 
     # replace the first parent with pkg_name
     subcommands_module_name = get_module_name_replacing_start_module(
         subcommands, pkg_name
     )
+    subcommands_module_path = ModulePath.module_name_to_relative_file_path(
+        subcommands_module_name
+    )
 
-    subcommands_module = import_module_from_file(subcommands_module_name)
+    subcommands_module = import_module_with_file_fallback(subcommands_module_path)
 
     sub_cmds = get_all_functions_from_module(subcommands_module)
 

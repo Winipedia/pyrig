@@ -7,15 +7,11 @@ formatting, type checking, and security scanning.
 
 import logging
 from pathlib import Path
-from subprocess import CompletedProcess  # nosec: B404
 from typing import Any
 
 from pyrig.dev.configs.base.base import YamlConfigFile
-from pyrig.src.git.git import git_add_file
-from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import (
-    PROJECT_MGT_RUN_ARGS,
-    get_script_from_args,
+    Args,
 )
 
 logger = logging.getLogger(__name__)
@@ -76,7 +72,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         hook: dict[str, Any] = {
             "id": name,
             "name": name,
-            "entry": get_script_from_args(args),
+            "entry": str(Args(args)),
             "language": language,
             "always_run": always_run,
             "pass_filenames": pass_filenames,
@@ -126,45 +122,3 @@ class PreCommitConfigConfigFile(YamlConfigFile):
     def __init__(self) -> None:
         """Initialize the pre-commit config file manager."""
         super().__init__()
-
-    @classmethod
-    def install(cls) -> CompletedProcess[bytes]:
-        """Install pre-commit hooks into the git repository.
-
-        Returns:
-            The completed process result.
-        """
-        logger.info("Running pre-commit install")
-        return run_subprocess([*PROJECT_MGT_RUN_ARGS, "pre-commit", "install"])
-
-    @classmethod
-    def run_hooks(
-        cls,
-        *,
-        with_install: bool = True,
-        all_files: bool = True,
-        add_before_commit: bool = False,
-        verbose: bool = True,
-        check: bool = True,
-    ) -> None:
-        """Run all pre-commit hooks.
-
-        Args:
-            with_install: Whether to install hooks first.
-            all_files: Whether to run on all files.
-            add_before_commit: Whether to git add files first.
-            verbose: Whether to show verbose output.
-            check: Whether to raise on hook failure.
-        """
-        if add_before_commit:
-            logger.info("Adding all files to git")
-            git_add_file(Path())
-        if with_install:
-            cls.install()
-        logger.info("Running pre-commit run")
-        args = ["pre-commit", "run"]
-        if all_files:
-            args.append("--all-files")
-        if verbose:
-            args.append("--verbose")
-        run_subprocess([*args], check=check)

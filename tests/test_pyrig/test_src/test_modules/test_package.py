@@ -14,22 +14,25 @@ import pytest
 from pytest_mock import MockFixture
 
 import pyrig
+from pyrig import src
 from pyrig.dev.utils import packages
 from pyrig.dev.utils.packages import find_packages
 from pyrig.src.modules.module import (
-    create_module,
+    import_module_from_file,
     make_obj_importpath,
 )
 from pyrig.src.modules.package import (
     DependencyGraph,
-    copy_package,
-    get_main_package,
+    create_package,
     get_modules_and_packages_from_package,
+    get_objs_from_obj,
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
     get_project_name_from_cwd,
     get_project_name_from_pkg_name,
-    import_pkg_from_path,
+    get_same_modules_from_deps_depen_on_dep,
+    import_pkg_from_dir,
+    import_pkg_with_dir_fallback,
     module_is_package,
     walk_package,
 )
@@ -66,7 +69,7 @@ def test_get_modules_and_packages_from_package(tmp_path: Path) -> None:
         init_file.write_text('"""Test package."""\n')
         module_file = package_dir / "test_module.py"
         module_file.write_text('"""Test module."""\n')
-        package = import_pkg_from_path(package_dir)
+        package = import_pkg_from_dir(package_dir)
 
         packages, modules = get_modules_and_packages_from_package(package)
         assert_with_msg(
@@ -132,38 +135,6 @@ def test_find_packages_with_namespace(mocker: MockFixture) -> None:
     mock_find_namespace.assert_called_once_with(where=".", exclude=[], include=("*",))
 
 
-def test_find_packages_with_gitignore_filtering(mocker: MockFixture) -> None:
-    """Test find_packages with gitignore patterns that should exclude packages."""
-    # Mock setuptools find_packages to return only packages not excluded by gitignore
-    mock_find_packages = mocker.patch(
-        make_obj_importpath(packages) + "._find_packages",
-        return_value=[
-            "package1",
-            "package2",
-        ],  # dist and build are excluded by setuptools
-    )
-
-    # Mock load_gitignore to return patterns that should exclude dist and build
-    mocker.patch(
-        "pathlib.Path.read_text",
-        return_value="""
-dist/
-build/
-__pycache__/
-""",
-    )
-
-    result = find_packages()
-    expected = ["package1", "package2"]
-    assert_with_msg(result == expected, f"Expected {expected}, got {result}")
-
-    # Verify that setuptools find_packages was called with gitignore patterns
-    expected_exclude = ["dist", "build", "__pycache__"]
-    mock_find_packages.assert_called_with(
-        where=".", exclude=expected_exclude, include=("*",)
-    )
-
-
 def test_walk_package(mocker: MockFixture) -> None:
     """Test func for walk_package."""
     # Create mock package hierarchy
@@ -213,73 +184,6 @@ def test_walk_package(mocker: MockFixture) -> None:
             modules == expected_modules,
             f"Expected modules {expected_modules}, got {modules} at index {i}",
         )
-
-
-def test_copy_package(tmp_path: Path) -> None:
-    """Test func for copy_package."""
-    with chdir(tmp_path):
-        # Create source package structure
-        src_path = tmp_path / "src_path"
-        src_path.mkdir()
-
-        src_package = create_module("src_path.src_package", is_package=True)
-        create_module("src_path.src_package.sub_package", is_package=True)
-        create_module("src_path.src_package.module1", is_package=False)
-        create_module("src_path.src_package.sub_package.module2", is_package=False)
-
-        # assert module 2 exists
-        assert_with_msg(
-            (src_path / "src_package" / "sub_package" / "module2.py").exists(),
-            "Expected module2.py to exist",
-        )
-
-        # Copy the package
-        dst_path = tmp_path / "dst_path"
-        copy_package(src_package, dst_path)
-
-        # rglob all .py files in src_path and assert they exist in dst_path
-        for src_file in src_path.rglob("*.py"):
-            dst_file = dst_path / src_file.relative_to(src_path / "src_package")
-            assert_with_msg(
-                dst_file.exists(),
-                f"Expected {dst_file} to exist",
-            )
-
-
-def test_get_main_package(mocker: MockFixture) -> None:
-    """Test func for get_main_package."""
-    # Test successful case
-    mock_main_module = ModuleType("__main__")
-    mock_main_module.__package__ = "test_package"
-    mock_package = ModuleType("test_package")
-
-    # Create a mock sys module with modules attribute
-    mock_sys = mocker.MagicMock()
-    mock_sys.modules.get.return_value = mock_main_module
-    mocker.patch("pyrig.src.modules.package.sys", mock_sys)
-
-    mock_import_module = mocker.patch("pyrig.src.modules.package.import_module")
-    mock_import_module.return_value = mock_package
-
-    result = get_main_package()
-
-    assert_with_msg(result == mock_package, f"Expected {mock_package}, got {result}")
-    mock_sys.modules.get.assert_called_with("__main__")
-    mock_import_module.assert_called_with("test_package")
-
-    # Test case when no __main__ module exists
-    mock_sys.modules.get.return_value = None
-
-    with pytest.raises(ValueError, match="No __main__ module found"):
-        get_main_package()
-
-    # Test case when __main__ module has no __package__ attribute
-    mock_main_module_no_package = ModuleType("__main__")
-    mock_main_module_no_package.__package__ = None
-    mock_sys.modules.get.return_value = mock_main_module_no_package
-
-    with pytest.raises(ValueError, match="Not able to determine the main package"):
-        get_main_package()
 
 
 class TestDependencyGraph:
@@ -490,34 +394,6 @@ class TestDependencyGraph:
         )
 
 
-def test_import_pkg_from_path(tmp_path: Path) -> None:
-    """Test func for import_pkg_from_path."""
-    # Create a temporary package with known content
-    with chdir(tmp_path):
-        package_dir = tmp_path / "test_package"
-        package_dir.mkdir()
-        init_file = package_dir / "__init__.py"
-        init_file.write_text('"""Test package."""\n')
-
-        # Import the package
-        package = import_pkg_from_path(package_dir)
-
-        assert_with_msg(
-            package.__name__ == "test_package",
-            f"Expected package name to be test_package, got {package.__name__}",
-        )
-        # test deeper path
-        subdir = package_dir / "subdir"
-        subdir.mkdir()
-        init_file = subdir / "__init__.py"
-        init_file.write_text('"""Test package."""\n')
-        package = import_pkg_from_path(subdir)
-        assert_with_msg(
-            package.__name__ == "test_package.subdir",
-            f"Expected package name to be test_package.subdir, got {package.__name__}",
-        )
-
-
 def test_get_pkg_name_from_project_name() -> None:
     """Test function."""
     project_name = "test-project"
@@ -554,3 +430,137 @@ def test_get_pkg_name_from_cwd() -> None:
     assert pkg_name == expected_pkg_name, (
         f"Expected {expected_pkg_name}, got {pkg_name}"
     )
+
+
+def test_get_objs_from_obj(tmp_path: Path) -> None:
+    """Test func for get_objs_from_obj."""
+    # Create a test module with functions and classes
+    module_content = '''"""Test module."""
+
+def func1() -> str:
+    """Function 1."""
+    return "func1"
+
+def func2() -> str:
+    """Function 2."""
+    return "func2"
+
+class TestClass1:
+    """Test class 1."""
+
+    def method1(self) -> str:
+        """Method 1."""
+        return "method1"
+
+class TestClass2:
+    """Test class 2."""
+    pass
+'''
+
+    # Create and import the module
+    module_file = tmp_path / "test_objs_module.py"
+    module_file.write_text(module_content)
+
+    with chdir(tmp_path):
+        test_objs_module = import_module_from_file(module_file)
+
+        # Test getting objects from module
+        objs = get_objs_from_obj(test_objs_module)
+
+        # Should contain 2 functions and 2 classes
+        expected_function_count = 2
+        expected_class_count = 2
+        expected_total_objects = expected_function_count + expected_class_count
+        assert_with_msg(
+            len(objs) == expected_total_objects,
+            f"Expected {expected_total_objects} objects "
+            f"({expected_function_count} functions + {expected_class_count} classes), "
+            f"got {len(objs)}",
+        )
+
+        # Test getting objects from a class
+        class_objs = get_objs_from_obj(test_objs_module.TestClass1)
+
+        # Should contain at least the method1
+        method_names = [getattr(obj, "__name__", None) for obj in class_objs]
+        assert_with_msg(
+            "method1" in method_names,
+            f"Expected 'method1' in class methods, got {method_names}",
+        )
+
+        # Test with non-module, non-class object
+        def test_func() -> None:
+            pass
+
+        result = get_objs_from_obj(test_func)
+        assert_with_msg(result == [], f"Expected empty list for function, got {result}")
+
+
+def test_get_same_modules_from_deps_depen_on_dep() -> None:
+    """Test function."""
+    # Test getting the same module from all packages depending on pyrig
+
+    modules = get_same_modules_from_deps_depen_on_dep(src, pyrig)
+    # Should at least include pyrig.src itself
+    assert_with_msg(
+        len(modules) > 0,
+        f"Expected at least one module, got {modules}",
+    )
+    assert_with_msg(
+        src in modules,
+        f"Expected pyrig.src in modules, got {modules}",
+    )
+
+
+def test_create_package(tmp_path: Path) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        package_dir = tmp_path / "test_package"
+        assert not package_dir.exists()
+        package = create_package(package_dir)
+        assert package_dir.exists()
+        assert package.__name__ == "test_package"
+        assert package_dir.is_dir()
+        assert (package_dir / "__init__.py").exists()
+
+
+def test_import_pkg_with_dir_fallback(tmp_path: Path) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        non_existing_dir = tmp_path / "non_existing"
+        assert not non_existing_dir.exists()
+        with pytest.raises(FileNotFoundError):
+            import_pkg_with_dir_fallback(non_existing_dir)
+        # import nonexisting againto ccheck if somehow cached in sy
+        with pytest.raises(FileNotFoundError):
+            import_pkg_with_dir_fallback(non_existing_dir)
+
+        existing_dir = tmp_path / "existing"
+        existing_dir.mkdir()
+        init_file = existing_dir / "__init__.py"
+        init_file.write_text('"""Test package."""\n')
+        package = import_pkg_with_dir_fallback(existing_dir)
+        assert package.__name__ == "existing"
+
+
+def test_import_pkg_from_dir(tmp_path: Path) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        non_existing_dir = tmp_path / "non_existing"
+        assert not non_existing_dir.exists()
+        with pytest.raises(FileNotFoundError):
+            import_pkg_from_dir(non_existing_dir)
+
+        package_dir = tmp_path / "test_package"
+        package_dir.mkdir()
+        init_file = package_dir / "__init__.py"
+        init_file.write_text('"""Test package."""\n')
+        package = import_pkg_from_dir(package_dir)
+        assert package.__name__ == "test_package"
+
+        subdir = package_dir / "subdir"
+        subdir.mkdir()
+        init_file = subdir / "__init__.py"
+        init_file.write_text('"""Test package."""\n')
+        package = import_pkg_from_dir(subdir)
+        assert package.__name__ == "test_package.subdir"

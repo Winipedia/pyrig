@@ -6,11 +6,15 @@ a test file that verifies the CLI entry point works correctly.
 
 from pathlib import Path
 
+import pyrig
 from pyrig import main
 from pyrig.dev.configs.base.base import PythonPackageConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.modules.module import to_path
-from pyrig.src.testing.convention import make_test_obj_importpath_from_obj
+from pyrig.src.modules.path import ModulePath
+from pyrig.src.testing.convention import (
+    TEST_MODULE_PREFIX,
+    make_test_obj_importpath_from_obj,
+)
 
 
 class MainTestConfigFile(PythonPackageConfigFile):
@@ -27,16 +31,19 @@ class MainTestConfigFile(PythonPackageConfigFile):
         Returns:
             Path to the tests/pkg_name/src directory.
         """
-        test_module_path = to_path(
-            make_test_obj_importpath_from_obj(main), is_package=False
-        ).parent
-        # replace pyrig with project name
+        test_obj_importpath = make_test_obj_importpath_from_obj(main)
+        # this is now tests.test_pyrig.test_main
+        test_package_name = TEST_MODULE_PREFIX + PyprojectConfigFile.get_package_name()
+        test_pyrig_name = TEST_MODULE_PREFIX + pyrig.__name__
 
-        package_name = PyprojectConfigFile.get_package_name()
-        test_module_path = Path(
-            test_module_path.as_posix().replace("pyrig", package_name, 1)
+        test_obj_importpath = test_obj_importpath.replace(
+            test_pyrig_name, test_package_name
         )
-        return Path(test_module_path)
+        # this is now tests.test_project_name.test_main
+        test_module_path = ModulePath.module_name_to_relative_file_path(
+            test_obj_importpath
+        )
+        return test_module_path.parent
 
     @classmethod
     def get_filename(cls) -> str:

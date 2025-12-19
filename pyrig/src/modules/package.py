@@ -29,14 +29,19 @@ import importlib.util
 import logging
 import pkgutil
 import re
-import shutil
-import sys
-from collections.abc import Generator, Iterable
-from importlib import import_module
+from collections.abc import Callable, Generator, Iterable, Sequence
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 from pyrig.src.graph import DiGraph
+from pyrig.src.modules.class_ import get_all_cls_from_module, get_all_methods_from_cls
+from pyrig.src.modules.function import get_all_functions_from_module
+from pyrig.src.modules.module import (
+    import_module_with_default,
+    import_module_with_file_fallback,
+)
+from pyrig.src.modules.path import ModulePath, make_dir_with_init_file
 
 logger = logging.getLogger(__name__)
 
@@ -82,8 +87,7 @@ def get_modules_and_packages_from_package(
 
     """
     from pyrig.src.modules.module import (  # noqa: PLC0415
-        import_module_from_file,
-        to_path,
+        import_module_with_file_fallback,
     )
 
     modules_and_packages = list(
@@ -92,12 +96,13 @@ def get_modules_and_packages_from_package(
     packages: list[ModuleType] = []
     modules: list[ModuleType] = []
     for _finder, name, is_pkg in modules_and_packages:
-        path = to_path(name, is_package=is_pkg)
-
-        mod = import_module_from_file(path)
         if is_pkg:
-            packages.append(mod)
+            path = ModulePath.pkg_name_to_relative_dir_path(name)
+            pkg = import_pkg_with_dir_fallback(path)
+            packages.append(pkg)
         else:
+            path = ModulePath.module_name_to_relative_file_path(name)
+            mod = import_module_with_file_fallback(path)
             modules.append(mod)
 
     # make consistent order
@@ -133,75 +138,40 @@ def walk_package(
         yield from walk_package(subpackage)
 
 
-def copy_package(
-    src_package: ModuleType,
-    dst: str | Path | ModuleType,
-    *,
-    with_file_content: bool = True,
-    skip_existing: bool = True,
-) -> None:
-    """Copy a package to a different destination.
+def create_package(path: Path) -> ModuleType:
+    """Create a package at the given path.
 
-    Takes a ModuleType of package and a destination package name and then copies
-    the package to the destination. If with_file_content is True, it copies the
-    content of the files, otherwise it just creates the files.
+    The given patz must not end with __init__.py.
 
     Args:
-        src_package (ModuleType): The package to copy
-        dst (str | Path): destination package name as a
-                          Path with / or as a str with dots
-        with_file_content (bool, optional): copies the content of the files.
-        skip_existing (bool, optional): skips existing files.
+        path: The dir path to create the package at
 
     """
-    from pyrig.src.modules.module import create_module, to_path  # noqa: PLC0415
-
-    # copy the folder with shutil
-    src_path = Path(src_package.__path__[0])
-    dst_path = to_path(dst, is_package=True)
-    # walk thze src_path and copy the files to dst_path if they do not exist
-    for src in src_path.rglob("*"):
-        dst_ = dst_path / src.relative_to(src_path)
-        if skip_existing and dst_.exists():
-            continue
-        if src.is_dir():
-            dst_.mkdir(parents=True, exist_ok=True)
-            continue
-        # Ensure parent directory exists before copying file
-        dst_.parent.mkdir(parents=True, exist_ok=True)
-        if with_file_content:
-            shutil.copy2(src, dst_)
-        else:
-            create_module(dst_, is_package=False)
-
-
-def get_main_package() -> ModuleType:
-    """Gets the main package of the executing code.
-
-    Even when this package is installed as a module.
-    """
-    from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
-        to_module_name,
-    )
-
-    main = sys.modules.get("__main__")
-    if main is None:
-        msg = "No __main__ module found"
+    if path == Path.cwd():
+        msg = f"Cannot create package {path=} because it is the CWD"
         raise ValueError(msg)
+    make_dir_with_init_file(path)
 
-    package_name = getattr(main, "__package__", None)
-    if package_name:
-        package_name = package_name.split(".")[0]
-        return import_module(package_name)
+    return import_pkg_with_dir_fallback(path)
 
-    file_name = getattr(main, "__file__", None)
-    if file_name:
-        package_name = to_module_name(file_name)
-        package_name = package_name.split(".")[0]
-        return import_module(package_name)
 
-    msg = "Not able to determine the main package"
-    raise ValueError(msg)
+def import_pkg_with_dir_fallback(path: Path) -> ModuleType:
+    """Import a package from a path.
+
+    If pkg cannot be found via normal importlib, try to import from path.
+
+    Args:
+        path (Path): The path to the package
+
+    Returns:
+        ModuleType: The imported package module.
+    """
+    path = path.resolve()
+    module_name = ModulePath.absolute_path_to_module_name(path)
+    pkg = import_module_with_default(module_name)
+    if isinstance(pkg, ModuleType):
+        return pkg
+    return import_pkg_from_dir(path)
 
 
 class DependencyGraph(DiGraph):
@@ -376,28 +346,25 @@ class DependencyGraph(DiGraph):
         return modules
 
 
-def import_pkg_from_path(package_dir: Path) -> ModuleType:
-    """Import a package from a filesystem path.
+def import_pkg_from_dir(package_dir: Path) -> ModuleType:
+    """Import a package from a directory.
 
-    Uses importlib machinery to load a package from its directory path,
-    rather than by its module name. Useful when the package is not yet
-    in sys.path or when you have a path but not the module name.
+    This function imports a package from a directory by creating a module
+    spec and loading the module from the __init__.py file in the directory.
 
     Args:
-        package_dir: Path to the package directory (must contain __init__.py).
-
-    Returns:
-        The imported package module.
+        package_dir (Path): The directory containing the package to import.
 
     Raises:
-        ValueError: If a module spec cannot be created for the path.
-    """
-    from pyrig.src.modules.module import to_module_name  # noqa: PLC0415
+        ValueError: If the package directory does not contain an __init__.py file.
 
-    package_name = to_module_name(package_dir.resolve().relative_to(Path.cwd()))
-    loader = importlib.machinery.SourceFileLoader(
-        package_name, str(package_dir / "__init__.py")
-    )
+    Returns:
+        ModuleType: The imported package module.
+    """
+    init_path = package_dir / "__init__.py"
+
+    package_name = ModulePath.absolute_path_to_module_name(package_dir)
+    loader = importlib.machinery.SourceFileLoader(package_name, str(init_path))
     spec = importlib.util.spec_from_loader(package_name, loader, is_package=True)
     if spec is None:
         msg = f"Could not create spec for {package_dir}"
@@ -450,3 +417,82 @@ def get_pkg_name_from_cwd() -> str:
         The package name (directory name with hyphens as underscores).
     """
     return get_pkg_name_from_project_name(get_project_name_from_cwd())
+
+
+def get_objs_from_obj(
+    obj: Callable[..., Any] | type | ModuleType,
+) -> Sequence[Callable[..., Any] | type | ModuleType]:
+    """Extract all contained objects from a container object.
+
+    Retrieves all relevant objects contained within the given object, with behavior
+    depending on the type of the container:
+    - For modules: returns all functions and classes defined in the module
+    - For packages: returns all submodules in the package
+    - For classes: returns all methods defined directly in the class
+    - For other objects: returns an empty list
+
+    Args:
+        obj: The container object to extract contained objects from
+
+    Returns:
+        A sequence of objects contained within the given container object
+
+    """
+    if isinstance(obj, ModuleType):
+        if module_is_package(obj):
+            return get_modules_and_packages_from_package(obj)[1]
+        objs: list[Callable[..., Any] | type] = []
+        objs.extend(get_all_functions_from_module(obj))
+        objs.extend(get_all_cls_from_module(obj))
+        return objs
+    if isinstance(obj, type):
+        return get_all_methods_from_cls(obj, exclude_parent_methods=True)
+    return []
+
+
+def get_same_modules_from_deps_depen_on_dep(
+    module: ModuleType, dep: ModuleType, until_pkg: ModuleType | None = None
+) -> list[ModuleType]:
+    """Find equivalent modules across all packages depending on a dependency.
+
+    This is a key function for pyrig's multi-package architecture. Given a
+    module path within a dependency (e.g.,  smth.dev.configs`), it finds
+    the equivalent module path in all packages that depend on that dependency
+    (e.g., `myapp.dev.configs`, `other_pkg.dev.configs`).
+
+    This enables automatic discovery of ConfigFile implementations, Builder
+    subclasses, and other extensible components across the entire ecosystem
+    of packages that depend on pyrig.
+
+    Args:
+        module: The module to use as a template (e.g., `smth.dev.configs`).
+        dep: The dependency package that other packages depend on (e.g., pyrig or smth).
+        until_pkg: Optional package to stop at. If provided, only modules from
+            packages that depend on `until_pkg` will be returned.
+
+    Returns:
+        A list of equivalent modules from all packages that depend on `dep`,
+        including the original module itself.
+
+    Example:
+        >>> import smth
+        >>> from smth.dev import configs
+        >>> modules = get_same_modules_from_deps_depen_on_dep(
+        ...     configs, smth
+        ... )
+        >>> [m.__name__ for m in modules]
+        ['smth.dev.configs', 'myapp.dev.configs', 'other_pkg.dev.configs']
+    """
+    module_name = module.__name__
+    graph = DependencyGraph()
+    pkgs = graph.get_all_depending_on(dep, include_self=True)
+
+    modules: list[ModuleType] = []
+    for pkg in pkgs:
+        pkg_module_name = module_name.replace(dep.__name__, pkg.__name__, 1)
+        pkg_module_path = ModulePath.pkg_name_to_relative_dir_path(pkg_module_name)
+        pkg_module = import_module_with_file_fallback(pkg_module_path)
+        modules.append(pkg_module)
+        if isinstance(until_pkg, ModuleType) and pkg.__name__ == until_pkg.__name__:
+            break
+    return modules
