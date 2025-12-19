@@ -51,7 +51,7 @@ def get_repo_url_from_git(*, check: bool = True) -> str:
         - git@github.com:owner/repo.git
 
     Args:
-        check: Whether to check succes in subprocess.
+        check: Whether to check success in subprocess.
 
     Returns:
         The remote origin URL (e.g., "https://github.com/owner/repo.git"
@@ -91,7 +91,7 @@ def get_repo_owner_and_name_from_git(*, check_repo_url: bool = True) -> tuple[st
     and repository name. Handles both HTTPS and SSH URL formats.
 
     Args:
-        check_repo_url: Whether to check succes in subprocess.
+        check_repo_url: Whether to check success in subprocess.
 
     Returns:
         A tuple of (owner, repository_name).
@@ -135,7 +135,7 @@ def git_add_file(path: Path, *, check: bool = True) -> CompletedProcess[bytes]:
 
     Args:
         path: Path to the file to add.
-        check: Whether to check succes in subprocess.
+        check: Whether to check success in subprocess.
 
     Returns:
         The completed process result.

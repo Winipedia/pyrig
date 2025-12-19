@@ -4,12 +4,15 @@ This module provides the main initialization flow for pyrig projects.
 The `init()` function runs a series of setup steps to fully configure
 a new project, including:
 
-1. Writing priority config files (pyproject.toml with dev dependencies)
-2. Installing dependencies with uv
-3. Creating project structure (source and test directories)
-4. Running pre-commit hooks for initial formatting
-5. Running tests to verify setup
-6. Re-installing to activate CLI entry points
+1. Adding dev dependencies (installs pyrig-dev package)
+2. Syncing venv (installs all dependencies)
+3. Creating priority config files (pyproject.toml, .gitignore, LICENSE, etc.)
+4. Syncing venv (ensures new configs are applied)
+5. Creating project root (generates all config files and directory structure)
+6. Creating test files (generates test skeletons for all code)
+7. Running pre-commit hooks (formats and lints all code)
+8. Running tests (validates everything works)
+9. Committing initial changes (creates initial git commit)
 
 The initialization process is idempotent and can be re-run safely.
 
@@ -149,14 +152,15 @@ def init_project() -> None:
     This is the main entry point for the `pyrig init` command.
 
     The steps include:
-        1. Write priority config files (pyproject.toml)
-        2. Install dependencies
-        3. Update dependencies to latest
-        4. Create project structure
-        5. Generate test skeletons
-        6. Run pre-commit hooks
-        7. Run tests
-        8. Re-install to activate CLI
+        1. Adding dev dependencies (installs pyrig-dev package)
+        2. Syncing venv (installs all dependencies)
+        3. Creating priority config files (pyproject.toml, .gitignore, LICENSE, etc.)
+        4. Syncing venv (ensures new configs are applied)
+        5. Creating project root (generates all config files and directory structure)
+        6. Creating test files (generates test skeletons for all code)
+        7. Running pre-commit hooks (formats and lints all code)
+        8. Running tests (validates everything works)
+        9. Committing initial changes (creates initial git commit)
     """
     # for init set log level to info
     logging.basicConfig(level=logging.INFO)
