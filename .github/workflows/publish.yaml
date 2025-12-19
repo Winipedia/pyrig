@@ -35,5 +35,6 @@ jobs:
       id: build_wheel
       run: uv build
     - name: Publish To Pypi
+      if: ${{ secrets.PYPI_TOKEN != '' }}
       id: publish_to_pypi
       run: uv publish --token ${{ secrets.PYPI_TOKEN }}

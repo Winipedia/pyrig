@@ -83,16 +83,18 @@ Your repository needs secrets for automation to work:
      - Value: Your Personal Access Token from prerequisites
      - Used for: Branch protection and repository management
 
-   - **`PYPI_TOKEN`** (Optional, only if you want to publish to PyPI)
+   - **`PYPI_TOKEN`** (Optional - publish step skipped if not configured)
      - Value: Your PyPI API token
      - Used for: Automated package publishing
      - [Get a PyPI token here](https://pypi.org/manage/account/token/)
      - I recommend after the first publish to revoke the original token and make a scoped one for that package only.
+     - **Note:** Workflows will run successfully without this - the publish step is simply skipped
 
-   - **`CODECOV_TOKEN`** (public repos just need to connect Codecov account to the repository)
+   - **`CODECOV_TOKEN`** (Optional - coverage upload skipped if not configured)
      - Value: Your Codecov token
      - Used for: Code coverage reporting
      - Public repos don't need this if you connect your Codecov account
+     - **Note:** Workflows will run successfully without this - the coverage upload step is simply skipped
      - [Get a Codecov token here](https://codecov.io/)
 
 ### Step 3: Clone and Initialize Locally
