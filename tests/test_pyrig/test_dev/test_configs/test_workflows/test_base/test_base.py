@@ -45,6 +45,16 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_if_pypi_token_configured(self) -> None:
+        """Test method."""
+        result = Workflow.if_pypi_token_configured()
+        assert result == "${{ secrets.PYPI_TOKEN != '' }}"
+
+    def test_if_codecov_token_configured(self) -> None:
+        """Test method."""
+        result = Workflow.if_codecov_token_configured()
+        assert result == "${{ secrets.CODECOV_TOKEN != '' }}"
+
     def test_step_save_container_image(self) -> None:
         """Test method."""
         step = Workflow.step_save_container_image()
@@ -55,17 +65,17 @@ class TestWorkflow:
         step = Workflow.step_make_dist_folder()
         assert "run" in step, f"Expected 'run' in step, got {step}"
 
-    def test_if_condition(self) -> None:
+    def test_insert_var(self) -> None:
         """Test method."""
         condition = "condition"
-        result = Workflow.if_condition(condition)
+        result = Workflow.insert_var(condition)
         expected = "${{ condition }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
     def test_combined_if(self) -> None:
         """Test method."""
         conditions = ["condition1", "condition2"]
-        conditions = [Workflow.if_condition(condition) for condition in conditions]
+        conditions = [Workflow.insert_var(condition) for condition in conditions]
         result = Workflow.combined_if(*conditions)
         expected = "${{ condition1 && condition2 }}"
         assert result == expected, f"Expected '{expected}', got {result}"

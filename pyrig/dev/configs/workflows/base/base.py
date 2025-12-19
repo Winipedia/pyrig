@@ -875,8 +875,7 @@ class Workflow(YamlConfigFile):
         If the repository is private, the workflow will fail and
         a Codecov token has to be added to the repository secrets.
         You need an account on Codecov for this.
-        This is why we fail_ci_if_error is not set to true.
-        This is an optional service and should not break the workflow.
+        If Codecov token is not defined then the step is skipped.
 
         Args:
             step: Existing step dict to update.
@@ -886,10 +885,12 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_upload_coverage_report,
+            if_condition=cls.if_codecov_token_configured(),
             uses="codecov/codecov-action@main",
             with_={
                 "files": "coverage.xml",
                 "token": cls.insert_codecov_token(),
+                "fail_ci_if_error": "true",
             },
             step=step,
         )
@@ -1075,6 +1076,8 @@ class Workflow(YamlConfigFile):
     ) -> dict[str, Any]:
         """Create a step that publishes the package to PyPI.
 
+        If PYPI_TOKEN is not defined then the step is skipped.
+
         Args:
             step: Existing step dict to update.
 
@@ -1082,6 +1085,7 @@ class Workflow(YamlConfigFile):
             Step that runs uv publish with PYPI_TOKEN.
         """
         return cls.get_step(
+            if_condition=cls.if_pypi_token_configured(),
             step_func=cls.step_publish_to_pypi,
             run=str(DependencyManager.get_publish_args(cls.insert_pypi_token())),
             step=step,
@@ -1455,13 +1459,25 @@ class Workflow(YamlConfigFile):
     # Insertions
     # ----------------------------------------------------------------------------
     @classmethod
+    def insert_var(cls, var: str) -> str:
+        """Wrap a variable in GitHub Actions expression syntax.
+
+        Args:
+            var: Variable expression to wrap.
+
+        Returns:
+            GitHub Actions expression for the variable.
+        """
+        return f"${{{{ {var} }}}}"
+
+    @classmethod
     def insert_repo_token(cls) -> str:
         """Get the GitHub expression for REPO_TOKEN secret.
 
         Returns:
             GitHub Actions expression for secrets.REPO_TOKEN.
         """
-        return "${{ secrets.REPO_TOKEN }}"
+        return cls.insert_var("secrets.REPO_TOKEN")
 
     @classmethod
     def insert_pypi_token(cls) -> str:
@@ -1470,7 +1486,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for secrets.PYPI_TOKEN.
         """
-        return "${{ secrets.PYPI_TOKEN }}"
+        return cls.insert_var("secrets.PYPI_TOKEN")
 
     @classmethod
     def insert_version(cls) -> str:
@@ -1490,10 +1506,8 @@ class Workflow(YamlConfigFile):
             GitHub Actions expression referencing the extract_version output.
         """
         # make dynamic with cls.make_id_from_func(cls.step_extract_version)
-        return (
-            "${{ "
+        return cls.insert_var(
             f"steps.{cls.make_id_from_func(cls.step_extract_version)}.outputs.version"
-            " }}"
         )
 
     @classmethod
@@ -1503,10 +1517,8 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression referencing the build_changelog output.
         """
-        return (
-            "${{ "
+        return cls.insert_var(
             f"steps.{cls.make_id_from_func(cls.step_build_changelog)}.outputs.changelog"
-            " }}"
         )
 
     @classmethod
@@ -1516,7 +1528,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for secrets.GITHUB_TOKEN.
         """
-        return "${{ secrets.GITHUB_TOKEN }}"
+        return cls.insert_var("secrets.GITHUB_TOKEN")
 
     @classmethod
     def insert_codecov_token(cls) -> str:
@@ -1525,7 +1537,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for secrets.CODECOV_TOKEN.
         """
-        return "${{ secrets.CODECOV_TOKEN }}"
+        return cls.insert_var("secrets.CODECOV_TOKEN")
 
     @classmethod
     def insert_repository_name(cls) -> str:
@@ -1534,7 +1546,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for the repository name.
         """
-        return "${{ github.event.repository.name }}"
+        return cls.insert_var("github.event.repository.name")
 
     @classmethod
     def insert_ref_name(cls) -> str:
@@ -1543,7 +1555,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for github.ref_name.
         """
-        return "${{ github.ref_name }}"
+        return cls.insert_var("github.ref_name")
 
     @classmethod
     def insert_repository_owner(cls) -> str:
@@ -1552,7 +1564,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for github.repository_owner.
         """
-        return "${{ github.repository_owner }}"
+        return cls.insert_var("github.repository_owner")
 
     @classmethod
     def insert_workflow_run_id(cls) -> str:
@@ -1564,7 +1576,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for github.event.workflow_run.id.
         """
-        return "${{ github.event.workflow_run.id }}"
+        return cls.insert_var("github.event.workflow_run.id")
 
     @classmethod
     def insert_os(cls) -> str:
@@ -1573,7 +1585,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for runner.os.
         """
-        return "${{ runner.os }}"
+        return cls.insert_var("runner.os")
 
     @classmethod
     def insert_matrix_os(cls) -> str:
@@ -1582,7 +1594,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for matrix.os.
         """
-        return "${{ matrix.os }}"
+        return cls.insert_var("matrix.os")
 
     @classmethod
     def insert_matrix_python_version(cls) -> str:
@@ -1591,7 +1603,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for matrix.python-version.
         """
-        return "${{ matrix.python-version }}"
+        return cls.insert_var("matrix.python-version")
 
     @classmethod
     def insert_artifact_name(cls) -> str:
@@ -1618,19 +1630,7 @@ class Workflow(YamlConfigFile):
             condition.strip().removeprefix("${{").removesuffix("}}").strip()
             for condition in conditions
         ]
-        return cls.if_condition(" && ".join(bare_conditions))
-
-    @classmethod
-    def if_condition(cls, condition: str) -> str:
-        """Wrap a condition in GitHub Actions expression syntax.
-
-        Args:
-            condition: Condition expression to wrap.
-
-        Returns:
-            GitHub Actions expression for the condition.
-        """
-        return f"${{{{ {condition} }}}}"
+        return cls.insert_var(" && ".join(bare_conditions))
 
     @classmethod
     def if_matrix_is_not_os(cls, os: str) -> str:
@@ -1642,7 +1642,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Condition expression for matrix.os comparison.
         """
-        return cls.if_condition(f"matrix.os != '{os}'")
+        return cls.insert_var(f"matrix.os != '{os}'")
 
     @classmethod
     def if_workflow_run_is_success(cls) -> str:
@@ -1651,4 +1651,22 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression checking workflow_run conclusion.
         """
-        return cls.if_condition("github.event.workflow_run.conclusion == 'success'")
+        return cls.insert_var("github.event.workflow_run.conclusion == 'success'")
+
+    @classmethod
+    def if_pypi_token_configured(cls) -> str:
+        """Create a condition for PYPI_TOKEN being configured.
+
+        Returns:
+            GitHub Actions expression checking for PYPI_TOKEN.
+        """
+        return cls.insert_var("secrets.PYPI_TOKEN != ''")
+
+    @classmethod
+    def if_codecov_token_configured(cls) -> str:
+        """Create a condition for CODECOV_TOKEN being configured.
+
+        Returns:
+            GitHub Actions expression checking for CODECOV_TOKEN.
+        """
+        return cls.insert_var("secrets.CODECOV_TOKEN != ''")

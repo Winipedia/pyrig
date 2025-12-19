@@ -268,11 +268,14 @@ jobs:
 
 ```yaml
 - name: Publish To Pypi
+  if: ${{ secrets.PYPI_TOKEN != '' }}
   id: publish_to_pypi
   run: uv publish --token ${{ secrets.PYPI_TOKEN }}
 ```
 
 **Purpose:** Uploads package to PyPI
+
+**Conditional:** Step only runs if `PYPI_TOKEN` is configured
 
 **What it does:**
 - Authenticates with PyPI using token
@@ -326,6 +329,7 @@ jobs:
       id: build_wheel
       run: uv build
     - name: Publish To Pypi
+      if: ${{ secrets.PYPI_TOKEN != '' }}
       id: publish_to_pypi
       run: uv publish --token ${{ secrets.PYPI_TOKEN }}
 ```
@@ -334,7 +338,11 @@ jobs:
 
 ### `PYPI_TOKEN`
 
-The workflow requires a PyPI API token:
+The workflow requires a PyPI API token for publishing:
+
+**Required:** No (optional - publish step is skipped if not configured)
+
+**Behavior:** If `PYPI_TOKEN` is not set, the publish step is automatically skipped and the workflow completes successfully. This allows the workflow to run without errors even if you're not ready to publish to PyPI yet.
 
 **Setup:**
 
@@ -357,6 +365,8 @@ The workflow requires a PyPI API token:
 - Only accessible to workflows
 - Never exposed in logs
 - Can be revoked anytime
+
+**Note:** The publish step includes a conditional check (`if: ${{ secrets.PYPI_TOKEN != '' }}`) that skips publishing when the token is not configured.
 
 ## Workflow Execution
 
@@ -466,11 +476,11 @@ class CustomPublishWorkflow(PublishWorkflow):
 
 ## Common Issues
 
-### Issue: PYPI_TOKEN not found
+### Issue: Want to publish but step is being skipped
 
-**Symptom:** Workflow fails with "PYPI_TOKEN not found"
+**Symptom:** Publish step shows as skipped in workflow logs
 
-**Cause:** Secret not configured in GitHub
+**Cause:** `PYPI_TOKEN` secret not configured in GitHub
 
 **Solution:**
 
@@ -482,6 +492,8 @@ class CustomPublishWorkflow(PublishWorkflow):
 4. Value: Your PyPI token (starts with pypi-)
 5. Click "Add secret"
 ```
+
+**Note:** As of pyrig 2.2.14+, the workflow no longer fails when `PYPI_TOKEN` is missing - it simply skips the publish step. This is intentional to allow workflows to run successfully even if you're not ready to publish yet.
 
 ### Issue: Package already exists on PyPI
 
