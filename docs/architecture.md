@@ -386,6 +386,6 @@ graph LR
 
 - [Getting Started Guide](getting-started.md) - Initial project setup
 - [Multi-Package Architecture](multi-package-architecture.md) - Detailed multi-package guide
-- [Configuration Files Reference](config-files/) - All config file documentation
+- [Configuration Files Reference](config-files/index.md) - All config file documentation
 
 

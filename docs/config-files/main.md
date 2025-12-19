@@ -404,7 +404,7 @@ The `main.py` is used as the default command in containers:
 
 ```dockerfile
 # Containerfile
-FROM python:3.12-slim
+FROM python:<version>-slim
 # ... setup ...
 ENTRYPOINT ["uv", "run", "my-awesome-project"]
 CMD ["main"]  # <-- Calls main() function

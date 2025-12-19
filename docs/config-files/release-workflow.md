@@ -259,13 +259,7 @@ jobs:
     python-version: '3.14'
 ```
 
-**Purpose:** Installs uv and Python
-
-**Configuration:**
-- **Python version:** Latest supported version (3.14)
-- **uv:** Latest version from astral-sh/setup-uv
-
-**Why needed:** uv is used for version bumping and dependency management
+Installs uv and the latest Python version allowed by `requires-python` constraint (currently 3.14)
 
 ### 4. Patch Version
 

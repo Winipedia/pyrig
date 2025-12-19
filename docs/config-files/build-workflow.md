@@ -155,7 +155,7 @@ Builds Python packages (wheels and source distributions) across all major operat
 
 1. **Checkout Repository** - Clones the repository
 2. **Setup Git** - Configures git user for commits
-3. **Setup Project Mgt** - Installs uv with Python 3.14
+3. **Setup Project Mgt** - Installs uv with latest allowed Python version
 4. **Patch Version** - Bumps patch version (e.g., 1.2.3 → 1.2.4)
 5. **Install Python Dependencies** - Upgrades and installs all dependencies
 6. **Add Dependency Updates To Git** - Stages updated lock file
@@ -227,10 +227,7 @@ Builds a Podman container image from the Containerfile.
     python-version: '3.14'
 ```
 
-- **Purpose:** Installs uv package manager and Python
-- **Action:** `astral-sh/setup-uv@main`
-- **Python Version:** Uses latest supported version (3.14)
-- **Why needed:** uv is required for all dependency and build operations
+Installs uv and the latest Python version allowed by `requires-python` constraint (currently 3.14)
 
 ### Patch Version
 
@@ -575,7 +572,6 @@ These artifacts are:
 - **`<package>/dev/builders/`** - Custom builder classes for additional artifacts
 - **`pyproject.toml`** - Version is bumped by this workflow
 - **`uv.lock`** - Updated with latest dependencies by this workflow
-- **Source:** [`pyrig/dev/configs/workflows/build.py`](../../pyrig/dev/configs/workflows/build.py)
 
 ## Common Issues
 

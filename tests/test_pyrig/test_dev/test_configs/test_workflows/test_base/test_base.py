@@ -45,6 +45,11 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_step_publish_documentation(self) -> None:
+        """Test method."""
+        result = Workflow.step_publish_documentation()
+        assert "uses" in result, f"Expected 'uses' in step, got {result}"
+
     def test_run_if_condition(self) -> None:
         """Test method."""
         run = "echo test"

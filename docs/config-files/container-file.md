@@ -49,11 +49,11 @@ Both `podman build` and `docker build` work with Containerfile.
 Pyrig uses **Python slim images** for optimal size and security:
 
 ```dockerfile
-FROM python:3.14-slim
+FROM python:<latest>-slim
 ```
 
 - **Slim variant** - Minimal Debian-based image (~50MB vs ~900MB for full)
-- **Latest Python** - Uses the latest Python version from `requires-python`
+- **Latest Python** - Uses the latest Python version from `requires-python` (currently 3.14)
 - **Security** - Fewer packages = smaller attack surface
 - **Performance** - Faster pulls and builds
 
@@ -83,11 +83,11 @@ Each layer in the Containerfile serves a specific purpose. Pyrig validates that 
 ### Layer 1: Base Image
 
 ```dockerfile
-FROM python:3.14-slim
+FROM python:<latest>-slim
 ```
 
 - **Type:** Base image selection
-- **Default:** `python:{latest}-slim` where latest is from `requires-python`
+- **Default:** `python:{latest}-slim` where latest is from `requires-python` (currently 3.14)
 - **Required:** Yes
 - **Purpose:** Provides Python runtime environment
 - **Why pyrig sets it:** Uses the latest Python version your project supports for best compatibility
@@ -285,13 +285,13 @@ podman run my-awesome-project --help
 
 ## Default Configuration
 
-For a project named `my-awesome-project` with Python 3.12+:
+For a project named `my-awesome-project` with `requires-python = ">=3.12"`:
 
 **File location:** `Containerfile`
 
 **File contents:**
 ```dockerfile
-FROM python:3.14-slim
+FROM python:3.14-slim  # Latest version from requires-python
 
 WORKDIR /my-awesome-project
 
@@ -359,7 +359,7 @@ You can pass build arguments to customize the build:
 podman build --build-arg PYTHON_VERSION=3.12 -t my-awesome-project .
 
 # Use a different base image
-podman build --build-arg BASE_IMAGE=python:3.12-alpine -t my-awesome-project .
+podman build --build-arg BASE_IMAGE=python:<version>-alpine -t my-awesome-project .
 ```
 
 **Note:** Pyrig's default Containerfile doesn't use build args, but you can add them via customization.
@@ -420,7 +420,7 @@ You can customize the Containerfile by editing it directly or subclassing `Conta
 If your application needs system packages:
 
 ```dockerfile
-FROM python:3.14-slim
+FROM python:<latest>-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -438,7 +438,7 @@ WORKDIR /my-awesome-project
 For smaller images, use Alpine Linux:
 
 ```dockerfile
-FROM python:3.14-alpine
+FROM python:<latest>-alpine
 
 # Alpine uses apk instead of apt
 RUN apk add --no-cache gcc musl-dev
@@ -459,7 +459,7 @@ For even smaller images, use multi-stage builds:
 
 ```dockerfile
 # Build stage
-FROM python:3.14-slim as builder
+FROM python:<latest>-slim as builder
 
 WORKDIR /build
 
@@ -471,7 +471,7 @@ COPY my_awesome_project my_awesome_project
 RUN uv sync --no-group dev
 
 # Runtime stage
-FROM python:3.14-slim
+FROM python:<latest>-slim
 
 WORKDIR /my-awesome-project
 
@@ -588,7 +588,7 @@ EOF
 
 **2. Use slim base:**
 ```dockerfile
-FROM python:3.14-slim  # Not python:3.14
+FROM python:<version>-slim  # Not python:<version>
 ```
 
 **3. Clean up in same layer:**

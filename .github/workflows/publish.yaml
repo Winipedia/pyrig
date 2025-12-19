@@ -6,7 +6,8 @@ name: Publish
     - Release
     types:
     - completed
-permissions: {}
+permissions:
+  contents: write
 run-name: Publish
 defaults:
   run:
@@ -39,3 +40,15 @@ jobs:
       run: 'if [ ${{ secrets.PYPI_TOKEN != '''' }} ]; then uv publish --token ${{
         secrets.PYPI_TOKEN }}; else echo "Skipping step due to failed condition: secrets.PYPI_TOKEN
         != ''''."; fi'
+  publish_documentation:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - name: Checkout Repository
+      id: checkout_repository
+      uses: actions/checkout@main
+    - name: Publish Documentation
+      id: publish_documentation
+      uses: mhausenblas/mkdocs-deploy-gh-pages@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

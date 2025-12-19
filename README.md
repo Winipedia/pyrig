@@ -5,6 +5,7 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Container](https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6)](https://podman.io/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
+[![MkDocs](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://www.mkdocs.org/)
 <!-- code-quality -->
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
@@ -18,6 +19,8 @@
 <!-- ci/cd -->
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yaml?label=CI&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/health_check.yaml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yaml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yaml)
+<!-- documentation -->
+[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://Winipedia.github.io/pyrig)
 
 ---
 
@@ -25,33 +28,38 @@
 
 ---
 
-## ⚠️ Important: GitHub Required
-
-**pyrig only works with GitHub.** It does not support GitLab, Bitbucket, or other platforms. This is an intentional design decision to provide deep integration with GitHub's ecosystem (Actions, branch protection, releases). See [drawbacks documentation](docs/drawbacks.md#6-github-only-platform) for details.
-
----
-
 ## What is pyrig?
 
 **pyrig** is an opinionated Python project framework that enforces best practices and keeps your projects up-to-date automatically. Unlike traditional project templates, pyrig is a living system that manages your entire development lifecycle. Pyrig makes project development seamless and keeps you focused on your code. It allows even in bigger projects to not lose the overview. Its opinionated and best practices approach allows you to always know what belongs where and where to find things.
 
+<table>
+<tr>
+<td width="50%">
+
+**Traditional Templates**
 ```mermaid
-graph LR
-    subgraph "Traditional Templates"
-        T1[Generate once] --> T2[Manual updates]
-        T2 --> T3[Config drift]
-        T3 --> T4[Maintenance burden]
-    end
-
-    subgraph "pyrig"
-        P1[Living system] --> P2[Auto-sync configs]
-        P2 --> P3[Always current]
-        P3 --> P4[Focus on code]
-    end
-
+graph TB
+    T1[Generate once] --> T2[Manual updates]
+    T2 --> T3[Config drift]
+    T3 --> T4[Maintenance burden]
     style T4 fill:#FF6B6B,color:#fff
+```
+
+</td>
+<td width="50%">
+
+**pyrig**
+```mermaid
+graph TB
+    P1[Living system] --> P2[Auto-sync configs]
+    P2 --> P3[Always current]
+    P3 --> P4[Focus on code]
     style P4 fill:#2E7D32,color:#fff
 ```
+
+</td>
+</tr>
+</table>
 
 ### Key Features
 
@@ -141,23 +149,34 @@ pyrig uses cutting-edge Python tooling:
 
 ## What Makes pyrig Different?
 
+<table>
+<tr>
+<td width="50%">
+
+**Other Templates**
 ```mermaid
 graph TB
-    subgraph "Other Templates"
-        O1[Generate once] --> O2[Manual sync]
-        O2 --> O3[Config drift]
-        O3 --> O4[Outdated tools]
-    end
-
-    subgraph "pyrig"
-        P1[Living system] --> P2[Auto-sync]
-        P2 --> P3[Always current]
-        P3 --> P4[Enforced quality]
-    end
-
+    O1[Generate once] --> O2[Manual sync]
+    O2 --> O3[Config drift]
+    O3 --> O4[Outdated tools]
     style O4 fill:#FF6B6B,color:#fff
+```
+
+</td>
+<td width="50%">
+
+**pyrig**
+```mermaid
+graph TB
+    P1[Living system] --> P2[Auto-sync]
+    P2 --> P3[Always current]
+    P3 --> P4[Enforced quality]
     style P4 fill:#2E7D32,color:#fff
 ```
+
+</td>
+</tr>
+</table>
 
 **Key Differences:**
 

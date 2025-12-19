@@ -130,12 +130,6 @@ New to my-awesome-project? Start here:
 
 - [Configuration Files Reference](config-files/index.md) - All config files
 
-## Contributing
-
-- [Contributing Guide](contributing.md) - How to contribute
-- [Development Setup](development.md) - Setting up dev environment
-- [Code Style](code-style.md) - Coding standards
-
 ## Changelog
 
 - [Changelog](changelog.md) - Version history
@@ -149,7 +143,6 @@ New to my-awesome-project? Start here:
 ## Quick Links
 
 - [Getting Started](getting-started.md)
-- [API Reference](api-reference.md)
 - [Examples](examples.md)
 ```
 
@@ -186,14 +179,6 @@ from my_awesome_project import AwesomeClass
 awesome = AwesomeClass()
 result = awesome.do_something()
 ```
-
-## API Reference
-
-See [API Reference](api-reference.md) for detailed API documentation.
-
-## Contributing
-
-See [Contributing Guide](contributing.md) for how to contribute.
 ```
 
 ## Documentation Structure Recommendations
@@ -223,7 +208,6 @@ docs/
 │   ├── index.md
 │   ├── pyproject.md
 │   └── ...
-├── contributing.md
 └── changelog.md
 ```
 
