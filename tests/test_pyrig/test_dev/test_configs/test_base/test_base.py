@@ -23,6 +23,7 @@ from pyrig.dev.configs.base.base import (
     TomlConfigFile,
     TypedConfigFile,
     YamlConfigFile,
+    YmlConfigFile,
 )
 from pyrig.src.modules.class_ import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
@@ -1065,3 +1066,12 @@ class TestBadgesMarkdownConfigFile:
         """Test method."""
         badges = my_test_badges_markdown_config_file.get_badges()
         assert isinstance(badges, dict)
+
+
+class TestYmlConfigFile:
+    """Test class."""
+
+    def test_get_file_extension(self) -> None:
+        """Test method."""
+        extension = YmlConfigFile.get_file_extension()
+        assert extension == "yml"

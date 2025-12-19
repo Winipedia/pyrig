@@ -2,9 +2,9 @@
 
 ## Overview
 
-**File Location:** `mkdocs.yaml`  
-**ConfigFile Class:** `MkdocsConfigFile`  
-**File Type:** YAML configuration  
+**File Location:** `mkdocs.yml`
+**ConfigFile Class:** `MkdocsConfigFile`
+**File Type:** YAML configuration
 **Priority:** Standard
 
 Configuration file for MkDocs documentation generator. Defines site metadata, navigation structure, and plugins for building documentation websites.
