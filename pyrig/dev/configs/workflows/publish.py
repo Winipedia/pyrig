@@ -51,9 +51,7 @@ class PublishWorkflow(Workflow):
         return cls.get_job(
             job_func=cls.job_publish_package,
             steps=cls.steps_publish_package(),
-            if_condition=cls.combined_if(
-                cls.if_workflow_run_is_success(), cls.if_pypi_token_configured()
-            ),
+            if_condition=cls.if_workflow_run_is_success(),
         )
 
     @classmethod

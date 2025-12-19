@@ -883,13 +883,17 @@ class Workflow(YamlConfigFile):
         Returns:
             Step configuration for uploading coverage report.
         """
+        #  make fail_ci_if_error true if token exists and false if it doesn't
+        fail_ci_if_error = cls.insert_var(
+            'secrets.CODECOV_TOKEN != "" ? "true" : "false"'
+        )
         return cls.get_step(
             step_func=cls.step_upload_coverage_report,
             uses="codecov/codecov-action@main",
             with_={
                 "files": "coverage.xml",
                 "token": cls.insert_codecov_token(),
-                "fail_ci_if_error": "true",
+                "fail_ci_if_error": fail_ci_if_error,
             },
             step=step,
         )
@@ -1083,9 +1087,11 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that runs uv publish with PYPI_TOKEN.
         """
+        run = str(DependencyManager.get_publish_args(cls.insert_pypi_token()))
+        run_if = cls.run_if_condition(run, cls.if_pypi_token_configured())
         return cls.get_step(
             step_func=cls.step_publish_to_pypi,
-            run=str(DependencyManager.get_publish_args(cls.insert_pypi_token())),
+            run=run_if,
             step=step,
         )
 
@@ -1466,6 +1472,8 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression for the variable.
         """
+        # remove existing wrapping if it exists
+        var = var.strip().removeprefix("${{").removesuffix("}}").strip()
         return f"${{{{ {var} }}}}"
 
     @classmethod
@@ -1640,7 +1648,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Condition expression for matrix.os comparison.
         """
-        return cls.insert_var(f"matrix.os != '{os}'")
+        return cls.insert_var(f'matrix.os != "{os}"')
 
     @classmethod
     def if_workflow_run_is_success(cls) -> str:
@@ -1649,7 +1657,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression checking workflow_run conclusion.
         """
-        return cls.insert_var("github.event.workflow_run.conclusion == 'success'")
+        return cls.insert_var('github.event.workflow_run.conclusion == "success"')
 
     @classmethod
     def if_pypi_token_configured(cls) -> str:
@@ -1658,7 +1666,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression checking for PYPI_TOKEN.
         """
-        return cls.insert_var("secrets.PYPI_TOKEN != ''")
+        return cls.insert_var('secrets.PYPI_TOKEN != ""')
 
     @classmethod
     def if_codecov_token_configured(cls) -> str:
@@ -1667,4 +1675,23 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression checking for CODECOV_TOKEN.
         """
-        return cls.insert_var("secrets.CODECOV_TOKEN != ''")
+        return cls.insert_var('secrets.CODECOV_TOKEN != ""')
+
+    # Runs
+    # ----------------------------------------------------------------------------
+    @classmethod
+    def run_if_condition(cls, run: str, condition: str) -> str:
+        """Returns a run command that only runs if condition is true.
+
+        Args:
+            run: Command to run.
+            condition: Condition expression.
+
+        Returns:
+            GitHub Actions expression checking for condition.
+        """
+        condition_check = cls.insert_var(condition)
+        # make a script that runs the command if the token is configured
+        # and echos a message if it is not
+        msg = f"Skipping step due to failed condition: {condition}."
+        return f'if [ {condition_check} ]; then {run}; else echo "{msg}"; fi'
