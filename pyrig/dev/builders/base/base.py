@@ -34,9 +34,7 @@ from pyrig.dev.utils.packages import get_src_package
 from pyrig.src.modules.class_ import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
-from pyrig.src.modules.module import (
-    to_path,
-)
+from pyrig.src.modules.path import ModulePath
 
 
 class Builder(ABC):
@@ -204,7 +202,8 @@ class Builder(ABC):
             Path to the project root (parent of the source package).
         """
         src_pkg = get_src_package()
-        return to_path(src_pkg, is_package=True).resolve().parent
+        src_path = ModulePath.pkg_type_to_dir_path(src_pkg)
+        return src_path.parent
 
     @classmethod
     def get_main_path(cls) -> Path:
@@ -240,9 +239,9 @@ class Builder(ABC):
         Returns:
             Relative path from source package to main.py.
         """
-        return to_path(main, is_package=False).relative_to(
-            to_path(pyrig, is_package=True)
-        )
+        project_main_file = ModulePath.module_name_to_relative_file_path(main.__name__)
+        pyrig_pkg_dir = ModulePath.pkg_name_to_relative_dir_path(pyrig.__name__)
+        return project_main_file.relative_to(pyrig_pkg_dir)
 
     @classmethod
     def get_resources_path_from_src_pkg(cls) -> Path:
@@ -251,6 +250,6 @@ class Builder(ABC):
         Returns:
             Relative path from source package to resources directory.
         """
-        return to_path(resources, is_package=True).relative_to(
-            to_path(pyrig, is_package=True)
-        )
+        resources_path = ModulePath.pkg_name_to_relative_dir_path(resources.__name__)
+        pyrig_pkg_dir = ModulePath.pkg_name_to_relative_dir_path(pyrig.__name__)
+        return resources_path.relative_to(pyrig_pkg_dir)

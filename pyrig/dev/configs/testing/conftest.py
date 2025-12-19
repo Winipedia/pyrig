@@ -6,8 +6,6 @@ the tests/conftest.py file that configures pytest plugins.
 
 from pyrig.dev.configs.base.base import PythonTestsConfigFile
 from pyrig.src.modules.module import make_obj_importpath
-from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.mgt import PROJECT_MGT_RUN_ARGS
 
 
 class ConftestConfigFile(PythonTestsConfigFile):
@@ -53,12 +51,3 @@ pytest_plugins = ["{make_obj_importpath(conftest)}"]
             f'pytest_plugins = ["{make_obj_importpath(conftest)}"]'
             in cls.get_file_content()
         )
-
-    @classmethod
-    def run_tests(cls, *, check: bool = True) -> None:
-        """Run the project's test suite using pytest.
-
-        Args:
-            check: Whether to raise on test failure.
-        """
-        run_subprocess([*PROJECT_MGT_RUN_ARGS, "pytest"], check=check)

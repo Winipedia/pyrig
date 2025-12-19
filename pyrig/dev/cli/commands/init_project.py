@@ -27,8 +27,13 @@ from collections.abc import Callable
 from typing import Any
 
 import pyrig
-from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.mgt import PROJECT_MGT, get_pyrig_cli_cmd_args
+from pyrig.src.project.mgt import (
+    DependencyManager,
+    PreCommit,
+    Pyrig,
+    TestRunner,
+    VersionControl,
+)
 from pyrig.src.string import make_name_from_obj
 
 logger = logging.getLogger(__name__)
@@ -42,7 +47,8 @@ def adding_dev_dependencies() -> None:
 
     This installs the dev dependencies listed in pyproject.toml.
     """
-    run_subprocess([PROJECT_MGT, "add", "--group", "dev", *STANDARD_DEV_DEPS])
+    args = DependencyManager.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
+    args.run()
 
 
 def creating_priority_config_files() -> None:
@@ -61,7 +67,8 @@ def syncing_venv() -> None:
 
     This installs the dependencies listed in pyproject.toml.
     """
-    run_subprocess([PROJECT_MGT, "sync"])
+    args = DependencyManager.get_install_dependencies_args()
+    args.run()
 
 
 def creating_project_root() -> None:
@@ -72,7 +79,8 @@ def creating_project_root() -> None:
     """
     from pyrig.dev.cli.subcommands import mkroot  # noqa: PLC0415
 
-    run_subprocess(get_pyrig_cli_cmd_args(mkroot))
+    args = Pyrig.get_cmd_args(mkroot)
+    args.run()
 
 
 def creating_test_files() -> None:
@@ -83,7 +91,8 @@ def creating_test_files() -> None:
     """
     from pyrig.dev.cli.subcommands import mktests  # noqa: PLC0415
 
-    run_subprocess(get_pyrig_cli_cmd_args(mktests))
+    args = Pyrig.get_cmd_args(mktests)
+    args.run()
 
 
 def running_pre_commit_hooks() -> None:
@@ -92,11 +101,12 @@ def running_pre_commit_hooks() -> None:
     This runs all pre-commit hooks to ensure the codebase is
     in a clean, linted, and formatted state.
     """
-    from pyrig.dev.configs.git.pre_commit import (  # noqa: PLC0415
-        PreCommitConfigConfigFile,
-    )
-
-    PreCommitConfigConfigFile.run_hooks(add_before_commit=True)
+    # install pre-commit hooks
+    PreCommit.get_install_args().run()
+    # add all files to git
+    VersionControl.get_add_all_args().run()
+    # run pre-commit hooks
+    PreCommit.get_run_all_files_args().run()
 
 
 def running_tests() -> None:
@@ -105,9 +115,8 @@ def running_tests() -> None:
     This executes the test suite to verify that everything is
     working correctly after initialization.
     """
-    from pyrig.dev.configs.testing.conftest import ConftestConfigFile  # noqa: PLC0415
-
-    ConftestConfigFile.run_tests()
+    args = TestRunner.get_run_tests_args()
+    args.run()
 
 
 def committing_initial_changes() -> None:
@@ -116,9 +125,8 @@ def committing_initial_changes() -> None:
     This commits all changes made during initialization in a single commit.
     """
     # changes were added by the run pre-commit hooks step
-    run_subprocess(
-        ["git", "commit", "--no-verify", "-m", f"{pyrig.__name__}: Initial commit"]
-    )
+    args = VersionControl.get_commit_no_verify_args(f"{pyrig.__name__}: Initial commit")
+    args.run()
 
 
 SETUP_STEPS: list[Callable[..., Any]] = [

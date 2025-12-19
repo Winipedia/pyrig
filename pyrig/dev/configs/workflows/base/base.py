@@ -15,13 +15,13 @@ from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.base.base import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.utils.packages import get_src_package
-from pyrig.src.modules.package import (
-    DependencyGraph,
-)
 from pyrig.src.project.mgt import (
-    PROJECT_MGT,
-    PROJECT_MGT_RUN_SCRIPT,
-    get_project_mgt_run_pyrig_cli_cmd_script,
+    ContainerEngine,
+    DependencyManager,
+    PreCommit,
+    Pyrig,
+    TestRunner,
+    VersionControl,
 )
 from pyrig.src.string import (
     make_name_from_obj,
@@ -683,18 +683,6 @@ class Workflow(YamlConfigFile):
             ),
         ]
 
-    @classmethod
-    def steps_configure_keyring_if_needed(cls) -> list[dict[str, Any]]:
-        """Get keyring configuration steps if keyring is a dependency.
-
-        Returns:
-            List with keyring setup step if needed, empty otherwise.
-        """
-        steps: list[dict[str, Any]] = []
-        if "keyring" in DependencyGraph.get_all_dependencies():
-            steps.append(cls.step_setup_keyring())
-        return steps
-
     # Single Step
     @classmethod
     def step_opt_out_of_workflow(
@@ -795,7 +783,11 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_container_image,
-            run=f"podman build -t {PyprojectConfigFile.get_project_name()} .",
+            run=str(
+                ContainerEngine.get_build_args(
+                    "-t", PyprojectConfigFile.get_project_name(), "."
+                )
+            ),
             step=step,
         )
 
@@ -817,7 +809,11 @@ class Workflow(YamlConfigFile):
         image_path = Path(cls.ARTIFACTS_DIR_NAME) / image_file
         return cls.get_step(
             step_func=cls.step_save_container_image,
-            run=f"podman save -o {image_path.as_posix()} {image_file.stem}",
+            run=str(
+                ContainerEngine.get_save_args(
+                    "-o", image_path.as_posix(), image_file.stem
+                )
+            ),
             step=step,
         )
 
@@ -861,7 +857,7 @@ class Workflow(YamlConfigFile):
             step = {}
         if PyprojectConfigFile.get_package_name() == pyrig.__name__:
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
-        run = f"{PROJECT_MGT_RUN_SCRIPT} pytest --log-cli-level=INFO --cov-report=xml"
+        run = str(TestRunner.get_run_tests_in_ci_args())
         return cls.get_step(
             step_func=cls.step_run_tests,
             run=run,
@@ -914,7 +910,9 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_patch_version,
-            run=f"{PROJECT_MGT} version --bump patch && git add pyproject.toml",
+            run=str(DependencyManager.get_patch_version_args())
+            + " && "
+            + str(VersionControl.get_add_pyproject_toml_args()),
             step=step,
         )
 
@@ -934,7 +932,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_add_dependency_updates_to_git,
-            run=f"git add pyproject.toml {PROJECT_MGT}.lock",
+            run=str(VersionControl.get_add_pyproject_toml_and_uv_lock_args()),
             step=step,
         )
 
@@ -984,7 +982,15 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_setup_git,
-            run='git config --global user.email "github-actions[bot]@users.noreply.github.com" && git config --global user.name "github-actions[bot]"',  # noqa: E501
+            run=str(
+                VersionControl.get_config_global_user_email_args(
+                    '"github-actions[bot]@users.noreply.github.com"',
+                ),
+            )
+            + " && "
+            + str(
+                VersionControl.get_config_global_user_name_args('"github-actions[bot]"')
+            ),
             step=step,
         )
 
@@ -1057,7 +1063,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_wheel,
-            run=f"{PROJECT_MGT} build",
+            run=str(DependencyManager.get_build_args()),
             step=step,
         )
 
@@ -1077,7 +1083,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_publish_to_pypi,
-            run=f"{PROJECT_MGT} publish --token {cls.insert_pypi_token()}",
+            run=str(DependencyManager.get_publish_args(cls.insert_pypi_token())),
             step=step,
         )
 
@@ -1097,8 +1103,8 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that runs uv sync.
         """
-        upgrade = f"{PROJECT_MGT} lock --upgrade"
-        install = f"{PROJECT_MGT} sync"
+        upgrade = str(DependencyManager.get_update_dependencies_args())
+        install = str(DependencyManager.get_install_dependencies_args())
         if no_dev:
             install += " --no-group dev"
         run = f"{upgrade} && {install}"
@@ -1106,26 +1112,6 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_install_python_dependencies,
             run=run,
-            step=step,
-        )
-
-    @classmethod
-    def step_setup_keyring(
-        cls,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that configures keyring for CI.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that sets up PlaintextKeyring for CI environments.
-        """
-        return cls.get_step(
-            step_func=cls.step_setup_keyring,
-            run=f'{PROJECT_MGT_RUN_SCRIPT} python -c "import keyring; from keyrings.alt.file import PlaintextKeyring; keyring.set_keyring(PlaintextKeyring());"',  # noqa: E501
             step=step,
         )
 
@@ -1147,7 +1133,7 @@ class Workflow(YamlConfigFile):
 
         return cls.get_step(
             step_func=cls.step_protect_repository,
-            run=get_project_mgt_run_pyrig_cli_cmd_script(protect_repo),
+            run=str(Pyrig.get_venv_run_cmd_args(protect_repo)),
             env={"REPO_TOKEN": cls.insert_repo_token()},
             step=step,
         )
@@ -1171,7 +1157,9 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_run_pre_commit_hooks,
-            run=f"{PROJECT_MGT_RUN_SCRIPT} pre-commit run --all-files",
+            run=str(
+                DependencyManager.get_run_args(*PreCommit.get_run_all_files_args())
+            ),
             step=step,
         )
 
@@ -1189,9 +1177,10 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that commits with [skip ci] prefix.
         """
+        msg = '"[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)"'
         return cls.get_step(
             step_func=cls.step_commit_added_changes,
-            run="git commit --no-verify -m '[skip ci] CI/CD: Committing possible added changes (e.g.: pyproject.toml)'",  # noqa: E501
+            run=str(VersionControl.get_commit_no_verify_args(msg)),
             step=step,
         )
 
@@ -1211,7 +1200,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_push_commits,
-            run="git push",
+            run=str(VersionControl.get_push_args()),
             step=step,
         )
 
@@ -1231,7 +1220,9 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_create_and_push_tag,
-            run=f"git tag {cls.insert_version()} && git push origin {cls.insert_version()}",  # noqa: E501
+            run=str(VersionControl.get_args("tag", cls.insert_version()))
+            + " && "
+            + str(VersionControl.get_push_args("origin", cls.insert_version())),
             step=step,
         )
 
@@ -1321,7 +1312,7 @@ class Workflow(YamlConfigFile):
 
         return cls.get_step(
             step_func=cls.step_build_artifacts,
-            run=get_project_mgt_run_pyrig_cli_cmd_script(build),
+            run=str(Pyrig.get_venv_run_cmd_args(build)),
             step=step,
         )
 
@@ -1488,7 +1479,8 @@ class Workflow(YamlConfigFile):
         Returns:
             Shell command that outputs the version with v prefix.
         """
-        return f"v$({PROJECT_MGT} version --short)"
+        script = str(DependencyManager.get_version_short_args())
+        return f"v$({script})"
 
     @classmethod
     def insert_version_from_extract_version_step(cls) -> str:

@@ -311,7 +311,7 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
         ...     discard_parents=True
         ... )
     """
-    from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
+    from pyrig.src.modules.package import (  # noqa: PLC0415  # avoid circular import
         get_same_modules_from_deps_depen_on_dep,
     )
 

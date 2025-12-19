@@ -49,9 +49,8 @@ from pyrig.src.modules.module import (
     get_isolated_obj_name,
     get_module_content_as_str,
     get_module_name_replacing_start_module,
-    make_pkg_dir,
-    to_path,
 )
+from pyrig.src.modules.path import ModulePath, make_pkg_dir
 from pyrig.src.string import split_on_uppercase
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
@@ -684,7 +683,8 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         new_module_name = get_module_name_replacing_start_module(
             src_module, PyprojectConfigFile.get_package_name()
         )
-        return to_path(new_module_name, is_package=True).parent
+        new_module_path = ModulePath.module_name_to_relative_file_path(new_module_name)
+        return new_module_path.parent
 
     @classmethod
     def get_content_str(cls) -> str:

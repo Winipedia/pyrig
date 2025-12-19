@@ -17,7 +17,7 @@ from PyInstaller.utils.hooks import collect_data_files
 import pyrig
 from pyrig import resources
 from pyrig.dev.builders.base.base import Builder
-from pyrig.src.modules.module import get_same_modules_from_deps_depen_on_dep
+from pyrig.src.modules.package import get_same_modules_from_deps_depen_on_dep
 
 
 class PyInstallerBuilder(Builder):

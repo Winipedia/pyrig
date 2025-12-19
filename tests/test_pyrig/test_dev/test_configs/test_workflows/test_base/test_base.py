@@ -5,11 +5,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from pytest_mock import MockFixture
 
-from pyrig.dev.configs.workflows.base import base
 from pyrig.dev.configs.workflows.base.base import Workflow
-from pyrig.src.modules.package import DependencyGraph
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -101,26 +98,6 @@ class TestWorkflow:
     def test_steps_core_installed_setup(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for steps_core_installed_setup."""
         result = my_test_workflow.steps_core_installed_setup(no_dev=True)
-        assert_with_msg(len(result) > 0, "Expected steps to be non-empty")
-
-    def test_steps_configure_keyring_if_needed(
-        self, my_test_workflow: type[Workflow], mocker: MockFixture
-    ) -> None:
-        """Test method for steps_configure_keyring_if_needed."""
-        # mock get_all_dependencies to return no dependencies
-        mocker.patch(
-            base.__name__
-            + "."
-            + DependencyGraph.__name__
-            + "."
-            + DependencyGraph.get_all_dependencies.__name__,
-            side_effect=[[], ["keyring"]],
-        )
-        result = my_test_workflow.steps_configure_keyring_if_needed()
-        assert_with_msg(len(result) == 0, "Expected steps to be empty")
-        # mock get_all_dependencies to return keyring as dependency
-
-        result = my_test_workflow.steps_configure_keyring_if_needed()
         assert_with_msg(len(result) > 0, "Expected steps to be non-empty")
 
     def test_make_id_from_func(self, my_test_workflow: type[Workflow]) -> None:
@@ -404,11 +381,6 @@ class TestWorkflow:
     ) -> None:
         """Test method for step_install_python_dependencies."""
         result = my_test_workflow.step_install_python_dependencies(no_dev=True)
-        assert_with_msg("run" in result, "Expected 'run' in step")
-
-    def test_step_setup_keyring(self, my_test_workflow: type[Workflow]) -> None:
-        """Test method for step_setup_keyring."""
-        result = my_test_workflow.step_setup_keyring()
         assert_with_msg("run" in result, "Expected 'run' in step")
 
     def test_step_protect_repository(self, my_test_workflow: type[Workflow]) -> None:

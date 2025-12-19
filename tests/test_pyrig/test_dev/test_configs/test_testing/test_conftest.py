@@ -3,11 +3,8 @@
 from collections.abc import Callable
 
 import pytest
-from pytest_mock import MockFixture
 
-from pyrig.dev.configs.testing import conftest
 from pyrig.dev.configs.testing.conftest import ConftestConfigFile
-from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -39,16 +36,3 @@ class TestConftestConfigFile:
             "pytest_plugins" in content_str,
             "Expected 'pytest_plugins' in conftest content",
         )
-
-    def test_run_tests(
-        self,
-        my_test_conftest_config_file: type[ConftestConfigFile],
-        mocker: MockFixture,
-    ) -> None:
-        """Test method for run_tests."""
-        mock_run = mocker.patch(
-            make_obj_importpath(conftest) + ".run_subprocess",
-            return_value=0,
-        )
-        my_test_conftest_config_file.run_tests()
-        mock_run.assert_called_once()

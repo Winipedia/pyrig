@@ -7,11 +7,9 @@ import pytest
 from packaging.version import Version
 from pytest_mock import MockFixture
 
-from pyrig.dev.configs import pyproject
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
-from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -313,25 +311,3 @@ class TestPyprojectConfigFile:
             first_version == "3.8.1",
             "Expected get_first_supported_python_version to return 3.8.1",
         )
-
-    def test_update_dependencies(
-        self,
-        my_test_pyproject_config_file: type[PyprojectConfigFile],
-        mocker: MockFixture,
-    ) -> None:
-        """Test method for update_dependencies."""
-        my_test_pyproject_config_file()
-        mock_run = mocker.patch(make_obj_importpath(pyproject) + ".run_subprocess")
-        my_test_pyproject_config_file.update_dependencies()
-        mock_run.assert_called()
-
-    def test_install_dependencies(
-        self,
-        my_test_pyproject_config_file: type[PyprojectConfigFile],
-        mocker: MockFixture,
-    ) -> None:
-        """Test method for install_dependencies."""
-        my_test_pyproject_config_file()
-        mock_run = mocker.patch(make_obj_importpath(pyproject) + ".run_subprocess")
-        my_test_pyproject_config_file.install_dependencies()
-        mock_run.assert_called()

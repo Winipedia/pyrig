@@ -19,11 +19,12 @@ from pyrig.src.modules.module import (
     create_module,
     get_isolated_obj_name,
     get_module_content_as_str,
-    to_path,
 )
 from pyrig.src.modules.package import (
+    create_package,
     walk_package,
 )
+from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import (
     get_test_obj_from_obj,
     make_test_obj_importpath_from_obj,
@@ -63,8 +64,9 @@ def create_test_package(package: ModuleType) -> None:
 
     """
     test_package_name = make_test_obj_importpath_from_obj(package)
+    test_package_path = ModulePath.pkg_name_to_relative_dir_path(test_package_name)
     # create package if it doesn't exist
-    create_module(test_package_name, is_package=True)
+    create_package(test_package_path)
 
 
 def create_test_module(module: ModuleType) -> None:
@@ -80,8 +82,10 @@ def create_test_module(module: ModuleType) -> None:
 
     """
     test_module_name = make_test_obj_importpath_from_obj(module)
-    test_module = create_module(test_module_name, is_package=False)
-    test_module_path = to_path(test_module, is_package=False)
+    test_module_path = ModulePath.module_name_to_relative_file_path(test_module_name)
+    test_module = create_module(test_module_path)
+    test_module_path = ModulePath.module_type_to_file_path(test_module)
+
     test_module_path.write_text(get_test_module_content(module))
 
 

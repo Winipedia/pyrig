@@ -49,8 +49,8 @@ jobs:
       run: uv run pre-commit run --all-files
     - name: Commit Added Changes
       id: commit_added_changes
-      run: 'git commit --no-verify -m ''[skip ci] CI/CD: Committing possible added
-        changes (e.g.: pyproject.toml)'''
+      run: 'git commit --no-verify -m "[skip ci] CI/CD: Committing possible changes
+        (e.g.: pyproject.toml)"'
     - name: Push Commits
       id: push_commits
       run: git push

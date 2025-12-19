@@ -8,8 +8,8 @@ from types import ModuleType
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
-from pyrig.src.modules.module import to_path
 from pyrig.src.modules.package import DOCS_DIR_NAME
+from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
 
@@ -84,7 +84,7 @@ def get_src_package() -> ModuleType:
 
     """
     package_names = find_packages(depth=0, include_namespace_packages=False)
-    package_paths = [to_path(p, is_package=True) for p in package_names]
+    package_paths = [ModulePath.pkg_name_to_relative_dir_path(p) for p in package_names]
     pkg = next(
         p for p in package_paths if p.name not in {TESTS_PACKAGE_NAME, DOCS_DIR_NAME}
     )
