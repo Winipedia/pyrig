@@ -13,6 +13,8 @@ from typing import Any
 import pyrig
 from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.base.base import YamlConfigFile
+from pyrig.dev.configs.docs.mkdocs import MkdocsConfigFile
+from pyrig.dev.configs.docs.requirements import RequirementsConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.utils.packages import get_src_package
 from pyrig.src.project.mgt import (
@@ -1112,7 +1114,11 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_publish_documentation,
             uses="mhausenblas/mkdocs-deploy-gh-pages@master",
-            env={"GITHUB_TOKEN": cls.insert_github_token()},
+            env={
+                "GITHUB_TOKEN": cls.insert_github_token(),
+                "REQUIREMENTS": RequirementsConfigFile.get_path().as_posix(),
+                "CONFIG_FILE": MkdocsConfigFile.get_path().as_posix(),
+            },
             step=step,
         )
 

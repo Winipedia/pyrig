@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.dev.configs.mkdocs import MkdocsConfigFile
+from pyrig.dev.configs.docs.mkdocs import MkdocsConfigFile
 
 
 class TestMkdocsConfigFile:
@@ -11,7 +11,7 @@ class TestMkdocsConfigFile:
     def test_get_parent_path(self) -> None:
         """Test method."""
         parent_path = MkdocsConfigFile.get_parent_path()
-        assert parent_path == Path()
+        assert parent_path == Path("docs")
 
     def test_get_configs(self) -> None:
         """Test method."""

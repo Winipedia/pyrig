@@ -20,6 +20,7 @@ Example:
 
 import logging
 import os
+from functools import cache
 from pathlib import Path
 from typing import Any, Literal
 
@@ -180,16 +181,9 @@ def create_or_update_ruleset(  # noqa: PLR0913
     Returns:
         The API response containing the created/updated ruleset.
     """
-    repo = get_repo(token, owner, repo_name)
     ruleset_id = ruleset_exists(
         token=token, owner=owner, repo_name=repo_name, ruleset_name=ruleset_name
     )
-    method = "PUT" if ruleset_id else "POST"
-    url = f"{repo.url}/rulesets"
-
-    if ruleset_id:
-        url += f"/{ruleset_id}"
-
     payload: dict[str, Any] = {
         "name": ruleset_name,
         "enforcement": enforcement,
@@ -200,17 +194,18 @@ def create_or_update_ruleset(  # noqa: PLR0913
     if bypass_actors:
         payload["bypass_actors"] = bypass_actors
 
-    _headers, res = repo._requester.requestJsonAndCheck(  # noqa: SLF001
-        method,
-        url,
-        headers={
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-        },
-        input=payload,
-    )
+    endpoint = "rulesets"
+    if ruleset_id:
+        endpoint += f"/{ruleset_id}"
 
-    return res
+    return github_api_request(
+        token,
+        owner,
+        repo_name,
+        endpoint=endpoint,
+        method="PUT" if ruleset_id else "POST",
+        payload=payload,
+    )
 
 
 def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
@@ -224,20 +219,12 @@ def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
     Returns:
         A list of ruleset objects from the GitHub API.
     """
-    repo = get_repo(token, owner, repo_name)
-    url = f"{repo.url}/rulesets"
-    method = "GET"
-    _headers, res = repo._requester.requestJsonAndCheck(  # noqa: SLF001
-        method,
-        url,
-        headers={
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-        },
+    return github_api_request(
+        token, owner, repo_name, endpoint="rulesets", method="GET"
     )
-    return res
 
 
+@cache
 def get_repo(token: str, owner: str, repo_name: str) -> Repository:
     """Get a PyGithub Repository object for API operations.
 
@@ -269,6 +256,45 @@ def ruleset_exists(token: str, owner: str, repo_name: str, ruleset_name: str) ->
     rulesets = get_all_rulesets(token, owner, repo_name)
     main_ruleset = next((rs for rs in rulesets if rs["name"] == ruleset_name), None)
     return main_ruleset["id"] if main_ruleset else 0
+
+
+def github_api_request(  # noqa: PLR0913
+    token: str,
+    owner: str,
+    repo_name: str,
+    endpoint: str,
+    *,
+    method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"] = "GET",
+    payload: dict[str, Any] | None = None,
+) -> Any:
+    """Make a generic GitHub API request.
+
+    Args:
+        token: GitHub API token.
+        owner: Repository owner.
+        repo_name: Repository name.
+        endpoint: API endpoint path (e.g., "pages", "rulesets").
+        method: HTTP method to use.
+        payload: Optional JSON payload for POST/PUT/PATCH requests.
+
+    Returns:
+        The API response data.
+    """
+    repo = get_repo(token, owner, repo_name)
+    url = f"{repo.url}/{endpoint}"
+
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+
+    _headers, res = repo._requester.requestJsonAndCheck(  # noqa: SLF001
+        method,
+        url,
+        headers=headers,
+        input=payload,
+    )
+    return res
 
 
 def get_github_repo_token() -> str:

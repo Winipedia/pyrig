@@ -21,6 +21,7 @@ from pyrig.dev.configs.base.base import (
     PythonTestsConfigFile,
     TextConfigFile,
     TomlConfigFile,
+    TxtConfigFile,
     TypedConfigFile,
     YamlConfigFile,
     YmlConfigFile,
@@ -1075,3 +1076,12 @@ class TestYmlConfigFile:
         """Test method."""
         extension = YmlConfigFile.get_file_extension()
         assert extension == "yml"
+
+
+class TestTxtConfigFile:
+    """Test class."""
+
+    def test_get_file_extension(self) -> None:
+        """Test method."""
+        extension = TxtConfigFile.get_file_extension()
+        assert extension == "txt"
