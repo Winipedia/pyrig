@@ -683,6 +683,12 @@ uv run pyrig build         # Build all artifacts (executables, etc.)
 uv run pyrig protect-repo  # Set up GitHub branch protection
 ```
 
+**Note:** If you want to use GitHub Pages for documentation, you need to manually configure it in your repository settings:
+1. Go to **Settings → Pages**
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**
+3. Select the **gh-pages** branch
+4. Click **Save**
+
 ### Getting Help
 ```bash
 uv run pyrig --help        # Show all available commands

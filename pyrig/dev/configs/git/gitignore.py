@@ -100,13 +100,14 @@ class GitIgnoreConfigFile(ConfigFile):
             DotExperimentConfigFile.get_path().as_posix(),
             "# others",
             DotEnvConfigFile.get_path().as_posix(),
-            ".coverage",
-            "coverage.xml",
-            ".mypy_cache/",
-            ".pytest_cache/",
-            ".ruff_cache/",
-            ".venv/",
-            "dist/",
+            ".coverage",  # bc of pytest-cov
+            "coverage.xml",  # bc of pytest-cov
+            ".mypy_cache/",  # bc of mypy cache
+            ".pytest_cache/",  # bc of pytest cache
+            ".ruff_cache/",  # bc of ruff cache
+            ".venv/",  # bc of uv venv
+            "dist/",  # bc of uv publish
+            "site/",  # bc of mkdocs
         ]
 
         dotenv_path = DotEnvConfigFile.get_path().as_posix()

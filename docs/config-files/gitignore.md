@@ -13,11 +13,12 @@ Specifies which files and directories Git should ignore and not track. Pyrig aut
 
 The `.gitignore` file prevents unwanted files from being committed to version control:
 
-- **Exclude Build Artifacts** - Compiled bytecode, distributions, eggs
+- **Exclude Build Artifacts** - Compiled bytecode, distributions, eggs, documentation builds
 - **Ignore Cache Directories** - `__pycache__`, `.mypy_cache`, `.pytest_cache`, `.ruff_cache`
 - **Protect Secrets** - `.env` files with API keys and passwords
 - **Skip IDE Files** - `.vscode/` and other editor-specific files
 - **Omit Virtual Environments** - `.venv/`, `venv/`, `env/`
+- **Ignore Documentation Builds** - `site/` directory from MkDocs builds
 
 ### Why pyrig manages this file
 
@@ -66,11 +67,14 @@ Includes patterns for:
 ```gitignore
 # others
 .env
-.mypy_cache/
-.pytest_cache/
-.ruff_cache/
-.venv/
-dist/
+.coverage        # bc of pytest-cov
+coverage.xml     # bc of pytest-cov
+.mypy_cache/     # bc of mypy cache
+.pytest_cache/   # bc of pytest cache
+.ruff_cache/     # bc of ruff cache
+.venv/           # bc of uv venv
+dist/            # bc of uv publish
+site/            # bc of mkdocs
 ```
 
 ## Pattern Syntax

@@ -8,14 +8,24 @@ Rulesets are GitHub's newer mechanism for branch protection, offering more
 flexibility than the older branch protection rules. This module provides
 functions to create, update, and query rulesets.
 
+Key Functions:
+    - github_api_request: Generic GitHub API request function
+    - create_or_update_ruleset: Create or update repository rulesets
+    - get_rules_payload: Build rules array for rulesets
+    - get_repo: Get PyGithub Repository object
+    - get_github_repo_token: Retrieve GitHub token from env or .env
+
 Attributes:
     DEFAULT_BRANCH: The default branch name used by pyrig ("main").
     DEFAULT_RULESET_NAME: The name of the default protection ruleset.
 
 Example:
-    >>> from pyrig.src.git.github.repo.repo import get_repo, create_or_update_ruleset
+    >>> from pyrig.dev.utils.git import get_repo, create_or_update_ruleset
     >>> repo = get_repo(token, "owner", "repo_name")
     >>> rules = get_rules_payload(pull_request={"required_approving_review_count": 1})
+    >>> # Or use the generic API request function
+    >>> from pyrig.dev.utils.git import github_api_request
+    >>> data = github_api_request(token, owner, repo, "rulesets", method="GET")
 """
 
 import logging

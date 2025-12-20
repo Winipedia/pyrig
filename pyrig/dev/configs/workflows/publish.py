@@ -100,6 +100,7 @@ class PublishWorkflow(Workflow):
             List of steps for setup and publish.
         """
         return [
-            cls.step_checkout_repository(),
+            *cls.steps_core_installed_setup(),
+            cls.step_build_documentation(),
             cls.step_publish_documentation(),
         ]

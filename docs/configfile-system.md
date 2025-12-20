@@ -323,6 +323,36 @@ class MyTextConfig(TextConfigFile):
 - Allows users to add additional content
 - Uses substring matching for validation
 
+### TxtConfigFile
+
+For plain text files with `.txt` extension:
+
+```python
+from pyrig.dev.configs.base.base import TxtConfigFile
+from pathlib import Path
+
+class MyTxtConfig(TxtConfigFile):
+    @classmethod
+    def get_parent_path(cls) -> Path:
+        return Path("docs")
+
+    @classmethod
+    def get_filename(cls) -> str:
+        return "requirements"
+
+    @classmethod
+    def get_content_str(cls) -> str:
+        return "mkdocs-mermaid2-plugin\n"
+```
+
+**Features:**
+- Extends `TextConfigFile` with `.txt` extension
+- Validates that required content is present
+- Allows users to add additional content
+- Uses substring matching for validation
+
+**Note:** The only difference between `TxtConfigFile` and `TextConfigFile` is that `TxtConfigFile` automatically uses `.txt` extension, while `TextConfigFile` requires you to specify the extension via `get_file_extension()`.
+
 ### MarkdownConfigFile
 
 For Markdown files (`.md`):
