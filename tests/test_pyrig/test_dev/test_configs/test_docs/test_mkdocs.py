@@ -16,6 +16,10 @@ class TestMkdocsConfigFile:
     def test_get_configs(self) -> None:
         """Test method."""
         configs = MkdocsConfigFile.get_configs()
+        assert isinstance(configs, dict)
         assert "site_name" in configs
         assert "nav" in configs
         assert "plugins" in configs
+        assert "theme" in configs
+        assert isinstance(configs["theme"], dict)
+        assert configs["theme"]["name"] == "material"

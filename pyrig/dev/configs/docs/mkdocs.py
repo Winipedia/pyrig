@@ -42,4 +42,7 @@ class MkdocsConfigFile(YmlConfigFile):
                 {"Home": IndexConfigFile.get_path().name},
             ],
             "plugins": ["search", "mermaid2"],
+            "theme": {
+                "name": "material",
+            },
         }

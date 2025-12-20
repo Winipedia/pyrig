@@ -1,0 +1,239 @@
+# MkDocs Configuration
+
+The `MkdocsConfigFile` manages the project's `mkdocs.yml` configuration file for generating documentation websites with MkDocs.
+
+## Overview
+
+Creates a minimal MkDocs configuration that:
+- Sets the site name from your project name
+- Configures basic navigation with home page
+- Enables search and Mermaid diagram plugins
+- Uses Material theme for modern, professional documentation
+- Allows user customization while maintaining required structure
+
+## Inheritance
+
+```mermaid
+graph TD
+    A[ConfigFile] --> B[YamlConfigFile]
+    B --> C[YmlConfigFile]
+    C --> D[MkdocsConfigFile]
+    
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+```
+
+**Inherits from**: `YmlConfigFile`
+
+**What this means**:
+- File is YAML format with `.yml` extension (not `.yaml`)
+- Uses PyYAML for parsing and serialization
+- Validation checks if required keys exist in the file
+- Users can add custom configuration keys
+- File is considered correct if it's a superset of required config
+
+## File Location
+
+**Path**: `mkdocs.yml` (project root)
+
+**Extension**: `.yml` (not `.yaml`) - MkDocs convention prefers the shorter extension.
+
+## How It Works
+
+### Automatic Generation
+
+When initialized via `uv run myapp mkroot`, the `mkdocs.yml` file is created with minimal required configuration:
+
+```yaml
+site_name: my-project
+nav:
+  - Home: index.md
+plugins:
+  - search
+  - mermaid2
+theme:
+  name: material
+```
+
+### Required Configuration
+
+The `get_configs()` method returns the minimal required structure:
+
+```python
+{
+    "site_name": PyprojectConfigFile.get_project_name(),
+    "nav": [
+        {"Home": IndexConfigFile.get_path().name},
+    ],
+    "plugins": ["search", "mermaid2"],
+    "theme": {
+        "name": "material",
+    },
+}
+```
+
+Note: mermaid2 is a plugin that allows you to write mermaid diagrams in your markdown files. It is not a required plugin, but it is highly recommended. And AI makes it very easy to create beautiful diagrams and docs these days. Also the package is included via `pyrig-dev`
+
+**Four required keys**:
+1. **`site_name`**: Automatically pulled from `pyproject.toml` project name
+2. **`nav`**: Navigation with at least a Home entry pointing to `index.md` created by pyrig's `IndexConfigFile`
+3. **`plugins`**: Search and Mermaid2 plugins enabled
+4. **`theme`**: Material theme for modern, professional documentation UI
+
+### Validation Logic
+
+Inherits standard YAML validation from `YmlConfigFile`:
+- Loads existing `mkdocs.yml` file
+- Checks if all required keys are present with the standard subset/superset logic
+- Verifies values match or extend required configuration
+- Adds missing keys without overwriting user customizations
+
+The file is valid if it contains at least the required keys with compatible values.
+
+## Dynamic Configuration
+
+The MkDocs config adapts to your project automatically:
+
+### Site Name
+
+```python
+"site_name": PyprojectConfigFile.get_project_name()
+```
+
+Automatically uses your project name from `pyproject.toml`. If your project is named `my-awesome-project`, the site name becomes `my-awesome-project`.
+
+### Home Page Path
+
+```python
+{"Home": IndexConfigFile.get_path().name}
+```
+
+References the `docs/index.md` file created by `IndexConfigFile`. The path is dynamically determined, ensuring navigation always points to the correct file.
+
+### Material Theme
+
+```python
+"theme": {
+    "name": "material",
+}
+```
+
+Pyrig uses the Material theme by default, which provides:
+- Modern, responsive design
+- Built-in search functionality
+- Mobile-friendly navigation
+- Dark/light mode support
+- Extensive customization options
+
+The Material theme is included as a dependency via `pyrig-dev`, so it's automatically available.
+
+## Usage
+
+### Building Documentation
+
+```bash
+# Serve documentation locally with live reload
+uv run mkdocs serve
+
+# Build static site
+uv run mkdocs build
+```
+
+Note: pyrig auto publishes the documentation to github pages via the `publish.yaml` github workflow. So you don't even need to deploy it manually and can just visit the github pages website to view your documentation.
+
+### Customization
+
+You can extend the configuration while keeping pyrig's required keys:
+
+```yaml
+# Required by pyrig
+site_name: my-project
+nav:
+  - Home: index.md
+  # Add your own navigation
+  - User Guide:
+    - Installation: guide/installation.md
+    - Configuration: guide/configuration.md
+  - API Reference: api/index.md
+plugins:
+  - search
+  - mermaid2
+  # Add your own plugins
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+
+# Required by pyrig, but you can customize
+theme:
+  name: material
+  # Add custom theme options
+  palette:
+    primary: teal
+  features:
+    - navigation.tabs
+    - navigation.sections
+
+# Add custom configuration
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/yourusername/my-project
+```
+
+As long as the four required keys (`site_name`, `nav`, `plugins`, `theme`) are present with valid values, validation passes.
+
+### Adding Documentation Pages
+
+1. Create markdown files in the `docs/` directory:
+   ```bash
+   mkdir -p docs/guide
+   echo "# Installation" > docs/guide/installation.md
+   ```
+
+2. Add them to navigation in `mkdocs.yml`:
+   ```yaml
+   nav:
+     - Home: index.md
+     - Installation: guide/installation.md
+   ```
+
+3. Serve to preview:
+   ```bash
+   uv run mkdocs serve
+   ```
+
+## Plugin Details
+
+### Search Plugin
+
+Enables full-text search across all documentation pages. No configuration needed - works out of the box.
+
+### Mermaid2 Plugin
+
+Enables Mermaid diagram rendering in markdown:
+
+````markdown
+```mermaid
+graph TD
+    A[Start] --> B[Process]
+    B --> C[End]
+```
+````
+
+This is why pyrig's documentation can include architecture diagrams directly in markdown files.
+
+## Best Practices
+
+1. **Keep required keys**: Don't remove `site_name`, `nav`, `plugins`, or `theme`
+2. **Extend navigation**: Add your pages to the `nav` list
+4. **Organize docs**: Use subdirectories in `docs/` for structure
+5. **Preview locally**: Always run `mkdocs serve` before deploying via the `publish.yaml` github workflow by pushing to main

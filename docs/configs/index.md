@@ -9,8 +9,11 @@ Learn how the ConfigFile system works, including automatic discovery, validation
 
 ## Configuration Files
 
-### [Containerfile](containerfile.md)
+### [Containerfile](container_file.md)
 Container image configuration for building production-ready images with Podman or Docker.
+
+### [MkDocs](mkdocs.md)
+Documentation site configuration for generating websites with MkDocs.
 
 ## Quick Overview
 
