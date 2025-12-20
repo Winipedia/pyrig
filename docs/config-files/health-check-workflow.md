@@ -429,15 +429,18 @@ jobs:
 ### REPO_TOKEN
 
 - **Type:** GitHub Personal Access Token (PAT)
-- **Permissions:** `repo` (full repository access)
-- **Purpose:** Allows `protect-repo` command to configure branch protection
-- **Required:** Yes (for `protect-repo` step)
+- **Permissions:**
+  - `repo` (full repository access)
+  - `pages` → `read` and `write` (for GitHub Pages deployment)
+- **Purpose:** Allows `protect-repo` command to configure branch protection and enables GitHub Pages deployment
+- **Required:** Yes (for `protect-repo` step and documentation deployment)
 - **How to create:**
   1. Go to GitHub Settings → Developer settings → Personal access tokens
   2. Generate new token (classic)
   3. Select `repo` scope
-  4. Copy token
-  5. Add to repository secrets as `REPO_TOKEN`
+  4. Select `pages` → `read` and `write` scope
+  5. Copy token
+  6. Add to repository secrets as `REPO_TOKEN`
 
 ### CODECOV_TOKEN
 
@@ -559,7 +562,7 @@ config_path = "config/settings.json"  # Fails on Windows
 
 **Solution:**
 ```bash
-# Create GitHub PAT with repo scope
+# Create GitHub PAT with repo and pages (read/write) scopes
 # Add to repository secrets as REPO_TOKEN
 ```
 

@@ -574,7 +574,10 @@ The workflow requires a GitHub Personal Access Token:
    - Click "Generate new token (classic)"
    - Name: `GitHub Actions`
    - Expiration: Choose appropriate expiration
-   - Scopes: Select `repo` (full control of private repositories)
+   - Scopes:
+     - Select `contents` → `read` and `write` (required for pushing commits and tags)
+     - Select `administration` → `read` and `write` (required for repo and branch protection settings)
+     - Select `pages` → `read` and `write` (required for GitHub Pages deployment)
    - Click "Generate token"
    - Copy the token (starts with `ghp_`)
 
@@ -589,6 +592,7 @@ The workflow requires a GitHub Personal Access Token:
 - Default `GITHUB_TOKEN` can't trigger workflows
 - `REPO_TOKEN` allows pushing commits and tags
 - Enables workflow chaining (release → publish)
+- Pages scope required for deploying documentation to GitHub Pages
 
 **Security:**
 - Token is encrypted in GitHub
