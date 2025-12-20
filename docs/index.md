@@ -27,3 +27,8 @@
 > A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development.
 
 ---
+
+## Documentation
+
+### [CLI Documentation](cli/index.md)
+Learn how pyrig's CLI system works, including command discovery, multi-package support, and how to create your own commands.
