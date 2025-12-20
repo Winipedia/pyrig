@@ -10,6 +10,7 @@ from pyrig.dev.utils.git import (
     get_github_repo_token,
     get_repo,
     get_rules_payload,
+    github_api_request,
     ruleset_exists,
 )
 from pyrig.src.git.git import (
@@ -121,4 +122,14 @@ def test_get_github_repo_token() -> None:
     token = get_github_repo_token()
     assert_with_msg(
         isinstance(token, str), f"Expected token to be str, got {type(token)}"
+    )
+
+
+def test_github_api_request() -> None:
+    """Test function."""
+    github_api_request(
+        get_github_repo_token(),
+        *get_repo_owner_and_name_from_git(),
+        "rulesets",
+        method="GET",
     )

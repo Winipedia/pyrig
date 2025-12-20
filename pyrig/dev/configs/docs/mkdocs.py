@@ -26,7 +26,7 @@ class MkdocsConfigFile(YmlConfigFile):
         Returns:
             Path to the project root.
         """
-        return Path()
+        return Path("docs")
 
     @classmethod
     def get_configs(cls) -> dict[str, Any] | list[Any]:

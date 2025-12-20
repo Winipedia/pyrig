@@ -226,6 +226,39 @@ class MyYamlConfig(YamlConfigFile):
 - Preserves key order (no sorting)
 - Handles nested dictionaries and lists
 
+### YmlConfigFile
+
+For YAML configuration files with `.yml` extension:
+
+```python
+from pyrig.dev.configs.base.base import YmlConfigFile
+from pathlib import Path
+
+class MyYmlConfig(YmlConfigFile):
+    @classmethod
+    def get_parent_path(cls) -> Path:
+        return Path("config")
+
+    @classmethod
+    def get_filename(cls) -> str:
+        return "mkdocs"
+
+    @classmethod
+    def get_configs(cls) -> dict:
+        return {
+            "site_name": "My Project",
+            "nav": [{"Home": "index.md"}],
+        }
+```
+
+**Features:**
+- Extends `YamlConfigFile` with `.yml` extension
+- Uses PyYAML for parsing (same as YamlConfigFile)
+- Preserves key order (no sorting)
+- Handles nested dictionaries and lists
+
+**Note:** The only difference between `YmlConfigFile` and `YamlConfigFile` is the file extension (`.yml` vs `.yaml`). Use `YmlConfigFile` when the tool or convention requires `.yml` extension (e.g., MkDocs uses `mkdocs.yml`).
+
 ### TomlConfigFile
 
 For TOML configuration files (`.toml`):
@@ -405,7 +438,7 @@ def load(cls) -> dict:
     return yaml.safe_load(cls.get_path().read_text(encoding="utf-8")) or {}
 ```
 
-**Note:** Format-specific base classes (YamlConfigFile, TomlConfigFile, etc.) already implement this.
+**Note:** Format-specific base classes (YamlConfigFile, YmlConfigFile, TomlConfigFile, etc.) already implement this.
 
 ### 4. `dump(config: dict | list) -> None`
 
@@ -740,7 +773,7 @@ def get_configs(cls) -> dict:
 
 ### ✅ DO
 
-- **Use appropriate base classes** - YamlConfigFile, TomlConfigFile, etc.
+- **Use appropriate base classes** - YamlConfigFile, YmlConfigFile, TomlConfigFile, etc.
 - **Implement required methods** - get_parent_path(), get_configs()
 - **Use subset validation** - Allow user customization
 - **Document config options** - Add docstrings explaining settings
