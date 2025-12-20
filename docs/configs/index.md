@@ -54,6 +54,9 @@ Pre-commit hooks configuration for automated code quality checks before commits.
 ### [py.typed](py_typed.md)
 PEP 561 marker file indicating the package supports type checking.
 
+### [pyproject.toml](pyproject.md)
+Central project configuration file for Python packaging, dependencies, and tool settings.
+
 ### [README.md](readme_md.md)
 Repository homepage file with badges and project description for GitHub.
 

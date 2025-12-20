@@ -127,7 +127,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     }
                 },
                 "ruff": {
-                    "exclude": [".*", "**/migrations/*.py"],
+                    "exclude": [".*"],
                     "lint": {
                         "select": ["ALL"],
                         "ignore": ["D203", "D213", "COM812", "ANN401"],
