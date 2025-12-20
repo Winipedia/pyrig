@@ -152,7 +152,7 @@ repo_name: username/myproject
 Serve documentation locally with live reload:
 
 ```bash
-mkdocs serve
+uv mkdocs serve
 ```
 
 Visit `http://127.0.0.1:8000/` to view the documentation.
@@ -162,16 +162,31 @@ Visit `http://127.0.0.1:8000/` to view the documentation.
 Generate static HTML:
 
 ```bash
-mkdocs build
+uv mkdocs build
 ```
 
-Output is in `site/` directory.
+Output is in `site/` directory (which is ignored by `.gitignore`).
 
 ### Deploy to GitHub Pages
 
+**Automated (Recommended):**
+
+Documentation is automatically built and deployed to GitHub Pages by the `publish.yaml` workflow after each release. See [publish-workflow.md](publish-workflow.md) for details.
+
+**Manual Deployment:**
+
+For testing or one-off deployments:
+
 ```bash
-mkdocs gh-deploy
+uv mkdocs build
+# Then manually deploy the site/ directory
 ```
+
+**Note:** After the first deployment, you need to manually configure GitHub Pages in your repository settings:
+1. Go to **Settings → Pages**
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**
+3. Select the **gh-pages** branch
+4. Click **Save**
 
 ## Common MkDocs Plugins
 
@@ -194,6 +209,8 @@ mkdocs gh-deploy
 - **`docs/index.md`** - Documentation homepage ([docs-index.md](docs-index.md))
 - **`docs/`** - Documentation directory
 - **`pyproject.toml`** - Project metadata source ([pyproject.md](pyproject.md))
+- **`.github/workflows/publish.yaml`** - Automated documentation deployment ([publish-workflow.md](publish-workflow.md))
+- **`.gitignore`** - Ignores `site/` build directory ([gitignore.md](gitignore.md))
 
 ## Common Issues
 

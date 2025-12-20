@@ -226,3 +226,4 @@ __marimo__/
 .pytest_cache/
 .ruff_cache/
 .venv/
+site/

@@ -13,7 +13,6 @@ from typing import Any
 import pyrig
 from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.base.base import YamlConfigFile
-from pyrig.dev.configs.docs.requirements import RequirementsConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.utils.packages import get_src_package
 from pyrig.src.project.mgt import (
@@ -1097,6 +1096,26 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
+    def step_build_documentation(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that builds the documentation.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs uv build-docs.
+        """
+        return cls.get_step(
+            step_func=cls.step_build_documentation,
+            run=str(DependencyManager.get_args("mkdocs", "build")),
+            step=step,
+        )
+
+    @classmethod
     def step_publish_documentation(
         cls,
         *,
@@ -1112,10 +1131,10 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_publish_documentation,
-            uses="mhausenblas/mkdocs-deploy-gh-pages@master",
-            env={
-                "GITHUB_TOKEN": cls.insert_github_token(),
-                "REQUIREMENTS": RequirementsConfigFile.get_path().as_posix(),
+            uses="peaceiris/actions-gh-pages@main",
+            with_={
+                "github_token": cls.insert_github_token(),
+                "publish_dir": "site",
             },
             step=step,
         )

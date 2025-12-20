@@ -493,6 +493,16 @@ def protect_repo() -> None:
     protect_repository()
 ```
 
+**What it does:**
+- Sets secure repository settings (description, default branch, merge settings)
+- Creates or updates branch protection rulesets
+
+**Note:** If you want to use GitHub Pages for documentation, you need to manually configure it in your repository settings because GitHub's Rest API does not support setting it via the API:
+1. Go to **Settings → Pages**
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**
+3. Select the **gh-pages** branch
+4. Click **Save**
+
 ```bash
 $ uv run pyrig protect-repo
 ```

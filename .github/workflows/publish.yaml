@@ -47,9 +47,30 @@ jobs:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
+    - name: Setup Git
+      id: setup_git
+      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        && git config --global user.name "github-actions[bot]"
+    - name: Setup Project Mgt
+      id: setup_project_mgt
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+    - name: Patch Version
+      id: patch_version
+      run: uv version --bump patch && git add pyproject.toml
+    - name: Install Python Dependencies
+      id: install_python_dependencies
+      run: uv lock --upgrade && uv sync
+    - name: Add Dependency Updates To Git
+      id: add_dependency_updates_to_git
+      run: git add pyproject.toml uv.lock
+    - name: Build Documentation
+      id: build_documentation
+      run: uv mkdocs build
     - name: Publish Documentation
       id: publish_documentation
-      uses: mhausenblas/mkdocs-deploy-gh-pages@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REQUIREMENTS: docs/requirements.txt
+      uses: peaceiris/actions-gh-pages@main
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: site
