@@ -9,14 +9,26 @@ Learn how the ConfigFile system works, including automatic discovery, validation
 
 ## Configuration Files
 
+### [builders/__init__.py](builders_init.md)
+Package initialization file for the builders directory structure.
+
+### [configs/__init__.py](configs_init.md)
+Package initialization file for the configs directory structure.
+
 ### [Containerfile](container_file.md)
 Container image configuration for building production-ready images with Podman or Docker.
+
+### [.experiment.py](dot_experiment.md)
+Scratch file for local experimentation, automatically excluded from version control.
 
 ### [GitIgnore](gitignore.md)
 Git ignore patterns for excluding files from version control.
 
 ### [Index.md](index_md.md)
 Documentation homepage file for MkDocs sites with badges and project description.
+
+### [main.py](main.md)
+CLI entry point file that provides the command-line interface for your application.
 
 ### [MkDocs](mkdocs.md)
 Documentation site configuration for generating websites with MkDocs.
@@ -26,6 +38,18 @@ Pre-commit hooks configuration for automated code quality checks before commits.
 
 ### [README.md](readme_md.md)
 Repository homepage file with badges and project description for GitHub.
+
+### [resources/__init__.py](resources_init.md)
+Package initialization file for the resources directory structure.
+
+### [shared_subcommands.py](shared_subcommands.md)
+CLI shared subcommands file for defining reusable commands across all pyrig projects.
+
+### [src/__init__.py](src_init.md)
+Package initialization file for the src directory structure.
+
+### [subcommands.py](subcommands.md)
+CLI subcommands file for defining project-specific custom commands.
 
 ## Quick Overview
 
