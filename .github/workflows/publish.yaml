@@ -70,6 +70,9 @@ jobs:
     - name: Build Documentation
       id: build_documentation
       run: uv run mkdocs build
+    - name: Enable Pages
+      id: enable_pages
+      uses: actions/configure-pages@main
     - name: Upload Documentation
       id: upload_documentation
       uses: actions/upload-pages-artifact@main

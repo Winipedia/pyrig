@@ -92,6 +92,7 @@ class PublishWorkflow(Workflow):
         return [
             *cls.steps_core_installed_setup(),
             cls.step_build_documentation(),
+            cls.step_enable_pages(),
             cls.step_upload_documentation(),
             cls.step_publish_documentation(),
         ]
