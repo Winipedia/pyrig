@@ -35,3 +35,6 @@ Learn how pyrig's CLI system works, including command discovery, multi-package s
 
 ### [Testing Documentation](tests/index.md)
 Understand pyrig's testing framework, including mirrored test structure, automatic fixture sharing, and autouse validation fixtures.
+
+### [Builder Documentation](builders/index.md)
+Create distributable artifacts with pyrig's builder system, including PyInstaller executables and custom build processes.
