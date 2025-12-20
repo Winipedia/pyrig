@@ -32,3 +32,6 @@
 
 ### [CLI Documentation](cli/index.md)
 Learn how pyrig's CLI system works, including command discovery, multi-package support, and how to create your own commands.
+
+### [Testing Documentation](tests/index.md)
+Understand pyrig's testing framework, including mirrored test structure, automatic fixture sharing, and autouse validation fixtures.
