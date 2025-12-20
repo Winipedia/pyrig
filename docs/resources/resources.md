@@ -77,7 +77,7 @@ def get_resource_path(name: str, package: ModuleType) -> Path:
     """
 ```
 
-## examples
+## Examples
 
 ### How Pyinstaller gets the icon.png
 
@@ -135,3 +135,18 @@ graph LR
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
+
+## Files in pyrig resources
+
+Pyrig provides the following resources:
+- GITIGNORE
+- LATEST_PYTHON_VERSION
+- MIT_LICENSE_TEMPLATE
+
+These are all used during the `pyrig init` or better `pyrig mkroot` command.
+These files are used as fallbacks if the API request to fetch the latest information of these files fail.
+pyrig also keeps them automatically updated in itself. So when github changes its gitgnore file for python then pyrig on its next release will have the updated file in resources and once your pyrig version gets updated you will get the updated file as well. As updates happen automatically via autouse fixtures and github workflows, this will be seemless and you wont even notice it probably.
+
+
+
+
