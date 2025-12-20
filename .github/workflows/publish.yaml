@@ -67,7 +67,7 @@ jobs:
       run: git add pyproject.toml uv.lock
     - name: Build Documentation
       id: build_documentation
-      run: uv mkdocs build
+      run: uv run mkdocs build
     - name: Publish Documentation
       id: publish_documentation
       uses: peaceiris/actions-gh-pages@main
