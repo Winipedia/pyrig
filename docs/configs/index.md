@@ -39,7 +39,7 @@ Git ignore patterns for excluding files from version control.
 ### [Index.md](index_md.md)
 Documentation homepage file for MkDocs sites with badges and project description.
 
-### [LICENSE](license.md)
+### [LICENSE](license_md.md)
 Project license file, defaults to MIT License with automatic year and owner.
 
 ### [main.py](main.md)
