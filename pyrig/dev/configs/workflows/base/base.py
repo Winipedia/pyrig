@@ -1111,7 +1111,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_documentation,
-            run=str(DependencyManager.get_args("mkdocs", "build")),
+            run=str(DependencyManager.get_run_args("mkdocs", "build")),
             step=step,
         )
 
