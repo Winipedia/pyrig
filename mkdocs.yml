@@ -1,6 +1,10 @@
 site_name: pyrig
 nav:
 - Home: index.md
+- CLI:
+  - Architecture: cli/architecture.md
+  - Subcommands: cli/subcommands.md
+  - Shared Subcommands: cli/shared-subcommands.md
 plugins:
 - search
 - mermaid2
