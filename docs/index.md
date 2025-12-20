@@ -38,3 +38,6 @@ Understand pyrig's testing framework, including mirrored test structure, automat
 
 ### [Builder Documentation](builders/index.md)
 Create distributable artifacts with pyrig's builder system, including PyInstaller executables and custom build processes.
+
+### [Resources Documentation](resources/index.md)
+Manage static files (images, configs, templates) that work seamlessly in both development and PyInstaller executables.
