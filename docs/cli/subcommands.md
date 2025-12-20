@@ -65,6 +65,8 @@ Functions are discovered and registered automatically:
 - **Defined in module** - imported functions are excluded
 - **Sorted by definition order** - commands appear in the order they're defined
 
+Note: The main function from your main.py at myapp/main.py is automatically registered as a command as well in addition to all functions in subcommands.py.
+
 ## Command Naming
 
 Function names are converted to CLI command names:
