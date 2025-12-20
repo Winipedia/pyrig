@@ -18,6 +18,9 @@ Git ignore patterns for excluding files from version control.
 ### [MkDocs](mkdocs.md)
 Documentation site configuration for generating websites with MkDocs.
 
+### [Pre-Commit](pre_commit.md)
+Pre-commit hooks configuration for automated code quality checks before commits.
+
 ## Quick Overview
 
 The configuration system provides:

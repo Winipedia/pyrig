@@ -118,7 +118,3 @@ class PreCommitConfigConfigFile(YamlConfigFile):
                 },
             ]
         }
-
-    def __init__(self) -> None:
-        """Initialize the pre-commit config file manager."""
-        super().__init__()

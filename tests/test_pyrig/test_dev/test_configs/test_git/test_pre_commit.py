@@ -94,10 +94,3 @@ class TestPreCommitConfigConfigFile:
             len(repo["hooks"]) > 0,
             "Expected at least one hook in repo",
         )
-
-    def test___init__(
-        self, my_test_pre_commit_config_file: type[PreCommitConfigConfigFile]
-    ) -> None:
-        """Test method for __init__."""
-        # Create instance
-        my_test_pre_commit_config_file()
