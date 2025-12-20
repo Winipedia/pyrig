@@ -68,9 +68,11 @@ jobs:
     - name: Build Documentation
       id: build_documentation
       run: uv run mkdocs build
+    - name: Upload Documentation
+      id: upload_documentation
+      uses: actions/upload-pages-artifact@main
+      with:
+        path: site
     - name: Publish Documentation
       id: publish_documentation
-      uses: peaceiris/actions-gh-pages@main
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: site
+      uses: actions/deploy-pages@main

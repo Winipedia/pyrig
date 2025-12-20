@@ -1116,6 +1116,27 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
+    def step_upload_documentation(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that uploads the documentation to GitHub Pages.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that uploads the documentation to GitHub Pages.
+        """
+        return cls.get_step(
+            step_func=cls.step_upload_documentation,
+            uses="actions/upload-pages-artifact@main",
+            with_={"path": "site"},
+            step=step,
+        )
+
+    @classmethod
     def step_publish_documentation(
         cls,
         *,
@@ -1131,11 +1152,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_publish_documentation,
-            uses="peaceiris/actions-gh-pages@main",
-            with_={
-                "github_token": cls.insert_github_token(),
-                "publish_dir": "site",
-            },
+            uses="actions/deploy-pages@main",
             step=step,
         )
 

@@ -45,6 +45,11 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_step_upload_documentation(self) -> None:
+        """Test method."""
+        result = Workflow.step_upload_documentation()
+        assert "uses" in result, f"Expected 'uses' in step, got {result}"
+
     def test_step_build_documentation(self) -> None:
         """Test method."""
         result = Workflow.step_build_documentation()
