@@ -24,7 +24,7 @@ Documentation site configuration for generating websites with MkDocs.
 ### [Pre-Commit](pre_commit.md)
 Pre-commit hooks configuration for automated code quality checks before commits.
 
-### [README.md](readme.md)
+### [README.md](readme_md.md)
 Repository homepage file with badges and project description for GitHub.
 
 ## Quick Overview
