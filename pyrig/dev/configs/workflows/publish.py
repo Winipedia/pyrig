@@ -25,7 +25,8 @@ class PublishWorkflow(Workflow):
             Permissions with write access for creating tags and releases.
         """
         permissions = super().get_permissions()
-        permissions["contents"] = "write"
+        permissions["pages"] = "write"
+        permissions["id-token"] = "write"
         return permissions
 
     @classmethod
