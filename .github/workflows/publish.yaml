@@ -6,9 +6,7 @@ name: Publish
     - Release
     types:
     - completed
-permissions:
-  pages: write
-  id-token: write
+permissions: {}
 run-name: Publish
 defaults:
   run:
@@ -42,6 +40,9 @@ jobs:
         secrets.PYPI_TOKEN }}; else echo "Skipping step due to failed condition: secrets.PYPI_TOKEN
         != ''''."; fi'
   publish_documentation:
+    permissions:
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:

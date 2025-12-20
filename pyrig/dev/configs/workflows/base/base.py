@@ -1116,6 +1116,26 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
+    def step_enable_pages(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that enables GitHub Pages.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that enables GitHub Pages.
+        """
+        return cls.get_step(
+            step_func=cls.step_enable_pages,
+            uses="actions/configure-pages@main",
+            step=step,
+        )
+
+    @classmethod
     def step_upload_documentation(
         cls,
         *,

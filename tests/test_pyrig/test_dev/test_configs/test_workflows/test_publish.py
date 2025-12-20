@@ -19,11 +19,6 @@ def my_test_publish_workflow(
 class TestPublishWorkflow:
     """Test class."""
 
-    def test_get_permissions(self) -> None:
-        """Test method."""
-        permissions = PublishWorkflow.get_permissions()
-        assert isinstance(permissions, dict), f"Expected dict, got {type(permissions)}"
-
     def test_job_publish_documentation(self) -> None:
         """Test method."""
         result = PublishWorkflow.job_publish_documentation()

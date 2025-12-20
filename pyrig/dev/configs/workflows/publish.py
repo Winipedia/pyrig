@@ -18,18 +18,6 @@ class PublishWorkflow(Workflow):
     """
 
     @classmethod
-    def get_permissions(cls) -> dict[str, Any]:
-        """Get the workflow permissions.
-
-        Returns:
-            Permissions with write access for creating tags and releases.
-        """
-        permissions = super().get_permissions()
-        permissions["pages"] = "write"
-        permissions["id-token"] = "write"
-        return permissions
-
-    @classmethod
     def get_workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers.
 
@@ -76,6 +64,7 @@ class PublishWorkflow(Workflow):
         """
         return cls.get_job(
             job_func=cls.job_publish_documentation,
+            permissions={"pages": "write", "id-token": "write"},
             steps=cls.steps_publish_documentation(),
             if_condition=cls.if_workflow_run_is_success(),
         )
