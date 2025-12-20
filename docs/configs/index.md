@@ -12,6 +12,9 @@ Learn how the ConfigFile system works, including automatic discovery, validation
 ### [Containerfile](container_file.md)
 Container image configuration for building production-ready images with Podman or Docker.
 
+### [GitIgnore](gitignore.md)
+Git ignore patterns for excluding files from version control.
+
 ### [MkDocs](mkdocs.md)
 Documentation site configuration for generating websites with MkDocs.
 
