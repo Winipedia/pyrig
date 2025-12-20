@@ -7,6 +7,11 @@ pyrig's configuration system automatically creates and maintains project configu
 ### [Architecture](architecture.md)
 Learn how the ConfigFile system works, including automatic discovery, validation, and how to create custom configuration files.
 
+## Configuration Files
+
+### [Containerfile](containerfile.md)
+Container image configuration for building production-ready images with Podman or Docker.
+
 ## Quick Overview
 
 The configuration system provides:

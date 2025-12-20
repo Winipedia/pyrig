@@ -59,6 +59,21 @@ Run once per test session before any tests execute.
 
 ---
 
+### `assert_no_namespace_packages`
+
+**Purpose**: Ensure all packages have `__init__.py` files.
+
+**Assertion**:
+- Scans project for namespace packages (directories without `__init__.py`)
+- Creates missing `__init__.py` files
+- Fails if any namespace packages found
+
+**Scope**: Session
+
+**Why**: Prevents namespace package issues and ensures proper package structure.
+
+---
+
 ### `assert_all_src_code_in_one_package`
 
 **Purpose**: Enforce single source package structure.
@@ -72,6 +87,20 @@ src, dev and main.py
 **Why**: Maintains clean project structure with single source of truth. The point of this is that all your code should in src.
 Some might not like that you have to import everything via my_project.src.module instead of just my_project.module, but we think the benefits outweigh the costs.
 If you do not want that I suppose you could add an import * from src to your __init__.py in my_project/__init__.py.
+
+---
+
+### `assert_src_package_correctly_named`
+
+**Purpose**: Verify source package name matches project name.
+
+**Assertion**:
+- Checks that source package name is derived from project name
+- Ensures naming convention is followed (project-name → project_name)
+
+**Scope**: Session
+
+**Why**: Maintains consistent naming between project and package. The convention pyrig asserts here is that the project name is the same as the package name, but with dashes instead of underscores. This is the convention we use for all our projects.
 
 ---
 
@@ -186,6 +215,31 @@ Also imports all src modules, to assert a minimum of sanity.
 **Why**: Keeps tooling current for development.
 
 These fixtures that update tools and stuff are failing if they do, just so you know it happened and does not it silently.
+
+---
+
+### `assert_version_control_is_installed`
+
+**Purpose**: Ensure git is installed and available.
+
+**Assertion**: Runs `git --version` and verifies success.
+
+**Scope**: Session
+
+**Why**: Ensures version control tooling is available for development.
+
+---
+
+### `assert_container_engine_is_installed`
+
+**Purpose**: Ensure Podman is installed and available.
+
+**Assertion**: Runs `podman --version` and verifies success.
+
+**Scope**: Session
+
+**Why**: Ensures containerization tooling is available for development.
+
 ---
 
 ## Module-Level Fixtures
@@ -240,30 +294,50 @@ Note: The order of autouse fixtures is not guaranteed and usually random.
 graph TD
     A[Session Start] --> B[assert_no_unstaged_changes before]
     B --> C[assert_root_is_correct]
-    C --> D[assert_all_src_code_in_one_package]
-    D --> E[assert_all_modules_tested]
-    E --> F[Other session fixtures...]
-    F --> G[For each test module]
-    G --> H[assert_all_funcs_and_classes_tested]
-    H --> I[For each test class]
-    I --> J[assert_all_methods_tested]
-    J --> K[Run individual tests]
-    K --> L[Session End]
-    L --> M[assert_no_unstaged_changes after]
-    
+    C --> D[assert_no_namespace_packages]
+    D --> E[assert_all_src_code_in_one_package]
+    E --> F[assert_src_package_correctly_named]
+    F --> G[assert_all_modules_tested]
+    G --> H[assert_no_unit_test_package_usage]
+    H --> I[assert_dependencies_are_up_to_date]
+    I --> J[assert_pre_commit_is_installed]
+    J --> K[assert_src_runs_without_dev_deps]
+    K --> L[assert_src_does_not_use_dev]
+    L --> M[assert_all_dev_deps_in_deps]
+    M --> N[assert_project_mgt_is_up_to_date]
+    N --> O[assert_version_control_is_installed]
+    O --> P[assert_container_engine_is_installed]
+    P --> Q[For each test module]
+    Q --> R[assert_all_funcs_and_classes_tested]
+    R --> S[For each test class]
+    S --> T[assert_all_methods_tested]
+    T --> U[Run individual tests]
+    U --> V[Session End]
+    V --> W[assert_no_unstaged_changes after]
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style C fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style D fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style F fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style H fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style I fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style I fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style J fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style K fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style L fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style K fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style L fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style M fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style N fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style O fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style P fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style Q fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style R fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style S fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style T fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style U fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style V fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style W fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
 ## Creating Custom Autouse Fixtures
