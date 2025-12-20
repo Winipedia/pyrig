@@ -1132,6 +1132,7 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_enable_pages,
             uses="actions/configure-pages@main",
+            with_={"token": cls.insert_repo_token(), "enablement": "true"},
             step=step,
         )
 

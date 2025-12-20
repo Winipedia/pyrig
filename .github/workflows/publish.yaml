@@ -73,6 +73,9 @@ jobs:
     - name: Enable Pages
       id: enable_pages
       uses: actions/configure-pages@main
+      with:
+        token: ${{ secrets.REPO_TOKEN }}
+        enablement: 'true'
     - name: Upload Documentation
       id: upload_documentation
       uses: actions/upload-pages-artifact@main
