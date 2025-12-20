@@ -57,9 +57,10 @@ You'll need:
    **Important:** Your git username must match your GitHub username for pyrig to work correctly.
 
 3. **A GitHub Personal Access Token (PAT)** with the following permissions:
-   - `administration:read` and `administration:write` (for repository protection)
-   - `contents:read` and `contents:write` (for pushing code in CI)
-   
+   - `contents` → `read` and `write` (for pushing commits and tags)
+   - `administration` → `read` and `write` (for repository protection)
+   - `pages` → `read` and `write` (for GitHub Pages deployment)
+
    [Create a PAT here](https://github.com/settings/tokens/new)
 
 ## Quick Start: Your First pyrig Project
@@ -81,7 +82,7 @@ Your repository needs secrets for automation to work:
 
    - **`REPO_TOKEN`** (Required)
      - Value: Your Personal Access Token from prerequisites
-     - Used for: Branch protection and repository management
+     - Used for: Branch protection, repository management, and GitHub Pages deployment
 
    - **`PYPI_TOKEN`** (Optional - publish command skipped if not configured)
      - Value: Your PyPI API token
