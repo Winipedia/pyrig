@@ -91,12 +91,18 @@ graph TD
 5. **Copy token immediately** (you won't see it again)
 6. Add token to your repository secrets
 
-**Codecov Token (CODECOV_TOKEN)** - **Optional** (for coverage reporting):
-1. Create account at [codecov.io](https://codecov.io)
-2. Link your GitHub account
-3. Add your repository
-4. Copy the repository upload token from Settings
-5. Add token to your repository secrets
+**Codecov Account** - **Required** (for coverage badge and reporting):
+1. Visit [codecov.io](https://codecov.io)
+2. Click "Log in with GitHub" to create account and link GitHub
+3. That's it - your account is ready
+
+**Codecov Token (CODECOV_TOKEN)** - **Recommended** (for uploading coverage):
+1. Go to your repository on Codecov
+2. Navigate to Settings → General
+3. Copy the repository upload token
+4. Add token to your GitHub repository secrets as `CODECOV_TOKEN`
+
+**Note**: Without the token, you must enable tokenless upload in Codecov settings (Settings → General → "Allow tokenless upload"). However, adding the token is recommended for reliability and security.
 
 ## Setup Steps
 
