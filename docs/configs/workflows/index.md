@@ -24,16 +24,16 @@ See [Workflow Architecture](architecture.md) for details on:
 ## Workflow Files
 
 ### [health_check.yaml](health_check.md)
-Continuous integration workflow that runs on PRs, pushes, and scheduled intervals.
+Continuous integration workflow that validates code quality and runs tests across OS and Python versions.
 
 ### [build.yaml](build.md)
-Artifact building workflow that runs after successful health checks on main.
+Artifact building workflow that creates platform-specific executables and container images.
 
 ### [release.yaml](release.md)
-Release creation workflow that tags versions and publishes GitHub releases.
+Release creation workflow that versions, tags, and publishes GitHub releases with artifacts.
 
 ### [publish.yaml](publish.md)
-Publishing workflow that distributes to PyPI and GitHub Pages.
+Publishing workflow that distributes packages to PyPI and documentation to GitHub Pages.
 
 ## Quick Start
 

@@ -170,10 +170,56 @@ graph LR
     style E2 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
 ```
 
+## Creating Custom Workflows
+
+To create your own workflow, subclass `Workflow` and implement `get_jobs()`:
+
+```python
+# myapp/dev/configs/workflows/custom.py
+from typing import Any
+from pyrig.dev.configs.workflows.base.base import Workflow
+
+class CustomWorkflow(Workflow):
+    """Custom workflow that runs on manual trigger."""
+
+    @classmethod
+    def get_workflow_triggers(cls) -> dict[str, Any]:
+        """Trigger manually via workflow_dispatch."""
+        triggers = super().get_workflow_triggers()
+        triggers.update(cls.on_workflow_dispatch())
+        return triggers
+
+    @classmethod
+    def get_jobs(cls) -> dict[str, Any]:
+        """Define the workflow jobs."""
+        jobs: dict[str, Any] = {}
+        jobs.update(cls.job_custom_task())
+        return jobs
+
+    @classmethod
+    def job_custom_task(cls) -> dict[str, Any]:
+        """Custom job that runs a script."""
+        return cls.get_job(
+            job_func=cls.job_custom_task,
+            runs_on=cls.UBUNTU_LATEST,
+            steps=[
+                cls.step_checkout_repository(),
+                cls.step_setup_python(python_version="3.12"),
+                cls.step_setup_project_mgt(),
+                cls.step_install_python_dependencies(),
+                {
+                    "name": "Run custom script",
+                    "run": "uv run python scripts/custom_task.py",
+                },
+            ],
+        )
+```
+
+After creating the file, run `uv run myapp mkroot` to generate `.github/workflows/custom.yaml`.
+
 ## Best Practices
 
-1. **Don't edit YAML directly**: Modify the Python workflow classes instead
+1. **Don't edit YAML directly**: Modify the Python workflow classes instead by subclassing them as you can with all ConfigFiles
 2. **Use opt-out for customization**: Replace steps with `step_opt_out_of_workflow()` to disable
 3. **Configure secrets**: Add REPO_TOKEN, PYPI_TOKEN, CODECOV_TOKEN to repository secrets
 4. **Test locally**: Run `uv run myapp mkroot` to regenerate workflows after changes
-
