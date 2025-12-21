@@ -138,6 +138,10 @@ Note: In the future we will only use ty and not mypy. However, astral-sh/ty is s
 - Tracks coverage across matrix builds
 - Free for open source
 
+**Setup Required**:
+- Account required: Visit [codecov.io](https://codecov.io) and log in with GitHub
+- Token recommended: Add `CODECOV_TOKEN` to repository secrets, or enable tokenless upload in Codecov settings
+
 ## Documentation
 
 ### MkDocs
