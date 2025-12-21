@@ -54,7 +54,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the `main.py` file is created with:
+When initialized via `uv run pyrig mkroot`, the `main.py` file is created with:
 
 1. **Module copy**: Complete source code from `pyrig.main` is copied
 2. **Path transformation**: Module path is transformed to match your package structure

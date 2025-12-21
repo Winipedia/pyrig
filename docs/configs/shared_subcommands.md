@@ -50,7 +50,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created with:
+When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from `pyrig.dev.cli.shared_subcommands` is copied
 2. **Package structure**: The `dev/cli/` directory is created
@@ -69,7 +69,7 @@ The file contains only the docstring, allowing you to add shared CLI commands.
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Purpose

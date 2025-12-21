@@ -52,7 +52,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created with:
+When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from `pyrig.dev.tests.fixtures.__init__.py` is copied
 2. **Package structure**: The `dev/tests/fixtures/` directory is created
@@ -71,7 +71,7 @@ The file contains only the docstring, allowing you to add custom fixture modules
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Purpose

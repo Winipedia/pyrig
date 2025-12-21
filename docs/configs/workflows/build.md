@@ -202,7 +202,7 @@ GitHub Actions tab → Build → Run workflow
 ## Best Practices
 
 1. **Define builders**: Create builder classes in `myapp/dev/builders/` for custom artifacts
-2. **Test locally**: Run `uv run myapp build` before pushing
+2. **Test locally**: Run `uv run pyrig build` before pushing
 3. **Check all platforms**: Verify artifacts build successfully on all OS
 4. **Keep Containerfile updated**: Ensure container image builds correctly
 

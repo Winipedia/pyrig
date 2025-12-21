@@ -49,7 +49,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the `.experiment.py` file is created with:
+When initialized via `uv run pyrig mkroot`, the `.experiment.py` file is created with:
 
 1. **Minimal content**: Just a docstring explaining the file's purpose
 2. **Git exclusion**: Automatically added to `.gitignore`
@@ -265,4 +265,4 @@ Should show:
 .experiment.py
 ```
 
-If missing, run `uv run myapp mkroot` to regenerate `.gitignore`.
+If missing, run `uv run pyrig mkroot` to regenerate `.gitignore`.

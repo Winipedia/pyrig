@@ -54,5 +54,5 @@ class MyBuilder(Builder):
         output_file.write_text("artifact content")
 ```
 
-Place this in `myapp/dev/builders/my_builder.py` and it will be automatically discovered when running `uv run myapp build`. Any other file location within the `dev/builders` module will also work.
+Place this in `myapp/dev/builders/my_builder.py` and it will be automatically discovered when running `uv run pyrig build`. Any other file location within the `dev/builders` module will also work.
 

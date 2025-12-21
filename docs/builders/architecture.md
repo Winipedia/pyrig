@@ -167,7 +167,7 @@ You actually should not need one becuase pyrig will host your documentation for 
 
 ### Automatic Discovery
 
-When you run `uv run myapp build`, pyrig:
+When you run `uv run pyrig build`, pyrig:
 1. Finds `myapp.dev.builders` module
 2. Discovers `DocumentationBuilder` class
 3. Instantiates it, triggering the build
@@ -186,7 +186,7 @@ Package B (depends on Package A)
 ├── builders/
     └── documentation.py  # Custom builder
 
-Running `uv run pkgb build`:
+Running `uv run pyrig build`:
 ✓ Discovers ExecutableBuilder from Package A
 ✓ Discovers DocumentationBuilder from Package B
 ✓ Builds both artifacts

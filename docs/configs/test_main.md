@@ -51,7 +51,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created with:
+When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Test function**: A `test_main` function that uses the `main_test_fixture`
 2. **Fixture usage**: The autouse fixture validates the CLI works
@@ -90,7 +90,7 @@ def is_correct(cls) -> bool:
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Purpose

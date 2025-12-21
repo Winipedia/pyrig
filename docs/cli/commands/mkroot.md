@@ -53,5 +53,5 @@ The fixture checks if any config files are incorrect and automatically runs `mkr
 
 - [Configs Documentation](../../configs/index.md) - Details on all config files
 - [mkinits](mkinits.md) - Creates only `__init__.py` files
-- [init](init.md) - Calls mkroot as part of full project setup
+- [init](init.md) - Calls `pyrig mkroot` as part of full project setup
 

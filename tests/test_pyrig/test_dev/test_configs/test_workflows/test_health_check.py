@@ -21,6 +21,20 @@ def my_test_health_check_workflow(
 class TestHealthCheckWorkflow:
     """Test class."""
 
+    def test_job_protect_repository(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflow]
+    ) -> None:
+        """Test method."""
+        result = my_test_health_check_workflow.job_protect_repository()
+        assert isinstance(result, dict), "Expected dict"
+
+    def test_steps_protect_repository(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflow]
+    ) -> None:
+        """Test method."""
+        result = my_test_health_check_workflow.steps_protect_repository()
+        assert isinstance(result, list), "Expected list"
+
     def test_get_staggered_cron(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:

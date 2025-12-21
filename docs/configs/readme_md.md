@@ -52,7 +52,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the `README.md` file is created with:
+When initialized via `uv run pyrig mkroot`, the `README.md` file is created with:
 
 1. **Project name header**: Uses project name from `pyproject.toml`
 2. **Badge sections**: Five categories of badges (tooling, code quality, package info, CI/CD, documentation)
@@ -209,7 +209,7 @@ Shows supported Python versions in the Python badge.
 The file is automatically created when you run:
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Adding Custom Content

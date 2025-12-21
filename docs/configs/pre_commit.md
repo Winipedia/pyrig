@@ -47,7 +47,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the `.pre-commit-config.yaml` file is created with:
+When initialized via `uv run pyrig mkroot`, the `.pre-commit-config.yaml` file is created with:
 
 1. **Local repository configuration**: All hooks run locally using system tools
 2. **Five quality check hooks**: Linting, formatting, type checking (2 types), and security scanning

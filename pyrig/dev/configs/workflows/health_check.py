@@ -73,9 +73,25 @@ class HealthCheckWorkflow(Workflow):
             Dict with matrix and aggregation jobs.
         """
         jobs: dict[str, Any] = {}
+        jobs.update(cls.job_protect_repository())
         jobs.update(cls.job_health_check_matrix())
         jobs.update(cls.job_health_check())
         return jobs
+
+    @classmethod
+    def job_health_check(cls) -> dict[str, Any]:
+        """Get the aggregation job that depends on matrix completion.
+
+        Returns:
+            Job configuration for result aggregation.
+        """
+        matrix_job_id = cls.make_id_from_func(cls.job_health_check_matrix)
+        protect_job_id = cls.make_id_from_func(cls.job_protect_repository)
+        return cls.get_job(
+            job_func=cls.job_health_check,
+            needs=[matrix_job_id, protect_job_id],
+            steps=cls.steps_aggregate_matrix_results(),
+        )
 
     @classmethod
     def job_health_check_matrix(cls) -> dict[str, Any]:
@@ -92,16 +108,15 @@ class HealthCheckWorkflow(Workflow):
         )
 
     @classmethod
-    def job_health_check(cls) -> dict[str, Any]:
-        """Get the aggregation job that depends on matrix completion.
+    def job_protect_repository(cls) -> dict[str, Any]:
+        """Get the job that protects the repository.
 
         Returns:
-            Job configuration for result aggregation.
+            Job configuration for protecting the repository.
         """
         return cls.get_job(
-            job_func=cls.job_health_check,
-            needs=[cls.make_id_from_func(cls.job_health_check_matrix)],
-            steps=cls.steps_aggregate_matrix_results(),
+            job_func=cls.job_protect_repository,
+            steps=cls.steps_protect_repository(),
         )
 
     @classmethod
@@ -115,7 +130,6 @@ class HealthCheckWorkflow(Workflow):
             *cls.steps_core_matrix_setup(
                 python_version=cls.insert_matrix_python_version(),
             ),
-            cls.step_protect_repository(),
             cls.step_run_pre_commit_hooks(),
             cls.step_run_tests(),
             cls.step_upload_coverage_report(),
@@ -130,4 +144,16 @@ class HealthCheckWorkflow(Workflow):
         """
         return [
             cls.step_aggregate_matrix_results(),
+        ]
+
+    @classmethod
+    def steps_protect_repository(cls) -> list[dict[str, Any]]:
+        """Get the steps for protecting the repository.
+
+        Returns:
+            List of steps for setup and protection.
+        """
+        return [
+            *cls.steps_core_installed_setup(),
+            cls.step_protect_repository(),
         ]

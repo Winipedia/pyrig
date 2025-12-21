@@ -220,7 +220,7 @@ Pyrig automatically adds:
 ### Automatic Creation
 
 ```bash
-uv run my-app mkroot
+uv run pyrig mkroot
 ```
 
 ### Adding Dependencies
@@ -238,7 +238,7 @@ uv add --dev some-dev-package
 Edit pyproject.toml manually, then:
 
 ```bash
-uv run my-app mkroot  # Validates and merges changes
+uv run pyrig mkroot  # Validates and merges changes
 ```
 
 ## Best Practices

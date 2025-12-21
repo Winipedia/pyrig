@@ -49,7 +49,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the `docs/index.md` file is created with:
+When initialized via `uv run pyrig mkroot`, the `docs/index.md` file is created with:
 
 1. **Project name header**: Uses project name from `pyproject.toml` with " Documentation" suffix
 2. **Badge sections**: Five categories of badges (tooling, code quality, package info, CI/CD, documentation)
@@ -189,7 +189,7 @@ Shows supported Python versions in the Python badge.
 The file is automatically created when you run:
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Adding Custom Content
@@ -300,7 +300,7 @@ Update `pyproject.toml`:
 description = "Your new description"
 ```
 
-Then run `uv run myapp mkroot` to regenerate.
+Then run `uv run pyrig mkroot` to regenerate.
 
 ### Project name incorrect
 

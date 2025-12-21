@@ -43,7 +43,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created with:
+When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Fetch MIT License**: Downloads from GitHub's SPDX API
 2. **Fill placeholders**: Replaces `[year]` and `[fullname]`
@@ -88,7 +88,7 @@ Automatically fills in:
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Generated Content

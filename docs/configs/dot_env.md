@@ -43,7 +43,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created:
+When initialized via `uv run pyrig mkroot`, the file is created:
 
 1. **Empty file**: Created if it doesn't exist
 2. **Git exclusion**: Automatically added to `.gitignore`
@@ -77,7 +77,7 @@ Pyrig prevents accidental writes to `.env` files.
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Adding Environment Variables

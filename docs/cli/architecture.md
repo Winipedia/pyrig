@@ -64,15 +64,15 @@ sequenceDiagram
     CLI->>Replace: Replace pyrig → myapp
     Replace-->>CLI: myapp.dev.cli.subcommands
     CLI->>Import: Import module
-    Import-->>CLI: [init, mkroot, build, ...]
+    Import-->>CLI: [deploy, status, ...]
     CLI->>Typer: Register each function
 ```
 
-Example: When running `uv run myapp init`, the system:
+Example: When running `uv run myapp deploy`, the system:
 - Detects package name: `myapp`
 - Replaces `pyrig.dev.cli.subcommands` → `myapp.dev.cli.subcommands`
 - Imports `myapp/dev/cli/subcommands.py`
-- Registers all functions as commands
+- Registers all functions as commands (e.g., `deploy`, `status`, etc.)
 
 ### Shared Commands
 
@@ -185,5 +185,5 @@ graph TD
 
 The function's docstring becomes the command's help text, and Typer automatically generates argument parsing from the function signature.
 
-You will not be building a crazy CLI package with this or an cli based application, but it comes quite in handy for building a CLI for your project and have some simple commands that can be executed from the command line because lets be honest no one like doing `python -m myapp.subpkg.subpkg2.module` instead of `uv run myapp init`. Also you dont need the classic `if __name__ == "__main__":` boilerplate anymore this way.
+You will not be building a crazy CLI package with this or an cli based application, but it comes quite in handy for building a CLI for your project and have some simple commands that can be executed from the command line because lets be honest no one like doing `python -m myapp.subpkg.subpkg2.module` instead of `uv run myapp deploy`. Also you dont need the classic `if __name__ == "__main__":` boilerplate anymore this way.
 

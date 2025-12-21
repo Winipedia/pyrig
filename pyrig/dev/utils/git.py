@@ -30,7 +30,6 @@ Example:
 
 import logging
 import os
-from functools import cache
 from pathlib import Path
 from typing import Any, Literal
 
@@ -43,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_BRANCH = "main"
 
-DEFAULT_RULESET_NAME = f"{DEFAULT_BRANCH} protection"
+DEFAULT_RULESET_NAME = f"{DEFAULT_BRANCH}-protection"
 
 
 def get_rules_payload(  # noqa: PLR0913
@@ -157,20 +156,8 @@ def get_rules_payload(  # noqa: PLR0913
     return rules
 
 
-def create_or_update_ruleset(  # noqa: PLR0913
-    token: str,
-    owner: str,
-    repo_name: str,
-    *,
-    ruleset_name: str,
-    enforcement: Literal["active", "disabled", "evaluate"] = "active",
-    target: Literal["branch", "tag", "push"] = "branch",
-    bypass_actors: list[dict[str, Any]] | None = None,
-    conditions: dict[
-        Literal["ref_name"], dict[Literal["include", "exclude"], list[str]]
-    ]
-    | None = None,
-    rules: list[dict[str, Any]] | None = None,
+def create_or_update_ruleset(
+    token: str, owner: str, repo_name: str, **ruleset_params: Any
 ) -> Any:
     """Create or update a repository ruleset.
 
@@ -181,28 +168,16 @@ def create_or_update_ruleset(  # noqa: PLR0913
         token: GitHub API token with repo permissions.
         owner: Repository owner (user or organization).
         repo_name: Repository name.
-        ruleset_name: Name for the ruleset.
-        enforcement: Enforcement level ("active", "disabled", or "evaluate").
-        target: What the ruleset applies to ("branch", "tag", or "push").
-        bypass_actors: List of actors who can bypass the ruleset.
-        conditions: Branch/tag name patterns to include or exclude.
-        rules: List of rule objects from `get_rules_payload()`.
+        **ruleset_params: Keyword arguments for the ruleset
+            as the github api expects them
 
     Returns:
         The API response containing the created/updated ruleset.
     """
+    ruleset_name: str = ruleset_params["name"]
     ruleset_id = ruleset_exists(
         token=token, owner=owner, repo_name=repo_name, ruleset_name=ruleset_name
     )
-    payload: dict[str, Any] = {
-        "name": ruleset_name,
-        "enforcement": enforcement,
-        "target": target,
-        "conditions": conditions,
-        "rules": rules,
-    }
-    if bypass_actors:
-        payload["bypass_actors"] = bypass_actors
 
     endpoint = "rulesets"
     if ruleset_id:
@@ -214,7 +189,7 @@ def create_or_update_ruleset(  # noqa: PLR0913
         repo_name,
         endpoint=endpoint,
         method="PUT" if ruleset_id else "POST",
-        payload=payload,
+        payload=ruleset_params,
     )
 
 
@@ -234,7 +209,6 @@ def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
     )
 
 
-@cache
 def get_repo(token: str, owner: str, repo_name: str) -> Repository:
     """Get a PyGithub Repository object for API operations.
 

@@ -264,10 +264,10 @@ You will still be left with a nice initial project structure and tooling.
 # - run: uv run pyrig build
 ```
 
-**3. Don't call mkroot**:
+**3. Don't call pyrig mkroot**:
 ```bash
 # Never run:
-# uv run myapp mkroot
+# uv run pyrig mkroot
 ```
 
 ### What Happens
@@ -324,9 +324,9 @@ pytest_plugins = ["pyrig.dev.tests.fixtures"]
 - run: uv run pyrig build
 ```
 
-**3. Run mkroot**:
+**3. Run pyrig mkroot**:
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 pyrig will validate and update configs to current standards.

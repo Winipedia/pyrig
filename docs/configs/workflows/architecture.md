@@ -65,7 +65,7 @@ class MyWorkflow(Workflow):
 
 ### Opt-Out Mechanism
 
-Workflows can be opted out by replacing all steps with `step_opt_out_of_workflow()`. This creates a valid workflow that never runs, allowing users to disable workflows without deleting files. Or if you empty the file it will be regenerated on next `uv run myapp mkroot` with the opt-out steps for you. So just empty the file and run `uv run myapp mkroot` to opt out.
+Workflows can be opted out by replacing all steps with `step_opt_out_of_workflow()`. This creates a valid workflow that never runs, allowing users to disable workflows without deleting files. Or if you empty the file it will be regenerated on next `uv run pyrig mkroot` with the opt-out steps for you. So just empty the file and run `uv run pyrig mkroot` to opt out.
 
 ## Concrete Workflows
 
@@ -215,11 +215,11 @@ class CustomWorkflow(Workflow):
         )
 ```
 
-After creating the file, run `uv run myapp mkroot` to generate `.github/workflows/custom.yaml`.
+After creating the file, run `uv run pyrig mkroot` to generate `.github/workflows/custom.yaml`.
 
 ## Best Practices
 
 1. **Don't edit YAML directly**: Modify the Python workflow classes instead by subclassing them as you can with all ConfigFiles
 2. **Use opt-out for customization**: Replace steps with `step_opt_out_of_workflow()` to disable
 3. **Configure secrets**: Add REPO_TOKEN, PYPI_TOKEN, CODECOV_TOKEN to repository secrets
-4. **Test locally**: Run `uv run myapp mkroot` to regenerate workflows after changes
+4. **Test locally**: Run `uv run pyrig mkroot` to regenerate workflows after changes

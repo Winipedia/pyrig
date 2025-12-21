@@ -252,7 +252,7 @@ My App (depends on Package A)
     ├── icon.png
     └── app-config.json
 
-Running `uv run myapp build`:
+Running `uv run pyrig build`:
 ✓ Discovers MyAppBuilder
 ✓ Bundles pyrig.resources (base-config.json)
 ✓ Bundles pkg_a.resources (pkg-a-data.json)

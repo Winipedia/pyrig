@@ -19,14 +19,13 @@ Example:
 
 from typing import Any
 
+from pyrig.dev.configs.branch_protection import BranchProtectionConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.utils.git import (
     DEFAULT_BRANCH,
-    DEFAULT_RULESET_NAME,
     create_or_update_ruleset,
     get_github_repo_token,
     get_repo,
-    get_rules_payload,
 )
 from pyrig.src.git.git import (
     get_repo_owner_and_name_from_git,
@@ -77,7 +76,12 @@ def create_or_update_default_branch_ruleset() -> None:
     Applies pyrig's standard protection rules to the default branch (main).
     If a ruleset with the same name already exists, it is updated.
     """
+    token = get_github_repo_token()
+    owner, repo_name = get_repo_owner_and_name_from_git()
     create_or_update_ruleset(
+        token=token,
+        owner=owner,
+        repo_name=repo_name,
         **get_default_ruleset_params(),
     )
 
@@ -93,53 +97,4 @@ def get_default_ruleset_params() -> dict[str, Any]:
     Returns:
         A dictionary of parameters suitable for `create_or_update_ruleset()`.
     """
-    from pyrig.dev.configs.workflows.health_check import (  # noqa: PLC0415
-        HealthCheckWorkflow,  # avoid circular import
-    )
-
-    owner, repo_name = get_repo_owner_and_name_from_git()
-    token = get_github_repo_token()
-
-    rules = get_rules_payload(
-        deletion={},
-        non_fast_forward={},
-        creation={},
-        update={},
-        pull_request={
-            "required_approving_review_count": 1,
-            "dismiss_stale_reviews_on_push": True,
-            "require_code_owner_review": True,
-            "require_last_push_approval": True,
-            "required_review_thread_resolution": True,
-            "allowed_merge_methods": ["squash", "rebase"],
-        },
-        required_linear_history={},
-        required_signatures={},
-        required_status_checks={
-            "strict_required_status_checks_policy": True,
-            "do_not_enforce_on_create": False,
-            "required_status_checks": [
-                {
-                    "context": HealthCheckWorkflow.get_filename(),
-                }
-            ],
-        },
-    )
-
-    return {
-        "owner": owner,
-        "token": token,
-        "repo_name": repo_name,
-        "ruleset_name": DEFAULT_RULESET_NAME,
-        "enforcement": "active",
-        "bypass_actors": [
-            {
-                "actor_id": 5,
-                "actor_type": "RepositoryRole",
-                "bypass_mode": "always",
-            }
-        ],
-        "target": "branch",
-        "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}},
-        "rules": rules,
-    }
+    return BranchProtectionConfigFile.load()

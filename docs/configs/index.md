@@ -9,6 +9,9 @@ Learn how the ConfigFile system works, including automatic discovery, validation
 
 ## Configuration Files
 
+### [branch-protection.json](branch_protection.md)
+Branch protection ruleset configuration for GitHub repository protection.
+
 ### [builders/__init__.py](builders_init.md)
 Package initialization file for the builders directory structure.
 
@@ -94,10 +97,10 @@ The configuration system provides:
 
 ### Using Existing Config Files
 
-When you run `uv run myapp mkroot`, all ConfigFile subclasses are discovered and initialized:
+When you run `uv run pyrig mkroot`, all ConfigFile subclasses are discovered and initialized:
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 This creates:

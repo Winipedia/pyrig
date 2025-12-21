@@ -42,7 +42,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the `.gitignore` file is created by:
+When initialized via `uv run pyrig mkroot`, the `.gitignore` file is created by:
 
 1. **Fetching GitHub's Python.gitignore**: Downloads the latest standard Python patterns from GitHub. Falls back to bundled resource in pyrig's resources package if network fails.
 2. **Adding pyrig-specific patterns**: Includes patterns for pyrig tools and workflows
@@ -122,7 +122,7 @@ Automatically includes paths to other config files that should be ignored.
 ### Automatic Updates
 
 The `.gitignore` file is automatically updated when:
-- Running `uv run myapp mkroot`
+- Running `uv run pyrig mkroot`
 - New pyrig patterns are added in updates
 - GitHub's Python.gitignore is updated (on next initialization)
 

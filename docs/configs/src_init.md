@@ -52,7 +52,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created with:
+When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from `pyrig.src.__init__.py` is copied
 2. **Package structure**: The `src/` directory is created
@@ -71,7 +71,7 @@ The file contains only the docstring, allowing you to add your application's sou
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Purpose

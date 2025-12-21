@@ -14,10 +14,11 @@ graph TD
     A --> C[TomlConfigFile]
     A --> D[TextConfigFile]
     A --> E[TypedConfigFile]
+    A --> F[JsonConfigFile]
 
     B --> B1[YmlConfigFile]
     B --> B2[Workflow]
-    
+
     D --> D1[TxtConfigFile]
     D --> D2[MarkdownConfigFile]
     D --> D3[PythonConfigFile]
@@ -36,6 +37,7 @@ graph TD
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style B2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
@@ -135,6 +137,25 @@ Config files are initialized in three phases during `pyrig init or pyrig mkroot`
 These subclasses implement already all the required methods for you that they can and simplfy creating ConfigFiles for the specific format.
 Examples are the methods `load` and `dump` that are implemented for you or the file extension is set for you.
 
+### JsonConfigFile
+
+For JSON configuration files using Python's json module:
+
+```python
+from pyrig.dev.configs.base.base import JsonConfigFile
+
+class MyConfigFile(JsonConfigFile):
+    @classmethod
+    def get_parent_path(cls) -> Path:
+        return Path("config")
+
+    @classmethod
+    def get_configs(cls) -> dict[str, Any]:
+        return {"key": "value"}
+```
+
+Creates `config/my_config.json`.
+
 ### YamlConfigFile
 
 For YAML configuration files using PyYAML:
@@ -146,7 +167,7 @@ class MyConfigFile(YamlConfigFile):
     @classmethod
     def get_parent_path(cls) -> Path:
         return Path("config")
-    
+
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
         return {"key": "value"}

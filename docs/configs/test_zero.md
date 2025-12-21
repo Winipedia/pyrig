@@ -52,7 +52,7 @@ return "_".join(reversed(filename.split("_")))  # "test_zero"
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created with:
+When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Empty test**: A single test function that does nothing
 2. **Docstring**: Explains the file's purpose
@@ -78,7 +78,7 @@ The test does nothing but ensures pytest has at least one test to run.
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Purpose

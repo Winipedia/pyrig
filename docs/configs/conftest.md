@@ -46,7 +46,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created with:
+When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Plugin import**: Imports `pyrig.dev.tests.conftest` as a pytest plugin
 2. **Docstring**: Explains the file's purpose and warns against manual modification
@@ -92,7 +92,7 @@ def is_correct(cls) -> bool:
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### Purpose

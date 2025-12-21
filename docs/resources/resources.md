@@ -18,7 +18,7 @@ myapp/
         └── report.html
 ```
 
-The `resources` package is automatically created by pyrig when you run `uv run myapp mkroot`.
+The `resources` package is automatically created by pyrig when you run `uv run pyrig mkroot`.
 
 ## Accessing Resources
 

@@ -46,7 +46,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created with:
+When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Version extraction**: Reads `requires-python` from pyproject.toml
 2. **First version**: Uses the first supported Python version
@@ -88,7 +88,7 @@ def dump(cls, config: dict[str, Any] | list[Any]) -> None:
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### File Content

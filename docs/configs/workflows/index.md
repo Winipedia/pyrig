@@ -40,7 +40,7 @@ Publishing workflow that distributes packages to PyPI and documentation to GitHu
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 Creates all four workflows in `.github/workflows/`.
@@ -76,7 +76,7 @@ To disable a workflow without deleting it:
 
 1. Edit the workflow Python class
 2. Replace all steps with `step_opt_out_of_workflow()`
-3. Run `uv run myapp mkroot`
+3. Run `uv run pyrig mkroot`
 
 The workflow will exist but never execute.
 
@@ -84,12 +84,12 @@ The workflow will exist but never execute.
 
 1. Edit the workflow class in `myapp/dev/configs/workflows/`
 2. Override methods like `get_jobs()`, `get_workflow_triggers()`, etc.
-3. Run `uv run myapp mkroot` to regenerate YAML
+3. Run `uv run pyrig mkroot` to regenerate YAML
 
 ## Best Practices
 
 1. **Don't edit YAML directly**: Always modify Python subclasses of `Workflow`
-2. **Test locally first**: Run `uv run myapp mkroot` before committing
+2. **Test locally first**: Run `uv run pyrig mkroot` before committing
 3. **Use matrix strategies**: Test across OS and Python versions
 4. **Configure secrets properly**: Workflows fail without required tokens
 5. **Monitor workflow runs**: Check GitHub Actions tab for failures

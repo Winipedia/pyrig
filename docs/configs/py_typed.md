@@ -45,7 +45,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the file is created:
+When initialized via `uv run pyrig mkroot`, the file is created:
 
 1. **Package detection**: Reads package name from pyproject.toml
 2. **File creation**: Creates empty `{package_name}/py.typed`
@@ -73,7 +73,7 @@ The file is always empty - it's just a marker.
 ### Automatic Creation
 
 ```bash
-uv run myapp mkroot
+uv run pyrig mkroot
 ```
 
 ### File Content

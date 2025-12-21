@@ -41,7 +41,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the Containerfile is automatically created with all required layers:
+When initialized via `uv run pyrig mkroot`, the Containerfile is automatically created with all required layers:
 
 1. **Base image**: Uses Python slim image matching your `requires-python` constraint
 2. **Working directory**: Sets up workspace named after your project

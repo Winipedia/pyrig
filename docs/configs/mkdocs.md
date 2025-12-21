@@ -44,7 +44,7 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run myapp mkroot`, the `mkdocs.yml` file is created with minimal required configuration:
+When initialized via `uv run pyrig mkroot`, the `mkdocs.yml` file is created with minimal required configuration:
 
 ```yaml
 site_name: my-project
