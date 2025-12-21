@@ -291,13 +291,17 @@ def assert_no_unit_test_package_usage() -> None:
         AssertionError: If the unit test package is used
 
     """
+    paths: list[str] = []
     for path in Path().rglob("*.py"):
         if GitIgnoreConfigFile.path_is_in_gitignore(path):
             continue
-        assert_with_msg(
-            "UnitTest".lower() not in path.read_text(encoding="utf-8"),
-            f"Found unit test package usage in {path}. Use pytest instead.",
-        )
+        if "UnitTest".lower() in path.read_text(encoding="utf-8"):
+            paths.append(path.as_posix())
+
+    msg = f"""Found {"UnitTest".lower()} package usage in:
+    {make_summary_error_msg(paths)}
+"""
+    assert not paths, msg
 
 
 @autouse_session_fixture
@@ -312,26 +316,36 @@ def assert_dependencies_are_up_to_date() -> None:
     completed_process = args.run(check=False)
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
-    std_msg = stderr + stdout
+    std_msg_updated = stderr + stdout
 
     not_expected = ["Updated"]
     # if there were updates raise an error
-    update_occurred = any(exp in std_msg for exp in not_expected)
-    assert not update_occurred, f"Expected none of {not_expected}, got: {std_msg}"
+    update_occurred = any(exp in std_msg_updated for exp in not_expected)
+    deps_were_upgraded = update_occurred
 
     # sync the dependencies
     args = DependencyManager.get_install_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
-    std_msg = stderr + stdout
+    std_msg_installed = stderr + stdout
     expected = ["Resolved", "Audited"]
-    expected_in_err_or_out = any(exp in std_msg for exp in expected)
-    assert expected_in_err_or_out, f"Expected one of {expected}, got: {std_msg}"
-
+    expected_in_err_or_out = any(exp in std_msg_installed for exp in expected)
     not_expected = ["=="]
-    install_occurred = any(exp in std_msg for exp in not_expected)
-    assert not install_occurred, f"Expected none of {not_expected}, got: {std_msg}"
+    install_occurred = any(exp in std_msg_installed for exp in not_expected)
+    deps_were_installed = install_occurred and not expected_in_err_or_out
+
+    is_up_to_date = not deps_were_upgraded and not deps_were_installed
+
+    msg = f"""Dependencies were not up to date.
+This fixture ran `uv lock --upgrade` and `uv sync`.
+upgrade output:
+{std_msg_updated}
+-------------------------------------------------------------------------------
+install output:
+{std_msg_installed}
+"""
+    assert is_up_to_date, msg
 
 
 @autouse_session_fixture
@@ -347,10 +361,13 @@ def assert_pre_commit_is_installed() -> None:
     logger.info("Pre-commit install output: %s", stdout)
     expected = "pre-commit installed at"
 
-    assert_with_msg(
-        expected in stdout,
-        f"Expected {expected} in pre-commit install output, got {stdout}",
-    )
+    pre_commits_are_installed = expected in stdout
+
+    msg = f"""Pre-commits are not installed.
+    This fixture ran `pre-commit install` but it failed.
+    Output: {stdout}
+    """
+    assert pre_commits_are_installed, msg
 
 
 @autouse_session_fixture
@@ -424,10 +441,7 @@ def assert_src_runs_without_dev_deps(
         )
         stderr = installed.stderr.decode("utf-8")
         dev_dep_not_installed = f"not found: {dev_dep}" in stderr
-        assert_with_msg(
-            dev_dep_not_installed,
-            f"Expected {dev_dep} not to be installed",
-        )
+        assert dev_dep_not_installed, f"Expected {dev_dep} not to be installed"
         # check pytest is not importable
         args = DependencyManager.get_run_args("python", "-c", "import pytest")
         installed = args.run(
@@ -435,9 +449,8 @@ def assert_src_runs_without_dev_deps(
             env=env,
         )
         stderr = installed.stderr.decode("utf-8")
-        assert_with_msg(
-            "ModuleNotFoundError" in stderr,
-            f"Expected ModuleNotFoundError in stderr, got {stderr}",
+        assert "ModuleNotFoundError" in stderr, (
+            f"Expected ModuleNotFoundError, got {stderr}"
         )
         src_pkg_name = get_src_package().__name__
 
@@ -471,10 +484,10 @@ def assert_src_runs_without_dev_deps(
         completed_process = run_subprocess(cmd, env=env, check=False)
         stdout = completed_process.stdout.decode("utf-8")
         stderr = completed_process.stderr.decode("utf-8")
-        assert_with_msg(
-            "Success" in stdout,
-            f"Expected Success in stdout, got {stdout} and {stderr}",
-        )
+        msg = f"""Expected Success in stdout, got {stdout} and {stderr}
+If this fails then there is likely an import in src that depends on dev dependencies.
+"""
+        assert "Success" in stdout, msg
 
         # run cli without dev deps
         cmd = ["uv", "run", "--no-group", "dev", project_name, "--help"]
@@ -540,7 +553,9 @@ def assert_all_dev_deps_in_deps() -> None:
         PyprojectConfigFile.remove_version_from_dep(dep) for dep in standard_dev_deps
     }
 
-    assert stripped_standard_dev_deps.issubset(stripped_deps)
+    assert stripped_standard_dev_deps.issubset(stripped_deps), (
+        f"Expected {stripped_standard_dev_deps} to be a subset of {stripped_deps}"
+    )
 
 
 @autouse_session_fixture
@@ -559,7 +574,11 @@ def assert_project_mgt_is_up_to_date() -> None:
             "Temporary failure in name resolution",
         ]
         expected_in_err_or_out = any(exp in std_msg for exp in expected)
-        assert expected_in_err_or_out, f"Expected one of {expected}, got: {std_msg}"
+        msg = f"""Expected one of {expected} in stderr or stdout, got: {std_msg}
+
+        This fixture ran `uv self update` but it failed.
+        """
+        assert expected_in_err_or_out, msg
 
 
 @autouse_session_fixture
