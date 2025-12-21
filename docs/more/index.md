@@ -45,3 +45,18 @@ Understand what you sacrifice and what you gain with pyrig:
 
 Balanced assessment of pyrig's intentional trade-offs and what you get in return.
 
+## [Example Usage: Microservices Ecosystem](example-usage.md)
+
+Real-world example of using pyrig to build and maintain a standardized microservices ecosystem:
+
+- **Scenario**: Company with multiple Python microservices needing consistent standards
+- **Architecture**: Base package extending pyrig, multiple services depending on it
+- **Custom Configs**: Add company-wide logging, monitoring, security configurations
+- **Override Configs**: Customize MkDocs theme, pyproject.toml settings across all services
+- **Auto-Synchronization**: Update base package → all services heal themselves via autouse fixtures
+- **Discovery Mechanism**: How dependency graph + ConfigFile discovery enables multi-package architecture
+- **Propagation Flow**: Step-by-step breakdown of how changes flow through the ecosystem
+- **Real Benefits**: Security audits, rebranding, new services - all solved in minutes
+
+Complete walkthrough showing pyrig's power in production environments with microservices.
+
