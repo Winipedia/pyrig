@@ -28,6 +28,13 @@
 
 ---
 
+## Quick Start
+
+### [Getting Started](more/getting-started.md)
+Complete guide to setting up a new pyrig project from scratch. Covers prerequisites (Git, uv, Podman), required tokens (GitHub, PyPI, Codecov), and step-by-step setup from creating a repository to running your first workflows.
+
+---
+
 ## Documentation
 
 ### [CLI Documentation](cli/index.md)
