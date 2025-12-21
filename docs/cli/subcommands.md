@@ -67,6 +67,45 @@ Functions are discovered and registered automatically:
 
 Note: The main function from your main.py at myapp/main.py is automatically registered as a command as well in addition to all functions in subcommands.py.
 
+### Discovery Process
+
+```mermaid
+graph TD
+    A[CLI Entry Point] --> B[Extract package name from sys.argv]
+    B --> C{Package is pyrig?}
+
+    C -->|Yes| D[Import pyrig.dev.cli.subcommands]
+    C -->|No| E[Replace module path with package name]
+    E --> F[Import package.dev.cli.subcommands]
+
+    D --> G[Get all functions from module]
+    F --> G
+
+    G --> H[Filter: only functions defined in module]
+    H --> I[Sort by definition order]
+    I --> J[For each function...]
+
+    J --> K[Convert name to command name]
+    K --> L[Register with Typer app]
+    L --> J
+
+    J --> M[All commands registered]
+    M --> N[CLI ready to execute]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style I fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style K fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style L fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style N fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+```
+
 ## Command Naming
 
 Function names are converted to CLI command names:

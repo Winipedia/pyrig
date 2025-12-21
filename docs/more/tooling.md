@@ -2,6 +2,39 @@
 
 pyrig makes opinionated tooling choices to provide a consistent, modern development experience. This document explains which tools are used and why.
 
+## Tool Ecosystem
+
+```mermaid
+graph LR
+    A[pyrig Tools] --> B[uv]
+    A --> C[ruff]
+    A --> D[mypy/ty]
+    A --> E[pytest]
+    A --> F[MkDocs]
+    A --> G[Podman]
+    A --> H[pre-commit]
+    A --> I[GitHub<br/>Actions]
+
+    B -.-> B1[Package<br/>Management]
+    C -.-> C1[Linting &<br/>Formatting]
+    D -.-> D1[Type<br/>Checking]
+    E -.-> E1[Testing &<br/>Coverage]
+    F -.-> F1[Documentation]
+    G -.-> G1[Containers]
+    H -.-> H1[Git Hooks]
+    I -.-> I1[CI/CD]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style H fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style I fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+```
+
 ## Package Management
 
 ### uv

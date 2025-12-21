@@ -49,6 +49,40 @@ sequenceDiagram
 
 ### Discovery Steps
 
+```mermaid
+graph TD
+    A[Start: tests/conftest.py] --> B[Import pyrig.dev.tests.conftest]
+    B --> C[Build DependencyGraph]
+    C --> D[Find all packages depending on pyrig]
+    D --> E[For each package...]
+
+    E --> F[Get package's fixtures module path]
+    F --> G{Module exists?}
+    G -->|Yes| H[Find all .py files in module]
+    G -->|No| E
+    H --> I[Convert paths to module names]
+    I --> J[Add to pytest_plugins list]
+    J --> E
+
+    E --> K[All packages processed]
+    K --> L[pytest loads all plugins]
+    L --> M[All fixtures available in tests]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style I fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style J fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style L fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style M fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+```
+
+**Detailed Steps:**
+
 1. **Find dependent packages**: Uses dependency graph to find all packages depending on pyrig
 2. **Locate fixtures modules**: Finds equivalent of `pyrig.dev.tests.fixtures` in each package
 3. **Collect Python files**: Recursively finds all `.py` files in fixtures modules

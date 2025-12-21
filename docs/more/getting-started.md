@@ -40,11 +40,40 @@ podman --version
 
 ### Required Accounts & Tokens
 
+```mermaid
+graph TD
+    A[Required Accounts & Tokens] --> B[GitHub Account]
+    A --> C[REPO_TOKEN]
+    A --> D[PYPI_TOKEN]
+    A --> E[CODECOV_TOKEN]
+
+    B --> B1[Required]
+    C --> C1[Required]
+    D --> D1[Optional]
+    E --> E1[Optional]
+
+    C --> C2[Used by: protect-repo<br/>Health Check workflow<br/>Release workflow<br/>Publish workflow]
+    D --> D2[Used by: Publish workflow<br/>to publish to PyPI]
+    E --> E2[Used by: Health Check workflow<br/>to upload coverage]
+
+    C2 --> C3[Permissions:<br/>administration: read, write<br/>contents: read, write<br/>pages: read, write]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style B1 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
+    style C1 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
+    style D1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style E1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+```
+
 **GitHub Account**:
 - Create account at [github.com](https://github.com)
 - Verify email address
 
-**GitHub Personal Access Token (REPO_TOKEN)**:
+**GitHub Personal Access Token (REPO_TOKEN)** - **Required**:
 1. Go to GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens
 2. Select scopes:
    - `administration: read, write` (for `pyrig protect-repo`)
@@ -54,7 +83,7 @@ podman --version
 4. **Copy token immediately** (you won't see it again)
 5. Add token to your repository secrets
 
-**PyPI Token (PYPI_TOKEN)** (optional, for publishing):
+**PyPI Token (PYPI_TOKEN)** - **Optional** (for publishing):
 1. Create account at [pypi.org](https://pypi.org)
 2. Create an API token
 3. Scope: "Entire account" (recommended change to specific project after first publish)
@@ -62,7 +91,7 @@ podman --version
 5. **Copy token immediately** (you won't see it again)
 6. Add token to your repository secrets
 
-**Codecov Token (CODECOV_TOKEN)** (optional, for coverage reporting):
+**Codecov Token (CODECOV_TOKEN)** - **Optional** (for coverage reporting):
 1. Create account at [codecov.io](https://codecov.io)
 2. Link your GitHub account
 3. Add your repository
@@ -120,6 +149,45 @@ uv run pyrig init
 ```
 
 This runs 9 steps:
+
+```mermaid
+graph TD
+    A[uv run pyrig init] --> B[1. Adding dev dependencies]
+    B --> C[2. Syncing venv]
+    C --> D[3. Creating priority config files]
+    D --> E[4. Syncing venv]
+    E --> F[5. Creating project root]
+    F --> G[6. Creating test files]
+    G --> H[7. Running pre-commit hooks]
+    H --> I[8. Running tests]
+    I --> J[9. Committing initial changes]
+    J --> K[Setup complete!]
+
+    B -.->|Installs| B1[pyrig-dev package]
+    C -.->|Installs| C1[All dependencies]
+    D -.->|Creates| D1[pyproject.toml<br/>.gitignore<br/>LICENSE<br/>etc.]
+    E -.->|Installs| E1[Project itself<br/>Activates CLI]
+    F -.->|Generates| F1[All config files<br/>Directory structure]
+    G -.->|Creates| G1[Test skeletons<br/>for all code]
+    H -.->|Runs| H1[ruff format<br/>ruff check<br/>mypy<br/>bandit]
+    I -.->|Validates| I1[pytest with<br/>90% coverage]
+    J -.->|Creates| J1[Initial git commit]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style I fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style J fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style K fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+```
+
+**Step Details:**
+
 1. **Adding dev dependencies** - Installs pyrig-dev
 2. **Syncing venv** - Installs all dependencies
 3. **Creating priority config files** - pyproject.toml, .gitignore, LICENSE, ...

@@ -40,6 +40,25 @@ graph TD
 
 ## Configuration Sections
 
+```mermaid
+graph LR
+    A[pyproject.toml] --> B[project]
+    A --> C[build-system]
+    A --> D[dependency-groups]
+    A --> E[tool.*]
+
+    B -.-> B1[Metadata, deps,<br/>scripts, classifiers]
+    C -.-> C1[uv backend]
+    D -.-> D1[dev: pyrig-dev]
+    E -.-> E1[ruff, mypy, ty,<br/>pytest, bandit,<br/>coverage]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+```
+
 ### Project Metadata
 
 ```toml

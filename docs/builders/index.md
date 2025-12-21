@@ -28,6 +28,33 @@ The builder system provides:
 - **Temporary build isolation** for clean builds
 - **Built-in PyInstaller support** for executable creation
 
+### Builder Execution Flow
+
+```mermaid
+graph LR
+    A[uv run pyrig build] --> B[Discover Builders]
+    B --> C[For each Builder...]
+    C --> D[Create temp directory]
+    D --> E[Execute create_artifacts]
+    E --> F[Move artifacts to dist/]
+    F --> G[Clean up temp]
+    G --> C
+    C --> H[All builders complete]
+
+    B -.->|Finds| B1[All Builder subclasses<br/>across dependency chain]
+    E -.->|Calls| E1[Builder.create_artifacts<br/>with temp_artifacts_dir]
+    F -.->|Outputs| F1[dist/artifact-name]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style H fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+```
+
 ## Quick Start
 
 Build all artifacts:

@@ -28,6 +28,32 @@
 
 ---
 
+## Architecture Overview
+
+```mermaid
+graph LR
+    A[pyrig] --> B[CLI<br/>Commands]
+    A --> C[Config<br/>Files]
+    A --> D[Builders]
+    A --> E[Tests &<br/>Fixtures]
+    A --> F[CI/CD<br/>Workflows]
+
+    B -.-> B1[init, mkroot,<br/>mktests, build,<br/>protect-repo]
+    C -.-> C1[auto-generated<br/>configuration files]
+    D -.-> D1[PyInstaller &<br/>custom builders]
+    E -.-> E1[Shared fixtures<br/>auto-discovery]
+    F -.-> F1[Health Check<br/>Build, Release<br/>Publish]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+```
+
+---
+
 ## Quick Start
 
 ### [Getting Started](more/getting-started.md)

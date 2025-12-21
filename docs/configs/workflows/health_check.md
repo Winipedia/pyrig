@@ -83,6 +83,30 @@ graph TD
 
 This job runs independently from the test matrix to ensure branch protection is configured before any code quality checks. It sets up the environment, updates dependencies, and applies the branch protection ruleset from `branch-protection.json`.
 
+**Step Flow**:
+
+```mermaid
+graph TD
+    P1[1. Checkout Repository] --> P2[2. Setup Git]
+    P2 --> P3[3. Setup Project Mgt]
+    P3 --> P4[4. Patch Version]
+    P4 --> P5[5. Install Dependencies]
+    P5 --> P6[6. Add Updates to Git]
+    P6 --> P7[7. Protect Repository]
+
+    P7 -.->|Loads| P7A[branch-protection.json]
+    P7 -.->|Creates/Updates| P7B[GitHub Ruleset]
+    P7 -.->|Requires| P7C[REPO_TOKEN]
+
+    style P1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style P2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style P3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style P4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style P5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style P6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style P7 fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+```
+
 **Steps**:
 
 1. **Checkout Repository** (`actions/checkout@main`)
