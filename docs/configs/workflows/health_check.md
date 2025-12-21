@@ -238,7 +238,8 @@ graph TD
 ## Required Secrets
 
 - **REPO_TOKEN**: Fine-grained PAT with administration, contents, pages permissions
-- **CODECOV_TOKEN**: Codecov upload token (optional but recommended)
+- **CODECOV_TOKEN**: Codecov upload token (recommended, required for private repos)
+  - See [Getting Started - Codecov setup](../../more/getting-started.md#required-accounts--tokens) for details
 
 ## Usage
 

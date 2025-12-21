@@ -872,10 +872,13 @@ class Workflow(YamlConfigFile):
     ) -> dict[str, Any]:
         """Create a step that uploads the coverage report.
 
-        If the repository is private, the workflow will fail and
-        a Codecov token has to be added to the repository secrets.
-        You need an account on Codecov for this.
-        If Codecov token is not defined then the step is skipped.
+        Requires a Codecov account (log in at codecov.io with GitHub).
+
+        For private repos: CODECOV_TOKEN is required.
+        For public repos: CODECOV_TOKEN is recommended, or enable tokenless
+        upload in Codecov settings (Settings → General).
+
+        If CODECOV_TOKEN is not defined, the step will not fail CI.
 
         Args:
             step: Existing step dict to update.
