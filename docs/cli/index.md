@@ -4,6 +4,15 @@ The pyrig CLI system uses dynamic command discovery to automatically register co
 
 ## Documentation Pages
 
+### [Commands](commands/index.md)
+Documentation for all built-in pyrig commands:
+- init - Complete project initialization
+- mkroot - Create project structure
+- mktests - Generate test skeletons
+- mkinits - Create `__init__.py` files
+- build - Build all artifacts
+- protect-repo - Configure repository protection
+
 ### [Architecture](architecture.md)
 Learn how the CLI system works internally, including:
 - Entry point configuration and command registration flow
