@@ -44,5 +44,21 @@ class MkdocsConfigFile(YmlConfigFile):
             "plugins": ["search", "mermaid2"],
             "theme": {
                 "name": "material",
+                "palette": [
+                    {
+                        "scheme": "slate",
+                        "toggle": {
+                            "icon": "material/brightness-4",
+                            "name": "Light mode",
+                        },
+                    },
+                    {
+                        "scheme": "default",
+                        "toggle": {
+                            "icon": "material/brightness-7",
+                            "name": "Dark mode",
+                        },
+                    },
+                ],
             },
         }

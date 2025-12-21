@@ -55,6 +55,15 @@ plugins:
   - mermaid2
 theme:
   name: material
+  palette:
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Dark mode
 ```
 
 ### Required Configuration
@@ -70,6 +79,22 @@ The `get_configs()` method returns the minimal required structure:
     "plugins": ["search", "mermaid2"],
     "theme": {
         "name": "material",
+        "palette": [
+            {
+                "scheme": "slate",
+                "toggle": {
+                    "icon": "material/brightness-4",
+                    "name": "Light mode",
+                },
+            },
+            {
+                "scheme": "default",
+                "toggle": {
+                    "icon": "material/brightness-7",
+                    "name": "Dark mode",
+                },
+            },
+        ],
     },
 }
 ```
@@ -80,7 +105,7 @@ Note: mermaid2 is a plugin that allows you to write mermaid diagrams in your mar
 1. **`site_name`**: Automatically pulled from `pyproject.toml` project name
 2. **`nav`**: Navigation with at least a Home entry pointing to `index.md` created by pyrig's `IndexConfigFile`
 3. **`plugins`**: Search and Mermaid2 plugins enabled
-4. **`theme`**: Material theme for modern, professional documentation UI
+4. **`theme`**: Material theme with dark mode as default and light/dark toggle
 
 ### Validation Logic
 
@@ -117,6 +142,22 @@ References the `docs/index.md` file created by `IndexConfigFile`. The path is dy
 ```python
 "theme": {
     "name": "material",
+    "palette": [
+        {
+            "scheme": "slate",
+            "toggle": {
+                "icon": "material/brightness-4",
+                "name": "Light mode",
+            },
+        },
+        {
+            "scheme": "default",
+            "toggle": {
+                "icon": "material/brightness-7",
+                "name": "Dark mode",
+            },
+        },
+    ],
 }
 ```
 
@@ -124,10 +165,14 @@ Pyrig uses the Material theme by default, which provides:
 - Modern, responsive design
 - Built-in search functionality
 - Mobile-friendly navigation
-- Dark/light mode support
+- **Dark mode as default** (slate scheme) with toggle to switch to light mode
 - Extensive customization options
 
 The Material theme is included as a dependency via `pyrig-dev`, so it's automatically available.
+
+**Color Schemes**:
+- **`slate`** (default): Dark mode optimized for developers who prefer dark themes
+- **`default`**: Light mode available via toggle button in the header
 
 ## Usage
 
@@ -170,9 +215,17 @@ plugins:
 # Required by pyrig, but you can customize
 theme:
   name: material
-  # Add custom theme options
+  # Pyrig's default dark/light toggle (required)
   palette:
-    primary: teal
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Dark mode
+  # Add custom theme features
   features:
     - navigation.tabs
     - navigation.sections
