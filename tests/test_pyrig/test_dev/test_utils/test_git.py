@@ -112,7 +112,12 @@ def test_ruleset_exists() -> None:
 
 def test_create_or_update_ruleset() -> None:
     """Test func for create_or_update_ruleset."""
+    token = get_github_repo_token()
+    owner, repo_name = get_repo_owner_and_name_from_git()
     create_or_update_ruleset(
+        token=token,
+        owner=owner,
+        repo_name=repo_name,
         **get_default_ruleset_params(),
     )
 
