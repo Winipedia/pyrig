@@ -6,7 +6,6 @@ from pyrig.dev.cli.commands.protect_repo import (
     protect_repository,
     set_secure_repo_settings,
 )
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_protect_repository() -> None:
@@ -27,11 +26,8 @@ def test_create_or_update_default_branch_ruleset() -> None:
 def test_get_default_ruleset_params() -> None:
     """Test func for get_default_ruleset_params."""
     params = get_default_ruleset_params()
-    assert_with_msg(
-        "owner" in params,
-        "Expected 'owner' in params",
-    )
-    assert_with_msg(
-        "token" in params,
-        "Expected 'token' in params",
-    )
+    assert "name" in params
+    assert "target" in params
+    assert "enforcement" in params
+    assert "conditions" in params
+    assert "rules" in params
