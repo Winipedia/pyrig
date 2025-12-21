@@ -58,6 +58,8 @@ graph TD
     A3 --> S14
     A4 --> S14
 
+    Note right of A3: Artifact name uses runner.os (macOS)<br/>but executables inside use platform.system() (Darwin)
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000

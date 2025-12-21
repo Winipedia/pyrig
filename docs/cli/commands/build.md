@@ -26,7 +26,9 @@ pyrig includes a PyInstaller builder that creates standalone executables:
 Artifacts are automatically named with platform suffixes:
 - Linux: `myapp-Linux`
 - Windows: `myapp-Windows.exe`
-- macOS: `myapp-macOS`
+- macOS: `myapp-Darwin`
+
+**Note**: The suffix uses Python's `platform.system()` which returns "Darwin" on macOS.
 
 ## How It Works
 
@@ -47,12 +49,12 @@ from pyrig.dev.builders.base.base import Builder
 
 class MyBuilder(Builder):
     """Custom artifact builder."""
-    
+
     @classmethod
-    def create_artifacts(cls, artifacts_dir: Path) -> None:
+    def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
         """Create custom artifacts."""
         # Your build logic here
-        output_file = artifacts_dir / "my-artifact"
+        output_file = temp_artifacts_dir / "my-artifact"
         output_file.write_text("artifact content")
 ```
 
