@@ -2,6 +2,8 @@
 
 Complete guide to setting up a new pyrig project from scratch.
 
+pyrig provides **minimal best practices fully working defaults for everything a project needs**. This guide will walk you through setting up a complete, production-ready Python project in minutes.
+
 ## Prerequisites
 
 ### Required Software

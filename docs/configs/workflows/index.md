@@ -54,7 +54,8 @@ Add these to your GitHub repository secrets:
   - contents: read, write (needed to create and push commits and tags in the release workflow)
   - pages: read, write (needed to activate and publish documentation to GitHub Pages in the publish workflow)
 - **PYPI_TOKEN**: PyPI API token (for publishing packages)
-- **CODECOV_TOKEN**: Codecov token (for private repos, optional for public, We recommend adding it either way)
+- **CODECOV_TOKEN**: Codecov token (recommended for all repos, required for private repos)
+  - See [Getting Started - Codecov setup](../more/getting-started.md#required-accounts--tokens) for details
 
 ### Workflow Pipeline
 

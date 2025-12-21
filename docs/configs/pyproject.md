@@ -76,10 +76,15 @@ classifiers = [                   # PyPI classifiers
     # continues up to the latest Python version allowed by requires-python and found on python.org
 ]
 dependencies = [                  # Runtime dependencies
-    "pyrig>=2.2.29",
+    "pyrig>=3.0.1",
     # User dependencies (sorted)
 ]
 ```
+
+Note: pyrig 3.0.1 is the first release that we consider stable, complete and battle tested. 
+Please refrain from using any previous versions. In fact we recommend to always use the latest version of pyrig, 
+just like we recommend using the latest version of any package or tool. 
+That is the philosophy of pyrig.
 
 **Why**: Standard Python packaging metadata for PyPI distribution.
 

@@ -7,7 +7,7 @@ This section contains supplementary documentation about pyrig's design decisions
 Complete guide to setting up a new pyrig project from scratch:
 
 - **Prerequisites**: Git, uv, Podman (optional)
-- **Required Tokens**: GitHub (REPO_TOKEN), PyPI (optional), Codecov (optional)
+- **Required Tokens**: GitHub (REPO_TOKEN), PyPI (optional), Codecov account (required for badge), CODECOV_TOKEN (recommended)
 - **Setup Steps**: Create repo, clone, uv init, add pyrig, configure .env, run init
 - **What You Get**: Complete project structure, configs, CI/CD workflows, dev tools
 - **Next Steps**: Start coding, make changes, release
@@ -31,8 +31,9 @@ Learn about tool evolution and how pyrig adapts to better alternatives as they e
 
 ## [Trade-offs](drawbacks.md)
 
-Understand what you sacrifice and what you gain with pyrig:
+Understand pyrig's philosophy and what you sacrifice and what you gain:
 
+- **Philosophy**: Minimal best practices fully working defaults for everything a project needs
 - **Opinionated Tooling**: Sacrifice tool choice → Gain zero-config, best-in-class tools
 - **Runtime Dev Folder**: Sacrifice a few KB → Gain multi-package architecture and CLI extensibility
 - **Strict Requirements**: Sacrifice flexibility → Gain guaranteed code quality
@@ -43,7 +44,7 @@ Understand what you sacrifice and what you gain with pyrig:
 - **Autouse Fixtures**: Sacrifice <1s startup → Gain automatic project health monitoring
 - **Config Management**: Sacrifice full control → Gain automatic maintenance
 
-Balanced assessment of pyrig's intentional trade-offs and what you get in return.
+Balanced assessment of pyrig's intentional philosophy, trade-offs and what you get in return.
 
 ## [Example Usage: Microservices Ecosystem](example-usage.md)
 

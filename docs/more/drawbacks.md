@@ -200,11 +200,19 @@ Consider alternatives if you need:
 
 ## Philosophy
 
-pyrig's trade-offs are intentional. It prioritizes:
+pyrig's core philosophy is to provide **minimal best practices fully working defaults for everything a project needs**. This means:
+
+- **Complete out-of-the-box**: Every configuration, workflow, and tool is pre-configured and working from day one
+- **Best practices by default**: Opinionated choices based on industry standards and modern Python development
+- **Minimal configuration**: Zero setup required - sensible defaults that work for most projects
+- **Fully functional**: Not just templates or boilerplate, but a complete, tested, production-ready setup
+
+This philosophy drives pyrig's intentional trade-offs. It prioritizes:
 - **Consistency** over flexibility
 - **Automation** over manual control
 - **Quality** over convenience
 - **Standards** over customization
+- **Working defaults** over endless configuration options
 
 If these priorities align with your goals, pyrig's benefits far outweigh its trade-offs.
 
