@@ -107,7 +107,7 @@ class GitIgnoreConfigFile(ConfigFile):
             ".ruff_cache/",  # bc of ruff cache
             ".venv/",  # bc of uv venv
             "dist/",  # bc of uv publish
-            "site/",  # bc of mkdocs
+            "/site/",  # bc of mkdocs
         ]
 
         dotenv_path = DotEnvConfigFile.get_path().as_posix()

@@ -71,7 +71,7 @@ The `.gitignore` file combines patterns from multiple sources:
     ".ruff_cache/",
     ".venv/",
     "dist/",
-    "site/",
+    "/site/",
 ]
 ```
 
@@ -185,7 +185,7 @@ This uses the `pathspec` library with `gitwildmatch` for accurate pattern matchi
 ### Build Artifacts
 
 - `dist/` - Distribution packages (from `uv publish`)
-- `site/` - MkDocs build output
+- `/site/` - MkDocs build output
 
 ## Best Practices
 
