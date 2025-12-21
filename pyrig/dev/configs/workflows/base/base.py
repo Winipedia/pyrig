@@ -1088,7 +1088,7 @@ class Workflow(YamlConfigFile):
             Step that runs uv publish with PYPI_TOKEN.
         """
         run = str(DependencyManager.get_publish_args(cls.insert_pypi_token()))
-        run_if = cls.run_if_condition(run, cls.if_pypi_token_configured())
+        run_if = cls.run_if_condition(run, cls.insert_pypi_token())
         return cls.get_step(
             step_func=cls.step_publish_to_pypi,
             run=run_if,

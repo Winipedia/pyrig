@@ -36,9 +36,9 @@ jobs:
       run: uv build
     - name: Publish To Pypi
       id: publish_to_pypi
-      run: 'if [ ${{ secrets.PYPI_TOKEN != '''' }} ]; then uv publish --token ${{
-        secrets.PYPI_TOKEN }}; else echo "Skipping step due to failed condition: secrets.PYPI_TOKEN
-        != ''''."; fi'
+      run: 'if [ ${{ secrets.PYPI_TOKEN }} ]; then uv publish --token ${{ secrets.PYPI_TOKEN
+        }}; else echo "Skipping step due to failed condition: secrets.PYPI_TOKEN.";
+        fi'
   publish_documentation:
     permissions:
       pages: write
