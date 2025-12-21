@@ -38,6 +38,39 @@ The `Workflow` class provides:
 - **Permissions**: GitHub token permissions for the workflow
 - **Matrix Strategies**: Run jobs across OS and Python version combinations
 
+### Workflow Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Triggered
+    Triggered --> JobsQueued: Event matches trigger
+    JobsQueued --> JobRunning: Runner available
+    JobRunning --> StepsExecuting: Job starts
+    StepsExecuting --> StepSuccess: Step completes
+    StepSuccess --> StepsExecuting: More steps
+    StepSuccess --> JobSuccess: All steps done
+    StepsExecuting --> StepFailure: Step fails
+    StepFailure --> JobFailure
+    JobSuccess --> ArtifactsUploaded: Has artifacts
+    ArtifactsUploaded --> WorkflowComplete: All jobs done
+    JobSuccess --> WorkflowComplete: No artifacts
+    JobFailure --> WorkflowFailed
+    WorkflowComplete --> [*]
+    WorkflowFailed --> [*]
+
+    note right of Triggered
+        Triggers: push, pull_request,
+        schedule, workflow_run,
+        workflow_dispatch
+    end note
+
+    note right of StepsExecuting
+        Steps: checkout, setup,
+        install, test, build,
+        upload, etc.
+    end note
+```
+
 ### Declarative API
 
 Instead of writing YAML manually, you define workflows in Python:
@@ -70,6 +103,34 @@ Workflows can be opted out by replacing all steps with `step_opt_out_of_workflow
 ## Concrete Workflows
 
 Pyrig provides four workflows that form a complete CI/CD pipeline:
+
+```mermaid
+graph LR
+    A[Code Push/PR] --> B[Health Check]
+    B -->|Success on main| C[Build]
+    C -->|Success| D[Release]
+    D -->|Success| E[Publish]
+
+    B -.->|Jobs| B1[protect_repository<br/>health_check_matrix]
+    C -.->|Jobs| C1[build_artifacts<br/>build_container_image]
+    D -.->|Jobs| D1[release]
+    E -.->|Jobs| E1[publish_package<br/>publish_documentation]
+
+    B1 -.->|Outputs| B2[Code quality validated<br/>Branch protection applied]
+    C1 -.->|Outputs| C2[Executables<br/>Container image]
+    D1 -.->|Outputs| D2[Git tag<br/>GitHub release]
+    E1 -.->|Outputs| E2[PyPI package<br/>GitHub Pages docs]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style B2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style C2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style D2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style E2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+```
 
 ### 1. Health Check Workflow
 
