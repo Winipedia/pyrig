@@ -78,8 +78,6 @@ uv run myapp mkroot
 
 This package is where you add your application's source code. The `src/` directory contains the core business logic and utilities for your project.
 
-See the [Source Code documentation](../src/index.md) for details on organizing your source code.
-
 ## Best Practices
 
 1. **Don't modify the docstring**: Keep the copied docstring intact

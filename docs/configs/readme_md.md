@@ -214,51 +214,7 @@ uv run myapp mkroot
 
 ### Adding Custom Content
 
-Simply add your content after the generated header:
-
-```markdown
-# myapp
-
-<!-- badges here -->
-
----
-
-> A sample application
-
----
-
-## Installation
-
-```bash
-pip install myapp
-```
-
-## Quick Start
-
-```python
-from myapp import main
-
-main()
-```
-
-## Features
-
-- Feature 1
-- Feature 2
-- Feature 3
-
-## Documentation
-
-Full documentation is available at [https://owner.github.io/myapp](https://owner.github.io/myapp)
-
-## Contributing
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
+Simply add your content after the generated header.
 
 The validation only checks that required elements exist, so you can add as much content as you want.
 
