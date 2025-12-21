@@ -44,3 +44,6 @@ Manage static files (images, configs, templates) that work seamlessly in both de
 
 ### [Configuration Files Documentation](configs/index.md)
 Understand pyrig's configuration file system, including automatic discovery, validation, and creating custom config files. This is the main feature of pyrig that generates a comlete project structure for you, ready to use and start developing you project.
+
+### [Additional Information](more/index.md)
+Supplementary documentation about pyrig's design decisions, tooling choices, and technical details.
