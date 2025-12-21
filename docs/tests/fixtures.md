@@ -119,8 +119,11 @@ myapp/
             ├── my_fixtures.py      # Custom fixtures
 ```
 
-Note: You still have to decorate them with `@pytest.fixture` or one of the scope-specific decorators from `pyrig.dev.utils.testing` or the pytest `@pytest.fixture` decorator with any scope or args.
-pyrig does not autodecorate for you like in cli framework where it automatically decorates all functions as commands with typer.
+**Important**: Unlike the CLI framework (which auto-decorates functions as Typer commands), fixtures must be explicitly decorated with:
+- `@pytest.fixture` from pytest, or
+- Scope-specific decorators from `pyrig.dev.utils.testing` (`@session_fixture`, `@module_fixture`, etc.)
+
+Pyrig does not auto-decorate fixture functions.
 
 These fixtures automatically become available to:
 - Your package's tests
