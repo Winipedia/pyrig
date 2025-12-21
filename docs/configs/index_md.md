@@ -256,47 +256,6 @@ def is_correct(cls) -> bool:
 4. **Link to other pages**: Reference other documentation pages
 5. **Update description**: Keep `pyproject.toml` description current
 
-## Example Documentation Structure
-
-```markdown
-# myapp Documentation
-
-<!-- badges -->
-
----
-
-> A sample application
-
----
-
-## Overview
-
-Brief introduction to your project.
-
-## Installation
-
-```bash
-pip install myapp
-```
-
-## Quick Start
-
-```python
-from myapp import main
-
-main()
-```
-
-## Documentation
-
-- [API Reference](api/index.md)
-- [User Guide](guide/index.md)
-- [Contributing](contributing.md)
-
-## License
-
-This project is licensed under the MIT License.
-```
 
 ## Integration with MkDocs
 
