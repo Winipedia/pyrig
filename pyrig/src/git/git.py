@@ -15,30 +15,11 @@ Example:
     myorg/myrepo
 """
 
-import os
 from pathlib import Path
 from subprocess import CompletedProcess  # nosec: B404
 
 from pyrig.src.modules.package import get_project_name_from_cwd
 from pyrig.src.os.os import run_subprocess
-
-
-def running_in_github_actions() -> bool:
-    """Check if the code is running inside a GitHub Actions workflow.
-
-    GitHub Actions sets the `GITHUB_ACTIONS` environment variable to "true"
-    in all workflow runs. This function checks for that variable.
-
-    Returns:
-        True if running in GitHub Actions, False otherwise.
-
-    Example:
-        >>> if running_in_github_actions():
-        ...     print("Running in CI")
-        ... else:
-        ...     print("Running locally")
-    """
-    return os.getenv("GITHUB_ACTIONS", "false") == "true"
 
 
 def get_repo_url_from_git(*, check: bool = True) -> str:

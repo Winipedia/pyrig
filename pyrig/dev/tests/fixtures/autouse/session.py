@@ -30,12 +30,14 @@ from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
+from pyrig.dev.utils.github import running_in_github_actions
 from pyrig.dev.utils.packages import find_packages, get_src_package
 from pyrig.dev.utils.testing import autouse_session_fixture
 from pyrig.src.git.git import (
     get_git_unstaged_changes,
-    running_in_github_actions,
 )
+from pyrig.src.management.package_manager import PackageManager
+from pyrig.src.management.pre_committer import PreCommitter
 from pyrig.src.modules.imports import (
     get_modules_and_packages_from_package,
     walk_package,
@@ -52,7 +54,6 @@ from pyrig.src.modules.package import (
     get_project_name_from_pkg_name,
 )
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.mgt import DependencyManager, PreCommit
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
@@ -313,7 +314,7 @@ def assert_dependencies_are_up_to_date() -> None:
     to make sure the dependencies are up to date.
     """
     # update the dependencies
-    args = DependencyManager.get_update_dependencies_args()
+    args = PackageManager.get_update_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
@@ -325,7 +326,7 @@ def assert_dependencies_are_up_to_date() -> None:
     deps_were_upgraded = update_occurred
 
     # sync the dependencies
-    args = DependencyManager.get_install_dependencies_args()
+    args = PackageManager.get_install_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
@@ -356,7 +357,7 @@ def assert_pre_commit_is_installed() -> None:
     This fixture runs once per test session and runs pre-commit install
     to make sure pre-commit is installed.
     """
-    args = PreCommit.get_install_args()
+    args = PreCommitter.get_install_args()
     completed_process = args.run()
     stdout = completed_process.stdout.decode("utf-8")
     logger.info("Pre-commit install output: %s", stdout)
@@ -435,7 +436,7 @@ def assert_src_runs_without_dev_deps(
 
         # assert pytest is not installed
         dev_dep = "pytest"
-        args = DependencyManager.get_run_args("pip", "show", dev_dep)
+        args = PackageManager.get_run_args("pip", "show", dev_dep)
         installed = args.run(
             check=False,
             env=env,
@@ -444,7 +445,7 @@ def assert_src_runs_without_dev_deps(
         dev_dep_not_installed = f"not found: {dev_dep}" in stderr
         assert dev_dep_not_installed, f"Expected {dev_dep} not to be installed"
         # check pytest is not importable
-        args = DependencyManager.get_run_args("python", "-c", "import pytest")
+        args = PackageManager.get_run_args("python", "-c", "import pytest")
         installed = args.run(
             check=False,
             env=env,
@@ -520,6 +521,7 @@ def assert_src_does_not_use_dev() -> None:
         get_module_name_replacing_start_module(dev, pkg.__name__)
         for pkg in pkgs_depending_on_pyrig
     ]
+    possible_dev_usages = [re.escape(usage) for usage in possible_dev_usages]
 
     possible_dev_usages_pattern = r"\b(" + "|".join(possible_dev_usages) + r")\b"
 

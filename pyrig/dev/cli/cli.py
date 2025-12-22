@@ -20,7 +20,7 @@ import typer
 import pyrig
 from pyrig import main as pyrig_main
 from pyrig.dev.cli import shared_subcommands, subcommands
-from pyrig.dev.utils.cli import get_pkg_name_from_argv
+from pyrig.src.cli import get_pkg_name_from_argv
 from pyrig.src.modules.function import get_all_functions_from_module
 from pyrig.src.modules.module import (
     get_module_name_replacing_start_module,

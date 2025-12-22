@@ -21,9 +21,9 @@ from packaging.version import Version
 
 from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
-from pyrig.dev.utils.consts import STANDARD_DEV_DEPS
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
+from pyrig.src.consts import STANDARD_DEV_DEPS
 from pyrig.src.git.git import get_repo_owner_and_name_from_git
 from pyrig.src.modules.package import (
     get_pkg_name_from_cwd,

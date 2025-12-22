@@ -11,7 +11,7 @@ from importlib.metadata import version as get_version
 
 import typer
 
-from pyrig.dev.utils.cli import get_project_name_from_argv
+from pyrig.src.cli import get_project_name_from_argv
 
 
 def version() -> None:

@@ -23,8 +23,10 @@ from pyrig.dev.cli.commands.init_project import (
 from pyrig.dev.cli.subcommands import init
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.main import main
+from pyrig.src.management.package_manager import PackageManager
+from pyrig.src.management.pyrigger import Pyrigger
+from pyrig.src.management.version_controller import VersionController
 from pyrig.src.modules.path import ModulePath
-from pyrig.src.project.mgt import DependencyManager, Pyrig, VersionControl
 from pyrig.src.testing.assertions import assert_with_msg
 
 logger = logging.getLogger(__name__)
@@ -110,7 +112,7 @@ def test_init_project(tmp_path: Path) -> None:
     pyrig_temp_path = pyrig_temp_path.resolve()
     with chdir(pyrig_temp_path):
         # build the package
-        args = DependencyManager.get_build_args()
+        args = PackageManager.get_build_args()
         args.run()
 
     dist_files = list((pyrig_temp_path / "dist").glob("*.whl"))
@@ -124,9 +126,9 @@ def test_init_project(tmp_path: Path) -> None:
 
     # Initialize git repo in the test project directory
     with chdir(src_project_dir):
-        VersionControl.get_init_args().run()
-        VersionControl.get_config_local_user_email_args("test@example.com").run()
-        VersionControl.get_config_local_user_name_args("Test User").run()
+        VersionController.get_init_args().run()
+        VersionController.get_config_local_user_email_args("test@example.com").run()
+        VersionController.get_config_local_user_name_args("Test User").run()
 
     with chdir(src_project_dir):
         # Create a clean environment dict without VIRTUAL_ENV to force
@@ -134,11 +136,11 @@ def test_init_project(tmp_path: Path) -> None:
         clean_env = os.environ.copy()
         clean_env.pop("VIRTUAL_ENV", None)
 
-        args = DependencyManager.get_init_project_args("--python", python_version)
+        args = PackageManager.get_init_project_args("--python", python_version)
         args.run(env=clean_env)
 
         # Add pyrig wheel as a dependency
-        DependencyManager.get_add_dependencies_args(wheel_path).run(env=clean_env)
+        PackageManager.get_add_dependencies_args(wheel_path).run(env=clean_env)
 
         # uv add converts absolute paths to relative paths, which breaks when
         # the project is copied to a different location (e.g., in the
@@ -156,15 +158,15 @@ def test_init_project(tmp_path: Path) -> None:
         pyproject_toml.write_text(pyproject_content, encoding="utf-8")
 
         # Sync to update the lock file with the new absolute path
-        args = DependencyManager.get_install_dependencies_args()
+        args = PackageManager.get_install_dependencies_args()
         args.run(env=clean_env)
 
         # Verify pyrig was installed correctly by running init also assert init passes
-        args = Pyrig.get_venv_run_cmd_args(init)
+        args = Pyrigger.get_venv_run_cmd_args(init)
         stdout = args.run(env=clean_env).stdout.decode("utf-8")
 
         # assert the pkgs own cli is available
-        args = DependencyManager.get_run_args(project_name, "--help")
+        args = PackageManager.get_run_args(project_name, "--help")
         res = args.run(env=clean_env)
         stdout = res.stdout.decode("utf-8")
         expected = project_name
@@ -173,12 +175,12 @@ def test_init_project(tmp_path: Path) -> None:
             f"Expected {expected} in stdout, got {stdout}",
         )
         #  assert running the main command works
-        args = DependencyManager.get_run_args(project_name, main.__name__)
+        args = PackageManager.get_run_args(project_name, main.__name__)
         res = args.run(env=clean_env)
         assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
 
         # asert calling version works
-        args = DependencyManager.get_run_args(project_name, "version")
+        args = PackageManager.get_run_args(project_name, "version")
         res = args.run(env=clean_env)
         stdout = res.stdout.decode("utf-8")
         expected = f"{project_name} version 0.1.0"

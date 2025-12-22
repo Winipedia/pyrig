@@ -18,14 +18,6 @@ Key Functions:
 Attributes:
     DEFAULT_BRANCH: The default branch name used by pyrig ("main").
     DEFAULT_RULESET_NAME: The name of the default protection ruleset.
-
-Example:
-    >>> from pyrig.dev.utils.git import get_repo, create_or_update_ruleset
-    >>> repo = get_repo(token, "owner", "repo_name")
-    >>> rules = get_rules_payload(pull_request={"required_approving_review_count": 1})
-    >>> # Or use the generic API request function
-    >>> from pyrig.dev.utils.git import github_api_request
-    >>> data = github_api_request(token, owner, repo, "rulesets", method="GET")
 """
 
 import logging
@@ -320,3 +312,21 @@ def get_github_repo_token() -> str:
 
     msg = f"Expected REPO_TOKEN in {dotenv_path}"
     raise ValueError(msg)
+
+
+def running_in_github_actions() -> bool:
+    """Check if the code is running inside a GitHub Actions workflow.
+
+    GitHub Actions sets the `GITHUB_ACTIONS` environment variable to "true"
+    in all workflow runs. This function checks for that variable.
+
+    Returns:
+        True if running in GitHub Actions, False otherwise.
+
+    Example:
+        >>> if running_in_github_actions():
+        ...     print("Running in CI")
+        ... else:
+        ...     print("Running locally")
+    """
+    return os.getenv("GITHUB_ACTIONS", "false") == "true"

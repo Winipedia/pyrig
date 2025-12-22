@@ -31,14 +31,14 @@ from typing import Any
 
 import pyrig
 from pyrig.dev.cli.subcommands import mkroot, mktests
-from pyrig.dev.utils.consts import STANDARD_DEV_DEPS
-from pyrig.src.project.mgt import (
-    DependencyManager,
-    PreCommit,
-    Pyrig,
-    TestRunner,
-    VersionControl,
+from pyrig.src.consts import STANDARD_DEV_DEPS
+from pyrig.src.management.package_manager import PackageManager
+from pyrig.src.management.pre_committer import (
+    PreCommitter,
 )
+from pyrig.src.management.project_tester import ProjectTester
+from pyrig.src.management.pyrigger import Pyrigger
+from pyrig.src.management.version_controller import VersionController
 from pyrig.src.string import make_name_from_obj
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ def adding_dev_dependencies() -> None:
 
     This installs the dev dependencies listed in pyproject.toml.
     """
-    args = DependencyManager.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
+    args = PackageManager.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
     args.run()
 
 
@@ -60,7 +60,7 @@ def creating_priority_config_files() -> None:
     the other setup steps.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
-    args = Pyrig.get_cmd_args(mkroot, "--priority")
+    args = Pyrigger.get_cmd_args(mkroot, "--priority")
     args.run()
 
 
@@ -69,7 +69,7 @@ def syncing_venv() -> None:
 
     This installs the dependencies listed in pyproject.toml.
     """
-    args = DependencyManager.get_install_dependencies_args()
+    args = PackageManager.get_install_dependencies_args()
     args.run()
 
 
@@ -79,7 +79,7 @@ def creating_project_root() -> None:
     Invokes `uv run pyrig create-root` to generate all config files
     and the project directory structure.
     """
-    args = Pyrig.get_cmd_args(mkroot)
+    args = Pyrigger.get_cmd_args(mkroot)
     args.run()
 
 
@@ -89,7 +89,7 @@ def creating_test_files() -> None:
     Invokes `uv run pyrig create-tests` to generate test skeleton
     files that mirror the source code structure.
     """
-    args = Pyrig.get_cmd_args(mktests)
+    args = Pyrigger.get_cmd_args(mktests)
     args.run()
 
 
@@ -100,11 +100,11 @@ def running_pre_commit_hooks() -> None:
     in a clean, linted, and formatted state.
     """
     # install pre-commit hooks
-    PreCommit.get_install_args().run()
+    PreCommitter.get_install_args().run()
     # add all files to git
-    VersionControl.get_add_all_args().run()
+    VersionController.get_add_all_args().run()
     # run pre-commit hooks
-    PreCommit.get_run_all_files_args().run()
+    PreCommitter.get_run_all_files_args().run()
 
 
 def running_tests() -> None:
@@ -113,7 +113,7 @@ def running_tests() -> None:
     This executes the test suite to verify that everything is
     working correctly after initialization.
     """
-    args = TestRunner.get_run_tests_args()
+    args = ProjectTester.get_run_tests_args()
     args.run()
 
 
@@ -123,7 +123,9 @@ def committing_initial_changes() -> None:
     This commits all changes made during initialization in a single commit.
     """
     # changes were added by the run pre-commit hooks step
-    args = VersionControl.get_commit_no_verify_args(f"{pyrig.__name__}: Initial commit")
+    args = VersionController.get_commit_no_verify_args(
+        f"{pyrig.__name__}: Initial commit"
+    )
     args.run()
 
 

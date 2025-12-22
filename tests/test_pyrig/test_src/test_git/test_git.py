@@ -1,6 +1,5 @@
 """tests for pyrig.src.git.github.github module."""
 
-import os
 from pathlib import Path
 
 import pyrig
@@ -10,39 +9,8 @@ from pyrig.src.git.git import (
     get_repo_owner_and_name_from_git,
     get_repo_url_from_git,
     git_add_file,
-    running_in_github_actions,
 )
 from pyrig.src.testing.assertions import assert_with_msg
-
-
-def test_running_in_github_actions() -> None:
-    """Test func for running_in_github_actions."""
-    is_running_og = running_in_github_actions()
-    assert_with_msg(
-        isinstance(is_running_og, bool),
-        f"Expected is_running to be bool, got {type(is_running_og)}",
-    )
-
-    # set env var to true and check again
-    os.environ["GITHUB_ACTIONS"] = "true"
-    is_running = running_in_github_actions()
-    assert_with_msg(
-        is_running, "Expected is_running to be True when env var set to true"
-    )
-
-    # set to false and check again
-    os.environ["GITHUB_ACTIONS"] = "false"
-    is_running = running_in_github_actions()
-    assert_with_msg(
-        not is_running, "Expected is_running to be False when env var set to false"
-    )
-
-    # set back to original
-    os.environ["GITHUB_ACTIONS"] = "true" if is_running_og else "false"
-    assert_with_msg(
-        running_in_github_actions() == is_running_og,
-        "Expected is_running to be original value after reset",
-    )
 
 
 def test_get_repo_url_from_git() -> None:

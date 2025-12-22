@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.dev.utils.cli import get_pkg_name_from_argv, get_project_name_from_argv
+from pyrig.src.cli import get_pkg_name_from_argv, get_project_name_from_argv
 
 
 def test_get_project_name_from_argv() -> None:

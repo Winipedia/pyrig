@@ -16,6 +16,7 @@ from pyrig.dev.cli.commands.create_tests import make_test_skeletons
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.python.main import MainConfigFile
 from pyrig.dev.utils.testing import session_fixture
+from pyrig.src.management.package_manager import PackageManager
 from pyrig.src.modules.module import (
     get_module_content_as_str,
     get_module_name_replacing_start_module,
@@ -23,7 +24,6 @@ from pyrig.src.modules.module import (
 )
 from pyrig.src.modules.package import get_objs_from_obj
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.project.mgt import DependencyManager
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     get_obj_from_test_obj,
@@ -109,8 +109,8 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     src_package_name = PyprojectConfigFile.get_package_name()
 
     cmds = [
-        DependencyManager.get_run_args(project_name, "--help"),
-        DependencyManager.get_run_args(project_name, main.main.__name__, "--help"),
+        PackageManager.get_run_args(project_name, "--help"),
+        PackageManager.get_run_args(project_name, main.main.__name__, "--help"),
     ]
     success = False
     for cmd in cmds:

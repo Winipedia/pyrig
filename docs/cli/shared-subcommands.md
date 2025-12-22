@@ -97,7 +97,7 @@ To add a shared command to your package:
 Example:
 
 ```python
-from pyrig.dev.utils.cli import get_project_name_from_argv
+from pyrig.src.cli import get_project_name_from_argv
 import typer
 
 def status() -> None:

@@ -7,7 +7,7 @@ managing Markdown files that contain badges.
 import pyrig
 from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.utils.git import DEFAULT_BRANCH
+from pyrig.dev.utils.github import DEFAULT_BRANCH
 from pyrig.src.git.git import get_repo_owner_and_name_from_git
 
 

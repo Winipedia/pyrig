@@ -122,7 +122,7 @@ Automatically uses your project name from `pyproject.toml`.
 ### Entrypoint
 
 ```python
-entrypoint_args = list(DependencyManager.get_run_args(project_name))
+entrypoint_args = list(PackageManager.get_run_args(project_name))
 # ["uv", "run", "my-project"]
 ```
 

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.dev.configs.base.yaml import YamlConfigFile
-from pyrig.src.project.mgt import (
+from pyrig.src.management.base.base import (
     Args,
 )
 
