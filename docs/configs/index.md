@@ -100,7 +100,11 @@ The configuration system provides:
 When you run `uv run pyrig mkroot`, all ConfigFile subclasses are discovered and initialized:
 
 ```bash
+# Create all config files
 uv run pyrig mkroot
+
+# Create only priority config files (useful during initial setup)
+uv run pyrig mkroot --priority
 ```
 
 This creates:
@@ -111,19 +115,21 @@ This creates:
 - `main.py` - CLI entry point
 - And many more...
 
+The `--priority` flag creates only essential config files needed before installing dependencies (pyproject.toml, .gitignore, LICENSE, main.py, and package __init__.py files).
+
 ### Creating a Custom Config File
 
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.base import YamlConfigFile
+from pyrig.dev.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
     @classmethod
     def get_parent_path(cls) -> Path:
         """Directory containing the config file."""
         return Path(".")
-    
+
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
         """Expected configuration structure."""

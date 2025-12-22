@@ -7,7 +7,7 @@ the src directory structure with an __init__.py file.
 from types import ModuleType
 
 from pyrig import src
-from pyrig.dev.configs.base.base import InitConfigFile
+from pyrig.dev.configs.base.init import InitConfigFile
 
 
 class SrcInitConfigFile(InitConfigFile):

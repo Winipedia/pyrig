@@ -198,9 +198,9 @@ graph TD
 
 1. **Adding dev dependencies** - Installs pyrig-dev
 2. **Syncing venv** - Installs all dependencies
-3. **Creating priority config files** - pyproject.toml, .gitignore, LICENSE, ...
+3. **Creating priority config files** - Runs `pyrig mkroot --priority` to create essential files (pyproject.toml, .gitignore, LICENSE, main.py, and package __init__.py files) needed before dependency installation
 4. **Syncing venv** - Installs project itself, activates CLI
-5. **Creating project root** - All config files and directory structure
+5. **Creating project root** - Runs `pyrig mkroot` to create all config files and directory structure
 6. **Creating test files** - Test skeletons for all code
 7. **Running pre-commit hooks** - Formats and lints code
 8. **Running tests** - Validates everything works

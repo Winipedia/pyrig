@@ -23,7 +23,6 @@ import pyrig
 from pyrig import dev, main, resources, src
 from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.create_tests import make_test_skeletons
-from pyrig.dev.cli.commands.init_project import STANDARD_DEV_DEPS
 from pyrig.dev.cli.commands.make_inits import get_namespace_packages, make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
@@ -37,6 +36,10 @@ from pyrig.src.git.git import (
     get_git_unstaged_changes,
     running_in_github_actions,
 )
+from pyrig.src.modules.imports import (
+    get_modules_and_packages_from_package,
+    walk_package,
+)
 from pyrig.src.modules.module import (
     get_isolated_obj_name,
     get_module_name_replacing_start_module,
@@ -45,10 +48,8 @@ from pyrig.src.modules.module import (
 from pyrig.src.modules.package import (
     DOCS_DIR_NAME,
     DependencyGraph,
-    get_modules_and_packages_from_package,
     get_pkg_name_from_project_name,
     get_project_name_from_pkg_name,
-    walk_package,
 )
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.project.mgt import DependencyManager, PreCommit
@@ -467,7 +468,7 @@ def assert_src_runs_without_dev_deps(
                 "from pyrig import main; "
                 "from pyrig import src; "
                 "from pyrig.src.modules.module import get_module_name_replacing_start_module; "  # noqa: E501
-                "from pyrig.src.modules.package import walk_package; "
+                "from pyrig.src.modules.imports import walk_package; "
                 "from pyrig.src.testing.assertions import assert_with_msg; "
                 f"import {src_pkg_name}; "
                 f"src_module=import_module(get_module_name_replacing_start_module(src, {src_pkg_name}.__name__)); "  # noqa: E501
@@ -544,7 +545,7 @@ def assert_src_does_not_use_dev() -> None:
 def assert_all_dev_deps_in_deps() -> None:
     """Checks that all of pyrigs dev deps are in toml."""
     all_deps = set(PyprojectConfigFile.get_all_dependencies())
-    standard_dev_deps = set(STANDARD_DEV_DEPS)
+    standard_dev_deps = set(PyprojectConfigFile.get_standard_dev_dependencies())
 
     stripped_deps = {
         PyprojectConfigFile.remove_version_from_dep(dep) for dep in all_deps

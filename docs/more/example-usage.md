@@ -57,17 +57,17 @@ Add a company-wide logging configuration that all microservices will inherit.
 
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.base import YamlConfigFile
+from pyrig.dev.configs.base.yaml import YamlConfigFile
 
 
 class LoggingConfigFile(YamlConfigFile):
     """Logging configuration for all company microservices."""
-    
+
     @classmethod
     def get_parent_path(cls) -> Path:
         """Place in config/ directory."""
         return Path("config")
-    
+
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
         """Required logging configuration."""
@@ -321,7 +321,7 @@ Each service can still customize while keeping company standards.
 
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.base import YamlConfigFile
+from pyrig.dev.configs.base.yaml import YamlConfigFile
 
 
 class AuthConfigFile(YamlConfigFile):

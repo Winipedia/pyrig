@@ -9,7 +9,7 @@ from pathlib import Path
 from types import ModuleType
 
 from pyrig import main
-from pyrig.dev.configs.base.base import CopyModuleConfigFile
+from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
 
 
 class MainConfigFile(CopyModuleConfigFile):

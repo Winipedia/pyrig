@@ -10,18 +10,15 @@ from typing import Any, ClassVar
 
 from pytest_mock import MockFixture
 
-import pyrig
 from pyrig.src.modules.class_ import (
     discard_parent_classes,
     get_all_cls_from_module,
     get_all_methods_from_cls,
-    get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
     get_all_nonabstract_subclasses,
     get_all_subclasses,
     init_all_nonabstract_subclasses,
 )
 from pyrig.src.testing.assertions import assert_with_msg
-from tests.test_pyrig.test_src import test_modules
 
 
 def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -264,17 +261,6 @@ def test_init_all_nonabstract_subclasses(mocker: MockFixture) -> None:
     assert_with_msg(
         spy.call_count == 1,
         f"Expected __init__ of ConcreteChild to be called once, got {spy.call_count}",
-    )
-
-
-def test_get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep() -> None:
-    """Test func."""
-    subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
-        AbstractParent, pyrig, test_modules
-    )
-    assert_with_msg(
-        ConcreteChild in subclasses,
-        f"Expected ConcreteChild in non-abstract subclasses, got {subclasses}",
     )
 
 

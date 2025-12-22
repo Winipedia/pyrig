@@ -21,6 +21,7 @@ Example:
 import inspect
 import sys
 from collections.abc import Callable
+from types import ModuleType
 from typing import Any, cast
 
 
@@ -146,3 +147,24 @@ def get_qualname_of_obj(obj: Callable[..., Any] | type) -> str:
     """
     unwrapped = get_unwrapped_obj(obj)
     return cast("str", unwrapped.__qualname__)
+
+
+def get_module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
+    """Return the module name where a method-like object is defined.
+
+    Args:
+        obj: Method-like object (funcs, method, property, staticmethod, classmethod...)
+        default: Default module to return if the module cannot be determined
+
+    Returns:
+        The module name as a string, or None if module cannot be determined.
+
+    """
+    unwrapped = get_unwrapped_obj(obj)
+    module = inspect.getmodule(unwrapped)
+    if not module:
+        msg = f"Could not determine module of {obj}"
+        if default:
+            return default
+        raise ValueError(msg)
+    return module

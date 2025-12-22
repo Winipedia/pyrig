@@ -5,17 +5,27 @@ IMPORTANT: All funcs in this file will be added as subcommands.
 So best to define the logic elsewhere and just call it here in a wrapper.
 """
 
+import typer
 
-def mkroot() -> None:
+
+def mkroot(
+    *,
+    priority: bool = typer.Option(
+        default=False,
+        help="Only create priority config files.",
+    ),
+) -> None:
     """Creates the root of the project.
 
     This inits all ConfigFiles and creates __init__.py files for the src
     and tests package where they are missing. It does not overwrite any
     existing files.
     """
+    # local imports in pyrig to avoid cli failure when installing without dev deps
+    # as some pyrig commands are dependend on dev deps and can only be used in a dev env
     from pyrig.dev.cli.commands.create_root import make_project_root  # noqa: PLC0415
 
-    make_project_root()
+    make_project_root(priority=priority)
 
 
 def mktests() -> None:

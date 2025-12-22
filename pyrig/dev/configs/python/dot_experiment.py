@@ -7,7 +7,7 @@ This file is automatically added to .gitignore.
 
 from pathlib import Path
 
-from pyrig.dev.configs.base.base import PythonConfigFile
+from pyrig.dev.configs.base.python import PythonConfigFile
 
 
 class DotExperimentConfigFile(PythonConfigFile):

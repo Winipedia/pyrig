@@ -22,7 +22,11 @@ from importlib import import_module
 from types import ModuleType
 from typing import Any
 
-from pyrig.src.modules.inspection import get_def_line, get_obj_members
+from pyrig.src.modules.inspection import (
+    get_def_line,
+    get_module_of_obj,
+    get_obj_members,
+)
 
 
 def is_func_or_method(obj: Any) -> bool:
@@ -115,10 +119,6 @@ def get_all_functions_from_module(
         >>> [f.__name__ for f in funcs]
         ['first_function', 'second_function', 'third_function']
     """
-    from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
-        get_module_of_obj,
-    )
-
     if isinstance(module, str):
         module = import_module(module)
     funcs = [

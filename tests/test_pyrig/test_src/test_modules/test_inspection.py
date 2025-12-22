@@ -3,8 +3,11 @@
 tests.test_pyrig.test_modules.test_inspection
 """
 
+import os
+
 from pyrig.src.modules.inspection import (
     get_def_line,
+    get_module_of_obj,
     get_obj_members,
     get_qualname_of_obj,
     get_unwrapped_obj,
@@ -134,4 +137,47 @@ def test_get_unwrapped_obj() -> None:
     assert_with_msg(
         unwrapped.__name__ == "test_property",
         f"Expected 'test_property', got {unwrapped.__name__}",
+    )
+
+
+def test_get_module_of_obj() -> None:
+    """Test func for get_module_of_obj."""
+
+    # Test with a function
+    def test_function() -> None:
+        pass
+
+    module = get_module_of_obj(test_function)
+    assert_with_msg(
+        module.__name__ == __name__,
+        f"Expected module name {__name__}, got {module.__name__}",
+    )
+
+    # Test with a class method
+    class TestClass:
+        def test_method(self) -> None:
+            pass
+
+        @property
+        def test_property(self) -> str:
+            return "test"
+
+    method_module = get_module_of_obj(TestClass.test_method)
+    assert_with_msg(
+        method_module.__name__ == __name__,
+        f"Expected module name {__name__}, got {method_module.__name__}",
+    )
+
+    # Test with a property
+    prop_module = get_module_of_obj(TestClass.test_property)
+    assert_with_msg(
+        prop_module.__name__ == __name__,
+        f"Expected module name {__name__}, got {prop_module.__name__}",
+    )
+
+    # Test with built-in function
+    os_module = get_module_of_obj(os.path.join)
+    assert_with_msg(
+        "posixpath" in os_module.__name__ or "ntpath" in os_module.__name__,
+        f"Expected posixpath or ntpath module, got {os_module.__name__}",
     )

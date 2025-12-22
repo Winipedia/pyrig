@@ -6,7 +6,7 @@ a fixture.py file where users can define custom test fixtures.
 
 from types import ModuleType
 
-from pyrig.dev.configs.base.base import InitConfigFile
+from pyrig.dev.configs.base.init import InitConfigFile
 from pyrig.dev.tests import fixtures
 
 

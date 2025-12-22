@@ -7,7 +7,7 @@ checkers like mypy.
 
 from pathlib import Path
 
-from pyrig.dev.configs.base.base import TypedConfigFile
+from pyrig.dev.configs.base.typed import TypedConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 
 

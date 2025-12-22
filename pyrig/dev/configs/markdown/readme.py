@@ -6,7 +6,7 @@ managing the project's README.md file with a standard header.
 
 from pathlib import Path
 
-from pyrig.dev.configs.base.base import BadgesMarkdownConfigFile
+from pyrig.dev.configs.base.badges_md import BadgesMarkdownConfigFile
 
 
 class ReadmeConfigFile(BadgesMarkdownConfigFile):

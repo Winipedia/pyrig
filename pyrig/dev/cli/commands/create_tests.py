@@ -14,6 +14,7 @@ from pyrig.src.modules.class_ import (
     get_all_methods_from_cls,
 )
 from pyrig.src.modules.function import get_all_functions_from_module
+from pyrig.src.modules.imports import walk_package
 from pyrig.src.modules.inspection import get_qualname_of_obj
 from pyrig.src.modules.module import (
     create_module,
@@ -22,7 +23,6 @@ from pyrig.src.modules.module import (
 )
 from pyrig.src.modules.package import (
     create_package,
-    walk_package,
 )
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import (
