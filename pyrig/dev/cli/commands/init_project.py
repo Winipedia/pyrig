@@ -30,6 +30,8 @@ from collections.abc import Callable
 from typing import Any
 
 import pyrig
+from pyrig.dev.cli.subcommands import mkroot, mktests
+from pyrig.dev.utils.consts import STANDARD_DEV_DEPS
 from pyrig.src.project.mgt import (
     DependencyManager,
     PreCommit,
@@ -40,9 +42,6 @@ from pyrig.src.project.mgt import (
 from pyrig.src.string import make_name_from_obj
 
 logger = logging.getLogger(__name__)
-
-
-STANDARD_DEV_DEPS: list[str] = ["pyrig-dev"]
 
 
 def adding_dev_dependencies() -> None:
@@ -60,9 +59,9 @@ def creating_priority_config_files() -> None:
     This creates the priority config files that are required for
     the other setup steps.
     """
-    from pyrig.dev.configs.base.base import ConfigFile  # noqa: PLC0415
-
-    ConfigFile.init_priority_config_files()
+    # local imports to avoid failure on init when dev deps are not installed yet.
+    args = Pyrig.get_cmd_args(mkroot, "--priority")
+    args.run()
 
 
 def syncing_venv() -> None:
@@ -80,8 +79,6 @@ def creating_project_root() -> None:
     Invokes `uv run pyrig create-root` to generate all config files
     and the project directory structure.
     """
-    from pyrig.dev.cli.subcommands import mkroot  # noqa: PLC0415
-
     args = Pyrig.get_cmd_args(mkroot)
     args.run()
 
@@ -92,8 +89,6 @@ def creating_test_files() -> None:
     Invokes `uv run pyrig create-tests` to generate test skeleton
     files that mirror the source code structure.
     """
-    from pyrig.dev.cli.subcommands import mktests  # noqa: PLC0415
-
     args = Pyrig.get_cmd_args(mktests)
     args.run()
 

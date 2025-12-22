@@ -8,7 +8,7 @@ All ConfigFile subclasses in this package are automatically discovered.
 from types import ModuleType
 
 from pyrig.dev import configs
-from pyrig.dev.configs.base.base import InitConfigFile
+from pyrig.dev.configs.base.init import InitConfigFile
 
 
 class ConfigsInitConfigFile(InitConfigFile):

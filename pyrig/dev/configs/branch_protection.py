@@ -8,7 +8,7 @@ create or update the default branch protection ruleset on GitHub.
 from pathlib import Path
 from typing import Any
 
-from pyrig.dev.configs.base.base import JsonConfigFile
+from pyrig.dev.configs.base.json import JsonConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.dev.utils.git import DEFAULT_RULESET_NAME
 from pyrig.src.modules.package import get_project_name_from_pkg_name

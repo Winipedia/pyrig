@@ -108,9 +108,9 @@ graph LR
     A[pyrig.dev.configs] --> D[All discovered]
     B[pkg_a.dev.configs] --> D
     C[myapp.dev.configs] --> D
-    D --> E[init_config_files called]
+    D --> E[make_project_root called]
     E --> F[All configs initialized]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -127,11 +127,66 @@ Note: I highly recommend doing any changes to config files via a subclass and no
 
 ### Initialization Order
 
-Config files are initialized in three phases during `pyrig init or pyrig mkroot`:
+Config files are initialized in three phases during `pyrig init` or `pyrig mkroot`:
 
 1. **Priority files** - Required by other configs (e.g. pyproject.toml, .gitignore, LICENSE, main.py), these must exist before other initialization can proceed.
 2. **Ordered files** - Have dependencies on each other (e.g. fixtures/__init__.py, conftest.py)
 3. **Remaining files** - All other discovered configs in a non-deterministic order.
+
+#### Priority Initialization System
+
+The priority initialization system is implemented in `pyrig/dev/cli/commands/create_root.py` with three key functions:
+
+**`get_priority_config_files()`** - Returns config files that must be initialized first:
+```python
+def get_priority_config_files() -> list[type[ConfigFile]]:
+    """Get config files that must be initialized first.
+
+    These files are required by other config files or the build
+    process and must exist before other initialization can proceed.
+    """
+    return [
+        GitIgnoreConfigFile,      # Git ignore patterns
+        PyprojectConfigFile,      # Project metadata and dependencies
+        LicenceConfigFile,        # Project license
+        MainConfigFile,           # CLI entry point
+        ConfigsInitConfigFile,    # configs/__init__.py
+        BuildersInitConfigFile,   # builders/__init__.py
+        ZeroTestConfigFile,       # Initial test file
+        FixturesInitConfigFile,   # fixtures/__init__.py
+    ]
+```
+
+**`get_ordered_config_files()`** - Returns config files with specific ordering requirements:
+```python
+def get_ordered_config_files() -> list[type[ConfigFile]]:
+    """Get config files that must be initialized in a specific order.
+
+    These files have dependencies on each other and must be
+    initialized after priority files but before general files.
+    """
+    return []  # Currently empty, but available for future use
+```
+
+**`get_unordered_config_files()`** - Returns all remaining config files:
+```python
+def get_unordered_config_files() -> list[type[ConfigFile]]:
+    """Get all remaining config files.
+
+    These files have no dependencies on each other and can be
+    initialized in any order after priority and ordered files.
+    """
+    all_config_files = ConfigFile.get_all_subclasses()
+    priority_and_ordered = get_priority_config_files() + get_ordered_config_files()
+    return [cf for cf in all_config_files if cf not in priority_and_ordered]
+```
+
+You can create only priority config files using:
+```bash
+uv run pyrig mkroot --priority
+```
+
+This is useful during initial project setup when you need the essential files before installing dependencies.
 
 ## Format-Specific Subclasses
 These subclasses implement already all the required methods for you that they can and simplfy creating ConfigFiles for the specific format.
@@ -142,7 +197,9 @@ Examples are the methods `load` and `dump` that are implemented for you or the f
 For JSON configuration files using Python's json module:
 
 ```python
-from pyrig.dev.configs.base.base import JsonConfigFile
+from pathlib import Path
+from typing import Any
+from pyrig.dev.configs.base.json import JsonConfigFile
 
 class MyConfigFile(JsonConfigFile):
     @classmethod
@@ -161,7 +218,9 @@ Creates `config/my_config.json`.
 For YAML configuration files using PyYAML:
 
 ```python
-from pyrig.dev.configs.base.base import YamlConfigFile
+from pathlib import Path
+from typing import Any
+from pyrig.dev.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
     @classmethod
@@ -180,13 +239,15 @@ Creates `config/my_config.yaml`.
 For TOML files using tomlkit (preserves formatting):
 
 ```python
-from pyrig.dev.configs.base.base import TomlConfigFile
+from pathlib import Path
+from typing import Any
+from pyrig.dev.configs.base.toml import TomlConfigFile
 
 class MyConfigFile(TomlConfigFile):
     @classmethod
     def get_parent_path(cls) -> Path:
         return Path(".")
-    
+
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
         return {"tool": {"myapp": {"setting": "value"}}}
@@ -202,13 +263,14 @@ A .py, .txt or .md file are all text files. But file like .gitignore, .md, .yaml
 For plain text files with required content:
 
 ```python
-from pyrig.dev.configs.base.base import TextConfigFile
+from pathlib import Path
+from pyrig.dev.configs.base.text import TextConfigFile
 
 class MyConfigFile(TextConfigFile):
     @classmethod
     def get_parent_path(cls) -> Path:
         return Path(".")
-    
+
     @classmethod
     def get_content_str(cls) -> str:
         return "# Required header\n"
@@ -226,13 +288,14 @@ File is considered correct if it contains the required content. So you can add y
 For Python source files:
 
 ```python
-from pyrig.dev.configs.base.base import PythonConfigFile
+from pathlib import Path
+from pyrig.dev.configs.base.python import PythonConfigFile
 
 class MyConfigFile(PythonConfigFile):
     @classmethod
     def get_parent_path(cls) -> Path:
         return Path("myapp/src")
-    
+
     @classmethod
     def get_content_str(cls) -> str:
         return '"""Module docstring."""\n\ndef main():\n    pass\n'
@@ -281,7 +344,7 @@ Copies entire module content from pyrig to your project:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.base import CopyModuleConfigFile
+from pyrig.dev.configs.base.py_package import CopyModuleConfigFile
 from pyrig.dev.cli import subcommands
 
 class SubcommandsConfigFile(CopyModuleConfigFile):
@@ -298,7 +361,7 @@ Copies only the docstring, allowing custom implementation:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.base import CopyModuleOnlyDocstringConfigFile
+from pyrig.dev.configs.base.py_package import CopyModuleOnlyDocstringConfigFile
 from pyrig.dev.cli import shared_subcommands
 
 class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
@@ -315,7 +378,7 @@ Creates `__init__.py` files with docstrings:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.base import InitConfigFile
+from pyrig.dev.configs.base.init import InitConfigFile
 from pyrig.dev import configs
 
 class ConfigsInitConfigFile(InitConfigFile):
@@ -385,16 +448,16 @@ def is_correct(cls) -> bool:
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.base import YamlConfigFile
+from pyrig.dev.configs.base.yaml import YamlConfigFile
 
 class DatabaseConfigFile(YamlConfigFile):
     """Configuration for database connection settings."""
-    
+
     @classmethod
     def get_parent_path(cls) -> Path:
         """Place in config/ directory."""
         return Path("config")
-    
+
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
         """Required database configuration."""
@@ -405,7 +468,7 @@ class DatabaseConfigFile(YamlConfigFile):
                 "name": "myapp_db"
             }
         }
-    
+
     @classmethod
     def is_correct(cls) -> bool:
         """Ensure required keys exist."""

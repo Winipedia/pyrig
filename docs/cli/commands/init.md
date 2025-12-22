@@ -27,7 +27,7 @@ graph LR
 
     B -.->|uv add --group dev| B1[pyrig-dev]
     C -.->|uv sync| C1[Install deps]
-    D -.->|ConfigFile.init_priority| D1[Priority configs]
+    D -.->|pyrig mkroot --priority| D1[Priority configs]
     E -.->|uv sync| E1[Install project]
     F -.->|uv run pyrig mkroot| F1[All configs]
     G -.->|uv run pyrig mktests| G1[Test skeletons]

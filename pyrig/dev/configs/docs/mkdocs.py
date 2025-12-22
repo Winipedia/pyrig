@@ -7,7 +7,7 @@ managing the project's mkdocs.yml file for documentation generation.
 from pathlib import Path
 from typing import Any
 
-from pyrig.dev.configs.base.base import YmlConfigFile
+from pyrig.dev.configs.base.yml import YmlConfigFile
 from pyrig.dev.configs.markdown.docs.index import IndexConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 

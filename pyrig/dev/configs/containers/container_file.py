@@ -8,7 +8,7 @@ and adds pyrig-specific patterns.
 import json
 from pathlib import Path
 
-from pyrig.dev.configs.base.base import TextConfigFile
+from pyrig.dev.configs.base.text import TextConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.main import main
 from pyrig.src.project.mgt import DependencyManager

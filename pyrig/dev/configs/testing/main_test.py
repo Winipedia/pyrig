@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pyrig
 from pyrig import main
-from pyrig.dev.configs.base.base import PythonPackageConfigFile
+from pyrig.dev.configs.base.py_package import PythonPackageConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import (

@@ -10,7 +10,7 @@ from pathlib import Path
 
 import requests
 
-from pyrig.dev.configs.base.base import TextConfigFile
+from pyrig.dev.configs.base.text import TextConfigFile
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.src.git.git import get_repo_owner_and_name_from_git
 

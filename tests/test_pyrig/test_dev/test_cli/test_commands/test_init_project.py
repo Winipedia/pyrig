@@ -21,10 +21,8 @@ from pyrig.dev.cli.commands.init_project import (
     syncing_venv,
 )
 from pyrig.dev.cli.subcommands import init
-from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.main import main
-from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.project.mgt import DependencyManager, Pyrig, VersionControl
 from pyrig.src.testing.assertions import assert_with_msg
@@ -48,7 +46,7 @@ def test_running_tests(mocker: MockFixture) -> None:
 
 def test_creating_priority_config_files(mocker: MockFixture) -> None:
     """Test func."""
-    mock = mocker.patch(make_obj_importpath(ConfigFile.init_priority_config_files))
+    mock = mocker.patch("subprocess.run")
     creating_priority_config_files()
     mock.assert_called_once()
 

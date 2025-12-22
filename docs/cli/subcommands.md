@@ -7,18 +7,60 @@ Project-specific CLI commands are defined in the `dev/cli/subcommands.py` module
 Add a function to `subcommands.py` to create a new command:
 
 ```python
-def mkroot() -> None:
+import typer
+
+def mkroot(
+    *,
+    priority: bool = typer.Option(
+        default=False,
+        help="Only create priority config files.",
+    ),
+) -> None:
     """Creates the root of the project.
-    
+
     This inits all ConfigFiles and creates __init__.py files for the src
-    and tests package where they are missing.
+    and tests package where they are missing. It does not overwrite any
+    existing files.
     """
+    # local imports in pyrig to avoid cli failure when installing without dev deps
+    # as some pyrig commands are dependend on dev deps and can only be used in a dev env
     from pyrig.dev.cli.commands.create_root import make_project_root
-    
-    make_project_root()
+
+    make_project_root(priority=priority)
 ```
 
 The function name becomes the command name (converted to kebab-case), and the docstring becomes the help text.
+
+### Adding Command-Line Arguments
+
+Use `typer.Option` to add command-line arguments with flags:
+
+```python
+import typer
+
+def deploy(
+    *,
+    environment: str = typer.Option(
+        default="staging",
+        help="Deployment environment (staging, production).",
+    ),
+    dry_run: bool = typer.Option(
+        default=False,
+        help="Perform a dry run without making changes.",
+    ),
+) -> None:
+    """Deploy the application to the specified environment."""
+    from myapp.dev.cli.commands.deploy import deploy_app
+
+    deploy_app(environment=environment, dry_run=dry_run)
+```
+
+This creates a command with options:
+```bash
+uv run myapp deploy --environment production
+uv run myapp deploy --dry-run
+uv run myapp deploy --environment staging --dry-run
+```
 
 ## Command Pattern
 

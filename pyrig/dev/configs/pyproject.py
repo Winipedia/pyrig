@@ -19,8 +19,9 @@ from typing import Any, Literal
 import requests
 from packaging.version import Version
 
-from pyrig.dev.cli.commands.init_project import STANDARD_DEV_DEPS
-from pyrig.dev.configs.base.base import TomlConfigFile
+from pyrig.dev.cli import cli
+from pyrig.dev.configs.base.toml import TomlConfigFile
+from pyrig.dev.utils.consts import STANDARD_DEV_DEPS
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.git.git import get_repo_owner_and_name_from_git
@@ -84,10 +85,6 @@ class PyprojectConfigFile(TomlConfigFile):
             Complete configuration dict with project metadata,
             dependencies, build system, and tool configurations.
         """
-        from pyrig.dev.cli import (  # noqa: PLC0415
-            cli,
-        )
-
         repo_owner, _ = get_repo_owner_and_name_from_git(check_repo_url=False)
 
         return {

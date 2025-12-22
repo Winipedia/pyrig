@@ -4,7 +4,8 @@ This module provides the ConftestConfigFile class for creating
 the tests/conftest.py file that configures pytest plugins.
 """
 
-from pyrig.dev.configs.base.base import PythonTestsConfigFile
+from pyrig.dev.configs.base.py_tests import PythonTestsConfigFile
+from pyrig.dev.tests import conftest
 from pyrig.src.modules.module import make_obj_importpath
 
 
@@ -22,8 +23,6 @@ class ConftestConfigFile(PythonTestsConfigFile):
         Returns:
             Python code that imports pyrig's conftest as a pytest plugin.
         """
-        from pyrig.dev.tests import conftest  # noqa: PLC0415
-
         return f'''"""Pytest configuration for tests.
 
 This module configures pytest plugins for the test suite, setting up the necessary
@@ -45,8 +44,6 @@ pytest_plugins = ["{make_obj_importpath(conftest)}"]
         Returns:
             True if the file has required structure.
         """
-        from pyrig.dev.tests import conftest  # noqa: PLC0415
-
         return super().is_correct() or (
             f'pytest_plugins = ["{make_obj_importpath(conftest)}"]'
             in cls.get_file_content()

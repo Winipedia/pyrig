@@ -7,7 +7,7 @@ the dev/artifacts/resources directory structure with an __init__.py file.
 from types import ModuleType
 
 from pyrig import resources
-from pyrig.dev.configs.base.base import InitConfigFile
+from pyrig.dev.configs.base.init import InitConfigFile
 
 
 class ResourcesInitConfigFile(InitConfigFile):

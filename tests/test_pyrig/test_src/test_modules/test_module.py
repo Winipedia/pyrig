@@ -20,7 +20,6 @@ from pyrig.src.modules.module import (
     get_isolated_obj_name,
     get_module_content_as_str,
     get_module_name_replacing_start_module,
-    get_module_of_obj,
     import_module_from_file,
     import_module_with_default,
     import_module_with_file_fallback,
@@ -244,49 +243,6 @@ def test_get_default_module_content() -> None:
     result = get_default_module_content()
     # assert is str
     assert_with_msg(isinstance(result, str), f"Expected str, got {type(result)}")
-
-
-def test_get_module_of_obj() -> None:
-    """Test func for get_module_of_obj."""
-
-    # Test with a function
-    def test_function() -> None:
-        pass
-
-    module = get_module_of_obj(test_function)
-    assert_with_msg(
-        module.__name__ == __name__,
-        f"Expected module name {__name__}, got {module.__name__}",
-    )
-
-    # Test with a class method
-    class TestClass:
-        def test_method(self) -> None:
-            pass
-
-        @property
-        def test_property(self) -> str:
-            return "test"
-
-    method_module = get_module_of_obj(TestClass.test_method)
-    assert_with_msg(
-        method_module.__name__ == __name__,
-        f"Expected module name {__name__}, got {method_module.__name__}",
-    )
-
-    # Test with a property
-    prop_module = get_module_of_obj(TestClass.test_property)
-    assert_with_msg(
-        prop_module.__name__ == __name__,
-        f"Expected module name {__name__}, got {prop_module.__name__}",
-    )
-
-    # Test with built-in function
-    os_module = get_module_of_obj(os.path.join)
-    assert_with_msg(
-        "posixpath" in os_module.__name__ or "ntpath" in os_module.__name__,
-        f"Expected posixpath or ntpath module, got {os_module.__name__}",
-    )
 
 
 def test_import_module_with_default() -> None:

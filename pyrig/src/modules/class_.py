@@ -33,7 +33,12 @@ from types import ModuleType
 from typing import Any, overload
 
 from pyrig.src.modules.function import is_func
-from pyrig.src.modules.inspection import get_def_line, get_obj_members
+from pyrig.src.modules.imports import walk_package
+from pyrig.src.modules.inspection import (
+    get_def_line,
+    get_module_of_obj,
+    get_obj_members,
+)
 
 
 def get_all_methods_from_cls(
@@ -71,10 +76,6 @@ def get_all_methods_from_cls(
         >>> [m.__name__ for m in methods]
         ['method_a', 'method_b']
     """
-    from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
-        get_module_of_obj,
-    )
-
     methods = [
         (method, name)
         for name, method in get_obj_members(class_, include_annotate=include_annotate)
@@ -121,10 +122,6 @@ def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
         >>> [c.__name__ for c in classes]
         ['ClassA', 'ClassB']
     """
-    from pyrig.src.modules.module import (  # noqa: PLC0415  # avoid circular import
-        get_module_of_obj,
-    )
-
     if isinstance(module, str):
         module = import_module(module)
 
@@ -175,10 +172,6 @@ def get_all_subclasses[T: type](
         >>> get_all_subclasses(Base, discard_parents=True)
         {GrandChild}
     """
-    from pyrig.src.modules.package import (  # noqa: PLC0415  # avoid circular import
-        walk_package,
-    )
-
     if load_package_before:
         _ = list(walk_package(load_package_before))
     subclasses_set: set[T] = {cls}
@@ -269,65 +262,6 @@ def init_all_nonabstract_subclasses[T: type](
         discard_parents=discard_parents,
     ):
         subclass()
-
-
-def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
-    cls: T,
-    dep: ModuleType,
-    load_package_before: ModuleType,
-    *,
-    discard_parents: bool = False,
-) -> list[T]:
-    """Find non-abstract subclasses across all packages depending on a dependency.
-
-    This is the core discovery function for pyrig's multi-package architecture.
-    It finds all packages that depend on `dep`, looks for the same relative
-    module path as `load_package_before` in each, and discovers subclasses
-    of `cls` in those modules.
-
-    For example, if `dep` is smth and `load_package_before` is
-    `smth.dev.configs`, this will find `myapp.dev.configs` in any package
-    that depends on smth, and discover ConfigFile subclasses there.
-
-    Args:
-        cls: The base class to find subclasses of.
-        dep: The dependency package that other packages depend on (e.g., pyrig or smth).
-        load_package_before: The module path within `dep` to use as a template
-            for finding equivalent modules in dependent packages.
-        discard_parents: If True, keeps only leaf classes when inheritance
-            chains span multiple packages.
-
-    Returns:
-        A list of all discovered non-abstract subclasses. Classes from the
-        same module are grouped together, but ordering between packages
-        depends on the dependency graph traversal order.
-
-    Example:
-        >>> # Find all ConfigFile implementations across the ecosystem
-        >>> subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
-        ...     ConfigFile,
-        ...     smth,
-        ...     smth.dev.configs,
-        ...     discard_parents=True
-        ... )
-    """
-    from pyrig.src.modules.package import (  # noqa: PLC0415  # avoid circular import
-        get_same_modules_from_deps_depen_on_dep,
-    )
-
-    subclasses: list[T] = []
-    for pkg in get_same_modules_from_deps_depen_on_dep(load_package_before, dep):
-        subclasses.extend(
-            get_all_nonabstract_subclasses(
-                cls,
-                load_package_before=pkg,
-                discard_parents=discard_parents,
-            )
-        )
-    # as these are different modules and pks we need to discard parents again
-    if discard_parents:
-        subclasses = discard_parent_classes(subclasses)
-    return subclasses
 
 
 @overload

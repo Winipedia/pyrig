@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.dev.configs.base.base import YamlConfigFile
+from pyrig.dev.configs.base.yaml import YamlConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
 from pyrig.src.testing.assertions import assert_with_msg
 

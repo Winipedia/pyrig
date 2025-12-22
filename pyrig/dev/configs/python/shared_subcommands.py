@@ -8,7 +8,9 @@ that are available in all pyrig projects.
 from types import ModuleType
 
 from pyrig.dev.cli import shared_subcommands
-from pyrig.dev.configs.base.base import CopyModuleOnlyDocstringConfigFile
+from pyrig.dev.configs.base.copy_module_docstr import (
+    CopyModuleOnlyDocstringConfigFile,
+)
 
 
 class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):

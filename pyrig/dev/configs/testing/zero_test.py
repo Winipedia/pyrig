@@ -5,7 +5,7 @@ a minimal test file that ensures pytest runs even when no other
 tests exist.
 """
 
-from pyrig.dev.configs.base.base import PythonTestsConfigFile
+from pyrig.dev.configs.base.py_tests import PythonTestsConfigFile
 
 
 class ZeroTestConfigFile(PythonTestsConfigFile):

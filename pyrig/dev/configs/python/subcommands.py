@@ -7,7 +7,9 @@ a subcommands.py file where users can define custom CLI subcommands.
 from types import ModuleType
 
 from pyrig.dev.cli import subcommands
-from pyrig.dev.configs.base.base import CopyModuleOnlyDocstringConfigFile
+from pyrig.dev.configs.base.copy_module_docstr import (
+    CopyModuleOnlyDocstringConfigFile,
+)
 
 
 class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
