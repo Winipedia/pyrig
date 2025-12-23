@@ -68,25 +68,36 @@ version = "0.1.0"                 # Semantic version
 description = ""                  # Project description
 readme = "README.md"              # README file
 authors = [{name = "Owner"}]      # From git repo owner in remote or git config user.name
+maintainers = [{name = "Owner"}]  # From git repo owner in remote or git config user.name
+license = "MIT"                   # Auto-detected from LICENSE file using SPDX identifiers
 license-files = ["LICENSE"]       # License file
 requires-python = ">=3.12"        # Minimum Python version
 classifiers = [                   # PyPI classifiers
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     # continues up to the latest Python version allowed by requires-python and found on python.org
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
 ]
 dependencies = [                  # Runtime dependencies
     "pyrig>=3.0.1",
     # User dependencies (sorted)
 ]
+
+[project.urls]
+Homepage = "https://github.com/owner/my-app"      # Repository URL
+Documentation = "https://owner.github.io/my-app"  # GitHub Pages URL
+Source = "https://github.com/owner/my-app"        # Source code URL
+Issues = "https://github.com/owner/my-app/issues" # Issue tracker
+Changelog = "https://github.com/owner/my-app/releases" # Release notes
 ```
 
-Note: pyrig 3.0.1 is the first release that we consider stable, complete and battle tested. 
-Please refrain from using any previous versions. In fact we recommend to always use the latest version of pyrig, 
-just like we recommend using the latest version of any package or tool. 
+Note: pyrig 3.0.1 is the first release that we consider stable, complete and battle tested.
+Please refrain from using any previous versions. In fact we recommend to always use the latest version of pyrig,
+just like we recommend using the latest version of any package or tool.
 That is the philosophy of pyrig.
 
-**Why**: Standard Python packaging metadata for PyPI distribution.
+**Why**: Standard Python packaging metadata for PyPI distribution with enhanced discoverability through project URLs and auto-detected license.
 
 ### CLI Entry Points
 
@@ -219,8 +230,11 @@ Several values are determined automatically:
 |---------|--------|
 | `name` | Current directory name |
 | `authors` | Git repo owner |
+| `maintainers` | Git repo owner |
+| `license` | Auto-detected from LICENSE file using spdx-matcher |
 | `requires-python` | Existing value or `>=3.12` |
-| `classifiers` | Generated from `requires-python` |
+| `classifiers` | Generated from `requires-python` + OS Independent + Typing :: Typed |
+| `urls` | Auto-generated from git remote (Homepage, Documentation, Source, Issues, Changelog) |
 | `scripts` | Package name → CLI entry point |
 | `module-name` | Package name (hyphens → underscores) |
 

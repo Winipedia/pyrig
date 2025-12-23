@@ -64,8 +64,8 @@ def get_priority_config_files() -> list[type[ConfigFile]]:
     """
     return [
         GitIgnoreConfigFile,
-        PyprojectConfigFile,
         LicenceConfigFile,
+        PyprojectConfigFile,
         MainConfigFile,
         ConfigsInitConfigFile,
         BuildersInitConfigFile,

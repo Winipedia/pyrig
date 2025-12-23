@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import requests
+import spdx_matcher  # type: ignore[import-untyped]
 from packaging.version import Version
 
 from pyrig.dev.cli import cli
@@ -24,7 +25,11 @@ from pyrig.dev.configs.base.toml import TomlConfigFile
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.consts import STANDARD_DEV_DEPS
-from pyrig.src.git.git import get_repo_owner_and_name_from_git
+from pyrig.src.git import (
+    get_github_pages_url_from_git,
+    get_repo_owner_and_name_from_git,
+    get_repo_url_from_git,
+)
 from pyrig.src.modules.package import (
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
@@ -96,11 +101,22 @@ class PyprojectConfigFile(TomlConfigFile):
                 "authors": [
                     {"name": repo_owner},
                 ],
+                "maintainers": [
+                    {"name": repo_owner},
+                ],
+                "license": cls.detect_project_licence(),
                 "license-files": ["LICENSE"],
                 "requires-python": cls.get_project_requires_python(),
                 "classifiers": [
                     *cls.make_python_version_classifiers(),
                 ],
+                "urls": {
+                    "Homepage": get_repo_url_from_git(),
+                    "Documentation": get_github_pages_url_from_git(),
+                    "Source": get_repo_url_from_git(),
+                    "Issues": f"{get_repo_url_from_git()}/issues",
+                    "Changelog": f"{get_repo_url_from_git()}/releases",
+                },
                 "scripts": {
                     cls.get_project_name(): f"{cli.__name__}:{cli.main.__name__}"
                 },
@@ -166,6 +182,19 @@ class PyprojectConfigFile(TomlConfigFile):
         }
 
     @classmethod
+    def detect_project_licence(cls) -> str:
+        """Detect the project's license.
+
+        Returns:
+            The project's license as SPDX identifier.
+        """
+        content = Path("LICENSE").read_text(encoding="utf-8")
+        licenses: dict[str, dict[str, Any]]
+        licenses, _ = spdx_matcher.analyse_license_text(content)
+        licenses = licenses["licenses"]
+        return next(iter(licenses))
+
+    @classmethod
     def remove_wrong_dependencies(cls, config: dict[str, Any]) -> None:
         """Normalize dependencies by removing version specifiers.
 
@@ -206,9 +235,17 @@ class PyprojectConfigFile(TomlConfigFile):
             List of Python version classifiers.
         """
         versions = cls.get_supported_python_versions()
-        return [
+        python_version_classifiers = [
             f"Programming Language :: Python :: {v.major}.{v.minor}" for v in versions
         ]
+        os_classifiers = [
+            "Operating System :: OS Independent",
+        ]
+        typing_classifiers = [
+            "Typing :: Typed",
+        ]
+
+        return [*python_version_classifiers, *os_classifiers, *typing_classifiers]
 
     @classmethod
     def get_project_requires_python(cls, default: str = ">=3.12") -> str:

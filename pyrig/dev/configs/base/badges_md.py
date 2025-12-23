@@ -7,8 +7,19 @@ managing Markdown files that contain badges.
 import pyrig
 from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
+from pyrig.dev.configs.workflows.release import ReleaseWorkflow
 from pyrig.dev.utils.github import DEFAULT_BRANCH
-from pyrig.src.git.git import get_repo_owner_and_name_from_git
+from pyrig.src.git import (
+    get_codecov_url_from_git,
+    get_github_pages_url_from_git,
+    get_licence_badge_url_from_git,
+    get_pypi_badge_url_from_git,
+    get_pypi_url_from_git,
+    get_repo_url_from_git,
+    get_workflow_badge_url_from_git,
+    get_workflow_run_url_from_git,
+)
 
 
 class BadgesMarkdownConfigFile(MarkdownConfigFile):
@@ -71,10 +82,10 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         Returns:
             List of badge markdown strings.
         """
-        repo_owner, repo_name = get_repo_owner_and_name_from_git(check_repo_url=False)
-        project_name = PyprojectConfigFile.get_project_name()
         python_versions = PyprojectConfigFile.get_supported_python_versions()
         joined_python_versions = "|".join(str(v) for v in python_versions)
+        health_check_wf_name = HealthCheckWorkflow.get_filename()
+        release_wf_name = ReleaseWorkflow.get_filename()
         return {
             "tooling": [
                 rf"[![{pyrig.__name__}](https://img.shields.io/badge/built%20with-{pyrig.__name__}-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/{pyrig.__name__})",
@@ -89,18 +100,18 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
                 r"[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)",
                 r"[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)",
                 r"[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)",
-                rf"[![codecov](https://codecov.io/gh/{repo_owner}/{repo_name}/branch/{DEFAULT_BRANCH}/graph/badge.svg)](https://codecov.io/gh/{repo_owner}/{repo_name})",
+                rf"[![codecov]({get_codecov_url_from_git()}/branch/{DEFAULT_BRANCH}/graph/badge.svg)]({get_codecov_url_from_git()})",
             ],
             "package-info": [
-                rf"[![PyPI](https://img.shields.io/pypi/v/{project_name}?logo=pypi&logoColor=white)](https://pypi.org/project/{project_name}/)",
+                rf"[![PyPI]({get_pypi_badge_url_from_git()})]({get_pypi_url_from_git()})",
                 rf"[![Python](https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white)](https://www.python.org/)",
-                rf"[![License](https://img.shields.io/github/license/{repo_owner}/{repo_name})](https://github.com/{repo_owner}/{repo_name}/blob/main/LICENSE)",
+                rf"[![License]({get_licence_badge_url_from_git()})]({get_repo_url_from_git()}/blob/main/LICENSE)",
             ],
             "ci/cd": [
-                rf"[![CI](https://img.shields.io/github/actions/workflow/status/{repo_owner}/{repo_name}/health_check.yaml?label=CI&logo=github)](https://github.com/{repo_owner}/{repo_name}/actions/workflows/health_check.yaml)",
-                rf"[![CD](https://img.shields.io/github/actions/workflow/status/{repo_owner}/{repo_name}/release.yaml?label=CD&logo=github)](https://github.com/{repo_owner}/{repo_name}/actions/workflows/release.yaml)",
+                rf"[![CI]({get_workflow_badge_url_from_git(health_check_wf_name, 'CI', 'github')})]({get_workflow_run_url_from_git(health_check_wf_name)})",  # noqa: E501
+                rf"[![CD]({get_workflow_badge_url_from_git(release_wf_name, 'CD', 'github')})]({get_workflow_run_url_from_git(release_wf_name)})",  # noqa: E501
             ],
             "documentation": [
-                rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://{repo_owner}.github.io/{repo_name})",
+                rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({get_github_pages_url_from_git()})",
             ],
         }

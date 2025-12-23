@@ -147,8 +147,8 @@ def get_priority_config_files() -> list[type[ConfigFile]]:
     """
     return [
         GitIgnoreConfigFile,      # Git ignore patterns
+        LicenceConfigFile,        # Project license (must be before pyproject.toml for auto-detection)
         PyprojectConfigFile,      # Project metadata and dependencies
-        LicenceConfigFile,        # Project license
         MainConfigFile,           # CLI entry point
         ConfigsInitConfigFile,    # configs/__init__.py
         BuildersInitConfigFile,   # builders/__init__.py

@@ -1049,7 +1049,7 @@ dev = [{ name = "pyrig-dev", specifier = ">=0.1.1" }]
 
 [[package]]
 name = "pyrig-dev"
-version = "0.1.5"
+version = "0.1.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bandit" },
@@ -1068,6 +1068,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "ruff" },
     { name = "setuptools" },
+    { name = "spdx-matcher" },
     { name = "tenacity" },
     { name = "tomlkit" },
     { name = "ty" },
@@ -1077,9 +1078,9 @@ dependencies = [
     { name = "types-setuptools" },
     { name = "types-tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/01/89/2c47defce574175a3fe9442684351b82e23eb47d2fc0bdfd220e96627469/pyrig_dev-0.1.5.tar.gz", hash = "sha256:acf65dd6626c51dbf4c63dad58fe41edc9a2f3e88038057019e66a7c991a8eec", size = 2105, upload-time = "2025-12-21T02:22:49.928Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e7/98/b10c8bc1414fb01fc06dcfa0396a6cf9262703bc9dba14c85c3972eb771e/pyrig_dev-0.1.6.tar.gz", hash = "sha256:f298b16acd406241716bdaee64658f9b710211b8b9d9cb8f238d77edc43f2019", size = 2132, upload-time = "2025-12-22T23:04:19.138Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4c/09/18c93067fa03f0c91ad4b3b5d9e929442c954f1f2d71f99ac97244b027a7/pyrig_dev-0.1.5-py3-none-any.whl", hash = "sha256:ab50ad4a68c52822753027ccaa618cd67677312b5524f221ea61585965b3f31c", size = 2245, upload-time = "2025-12-21T02:22:48.964Z" },
+    { url = "https://files.pythonhosted.org/packages/61/1f/ed7477ec90246c1d81bf720e9ade06e8b63d6bc8ee4d0d2c604f864df58c/pyrig_dev-0.1.6-py3-none-any.whl", hash = "sha256:ab4c0ddfc80bec3d44c33f02aaf31e4364cc0b81547b7141eec931dbc3ce9564", size = 2259, upload-time = "2025-12-22T23:04:18.07Z" },
 ]
 
 [[package]]
@@ -1300,6 +1301,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/89/23/adf3796d740536d63a6fbda113d07e60c734b6ed5d3058d1e47fc0495e47/soupsieve-2.8.1.tar.gz", hash = "sha256:4cf733bc50fa805f5df4b8ef4740fc0e0fa6218cf3006269afd3f9d6d80fd350", size = 117856, upload-time = "2025-12-18T13:50:34.655Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/48/f3/b67d6ea49ca9154453b6d70b34ea22f3996b9fa55da105a79d8732227adc/soupsieve-2.8.1-py3-none-any.whl", hash = "sha256:a11fe2a6f3d76ab3cf2de04eb339c1be5b506a8a47f2ceb6d139803177f85434", size = 36710, upload-time = "2025-12-18T13:50:33.267Z" },
+]
+
+[[package]]
+name = "spdx-matcher"
+version = "0.1.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/76/f8/a5b2f5fbca58c0b77fefce25822320fdc5c1aeb3602646aec8326b6dc7dd/spdx_matcher-0.1.4.tar.gz", hash = "sha256:bad0a4314bd28b0822d72a54306845f509bddba9a9e4f1e47e79783fb02c0cff", size = 2260415, upload-time = "2025-12-08T21:59:33.313Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/52/95/64003400730fa837065ee6f547bf432cd7f9362f3c065d795e52b1b2cb67/spdx_matcher-0.1.4-py3-none-any.whl", hash = "sha256:139bf5376319b1dd6b0cad2f25f2f5f8866ec424a409e998a038b5e56b50764b", size = 2289037, upload-time = "2025-12-08T21:59:31.504Z" },
 ]
 
 [[package]]

@@ -27,7 +27,7 @@ from pyrig.dev.utils.github import (
     get_github_repo_token,
     get_repo,
 )
-from pyrig.src.git.git import (
+from pyrig.src.git import (
     get_repo_owner_and_name_from_git,
 )
 

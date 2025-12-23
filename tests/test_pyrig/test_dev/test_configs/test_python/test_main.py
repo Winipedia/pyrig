@@ -8,6 +8,7 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig import main
+from pyrig.dev.configs.licence import LicenceConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.python.main import MainConfigFile
 from pyrig.src.testing.assertions import assert_with_msg
@@ -37,6 +38,7 @@ class TestMainConfigFile:
         """Test method."""
         # spy on delete_root_main
         with chdir(tmp_path):
+            LicenceConfigFile()
             PyprojectConfigFile()
             spy = mocker.spy(
                 my_test_main_config_file,

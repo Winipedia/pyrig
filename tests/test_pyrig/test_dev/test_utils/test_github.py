@@ -16,7 +16,7 @@ from pyrig.dev.utils.github import (
     ruleset_exists,
     running_in_github_actions,
 )
-from pyrig.src.git.git import (
+from pyrig.src.git import (
     get_repo_owner_and_name_from_git,
 )
 from pyrig.src.testing.assertions import assert_with_msg

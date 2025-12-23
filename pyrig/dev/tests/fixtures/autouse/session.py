@@ -33,7 +33,7 @@ from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.utils.github import running_in_github_actions
 from pyrig.dev.utils.packages import find_packages, get_src_package
 from pyrig.dev.utils.testing import autouse_session_fixture
-from pyrig.src.git.git import (
+from pyrig.src.git import (
     get_git_unstaged_changes,
 )
 from pyrig.src.management.package_manager import PackageManager

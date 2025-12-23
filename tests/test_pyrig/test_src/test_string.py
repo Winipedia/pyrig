@@ -2,7 +2,10 @@
 
 from types import ModuleType
 
-from pyrig.src.string import make_name_from_obj, split_on_uppercase
+from pyrig.src.string import (
+    make_name_from_obj,
+    split_on_uppercase,
+)
 from pyrig.src.testing.assertions import assert_with_msg
 
 

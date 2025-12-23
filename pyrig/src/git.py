@@ -9,12 +9,13 @@ following a priority order that prefers environment variables for CI/CD
 compatibility.
 
 Example:
-    >>> from pyrig.src.git.github.github import get_repo_owner_and_name_from_git
-    >>> owner, repo = get_repo_owner_and_name_from_git()
+    >>> from pyrig.src.git import get_repo_owner_and_name_from_git
+    >>> owner, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
     >>> print(f"{owner}/{repo}")
     myorg/myrepo
 """
 
+from functools import cache
 from pathlib import Path
 from subprocess import CompletedProcess  # nosec: B404
 
@@ -22,7 +23,8 @@ from pyrig.src.modules.package import get_project_name_from_cwd
 from pyrig.src.os.os import run_subprocess
 
 
-def get_repo_url_from_git(*, check: bool = True) -> str:
+@cache
+def get_repo_remote_from_git(*, check: bool = True) -> str:
     """Get the remote origin URL from the local git repository.
 
     Executes `git config --get remote.origin.url` to retrieve the URL
@@ -48,6 +50,7 @@ def get_repo_url_from_git(*, check: bool = True) -> str:
     return stdout.strip()
 
 
+@cache
 def get_git_username() -> str:
     """Get the git username from the local git config.
 
@@ -85,7 +88,7 @@ def get_repo_owner_and_name_from_git(*, check_repo_url: bool = True) -> tuple[st
         >>> print(f"{owner}/{repo}")
         myorg/myrepo
     """
-    url = get_repo_url_from_git(check=check_repo_url)
+    url = get_repo_remote_from_git(check=check_repo_url)
     if not url:
         # we default to git username and repo name from cwd
         owner = get_git_username()
@@ -125,3 +128,83 @@ def git_add_file(path: Path, *, check: bool = True) -> CompletedProcess[bytes]:
     if path.is_absolute():
         path = path.relative_to(Path.cwd())
     return run_subprocess(["git", "add", str(path)], check=check)
+
+
+def get_repo_url_from_git() -> str:
+    """Get the theoretical real github url.
+
+    This is the url you would put in a browser not ssh.
+    is like: https://github.com/owner/repo.git
+    """
+    owner, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
+    return f"https://github.com/{owner}/{repo}"
+
+
+def get_github_pages_url_from_git() -> str:
+    """Get the github pages url.
+
+    This is the url you would put in a browser not ssh.
+    is like: https://owner.github.io/repo
+    """
+    owner, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
+    return f"https://{owner}.github.io/{repo}"
+
+
+def get_codecov_url_from_git() -> str:
+    """Get the codecov url.
+
+    This is the url you would put in a browser not ssh.
+    is like: https://codecov.io/gh/owner/repo
+    """
+    owner, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
+    return f"https://codecov.io/gh/{owner}/{repo}"
+
+
+def get_pypi_url_from_git() -> str:
+    """Get the pypi url.
+
+    This is the url you would put in a browser not ssh.
+    is like: https://pypi.org/project/repo
+    """
+    _, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
+    return f"https://pypi.org/project/{repo}"
+
+
+def get_pypi_badge_url_from_git() -> str:
+    """Get the pypi badge url.
+
+    This is the url you would put in a browser not ssh.
+    is like: https://img.shields.io/pypi/v/repo
+    """
+    _, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
+    return f"https://img.shields.io/pypi/v/{repo}?logo=pypi&logoColor=white"
+
+
+def get_workflow_run_url_from_git(workflow_name: str) -> str:
+    """Get the workflow run url.
+
+    This is the url you would put in a browser not ssh.
+    is like: https://github.com/{repo_owner}/{repo_name}/actions/workflows/{workflow_name}.yaml
+    """
+    owner, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
+    return f"https://github.com/{owner}/{repo}/actions/workflows/{workflow_name}.yaml"
+
+
+def get_workflow_badge_url_from_git(workflow_name: str, label: str, logo: str) -> str:
+    """Get the workflow badge url.
+
+    This is the url you would put in a browser not ssh.
+    is like: https://img.shields.io/github/actions/workflow/status/{repo_owner}/{repo_name}/{workflow_name}.yaml?label=CI&logo=github
+    """
+    owner, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
+    return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yaml?label={label}&logo={logo}"
+
+
+def get_licence_badge_url_from_git() -> str:
+    """Get the licence badge url.
+
+    This is the url you would put in a browser not ssh.
+    is like: https://img.shields.io/github/license/{repo_owner}/{repo_name}
+    """
+    owner, repo = get_repo_owner_and_name_from_git(check_repo_url=False)
+    return f"https://img.shields.io/github/license/{owner}/{repo}"

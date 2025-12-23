@@ -30,6 +30,11 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
+    def test_detect_project_licence(self) -> None:
+        """Test method."""
+        license_id = PyprojectConfigFile.detect_project_licence()
+        assert license_id == "MIT", f"Expected 'MIT', got '{license_id}'"
+
     def test_get_latest_python_version(self) -> None:
         """Test method."""
         latest_version = PyprojectConfigFile.get_latest_python_version()

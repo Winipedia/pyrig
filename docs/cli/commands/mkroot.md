@@ -33,8 +33,8 @@ When using `--priority`, only the priority files are created.
 When using `--priority`, only these essential files are created:
 
 1. **GitIgnoreConfigFile** (`.gitignore`) - Git ignore patterns
-2. **PyprojectConfigFile** (`pyproject.toml`) - Project metadata and dependencies
-3. **LicenceConfigFile** (`LICENSE`) - Project license
+2. **LicenceConfigFile** (`LICENSE`) - Project license (must be created before pyproject.toml for license auto-detection)
+3. **PyprojectConfigFile** (`pyproject.toml`) - Project metadata and dependencies
 4. **MainConfigFile** (`main.py`) - CLI entry point
 5. **ConfigsInitConfigFile** (`dev/configs/__init__.py`) - Configs package initialization
 6. **BuildersInitConfigFile** (`dev/builders/__init__.py`) - Builders package initialization
