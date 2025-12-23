@@ -24,6 +24,16 @@ classifiers = [
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
+keywords = [
+    "project-setup",
+    "automation",
+    "scaffolding",
+    "cli",
+    "testing",
+    "ci-cd",
+    "devops",
+    "packaging",
+]
 
 [project.urls]
 Homepage = "https://github.com/Winipedia/pyrig"

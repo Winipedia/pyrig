@@ -117,6 +117,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     "Issues": f"{get_repo_url_from_git()}/issues",
                     "Changelog": f"{get_repo_url_from_git()}/releases",
                 },
+                "keywords": [],
                 "scripts": {
                     cls.get_project_name(): f"{cli.__name__}:{cli.main.__name__}"
                 },
