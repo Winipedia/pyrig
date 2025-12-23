@@ -79,6 +79,7 @@ classifiers = [                   # PyPI classifiers
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
+keywords = []                     # PyPI search keywords (user-defined, see below)
 dependencies = [                  # Runtime dependencies
     "pyrig>=3.0.1",
     # User dependencies (sorted)
@@ -98,6 +99,35 @@ just like we recommend using the latest version of any package or tool.
 That is the philosophy of pyrig.
 
 **Why**: Standard Python packaging metadata for PyPI distribution with enhanced discoverability through project URLs and auto-detected license.
+
+### Keywords
+
+pyrig generates an **empty `keywords` list** as a placeholder. You should fill this with 5-8 relevant search terms that help users discover your project on PyPI.
+
+**Best Practices**:
+- Use 5-8 keywords (optimal for discoverability)
+- Include primary use cases and features
+- Use hyphenated compound terms (e.g., "task-runner", "cli-framework")
+- Mix broad terms (e.g., "automation") with specific ones (e.g., "ci-cd")
+- Avoid redundancy with classifiers (don't repeat "python", "testing" if already in classifiers)
+- Focus on what users would actually search for
+
+**Note**: You only need keywords if you plan to publish your package to PyPI and add a `PYPI_TOKEN` to your repository secrets.
+
+**Example for a web framework**:
+```toml
+keywords = ["web-framework", "async", "api", "rest", "microservices"]
+```
+
+**Example for a CLI tool**:
+```toml
+keywords = ["cli", "automation", "task-runner", "productivity", "devops"]
+```
+
+**Example for a data processing library**:
+```toml
+keywords = ["data-processing", "etl", "pipeline", "analytics", "big-data"]
+```
 
 ### CLI Entry Points
 
@@ -234,6 +264,7 @@ Several values are determined automatically:
 | `license` | Auto-detected from LICENSE file using spdx-matcher |
 | `requires-python` | Existing value or `>=3.12` |
 | `classifiers` | Generated from `requires-python` + OS Independent + Typing :: Typed |
+| `keywords` | Empty list (user should fill with 5-8 search terms) |
 | `urls` | Auto-generated from git remote (Homepage, Documentation, Source, Issues, Changelog) |
 | `scripts` | Package name → CLI entry point |
 | `module-name` | Package name (hyphens → underscores) |
