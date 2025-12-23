@@ -57,7 +57,7 @@ Requires signed commits for security.
 #### Status Check Requirements
 - **Strict Policy**: Branch must be up to date before merging
 - **Do Not Enforce on Create**: Enabled (allows initial branch creation)
-- **Required Checks**: `protect_repository` job must pass
+- **Required Checks**: `health_check` job must pass
 
 Note: The other workflows are not triggered by a passing health check here because it is not running on main when doing a Pull Request.
 

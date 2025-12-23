@@ -82,7 +82,7 @@ The file contains a complete GitHub ruleset definition:
                 "strict_required_status_checks_policy": true,
                 "do_not_enforce_on_create": true,
                 "required_status_checks": [
-                    {"context": "protect_repository"}
+                    {"context": "health_check"}
                 ]
             }
         },
@@ -136,8 +136,8 @@ The file contains a complete GitHub ruleset definition:
 - Only squash and rebase merges allowed
 
 **Required Status Checks**:
-- `protect_repository` job must pass
-- Branch must be up to date before merging
+- `health_check` job must pass
+- Branch must be up to date before merging and pass tests and other checks
 - Not enforced on branch creation
 
 **Non-Fast-Forward Protection**:

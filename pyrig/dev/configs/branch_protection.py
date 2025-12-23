@@ -52,7 +52,7 @@ class BranchProtectionConfigFile(JsonConfigFile):
             Dict with the branch protection configuration.
         """
         status_check_id = HealthCheckWorkflow.make_id_from_func(
-            HealthCheckWorkflow.job_protect_repository
+            HealthCheckWorkflow.job_health_check
         )
         bypass_id = 5  # GitHubs standard id for repo owner
         return {

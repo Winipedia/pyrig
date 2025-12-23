@@ -111,7 +111,7 @@ graph LR
     C -->|Success| D[Release]
     D -->|Success| E[Publish]
 
-    B -.->|Jobs| B1[protect_repository<br/>health_check_matrix]
+    B -.->|Jobs| B1[protect_repository<br/>health_check_matrix<br/>health_check]
     C -.->|Jobs| C1[build_artifacts<br/>build_container_image]
     D -.->|Jobs| D1[release]
     E -.->|Jobs| E1[publish_package<br/>publish_documentation]
@@ -142,13 +142,14 @@ graph LR
 - Scheduled (daily, staggered by dependency depth)
 
 **Jobs**:
+- **protect_repository**: Applies branch protection rules
 - **health_check_matrix**: Runs across OS (Ubuntu, Windows, macOS) and Python versions
   - Linting (ruff)
   - Type checking (ty, mypy)
   - Security scanning (bandit)
   - Tests with coverage (pytest)
   - Coverage upload (codecov)
-- **health_check**: Aggregates matrix results
+- **health_check**: Aggregates matrix and protection results (required status check for PRs)
 
 **Purpose**: Continuous integration - ensures code quality on every change.
 
