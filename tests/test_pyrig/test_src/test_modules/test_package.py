@@ -118,7 +118,7 @@ class TestDependencyGraph:
     def test___init__(self) -> None:
         """Test method for __init__."""
         # Test it initializes without error
-        graph = DependencyGraph()
+        graph = DependencyGraph.cached()
 
         # Verify it has nodes (should have installed packages)
         num_nodes = len(graph.nodes())
@@ -144,7 +144,7 @@ class TestDependencyGraph:
             return_value=[mock_dist1, mock_dist2],
         )
 
-        graph = DependencyGraph()
+        graph = DependencyGraph.cached()
 
         # Verify nodes were added
         assert_with_msg(
@@ -207,7 +207,7 @@ class TestDependencyGraph:
         mocker.patch.object(DependencyGraph, "build")
 
         # Create a simple dependency graph
-        graph = DependencyGraph()
+        graph = DependencyGraph.cached()
 
         # Add nodes and edges manually
         # Structure: pkg_a -> pkg_b -> pkg_c

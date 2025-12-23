@@ -1,18 +1,7 @@
 """A func that creates __init__.py files for all packages and modules."""
 
-from pyrig.dev.utils.packages import find_packages
-from pyrig.src.modules.package import DOCS_DIR_NAME
+from pyrig.dev.utils.packages import get_namespace_packages
 from pyrig.src.modules.path import ModulePath, make_init_module
-
-
-def get_namespace_packages() -> list[str]:
-    """Get all namespace packages."""
-    packages = find_packages(depth=None)
-    namespace_packages = find_packages(depth=None, include_namespace_packages=True)
-    namespace_packages = [
-        p for p in namespace_packages if not p.startswith(DOCS_DIR_NAME)
-    ]
-    return list(set(namespace_packages) - set(packages))
 
 
 def make_init_files() -> None:

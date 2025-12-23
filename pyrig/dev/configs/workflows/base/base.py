@@ -10,12 +10,11 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-import pyrig
 from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.yaml import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.utils.packages import get_src_package
+from pyrig.dev.utils.packages import get_src_package, src_pkg_is_pyrig
 from pyrig.src.management.container_engine import (
     ContainerEngine,
 )
@@ -856,7 +855,7 @@ class Workflow(YamlConfigFile):
         """
         if step is None:
             step = {}
-        if PyprojectConfigFile.get_package_name() == pyrig.__name__:
+        if src_pkg_is_pyrig():
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
         run = str(ProjectTester.get_run_tests_in_ci_args())
         return cls.get_step(

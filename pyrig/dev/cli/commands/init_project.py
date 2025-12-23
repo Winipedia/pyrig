@@ -159,9 +159,6 @@ def init_project() -> None:
         8. Running tests (validates everything works)
         9. Committing initial changes (creates initial git commit)
     """
-    # for init set log level to info
-    logging.basicConfig(level=logging.INFO)
-
     for step in SETUP_STEPS:
         step_name = make_name_from_obj(step, join_on=" ")
         logger.info(step_name)

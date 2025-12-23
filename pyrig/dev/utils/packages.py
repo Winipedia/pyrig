@@ -8,6 +8,7 @@ from types import ModuleType
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
+import pyrig
 from pyrig.src.modules.package import DOCS_DIR_NAME
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
@@ -79,15 +80,35 @@ def get_src_package() -> ModuleType:
         The main source package as a module object
 
     Raises:
-        StopIteration: If no source package can be found or
-                       if only the test package exists
+        ModuleNotFoundError: if the detection is not reliable
 
     """
     package_names = find_packages(depth=0, include_namespace_packages=False)
     package_paths = [ModulePath.pkg_name_to_relative_dir_path(p) for p in package_names]
-    pkg = next(
-        p for p in package_paths if p.name not in {TESTS_PACKAGE_NAME, DOCS_DIR_NAME}
-    )
+    pkgs = [p for p in package_paths if p.name not in {TESTS_PACKAGE_NAME}]
+    if len(pkgs) != 1:
+        msg = "Could not reliably determine source package."
+        raise ModuleNotFoundError(msg)
+    pkg = pkgs[0]
     pkg_name = pkg.name
 
     return import_module(pkg_name)
+
+
+def src_pkg_is_pyrig() -> bool:
+    """Checks if the current project is pyrig itself.
+
+    Returns:
+        bool: True if pyrig is the current package and project, False otherwise
+    """
+    return get_src_package().__name__ == pyrig.__name__
+
+
+def get_namespace_packages() -> list[str]:
+    """Get all namespace packages."""
+    packages = find_packages(depth=None)
+    namespace_packages = find_packages(depth=None, include_namespace_packages=True)
+    namespace_packages = [
+        p for p in namespace_packages if not p.startswith(DOCS_DIR_NAME)
+    ]
+    return list(set(namespace_packages) - set(packages))

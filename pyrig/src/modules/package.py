@@ -17,7 +17,7 @@ extensible components in those packages.
 
 Example:
     >>> from pyrig.src.modules.package import DependencyGraph
-    >>> graph = DependencyGraph()
+    >>> graph = DependencyGraph.cached()
     >>> dependents = graph.get_all_depending_on("pyrig")
     >>> [m.__name__ for m in dependents]
     ['myapp', 'other_pkg']
@@ -87,7 +87,7 @@ class DependencyGraph(DiGraph):
         Inherits all attributes from DiGraph.
 
     Example:
-        >>> graph = DependencyGraph()
+        >>> graph = DependencyGraph.cached()
         >>> # Find all packages that depend on pyrig
         >>> dependents = graph.get_all_depending_on("pyrig")
         >>> [m.__name__ for m in dependents]
@@ -351,7 +351,7 @@ def get_same_modules_from_deps_depen_on_dep(
         ['smth.dev.configs', 'myapp.dev.configs', 'other_pkg.dev.configs']
     """
     module_name = module.__name__
-    graph = DependencyGraph()
+    graph = DependencyGraph.cached()
     pkgs = graph.get_all_depending_on(dep, include_self=True)
 
     modules: list[ModuleType] = []

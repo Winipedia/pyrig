@@ -28,6 +28,7 @@ Example:
 
 import inspect
 from collections.abc import Callable
+from functools import cache
 from importlib import import_module
 from types import ModuleType
 from typing import Any, overload
@@ -301,3 +302,16 @@ def discard_parent_classes[T: type](
         if any(child in classes for child in cls.__subclasses__()):
             classes.remove(cls)
     return classes
+
+
+@cache
+def get_cached_instance[T](cls: type[T]) -> T:
+    """Get a cached instance of a class.
+
+    Args:
+        cls: The class to instantiate.
+
+    Returns:
+        A cached instance of the class.
+    """
+    return cls()

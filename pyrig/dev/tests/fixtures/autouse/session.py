@@ -23,14 +23,18 @@ import pyrig
 from pyrig import dev, main, resources, src
 from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.create_tests import make_test_skeletons
-from pyrig.dev.cli.commands.make_inits import get_namespace_packages, make_init_files
+from pyrig.dev.cli.commands.make_inits import make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
-from pyrig.dev.utils.packages import find_packages, get_src_package
+from pyrig.dev.utils.packages import (
+    find_packages,
+    get_namespace_packages,
+    get_src_package,
+)
 from pyrig.dev.utils.testing import autouse_session_fixture
 from pyrig.src.git import (
     get_git_unstaged_changes,
@@ -513,7 +517,7 @@ def assert_src_does_not_use_dev() -> None:
 
     src_src_pkg = import_module(src_src_pkg_name)
 
-    pkgs_depending_on_pyrig = DependencyGraph().get_all_depending_on(
+    pkgs_depending_on_pyrig = DependencyGraph.cached().get_all_depending_on(
         pyrig, include_self=True
     )
 

@@ -93,7 +93,7 @@ Issues = "https://github.com/owner/my-app/issues" # Issue tracker
 Changelog = "https://github.com/owner/my-app/releases" # Release notes
 ```
 
-Note: pyrig 3.0.1 is the first release that we consider stable, complete and battle tested.
+Note: pyrig 3.1.1 is the first release that we consider stable, complete and battle tested.
 Please refrain from using any previous versions. In fact we recommend to always use the latest version of pyrig,
 just like we recommend using the latest version of any package or tool.
 That is the philosophy of pyrig.

@@ -101,7 +101,7 @@ This allows any package depending on pyrig to define its own commands by followi
 The `DependencyGraph` class builds a directed graph of package dependencies:
 
 ```python
-graph = DependencyGraph()
+graph = DependencyGraph.cached()
 packages = graph.get_all_depending_on("pyrig", include_self=True)
 # Returns: [pyrig, myapp, myplugin] in topological order
 ```

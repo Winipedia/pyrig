@@ -372,7 +372,7 @@ uv init && uv add company-base && uv run notification-service init
 
 When you run `uv run pyrig mkroot`:
 
-1. **Dependency graph built**: `DependencyGraph().get_all_depending_on("pyrig")`
+1. **Dependency graph built**: `DependencyGraph.cached().get_all_depending_on("pyrig")`
    - Returns: `[pyrig, company-base, auth-service]`
 
 2. **Find config modules**: For each package, find `<package>.dev.configs`

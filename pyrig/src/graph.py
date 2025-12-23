@@ -16,6 +16,10 @@ Example:
     {'app', 'library'}
 """
 
+from typing import Self
+
+from pyrig.src.modules.class_ import get_cached_instance
+
 
 class DiGraph:
     """A directed graph with efficient bidirectional traversal.
@@ -39,6 +43,11 @@ class DiGraph:
         >>> g.ancestors("B")  # What depends on B?
         {'A'}
     """
+
+    @classmethod
+    def cached(cls) -> Self:
+        """Get a cached instance of the graph."""
+        return get_cached_instance(cls)  # type: ignore[no-any-return, arg-type]
 
     def __init__(self) -> None:
         """Initialize an empty directed graph with no nodes or edges."""

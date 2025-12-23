@@ -11,10 +11,9 @@ from typing import Any, ParamSpec
 from requests import RequestException
 from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
-import pyrig
 from pyrig import resources
+from pyrig.dev.utils.packages import src_pkg_is_pyrig
 from pyrig.src.git import git_add_file
-from pyrig.src.modules.package import get_pkg_name_from_cwd
 from pyrig.src.resource import get_resource_path
 
 P = ParamSpec("P")
@@ -52,11 +51,7 @@ def return_resource_file_content_on_exceptions(
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
             result = decorated_func(*args, **kwargs).strip()
-            if (
-                get_pkg_name_from_cwd() == pyrig.__name__
-                and overwrite_resource
-                and result != content
-            ):
+            if src_pkg_is_pyrig() and overwrite_resource and result != content:
                 resource_path.write_text(result, encoding="utf-8")
                 git_add_file(resource_path)
             return result
