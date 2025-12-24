@@ -27,6 +27,9 @@ This command works in any package:
 ```bash
 uv run pyrig version        # Output: pyrig version 2.2.29
 uv run myapp version        # Output: myapp version 1.0.0
+
+# With verbose output (global options work with shared commands too)
+uv run pyrig -v version     # Shows debug information
 ```
 
 ## Discovery Mechanism
@@ -129,6 +132,20 @@ graph LR
 pyrig includes these shared commands:
 
 - **`version`** - Display package version
+
+## Global Options
+
+All shared commands support the same global options as regular commands:
+
+```bash
+# Verbose output
+uv run myapp -v version
+
+# Quiet mode
+uv run myapp -q version
+```
+
+**Note**: Global options (`-v`, `-vv`, `-vvv`, `-q`) must be specified **before** the command name. See [CLI Architecture](architecture.md#global-options) for details on logging levels.
 
 ## Difference from Subcommands
 

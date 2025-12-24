@@ -5,9 +5,12 @@ including support for frozen environments (PyInstaller) and conversions between
 module names and file paths.
 """
 
+import logging
 import sys
 from pathlib import Path
 from types import ModuleType
+
+logger = logging.getLogger(__name__)
 
 
 class ModulePath:
@@ -276,6 +279,8 @@ def make_init_module(path: Path) -> None:
 
     if init_path.exists():
         return
+
+    logger.info("Creating __init__.py file at: %s", init_path)
 
     content = get_default_init_module_content()
     init_path.write_text(content)

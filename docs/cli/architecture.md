@@ -24,6 +24,45 @@ def main() -> None:
     app()                       # Execute Typer application
 ```
 
+### Global Options
+
+The CLI provides global options that apply to all commands through a Typer callback:
+
+```python
+@app.callback()
+def configure_logging(
+    verbose: int = typer.Option(
+        0,
+        "--verbose",
+        "-v",
+        count=True,
+        help="Increase verbosity: -v (DEBUG), -vv (modules), -vvv (timestamps)",
+    ),
+    quiet: bool = typer.Option(
+        False,
+        "--quiet",
+        "-q",
+        help="Only show warnings and errors",
+    ),
+) -> None:
+    """Configure global CLI options."""
+    # Configures logging based on verbosity level
+```
+
+The callback runs before any command, configuring the logging system:
+
+- **Default (no flags)**: INFO level with clean formatting
+- **`-v`**: DEBUG level with level prefix
+- **`-vv`**: DEBUG level with module names
+- **`-vvv`**: DEBUG level with timestamps and full details
+- **`-q/--quiet`**: WARNING level (only warnings and errors)
+
+**Important**: Global options must be specified **before** the command name:
+```bash
+uv run pyrig -v build      # Correct
+uv run pyrig build -v      # Incorrect
+```
+
 ```mermaid
 graph LR
     A[uv run pyrig init] --> B[main]

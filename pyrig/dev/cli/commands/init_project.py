@@ -159,8 +159,9 @@ def init_project() -> None:
         8. Running tests (validates everything works)
         9. Committing initial changes (creates initial git commit)
     """
+    logger.info("Initializing project")
     for step in SETUP_STEPS:
         step_name = make_name_from_obj(step, join_on=" ")
         logger.info(step_name)
         step()
-    logger.info("Setup complete!")
+    logger.info("Initialization complete!")

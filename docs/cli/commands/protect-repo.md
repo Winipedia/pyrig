@@ -6,6 +6,12 @@ Configures repository protection settings and branch protection rulesets on GitH
 
 ```bash
 uv run pyrig protect-repo
+
+# With verbose output to see API requests and responses
+uv run pyrig -v protect-repo
+
+# With detailed debug logging
+uv run pyrig -vv protect-repo
 ```
 
 ## What It Does

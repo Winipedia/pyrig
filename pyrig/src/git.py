@@ -15,6 +15,7 @@ Example:
     myorg/myrepo
 """
 
+import logging
 import os
 from functools import cache
 from pathlib import Path
@@ -22,6 +23,8 @@ from subprocess import CompletedProcess  # nosec: B404
 
 from pyrig.src.modules.package import get_project_name_from_cwd
 from pyrig.src.os.os import run_subprocess
+
+logger = logging.getLogger(__name__)
 
 
 @cache
@@ -92,8 +95,10 @@ def get_repo_owner_and_name_from_git(*, check_repo_url: bool = True) -> tuple[st
     url = get_repo_remote_from_git(check=check_repo_url)
     if not url:
         # we default to git username and repo name from cwd
+        logger.debug("No git remote found, using git username and CWD for repo info")
         owner = get_git_username()
         repo = get_project_name_from_cwd()
+        logger.debug("Derived repository: %s/%s", owner, repo)
         return owner, repo
 
     parts = url.removesuffix(".git").split("/")
@@ -128,6 +133,7 @@ def git_add_file(path: Path, *, check: bool = True) -> CompletedProcess[bytes]:
     # make path relative to cwd if it is absolute
     if path.is_absolute():
         path = path.relative_to(Path.cwd())
+    logger.debug("Adding file to git: %s", path)
     return run_subprocess(["git", "add", str(path)], check=check)
 
 

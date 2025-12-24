@@ -47,6 +47,7 @@ def which_with_raise(cmd: str, *, raise_error: bool = True) -> str | None:
     """
     path = shutil.which(cmd)
     if path is None:
+        logger.debug("Command not found: %s", cmd)
         msg = f"Command {cmd} not found"
         if raise_error:
             raise FileNotFoundError(msg)
@@ -95,7 +96,7 @@ def run_subprocess(  # noqa: PLR0913
     if cwd is None:
         cwd = Path.cwd()
     try:
-        return subprocess.run(  # noqa: S603  # nosec: B603
+        result = subprocess.run(  # noqa: S603  # nosec: B603
             args,
             check=check,
             input=input_,
@@ -106,16 +107,12 @@ def run_subprocess(  # noqa: PLR0913
         )
     except subprocess.CalledProcessError as e:
         logger.exception(
-            """
-Failed to run subprocess:
-    args: %s
-    returncode: %s
-    stdout: %s
-    stderr: %s
-""",
+            "Command failed: %s (exit code %d)\nstdout: %s\nstderr: %s",
             args,
             e.returncode,
             e.stdout.decode("utf-8"),
             e.stderr.decode("utf-8"),
         )
         raise
+    else:
+        return result

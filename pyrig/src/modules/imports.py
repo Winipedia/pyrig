@@ -2,6 +2,7 @@
 
 import importlib.machinery
 import importlib.util
+import logging
 import pkgutil
 from collections.abc import Generator
 from pathlib import Path
@@ -12,6 +13,8 @@ from pyrig.src.modules.module import (
     import_module_with_file_fallback,
 )
 from pyrig.src.modules.path import ModulePath
+
+logger = logging.getLogger(__name__)
 
 
 def module_is_package(obj: ModuleType) -> bool:

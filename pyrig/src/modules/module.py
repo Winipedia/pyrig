@@ -65,6 +65,7 @@ def create_module(path: Path) -> ModuleType:
     make_dir_with_init_file(path.parent)
 
     if not path.exists():
+        logger.info("Creating module at: %s", path)
         path.write_text(get_default_module_content())
     return import_module_with_file_fallback(path)
 
@@ -280,7 +281,11 @@ def import_module_with_default(
     try:
         return import_module(module_name)
     except ImportError:
-        logger.debug("Could not import module %s", module_name)
+        logger.debug(
+            "Could not import module %s, returning default value %s",
+            module_name,
+            default,
+        )
         return default
 
 

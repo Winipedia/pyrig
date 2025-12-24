@@ -27,6 +27,7 @@ Example:
 """
 
 import inspect
+import logging
 from collections.abc import Callable
 from functools import cache
 from importlib import import_module
@@ -40,6 +41,8 @@ from pyrig.src.modules.inspection import (
     get_module_of_obj,
     get_obj_members,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def get_all_methods_from_cls(
@@ -173,6 +176,7 @@ def get_all_subclasses[T: type](
         >>> get_all_subclasses(Base, discard_parents=True)
         {GrandChild}
     """
+    logger.debug("Discovering subclasses of %s", cls.__name__)
     if load_package_before:
         _ = list(walk_package(load_package_before))
     subclasses_set: set[T] = {cls}

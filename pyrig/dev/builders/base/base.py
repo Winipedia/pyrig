@@ -20,6 +20,7 @@ Attributes:
     ARTIFACTS_DIR_NAME: Default output directory for artifacts ("dist").
 """
 
+import logging
 import platform
 import shutil
 import tempfile
@@ -35,6 +36,8 @@ from pyrig.src.modules.package import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
 from pyrig.src.modules.path import ModulePath
+
+logger = logging.getLogger(__name__)
 
 
 class Builder(ABC):
@@ -98,12 +101,14 @@ class Builder(ABC):
         then moves and renames artifacts to the final output directory
         with platform-specific suffixes.
         """
+        logger.debug("Building artifacts with %s", cls.__name__)
         with tempfile.TemporaryDirectory() as temp_build_dir:
             temp_dir_path = Path(temp_build_dir)
             temp_artifacts_dir = cls.get_temp_artifacts_path(temp_dir_path)
             cls.create_artifacts(temp_artifacts_dir)
             artifacts = cls.get_temp_artifacts(temp_artifacts_dir)
             cls.rename_artifacts(artifacts)
+        logger.debug("Built %d artifact(s) with %s", len(artifacts), cls.__name__)
 
     @classmethod
     def rename_artifacts(cls, artifacts: list[Path]) -> None:
@@ -118,7 +123,9 @@ class Builder(ABC):
             # rename the files with -platform.system()
             new_name = f"{artifact.stem}-{platform.system()}{artifact.suffix}"
             new_path = artifacts_dir / new_name
+            logger.debug("Moving artifact: %s to: %s", artifact, new_path)
             shutil.move(str(artifact), str(new_path))
+            logger.info("Created artifact: %s", new_path.name)
 
     @classmethod
     def get_temp_artifacts(cls, temp_artifacts_dir: Path) -> list[Path]:
@@ -182,7 +189,8 @@ class Builder(ABC):
     @classmethod
     def init_all_non_abstract_subclasses(cls) -> None:
         """Instantiate all discovered Builder subclasses to trigger builds."""
-        for builder_cls in cls.get_non_abstract_subclasses():
+        builders = cls.get_non_abstract_subclasses()
+        for builder_cls in builders:
             builder_cls()
 
     @classmethod

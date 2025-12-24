@@ -166,16 +166,23 @@ def create_or_update_ruleset(
     Returns:
         The API response containing the created/updated ruleset.
     """
+    logger.info("Creating or updating ruleset: %s", ruleset_params["name"])
     ruleset_name: str = ruleset_params["name"]
+    logger.debug(
+        "Checking if ruleset '%s' exists for %s/%s", ruleset_name, owner, repo_name
+    )
     ruleset_id = ruleset_exists(
         token=token, owner=owner, repo_name=repo_name, ruleset_name=ruleset_name
     )
 
     endpoint = "rulesets"
     if ruleset_id:
+        logger.debug("Updating existing ruleset: %s (ID: %s)", ruleset_name, ruleset_id)
         endpoint += f"/{ruleset_id}"
+    else:
+        logger.debug("Creating new ruleset: %s", ruleset_name)
 
-    return github_api_request(
+    result = github_api_request(
         token,
         owner,
         repo_name,
@@ -183,6 +190,12 @@ def create_or_update_ruleset(
         method="PUT" if ruleset_id else "POST",
         payload=ruleset_params,
     )
+    logger.info(
+        "Ruleset '%s' %s successfully",
+        ruleset_name,
+        "updated" if ruleset_id else "created",
+    )
+    return result
 
 
 def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
@@ -256,6 +269,7 @@ def github_api_request(  # noqa: PLR0913
     Returns:
         The API response data.
     """
+    logger.debug("GitHub API request: %s %s/%s/%s", method, owner, repo_name, endpoint)
     repo = get_repo(token, owner, repo_name)
     url = f"{repo.url}/{endpoint}"
 
@@ -270,6 +284,7 @@ def github_api_request(  # noqa: PLR0913
         headers=headers,
         input=payload,
     )
+    logger.debug("GitHub API request successful: %s %s", method, endpoint)
     return res
 
 
@@ -298,6 +313,7 @@ def get_github_repo_token() -> str:
     # try os env first
     token = os.getenv("REPO_TOKEN")
     if token:
+        logger.debug("Using REPO_TOKEN from environment variable")
         return token
 
     # try .env next
@@ -308,6 +324,7 @@ def get_github_repo_token() -> str:
     dotenv = dotenv_values(dotenv_path)
     token = dotenv.get("REPO_TOKEN")
     if token:
+        logger.debug("Using REPO_TOKEN from .env file")
         return token
 
     msg = f"Expected REPO_TOKEN in {dotenv_path}"

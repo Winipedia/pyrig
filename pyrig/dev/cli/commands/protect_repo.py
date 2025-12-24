@@ -17,6 +17,7 @@ Example:
     >>> protect_repository()  # Applies all protection rules
 """
 
+import logging
 from typing import Any
 
 from pyrig.dev.configs.branch_protection import BranchProtectionConfigFile
@@ -31,6 +32,8 @@ from pyrig.src.git import (
     get_repo_owner_and_name_from_git,
 )
 
+logger = logging.getLogger(__name__)
+
 
 def protect_repository() -> None:
     """Apply all security protections to the repository.
@@ -38,8 +41,10 @@ def protect_repository() -> None:
     Configures both repository-level settings and branch protection
     rulesets. This is the main entry point for securing a repository.
     """
+    logger.info("Protecting repository")
     set_secure_repo_settings()
     create_or_update_default_branch_ruleset()
+    logger.info("Repository protection complete")
 
 
 def set_secure_repo_settings() -> None:
@@ -52,11 +57,13 @@ def set_secure_repo_settings() -> None:
         - Allow update branch button
         - Disable merge commits (squash and rebase only)
     """
+    logger.info("Configuring secure repository settings")
     owner, repo_name = get_repo_owner_and_name_from_git()
     token = get_github_repo_token()
     repo = get_repo(token, owner, repo_name)
 
     toml_description = PyprojectConfigFile.get_project_description()
+    logger.debug("Setting repository description: %s", toml_description)
 
     repo.edit(
         name=repo_name,
@@ -68,6 +75,7 @@ def set_secure_repo_settings() -> None:
         allow_rebase_merge=True,
         allow_squash_merge=True,
     )
+    logger.info("Repository settings configured successfully")
 
 
 def create_or_update_default_branch_ruleset() -> None:

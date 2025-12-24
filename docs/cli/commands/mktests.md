@@ -6,6 +6,9 @@ Generates test skeletons for all functions and classes in the source package.
 
 ```bash
 uv run pyrig mktests
+
+# With verbose output to see test creation details
+uv run pyrig -v mktests
 ```
 
 ## What It Does

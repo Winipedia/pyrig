@@ -6,6 +6,7 @@ It creates the basic test structure and generates skeleton test functions with
 NotImplementedError to indicate tests that need to be written.
 """
 
+import logging
 from types import ModuleType
 
 from pyrig.dev.utils.packages import get_src_package
@@ -31,6 +32,8 @@ from pyrig.src.testing.convention import (
     make_test_obj_name,
 )
 
+logger = logging.getLogger(__name__)
+
 
 def make_test_skeletons() -> None:
     """Create all test files for the project.
@@ -38,7 +41,11 @@ def make_test_skeletons() -> None:
     This function orchestrates the test creation process by first setting up the base
     test structure and then creating test files for all source packages.
     """
-    create_tests_for_package(get_src_package())
+    logger.info("Creating test skeletons")
+    src_package = get_src_package()
+    logger.debug("Source package: %s", src_package.__name__)
+    create_tests_for_package(src_package)
+    logger.info("Test skeleton creation complete")
 
 
 def create_tests_for_package(package: ModuleType) -> None:
@@ -47,10 +54,13 @@ def create_tests_for_package(package: ModuleType) -> None:
     This function walks through the source package hierarchy and creates corresponding
     test packages and modules for each package and module found in the source.
     """
+    logger.debug("Creating tests for package: %s", package.__name__)
+    module_count = 0
     for pkg, modules in walk_package(package):
         create_test_package(pkg)
         for module in modules:
             create_test_module(module)
+            module_count += 1
 
 
 def create_test_package(package: ModuleType) -> None:
@@ -83,6 +93,7 @@ def create_test_module(module: ModuleType) -> None:
     """
     test_module_name = make_test_obj_importpath_from_obj(module)
     test_module_path = ModulePath.module_name_to_relative_file_path(test_module_name)
+
     test_module = create_module(test_module_path)
     test_module_path = ModulePath.module_type_to_file_path(test_module)
 

@@ -1,5 +1,8 @@
 """Contains a simple test for cli."""
 
+import logging
+
+from pyrig.dev.cli.cli import configure_logging
 from pyrig.dev.cli.shared_subcommands import version
 from pyrig.src.management.pyrigger import Pyrigger
 from pyrig.src.testing.assertions import assert_with_msg
@@ -36,3 +39,18 @@ def test_main() -> None:
         result.returncode == 0,
         "Expected returncode 0",
     )
+
+
+def test_configure_logging() -> None:
+    """Test that configure_logging sets the correct logging level."""
+    # Test default (INFO level)
+    configure_logging(verbose=0, quiet=False)
+    assert logging.root.level == logging.INFO
+
+    # Test quiet mode (WARNING level)
+    configure_logging(verbose=0, quiet=True)
+    assert logging.root.level == logging.WARNING
+
+    # Test verbose mode (DEBUG level)
+    configure_logging(verbose=1, quiet=False)
+    assert logging.root.level == logging.DEBUG

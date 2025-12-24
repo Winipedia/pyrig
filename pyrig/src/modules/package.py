@@ -110,6 +110,7 @@ class DependencyGraph(DiGraph):
         Iterates through all installed distributions, adding each as a node
         and creating edges from each package to its dependencies.
         """
+        logger.debug("Building dependency graph from installed distributions")
         for dist in importlib.metadata.distributions():
             name = self.parse_distname_from_metadata(dist)
             self.add_node(name)
@@ -119,6 +120,7 @@ class DependencyGraph(DiGraph):
                 dep = self.parse_pkg_name_from_req(req)
                 if dep:
                     self.add_edge(name, dep)  # package → dependency
+        logger.debug("Dependency graph built with %d packages", len(self.nodes()))
 
     @staticmethod
     def parse_distname_from_metadata(dist: importlib.metadata.Distribution) -> str:
@@ -220,6 +222,8 @@ class DependencyGraph(DiGraph):
 
         # Sort in topological order (dependencies before dependents)
         dependents = self.topological_sort_subgraph(dependents_set)
+
+        logger.debug("Found packages depending on %s: %s", package, dependents)
 
         return self.import_packages(dependents)
 
@@ -351,6 +355,11 @@ def get_same_modules_from_deps_depen_on_dep(
         ['smth.dev.configs', 'myapp.dev.configs', 'other_pkg.dev.configs']
     """
     module_name = module.__name__
+    logger.debug(
+        "Discovering modules equivalent to %s in packages depending on %s",
+        module_name,
+        dep.__name__,
+    )
     graph = DependencyGraph.cached()
     pkgs = graph.get_all_depending_on(dep, include_self=True)
 
@@ -362,6 +371,9 @@ def get_same_modules_from_deps_depen_on_dep(
         modules.append(pkg_module)
         if isinstance(until_pkg, ModuleType) and pkg.__name__ == until_pkg.__name__:
             break
+    logger.debug(
+        "Found modules equivalent to %s: %s", module_name, [m.__name__ for m in modules]
+    )
     return modules
 
 
@@ -405,6 +417,11 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
         ...     discard_parents=True
         ... )
     """
+    logger.debug(
+        "Discovering subclasses of %s from modules in packages depending on %s",
+        cls.__name__,
+        dep.__name__,
+    )
     subclasses: list[T] = []
     for pkg in get_same_modules_from_deps_depen_on_dep(load_package_before, dep):
         subclasses.extend(
@@ -416,5 +433,11 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
         )
     # as these are different modules and pks we need to discard parents again
     if discard_parents:
+        logger.debug("Discarding parent classes. Only keeping leaf classes...")
         subclasses = discard_parent_classes(subclasses)
+    logger.debug(
+        "Found final leaf subclasses of %s: %s",
+        cls.__name__,
+        [c.__name__ for c in subclasses],
+    )
     return subclasses

@@ -6,6 +6,12 @@ Builds all project artifacts by invoking all registered Builder subclasses.
 
 ```bash
 uv run pyrig build
+
+# With verbose output to see build details
+uv run pyrig -v build
+
+# With detailed logging including module names
+uv run pyrig -vv build
 ```
 
 ## What It Does

@@ -6,6 +6,12 @@ Complete project initialization command that sets up a new pyrig project from sc
 
 ```bash
 uv run pyrig init
+
+# With verbose output to see detailed progress
+uv run pyrig -v init
+
+# With full debug logging
+uv run pyrig -vvv init
 ```
 
 ## What It Does

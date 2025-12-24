@@ -3,7 +3,6 @@
 import inspect
 from contextlib import chdir
 from pathlib import Path
-from types import ModuleType
 
 from pytest_mock import MockFixture
 
@@ -45,44 +44,18 @@ def test_make_test_skeletons(mocker: MockFixture) -> None:
     )
 
 
-def test_create_tests_for_package(mocker: MockFixture) -> None:
+def test_create_tests_for_package(tmp_path: Path) -> None:
     """Test func for create_tests_for_src_package."""
-    # Mock the dependencies
-    mock_walk_package = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".walk_package"
-    )
-    mock_create_test_package = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".create_test_package"
-    )
-    mock_create_test_module = mocker.patch(
-        make_obj_importpath(create_tests_module) + ".create_test_module"
-    )
-
-    # Create mock package and modules
-    mock_package = mocker.MagicMock(spec=ModuleType)
-    mock_module1 = mocker.MagicMock(spec=ModuleType)
-    mock_module2 = mocker.MagicMock(spec=ModuleType)
-
-    # Set up mock return values
-    mock_walk_package.return_value = [(mock_package, [mock_module1, mock_module2])]
-
-    # Call the function
-    create_tests_for_package(package=mock_package)
-
-    # Verify walk_package was called with the source package
-    mock_walk_package.assert_called_once_with(mock_package)
-
-    # Verify create_test_package was called for the package
-    mock_create_test_package.assert_called_once_with(mock_package)
-
-    # Verify create_test_module was called for each module
-    expected_module_calls = 2
-    actual_module_calls = mock_create_test_module.call_count
-    assert_with_msg(
-        actual_module_calls == expected_module_calls,
-        f"Expected create_test_module called {expected_module_calls} times, "
-        f"got {actual_module_calls}",
-    )
+    with chdir(tmp_path):
+        # Create a source package with a module
+        package_path = tmp_path / "src_package"
+        package_path.mkdir()
+        module_path = package_path / "module.py"
+        module_path.write_text('"""Test module."""\n')
+        package = create_package(package_path)
+        create_tests_for_package(package)
+        test_path = tmp_path / "tests/test_src_package/test_module.py"
+        assert test_path.exists()
 
 
 def test_create_test_package(tmp_path: Path) -> None:

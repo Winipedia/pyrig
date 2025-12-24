@@ -10,6 +10,9 @@ uv run pyrig mkroot
 
 # Create only priority config files
 uv run pyrig mkroot --priority
+
+# With verbose output to see which files are created/updated
+uv run pyrig -v mkroot
 ```
 
 ## Options

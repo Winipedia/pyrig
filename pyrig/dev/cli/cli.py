@@ -13,6 +13,7 @@ Example:
     $ uv run pyrig build
 """
 
+import logging
 from importlib import import_module
 
 import typer
@@ -29,8 +30,57 @@ from pyrig.src.modules.module import (
 from pyrig.src.modules.package import get_same_modules_from_deps_depen_on_dep
 from pyrig.src.modules.path import ModulePath
 
+logger = logging.getLogger(__name__)
+
 app = typer.Typer(no_args_is_help=True)
 """The main Typer application instance."""
+
+
+@app.callback()
+def configure_logging(
+    verbose: int = typer.Option(
+        0,
+        "--verbose",
+        "-v",
+        count=True,
+        help="Increase verbosity: -v (DEBUG), -vv (modules), -vvv (timestamps)",
+    ),
+    quiet: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        "--quiet",
+        "-q",
+        help="Only show warnings and errors",
+    ),
+) -> None:
+    """Configure global CLI options.
+
+    Args:
+        verbose: Verbosity level (0=INFO, 1=DEBUG, 2=DEBUG with modules,
+            3+=DEBUG with timestamps)
+        quiet: If True, only show warnings and errors
+    """
+    if quiet:
+        # --quiet: only show warnings and errors
+        level = logging.WARNING
+        fmt = "%(levelname)s: %(message)s"
+    elif verbose == 0:
+        # Default: show info messages with clean formatting
+        level = logging.INFO
+        fmt = "%(message)s"
+    elif verbose == 1:
+        # -v: show debug messages with level prefix
+        level = logging.DEBUG
+        fmt = "%(levelname)s: %(message)s"
+    elif verbose == 2:  # noqa: PLR2004
+        # -vv: show debug messages with module names
+        level = logging.DEBUG
+        fmt = "%(levelname)s [%(name)s] %(message)s"
+    else:
+        # -vvv+: show debug messages with timestamps and full details
+        level = logging.DEBUG
+        fmt = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
+
+    logging.basicConfig(level=level, format=fmt, force=True)
 
 
 def add_subcommands() -> None:
@@ -42,6 +92,7 @@ def add_subcommands() -> None:
     """
     # extract project name from sys.argv[0]
     pkg_name = get_pkg_name_from_argv()
+    logger.debug("Registering subcommands for package: %s", pkg_name)
 
     main_module_name = get_module_name_replacing_start_module(pyrig_main, pkg_name)
     main_module_path = ModulePath.module_name_to_relative_file_path(main_module_name)
@@ -61,6 +112,7 @@ def add_subcommands() -> None:
     sub_cmds = get_all_functions_from_module(subcommands_module)
 
     for sub_cmd in sub_cmds:
+        logger.debug("Registering subcommand: %s", sub_cmd.__name__)  # ty:ignore[unresolved-attribute]
         app.command()(sub_cmd)
 
 
@@ -84,8 +136,13 @@ def add_shared_subcommands() -> None:
         until_pkg=package,
     )
     for shared_subcommands_module in all_shared_subcommands_modules:
+        logger.debug(
+            "Registering shared subcommands from module: %s",
+            shared_subcommands_module.__name__,
+        )
         sub_cmds = get_all_functions_from_module(shared_subcommands_module)
         for sub_cmd in sub_cmds:
+            logger.debug("Registering shared subcommand: %s", sub_cmd.__name__)  # ty:ignore[unresolved-attribute]
             app.command()(sub_cmd)
 
 

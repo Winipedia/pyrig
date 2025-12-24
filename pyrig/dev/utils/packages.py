@@ -1,5 +1,6 @@
 """Helper functions for working with Python packages."""
 
+import logging
 from collections.abc import Iterable
 from importlib import import_module
 from pathlib import Path
@@ -12,6 +13,8 @@ import pyrig
 from pyrig.src.modules.package import DOCS_DIR_NAME
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
+
+logger = logging.getLogger(__name__)
 
 
 def find_packages(
@@ -83,6 +86,7 @@ def get_src_package() -> ModuleType:
         ModuleNotFoundError: if the detection is not reliable
 
     """
+    logger.debug("Discovering top-level source package")
     package_names = find_packages(depth=0, include_namespace_packages=False)
     package_paths = [ModulePath.pkg_name_to_relative_dir_path(p) for p in package_names]
     pkgs = [p for p in package_paths if p.name not in {TESTS_PACKAGE_NAME}]
@@ -91,6 +95,7 @@ def get_src_package() -> ModuleType:
         raise ModuleNotFoundError(msg)
     pkg = pkgs[0]
     pkg_name = pkg.name
+    logger.debug("Identified source package: %s", pkg_name)
 
     return import_module(pkg_name)
 
@@ -107,9 +112,12 @@ def src_pkg_is_pyrig() -> bool:
 
 def get_namespace_packages() -> list[str]:
     """Get all namespace packages."""
+    logger.debug("Discovering namespace packages")
     packages = find_packages(depth=None)
     namespace_packages = find_packages(depth=None, include_namespace_packages=True)
     namespace_packages = [
         p for p in namespace_packages if not p.startswith(DOCS_DIR_NAME)
     ]
-    return list(set(namespace_packages) - set(packages))
+    result = list(set(namespace_packages) - set(packages))
+    logger.debug("Found %d namespace packages: %s", len(result), result)
+    return result

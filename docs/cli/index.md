@@ -50,3 +50,19 @@ uv run myapp <command>   # Run myapp-specific commands
 uv run myapp version     # Shared commands work too
 ```
 
+## Global Options
+
+All commands support global verbosity and quiet flags:
+
+```bash
+# Increase verbosity (can be repeated)
+uv run pyrig -v build          # DEBUG level with level prefix
+uv run pyrig -vv build         # DEBUG level with module names
+uv run pyrig -vvv build        # DEBUG level with timestamps
+
+# Quiet mode (only warnings and errors)
+uv run pyrig -q build          # Suppress info messages
+```
+
+**Note**: Global options must come **before** the command name (e.g., `pyrig -v build`, not `pyrig build -v`).
+

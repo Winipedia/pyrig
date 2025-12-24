@@ -6,6 +6,8 @@ It delegates to the ConfigFile system to discover and initialize
 all registered config file types.
 """
 
+import logging
+
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.configs.licence import LicenceConfigFile
@@ -15,6 +17,8 @@ from pyrig.dev.configs.python.configs_init import ConfigsInitConfigFile
 from pyrig.dev.configs.python.main import MainConfigFile
 from pyrig.dev.configs.testing.fixtures_init import FixturesInitConfigFile
 from pyrig.dev.configs.testing.zero_test import ZeroTestConfigFile
+
+logger = logging.getLogger(__name__)
 
 
 def make_project_root(*, priority: bool = False) -> None:
@@ -30,10 +34,13 @@ def make_project_root(*, priority: bool = False) -> None:
 
     This is the implementation for the `pyrig create-root` command.
     """
+    logger.info("Creating project root")
     if priority:
+        logger.info("Creating only priority config files")
         init_config_files(get_priority_config_files())
         return
     init_all_config_files()
+    logger.info("Project root creation complete")
 
 
 def init_all_config_files() -> None:
@@ -42,9 +49,14 @@ def init_all_config_files() -> None:
     Initializes files in order: priority files first, then ordered
     files, then all remaining files.
     """
-    init_config_files(get_priority_config_files())
-    init_config_files(get_ordered_config_files())
-    init_config_files(get_unordered_config_files())
+    priority_files = get_priority_config_files()
+    init_config_files(priority_files)
+
+    ordered_files = get_ordered_config_files()
+    init_config_files(ordered_files)
+
+    unordered_files = get_unordered_config_files()
+    init_config_files(unordered_files)
 
 
 def init_config_files(config_files: list[type[ConfigFile]]) -> None:

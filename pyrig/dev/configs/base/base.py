@@ -21,6 +21,7 @@ Subclasses must implement:
 """
 
 import inspect
+import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
@@ -32,6 +33,8 @@ from pyrig.src.modules.package import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
 from pyrig.src.string import split_on_uppercase
+
+logger = logging.getLogger(__name__)
 
 
 class ConfigFile(ABC):
@@ -105,17 +108,25 @@ class ConfigFile(ABC):
         Raises:
             ValueError: If the config file cannot be made correct.
         """
-        self.get_path().parent.mkdir(parents=True, exist_ok=True)
-        if not self.get_path().exists():
-            self.get_path().touch()
+        path = self.get_path()
+        logger.debug(
+            "Initializing config file: %s at: %s",
+            self.__class__.__name__,
+            path,
+        )
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if not path.exists():
+            logger.info("Creating config file %s at: %s", self.__class__.__name__, path)
+            path.touch()
             self.dump(self.get_configs())
 
         if not self.is_correct():
+            logger.info("Updating config file %s at: %s", self.__class__.__name__, path)
             config = self.add_missing_configs()
             self.dump(config)
 
         if not self.is_correct():
-            msg = f"Config file {self.get_path()} is not correct."
+            msg = f"Config file {path} is not correct."
             raise ValueError(msg)
 
     @classmethod

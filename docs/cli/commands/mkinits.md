@@ -6,6 +6,9 @@ Creates `__init__.py` files for all packages and modules that are missing them.
 
 ```bash
 uv run pyrig mkinits
+
+# With verbose output to see which __init__.py files are created
+uv run pyrig -v mkinits
 ```
 
 ## What It Does

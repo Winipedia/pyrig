@@ -1,7 +1,11 @@
 """A func that creates __init__.py files for all packages and modules."""
 
+import logging
+
 from pyrig.dev.utils.packages import get_namespace_packages
 from pyrig.src.modules.path import ModulePath, make_init_module
+
+logger = logging.getLogger(__name__)
 
 
 def make_init_files() -> None:
@@ -9,9 +13,16 @@ def make_init_files() -> None:
 
     Will not overwrite existing files.
     """
+    logger.info("Starting __init__.py file creation")
     any_namespace_packages = get_namespace_packages()
-    if any_namespace_packages:
-        # make init files for all namespace packages
-        for package in any_namespace_packages:
-            pkg_dir = ModulePath.pkg_name_to_relative_dir_path(package)
-            make_init_module(pkg_dir)
+    if not any_namespace_packages:
+        logger.info(
+            "No namespace packages found, all packages already have __init__.py files"
+        )
+        return
+
+    # make init files for all namespace packages
+    for package in any_namespace_packages:
+        pkg_dir = ModulePath.pkg_name_to_relative_dir_path(package)
+        make_init_module(pkg_dir)
+    logger.info("Created __init__.py files for all namespace packages")

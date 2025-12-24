@@ -73,7 +73,7 @@ def assert_no_untested_objs() -> Callable[
             if isinstance(test_obj, ModuleType):
                 # we skip if module not found bc that means it has custom tests
                 # and is not part of the mirrored structure
-                logger.warning("No source module found for %s, skipping", test_obj)
+                logger.debug("No source module found for %s, skipping", test_obj)
                 return
             raise
         objs = get_objs_from_obj(obj)

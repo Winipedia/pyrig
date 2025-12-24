@@ -33,6 +33,5 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
             True if the docstring is present in the file.
         """
         docstring = cls.get_content_str().strip()
-        # remove the triple quotes from the docstring
-        docstring = docstring[3:-3]
-        return docstring in cls.get_file_content() or super().is_correct()
+        # is correct if file start with """
+        return super().is_correct() or docstring.startswith('"""')

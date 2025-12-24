@@ -364,7 +364,6 @@ def assert_pre_commit_is_installed() -> None:
     args = PreCommitter.get_install_args()
     completed_process = args.run()
     stdout = completed_process.stdout.decode("utf-8")
-    logger.info("Pre-commit install output: %s", stdout)
     expected = "pre-commit installed at"
 
     pre_commits_are_installed = expected in stdout
@@ -427,7 +426,7 @@ def assert_src_runs_without_dev_deps(
         std_msg = stderr + stdout
         no_internet = "Temporary failure in name resolution" in std_msg
         if no_internet:
-            logger.warning(
+            logger.info(
                 "No internet, skipping %s",
                 func_name,
             )
