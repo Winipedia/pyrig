@@ -12,11 +12,12 @@ import pytest
 from pytest_mock import MockerFixture
 
 from pyrig import main
-from pyrig.dev.cli.commands.create_tests import make_test_skeletons
+from pyrig.dev.cli.commands.create_tests import create_test_module
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.python.main import MainConfigFile
 from pyrig.dev.utils.testing import session_fixture
 from pyrig.src.management.package_manager import PackageManager
+from pyrig.src.modules.inspection import get_module_of_obj
 from pyrig.src.modules.module import (
     get_module_content_as_str,
     get_module_name_replacing_start_module,
@@ -88,7 +89,8 @@ def assert_no_untested_objs() -> Callable[
 
         # get the modules of these obj
         if missing_test_obj_path_to_obj:
-            make_test_skeletons()
+            module = get_module_of_obj(obj)
+            create_test_module(module)
 
         msg = f"""Found missing tests. Tests skeletons were automatically created for:
         {make_summary_error_msg(missing_test_obj_path_to_obj.keys())}

@@ -16,6 +16,7 @@ from pyrig.src.modules.class_ import (
     get_all_methods_from_cls,
     get_all_nonabstract_subclasses,
     get_all_subclasses,
+    get_cached_instance,
     init_all_nonabstract_subclasses,
 )
 from pyrig.src.testing.assertions import assert_with_msg
@@ -269,3 +270,14 @@ def test_discard_parent_classes() -> None:
     classes = discard_parent_classes([ParentClass, TestClass])
     assert ParentClass not in classes, f"Expected ParentClass not in {classes}"
     assert TestClass in classes, f"Expected TestClass in {classes}"
+
+
+def test_get_cached_instance() -> None:
+    """Test function."""
+
+    class TestClass:
+        """Test class."""
+
+    instance1 = get_cached_instance(TestClass)
+    instance2 = get_cached_instance(TestClass)
+    assert instance1 is instance2

@@ -101,7 +101,8 @@ def src_pkg_is_pyrig() -> bool:
     Returns:
         bool: True if pyrig is the current package and project, False otherwise
     """
-    return get_src_package().__name__ == pyrig.__name__
+    pkgs = find_packages(depth=0, include_namespace_packages=False)
+    return pyrig.__name__ in pkgs
 
 
 def get_namespace_packages() -> list[str]:

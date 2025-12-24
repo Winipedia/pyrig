@@ -11,6 +11,7 @@ from pyrig.dev.utils.packages import (
     find_packages,
     get_namespace_packages,
     get_src_package,
+    src_pkg_is_pyrig,
 )
 from pyrig.src.modules.module import make_obj_importpath
 from pyrig.src.testing.assertions import assert_with_msg
@@ -118,3 +119,8 @@ def test_get_namespace_packages(tmp_path: Path) -> None:
         assert get_namespace_packages() == ["src"]
         (Path.cwd() / "src" / "__init__.py").write_text("")
         assert get_namespace_packages() == []
+
+
+def test_src_pkg_is_pyrig() -> None:
+    """Test function."""
+    assert src_pkg_is_pyrig()

@@ -144,7 +144,7 @@ class TestDependencyGraph:
             return_value=[mock_dist1, mock_dist2],
         )
 
-        graph = DependencyGraph.cached()
+        graph = DependencyGraph()
 
         # Verify nodes were added
         assert_with_msg(
