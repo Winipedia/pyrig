@@ -7,7 +7,7 @@ This section contains supplementary documentation about pyrig's design decisions
 Complete guide to setting up a new pyrig project from scratch:
 
 - **Prerequisites**: Git, uv, Podman (optional)
-- **Required Tokens**: GitHub (REPO_TOKEN), PyPI (optional), Codecov account (required for badge), CODECOV_TOKEN (recommended)
+- **Required Tokens**: GitHub (REPO_TOKEN), PyPI (optional), Codecov account (recommended), CODECOV_TOKEN (recommended)
 - **Setup Steps**: Create repo, clone, uv init, add pyrig, configure .env, run init
 - **What You Get**: Complete project structure, configs, CI/CD workflows, dev tools
 - **Next Steps**: Start coding, make changes, release

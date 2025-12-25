@@ -63,16 +63,6 @@ When initialized via `uv run pyrig mkroot`, the `.experiment.py` file is created
 
 That's it! The file contains only a single-line docstring.
 
-### Content Generation
-
-```python
-@classmethod
-def get_content_str(cls) -> str:
-    """Get the experiment file content."""
-    return '''"""This file is for experimentation and is ignored by git."""
-'''
-```
-
 The minimal content allows you to add whatever code you want without worrying about validation.
 
 ## Git Integration
@@ -172,17 +162,7 @@ print(response.json())
 
 ## Validation Logic
 
-The validation is inherited from `TextConfigFile`:
-
-```python
-@classmethod
-def is_correct(cls) -> bool:
-    """Check if the file contains the required content."""
-    return (
-        super().is_correct()
-        or cls.get_content_str().strip() in cls.load()[cls.CONTENT_KEY]
-    )
-```
+The validation is inherited from `TextConfigFile` and checks if the required docstring exists somewhere in the file.
 
 **Required element**: The docstring must exist somewhere in the file.
 

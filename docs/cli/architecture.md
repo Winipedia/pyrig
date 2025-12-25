@@ -17,39 +17,13 @@ Running `uv run pyrig <command>` calls the `main()` function in `pyrig/dev/cli/c
 
 The `main()` function orchestrates command discovery in three steps:
 
-```python
-def main() -> None:
-    add_subcommands()           # Register project-specific commands
-    add_shared_subcommands()    # Register shared commands
-    app()                       # Execute Typer application
-```
+1. **Register project-specific commands** - Discovers commands from the current package's `subcommands` module
+2. **Register shared commands** - Discovers commands from all packages in the dependency chain
+3. **Execute Typer application** - Runs the CLI with all registered commands
 
 ### Global Options
 
-The CLI provides global options that apply to all commands through a Typer callback:
-
-```python
-@app.callback()
-def configure_logging(
-    verbose: int = typer.Option(
-        0,
-        "--verbose",
-        "-v",
-        count=True,
-        help="Increase verbosity: -v (DEBUG), -vv (modules), -vvv (timestamps)",
-    ),
-    quiet: bool = typer.Option(
-        False,
-        "--quiet",
-        "-q",
-        help="Only show warnings and errors",
-    ),
-) -> None:
-    """Configure global CLI options."""
-    # Configures logging based on verbosity level
-```
-
-The callback runs before any command, configuring the logging system:
+The CLI provides global options that apply to all commands through a Typer callback that runs before any command executes, configuring the logging system:
 
 - **Default (no flags)**: INFO level with clean formatting
 - **`-v`**: DEBUG level with level prefix
@@ -224,5 +198,5 @@ graph TD
 
 The function's docstring becomes the command's help text, and Typer automatically generates argument parsing from the function signature.
 
-You will not be building a crazy CLI package with this or an cli based application, but it comes quite in handy for building a CLI for your project and have some simple commands that can be executed from the command line because lets be honest no one like doing `python -m myapp.subpkg.subpkg2.module` instead of `uv run myapp deploy`. Also you dont need the classic `if __name__ == "__main__":` boilerplate anymore this way.
+The pyrig CLI system is designed for project automation and development workflows, not for building complex CLI applications. It provides a convenient way to execute project commands without the verbosity of `python -m myapp.subpkg.subpkg2.module` or the boilerplate of `if __name__ == "__main__":` guards. Simply define functions in your `subcommands.py` module and they become accessible as `uv run myapp <command>`. I suppose if done right you can also use it to build some more complex CLI apps on top of it but that is not the intended primary use case. 
 

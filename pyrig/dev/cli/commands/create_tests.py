@@ -57,7 +57,8 @@ def create_tests_for_package(package: ModuleType) -> None:
     futures: list[Future[None]] = []
     with ThreadPoolExecutor() as executor:
         for pkg, modules in walk_package(package):
-            futures.append(executor.submit(create_test_package, pkg))
+            if not modules:
+                futures.append(executor.submit(create_test_package, pkg))
             futures.extend(
                 executor.submit(create_test_module, module) for module in modules
             )

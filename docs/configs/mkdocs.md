@@ -68,43 +68,10 @@ theme:
 
 ### Required Configuration
 
-The `get_configs()` method returns the minimal required structure:
-
-```python
-{
-    "site_name": PyprojectConfigFile.get_project_name(),
-    "nav": [
-        {"Home": IndexConfigFile.get_path().name},
-    ],
-    "plugins": ["search", "mermaid2"],
-    "theme": {
-        "name": "material",
-        "palette": [
-            {
-                "scheme": "slate",
-                "toggle": {
-                    "icon": "material/brightness-4",
-                    "name": "Light mode",
-                },
-            },
-            {
-                "scheme": "default",
-                "toggle": {
-                    "icon": "material/brightness-7",
-                    "name": "Dark mode",
-                },
-            },
-        ],
-    },
-}
-```
-
-Note: mermaid2 is a plugin that allows you to write mermaid diagrams in your markdown files. It is not a required plugin, but it is highly recommended. And AI makes it very easy to create beautiful diagrams and docs these days. Also the package is included via `pyrig-dev`
-
 **Four required keys**:
 1. **`site_name`**: Automatically pulled from `pyproject.toml` project name
-2. **`nav`**: Navigation with at least a Home entry pointing to `index.md` created by pyrig's `IndexConfigFile`
-3. **`plugins`**: Search and Mermaid2 plugins enabled
+2. **`nav`**: Navigation with at least a Home entry pointing to `index.md` in the docs directory
+3. **`plugins`**: Search and Mermaid2 plugins enabled (mermaid2 allows beautiful diagrams in markdown, included via `pyrig-dev`)
 4. **`theme`**: Material theme with dark mode as default and light/dark toggle
 
 ### Validation Logic
@@ -123,43 +90,13 @@ The MkDocs config adapts to your project automatically:
 
 ### Site Name
 
-```python
-"site_name": PyprojectConfigFile.get_project_name()
-```
-
 Automatically uses your project name from `pyproject.toml`. If your project is named `my-awesome-project`, the site name becomes `my-awesome-project`.
 
 ### Home Page Path
 
-```python
-{"Home": IndexConfigFile.get_path().name}
-```
-
-References the `docs/index.md` file created by `IndexConfigFile`. The path is dynamically determined, ensuring navigation always points to the correct file.
+The navigation automatically points to `index.md` in the docs directory, which is created by pyrig's `IndexConfigFile`. This ensures the homepage is always correctly referenced.
 
 ### Material Theme
-
-```python
-"theme": {
-    "name": "material",
-    "palette": [
-        {
-            "scheme": "slate",
-            "toggle": {
-                "icon": "material/brightness-4",
-                "name": "Light mode",
-            },
-        },
-        {
-            "scheme": "default",
-            "toggle": {
-                "icon": "material/brightness-7",
-                "name": "Dark mode",
-            },
-        },
-    ],
-}
-```
 
 Pyrig uses the Material theme by default, which provides:
 - Modern, responsive design
@@ -288,5 +225,5 @@ This is why pyrig's documentation can include architecture diagrams directly in 
 
 1. **Keep required keys**: Don't remove `site_name`, `nav`, `plugins`, or `theme`
 2. **Extend navigation**: Add your pages to the `nav` list
-4. **Organize docs**: Use subdirectories in `docs/` for structure
-5. **Preview locally**: Always run `mkdocs serve` before deploying via the `publish.yaml` github workflow by pushing to main
+3. **Organize docs**: Use subdirectories in `docs/` for structure
+4. **Preview locally**: Always run `uv run mkdocs serve` before deploying via the `publish.yaml` github workflow by pushing to main

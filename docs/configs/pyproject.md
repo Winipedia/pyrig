@@ -50,7 +50,7 @@ graph LR
     B -.-> B1[Metadata, deps,<br/>scripts, classifiers]
     C -.-> C1[uv backend]
     D -.-> D1[dev: pyrig-dev]
-    E -.-> E1[ruff, mypy, ty,<br/>pytest, bandit,<br/>coverage]
+    E -.-> E1[ruff, mypy, ty,<br/>pytest, bandit]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -93,10 +93,7 @@ Issues = "https://github.com/owner/my-app/issues" # Issue tracker
 Changelog = "https://github.com/owner/my-app/releases" # Release notes
 ```
 
-Note: pyrig 3.1.1 is the first release that we consider stable, complete and battle tested.
-Please refrain from using any previous versions. In fact we recommend to always use the latest version of pyrig,
-just like we recommend using the latest version of any package or tool.
-That is the philosophy of pyrig.
+**Note**: We recommend always using the latest version of pyrig (and all dependencies). Pyrig follows semantic versioning and maintains backward compatibility within major versions.
 
 **Why**: Standard Python packaging metadata for PyPI distribution with enhanced discoverability through project URLs and auto-detected license.
 
@@ -133,14 +130,19 @@ keywords = ["data-processing", "etl", "pipeline", "analytics", "big-data"]
 
 ```toml
 [project.scripts]
-my-app = "pyrig.dev.cli.cli:main"      # CLI command: my-app, but pyrig handles the calling of the main function in cli.py of pyrig
+my-app = "pyrig.dev.cli.cli:main"      # Creates CLI command: my-app
 ```
 
-**Why**: Creates executable command when package is installed, so that you can call your code via `uv run my-app <command>`
+**Why**: Creates an executable command when the package is installed. The entry point references pyrig's CLI infrastructure, which automatically discovers and runs your project's subcommands. You can invoke it via `uv run my-app <command>` or just `my-app <command>` after installation.
 
 ### Dependencies
 
 ```toml
+[project]
+dependencies = [                  # Runtime dependencies
+    "pyrig>=3.0.1",
+    # User dependencies (sorted)
+]
 
 [dependency-groups]
 dev = [                           # Development dependencies
@@ -149,10 +151,10 @@ dev = [                           # Development dependencies
 ]
 ```
 
-**Why**: 
-- `dependencies`: Required for package to run
+**Why**:
+- `dependencies`: Required for package to run (includes pyrig runtime)
 - `dev`: Only needed for development (testing, linting, etc.)
-- `pyrig-dev` auto-added to ensure pyrig tools available
+- `pyrig-dev` auto-added to dev dependencies to ensure development tools are available
 
 ### Build System
 
@@ -183,9 +185,9 @@ ignore = [
     "ANN401",                     # any-type (allow typing.Any)
 ]
 fixable = ["ALL"]                 # Auto-fix all rules
-per-file-ignores = {
-    "**/tests/**/*.py" = ["S101"]  # Allow assert in tests and dev/tests/fixtures
-}
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**/*.py" = ["S101"]     # Allow assert in tests
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"             # Use Google docstring style
@@ -201,8 +203,8 @@ convention = "google"             # Use Google docstring style
 ### ty (Type Checker)
 
 ```toml
-[tool.ty]
-terminal.error-on-warning = true  # Treat warnings as errors
+[tool.ty.terminal]
+error-on-warning = true  # Treat warnings as errors
 ```
 
 **Why**: Strict type checking - no warnings allowed.
@@ -259,14 +261,14 @@ Several values are determined automatically:
 | Setting | Source |
 |---------|--------|
 | `name` | Current directory name |
-| `authors` | Git repo owner |
-| `maintainers` | Git repo owner |
-| `license` | Auto-detected from LICENSE file using spdx-matcher |
-| `requires-python` | Existing value or `>=3.12` |
+| `authors` | Git repo owner from remote URL or `git config user.name` |
+| `maintainers` | Git repo owner from remote URL or `git config user.name` |
+| `license` | Auto-detected from LICENSE file using spdx-matcher library |
+| `requires-python` | Existing value or `>=3.12` (default) |
 | `classifiers` | Generated from `requires-python` + OS Independent + Typing :: Typed |
-| `keywords` | Empty list (user should fill with 5-8 search terms) |
+| `keywords` | Empty list (user should fill with 5-8 search terms for PyPI) |
 | `urls` | Auto-generated from git remote (Homepage, Documentation, Source, Issues, Changelog) |
-| `scripts` | Package name → CLI entry point |
+| `scripts` | Package name → pyrig CLI entry point |
 | `module-name` | Package name (hyphens → underscores) |
 
 ## Dependency Management
@@ -316,6 +318,6 @@ uv run pyrig mkroot  # Validates and merges changes
 2. **Use uv for dependencies**: Don't manually edit dependency lists
 3. **Keep coverage high**: 90% minimum enforced by pytest
 4. **Follow strict typing**: MyPy strict mode catches bugs early
-5. **Let ruff auto-fix**: Run `ruff check --fix` before committing
+5. **Let ruff auto-fix**: Run `uv run ruff check --fix` before committing
 
 

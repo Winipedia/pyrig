@@ -69,8 +69,7 @@ Creates essential config files with `get_priority() > 0`, grouped by priority:
 Priority groups are processed sequentially (highest first), with files in the same group initialized in parallel. These files are required before other setup steps can proceed.
 
 ### 4. Syncing Venv (Again)
-Ensures the venv reflects the newly created config files and uv installs the project itself.
-Activates the cli of my-app.
+Ensures the venv reflects the newly created config files. This step installs the project itself, making the project's CLI commands available (e.g., `uv run myapp <command>`).
 
 ### 5. Creating Project Root
 Generates all config files and directory structure by calling `mkroot` internally. See [mkroot](mkroot.md) for details.

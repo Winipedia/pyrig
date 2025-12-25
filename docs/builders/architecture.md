@@ -60,29 +60,16 @@ graph LR
 5. **Instantiate each builder** to trigger the build process
 
 This means only the most specific (leaf) implementations are executed.
-If you have non-abstract Builder in package A and then subclass that class in B then only the subclass in B will be executed. The same goes for ConfigFiles
+If you have a non-abstract Builder in package A and then subclass that class in package B, then only the subclass in B will be executed. The same behavior applies to ConfigFiles.
 
 ## Builder Base Class
 
-The `Builder` abstract base class provides the framework:
+The `Builder` abstract base class provides the framework for creating custom builders. All builders must:
+- Inherit from `Builder`
+- Implement the `create_artifacts` method
+- Be placed in a `dev/builders/` module
 
-```python
-from abc import ABC, abstractmethod
-from pathlib import Path
-
-class Builder(ABC):
-    ARTIFACTS_DIR_NAME = "dist"
-    
-    @classmethod
-    @abstractmethod
-    def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
-        """Implement this to create your artifacts."""
-        pass
-    
-    def __init__(self) -> None:
-        """Instantiation triggers the build."""
-        self.__class__.build()
-```
+When instantiated, the builder automatically triggers the build process.
 
 ### Key Methods
 
@@ -96,36 +83,21 @@ class Builder(ABC):
 
 ## Build Process
 
-### 1. Temporary Directory Creation
+The build process follows these steps:
 
-```python
-with tempfile.TemporaryDirectory() as temp_build_dir:
-    temp_artifacts_dir = cls.get_temp_artifacts_path(temp_dir_path)
-```
+### 1. Temporary Directory Creation
 
 Builds happen in isolated temporary directories to avoid polluting the workspace.
 
 ### 2. Artifact Creation
 
-```python
-cls.create_artifacts(temp_artifacts_dir)
-```
-
-Your implementation writes artifacts to the temporary directory.
+Your `create_artifacts` implementation writes artifacts to the temporary directory.
 
 ### 3. Artifact Collection
-
-```python
-artifacts = cls.get_temp_artifacts(temp_artifacts_dir)
-```
 
 All files in the temp directory are collected as artifacts.
 
 ### 4. Platform-Specific Naming
-
-```python
-cls.rename_artifacts(artifacts)
-```
 
 Artifacts are moved to `dist/` with platform suffixes:
 - `my-app-Linux` on Linux
@@ -163,7 +135,8 @@ myapp/
         ├── __init__.py
         └── documentation.py  # DocumentationBuilder defined here
 ```
-You actually should not need one becuase pyrig will host your documentation for you on github pages via the workflows and builds them via mkdocs, but this is just an example of how subclassing the Builder base class work.
+
+Note: You actually should not need a documentation builder because pyrig will host your documentation for you on GitHub Pages via the workflows and build them via MkDocs. This is just an example of how subclassing the Builder base class works.
 
 ### Automatic Discovery
 
@@ -207,5 +180,5 @@ The `Builder` class provides utilities for accessing project paths:
 
 These are particularly useful for PyInstaller builders and custom build processes.
 
-If you do it right you should never even have to execute the command `uv run pyrig build` because the CI/CD pipeline will do it for you and upload the artifacts to github and add them to the release.
+Note: If you set up your project correctly, you should never need to manually execute `uv run pyrig build` because the CI/CD pipeline will automatically build artifacts, upload them to GitHub, and add them to releases.
 

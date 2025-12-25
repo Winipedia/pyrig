@@ -8,6 +8,8 @@ pyrig's ConfigFile system provides automatic creation, validation, and updating 
 
 The `ConfigFile` abstract base class is the foundation of the configuration system. All config files inherit from it or one of its format-specific subclasses.
 
+When you run `pyrig mkroot` or `pyrig init`, all ConfigFile subclasses are automatically discovered and initialized, creating the complete project configuration.
+
 ```mermaid
 graph TD
     A[ConfigFile] --> B[YamlConfigFile]
@@ -81,7 +83,7 @@ graph TD
     style I fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Note**: Config files are grouped by priority and initialized sequentially by group (highest priority first). Within each priority group, files are initialized in parallel using ThreadPoolExecutor for improved performance.
+**Note**: Config files are grouped by priority and initialized by group (highest priority first). Within each priority group, files are initialized in parallel using ThreadPoolExecutor for improved performance.
 
 ### Validation Logic
 
@@ -89,17 +91,16 @@ A config file is considered correct if:
 1. **Empty file** - User opted out of this configuration file
 2. **Superset validation** - Actual config contains all expected keys/values
 
-The validation uses `nested_structure_is_subset` to recursively check that the expected configuration is a subset of the actual configuration. Please only use lists and dicts to define your configuration.
+The validation recursively checks that the expected configuration is a subset of the actual configuration. Only use lists and dicts to define your configuration structure.
 
 ### Smart Merging
 
-When configs are missing, the system intelligently merges them:
-- **Dict values** - Missing keys are added and key that have wrong values are corrected. So watch out! Pyrig does overwrite values.
+When configs are missing or incorrect, the system intelligently merges them:
+- **Dict values** - Missing keys are added. **Important**: Keys with incorrect values are overwritten with the expected values from `get_configs()`. This ensures required configuration is always correct.
 - **List values** - Missing items are inserted at the correct index
-- **User additions** - Preserved during merge as long as not incorrectly overwriting defaults that pyrig asserts and enforces via overwriting wrong values.
+- **User additions** - Preserved during merge (extra keys in dicts, extra items in lists)
 
-Note:
-If you want to change default values, you will have to subclass the specific config file and overwrite the `get_configs` method or any other method you want behavior adjusted in. I highly recommend keeping the class name the same as the filename is derived from it unless you overwrite `get_filename`. Just import the class from pyrig via the as syntax: `from pyrig.dev.configs.some.config_file import MainConfigFile as BaseMainConfigFile` and subclass it.
+**Customizing default values**: To change default values, subclass the specific config file and override the `get_configs()` method. Keep the class name the same (filename is derived from it) unless you also override `get_filename()`. Import the base class using: `from pyrig.dev.configs.some.config_file import MainConfigFile as BaseMainConfigFile` and subclass it.
 
 ## Automatic Discovery
 
@@ -129,121 +130,68 @@ Note: I highly recommend doing any changes to config files via a subclass and no
 
 ### Initialization Order
 
-Config files are initialized in two phases during `pyrig init` or `pyrig mkroot`:
+Config files are initialized during `pyrig mkroot` or `pyrig init` using a priority-based system that balances correctness with performance.
 
-1. **Priority files** (priority > 0) - Required by other configs, initialized sequentially in order of priority (highest first)
-2. **Non-priority files** (priority <= 0) - Independent configs, initialized in parallel for performance
+#### Priority System
 
-#### Priority Initialization System
+Each ConfigFile subclass can override `get_priority()` to specify initialization order:
 
-The priority initialization system is now implemented directly in the `ConfigFile` base class through the `get_priority()` method and related class methods.
-
-**Priority Method** - Each ConfigFile subclass can override `get_priority()`:
 ```python
 @classmethod
 def get_priority(cls) -> float:
-    """Get the priority for this config file.
+    """Return priority for this config file.
 
-    Returns:
-        The priority as a float. Higher numbers are processed first.
-        Return 0 (default) if order doesn't matter.
+    Higher numbers are processed first. Return 0 (default) if order doesn't matter.
     """
     return 0  # Default: no priority
 ```
 
-**Priority Values in pyrig**:
-- `LicenceConfigFile`: 30 (highest - must exist before pyproject.toml for license detection)
-- `PyprojectConfigFile`: 20 (must exist before other configs)
+**Priority values in pyrig**:
+- `LicenceConfigFile`: 30 (must exist before pyproject.toml for license detection)
+- `PyprojectConfigFile`: 20 (must exist before other configs that read from it)
 - `ConfigsInitConfigFile`: 10 (creates package structure)
 - `FixturesInitConfigFile`: 10 (must exist before conftest.py)
 - All others: 0 (no specific order required)
 
-**Initialization Methods**:
+#### How Initialization Works
 
-`ConfigFile.init_subclasses(*subclasses)` - Core initialization method:
-```python
-@classmethod
-def init_subclasses(cls, *subclasses: type["ConfigFile"]) -> None:
-    """Initialize ConfigFile subclasses grouped by priority.
+The initialization process groups config files by priority and processes each group:
 
-    Groups subclasses by priority and initializes each group in parallel.
-    Groups are processed sequentially in order of priority (highest first).
-    """
-    # Group by priority
-    subclasses_by_priority: dict[float, list[type[ConfigFile]]] = defaultdict(list)
-    for cf in subclasses:
-        subclasses_by_priority[cf.get_priority()].append(cf)
+1. **Grouping**: All config files are grouped by their priority value
+2. **Sequential group processing**: Priority groups are processed in order (highest priority first)
+3. **Parallel within groups**: All files within the same priority group are initialized in parallel using ThreadPoolExecutor
 
-    # Process each priority group sequentially (highest first)
-    # Within each group, initialize in parallel
-    for priority, cf_group in subclasses_by_priority.items():
-        with ThreadPoolExecutor() as executor:
-            list(executor.map(lambda cf: cf(), cf_group))
-```
+**Example execution order**:
+- Priority 30 group (LICENSE) - Initialized first
+- Priority 20 group (pyproject.toml) - Initialized second
+- Priority 10 group (ConfigsInitConfigFile, FixturesInitConfigFile) - Initialized third, both in parallel
+- Priority 0 group (all other configs) - Initialized last, all in parallel
 
-`ConfigFile.init_all_subclasses()` - Initialize all config files:
-```python
-@classmethod
-def init_all_subclasses(cls) -> None:
-    """Initialize all ConfigFile subclasses."""
-    cls.init_subclasses(*cls.get_all_subclasses())
-```
+**Key methods**:
+- `ConfigFile.init_all_subclasses()` - Initialize all discovered config files
+- `ConfigFile.init_priority_subclasses()` - Initialize only files with priority > 0
+- `ConfigFile.get_all_subclasses()` - Discover all config files (sorted by priority)
+- `ConfigFile.get_priority_subclasses()` - Get only config files with priority > 0
 
-`ConfigFile.init_priority_subclasses()` - Initialize only priority files:
-```python
-@classmethod
-def init_priority_subclasses(cls) -> None:
-    """Initialize all ConfigFile subclasses with priority > 0."""
-    cls.init_subclasses(*cls.get_priority_subclasses())
-```
-
-**Discovery and Sorting**:
-
-`ConfigFile.get_all_subclasses()` now returns subclasses sorted by priority:
-```python
-@classmethod
-def get_all_subclasses(cls) -> list[type["ConfigFile"]]:
-    """Get all ConfigFile subclasses, sorted by priority (highest first)."""
-    subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(...)
-    return sorted(subclasses, key=lambda x: x.get_priority(), reverse=True)
-```
-
-**Helper Methods**:
-- `get_priority_subclasses()` - Returns only config files with priority > 0 (sorted by priority)
-- `init_subclasses(*subclasses)` - Initialize specific subclasses, grouped by priority with parallel execution within each group
-
-You can create only priority config files using:
+**Priority-only initialization**:
 ```bash
 uv run pyrig mkroot --priority
 ```
 
-This is useful during initial project setup when you need the essential files before installing dependencies.
+This creates only the essential files (priority > 0) during initial project setup, useful when you need core files before installing dependencies.
 
-### Performance Optimization
+#### Performance Benefits
 
-pyrig uses a hybrid approach that groups config files by priority and parallelizes within each group:
-
-**How it works**:
-1. **Group by priority** - All config files are grouped by their priority value
-2. **Sequential group processing** - Priority groups are processed sequentially (highest priority first)
-3. **Parallel within groups** - All files within the same priority group are initialized in parallel using ThreadPoolExecutor
-
-**Example execution**:
-- Priority 30 group (LICENSE) - Initialized first, alone
-- Priority 20 group (pyproject.toml) - Initialized second, alone
-- Priority 10 group (ConfigsInitConfigFile, FixturesInitConfigFile) - Initialized third, both in parallel
-- Priority 0 group (all other configs) - Initialized last, all in parallel
-
-**Benefits**:
+The hybrid priority-based approach provides:
 - **Correctness** - Dependencies are respected through priority ordering
 - **Performance** - Files without dependencies initialize concurrently
 - **Flexibility** - Same priority = can run in parallel, different priority = guaranteed order
 
-This approach is significantly faster for projects with many config files while ensuring that dependencies (like LICENSE before pyproject.toml) are always met.
+This is significantly faster for projects with many config files while ensuring dependencies (like LICENSE before pyproject.toml) are always met.
 
 ## Format-Specific Subclasses
-These subclasses implement already all the required methods for you that they can and simplfy creating ConfigFiles for the specific format.
-Examples are the methods `load` and `dump` that are implemented for you or the file extension is set for you.
+
+These subclasses implement common methods for specific file formats, simplifying ConfigFile creation. They provide implementations for `load()`, `dump()`, and `get_file_extension()` so you only need to define the file location and expected content.
 
 ### JsonConfigFile
 
@@ -310,10 +258,7 @@ Creates `my_config.toml` with pretty formatting.
 
 ### TextConfigFile
 
-Note: this is not a txt file. The word text is used to indicate that it is a plain text file, this includes all files that can not be represented like a list or dict.
-A .py, .txt or .md file are all text files. But file like .gitignore, .md, .yaml files fro exampe all can be represented as dicts or lists and should use the more specific subclasses.
-
-For plain text files with required content:
+For plain text files with required content. "Text" here means files that cannot be represented as structured data (dicts/lists). This includes `.py`, `.txt`, `.md` files, etc. Files like `.yaml`, `.json`, `.toml` that can be represented as dicts/lists should use their specific subclasses instead.
 
 ```python
 from pathlib import Path
@@ -333,8 +278,7 @@ class MyConfigFile(TextConfigFile):
         return "someext"
 ```
 
-Creates `my_config.someext`.
-File is considered correct if it contains the required content. So you can add your own content after the required content or before it.
+Creates `my_config.someext`. The file is considered correct if it contains the required content anywhere within it. You can add your own content before or after the required content.
 
 ### PythonConfigFile
 
@@ -468,9 +412,9 @@ def get_filename(cls) -> str:
 
 ## Opt-Out Mechanism
 
-Users can opt out of any config file by emptying it. An empty file is considered "unwanted" and validation passes. There are few exceptions, e.g. README.md is considered always wanted. However you can override `is_unwanted` to change this behavior.
+Users can opt out of any config file by emptying it. An empty file is considered "unwanted" and validation passes. There are few exceptions (e.g., README.md is always required). You can override `is_unwanted()` to customize this behavior.
 
-Note: Deleting a file will juts lead to it being recreated. Emptying it is the only way to opt out.
+**Note**: Deleting a file will just lead to it being recreated. Emptying it is the only way to opt out.
 
 ## Custom Validation
 

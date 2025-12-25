@@ -145,8 +145,8 @@ def test_my_config(config_file_factory):
     assert TestConfig.get_path().exists()
 ```
 
-**Purpose**: Isolate config file tests from actual project files. 
-Prevents file generation in your project if you define cutsom subclasses of Config Files
+**Purpose**: Isolate config file tests from actual project files.
+Prevents file generation in your project if you define custom subclasses of ConfigFile.
 
 #### `builder_factory`
 

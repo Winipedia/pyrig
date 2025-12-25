@@ -78,15 +78,14 @@ Run once per test session before any tests execute.
 
 **Purpose**: Enforce single source package structure.
 
-**Assertion**: Verifies only one source package exists (besides `tests` and `docs`).
-Also ensures all other code is in the src package by checking that the first layer is just
-src, dev and main.py
+**Assertion**:
+- Verifies only one source package exists at the root (besides `tests` and `docs`)
+- Ensures the source package contains only: `src/`, `dev/`, `resources/` subdirectories and `main.py`
+- Prevents code from being scattered across multiple top-level packages
 
 **Scope**: Session
 
-**Why**: Maintains clean project structure with single source of truth. The point of this is that all your code should in src.
-Some might not like that you have to import everything via my_project.src.module instead of just my_project.module, but we think the benefits outweigh the costs.
-If you do not want that I suppose you could add an import * from src to your __init__.py in my_project/__init__.py.
+**Why**: Maintains clean project structure with a single source of truth. All application code should be in `src/`, development tools in `dev/`, and resources in `resources/`. This enforces the convention that imports use `my_project.src.module` rather than `my_project.module`, which provides clear separation between the package namespace and source code.
 
 ---
 
@@ -117,8 +116,8 @@ If you do not want that I suppose you could add an import * from src to your __i
 **Scope**: Session
 
 **Why**: Enforces complete test coverage at module level.
-We think it is good to call at least every function. This has shown during pyrigs development already
-that it catches a lot of things early and helps long term. We recognize it can be annoying, bit we believe it is worth it for real projects in the long run. 
+We think it is good to call at least every function. This has shown during pyrig's development already
+that it catches a lot of things early and helps long term. We recognize it can be annoying, but we believe it is worth it for real projects in the long run.
 
 ---
 
@@ -136,18 +135,16 @@ that it catches a lot of things early and helps long term. We recognize it can b
 
 ### `assert_dependencies_are_up_to_date`
 
-**Purpose**: Verify dependency lock file is current.
+**Purpose**: Verify dependencies are already up to date.
 
 **Assertion**:
-- Runs `uv lock --upgrade` (should not update)
-- Runs `uv sync` (should not install)
-- Fails if any changes occur
-
-This basically exists to keep your project automatically updated as long as your dependencies are defined with >=.
+- Runs `uv lock --upgrade` to check for available updates
+- Runs `uv sync` to check for missing installations
+- Fails if either command makes changes
 
 **Scope**: Session
 
-**Why**: Ensures updated and current dependencies and venv.
+**Why**: Enforces that dependencies are kept current. If this fails, run `uv lock --upgrade && uv sync` locally and commit the updated lock file. This ensures your project uses the latest compatible versions when dependencies are specified with `>=` constraints.
 
 ---
 
@@ -169,14 +166,14 @@ This basically exists to keep your project automatically updated as long as your
 
 **Assertion**:
 - Copies project to temp directory
-- Runs `uv run --no-group dev <project> --help`
-- Verifies CLI works without dev group
-
-Also imports all src modules, to assert a minimum of sanity.
+- Installs dependencies with `uv sync --no-group dev`
+- Verifies pytest is not installed or importable
+- Imports all modules in `src/` to catch dev dependency imports
+- Runs `uv run --no-group dev <project> --help` to verify CLI works
 
 **Scope**: Session
 
-**Why**: Ensures production code doesn't depend on development tools.
+**Why**: Ensures production code doesn't depend on development tools. This catches accidental imports of dev dependencies in source code.
 
 ---
 
@@ -208,13 +205,13 @@ Also imports all src modules, to assert a minimum of sanity.
 
 **Purpose**: Ensure project management tool (uv) is latest version.
 
-**Assertion**: Checks uv version and updates if needed.
+**Assertion**: Runs `uv self update` and expects either:
+- Success message indicating already on latest version
+- Acceptable failure (GitHub rate limit, network issues)
 
 **Scope**: Session (local only, skipped in CI)
 
-**Why**: Keeps tooling current for development.
-
-These fixtures that update tools and stuff are failing if they do, just so you know it happened and does not it silently.
+**Why**: Keeps the package manager tooling current for development. Unlike dependency updates, this actively updates `uv` if a new version is available.
 
 ---
 
@@ -236,7 +233,7 @@ These fixtures that update tools and stuff are failing if they do, just so you k
 
 **Assertion**: Runs `podman --version` and verifies success.
 
-**Scope**: Session
+**Scope**: Session (local only, skipped in CI)
 
 **Why**: Ensures containerization tooling is available for development.
 
@@ -288,57 +285,52 @@ Run once per test class.
 
 ## Fixture Execution Order
 
-Note: The order of autouse fixtures is not guaranteed and usually random.
+**Note**: The execution order of session-level autouse fixtures is not guaranteed by pytest and may vary between test runs. The diagram below shows the logical grouping and scope hierarchy, not a guaranteed execution sequence.
 
 ```mermaid
 graph TD
-    A[Session Start] --> B[assert_no_unstaged_changes before]
-    B --> C[assert_root_is_correct]
-    C --> D[assert_no_namespace_packages]
-    D --> E[assert_all_src_code_in_one_package]
-    E --> F[assert_src_package_correctly_named]
-    F --> G[assert_all_modules_tested]
-    G --> H[assert_no_unit_test_package_usage]
-    H --> I[assert_dependencies_are_up_to_date]
-    I --> J[assert_pre_commit_is_installed]
-    J --> K[assert_src_runs_without_dev_deps]
-    K --> L[assert_src_does_not_use_dev]
-    L --> M[assert_all_dev_deps_in_deps]
-    M --> N[assert_project_mgt_is_up_to_date]
-    N --> O[assert_version_control_is_installed]
-    O --> P[assert_container_engine_is_installed]
-    P --> Q[For each test module]
-    Q --> R[assert_all_funcs_and_classes_tested]
-    R --> S[For each test class]
-    S --> T[assert_all_methods_tested]
-    T --> U[Run individual tests]
-    U --> V[Session End]
-    V --> W[assert_no_unstaged_changes after]
+    A[Session Start] --> B[Session-level autouse fixtures run<br/>order not guaranteed]
+    B --> C[For each test module]
+    C --> D[assert_all_funcs_and_classes_tested]
+    D --> E[For each test class in module]
+    E --> F[assert_all_methods_tested]
+    F --> G[Run individual tests]
+    G --> H[Session End]
+    H --> I[assert_no_unstaged_changes after]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style D fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style F fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style G fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style H fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style H fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style I fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style J fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style K fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style L fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style M fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style N fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style O fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style P fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style Q fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style R fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style S fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style T fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style U fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style V fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style W fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
+
+**Session-level fixtures** (run once, order not guaranteed):
+- `assert_no_unstaged_changes` (before and after)
+- `assert_root_is_correct`
+- `assert_no_namespace_packages`
+- `assert_all_src_code_in_one_package`
+- `assert_src_package_correctly_named`
+- `assert_all_modules_tested`
+- `assert_no_unit_test_package_usage`
+- `assert_dependencies_are_up_to_date`
+- `assert_pre_commit_is_installed`
+- `assert_src_runs_without_dev_deps`
+- `assert_src_does_not_use_dev`
+- `assert_all_dev_deps_in_deps`
+- `assert_project_mgt_is_up_to_date` (local only)
+- `assert_version_control_is_installed`
+- `assert_container_engine_is_installed` (local only)
+
+**Module-level fixtures** (run once per test module):
+- `assert_all_funcs_and_classes_tested`
+
+**Class-level fixtures** (run once per test class):
+- `assert_all_methods_tested`
 
 ## Creating Custom Autouse Fixtures
 

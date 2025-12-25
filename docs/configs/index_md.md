@@ -95,16 +95,7 @@ For a project named "myapp" with description "A sample application":
 
 ### Content Generation Logic
 
-The `get_content_str()` method:
-
-```python
-@classmethod
-def get_content_str(cls) -> str:
-    """Get the index file content."""
-    content = super().get_content_str()  # Get BadgesMarkdownConfigFile content
-    project_name = PyprojectConfigFile.get_project_name()
-    return content.replace(project_name, f"{project_name} Documentation", 1)
-```
+The content generation inherits from `BadgesMarkdownConfigFile` and adds " Documentation" suffix to the project name.
 
 **Key behavior**:
 - Calls parent class to generate base content with badges
@@ -117,36 +108,19 @@ The index file adapts to your project automatically:
 
 ### Project Name
 
-```python
-PyprojectConfigFile.get_project_name()  # From pyproject.toml [project] name
-```
-
-Automatically uses your project name with " Documentation" suffix.
+Automatically uses your project name from `pyproject.toml` `[project]` `name` field with " Documentation" suffix.
 
 ### Project Description
 
-```python
-PyprojectConfigFile.get_project_description()  # From pyproject.toml [project] description
-```
-
-Displays as a blockquote below the badges.
+Displays the project description from `pyproject.toml` `[project]` `description` field as a blockquote below the badges.
 
 ### Repository Information
 
-```python
-repo_owner, repo_name = get_repo_owner_and_name_from_git(check_repo_url=False)
-```
-
-Extracts from Git remote URL for badge links.
+Extracts repository owner and name from Git remote URL for badge links.
 
 ### Python Versions
 
-```python
-python_versions = PyprojectConfigFile.get_supported_python_versions()
-joined_python_versions = "|".join(str(v) for v in python_versions)
-```
-
-Shows supported Python versions in the Python badge.
+Shows supported Python versions from `pyproject.toml` `requires-python` field in the Python badge (e.g., `3.10|3.11|3.12`).
 
 ## Badge Categories
 
@@ -225,28 +199,14 @@ The validation only checks that required elements exist, so you can add as much 
 
 ### Validation Logic
 
-The `is_correct()` method checks:
-
-```python
-@classmethod
-def is_correct(cls) -> bool:
-    """Check if the index file is valid."""
-    file_content = cls.get_file_content()
-    badges = [badge for _group, badges in cls.get_badges().items() for badge in badges]
-    all_badges_in_file = all(badge in file_content for badge in badges)
-    description_in_file = PyprojectConfigFile.get_project_description() in file_content
-    project_name_in_file = PyprojectConfigFile.get_project_name() in file_content
-    return super().is_correct() or (
-        all_badges_in_file and description_in_file and project_name_in_file
-    )
-```
+The validation checks that the index file contains all required elements (inherited from `BadgesMarkdownConfigFile`):
 
 **Required elements**:
 1. All badges from all categories
 2. Project description
 3. Project name
 
-**Flexible structure**: As long as these elements exist somewhere in the file, it's considered valid.
+**Flexible structure**: As long as these elements exist somewhere in the file, it's considered valid. You can add custom content anywhere.
 
 ## Best Practices
 

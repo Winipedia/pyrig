@@ -9,11 +9,11 @@ running from a PyInstaller bundle, resources are extracted from the frozen
 executable's temporary directory (MEIPASS). Using `importlib.resources`
 handles both cases transparently.
 
-Resources should be placed in `pkg/dev/artifacts/resources/` directories
+Resources should be placed in `pkg/resources/` directories
 and accessed via the `get_resource_path` function.
 
 Example:
-    >>> import my_project.dev.artifacts.resources as resources
+    >>> import my_project.resources as resources
     >>> from pyrig.src.resource import get_resource_path
     >>> config_path = get_resource_path("config.json", resources)
     >>> data = config_path.read_text()
@@ -43,10 +43,10 @@ def get_resource_path(name: str, package: ModuleType) -> Path:
         to the extracted file in the temporary directory.
 
     Example:
-        >>> import my_app.dev.artifacts.resources as resources
+        >>> import my_app.resources as resources
         >>> icon_path = get_resource_path("icon.png", resources)
         >>> print(icon_path)
-        /path/to/my_app/dev/artifacts/resources/icon.png
+        /path/to/my_app/resources/icon.png
 
     Note:
         The returned path is only valid within the context of the current

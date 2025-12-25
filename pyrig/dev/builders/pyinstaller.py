@@ -31,9 +31,9 @@ class PyInstallerBuilder(Builder):
         - ``get_additional_resource_pkgs``: Return packages containing resources
 
     The builder automatically includes:
-        - All resources from dev/artifacts/resources directories
+        - All resources from resources directories
         - Resources from all packages depending on pyrig
-        - Platform-appropriate icon format (ico/icns/png)
+        - Platform-appropriate icon format (ico/icns for Windows/macOS)
 
     Example:
         class MyAppBuilder(PyInstallerBuilder):
@@ -65,7 +65,7 @@ class PyInstallerBuilder(Builder):
             List of module objects representing resource packages.
 
         Note:
-            The dev/artifacts/resources package and resources from all
+            The resources package and resources from all
             pyrig-dependent packages are included automatically.
         """
 

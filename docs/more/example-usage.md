@@ -153,7 +153,7 @@ class MkdocsConfigFile(BaseMkdocsConfigFile):
 
 **Key mechanism**:
 - **Subclass** pyrig's `MkdocsConfigFile` with same name
-- **`discard_parents=True`** ensures only your subclass is initialized because it is the last leaf in that class inheritence chain.
+- **`discard_parents=True`** ensures only your subclass is initialized because it is the last leaf in that class inheritance chain.
 - **All microservices** automatically get company branding
 
 ## Step 4: Adjust Pyproject Settings
@@ -223,7 +223,7 @@ uv run pyrig init
 ```
 
 Note:
-If you are a company you repos probably will not be public so you will need tokens and stuff to do uv add. If you manage a package ecosystem for pypi then you can use uv add like usual
+If you are a company your repos probably will not be public so you will need tokens and stuff to do uv add. If you manage a package ecosystem for pypi then you can use uv add like usual
 
 **What gets created automatically**:
 
@@ -352,10 +352,10 @@ Create `payment-service` and `notification-service` the same way:
 
 ```bash
 # Payment service
-uv init && uv add company-base && uv run payment-service init
+uv init && uv add company-base && uv run pyrig init
 
 # Notification service
-uv init && uv add company-base && uv run notification-service init
+uv init && uv add company-base && uv run pyrig init
 ```
 
 **All three services now have**:
@@ -425,10 +425,10 @@ See [Autouse Fixtures](../tests/autouse.md) for details on the validation system
 
 3. **In each service**:
    ```bash
-   # all you gott do
+   # all you gotta do
    uv lock --upgrade && uv sync
    uv run pytest  # Auto-heals to add bandit or do pyrig mkroot
-   # commit and push and the new lease etc happens automatically
+   # commit and push and the new release etc happens automatically
    ```
 
 **Result**: All your microservices now have `bandit` without manual edits.
@@ -441,7 +441,7 @@ See [Autouse Fixtures](../tests/autouse.md) for details on the validation system
 
 1. **Update `company-base/dev/configs/docs/mkdocs.py`**: Change colors, then do the same steps as above
 2. **Release** new version
-3. **Services update** → All docs sites automatically rebranded at GitHUb pages
+3. **Services update** → All docs sites automatically rebranded at GitHub Pages
 
 ### Scenario: New Microservice
 
@@ -523,8 +523,8 @@ pyrig's multi-package architecture enables:
 4. **Self-healing** via autouse fixtures on every test run
 5. **Zero manual sync** across unlimited services
 
-This pattern scales from 2 services to inifinite+ services with the same simplicity.
+This pattern scales from 2 services to infinite+ services with the same simplicity.
 
-Note: If you somehow end up creating a structure over 20 depdencies deep in a depoendecy chain, the health check cron will get confused as the day has only 24 hours and it staggers it per hour. See more at: [Health Check Documentation](../configs/workflows/health_check.md)
+Note: If you somehow end up creating a structure over 20 dependencies deep in a dependency chain, the health check cron will get confused as the day has only 24 hours and it staggers it per hour. See more at: [Health Check Documentation](../configs/workflows/health_check.md)
 
 

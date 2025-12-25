@@ -227,7 +227,7 @@ class Builder(ABC):
         """Get the absolute path to the resources directory.
 
         Returns:
-            Path to the dev/artifacts/resources directory.
+            Path to the resources directory.
         """
         return cls.get_src_pkg_path() / cls.get_resources_path_from_src_pkg()
 

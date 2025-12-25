@@ -5,7 +5,7 @@ pyrig's configuration system automatically creates and maintains project configu
 ## Documentation Pages
 
 ### [Architecture](architecture.md)
-Learn how the ConfigFile system works, including automatic discovery, validation, and how to create custom configuration files.
+Learn how the ConfigFile system works, including automatic discovery, validation, and creating custom configuration files.
 
 ## Configuration Files
 

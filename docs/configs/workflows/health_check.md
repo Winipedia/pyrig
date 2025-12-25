@@ -239,7 +239,7 @@ graph TD
 
 - **REPO_TOKEN**: Fine-grained PAT with administration, contents, pages permissions
 - **CODECOV_TOKEN**: Codecov upload token (recommended, required for private repos)
-  - See [Getting Started - Codecov setup](../../more/getting-started.md#required-accounts--tokens) for details
+  - See [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens) for details
 
 ## Usage
 
