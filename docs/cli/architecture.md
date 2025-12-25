@@ -32,6 +32,7 @@ The CLI provides global options that apply to all commands through a Typer callb
 - **`-q/--quiet`**: WARNING level (only warnings and errors)
 
 **Important**: Global options must be specified **before** the command name:
+
 ```bash
 uv run pyrig -v build      # Correct
 uv run pyrig build -v      # Incorrect
@@ -82,6 +83,7 @@ sequenceDiagram
 ```
 
 Example: When running `uv run myapp deploy`, the system:
+
 - Detects package name: `myapp`
 - Replaces `pyrig.dev.cli.subcommands` → `myapp.dev.cli.subcommands`
 - Imports `myapp/dev/cli/subcommands.py`
@@ -198,5 +200,4 @@ graph TD
 
 The function's docstring becomes the command's help text, and Typer automatically generates argument parsing from the function signature.
 
-The pyrig CLI system is designed for project automation and development workflows, not for building complex CLI applications. It provides a convenient way to execute project commands without the verbosity of `python -m myapp.subpkg.subpkg2.module` or the boilerplate of `if __name__ == "__main__":` guards. Simply define functions in your `subcommands.py` module and they become accessible as `uv run myapp <command>`. I suppose if done right you can also use it to build some more complex CLI apps on top of it but that is not the intended primary use case. 
-
+The pyrig CLI system is designed for project automation and development workflows, not for building complex CLI applications. It provides a convenient way to execute project commands without the verbosity of `python -m myapp.subpkg.subpkg2.module` or the boilerplate of `if __name__ == "__main__":` guards. Simply define functions in your `subcommands.py` module and they become accessible as `uv run myapp <command>`. I suppose if done right you can also use it to build some more complex CLI apps on top of it but that is not the intended primary use case.

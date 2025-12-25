@@ -55,13 +55,17 @@ graph LR
 ```
 
 ### 1. Adding Dev Dependencies
+
 Installs the `pyrig-dev` package group to the project.
 
 ### 2. Syncing Venv
+
 Installs all dependencies including the newly added dev dependencies.
 
 ### 3. Creating Priority Config Files
+
 Creates essential config files with `get_priority() > 0`, grouped by priority:
+
 - **Priority 30**: `LICENSE` - Must exist before pyproject.toml for license detection
 - **Priority 20**: `pyproject.toml` - Project metadata and dependencies
 - **Priority 10**: `myapp/dev/configs/__init__.py` and `myapp/dev/tests/fixtures/__init__.py` - Package structure files (initialized in parallel)
@@ -69,30 +73,38 @@ Creates essential config files with `get_priority() > 0`, grouped by priority:
 Priority groups are processed sequentially (highest first), with files in the same group initialized in parallel. These files are required before other setup steps can proceed.
 
 ### 4. Syncing Venv (Again)
+
 Ensures the venv reflects the newly created config files. This step installs the project itself, making the project's CLI commands available (e.g., `uv run myapp <command>`).
 
 ### 5. Creating Project Root
+
 Generates all config files and directory structure by calling `mkroot` internally. See [mkroot](mkroot.md) for details.
 
 ### 6. Creating Test Files
+
 Generates test skeletons for all code by calling `mktests` internally. See [mktests](mktests.md) for details.
 
 ### 7. Running Pre-commit Hooks
+
 Runs all pre-commit hooks to format and lint the code:
+
 - Ruff formatting and linting
 - Type checking with mypy
 - Security scanning with bandit
 - Documentation updates
 
 ### 8. Running Tests
+
 Validates everything works by running the full test suite with pytest.
 
 ### 9. Committing Initial Changes
+
 Creates an initial git commit with message: `pyrig: Initial commit`.
 
 ## When to Use
 
 Use `init` when:
+
 - Starting a new project from scratch
 - Setting up a fresh clone of a pyrig-based project
 - Resetting a project to a clean state
@@ -107,4 +119,3 @@ It should only be used once at the beginning when creating a new project.
 - [mkroot](mkroot.md) - Called internally by init (step 5)
 - [mktests](mktests.md) - Called internally by init (step 6)
 - [Configs Documentation](../../configs/index.md) - Details on all config files created
-

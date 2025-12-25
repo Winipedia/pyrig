@@ -1,10 +1,11 @@
-# configs/__init__.py Configuration
+# configs/**init**.py Configuration
 
 The `ConfigsInitConfigFile` manages the `dev/configs/__init__.py` file.
 
 ## Overview
 
 Creates a configs package that:
+
 - Mirrors the structure of `pyrig.dev.configs`
 - Copies only the docstring from the source module
 - Ensures the configs directory exists with proper package structure
@@ -21,7 +22,7 @@ graph TD
     E --> F[CopyModuleOnlyDocstringConfigFile]
     F --> G[InitConfigFile]
     G --> H[ConfigsInitConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -35,6 +36,7 @@ graph TD
 **Inherits from**: `InitConfigFile`
 
 **What this means**:
+
 - Creates `__init__.py` files for package initialization
 - Copies only the docstring from `pyrig.dev.configs`
 - Automatically determines target path

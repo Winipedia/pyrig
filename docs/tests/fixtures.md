@@ -11,14 +11,14 @@ graph TD
     A[pyrig.dev.tests.fixtures] --> B[Package A fixtures]
     B --> C[Package B fixtures]
     C --> D[Package C fixtures]
-    
+
     A -.->|Available in| B
     A -.->|Available in| C
     A -.->|Available in| D
     B -.->|Available in| C
     B -.->|Available in| D
     C -.->|Available in| D
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -35,7 +35,7 @@ sequenceDiagram
     participant P as pyrig.dev.tests.conftest
     participant D as DependencyGraph
     participant F as Fixture Modules
-    
+
     T->>P: Import as pytest plugin
     P->>D: Find all packages depending on pyrig
     D-->>P: [pyrig, pkg_a, pkg_b, ...]
@@ -43,7 +43,7 @@ sequenceDiagram
     F-->>P: [pyrig.dev.tests.fixtures, pkg_a.dev.tests.fixtures, ...]
     P->>P: Register all Python files as pytest plugins
     P-->>T: All fixtures available
-    
+
     Note over T,F: All fixtures from entire dependency chain now available
 ```
 
@@ -101,6 +101,7 @@ pytest_plugins = ["pyrig.dev.tests.conftest"]
 ```
 
 This single line activates:
+
 - All pyrig fixtures
 - All fixtures from packages you depend on
 - Automatic fixture discovery for your package
@@ -110,7 +111,7 @@ This single line activates:
 
 Create fixtures in your package's fixtures module:
 
-```
+```text
 myapp/
 └── dev/
     └── tests/
@@ -120,12 +121,14 @@ myapp/
 ```
 
 **Important**: Unlike the CLI framework (which auto-decorates functions as Typer commands), fixtures must be explicitly decorated with:
+
 - `@pytest.fixture` from pytest, or
 - Scope-specific decorators from `pyrig.dev.utils.testing` (`@session_fixture`, `@module_fixture`, etc.)
 
 Pyrig does not auto-decorate fixture functions.
 
 These fixtures automatically become available to:
+
 - Your package's tests
 - All packages that depend on your package
 
@@ -164,6 +167,7 @@ def test_my_builder(builder_factory):
 **Purpose**: Isolate artifact generation tests from actual build directories.
 
 ### Assertion Fixtures
+
 These are mainly only used internally by pyrig.
 
 #### `assert_no_untested_objs`
@@ -215,7 +219,7 @@ def module_setup():
 
 ## Multi-Package Example
 
-```
+```text
 pyrig (base package)
 ├── fixtures: config_file_factory, builder_factory, main_test_fixture
 │
@@ -237,4 +241,3 @@ When Package B tests run:
 ```
 
 All fixtures are automatically discovered and available without any additional configuration.
-

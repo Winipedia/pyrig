@@ -22,9 +22,11 @@ The `mktests` command:
 ### Generated Test Structure
 
 For each source module, creates a corresponding test module:
+
 - `src/myapp/foo.py` → `tests/test_myapp/test_foo.py`
 
 For each function/class, creates a test function:
+
 - `def my_func()` → `def test_my_func()`
 - `class MyClass` → `class TestMyClass` with `def test_<method>()` for each method
 
@@ -37,6 +39,7 @@ For each function/class, creates a test function:
 ## When to Use
 
 Use `mktests` when:
+
 - Adding new functions or classes to the codebase
 - Ensuring all code has test coverage
 - Generating test structure for a new module
@@ -46,9 +49,11 @@ Use `mktests` when:
 This command **runs automatically** in two autouse fixtures:
 
 ### 1. assert_all_modules_tested
+
 Session-scoped fixture that ensures every source module has a corresponding test module. See [Autouse Fixtures](../../tests/autouse.md#assert_all_modules_tested).
 
 ### 2. assert_all_funcs_and_classes_tested
+
 Module-scoped fixture that ensures every function and class has a corresponding test. See [Autouse Fixtures](../../tests/autouse.md#assert_all_funcs_and_classes_tested).
 
 Both fixtures automatically call `mktests` if missing tests are detected.
@@ -58,4 +63,3 @@ Both fixtures automatically call `mktests` if missing tests are detected.
 - [Tests Documentation](../../tests/index.md) - Details on test structure
 - [Autouse Fixtures](../../tests/autouse.md) - Automatic test generation
 - [init](init.md) - Calls mktests as part of full project setup
-

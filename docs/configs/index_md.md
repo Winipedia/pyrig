@@ -5,6 +5,7 @@ The `IndexConfigFile` manages the `docs/index.md` file, which serves as the home
 ## Overview
 
 Creates a documentation index file that:
+
 - Uses the project name with "Documentation" suffix as the header
 - Includes all standard badges (tooling, code quality, package info, CI/CD, documentation)
 - Displays the project description from `pyproject.toml`
@@ -19,7 +20,7 @@ graph TD
     B --> C[MarkdownConfigFile]
     C --> D[BadgesMarkdownConfigFile]
     D --> E[IndexConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -30,6 +31,7 @@ graph TD
 **Inherits from**: `BadgesMarkdownConfigFile`
 
 **What this means**:
+
 - Markdown file format (`.md` extension)
 - Automatically generates badges from project metadata
 - Includes project name and description
@@ -98,6 +100,7 @@ For a project named "myapp" with description "A sample application":
 The content generation inherits from `BadgesMarkdownConfigFile` and adds " Documentation" suffix to the project name.
 
 **Key behavior**:
+
 - Calls parent class to generate base content with badges
 - Replaces first occurrence of project name with "{project_name} Documentation"
 - This transforms "# myapp" into "# myapp Documentation"
@@ -202,6 +205,7 @@ The validation only checks that required elements exist, so you can add as much 
 The validation checks that the index file contains all required elements (inherited from `BadgesMarkdownConfigFile`):
 
 **Required elements**:
+
 1. All badges from all categories
 2. Project description
 3. Project name
@@ -215,7 +219,6 @@ The validation checks that the index file contains all required elements (inheri
 3. **Organize with sections**: Use `##` headers for main sections
 4. **Link to other pages**: Reference other documentation pages
 5. **Update description**: Keep `pyproject.toml` description current
-
 
 ## Integration with MkDocs
 
@@ -246,6 +249,7 @@ Both files share the same badges and description, but serve different purposes.
 ### Badges not rendering
 
 Make sure:
+
 - Repository is public or badges support private repos
 - GitHub Actions workflows exist
 - PyPI package is published (for PyPI badge)
@@ -302,6 +306,7 @@ You can remove entire badge categories by editing the file, but they'll be re-ad
 ### Changing Badge Order
 
 The badges are organized in this order:
+
 1. tooling
 2. code-quality
 3. package-info
@@ -309,5 +314,4 @@ The badges are organized in this order:
 5. documentation
 
 This order is defined in `BadgesMarkdownConfigFile.get_badges()` and can be customized by overriding the method.
-
 

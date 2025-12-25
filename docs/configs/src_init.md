@@ -1,10 +1,11 @@
-# src/__init__.py Configuration
+# src/**init**.py Configuration
 
 The `SrcInitConfigFile` manages the `src/__init__.py` file.
 
 ## Overview
 
 Creates a src package that:
+
 - Mirrors the structure of `pyrig.src`
 - Copies only the docstring from the source module
 - Ensures the src directory exists with proper package structure
@@ -21,7 +22,7 @@ graph TD
     E --> F[CopyModuleOnlyDocstringConfigFile]
     F --> G[InitConfigFile]
     G --> H[SrcInitConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -35,6 +36,7 @@ graph TD
 **Inherits from**: `InitConfigFile`
 
 **What this means**:
+
 - Creates `__init__.py` files for package initialization
 - Copies only the docstring from `pyrig.src`
 - Automatically determines target path

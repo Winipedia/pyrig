@@ -1,10 +1,11 @@
-# builders/__init__.py Configuration
+# builders/**init**.py Configuration
 
 The `BuildersInitConfigFile` manages the `dev/artifacts/builders/__init__.py` file.
 
 ## Overview
 
 Creates a builders package that:
+
 - Mirrors the structure of `pyrig.dev.builders`
 - Copies only the docstring from the source module
 - Ensures the builders directory exists with proper package structure
@@ -21,7 +22,7 @@ graph TD
     E --> F[CopyModuleOnlyDocstringConfigFile]
     F --> G[InitConfigFile]
     G --> H[BuildersInitConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -35,6 +36,7 @@ graph TD
 **Inherits from**: `InitConfigFile`
 
 **What this means**:
+
 - Creates `__init__.py` files for package initialization
 - Copies only the docstring from `pyrig.dev.builders`
 - Automatically determines target path

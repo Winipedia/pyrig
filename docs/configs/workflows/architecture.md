@@ -16,7 +16,7 @@ graph TD
     C --> E[BuildWorkflow]
     C --> F[ReleaseWorkflow]
     C --> G[PublishWorkflow]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -137,11 +137,13 @@ graph LR
 **File**: `.github/workflows/health_check.yaml`
 
 **Triggers**:
+
 - Pull requests
 - Pushes to main
 - Scheduled (daily, staggered by dependency depth)
 
 **Jobs**:
+
 - **protect_repository**: Applies branch protection rules
 - **health_check_matrix**: Runs across OS (Ubuntu, Windows, macOS) and Python versions
   - Linting (ruff)
@@ -158,9 +160,11 @@ graph LR
 **File**: `.github/workflows/build.yaml`
 
 **Triggers**:
+
 - After health check completes successfully on main
 
 **Jobs**:
+
 - **build_artifacts**: Builds project artifacts across OS matrix
 - **build_container_image**: Builds container image (Ubuntu only)
 
@@ -171,9 +175,11 @@ graph LR
 **File**: `.github/workflows/release.yaml`
 
 **Triggers**:
+
 - After build workflow completes successfully
 
 **Jobs**:
+
 - **release**: Creates GitHub release
   - Bumps patch version
   - Commits and pushes changes
@@ -191,9 +197,11 @@ graph LR
 **File**: `.github/workflows/publish.yaml`
 
 **Triggers**:
+
 - After release workflow completes successfully
 
 **Jobs**:
+
 - **publish_package**: Publishes to PyPI
   - Builds wheel
   - Publishes with PYPI_TOKEN (if configured)

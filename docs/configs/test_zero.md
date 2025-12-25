@@ -5,6 +5,7 @@ The `ZeroTestConfigFile` manages the `tests/test_zero.py` file.
 ## Overview
 
 Creates a test_zero.py file that:
+
 - Provides a placeholder test when no other tests exist
 - Ensures pytest runs successfully even with no real tests
 - Triggers execution of autouse fixtures
@@ -18,7 +19,7 @@ graph TD
     B --> C[PythonConfigFile]
     C --> D[PythonTestsConfigFile]
     D --> E[ZeroTestConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -29,6 +30,7 @@ graph TD
 **Inherits from**: `PythonTestsConfigFile`
 
 **What this means**:
+
 - Python file in the tests directory
 - Located at `tests/test_zero.py`
 - Text-based validation (checks for required content)
@@ -78,6 +80,7 @@ uv run pyrig mkroot
 ### Purpose
 
 This file ensures that:
+
 - Pytest runs successfully even when you haven't written tests yet
 - Autouse fixtures execute (which validate project structure)
 - CI/CD pipelines don't fail due to "no tests collected"

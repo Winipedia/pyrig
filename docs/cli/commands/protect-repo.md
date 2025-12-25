@@ -35,18 +35,23 @@ Configures repository-level settings:
 Creates or updates a ruleset named `main-protection` with comprehensive protection rules loaded from `branch-protection.json`:
 
 #### Deletion Protection
+
 Prevents deletion of the main branch.
 
 #### Non-Fast-Forward Protection
+
 Prevents force pushes that rewrite history.
 
 #### Creation Protection
+
 Controls branch creation patterns.
 
 #### Update Protection
+
 Requires pull requests for updates.
 
 #### Pull Request Requirements
+
 - **Required Approving Reviews**: 1 approval required
 - **Dismiss Stale Reviews**: Reviews dismissed when new commits pushed
 - **Code Owner Review**: Requires approval from code owners
@@ -55,12 +60,15 @@ Requires pull requests for updates.
 - **Allowed Merge Methods**: Squash and rebase only
 
 #### Linear History Requirement
+
 Enforces linear commit history (no merge commits).
 
 #### Signature Requirement
+
 Requires signed commits for security.
 
 #### Status Check Requirements
+
 - **Strict Policy**: Branch must be up to date before merging
 - **Do Not Enforce on Create**: Enabled (allows initial branch creation)
 - **Required Checks**: `health_check` job must pass
@@ -68,6 +76,7 @@ Requires signed commits for security.
 Note: The other workflows are not triggered by a passing health check here because it is not running on main when doing a Pull Request.
 
 #### Bypass Actors
+
 Repository admins can bypass all rules (actor_id: 5, actor_type: RepositoryRole, bypass_mode: always).
 
 ## Configuration File
@@ -81,6 +90,7 @@ uv run pyrig mkroot
 The `BranchProtectionConfigFile` class (in `pyrig.dev.configs.branch_protection`) programmatically generates this configuration file. The `protect-repo` command loads this file and applies it to GitHub via the API.
 
 This approach provides:
+
 - **Version control**: Protection rules are tracked in git
 - **Transparency**: Rules are visible in a standard JSON format
 - **Portability**: File can be manually uploaded to GitHub if needed
@@ -95,9 +105,11 @@ Requires `REPO_TOKEN` environment variable with GitHub personal access token.
 ### Required Token Permissions
 
 The token must have these permissions:
+
 - `administration: read, write`
 
 Not required by protect-repo but required for other pyrig commands:
+
 - `contents: read, write`
 - `pages: read, write`
 
@@ -106,6 +118,7 @@ Not required by protect-repo but required for other pyrig commands:
 You should not have to use it as it runs as part of the health check workflow.
 
 But in case you want to run it manually you can use `protect-repo` when:
+
 - Setting up a new repository
 - Updating protection rules after changes
 - Ensuring repository follows security best practices
@@ -121,4 +134,3 @@ The command is called in the "Protect Repository" step to ensure protection rule
 - [branch-protection.json](../../configs/branch_protection.md) - Configuration file used by this command
 - [Health Check Workflow](../../configs/workflows/health_check.md) - Calls protect-repo in CI/CD
 - [GitHub Rulesets API](https://docs.github.com/en/rest/repos/rules) - GitHub API documentation
-

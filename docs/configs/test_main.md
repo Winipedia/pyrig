@@ -5,6 +5,7 @@ The `MainTestConfigFile` manages the `tests/test_{package_name}/test_main.py` fi
 ## Overview
 
 Creates a test_main.py file that:
+
 - Tests the CLI entry point (main.py)
 - Uses the `main_test_fixture` autouse fixture
 - Ensures the CLI responds correctly
@@ -18,7 +19,7 @@ graph TD
     B --> C[PythonConfigFile]
     C --> D[PythonPackageConfigFile]
     D --> E[MainTestConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -29,6 +30,7 @@ graph TD
 **Inherits from**: `PythonPackageConfigFile`
 
 **What this means**:
+
 - Python file with package structure
 - Ensures parent directory is a valid Python package
 - Text-based validation (checks for required content)
@@ -42,7 +44,8 @@ graph TD
 
 **Filename**: `test_main` - Test file for main.py.
 
-**Path transformation**: 
+**Path transformation**:
+
 1. Start with `pyrig.main` → `tests.test_pyrig.test_main`
 2. Replace `test_pyrig` with `test_{package_name}` → `tests.test_myapp.test_main`
 3. Convert to file path → `tests/test_myapp/test_main.py`
@@ -89,6 +92,7 @@ uv run pyrig mkroot
 ### Purpose
 
 This file tests the CLI entry point by:
+
 - Using the `main_test_fixture` which runs `uv run myapp --help`
 - Ensuring the CLI responds without errors
 - Validating the main function is properly configured

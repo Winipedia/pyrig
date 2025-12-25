@@ -5,7 +5,9 @@ pyrig provides a resource management system for bundling static files (images, c
 ## Documentation Pages
 
 ### [Resource Management](resources.md)
+
 Learn how to manage and access static resources:
+
 - Resource package structure
 - Accessing resources with `get_resource_path`
 - PyInstaller compatibility
@@ -15,6 +17,7 @@ Learn how to manage and access static resources:
 ## Quick Overview
 
 The resource system provides:
+
 - **Unified access** to static files in development and production
 - **Automatic PyInstaller support** via `importlib.resources`
 - **Multi-package inheritance** - resources from all dependencies available

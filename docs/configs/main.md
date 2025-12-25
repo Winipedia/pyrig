@@ -5,6 +5,7 @@ The `MainConfigFile` manages the `main.py` file, which serves as the CLI entry p
 ## Overview
 
 Creates a main.py file that:
+
 - Serves as the CLI entry point for your application
 - Copies the complete implementation from `pyrig.main`
 - Provides a working CLI with subcommand support
@@ -21,7 +22,7 @@ graph TD
     C --> D[PythonPackageConfigFile]
     D --> E[CopyModuleConfigFile]
     E --> F[MainConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -33,6 +34,7 @@ graph TD
 **Inherits from**: `CopyModuleConfigFile`
 
 **What this means**:
+
 - Python file format (`.py` extension)
 - Copies entire module content from `pyrig.main`
 - Automatically determines target path by replacing `pyrig` with your package name
@@ -90,6 +92,7 @@ When running `uv run pyrig init`, any root-level `main.py` file is automatically
 ### Package Name
 
 The package name from `pyproject.toml` `[project]` `name` determines the target path:
+
 - Project name: `my-app`
 - Package name: `my_app`
 - Target path: `my_app/main.py`
@@ -103,6 +106,7 @@ The module path is automatically transformed from `pyrig.main` to `{package_name
 The validation checks for required structure:
 
 **Required elements**:
+
 1. A `def main` function definition
 2. The `if __name__ == "__main__":` guard
 
@@ -117,6 +121,7 @@ The file is automatically created when you run:
 ```bash
 uv run pyrig mkroot
 ```
+
 Or via init or pyrigs autouse fixtures when running pytest:
 
 ```bash
@@ -156,14 +161,14 @@ As long as `def main` and `if __name__ == "__main__":` exist, validation passes.
 ## Best Practices
 
 1. **Keep the structure**: Maintain `def main()` and `if __name__ == "__main__":`
-4. **Keep it simple**: main.py should be a thin entry point, not business logic
-5. **Don't move it**: Keep main.py in `myapp/`, not at project root
+2. **Keep it simple**: main.py should be a thin entry point, not business logic
+3. **Don't move it**: Keep main.py in `myapp/`, not at project root
 
 ## CLI Architecture
 
 The main.py file integrates with pyrig's CLI system:
 
-```
+```text
 main.py
   └─> CLI class (from pyrig.dev.cli.cli)
        ├─> Built-in commands (mkroot, build, etc.)

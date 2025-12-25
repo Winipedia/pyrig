@@ -35,6 +35,7 @@ When using `--priority`, only the priority files are created.
 When using `--priority`, only files with `get_priority() > 0` are created, in sequential order by priority:
 
 **Current priority files in pyrig**:
+
 - **LicenceConfigFile** (`LICENSE`) - Priority 30 (highest - must exist before pyproject.toml for license auto-detection)
 - **PyprojectConfigFile** (`pyproject.toml`) - Priority 20 (project metadata and dependencies)
 - **ConfigsInitConfigFile** (`dev/configs/__init__.py`) - Priority 10 (configs package initialization)
@@ -67,6 +68,7 @@ All config files are initialized using a hybrid approach:
 3. **Parallel within groups** - Files in the same priority group initialize concurrently
 
 This ensures:
+
 - **Correct ordering** - Dependencies respected through priority values
 - **Fast initialization** - Independent files (same priority) run in parallel
 
@@ -84,11 +86,13 @@ Only files with `get_priority() > 0` are initialized, using the same grouped app
 ## When to Use
 
 Use `mkroot` when:
+
 - Adding new config files subclassing `ConfigFile` to an existing project
 - Regenerating config files after updates
 - Ensuring project structure is up to date
 
 Use `mkroot --priority` when:
+
 - During initial project setup (before installing dependencies)
 - You only need essential config files to proceed with setup
 - It is already running as part of the `pyrig init` process
@@ -102,6 +106,7 @@ The fixture checks if any config files are incorrect and automatically runs `mkr
 ## Implementation
 
 The command delegates to:
+
 - `ConfigFile.init_all_subclasses()` when called without `--priority`
 - `ConfigFile.init_priority_subclasses()` when called with `--priority`
 

@@ -5,6 +5,7 @@ The `DotEnvConfigFile` manages the `.env` file for local environment variables.
 ## Overview
 
 Creates a .env file that:
+
 - Stores local environment variables
 - Automatically excluded from version control (in `.gitignore`)
 - Located at the project root
@@ -16,7 +17,7 @@ Creates a .env file that:
 ```mermaid
 graph TD
     A[ConfigFile] --> B[DotEnvConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
@@ -24,6 +25,7 @@ graph TD
 **Inherits from**: `ConfigFile`
 
 **What this means**:
+
 - Direct inheritance from ConfigFile
 - Custom `load()` and `dump()` implementations
 - Read-only from pyrig's perspective

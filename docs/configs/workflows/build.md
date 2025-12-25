@@ -13,6 +13,7 @@ The build workflow runs after successful health checks on the main branch. It bu
 ## Triggers
 
 ### Workflow Run
+
 - **Workflow**: `Health Check`
 - **Event**: `completed`
 - **Branches**: `main`
@@ -21,6 +22,7 @@ The build workflow runs after successful health checks on the main branch. It bu
 **Why workflow_run?** Ensures artifacts are only built after all tests pass on main branch.
 
 ### Workflow Dispatch
+
 - **Purpose**: Manual trigger for testing
 
 ## Job Flow
@@ -176,11 +178,13 @@ graph TD
 ## Artifacts Produced
 
 ### Platform Artifacts
+
 - **pyrig-Linux**: Linux executables and wheels
 - **pyrig-Windows**: Windows executables and wheels
 - **pyrig-macOS**: macOS executables and wheels
 
 ### Container Image
+
 - **container-image**: Podman/Docker image tarball (`pyrig.tar`)
 
 ## Usage

@@ -25,11 +25,13 @@ The `build` command:
 ### Built-in Builders
 
 pyrig includes a PyInstaller builder that creates standalone executables:
+
 - **PyInstallerBuilder** - Creates platform-specific executables from `main.py`
 
 ### Artifact Naming
 
 Artifacts are automatically named with platform suffixes:
+
 - Linux: `myapp-Linux`
 - Windows: `myapp-Windows.exe`
 - macOS: `myapp-Darwin`
@@ -69,6 +71,7 @@ See [Builders Documentation](../../builders/index.md) for complete details.
 ## When to Use
 
 Use `build` when:
+
 - Creating release artifacts
 - Testing the build process locally
 - Generating executables for distribution

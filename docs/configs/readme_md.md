@@ -5,6 +5,7 @@ The `ReadmeConfigFile` manages the `README.md` file, which serves as the homepag
 ## Overview
 
 Creates a README file that:
+
 - Uses the project name as the header
 - Includes all standard badges (tooling, code quality, package info, CI/CD, documentation)
 - Displays the project description from `pyproject.toml`
@@ -20,7 +21,7 @@ graph TD
     B --> C[MarkdownConfigFile]
     C --> D[BadgesMarkdownConfigFile]
     D --> E[ReadmeConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -31,6 +32,7 @@ graph TD
 **Inherits from**: `BadgesMarkdownConfigFile`
 
 **What this means**:
+
 - Markdown file format (`.md` extension)
 - Automatically generates badges from project metadata
 - Includes project name and description
@@ -101,6 +103,7 @@ For a project named "myapp" with description "A sample application":
 The `ReadmeConfigFile` inherits content generation from `BadgesMarkdownConfigFile` without modification.
 
 **Key behavior**:
+
 - Uses project name as-is (unlike `IndexConfigFile` which adds " Documentation")
 - Organizes badges by category with HTML comments
 - Wraps description in blockquote
@@ -181,6 +184,7 @@ The validation only checks that required elements exist, so you can add as much 
 The validation checks that the README file contains all required elements:
 
 **Required elements**:
+
 1. All badges from all categories
 2. Project description
 3. Project name

@@ -167,6 +167,9 @@ class PyprojectConfigFile(TomlConfigFile):
                         "error-on-warning": True,
                     },
                 },
+                "rumdl": {
+                    "respect_gitignore": True,
+                },
                 "mypy": {
                     "strict": True,
                     "warn_unreachable": True,

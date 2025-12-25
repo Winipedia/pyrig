@@ -15,7 +15,7 @@ pyrig enforces a strict mirrored structure between source code and tests, ensuri
 
 Tests mirror the source package structure with prefixed names:
 
-```
+```text
 Source:                          Tests:
 myapp/                          tests/
 ├── src/                        └── test_myapp/
@@ -36,7 +36,7 @@ myapp/                          tests/
 ```mermaid
 graph LR
     A[myapp.src.modules.parser] -->|Transform| B[tests.test_myapp.test_src.test_modules.test_parser]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
@@ -50,6 +50,7 @@ graph LR
 5. **Prefix function names** with `test_`
 
 Example:
+
 ```python
 # Source: myapp.src.parser.Parser.parse
 # Test:   tests.test_myapp.test_src.test_parser.TestParser.test_parse
@@ -64,7 +65,7 @@ Every source object must have a corresponding test:
 class Calculator:
     def add(self, a: int, b: int) -> int:
         return a + b
-    
+
     def subtract(self, a: int, b: int) -> int:
         return a - b
 
@@ -73,7 +74,7 @@ class TestCalculator:
     def test_add(self) -> None:
         calc = Calculator()
         assert calc.add(2, 3) == 5
-    
+
     def test_subtract(self) -> None:
         calc = Calculator()
         assert calc.subtract(5, 3) == 2
@@ -92,7 +93,7 @@ graph TD
     B -->|Yes| F{All functions/classes<br/>have tests?}
     F -->|No| C
     F -->|Yes| G[Run tests]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -111,6 +112,7 @@ def test_function_name() -> None:
 ```
 
 Generate manually:
+
 ```bash
 uv run pyrig mktests
 ```
@@ -149,4 +151,3 @@ Three levels of automatic validation ensure complete test coverage:
 3. **Class-level**: Validates all methods have tests
 
 All validation happens automatically through autouse fixtures.
-
