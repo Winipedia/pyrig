@@ -1,6 +1,7 @@
 # test_main.py Configuration
 
-The `MainTestConfigFile` manages the `tests/test_{package_name}/test_main.py` file.
+The `MainTestConfigFile` manages the `tests/test_{package_name}/test_main.py`
+file.
 
 ## Overview
 
@@ -38,7 +39,8 @@ graph TD
 
 ## File Location
 
-**Path**: `tests/test_{package_name}/test_main.py` (e.g., `tests/test_myapp/test_main.py`)
+**Path**: `tests/test_{package_name}/test_main.py` (e.g.,
+`tests/test_myapp/test_main.py`)
 
 **Extension**: `.py` - Python source file.
 
@@ -47,7 +49,8 @@ graph TD
 **Path transformation**:
 
 1. Start with `pyrig.main` → `tests.test_pyrig.test_main`
-2. Replace `test_pyrig` with `test_{package_name}` → `tests.test_myapp.test_main`
+2. Replace `test_pyrig` with `test_{package_name}` →
+   `tests.test_myapp.test_main`
 3. Convert to file path → `tests/test_myapp/test_main.py`
 
 ## How It Works
@@ -71,7 +74,8 @@ def test_main(main_test_fixture: None) -> None:
     assert main_test_fixture is None
 ```
 
-The test relies on the `main_test_fixture` autouse fixture to do the actual validation.
+The test relies on the `main_test_fixture` autouse fixture to do the actual
+validation.
 
 ### Validation Logic
 
@@ -79,7 +83,8 @@ The validation checks for the test function:
 
 **Required element**: A `def test_main` function.
 
-**Flexible content**: You can add additional tests or modify the implementation as long as `test_main` exists.
+**Flexible content**: You can add additional tests or modify the implementation
+as long as `test_main` exists.
 
 ## Usage
 
@@ -97,7 +102,8 @@ This file tests the CLI entry point by:
 - Ensuring the CLI responds without errors
 - Validating the main function is properly configured
 
-See the [Testing documentation](../tests/index.md) for details on the test infrastructure.
+See the [Testing documentation](../tests/index.md) for details on the test
+infrastructure.
 
 ## Best Practices
 

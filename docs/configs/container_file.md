@@ -1,6 +1,7 @@
 # Containerfile Configuration
 
-The `ContainerfileConfigFile` manages the project's Containerfile for building container images with Podman or Docker.
+The `ContainerfileConfigFile` manages the project's Containerfile for building
+container images with Podman or Docker.
 
 ## Overview
 
@@ -37,15 +38,18 @@ graph TD
 
 **Path**: `Containerfile` (project root)
 
-**No extension**: The file is named exactly `Containerfile` with no extension, following Podman/Buildah conventions.
+**No extension**: The file is named exactly `Containerfile` with no extension,
+following Podman/Buildah conventions.
 
 ## How It Works
 
 ### Automatic Generation
 
-When initialized via `uv run pyrig mkroot`, the Containerfile is automatically created with all required layers:
+When initialized via `uv run pyrig mkroot`, the Containerfile is automatically
+created with all required layers:
 
-1. **Base image**: Uses Python slim image matching your `requires-python` constraint
+1. **Base image**: Uses Python slim image matching your `requires-python`
+   constraint
 2. **Working directory**: Sets up workspace named after your project
 3. **UV installation**: Copies uv binary from official image
 4. **Dependency files**: Copies metadata files for dependency installation
@@ -81,7 +85,8 @@ Each layer is joined with double newlines for readability.
 
 ### Validation Logic
 
-The `is_correct()` method checks that all required layers are present in the file:
+The `is_correct()` method checks that all required layers are present in the
+file:
 
 ```python
 all_layers_in_file = all(
@@ -111,7 +116,8 @@ latest_python_version = PyprojectConfigFile.get_latest_possible_python_version()
 # Uses the highest Python version allowed by requires-python
 ```
 
-If `requires-python = ">=3.10"`, it uses the latest 3.x version available at python.org.
+If `requires-python = ">=3.10"`, it uses the latest 3.x version available at
+python.org.
 
 ### Project Names
 
@@ -140,11 +146,16 @@ Uses uv's run command to execute your project in the container environment.
 podman build -t my-project .
 ```
 
-We suppose all this works with docker as well. However we strongly recommend podman for security and performance reasons. It is deamonless and rootless, which makes it simply better than docker.
+We suppose all this works with docker as well. However we strongly recommend
+podman for security and performance reasons. It is deamonless and rootless,
+which makes it simply better than docker.
 
 ### Running the Container
 
-because we define an entrypoint and a default command, you can run the container directly and are not stuck with the main command. The main command is just the default command that is run when you do not provide any arguments to the container.
+because we define an entrypoint and a default command, you can run the container
+directly and are not stuck with the main command. The main command is just the
+default command that is run when you do not provide any arguments to the
+container.
 
 ```bash
 # Run with default command (main module)
@@ -179,7 +190,8 @@ As long as all required layers are present, validation passes.
 ## Security Features
 
 - **Non-root user**: Runs as `appuser` (UID 1000) instead of root
-- **Minimal base**: Uses slim Python image to reduce attack surface and keep container size small and lightweight
+- **Minimal base**: Uses slim Python image to reduce attack surface and keep
+  container size small and lightweight
 - **No dev dependencies**: Only installs runtime dependencies
 - **Proper ownership**: Files owned by appuser, not root
 
@@ -187,4 +199,6 @@ As long as all required layers are present, validation passes.
 
 1. **Keep required layers**: Don't remove pyrig's generated layers
 2. **Add custom layers after**: Append your customizations at the end
-3. **Do not use .containerignore**: Should not be necessary as we only copy the package folder and not the entire project. All copied config file are deleted in the last layer.
+3. **Do not use .containerignore**: Should not be necessary as we only copy the
+   package folder and not the entire project. All copied config file are deleted
+   in the last layer.

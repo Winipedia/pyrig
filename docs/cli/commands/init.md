@@ -1,6 +1,7 @@
 # init
 
-Complete project initialization command that sets up a new pyrig project from scratch.
+Complete project initialization command that sets up a new pyrig project from
+scratch.
 
 ## Usage
 
@@ -66,23 +67,32 @@ Installs all dependencies including the newly added dev dependencies.
 
 Creates essential config files with `get_priority() > 0`, grouped by priority:
 
-- **Priority 30**: `LICENSE` - Must exist before pyproject.toml for license detection
+- **Priority 30**: `LICENSE` - Must exist before pyproject.toml for license
+  detection
 - **Priority 20**: `pyproject.toml` - Project metadata and dependencies
-- **Priority 10**: `myapp/dev/configs/__init__.py` and `myapp/dev/tests/fixtures/__init__.py` - Package structure files (initialized in parallel)
+- **Priority 10**: `myapp/dev/configs/__init__.py` and
+  `myapp/dev/tests/fixtures/__init__.py` - Package structure files (initialized
+  in parallel)
 
-Priority groups are processed sequentially (highest first), with files in the same group initialized in parallel. These files are required before other setup steps can proceed.
+Priority groups are processed sequentially (highest first), with files in the
+same group initialized in parallel. These files are required before other setup
+steps can proceed.
 
 ### 4. Syncing Venv (Again)
 
-Ensures the venv reflects the newly created config files. This step installs the project itself, making the project's CLI commands available (e.g., `uv run myapp <command>`).
+Ensures the venv reflects the newly created config files. This step installs the
+project itself, making the project's CLI commands available (e.g.,
+`uv run myapp <command>`).
 
 ### 5. Creating Project Root
 
-Generates all config files and directory structure by calling `mkroot` internally. See [mkroot](mkroot.md) for details.
+Generates all config files and directory structure by calling `mkroot`
+internally. See [mkroot](mkroot.md) for details.
 
 ### 6. Creating Test Files
 
-Generates test skeletons for all code by calling `mktests` internally. See [mktests](mktests.md) for details.
+Generates test skeletons for all code by calling `mktests` internally. See
+[mktests](mktests.md) for details.
 
 ### 7. Running Pre-commit Hooks
 
@@ -111,11 +121,13 @@ Use `init` when:
 
 ## Autouse Fixture
 
-This command does **not** run in an autouse fixture. It's a manual setup command.
-It should only be used once at the beginning when creating a new project.
+This command does **not** run in an autouse fixture. It's a manual setup
+command. It should only be used once at the beginning when creating a new
+project.
 
 ## Related
 
 - [mkroot](mkroot.md) - Called internally by init (step 5)
 - [mktests](mktests.md) - Called internally by init (step 6)
-- [Configs Documentation](../../configs/index.md) - Details on all config files created
+- [Configs Documentation](../../configs/index.md) - Details on all config files
+  created

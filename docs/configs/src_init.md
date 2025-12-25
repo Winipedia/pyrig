@@ -48,7 +48,8 @@ graph TD
 
 **Source module**: `pyrig.src`
 
-**Path transformation**: `pyrig.src` → `{package_name}.src` → `{package_name}/src/__init__.py`
+**Path transformation**: `pyrig.src` → `{package_name}.src` →
+`{package_name}/src/__init__.py`
 
 ## How It Works
 
@@ -66,7 +67,8 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 """Source code package for application logic."""
 ```
 
-The file contains only the docstring, allowing you to add your application's source code.
+The file contains only the docstring, allowing you to add your application's
+source code.
 
 ## Usage
 
@@ -78,10 +80,12 @@ uv run pyrig mkroot
 
 ### Purpose
 
-This package is where you add your application's source code. The `src/` directory contains the core business logic and utilities for your project.
+This package is where you add your application's source code. The `src/`
+directory contains the core business logic and utilities for your project.
 
 ## Best Practices
 
 1. **Don't modify the docstring**: Keep the copied docstring intact
-2. **Add application code**: Create modules and packages for your application logic
+2. **Add application code**: Create modules and packages for your application
+   logic
 3. **Follow pyrig patterns**: Use the same structure as pyrig's src directory

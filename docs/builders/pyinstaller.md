@@ -1,8 +1,13 @@
 # PyInstaller Builder
 
-pyrig provides `PyInstallerBuilder`, an abstract builder for creating standalone executables from Python projects using PyInstaller.
+pyrig provides `PyInstallerBuilder`, an abstract builder for creating standalone
+executables from Python projects using PyInstaller.
 
-Note: The entire reason your main.py file is generated with a `if __name__ == "__main__":` guard is so that it can be used as an executable entry point. PyInstaller needs to execute that file to create a proper executable. We also kept it because it is a Python standard. However, we prefer using the CLI framework for running code.
+Note: The entire reason your main.py file is generated with a
+`if __name__ == "__main__":` guard is so that it can be used as an executable
+entry point. PyInstaller needs to execute that file to create a proper
+executable. We also kept it because it is a Python standard. However, we prefer
+using the CLI framework for running code.
 
 ## Overview
 
@@ -30,7 +35,9 @@ class MyAppBuilder(PyInstallerBuilder):
         return [myapp.resources]
 ```
 
-A use case we had was that we needed to add the migrations folder for a database once as we had it not located in the resources directory, which is autoincluded by PyInstallerBuilder.
+A use case we had was that we needed to add the migrations folder for a database
+once as we had it not located in the resources directory, which is autoincluded
+by PyInstallerBuilder.
 
 ### 2. Add an Icon
 
@@ -42,7 +49,9 @@ myapp/
     └── icon.png  # 256x256 PNG recommended
 ```
 
-Note: You can also override `get_app_icon_png_path` to use a different icon at a custom location. However, it's recommended to keep it in the resources directory.
+Note: You can also override `get_app_icon_png_path` to use a different icon at a
+custom location. However, it's recommended to keep it in the resources
+directory.
 
 ### 3. Build
 
@@ -105,7 +114,9 @@ myapp/
         └── default.html
 ```
 
-All files in resource packages are bundled into the executable as additional data files via the same relative path using the pyinstaller method from its utils hooks:
+All files in resource packages are bundled into the executable as additional
+data files via the same relative path using the pyinstaller method from its
+utils hooks:
 
 ```python
 from PyInstaller.utils.hooks import collect_data_files
@@ -123,7 +134,10 @@ PyInstaller requires platform-specific icon formats:
 - **macOS**: `.icns`
 - **Linux**: Not supported (PyInstaller ignores the `--icon` parameter on Linux)
 
-`PyInstallerBuilder` automatically converts your `icon.png` to the appropriate format for Windows and macOS. On Linux, the icon is still converted to PNG format for consistency, but PyInstaller will ignore it as Linux executables do not support embedded icons.
+`PyInstallerBuilder` automatically converts your `icon.png` to the appropriate
+format for Windows and macOS. On Linux, the icon is still converted to PNG
+format for consistency, but PyInstaller will ignore it as Linux executables do
+not support embedded icons.
 
 ### Custom Icon Location
 
@@ -145,18 +159,18 @@ class MyAppBuilder(PyInstallerBuilder):
 
 The builder generates these PyInstaller options:
 
-| Option | Value | Purpose |
-|--------|-------|---------|
-| `--name` | Project name from pyproject.toml | Executable name |
-| `--onefile` | Enabled | Single executable file |
-| `--noconsole` | Enabled | No console window (GUI mode) |
-| `--clean` | Enabled | Clean build cache |
-| `--noconfirm` | Enabled | Replace output directory without confirmation |
-| `--icon` | Platform-specific icon | Application icon |
-| `--add-data` | All resource packages | Bundle resources |
-| `--workpath` | Temp directory | Build artifacts location |
-| `--specpath` | Temp directory | Spec file location |
-| `--distpath` | Temp directory | Output location |
+| Option        | Value                            | Purpose                                       |
+| ------------- | -------------------------------- | --------------------------------------------- |
+| `--name`      | Project name from pyproject.toml | Executable name                               |
+| `--onefile`   | Enabled                          | Single executable file                        |
+| `--noconsole` | Enabled                          | No console window (GUI mode)                  |
+| `--clean`     | Enabled                          | Clean build cache                             |
+| `--noconfirm` | Enabled                          | Replace output directory without confirmation |
+| `--icon`      | Platform-specific icon           | Application icon                              |
+| `--add-data`  | All resource packages            | Bundle resources                              |
+| `--workpath`  | Temp directory                   | Build artifacts location                      |
+| `--specpath`  | Temp directory                   | Spec file location                            |
+| `--distpath`  | Temp directory                   | Output location                               |
 
 ### Customizing Options
 
@@ -257,7 +271,9 @@ Running `uv run pyrig build`:
 
 ## Requirements
 
-PyInstaller builder requires PyInstaller and Pillow (for icon conversion). These dependencies are included automatically when you add `pyrig-dev` to your development dependencies:
+PyInstaller builder requires PyInstaller and Pillow (for icon conversion). These
+dependencies are included automatically when you add `pyrig-dev` to your
+development dependencies:
 
 ```toml
 [dependency-groups]
@@ -266,4 +282,5 @@ dev = [
 ]
 ```
 
-The `pyrig-dev` package includes all necessary build tools including PyInstaller and Pillow.
+The `pyrig-dev` package includes all necessary build tools including PyInstaller
+and Pillow.

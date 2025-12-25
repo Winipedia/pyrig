@@ -1,6 +1,7 @@
 # publish.yaml
 
-Publishing workflow that distributes packages to PyPI and documentation to GitHub Pages.
+Publishing workflow that distributes packages to PyPI and documentation to
+GitHub Pages.
 
 ## Overview
 
@@ -8,7 +9,9 @@ Publishing workflow that distributes packages to PyPI and documentation to GitHu
 **Class**: `PublishWorkflow` in `pyrig.dev.configs.workflows.publish`  
 **Inherits**: `Workflow`
 
-The publish workflow is the final step in the CI/CD pipeline. It runs after successful releases and publishes the package to PyPI and documentation to GitHub Pages. These jobs run in parallel.
+The publish workflow is the final step in the CI/CD pipeline. It runs after
+successful releases and publishes the package to PyPI and documentation to
+GitHub Pages. These jobs run in parallel.
 
 ## Triggers
 
@@ -18,7 +21,8 @@ The publish workflow is the final step in the CI/CD pipeline. It runs after succ
 - **Event**: `completed`
 - **Condition**: Only runs if release succeeded
 
-**Why workflow_run?** Ensures publishing only happens after version is tagged and release is created.
+**Why workflow_run?** Ensures publishing only happens after version is tagged
+and release is created.
 
 ### Workflow Dispatch
 
@@ -107,7 +111,8 @@ graph TD
    - **Conditional**: Only runs if `PYPI_TOKEN` is configured
    - Skips with message if token not set
 
-**Why conditional?** Allows workflow to succeed even without PyPI token (useful for private packages or testing).
+**Why conditional?** Allows workflow to succeed even without PyPI token (useful
+for private packages or testing).
 
 ### 2. publish_documentation
 
@@ -172,7 +177,8 @@ graph TD
 ## Required Secrets
 
 - **PYPI_TOKEN**: PyPI API token (optional, skips publishing if not set)
-- **REPO_TOKEN**: Fine-grained PAT with pages write permission (for enabling Pages)
+- **REPO_TOKEN**: Fine-grained PAT with pages write permission (for enabling
+  Pages)
 
 ## Publishing Destinations
 
@@ -206,14 +212,15 @@ pip install myapp
 uv add myapp
 ```
 
-**Documentation**:
-Visit `https://{username}.github.io/{repo}/`
+**Documentation**: Visit `https://{username}.github.io/{repo}/`
 
 ## Best Practices
 
-1. **Configure PYPI_TOKEN**: Required for publishing to PyPI (get from pypi.org account settings)
+1. **Configure PYPI_TOKEN**: Required for publishing to PyPI (get from pypi.org
+   account settings)
 2. **Configure REPO_TOKEN**: Required for enabling GitHub Pages
 3. **Test docs locally**: Run `uv run mkdocs serve` before pushing
 4. **Verify PyPI upload**: Check package page after publishing
 5. **Check Pages deployment**: Visit docs URL after workflow completes
-6. **Use trusted publishing**: Consider configuring PyPI trusted publishing instead of tokens
+6. **Use trusted publishing**: Consider configuring PyPI trusted publishing
+   instead of tokens

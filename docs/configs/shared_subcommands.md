@@ -1,6 +1,7 @@
 # shared_subcommands.py Configuration
 
-The `SharedSubcommandsConfigFile` manages the `dev/cli/shared_subcommands.py` file.
+The `SharedSubcommandsConfigFile` manages the `dev/cli/shared_subcommands.py`
+file.
 
 ## Overview
 
@@ -46,7 +47,9 @@ graph TD
 
 **Source module**: `pyrig.dev.cli.shared_subcommands`
 
-**Path transformation**: `pyrig.dev.cli.shared_subcommands` → `{package_name}.dev.cli.shared_subcommands` → `{package_name}/dev/cli/shared_subcommands.py`
+**Path transformation**: `pyrig.dev.cli.shared_subcommands` →
+`{package_name}.dev.cli.shared_subcommands` →
+`{package_name}/dev/cli/shared_subcommands.py`
 
 ## How It Works
 
@@ -54,7 +57,8 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Docstring copy**: Only the docstring from `pyrig.dev.cli.shared_subcommands` is copied
+1. **Docstring copy**: Only the docstring from
+   `pyrig.dev.cli.shared_subcommands` is copied
 2. **Package structure**: The `dev/cli/` directory is created
 3. **Ready for customization**: You can add your own shared subcommand functions
 
@@ -76,13 +80,16 @@ uv run pyrig mkroot
 
 ### Purpose
 
-This file is where you define CLI subcommands that should be available across all your pyrig-based projects. Commands defined here are shared and reusable.
+This file is where you define CLI subcommands that should be available across
+all your pyrig-based projects. Commands defined here are shared and reusable.
 
-See the [CLI Subcommands documentation](../cli/subcommands.md) for details on creating custom commands.
+See the [CLI Subcommands documentation](../cli/subcommands.md) for details on
+creating custom commands.
 
 ## Best Practices
 
 1. **Don't modify the docstring**: Keep the copied docstring intact
-2. **Add shared commands**: Define functions that are useful across multiple projects
+2. **Add shared commands**: Define functions that are useful across multiple
+   projects
 3. **Keep it generic**: Shared commands should work in any pyrig project
 4. **Document thoroughly**: Add clear docstrings since these are reused

@@ -1,6 +1,7 @@
 # main.py Configuration
 
-The `MainConfigFile` manages the `main.py` file, which serves as the CLI entry point for your project.
+The `MainConfigFile` manages the `main.py` file, which serves as the CLI entry
+point for your project.
 
 ## Overview
 
@@ -37,9 +38,11 @@ graph TD
 
 - Python file format (`.py` extension)
 - Copies entire module content from `pyrig.main`
-- Automatically determines target path by replacing `pyrig` with your package name
+- Automatically determines target path by replacing `pyrig` with your package
+  name
 - Ensures parent directory is a valid Python package
-- Validation checks for required structure (`def main` and `if __name__ == "__main__":`)
+- Validation checks for required structure (`def main` and
+  `if __name__ == "__main__":`)
 - Users can modify the implementation while keeping required elements
 
 ## File Location
@@ -50,7 +53,8 @@ graph TD
 
 **Filename**: `main` - Extracted from the source module name (`pyrig.main`).
 
-**Path transformation**: `pyrig.main` → `{package_name}.src.main` → `{package_name}/src/main.py`
+**Path transformation**: `pyrig.main` → `{package_name}.src.main` →
+`{package_name}/src/main.py`
 
 ## How It Works
 
@@ -59,9 +63,12 @@ graph TD
 When initialized via `uv run pyrig mkroot`, the `main.py` file is created with:
 
 1. **Module copy**: Complete source code from `pyrig.main` is copied
-2. **Path transformation**: Module path is transformed to match your package structure
-3. **Package creation**: Parent directory becomes a valid Python package with `__init__.py`
-4. **Legacy cleanup**: Any root-level `main.py` is deleted (uv creates one at initialization when doing uv init)
+2. **Path transformation**: Module path is transformed to match your package
+   structure
+3. **Package creation**: Parent directory becomes a valid Python package with
+   `__init__.py`
+4. **Legacy cleanup**: Any root-level `main.py` is deleted (uv creates one at
+   initialization when doing uv init)
 
 ### Source Module
 
@@ -83,15 +90,18 @@ if __name__ == "__main__":
 
 ### Legacy Cleanup
 
-When running `uv run pyrig init`, any root-level `main.py` file is automatically deleted.
+When running `uv run pyrig init`, any root-level `main.py` file is automatically
+deleted.
 
-**Why this is needed**: uv creates a `main.py` at the project root during initialization. This cleanup ensures the file is only in `myapp/`.
+**Why this is needed**: uv creates a `main.py` at the project root during
+initialization. This cleanup ensures the file is only in `myapp/`.
 
 ## Dynamic Configuration
 
 ### Package Name
 
-The package name from `pyproject.toml` `[project]` `name` determines the target path:
+The package name from `pyproject.toml` `[project]` `name` determines the target
+path:
 
 - Project name: `my-app`
 - Package name: `my_app`
@@ -99,7 +109,9 @@ The package name from `pyproject.toml` `[project]` `name` determines the target 
 
 ### Module Path Transformation
 
-The module path is automatically transformed from `pyrig.main` to `{package_name}.main` to ensure the file is placed in the correct location for your project.
+The module path is automatically transformed from `pyrig.main` to
+`{package_name}.main` to ensure the file is placed in the correct location for
+your project.
 
 ## Validation Logic
 
@@ -110,7 +122,8 @@ The validation checks for required structure:
 1. A `def main` function definition
 2. The `if __name__ == "__main__":` guard
 
-**Flexible implementation**: As long as these elements exist, you can customize the implementation.
+**Flexible implementation**: As long as these elements exist, you can customize
+the implementation.
 
 ## Usage
 
@@ -160,7 +173,8 @@ As long as `def main` and `if __name__ == "__main__":` exist, validation passes.
 
 ## Best Practices
 
-1. **Keep the structure**: Maintain `def main()` and `if __name__ == "__main__":`
+1. **Keep the structure**: Maintain `def main()` and
+   `if __name__ == "__main__":`
 2. **Keep it simple**: main.py should be a thin entry point, not business logic
 3. **Don't move it**: Keep main.py in `myapp/`, not at project root
 
@@ -176,4 +190,5 @@ main.py
        └─> Shared subcommands (from myapp/dev/cli/shared_subcommands.py)
 ```
 
-See the [CLI documentation](../cli/architecture.md) for details on adding custom commands.
+See the [CLI documentation](../cli/architecture.md) for details on adding custom
+commands.

@@ -1,10 +1,12 @@
 # Fixture Sharing
 
-pyrig automatically shares fixtures across all packages in the dependency chain through a multi-package plugin architecture.
+pyrig automatically shares fixtures across all packages in the dependency chain
+through a multi-package plugin architecture.
 
 ## How It Works
 
-Every package depending on pyrig inherits all fixtures from pyrig and its dependencies:
+Every package depending on pyrig inherits all fixtures from pyrig and its
+dependencies:
 
 ```mermaid
 graph TD
@@ -83,9 +85,12 @@ graph TD
 
 **Detailed Steps:**
 
-1. **Find dependent packages**: Uses dependency graph to find all packages depending on pyrig
-2. **Locate fixtures modules**: Finds equivalent of `pyrig.dev.tests.fixtures` in each package
-3. **Collect Python files**: Recursively finds all `.py` files in fixtures modules
+1. **Find dependent packages**: Uses dependency graph to find all packages
+   depending on pyrig
+2. **Locate fixtures modules**: Finds equivalent of `pyrig.dev.tests.fixtures`
+   in each package
+3. **Collect Python files**: Recursively finds all `.py` files in fixtures
+   modules
 4. **Register as plugins**: Adds all files to `pytest_plugins` list
 
 ## Integration
@@ -120,10 +125,12 @@ myapp/
             ├── my_fixtures.py      # Custom fixtures
 ```
 
-**Important**: Unlike the CLI framework (which auto-decorates functions as Typer commands), fixtures must be explicitly decorated with:
+**Important**: Unlike the CLI framework (which auto-decorates functions as Typer
+commands), fixtures must be explicitly decorated with:
 
 - `@pytest.fixture` from pytest, or
-- Scope-specific decorators from `pyrig.dev.utils.testing` (`@session_fixture`, `@module_fixture`, etc.)
+- Scope-specific decorators from `pyrig.dev.utils.testing` (`@session_fixture`,
+  `@module_fixture`, etc.)
 
 Pyrig does not auto-decorate fixture functions.
 
@@ -148,8 +155,8 @@ def test_my_config(config_file_factory):
     assert TestConfig.get_path().exists()
 ```
 
-**Purpose**: Isolate config file tests from actual project files.
-Prevents file generation in your project if you define custom subclasses of ConfigFile.
+**Purpose**: Isolate config file tests from actual project files. Prevents file
+generation in your project if you define custom subclasses of ConfigFile.
 
 #### `builder_factory`
 
@@ -172,7 +179,8 @@ These are mainly only used internally by pyrig.
 
 #### `assert_no_untested_objs`
 
-Validates that all objects in a module, class, or function have corresponding tests:
+Validates that all objects in a module, class, or function have corresponding
+tests:
 
 ```python
 def test_my_module(assert_no_untested_objs):
@@ -240,4 +248,5 @@ When Package B tests run:
 ✓ custom_fixture (from Package B)
 ```
 
-All fixtures are automatically discovered and available without any additional configuration.
+All fixtures are automatically discovered and available without any additional
+configuration.

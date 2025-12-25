@@ -1,6 +1,7 @@
 # MkDocs Configuration
 
-The `MkdocsConfigFile` manages the project's `mkdocs.yml` configuration file for generating documentation websites with MkDocs.
+The `MkdocsConfigFile` manages the project's `mkdocs.yml` configuration file for
+generating documentation websites with MkDocs.
 
 ## Overview
 
@@ -40,13 +41,15 @@ graph TD
 
 **Path**: `mkdocs.yml` (project root)
 
-**Extension**: `.yml` (not `.yaml`) - MkDocs convention prefers the shorter extension.
+**Extension**: `.yml` (not `.yaml`) - MkDocs convention prefers the shorter
+extension.
 
 ## How It Works
 
 ### Automatic Generation
 
-When initialized via `uv run pyrig mkroot`, the `mkdocs.yml` file is created with minimal required configuration:
+When initialized via `uv run pyrig mkroot`, the `mkdocs.yml` file is created
+with minimal required configuration:
 
 ```yaml
 site_name: my-project
@@ -73,8 +76,10 @@ theme:
 **Four required keys**:
 
 1. **`site_name`**: Automatically pulled from `pyproject.toml` project name
-2. **`nav`**: Navigation with at least a Home entry pointing to `index.md` in the docs directory
-3. **`plugins`**: Search and Mermaid2 plugins enabled (mermaid2 allows beautiful diagrams in markdown, included via `pyrig-dev`)
+2. **`nav`**: Navigation with at least a Home entry pointing to `index.md` in
+   the docs directory
+3. **`plugins`**: Search and Mermaid2 plugins enabled (mermaid2 allows beautiful
+   diagrams in markdown, included via `pyrig-dev`)
 4. **`theme`**: Material theme with dark mode as default and light/dark toggle
 
 ### Validation Logic
@@ -82,11 +87,13 @@ theme:
 Inherits standard YAML validation from `YmlConfigFile`:
 
 - Loads existing `mkdocs.yml` file
-- Checks if all required keys are present with the standard subset/superset logic
+- Checks if all required keys are present with the standard subset/superset
+  logic
 - Verifies values match or extend required configuration
 - Adds missing keys without overwriting user customizations
 
-The file is valid if it contains at least the required keys with compatible values.
+The file is valid if it contains at least the required keys with compatible
+values.
 
 ## Dynamic Configuration
 
@@ -94,11 +101,14 @@ The MkDocs config adapts to your project automatically:
 
 ### Site Name
 
-Automatically uses your project name from `pyproject.toml`. If your project is named `my-awesome-project`, the site name becomes `my-awesome-project`.
+Automatically uses your project name from `pyproject.toml`. If your project is
+named `my-awesome-project`, the site name becomes `my-awesome-project`.
 
 ### Home Page Path
 
-The navigation automatically points to `index.md` in the docs directory, which is created by pyrig's `IndexConfigFile`. This ensures the homepage is always correctly referenced.
+The navigation automatically points to `index.md` in the docs directory, which
+is created by pyrig's `IndexConfigFile`. This ensures the homepage is always
+correctly referenced.
 
 ### Material Theme
 
@@ -110,11 +120,13 @@ Pyrig uses the Material theme by default, which provides:
 - **Dark mode as default** (slate scheme) with toggle to switch to light mode
 - Extensive customization options
 
-The Material theme is included as a dependency via `pyrig-dev`, so it's automatically available.
+The Material theme is included as a dependency via `pyrig-dev`, so it's
+automatically available.
 
 **Color Schemes**:
 
-- **`slate`** (default): Dark mode optimized for developers who prefer dark themes
+- **`slate`** (default): Dark mode optimized for developers who prefer dark
+  themes
 - **`default`**: Light mode available via toggle button in the header
 
 ## Usage
@@ -129,7 +141,9 @@ uv run mkdocs serve
 uv run mkdocs build
 ```
 
-Note: pyrig auto publishes the documentation to github pages via the `publish.yaml` github workflow. So you don't even need to deploy it manually and can just visit the github pages website to view your documentation.
+Note: pyrig auto publishes the documentation to github pages via the
+`publish.yaml` github workflow. So you don't even need to deploy it manually and
+can just visit the github pages website to view your documentation.
 
 ### Customization
 
@@ -142,8 +156,8 @@ nav:
   - Home: index.md
   # Add your own navigation
   - User Guide:
-    - Installation: guide/installation.md
-    - Configuration: guide/configuration.md
+      - Installation: guide/installation.md
+      - Configuration: guide/configuration.md
   - API Reference: api/index.md
 plugins:
   - search
@@ -185,7 +199,8 @@ extra:
       link: https://github.com/yourusername/my-project
 ```
 
-As long as the four required keys (`site_name`, `nav`, `plugins`, `theme`) are present with valid values, validation passes.
+As long as the four required keys (`site_name`, `nav`, `plugins`, `theme`) are
+present with valid values, validation passes.
 
 ### Adding Documentation Pages
 
@@ -214,7 +229,8 @@ As long as the four required keys (`site_name`, `nav`, `plugins`, `theme`) are p
 
 ### Search Plugin
 
-Enables full-text search across all documentation pages. No configuration needed - works out of the box.
+Enables full-text search across all documentation pages. No configuration
+needed - works out of the box.
 
 ### Mermaid2 Plugin
 
@@ -228,11 +244,14 @@ graph TD
 ```
 ````
 
-This is why pyrig's documentation can include architecture diagrams directly in markdown files.
+This is why pyrig's documentation can include architecture diagrams directly in
+markdown files.
 
 ## Best Practices
 
-1. **Keep required keys**: Don't remove `site_name`, `nav`, `plugins`, or `theme`
+1. **Keep required keys**: Don't remove `site_name`, `nav`, `plugins`, or
+   `theme`
 2. **Extend navigation**: Add your pages to the `nav` list
 3. **Organize docs**: Use subdirectories in `docs/` for structure
-4. **Preview locally**: Always run `uv run mkdocs serve` before deploying via the `publish.yaml` github workflow by pushing to main
+4. **Preview locally**: Always run `uv run mkdocs serve` before deploying via
+   the `publish.yaml` github workflow by pushing to main

@@ -1,29 +1,36 @@
 # CLI Architecture
 
-The pyrig CLI uses dynamic command discovery to automatically register commands from module functions. This enables both pyrig's built-in commands and project-specific commands in packages that depend on pyrig.
+The pyrig CLI uses dynamic command discovery to automatically register commands
+from module functions. This enables both pyrig's built-in commands and
+project-specific commands in packages that depend on pyrig.
 
 ## Entry Point
 
-Commands are invoked through the console script entry point defined in `pyproject.toml`:
+Commands are invoked through the console script entry point defined in
+`pyproject.toml`:
 
 ```toml
 [project.scripts]
 pyrig = "pyrig.dev.cli.cli:main"
 ```
 
-Running `uv run pyrig <command>` calls the `main()` function in `pyrig/dev/cli/cli.py`.
+Running `uv run pyrig <command>` calls the `main()` function in
+`pyrig/dev/cli/cli.py`.
 
 ## Command Registration Flow
 
 The `main()` function orchestrates command discovery in three steps:
 
-1. **Register project-specific commands** - Discovers commands from the current package's `subcommands` module
-2. **Register shared commands** - Discovers commands from all packages in the dependency chain
+1. **Register project-specific commands** - Discovers commands from the current
+   package's `subcommands` module
+2. **Register shared commands** - Discovers commands from all packages in the
+   dependency chain
 3. **Execute Typer application** - Runs the CLI with all registered commands
 
 ### Global Options
 
-The CLI provides global options that apply to all commands through a Typer callback that runs before any command executes, configuring the logging system:
+The CLI provides global options that apply to all commands through a Typer
+callback that runs before any command executes, configuring the logging system:
 
 - **Default (no flags)**: INFO level with clean formatting
 - **`-v`**: DEBUG level with level prefix
@@ -65,7 +72,12 @@ The `add_subcommands()` function discovers commands for the current package:
 5. **Register each function** as a Typer command
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#a8dadc','primaryTextColor':'#000','primaryBorderColor':'#333','lineColor':'#333','secondaryColor':'#90be6d','tertiaryColor':'#f4a261','actorBkg':'#a8dadc','actorBorder':'#333','actorTextColor':'#000','signalColor':'#333','signalTextColor':'#000'}}}%%
+%%{init: {'theme':'base', 'themeVariables': { 
+    'primaryColor':'#a8dadc','primaryTextColor':'#000',
+    'primaryBorderColor':'#333','lineColor':'#333','secondaryColor':'#90be6d',
+    'tertiaryColor':'#f4a261','actorBkg':'#a8dadc','actorBorder':'#333',
+    'actorTextColor':'#000','signalColor':'#333','signalTextColor':'#000'}}
+    }%%
 sequenceDiagram
     participant CLI as add_subcommands()
     participant Argv as sys.argv[0]
@@ -91,14 +103,16 @@ Example: When running `uv run myapp deploy`, the system:
 
 ### Shared Commands
 
-The `add_shared_subcommands()` function discovers commands across the package ecosystem:
+The `add_shared_subcommands()` function discovers commands across the package
+ecosystem:
 
 1. **Build a dependency graph** of all installed packages
 2. **Find all packages** that depend on pyrig
 3. **For each package**, import its `shared_subcommands` module
 4. **Register all functions** from each module
 
-This enables commands like `version` to work in any package that depends on pyrig.
+This enables commands like `version` to work in any package that depends on
+pyrig.
 
 ## Module Name Replacement
 
@@ -109,7 +123,8 @@ get_module_name_replacing_start_module(pyrig.dev.cli.subcommands, "myapp")
 # Returns: "myapp.dev.cli.subcommands"
 ```
 
-This allows any package depending on pyrig to define its own commands by following the same module structure.
+This allows any package depending on pyrig to define its own commands by
+following the same module structure.
 
 ## Dependency Graph
 
@@ -137,11 +152,13 @@ graph TD
     classDef dep2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-This enables discovery of all packages in the pyrig ecosystem and their corresponding command modules.
+This enables discovery of all packages in the pyrig ecosystem and their
+corresponding command modules.
 
 ## Function Discovery
 
-The `get_all_functions_from_module()` utility extracts all functions defined in a module:
+The `get_all_functions_from_module()` utility extracts all functions defined in
+a module:
 
 - Uses `inspect.getmembers()` to find all module members
 - Filters to only callable functions
@@ -169,7 +186,8 @@ flowchart LR
     style H fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-This automatic discovery means adding a new command requires only defining a function in the appropriate module.
+This automatic discovery means adding a new command requires only defining a
+function in the appropriate module.
 
 ## Import Strategy
 
@@ -178,7 +196,9 @@ The system uses a fallback import strategy for robustness:
 1. **Try normal import** by module name
 2. **Fall back to file-based import** if the module isn't in `sys.path`
 
-This handles edge cases where modules may not be properly installed or are in development mode. Mainly can be important when files are created during init and are not seen by normal imports yet.
+This handles edge cases where modules may not be properly installed or are in
+development mode. Mainly can be important when files are created during init and
+are not seen by normal imports yet.
 
 ## Command Execution
 
@@ -198,6 +218,14 @@ graph TD
     style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
-The function's docstring becomes the command's help text, and Typer automatically generates argument parsing from the function signature.
+The function's docstring becomes the command's help text, and Typer
+automatically generates argument parsing from the function signature.
 
-The pyrig CLI system is designed for project automation and development workflows, not for building complex CLI applications. It provides a convenient way to execute project commands without the verbosity of `python -m myapp.subpkg.subpkg2.module` or the boilerplate of `if __name__ == "__main__":` guards. Simply define functions in your `subcommands.py` module and they become accessible as `uv run myapp <command>`. I suppose if done right you can also use it to build some more complex CLI apps on top of it but that is not the intended primary use case.
+The pyrig CLI system is designed for project automation and development
+workflows, not for building complex CLI applications. It provides a convenient
+way to execute project commands without the verbosity of
+`python -m myapp.subpkg.subpkg2.module` or the boilerplate of
+`if __name__ == "__main__":` guards. Simply define functions in your
+`subcommands.py` module and they become accessible as `uv run myapp <command>`.
+I suppose if done right you can also use it to build some more complex CLI apps
+on top of it but that is not the intended primary use case.

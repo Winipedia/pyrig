@@ -1,6 +1,8 @@
 # CLI Documentation
 
-The pyrig CLI system uses dynamic command discovery to automatically register commands from module functions, enabling both built-in commands and project-specific commands in packages that depend on pyrig.
+The pyrig CLI system uses dynamic command discovery to automatically register
+commands from module functions, enabling both built-in commands and
+project-specific commands in packages that depend on pyrig.
 
 ## Documentation Pages
 
@@ -64,4 +66,6 @@ See [Commands](commands/index.md) for detailed documentation on each command.
 
 ## Global Options
 
-All commands support global verbosity and quiet flags. See [CLI Architecture - Global Options](architecture.md#global-options) for complete details on logging levels and usage.
+All commands support global verbosity and quiet flags. See
+[CLI Architecture - Global Options](architecture.md#global-options) for complete
+details on logging levels and usage.

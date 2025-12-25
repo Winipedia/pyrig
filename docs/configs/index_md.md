@@ -1,13 +1,15 @@
 # Index.md Configuration
 
-The `IndexConfigFile` manages the `docs/index.md` file, which serves as the homepage for your MkDocs documentation site.
+The `IndexConfigFile` manages the `docs/index.md` file, which serves as the
+homepage for your MkDocs documentation site.
 
 ## Overview
 
 Creates a documentation index file that:
 
 - Uses the project name with "Documentation" suffix as the header
-- Includes all standard badges (tooling, code quality, package info, CI/CD, documentation)
+- Includes all standard badges (tooling, code quality, package info, CI/CD,
+  documentation)
 - Displays the project description from `pyproject.toml`
 - Provides a professional starting point for documentation
 - Allows users to add custom content below the header
@@ -51,10 +53,13 @@ graph TD
 
 ### Automatic Generation
 
-When initialized via `uv run pyrig mkroot`, the `docs/index.md` file is created with:
+When initialized via `uv run pyrig mkroot`, the `docs/index.md` file is created
+with:
 
-1. **Project name header**: Uses project name from `pyproject.toml` with " Documentation" suffix
-2. **Badge sections**: Five categories of badges (tooling, code quality, package info, CI/CD, documentation)
+1. **Project name header**: Uses project name from `pyproject.toml` with "
+   Documentation" suffix
+2. **Badge sections**: Five categories of badges (tooling, code quality, package
+   info, CI/CD, documentation)
 3. **Project description**: Quoted description from `pyproject.toml`
 4. **Horizontal rules**: Visual separators for clean layout
 
@@ -66,26 +71,35 @@ For a project named "myapp" with description "A sample application":
 # myapp Documentation
 
 <!-- tooling -->
+
 [![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Container](https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6)](https://podman.io/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
 [![MkDocs](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://www.mkdocs.org/)
+
 <!-- code-quality -->
+
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
 [![codecov](https://codecov.io/gh/owner/myapp/branch/main/graph/badge.svg)](https://codecov.io/gh/owner/myapp)
+
 <!-- package-info -->
+
 [![PyPI](https://img.shields.io/pypi/v/myapp?logo=pypi&logoColor=white)](https://pypi.org/project/myapp/)
 [![Python](https://img.shields.io/badge/python-3.10|3.11|3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/github/license/owner/myapp)](https://github.com/owner/myapp/blob/main/LICENSE)
+
 <!-- ci/cd -->
+
 [![CI](https://img.shields.io/github/actions/workflow/status/owner/myapp/health_check.yaml?label=CI&logo=github)](https://github.com/owner/myapp/actions/workflows/health_check.yaml)
 [![CD](https://img.shields.io/github/actions/workflow/status/owner/myapp/release.yaml?label=CD&logo=github)](https://github.com/owner/myapp/actions/workflows/release.yaml)
+
 <!-- documentation -->
+
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://owner.github.io/myapp)
 
 ---
@@ -97,7 +111,8 @@ For a project named "myapp" with description "A sample application":
 
 ### Content Generation Logic
 
-The content generation inherits from `BadgesMarkdownConfigFile` and adds " Documentation" suffix to the project name.
+The content generation inherits from `BadgesMarkdownConfigFile` and adds "
+Documentation" suffix to the project name.
 
 **Key behavior**:
 
@@ -111,11 +126,13 @@ The index file adapts to your project automatically:
 
 ### Project Name
 
-Automatically uses your project name from `pyproject.toml` `[project]` `name` field with " Documentation" suffix.
+Automatically uses your project name from `pyproject.toml` `[project]` `name`
+field with " Documentation" suffix.
 
 ### Project Description
 
-Displays the project description from `pyproject.toml` `[project]` `description` field as a blockquote below the badges.
+Displays the project description from `pyproject.toml` `[project]` `description`
+field as a blockquote below the badges.
 
 ### Repository Information
 
@@ -123,7 +140,8 @@ Extracts repository owner and name from Git remote URL for badge links.
 
 ### Python Versions
 
-Shows supported Python versions from `pyproject.toml` `requires-python` field in the Python badge (e.g., `3.10|3.11|3.12`).
+Shows supported Python versions from `pyproject.toml` `requires-python` field in
+the Python badge (e.g., `3.10|3.11|3.12`).
 
 ## Badge Categories
 
@@ -198,11 +216,13 @@ This is the documentation for myapp.
 ...
 ```
 
-The validation only checks that required elements exist, so you can add as much content as you want.
+The validation only checks that required elements exist, so you can add as much
+content as you want.
 
 ### Validation Logic
 
-The validation checks that the index file contains all required elements (inherited from `BadgesMarkdownConfigFile`):
+The validation checks that the index file contains all required elements
+(inherited from `BadgesMarkdownConfigFile`):
 
 **Required elements**:
 
@@ -210,7 +230,8 @@ The validation checks that the index file contains all required elements (inheri
 2. Project description
 3. Project name
 
-**Flexible structure**: As long as these elements exist somewhere in the file, it's considered valid. You can add custom content anywhere.
+**Flexible structure**: As long as these elements exist somewhere in the file,
+it's considered valid. You can add custom content anywhere.
 
 ## Best Practices
 
@@ -234,13 +255,13 @@ This makes it the homepage of your documentation site.
 
 ## Difference from README.md
 
-| Feature | `docs/index.md` | `README.md` |
-|---------|----------------|-------------|
-| **Location** | `docs/` directory | Project root |
-| **Purpose** | Documentation homepage | Repository homepage |
-| **Header** | "{project} Documentation" | "{project}" |
-| **Audience** | Documentation readers | GitHub visitors |
-| **Content** | Detailed docs structure | Quick overview |
+| Feature      | `docs/index.md`           | `README.md`         |
+| ------------ | ------------------------- | ------------------- |
+| **Location** | `docs/` directory         | Project root        |
+| **Purpose**  | Documentation homepage    | Repository homepage |
+| **Header**   | "{project} Documentation" | "{project}"         |
+| **Audience** | Documentation readers     | GitHub visitors     |
+| **Content**  | Detailed docs structure   | Quick overview      |
 
 Both files share the same badges and description, but serve different purposes.
 
@@ -285,11 +306,15 @@ Add your own badges after the generated ones:
 # myapp Documentation
 
 <!-- tooling -->
+
 ...
+
 <!-- documentation -->
+
 ...
 
 <!-- custom badges -->
+
 [![Custom](https://img.shields.io/badge/custom-badge-blue)](https://example.com)
 
 ---
@@ -301,7 +326,9 @@ Add your own badges after the generated ones:
 
 ### Removing Badge Categories
 
-You can remove entire badge categories by editing the file, but they'll be re-added if missing. To permanently remove, you'd need to override `get_badges()` in a custom subclass.
+You can remove entire badge categories by editing the file, but they'll be
+re-added if missing. To permanently remove, you'd need to override
+`get_badges()` in a custom subclass.
 
 ### Changing Badge Order
 
@@ -313,4 +340,5 @@ The badges are organized in this order:
 4. ci/cd
 5. documentation
 
-This order is defined in `BadgesMarkdownConfigFile.get_badges()` and can be customized by overriding the method.
+This order is defined in `BadgesMarkdownConfigFile.get_badges()` and can be
+customized by overriding the method.

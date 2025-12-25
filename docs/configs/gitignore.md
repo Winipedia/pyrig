@@ -1,6 +1,7 @@
 # GitIgnore Configuration
 
-The `GitIgnoreConfigFile` manages the project's `.gitignore` file for excluding files from version control.
+The `GitIgnoreConfigFile` manages the project's `.gitignore` file for excluding
+files from version control.
 
 ## Overview
 
@@ -36,9 +37,11 @@ graph TD
 
 **Path**: `.gitignore` (project root)
 
-**Extension**: `.gitignore` - The filename is constructed specially to produce the dotfile name.
+**Extension**: `.gitignore` - The filename is constructed specially to produce
+the dotfile name.
 
-**Special filename handling**: `get_filename()` returns empty string so the path becomes `.gitignore` instead of `gitignore.gitignore`.
+**Special filename handling**: `get_filename()` returns empty string so the path
+becomes `.gitignore` instead of `gitignore.gitignore`.
 
 ## How It Works
 
@@ -46,8 +49,11 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the `.gitignore` file is created by:
 
-1. **Fetching GitHub's Python.gitignore**: Downloads the latest standard Python patterns from GitHub. Falls back to bundled resource in pyrig's resources package if network fails.
-2. **Adding pyrig-specific patterns**: Includes patterns for pyrig tools and workflows
+1. **Fetching GitHub's Python.gitignore**: Downloads the latest standard Python
+   patterns from GitHub. Falls back to bundled resource in pyrig's resources
+   package if network fails.
+2. **Adding pyrig-specific patterns**: Includes patterns for pyrig tools and
+   workflows
 3. **Merging with existing**: Preserves any patterns already in the file
 4. **Avoiding duplicates**: Only adds patterns that don't already exist
 
@@ -55,10 +61,12 @@ When initialized via `uv run pyrig mkroot`, the `.gitignore` file is created by:
 
 The `.gitignore` file combines patterns from multiple sources:
 
-1. **GitHub's standard Python patterns** - Comprehensive Python-specific patterns
+1. **GitHub's standard Python patterns** - Comprehensive Python-specific
+   patterns
 2. **VS Code workspace files** - `.vscode/` directory
 3. **Pyrig-specific patterns** - `.git/`, `.experiment.py`
-4. **Tool caches** - `.mypy_cache/`, `.pytest_cache/`, `.ruff_cache/`, `.rumdl_cache/`
+4. **Tool caches** - `.mypy_cache/`, `.pytest_cache/`, `.ruff_cache/`,
+   `.rumdl_cache/`
 5. **Environment and secrets** - `.env`
 6. **Coverage reports** - `.coverage`, `coverage.xml`
 7. **Build artifacts** - `.venv/`, `dist/`, `/site/`
@@ -78,9 +86,13 @@ The GitIgnore config adapts to your project automatically:
 
 ### GitHub Python Patterns
 
-Pyrig fetches the latest standard Python patterns from GitHub's official gitignore repository at `https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore`.
+Pyrig fetches the latest standard Python patterns from GitHub's official
+gitignore repository at
+`https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore`.
 
-**Fallback mechanism**: If the network request fails, pyrig uses a bundled resource file from `pyrig/resources/GITIGNORE` to ensure the `.gitignore` file is always created successfully.
+**Fallback mechanism**: If the network request fails, pyrig uses a bundled
+resource file from `pyrig/resources/GITIGNORE` to ensure the `.gitignore` file
+is always created successfully.
 
 ### Project-Specific Files
 
@@ -124,7 +136,8 @@ is_ignored = GitIgnoreConfigFile.path_is_in_gitignore("my_file.py")
 is_ignored = GitIgnoreConfigFile.path_is_in_gitignore(".venv/")
 ```
 
-This uses the `pathspec` library with `gitwildmatch` for accurate pattern matching.
+This uses the `pathspec` library with `gitwildmatch` for accurate pattern
+matching.
 
 ## Included Patterns
 
@@ -166,14 +179,18 @@ This uses the `pathspec` library with `gitwildmatch` for accurate pattern matchi
 1. **Don't remove required patterns**: Keep pyrig's patterns in the file
 2. **Add project-specific patterns**: Append your own patterns as needed
 3. **Use comments**: Organize patterns with comments for clarity
-4. **Test pattern matching**: Use `path_is_in_gitignore()` to verify patterns work
+4. **Test pattern matching**: Use `path_is_in_gitignore()` to verify patterns
+   work
 5. **Commit .gitignore**: Always version control your `.gitignore` file
 
 ## Advanced Features
 
 ### Network Failure Handling
 
-If GitHub is unreachable, pyrig uses a bundled fallback resource file at `pyrig/resources/GITIGNORE` which contains a recent copy of GitHub's Python.gitignore. This ensures the `.gitignore` file is always created successfully, even without internet access.
+If GitHub is unreachable, pyrig uses a bundled fallback resource file at
+`pyrig/resources/GITIGNORE` which contains a recent copy of GitHub's
+Python.gitignore. This ensures the `.gitignore` file is always created
+successfully, even without internet access.
 
 ### Pattern Matching
 

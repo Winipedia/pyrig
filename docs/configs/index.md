@@ -1,12 +1,14 @@
 # Configuration Files Documentation
 
-pyrig's configuration system automatically creates and maintains project configuration files through a declarative class-based architecture.
+pyrig's configuration system automatically creates and maintains project
+configuration files through a declarative class-based architecture.
 
 ## Documentation Pages
 
 ### [Architecture](architecture.md)
 
-Learn how the ConfigFile system works, including automatic discovery, validation, and creating custom configuration files.
+Learn how the ConfigFile system works, including automatic discovery,
+validation, and creating custom configuration files.
 
 ## Configuration Files
 
@@ -14,11 +16,11 @@ Learn how the ConfigFile system works, including automatic discovery, validation
 
 Branch protection ruleset configuration for GitHub repository protection.
 
-### [builders/__init__.py](builders_init.md)
+### [builders/**init**.py](builders_init.md)
 
 Package initialization file for the builders directory structure.
 
-### [configs/__init__.py](configs_init.md)
+### [configs/**init**.py](configs_init.md)
 
 Package initialization file for the configs directory structure.
 
@@ -28,21 +30,24 @@ Pytest configuration file that imports pyrig's test fixtures and plugins.
 
 ### [Containerfile](container_file.md)
 
-Container image configuration for building production-ready images with Podman or Docker.
+Container image configuration for building production-ready images with Podman
+or Docker.
 
 ### [.env](dot_env.md)
 
-Environment variables file for local configuration, automatically excluded from version control.
+Environment variables file for local configuration, automatically excluded from
+version control.
 
 ### [.experiment.py](dot_experiment.md)
 
-Scratch file for local experimentation, automatically excluded from version control.
+Scratch file for local experimentation, automatically excluded from version
+control.
 
 ### [.python-version](dot_python_version.md)
 
 Python version specification file for pyenv and other version managers.
 
-### [fixtures/__init__.py](fixtures_init.md)
+### [fixtures/**init**.py](fixtures_init.md)
 
 Package initialization file for the test fixtures directory structure.
 
@@ -52,7 +57,8 @@ Git ignore patterns for excluding files from version control.
 
 ### [Index.md](index_md.md)
 
-Documentation homepage file for MkDocs sites with badges and project description.
+Documentation homepage file for MkDocs sites with badges and project
+description.
 
 ### [LICENSE](license_md.md)
 
@@ -60,7 +66,8 @@ Project license file, defaults to MIT License with automatic year and owner.
 
 ### [main.py](main.md)
 
-CLI entry point file that provides the command-line interface for your application.
+CLI entry point file that provides the command-line interface for your
+application.
 
 ### [MkDocs](mkdocs.md)
 
@@ -76,21 +83,23 @@ PEP 561 marker file indicating the package supports type checking.
 
 ### [pyproject.toml](pyproject.md)
 
-Central project configuration file for Python packaging, dependencies, and tool settings.
+Central project configuration file for Python packaging, dependencies, and tool
+settings.
 
 ### [README.md](readme_md.md)
 
 Repository homepage file with badges and project description for GitHub.
 
-### [resources/__init__.py](resources_init.md)
+### [resources/**init**.py](resources_init.md)
 
 Package initialization file for the resources directory structure.
 
 ### [shared_subcommands.py](shared_subcommands.md)
 
-CLI shared subcommands file for defining reusable commands across all pyrig projects.
+CLI shared subcommands file for defining reusable commands across all pyrig
+projects.
 
-### [src/__init__.py](src_init.md)
+### [src/**init**.py](src_init.md)
 
 Package initialization file for the src directory structure.
 
@@ -117,12 +126,14 @@ The configuration system provides:
 - **Automatic discovery** of config files across all packages depending on pyrig
 - **Intelligent validation** ensuring configs are supersets of required values
 - **Smart merging** of missing configuration without overwriting user changes
-- **Multi-format support** for YAML, TOML, Python, Markdown, JSON, and plain text
+- **Multi-format support** for YAML, TOML, Python, Markdown, JSON, and plain
+  text
 - **Priority-based initialization** for dependency ordering
 - **Parallel initialization** for performance
 - **Opt-out mechanism** via empty files
 
-See [Architecture](architecture.md) for complete technical details on how the system works.
+See [Architecture](architecture.md) for complete technical details on how the
+system works.
 
 ## Quick Start
 
@@ -136,7 +147,8 @@ uv run pyrig mkroot
 uv run pyrig mkroot --priority
 ```
 
-The `--priority` flag creates only essential files needed before installing dependencies (LICENSE, pyproject.toml, `__init__.py` files).
+The `--priority` flag creates only essential files needed before installing
+dependencies (LICENSE, pyproject.toml, `__init__.py` files).
 
 ### Creating a Custom Config File
 
@@ -162,7 +174,8 @@ class MyConfigFile(YamlConfigFile):
         }
 ```
 
-Place this in `myapp/dev/configs/my_config.py` and it will be automatically discovered and create `config/my_config.yaml`.
+Place this in `myapp/dev/configs/my_config.py` and it will be automatically
+discovered and create `config/my_config.yaml`.
 
 See [Architecture](architecture.md) for:
 

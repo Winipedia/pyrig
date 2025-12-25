@@ -8,7 +8,10 @@ Continuous integration workflow that validates code quality and runs tests.
 **Class**: `HealthCheckWorkflow` in `pyrig.dev.configs.workflows.health_check`  
 **Inherits**: `Workflow`
 
-The health check workflow is the first step in the CI/CD pipeline. It runs on every pull request, push to main, and daily on a staggered schedule. It validates code quality through linting, type checking, security scanning, and comprehensive testing across multiple OS and Python versions.
+The health check workflow is the first step in the CI/CD pipeline. It runs on
+every pull request, push to main, and daily on a staggered schedule. It
+validates code quality through linting, type checking, security scanning, and
+comprehensive testing across multiple OS and Python versions.
 
 ## Triggers
 
@@ -28,7 +31,10 @@ The health check workflow is the first step in the CI/CD pipeline. It runs on ev
 - **Staggering**: Hour offset based on dependency depth to pyrig
 - **Purpose**: Catch issues from dependency updates
 
-**Why staggered?** If your package depends on pyrig, and pyrig releases at midnight, your package runs at 1 AM. This prevents failures when dependencies release right before your scheduled run and keeps all packages up to date at the same time if you have lots of packages depending in a line.
+**Why staggered?** If your package depends on pyrig, and pyrig releases at
+midnight, your package runs at 1 AM. This prevents failures when dependencies
+release right before your scheduled run and keeps all packages up to date at the
+same time if you have lots of packages depending in a line.
 
 ### Workflow Dispatch
 
@@ -82,10 +88,13 @@ graph TD
 
 ### 1. protect_repository
 
-**Runs on**: Ubuntu latest
-**Purpose**: Applies branch protection rules to the repository
+**Runs on**: Ubuntu latest **Purpose**: Applies branch protection rules to the
+repository
 
-This job runs independently from the test matrix to ensure branch protection is configured before any code quality checks. It sets up the environment, updates dependencies, and applies the branch protection ruleset from `branch-protection.json`.
+This job runs independently from the test matrix to ensure branch protection is
+configured before any code quality checks. It sets up the environment, updates
+dependencies, and applies the branch protection ruleset from
+`branch-protection.json`.
 
 **Step Flow**:
 
@@ -141,7 +150,11 @@ graph TD
    - Creates or updates branch protection ruleset on GitHub
    - Requires `REPO_TOKEN` secret
 
-**Why separate?** Running protection as a separate job ensures branch protection is configured early in the workflow. The `health_check` aggregator job (which waits for both this job and the matrix) is the required status check for PRs. No need to call this in all matrix jobs.
+- \*Why separate?\*\* Running protection as a separate job ensures branch
+
+protection is configured early in the workflow. The `health_check` aggregator
+job (which waits for both this job and the matrix) is the required status check
+for PRs. No need to call this in all matrix jobs.
 
 ### 2. health_check_matrix
 
@@ -150,7 +163,8 @@ graph TD
 **Matrix**:
 
 - **OS**: Ubuntu, Windows, macOS (latest)
-- **Python**: All versions from `pyproject.toml` `requires-python` (e.g., 3.12, 3.13, 3.14)
+- **Python**: All versions from `pyproject.toml` `requires-python` (e.g., 3.12,
+  3.13, 3.14)
 
 **Step Flow**:
 
@@ -205,7 +219,8 @@ graph TD
 
 7. **Run Pre Commit Hooks**
    - Runs `uv run pre-commit run --all-files`
-   - Executes: ruff (linting), ty (type checking), mypy (strict types), bandit (security)
+   - Executes: ruff (linting), ty (type checking), mypy (strict types), bandit
+     (security)
    - Fails if any hook fails
 
 8. **Run Tests**
@@ -219,13 +234,15 @@ graph TD
    - Uses `CODECOV_TOKEN` secret
    - Only fails CI if token is configured
 
-**Why matrix?** Testing across OS and Python versions catches platform-specific bugs and ensures compatibility.
+**Why matrix?** Testing across OS and Python versions catches platform-specific
+bugs and ensures compatibility.
 
 ### 3. health_check
 
-**Runs on**: Ubuntu latest
-**Needs**: `health_check_matrix`, `protect_repository` (waits for both to complete)
-**Purpose**: Aggregates matrix results into single job for branch protection rules, you will see the purpose of this once you make a Pull Request and wait for the checks to complete.
+**Runs on**: Ubuntu latest **Needs**: `health_check_matrix`,
+`protect_repository` (waits for both to complete) **Purpose**: Aggregates matrix
+results into single job for branch protection rules, you will see the purpose of
+this once you make a Pull Request and wait for the checks to complete.
 
 **Steps**:
 
@@ -233,7 +250,8 @@ graph TD
    - Echoes aggregation message
    - Provides single job status for GitHub branch protection
 
-**Why aggregate?** GitHub branch protection can require this single job instead of tracking all matrix combinations and the protection job individually.
+**Why aggregate?** GitHub branch protection can require this single job instead
+of tracking all matrix combinations and the protection job individually.
 
 ## Environment Variables
 
@@ -242,9 +260,13 @@ graph TD
 
 ## Required Secrets
 
-- **REPO_TOKEN**: Fine-grained PAT with administration, contents, pages permissions
-- **CODECOV_TOKEN**: Codecov upload token (recommended, required for private repos)
-  - See [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens) for details
+- **REPO_TOKEN**: Fine-grained PAT with administration, contents, pages
+  permissions
+- **CODECOV_TOKEN**: Codecov upload token (recommended, required for private
+  repos)
+  - See
+    [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens)
+    for details
 
 ## Usage
 
@@ -263,4 +285,5 @@ GitHub Actions tab → Health Check → Run workflow
 1. **Fix failures immediately**: Health check blocks the entire pipeline
 2. **Monitor coverage**: Maintain 90% minimum coverage
 3. **Check all matrix jobs**: Don't ignore platform-specific failures
-4. **Update dependencies regularly**: Scheduled runs catch breaking changes early
+4. **Update dependencies regularly**: Scheduled runs catch breaking changes
+   early

@@ -36,7 +36,8 @@ Artifacts are automatically named with platform suffixes:
 - Windows: `myapp-Windows.exe`
 - macOS: `myapp-Darwin`
 
-**Note**: The suffix uses Python's `platform.system()` which returns "Darwin" on macOS.
+**Note**: The suffix uses Python's `platform.system()` which returns "Darwin" on
+macOS.
 
 ## How It Works
 
@@ -78,13 +79,16 @@ Use `build` when:
 
 ## Autouse Fixture
 
-This command does **not** run in an autouse fixture. It's a manual build command.
+This command does **not** run in an autouse fixture. It's a manual build
+command.
 
 ## CI/CD Integration
 
-The `build` command is used in the Build workflow. See [Build Workflow](../../configs/workflows/build.md) for details.
+The `build` command is used in the Build workflow. See
+[Build Workflow](../../configs/workflows/build.md) for details.
 
 ## Related
 
-- [Builders Documentation](../../builders/index.md) - Complete builder system documentation
+- [Builders Documentation](../../builders/index.md) - Complete builder system
+  documentation
 - [Build Workflow](../../configs/workflows/build.md) - CI/CD build process

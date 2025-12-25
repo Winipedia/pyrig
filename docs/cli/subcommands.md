@@ -1,6 +1,8 @@
 # Subcommands
 
-Project-specific CLI commands are defined in the `dev/cli/subcommands.py` module. All functions in this module are automatically registered as CLI commands.
+Project-specific CLI commands are defined in the `dev/cli/subcommands.py`
+module. All functions in this module are automatically registered as CLI
+commands.
 
 ## Defining Commands
 
@@ -20,14 +22,16 @@ def mkroot(
 
     This inits all ConfigFiles.
     """
-    # local imports in pyrig to avoid cli failure when installing without dev deps
-    # as some pyrig commands are dependend on dev deps and can only be used in a dev env
+    # local imports in pyrig to avoid cli failure 
+    # when installing without dev deps, as some pyrig commands are 
+    # dependend on dev deps and can only be used in a dev env
     from pyrig.dev.cli.commands.create_root import make_project_root
 
     make_project_root(priority=priority)
 ```
 
-The function name becomes the command name (Typer automatically converts underscores to hyphens), and the docstring becomes the help text.
+The function name becomes the command name (Typer automatically converts
+underscores to hyphens), and the docstring becomes the help text.
 
 ### Adding Command-Line Arguments
 
@@ -106,7 +110,8 @@ Functions are discovered and registered automatically:
 - **Defined in module** - imported functions are excluded
 - **Sorted by definition order** - commands appear in the order they're defined
 
-Note: The main function from your main.py at myapp/main.py is automatically registered as a command as well in addition to all functions in subcommands.py.
+Note: The main function from your main.py at myapp/main.py is automatically
+registered as a command as well in addition to all functions in subcommands.py.
 
 ### Discovery Process
 
@@ -180,7 +185,8 @@ graph TD
     style D fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
-Running `uv run myapp <command>` will discover and execute commands from `myapp.dev.cli.subcommands`.
+Running `uv run myapp <command>` will discover and execute commands from
+`myapp.dev.cli.subcommands`.
 
 ## Built-in Commands
 

@@ -1,6 +1,7 @@
 # resources/**init**.py Configuration
 
-The `ResourcesInitConfigFile` manages the `dev/artifacts/resources/__init__.py` file.
+The `ResourcesInitConfigFile` manages the `dev/artifacts/resources/__init__.py`
+file.
 
 ## Overview
 
@@ -48,7 +49,8 @@ graph TD
 
 **Source module**: `pyrig.resources`
 
-**Path transformation**: `pyrig.resources` → `{package_name}.resources` → `{package_name}/resources/__init__.py`
+**Path transformation**: `pyrig.resources` → `{package_name}.resources` →
+`{package_name}/resources/__init__.py`
 
 ## How It Works
 
@@ -56,7 +58,8 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Docstring copy**: Only the docstring from `pyrig.resources.__init__.py` is copied
+1. **Docstring copy**: Only the docstring from `pyrig.resources.__init__.py` is
+   copied
 2. **Package structure**: The `resources/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files
 
@@ -66,7 +69,8 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 """Resources package for managing project resource files."""
 ```
 
-The file contains only the docstring, allowing you to add resource files to this directory.
+The file contains only the docstring, allowing you to add resource files to this
+directory.
 
 ## Usage
 
@@ -78,9 +82,12 @@ uv run pyrig mkroot
 
 ### Purpose
 
-This package is where you can add resource files for your project (templates, data files, etc.). Resources are bundled with your package and accessible at runtime.
+This package is where you can add resource files for your project (templates,
+data files, etc.). Resources are bundled with your package and accessible at
+runtime.
 
-See the [Resources documentation](../resources/index.md) for details on using the resources system.
+See the [Resources documentation](../resources/index.md) for details on using
+the resources system.
 
 ## Best Practices
 

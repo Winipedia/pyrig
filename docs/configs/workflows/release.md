@@ -8,7 +8,9 @@ Release creation workflow that versions, tags, and publishes GitHub releases.
 **Class**: `ReleaseWorkflow` in `pyrig.dev.configs.workflows.release`  
 **Inherits**: `Workflow`
 
-The release workflow runs after successful artifact builds. It bumps the version, commits changes, creates git tags, generates changelogs, and publishes GitHub releases with all artifacts attached.
+The release workflow runs after successful artifact builds. It bumps the
+version, commits changes, creates git tags, generates changelogs, and publishes
+GitHub releases with all artifacts attached.
 
 ## Triggers
 
@@ -18,7 +20,8 @@ The release workflow runs after successful artifact builds. It bumps the version
 - **Event**: `completed`
 - **Condition**: Only runs if build succeeded
 
-**Why workflow_run?** Ensures releases are only created after artifacts are successfully built.
+**Why workflow_run?** Ensures releases are only created after artifacts are
+successfully built.
 
 ### Workflow Dispatch
 
@@ -60,8 +63,6 @@ graph TD
     A3 --> S14
     A4 --> S14
 
-    Note right of A3: Artifact name uses runner.os (macOS)<br/>but executables inside use platform.system() (Darwin)
-
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
@@ -83,6 +84,10 @@ graph TD
     style A3 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
     style A4 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
 ```
+
+Note: uploaded names are -Linux, -Windows, -macOS,
+but downloaded names are -Linux, -Windows, -Darwin
+because of platform.system() in the build workflow.
 
 ## Jobs
 
@@ -124,7 +129,8 @@ graph TD
 
 8. **Commit Added Changes**
    - Commits all staged changes
-   - Message: `[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)`
+   - Message:
+     `[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)`
    - `--no-verify`: Skips pre-commit hooks (already ran)
    - `[skip ci]`: Prevents triggering another workflow run
 
@@ -146,7 +152,8 @@ graph TD
     - Downloads all artifacts from build workflow
     - Uses `run-id` from triggering workflow
     - `merge-multiple: true`: Combines all artifacts into `dist/`
-    - Downloads: `pyrig-Linux`, `pyrig-Windows`, `pyrig-macOS`, `container-image`
+    - Downloads: `pyrig-Linux`, `pyrig-Windows`, `pyrig-macOS`,
+      `container-image`
 
 13. **Build Changelog** (`mikepenz/release-changelog-builder-action@develop`)
     - Generates changelog from commits since last release
@@ -159,7 +166,8 @@ graph TD
     - **Tag**: Version from step 11 (e.g., `v0.1.5`)
     - **Name**: `{repo-name} v{version}` (e.g., `pyrig v0.1.5`)
     - **Body**: Changelog from step 13
-    - **Artifacts**: All files in `dist/*` (platform artifacts + container image)
+    - **Artifacts**: All files in `dist/*` (platform artifacts + container
+      image)
 
 ## Environment Variables
 
@@ -168,13 +176,17 @@ graph TD
 
 ## Required Secrets
 
-- **REPO_TOKEN**: Fine-grained PAT with contents write permission (for pushing to protected main branch)
-- **GITHUB_TOKEN**: Automatically provided by GitHub Actions (for downloading artifacts and creating releases)
+- **REPO_TOKEN**: Fine-grained PAT with contents write permission (for pushing
+  to protected main branch)
+- **GITHUB_TOKEN**: Automatically provided by GitHub Actions (for downloading
+  artifacts and creating releases)
 
 ## Versioning Strategy
 
-- **Automatic patch bumps**: Every release increments patch version (0.1.4 → 0.1.5)
-- **Manual major/minor bumps**: Edit `pyproject.toml` manually and commit to trigger release with new version
+- **Automatic patch bumps**: Every release increments patch version (0.1.4 →
+  0.1.5)
+- **Manual major/minor bumps**: Edit `pyproject.toml` manually and commit to
+  trigger release with new version
 
 ## Usage
 
@@ -193,8 +205,15 @@ Repository → Releases tab → See all published releases with artifacts
 ## Best Practices
 
 1. **Configure REPO_TOKEN**: Required for pushing to protected branches
-2. **Use conventional commits**: Improves changelog generation (feat:, fix:, etc.)
+2. **Use conventional commits**: Improves changelog generation (feat:, fix:,
+   etc.)
 3. **Review releases**: Check GitHub Releases page after workflow completes
 4. **Download artifacts**: Test artifacts before publishing to PyPI
 
-Note: A nice thing about this is, that health check will run once a day and trigger this pipeline automatically. This way your project stays up to date with the latest dependencies and you can release new versions regularly automatically. So if you do not work on a project for a while and come back your code will be up to date and has done a release every day you were away. Also this way a breaking change that interferes with your code will be caught by the health check and you can fix it before it becomes a problem.
+Note: A nice thing about this is, that health check will run once a day and
+trigger this pipeline automatically. This way your project stays up to date with
+the latest dependencies and you can release new versions regularly
+automatically. So if you do not work on a project for a while and come back your
+code will be up to date and has done a release every day you were away. Also
+this way a breaking change that interferes with your code will be caught by the
+health check and you can fix it before it becomes a problem.

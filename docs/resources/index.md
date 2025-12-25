@@ -1,6 +1,8 @@
 # Resources Documentation
 
-pyrig provides a resource management system for bundling static files (images, configs, templates) that works seamlessly in both development and PyInstaller executables.
+pyrig provides a resource management system for bundling static files (images,
+configs, templates) that works seamlessly in both development and PyInstaller
+executables.
 
 ## Documentation Pages
 
