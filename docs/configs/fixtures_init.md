@@ -88,4 +88,3 @@ See the [Fixtures documentation](../tests/fixtures.md) for details on creating c
 2. **Add fixture modules**: Create fixture files in this directory
 3. **Use pytest decorators**: Decorate fixtures with `@pytest.fixture` or pyrig's scope decorators
 4. **Follow naming conventions**: Use descriptive names for fixture modules
-

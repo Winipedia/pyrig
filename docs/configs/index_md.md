@@ -314,4 +314,3 @@ The badges are organized in this order:
 5. documentation
 
 This order is defined in `BadgesMarkdownConfigFile.get_badges()` and can be customized by overriding the method.
-

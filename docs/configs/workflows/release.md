@@ -198,4 +198,3 @@ Repository → Releases tab → See all published releases with artifacts
 4. **Download artifacts**: Test artifacts before publishing to PyPI
 
 Note: A nice thing about this is, that health check will run once a day and trigger this pipeline automatically. This way your project stays up to date with the latest dependencies and you can release new versions regularly automatically. So if you do not work on a project for a while and come back your code will be up to date and has done a release every day you were away. Also this way a breaking change that interferes with your code will be caught by the health check and you can fix it before it becomes a problem.
-

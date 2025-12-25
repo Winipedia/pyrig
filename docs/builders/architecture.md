@@ -184,4 +184,3 @@ The `Builder` class provides utilities for accessing project paths:
 These are particularly useful for PyInstaller builders and custom build processes.
 
 Note: If you set up your project correctly, you should never need to manually execute `uv run pyrig build` because the CI/CD pipeline will automatically build artifacts, upload them to GitHub, and add them to releases.
-

@@ -115,4 +115,3 @@ The validation checks if the LICENSE file exists and contains text (is non-empty
 5. **Add to README**: Reference the license in your README badges
 
 Note: I recommend choosing the right licence for you at repo creation time in github. This way pyrig will not overwrite it.
-

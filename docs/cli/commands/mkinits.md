@@ -53,4 +53,3 @@ The fixture checks for namespace packages and automatically runs `mkinits` to cr
 
 - [mkroot](mkroot.md) - Also creates `__init__.py` files as part of project structure
 - [Autouse Fixtures](../../tests/autouse.md) - Automatic `__init__.py` creation
-

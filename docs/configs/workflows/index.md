@@ -11,7 +11,8 @@ Pyrig generates GitHub Actions workflows that automate:
 - Creating releases (versioning, changelogs, GitHub releases)
 - Publishing (PyPI, GitHub Pages documentation)
 
-All workflows are defined in Python using the `Workflow` base class and automatically generated as YAML files in `.github/workflows/`.
+All workflows are defined in Python using the `Workflow` base class and
+automatically generated as YAML files in `.github/workflows/`.
 
 ## Architecture
 

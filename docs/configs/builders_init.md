@@ -87,4 +87,3 @@ See the [Builders documentation](../builders/index.md) for details on creating c
 1. **Don't modify the docstring**: Keep the copied docstring intact
 2. **Add custom builders**: Create builder modules in this directory
 3. **Follow pyrig patterns**: Use the same structure as pyrig's builders
-

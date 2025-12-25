@@ -195,4 +195,3 @@ def get_github_python_gitignore_as_str(cls) -> str:
 If the request fails (no internet, rate limit, etc.), it returns the content from `pyrig/resources/GITIGNORE` instead.
 
 This ensures your project can be initialized even without internet access, while still getting the latest templates when possible.
-

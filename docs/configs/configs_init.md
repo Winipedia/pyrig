@@ -87,4 +87,3 @@ See the [Config Files documentation](index.md) for details on creating custom co
 1. **Don't modify the docstring**: Keep the copied docstring intact
 2. **Add custom configs**: Create config file classes in this directory
 3. **Follow pyrig patterns**: Use the same structure as pyrig's config files
-

@@ -85,4 +85,3 @@ This package is where you add your application's source code. The `src/` directo
 1. **Don't modify the docstring**: Keep the copied docstring intact
 2. **Add application code**: Create modules and packages for your application logic
 3. **Follow pyrig patterns**: Use the same structure as pyrig's src directory
-

@@ -86,4 +86,3 @@ See the [CLI Subcommands documentation](../cli/subcommands.md) for details on cr
 2. **Add shared commands**: Define functions that are useful across multiple projects
 3. **Keep it generic**: Shared commands should work in any pyrig project
 4. **Document thoroughly**: Add clear docstrings since these are reused
-

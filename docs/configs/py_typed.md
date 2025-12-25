@@ -125,4 +125,3 @@ myapp = ["py.typed"]
 ```
 
 Pyrig handles this automatically in the build configuration.
-

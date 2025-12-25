@@ -108,4 +108,3 @@ Pyrig extracts the first supported version (`3.12`) and writes it to `.python-ve
 2. **Commit the file**: Include `.python-version` in version control
 3. **Use version managers**: Install pyenv, asdf, mise, or similar tools to manage Python versions
 4. **Update when needed**: Re-run `uv run pyrig mkroot` when updating `requires-python`
-

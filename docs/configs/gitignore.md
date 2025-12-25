@@ -192,4 +192,3 @@ GitIgnoreConfigFile.path_is_in_gitignore(".venv/")  # True
 # Handles files
 GitIgnoreConfigFile.path_is_in_gitignore("test.pyc")  # True (matches *.pyc)
 ```
-

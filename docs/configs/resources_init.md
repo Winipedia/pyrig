@@ -87,4 +87,3 @@ See the [Resources documentation](../resources/index.md) for details on using th
 1. **Don't modify the docstring**: Keep the copied docstring intact
 2. **Add resource files**: Place templates, data files, etc. in this directory
 3. **Use get_resource_path**: Access resources using pyrig's resource utilities
-

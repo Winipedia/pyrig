@@ -86,4 +86,3 @@ See the [CLI Subcommands documentation](../cli/subcommands.md) for details on cr
 2. **Add command functions**: Define functions that will become CLI commands
 3. **Follow naming conventions**: Use clear, descriptive function names
 4. **Add docstrings**: Document your commands for help text
-

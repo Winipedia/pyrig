@@ -116,4 +116,3 @@ The validation checks if the `.env` file exists. The file can be empty - pyrig o
 3. **Document variables**: Add comments explaining each variable
 4. **Keep secrets safe**: Don't share `.env` files
 5. **Use different files**: `.env.local`, `.env.test` for different environments
-

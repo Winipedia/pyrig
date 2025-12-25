@@ -60,4 +60,3 @@ Real-world example of using pyrig to build and maintain a standardized microserv
 - **Real Benefits**: Security audits, rebranding, new services - all solved in minutes
 
 Complete walkthrough showing pyrig's power in production environments with microservices.
-

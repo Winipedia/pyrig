@@ -105,4 +105,3 @@ See the [Testing documentation](../tests/index.md) for details on the test infra
 2. **Add more tests**: You can add additional tests for CLI functionality
 3. **Use the fixture**: The `main_test_fixture` does the heavy lifting
 4. **Test CLI commands**: Add tests for your custom subcommands
-

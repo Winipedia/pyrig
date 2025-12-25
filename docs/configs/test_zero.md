@@ -92,4 +92,3 @@ See the [Testing documentation](../tests/index.md) for details on the test infra
 1. **Keep it simple**: Don't add logic to this test
 2. **Delete when ready**: Remove this file once you have real tests
 3. **Don't rely on it**: This is a placeholder, not a real test
-

@@ -127,4 +127,3 @@ uv run pyrig mkroot --priority
 - [Configs Documentation](../../configs/index.md) - Details on all config files
 - [mkinits](mkinits.md) - Creates only `__init__.py` files
 - [init](init.md) - Calls `pyrig mkroot` as part of full project setup
-
