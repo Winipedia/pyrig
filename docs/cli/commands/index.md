@@ -1,6 +1,7 @@
 # Commands
 
-pyrig provides CLI commands for project setup, testing, building, and repository management.
+pyrig provides CLI commands for project setup, testing, building, and repository
+management.
 
 ## Available Commands
 
@@ -35,13 +36,17 @@ uv run pyrig protect-repo
 
 ## Global Options
 
-All commands support verbosity and quiet flags. See [CLI Architecture - Global Options](../architecture.md#global-options) for complete details on logging levels and usage.
+All commands support verbosity and quiet flags. See
+[CLI Architecture - Global Options](../architecture.md#global-options) for
+complete details on logging levels and usage.
 
 ## Command Discovery
 
-All commands are automatically discovered from `dev/cli/subcommands.py`. Each function in this module becomes a CLI command.
+All commands are automatically discovered from `dev/cli/subcommands.py`. Each
+function in this module becomes a CLI command.
 
-For packages depending on pyrig, you can define your own commands in `myapp/dev/cli/subcommands.py`:
+For packages depending on pyrig, you can define your own commands in
+`myapp/dev/cli/subcommands.py`:
 
 ```bash
 uv run myapp deploy    # Custom command defined in myapp

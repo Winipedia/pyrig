@@ -51,7 +51,8 @@ graph TD
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Plugin import**: Imports `pyrig.dev.tests.conftest` as a pytest plugin
-2. **Docstring**: Explains the file's purpose and warns against manual modification
+2. **Docstring**: Explains the file's purpose and warns against manual
+   modification
 3. **Pytest integration**: Automatically loads pyrig's fixtures and hooks
 
 ### Generated Content
@@ -59,17 +60,16 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 ```python
 """Pytest configuration for tests.
 
-This module configures pytest plugins for the test suite, setting up the necessary
-fixtures and hooks for the different
-test scopes (function, class, module, package, session).
-It also import custom plugins from tests/base/scopes.
-This file should not be modified manually.
-"""
+This module configures pytest plugins for the test suite, setting up the
+necessary fixtures and hooks for the different test scopes (function, class,
+module, package, session). It also import custom plugins from tests/base/scopes.
+This file should not be modified manually. """
 
 pytest_plugins = ["pyrig.dev.tests.conftest"]
 ```
 
-The `pytest_plugins` list tells pytest to load pyrig's conftest module, making all pyrig fixtures available.
+The `pytest_plugins` list tells pytest to load pyrig's conftest module, making
+all pyrig fixtures available.
 
 ## Validation Logic
 
@@ -87,7 +87,8 @@ def is_correct(cls) -> bool:
 
 **Required element**: The `pytest_plugins` list with pyrig's conftest import.
 
-**Flexible content**: You can add additional plugins or configuration as long as the required import exists.
+**Flexible content**: You can add additional plugins or configuration as long as
+the required import exists.
 
 ## Usage
 
@@ -105,11 +106,14 @@ This file configures pytest to use pyrig's test infrastructure, including:
 - Factory fixtures (`config_file_factory`, `builder_factory`)
 - Custom pytest hooks and plugins
 
-See the [Testing documentation](../tests/index.md) for details on the test infrastructure.
+See the [Testing documentation](../tests/index.md) for details on the test
+infrastructure.
 
 ## Best Practices
 
 1. **Don't remove the import**: Keep the `pytest_plugins` import intact
 2. **Add custom plugins**: You can add additional pytest plugins to the list
-3. **Avoid manual modification**: The file is auto-generated and should rarely need changes
-4. **Use fixtures package**: Add custom fixtures in `dev/tests/fixtures/` instead
+3. **Avoid manual modification**: The file is auto-generated and should rarely
+   need changes
+4. **Use fixtures package**: Add custom fixtures in `dev/tests/fixtures/`
+   instead

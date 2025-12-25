@@ -30,9 +30,16 @@
 
 ## What is pyrig?
 
-pyrig is an opinionated Python project toolkit that eliminates setup time and enforces best practices. Run one command to get a complete, production-ready project structure with CI/CD, testing, documentation, and more.
+pyrig is an opinionated Python project toolkit that eliminates setup time and
+enforces best practices. Run one command to get a complete, production-ready
+project structure with CI/CD, testing, documentation, and more.
 
-**Philosophy**: pyrig provides **minimal best practices fully working defaults for everything a project needs**. Every configuration, workflow, and tool is pre-configured and working from day one, so you can focus on writing code and start immediately developing your application, project or library.
+**Philosophy**: pyrig provides **minimal best practices fully
+working defaults for everything a project needs**.
+Every configuration, workflow, and tool is pre-configured
+and working from day one, so you can focus on writing code
+and start immediately developing
+your application, project or library.
 
 ### Key Features
 

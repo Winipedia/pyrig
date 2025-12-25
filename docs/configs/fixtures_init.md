@@ -48,7 +48,9 @@ graph TD
 
 **Source module**: `pyrig.dev.tests.fixtures`
 
-**Path transformation**: `pyrig.dev.tests.fixtures` → `{package_name}.dev.tests.fixtures` → `{package_name}/dev/tests/fixtures/__init__.py`
+**Path transformation**: `pyrig.dev.tests.fixtures` →
+`{package_name}.dev.tests.fixtures` →
+`{package_name}/dev/tests/fixtures/__init__.py`
 
 ## How It Works
 
@@ -56,7 +58,8 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Docstring copy**: Only the docstring from `pyrig.dev.tests.fixtures.__init__.py` is copied
+1. **Docstring copy**: Only the docstring from
+   `pyrig.dev.tests.fixtures.__init__.py` is copied
 2. **Package structure**: The `dev/tests/fixtures/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files
 
@@ -66,7 +69,8 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 """Test fixtures package for custom pytest fixtures."""
 ```
 
-The file contains only the docstring, allowing you to add custom fixture modules.
+The file contains only the docstring, allowing you to add custom fixture
+modules.
 
 ## Usage
 
@@ -78,13 +82,16 @@ uv run pyrig mkroot
 
 ### Purpose
 
-This package is where you can add custom test fixtures for your project. Fixtures defined here are automatically discovered and available to all tests.
+This package is where you can add custom test fixtures for your project.
+Fixtures defined here are automatically discovered and available to all tests.
 
-See the [Fixtures documentation](../tests/fixtures.md) for details on creating custom fixtures.
+See the [Fixtures documentation](../tests/fixtures.md) for details on creating
+custom fixtures.
 
 ## Best Practices
 
 1. **Don't modify the docstring**: Keep the copied docstring intact
 2. **Add fixture modules**: Create fixture files in this directory
-3. **Use pytest decorators**: Decorate fixtures with `@pytest.fixture` or pyrig's scope decorators
+3. **Use pytest decorators**: Decorate fixtures with `@pytest.fixture` or
+   pyrig's scope decorators
 4. **Follow naming conventions**: Use descriptive names for fixture modules

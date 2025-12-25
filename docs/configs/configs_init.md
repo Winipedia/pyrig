@@ -48,7 +48,8 @@ graph TD
 
 **Source module**: `pyrig.dev.configs`
 
-**Path transformation**: `pyrig.dev.configs` → `{package_name}.dev.configs` → `{package_name}/dev/configs/__init__.py`
+**Path transformation**: `pyrig.dev.configs` → `{package_name}.dev.configs` →
+`{package_name}/dev/configs/__init__.py`
 
 ## How It Works
 
@@ -56,7 +57,8 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Docstring copy**: Only the docstring from `pyrig.dev.configs.__init__.py` is copied
+1. **Docstring copy**: Only the docstring from `pyrig.dev.configs.__init__.py`
+   is copied
 2. **Package structure**: The `dev/configs/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files
 
@@ -66,7 +68,8 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 """Configuration files package for managing project configuration."""
 ```
 
-The file contains only the docstring, allowing you to add custom config file implementations.
+The file contains only the docstring, allowing you to add custom config file
+implementations.
 
 ## Usage
 
@@ -78,9 +81,11 @@ uv run pyrig mkroot
 
 ### Purpose
 
-This package is where you can add custom configuration file managers for your project. All ConfigFile subclasses are automatically discovered.
+This package is where you can add custom configuration file managers for your
+project. All ConfigFile subclasses are automatically discovered.
 
-See the [Config Files documentation](index.md) for details on creating custom config files.
+See the [Config Files documentation](index.md) for details on creating custom
+config files.
 
 ## Best Practices
 

@@ -39,7 +39,8 @@ graph TD
 
 **Filename**: Empty string to produce `.env` (not `env.env`).
 
-**Special filename handling**: `get_filename()` returns `""` to create a dotfile.
+**Special filename handling**: `get_filename()` returns `""` to create a
+dotfile.
 
 ## How It Works
 
@@ -53,11 +54,15 @@ When initialized via `uv run pyrig mkroot`, the file is created:
 
 ### Loading Environment Variables
 
-The `.env` file is loaded using the `python-dotenv` library's `dotenv_values()` function, which parses the file and returns a dictionary mapping variable names to their values.
+The `.env` file is loaded using the `python-dotenv` library's `dotenv_values()`
+function, which parses the file and returns a dictionary mapping variable names
+to their values.
 
 ### Dump Protection
 
-Pyrig prevents accidental writes to `.env` files. If you attempt to dump configuration to this file, it will raise a `ValueError`. This is intentional - the `.env` file is user-managed and should be edited manually.
+Pyrig prevents accidental writes to `.env` files. If you attempt to dump
+configuration to this file, it will raise a `ValueError`. This is intentional -
+the `.env` file is user-managed and should be edited manually.
 
 ## Usage
 
@@ -105,7 +110,8 @@ print(env_vars["DATABASE_URL"])
 
 ## Validation Logic
 
-The validation checks if the `.env` file exists. The file can be empty - pyrig only requires that it exists on disk.
+The validation checks if the `.env` file exists. The file can be empty - pyrig
+only requires that it exists on disk.
 
 **Required element**: File must exist (can be empty).
 

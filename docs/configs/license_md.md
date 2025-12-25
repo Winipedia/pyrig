@@ -54,7 +54,9 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 ### License Fetching
 
-Pyrig fetches the MIT license text from GitHub's SPDX API at `https://api.github.com/licenses/mit`. If the API call fails, it uses a bundled MIT license template from `pyrig/resources/MIT_LICENSE_TEMPLATE`.
+Pyrig fetches the MIT license text from GitHub's SPDX API at
+`https://api.github.com/licenses/mit`. If the API call fails, it uses a bundled
+MIT license template from `pyrig/resources/MIT_LICENSE_TEMPLATE`.
 
 ### Placeholder Replacement
 
@@ -102,7 +104,8 @@ curl https://www.gnu.org/licenses/gpl-3.0.txt > LICENSE
 
 ## Validation Logic
 
-The validation checks if the LICENSE file exists and contains text (is non-empty).
+The validation checks if the LICENSE file exists and contains text (is
+non-empty).
 
 **Required element**: File must exist and contain text.
 
@@ -111,7 +114,9 @@ The validation checks if the LICENSE file exists and contains text (is non-empty
 1. **Review the license**: Make sure MIT is appropriate for your project
 2. **Commit the file**: Include LICENSE in version control
 3. **Update copyright**: Add additional copyright holders if needed
-4. **Choose wisely**: Consider GPL, Apache, or other licenses for different use cases
+4. **Choose wisely**: Consider GPL, Apache, or other licenses for different use
+   cases
 5. **Add to README**: Reference the license in your README badges
 
-Note: I recommend choosing the right licence for you at repo creation time in github. This way pyrig will not overwrite it.
+Note: I recommend choosing the right licence for you at repo creation time in
+github. This way pyrig will not overwrite it.

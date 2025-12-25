@@ -1,6 +1,7 @@
 # Resource Management
 
-pyrig's resource system provides unified access to static files that works seamlessly in both development and PyInstaller executables.
+pyrig's resource system provides unified access to static files that works
+seamlessly in both development and PyInstaller executables.
 
 ## Resource Package Structure
 
@@ -18,13 +19,15 @@ myapp/
         └── report.html
 ```
 
-The `resources` package is automatically created by pyrig when you run `uv run pyrig mkroot`.
+The `resources` package is automatically created by pyrig when you run
+`uv run pyrig mkroot`.
 
 ## Accessing Resources
 
 ### Using `get_resource_path`
 
-The `get_resource_path` function provides cross-platform, environment-agnostic access to resources:
+The `get_resource_path` function provides cross-platform, environment-agnostic
+access to resources:
 
 ```python
 from pathlib import Path
@@ -40,11 +43,15 @@ print(config_path)  # Development: /path/to/myapp/resources/config.json
                     # PyInstaller: /tmp/_MEIxxxxxx/myapp/resources/config.json
 ```
 
-**Important**: The returned `Path` object is valid for the lifetime of the process. In PyInstaller bundles, resources are extracted to a temporary directory (`_MEIPASS`) that persists until the application exits. You can store and reuse the path throughout your application's runtime.
+**Important**: The returned `Path` object is valid for the lifetime of the
+process. In PyInstaller bundles, resources are extracted to a temporary
+directory (`_MEIPASS`) that persists until the application exits. You can store
+and reuse the path throughout your application's runtime.
 
 ### How It Works
 
-`get_resource_path` uses `importlib.resources.files()` and `as_file()` to provide a unified interface:
+`get_resource_path` uses `importlib.resources.files()` and `as_file()` to
+provide a unified interface:
 
 ```mermaid
 graph TD
@@ -67,11 +74,15 @@ graph TD
 
 **What happens:**
 
-1. **Development**: `importlib.resources` returns the actual filesystem path to the resource
-2. **PyInstaller**: `importlib.resources` extracts the bundled resource to the `_MEIPASS` temporary directory and returns that path
+1. **Development**: `importlib.resources` returns the actual filesystem path to
+   the resource
+2. **PyInstaller**: `importlib.resources` extracts the bundled resource to the
+   `_MEIPASS` temporary directory and returns that path
 3. **Result**: A `Path` object that works identically in both environments
 
-The environment detection and extraction is handled automatically by `importlib.resources` - your code doesn't need to know which environment it's running in.
+The environment detection and extraction is handled automatically by
+`importlib.resources` - your code doesn't need to know which environment it's
+running in.
 
 ## Usage Examples
 
@@ -116,7 +127,9 @@ def load_config() -> dict:
 
 ## Accessing Resources from Dependencies
 
-Each package has its own `resources/` directory. You can access resources from any package in your dependency chain by importing that package's resources module:
+Each package has its own `resources/` directory. You can access resources from
+any package in your dependency chain by importing that package's resources
+module:
 
 ```python
 # Access your own resources
@@ -153,7 +166,9 @@ graph TD
     style G fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Key point**: Resources are not "inherited" or merged - each package maintains its own resources. You simply import the specific package's resources module to access its files.
+**Key point**: Resources are not "inherited" or merged - each package maintains
+its own resources. You simply import the specific package's resources module to
+access its files.
 
 ## Pyrig's Built-in Resources
 
@@ -165,15 +180,19 @@ Pyrig includes the following resource files in `pyrig/resources/`:
 
 ### How They're Used
 
-These files serve as **fallback templates** when creating new projects with `uv run pyrig mkroot` (which is called by `uv run pyrig init`).
+These files serve as **fallback templates** when creating new projects with
+`uv run pyrig mkroot` (which is called by `uv run pyrig init`).
 
 When pyrig needs these files, it:
 
-1. **First attempts** to fetch the latest version from the internet (GitHub API, endoflife.date API, etc.)
+1. **First attempts** to fetch the latest version from the internet (GitHub API,
+   endoflife.date API, etc.)
 2. **Falls back** to the bundled resource file if the network request fails
-3. **Automatically updates** the bundled resource file when running as pyrig itself (not in user projects)
+3. **Automatically updates** the bundled resource file when running as pyrig
+   itself (not in user projects)
 
-This is implemented using the `@return_resource_content_on_fetch_error` decorator, which:
+This is implemented using the `@return_resource_content_on_fetch_error`
+decorator, which:
 
 - Catches network errors when fetching latest versions
 - Returns the bundled resource content as fallback
@@ -192,6 +211,8 @@ def get_github_python_gitignore_as_str(cls) -> str:
     return res.text
 ```
 
-If the request fails (no internet, rate limit, etc.), it returns the content from `pyrig/resources/GITIGNORE` instead.
+If the request fails (no internet, rate limit, etc.), it returns the content
+from `pyrig/resources/GITIGNORE` instead.
 
-This ensures your project can be initialized even without internet access, while still getting the latest templates when possible.
+This ensures your project can be initialized even without internet access, while
+still getting the latest templates when possible.

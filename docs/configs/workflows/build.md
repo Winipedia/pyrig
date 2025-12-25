@@ -1,6 +1,7 @@
 # build.yaml
 
-Artifact building workflow that creates distributable packages and container images.
+Artifact building workflow that creates distributable packages and container
+images.
 
 ## Overview
 
@@ -8,7 +9,10 @@ Artifact building workflow that creates distributable packages and container ima
 **Class**: `BuildWorkflow` in `pyrig.dev.configs.workflows.build`  
 **Inherits**: `Workflow`
 
-The build workflow runs after successful health checks on the main branch. It builds platform-specific artifacts (executables, wheels) across OS matrix and creates a container image. These artifacts are uploaded for the release workflow to publish.
+The build workflow runs after successful health checks on the main branch. It
+builds platform-specific artifacts (executables, wheels) across OS matrix and
+creates a container image. These artifacts are uploaded for the release workflow
+to publish.
 
 ## Triggers
 
@@ -19,7 +23,8 @@ The build workflow runs after successful health checks on the main branch. It bu
 - **Branches**: `main`
 - **Condition**: Only runs if health check succeeded
 
-**Why workflow_run?** Ensures artifacts are only built after all tests pass on main branch.
+**Why workflow_run?** Ensures artifacts are only built after all tests pass on
+main branch.
 
 ### Workflow Dispatch
 
@@ -57,9 +62,9 @@ graph TD
 
 ### 1. build_artifacts
 
-**Runs on**: Matrix of OS (Ubuntu, Windows, macOS)
-**Strategy**: `fail-fast: true`
-**Condition**: `github.event.workflow_run.conclusion == 'success'`
+**Runs on**: Matrix of OS (Ubuntu, Windows, macOS) **Strategy**:
+`fail-fast: true` **Condition**:
+`github.event.workflow_run.conclusion == 'success'`
 
 **Step Flow**:
 
@@ -114,15 +119,17 @@ graph TD
 
 8. **Upload Artifacts** (`actions/upload-artifact@main`)
    - Uploads `dist/` directory
-   - Artifact name: `pyrig-{OS}` (e.g., `pyrig-Linux`, `pyrig-Windows`, `pyrig-macOS`)
+   - Artifact name: `pyrig-{OS}` (e.g., `pyrig-Linux`, `pyrig-Windows`,
+     `pyrig-macOS`)
    - Available for download in release workflow
 
-**Why matrix?** Different OS produce different artifacts (Linux ELF, Windows EXE, macOS Mach-O).
+**Why matrix?** Different OS produce different artifacts (Linux ELF, Windows
+EXE, macOS Mach-O).
 
 ### 2. build_container_image
 
-**Runs on**: Ubuntu latest
-**Condition**: `github.event.workflow_run.conclusion == 'success'`
+**Runs on**: Ubuntu latest **Condition**:
+`github.event.workflow_run.conclusion == 'success'`
 
 **Step Flow**:
 
@@ -168,7 +175,8 @@ graph TD
    - Artifact name: `container-image`
    - Available for distribution or deployment
 
-**Why Podman?** Daemonless, rootless container engine preferred over Docker for security and simplicity.
+**Why Podman?** Daemonless, rootless container engine preferred over Docker for
+security and simplicity.
 
 ## Environment Variables
 
@@ -205,7 +213,8 @@ GitHub Actions tab → Build → Run workflow
 
 ## Best Practices
 
-1. **Define builders**: Create builder classes in `myapp/dev/builders/` for custom artifacts
+1. **Define builders**: Create builder classes in `myapp/dev/builders/` for
+   custom artifacts
 2. **Test locally**: Run `uv run pyrig build` before pushing
 3. **Check all platforms**: Verify artifacts build successfully on all OS
 4. **Keep Containerfile updated**: Ensure container image builds correctly

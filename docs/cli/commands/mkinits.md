@@ -27,11 +27,13 @@ Python packages require `__init__.py` files to be importable. Without them:
 - Imports may fail or behave unexpectedly
 - Package discovery tools may not work correctly
 
-pyrig enforces regular packages (with `__init__.py`) over namespace packages for consistency and reliability.
+pyrig enforces regular packages (with `__init__.py`) over namespace packages for
+consistency and reliability.
 
 ## Behavior
 
-- **Does not overwrite existing files** - Only creates missing `__init__.py` files
+- **Does not overwrite existing files** - Only creates missing `__init__.py`
+  files
 - **Creates empty files** - `__init__.py` files are created with no content
 - **Idempotent** - Safe to run multiple times
 
@@ -45,11 +47,16 @@ Use `mkinits` when:
 
 ## Autouse Fixture
 
-This command **runs automatically** in the `assert_no_namespace_packages` autouse fixture at session scope. See [Autouse Fixtures](../../tests/autouse.md#assert_no_namespace_packages) for details.
+This command **runs automatically** in the `assert_no_namespace_packages`
+autouse fixture at session scope. See
+[Autouse Fixtures](../../tests/autouse.md#assert_no_namespace_packages) for
+details.
 
-The fixture checks for namespace packages and automatically runs `mkinits` to create missing `__init__.py` files before tests run.
+The fixture checks for namespace packages and automatically runs `mkinits` to
+create missing `__init__.py` files before tests run.
 
 ## Related
 
-- [mkroot](mkroot.md) - Also creates `__init__.py` files as part of project structure
+- [mkroot](mkroot.md) - Also creates `__init__.py` files as part of project
+  structure
 - [Autouse Fixtures](../../tests/autouse.md) - Automatic `__init__.py` creation

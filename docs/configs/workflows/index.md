@@ -28,19 +28,23 @@ See [Workflow Architecture](architecture.md) for details on:
 
 ### [health_check.yaml](health_check.md)
 
-Continuous integration workflow that validates code quality and runs tests across OS and Python versions.
+Continuous integration workflow that validates code quality and runs tests
+across OS and Python versions.
 
 ### [build.yaml](build.md)
 
-Artifact building workflow that creates platform-specific executables and container images.
+Artifact building workflow that creates platform-specific executables and
+container images.
 
 ### [release.yaml](release.md)
 
-Release creation workflow that versions, tags, and publishes GitHub releases with artifacts.
+Release creation workflow that versions, tags, and publishes GitHub releases
+with artifacts.
 
 ### [publish.yaml](publish.md)
 
-Publishing workflow that distributes packages to PyPI and documentation to GitHub Pages.
+Publishing workflow that distributes packages to PyPI and documentation to
+GitHub Pages.
 
 ## Quick Start
 
@@ -57,12 +61,18 @@ Creates all four workflows in `.github/workflows/`.
 Add these to your GitHub repository secrets:
 
 - **REPO_TOKEN**: Fine-grained personal access token with permissions:
-  - administration: read, write (needed to protect repo and main branch via pyrig protect-repo in the health_check workflow)
-  - contents: read, write (needed to create and push commits and tags in the release workflow)
-  - pages: read, write (needed to activate and publish documentation to GitHub Pages in the publish workflow)
+  - administration: read, write (needed to protect repo and main branch via
+    pyrig protect-repo in the health_check workflow)
+  - contents: read, write (needed to create and push commits and tags in the
+    release workflow)
+  - pages: read, write (needed to activate and publish documentation to GitHub
+    Pages in the publish workflow)
 - **PYPI_TOKEN**: PyPI API token (for publishing packages)
-- **CODECOV_TOKEN**: Codecov token (recommended for all repos, required for private repos)
-  - See [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens) for details
+- **CODECOV_TOKEN**: Codecov token (recommended for all repos, required for
+  private repos)
+  - See
+    [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens)
+    for details
 
 ### Workflow Pipeline
 

@@ -1,6 +1,7 @@
 # builders/**init**.py Configuration
 
-The `BuildersInitConfigFile` manages the `dev/artifacts/builders/__init__.py` file.
+The `BuildersInitConfigFile` manages the `dev/artifacts/builders/__init__.py`
+file.
 
 ## Overview
 
@@ -48,7 +49,9 @@ graph TD
 
 **Source module**: `pyrig.dev.builders`
 
-**Path transformation**: `pyrig.dev.builders` → `{package_name}.dev.artifacts.builders` → `{package_name}/dev/artifacts/builders/__init__.py`
+**Path transformation**: `pyrig.dev.builders` →
+`{package_name}.dev.artifacts.builders` →
+`{package_name}/dev/artifacts/builders/__init__.py`
 
 ## How It Works
 
@@ -56,7 +59,8 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Docstring copy**: Only the docstring from `pyrig.dev.builders.__init__.py` is copied
+1. **Docstring copy**: Only the docstring from `pyrig.dev.builders.__init__.py`
+   is copied
 2. **Package structure**: The `dev/artifacts/builders/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files
 
@@ -66,7 +70,8 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 """Builders package for creating project artifacts."""
 ```
 
-The file contains only the docstring, allowing you to add custom builder implementations.
+The file contains only the docstring, allowing you to add custom builder
+implementations.
 
 ## Usage
 
@@ -78,9 +83,11 @@ uv run pyrig mkroot
 
 ### Purpose
 
-This package is where you can add custom builders for your project. The builders system is used to create project artifacts.
+This package is where you can add custom builders for your project. The builders
+system is used to create project artifacts.
 
-See the [Builders documentation](../builders/index.md) for details on creating custom builders.
+See the [Builders documentation](../builders/index.md) for details on creating
+custom builders.
 
 ## Best Practices
 

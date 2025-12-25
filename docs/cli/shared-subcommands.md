@@ -1,6 +1,8 @@
 # Shared Subcommands
 
-Shared subcommands are CLI commands available across all packages in the pyrig ecosystem. They are defined in `dev/cli/shared_subcommands.py` and automatically discovered in all dependent packages.
+Shared subcommands are CLI commands available across all packages in the pyrig
+ecosystem. They are defined in `dev/cli/shared_subcommands.py` and automatically
+discovered in all dependent packages.
 
 ## Purpose
 
@@ -89,7 +91,8 @@ def version() -> None:
     typer.echo(f"{project_name} version {get_version(project_name)}")
 ```
 
-The `get_project_name_from_argv()` utility extracts the package name from `sys.argv[0]`, enabling context-aware behavior.
+The `get_project_name_from_argv()` utility extracts the package name from
+`sys.argv[0]`, enabling context-aware behavior.
 
 ## Adding Shared Commands
 
@@ -147,13 +150,16 @@ uv run myapp -v version
 uv run myapp -q version
 ```
 
-**Note**: Global options (`-v`, `-vv`, `-vvv`, `-q`) must be specified **before** the command name. See [CLI Architecture](architecture.md#global-options) for details on logging levels.
+**Note**: Global options (`-v`, `-vv`, `-vvv`, `-q`) must be specified
+**before** the command name. See
+[CLI Architecture](architecture.md#global-options) for details on logging
+levels.
 
 ## Difference from Subcommands
 
-| Aspect | Subcommands | Shared Subcommands |
-|--------|-------------|-------------------|
-| Location | `dev/cli/subcommands.py` | `dev/cli/shared_subcommands.py` |
-| Scope | Package-specific | Cross-package |
-| Discovery | Current package only | All packages in dependency chain |
-| Use case | Project operations | Ecosystem-wide utilities |
+| Aspect    | Subcommands              | Shared Subcommands               |
+| --------- | ------------------------ | -------------------------------- |
+| Location  | `dev/cli/subcommands.py` | `dev/cli/shared_subcommands.py`  |
+| Scope     | Package-specific         | Cross-package                    |
+| Discovery | Current package only     | All packages in dependency chain |
+| Use case  | Project operations       | Ecosystem-wide utilities         |

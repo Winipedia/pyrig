@@ -1,6 +1,7 @@
 # Autouse Fixtures
 
-Autouse fixtures run automatically in all packages depending on pyrig, validating project health and enforcing conventions without explicit invocation.
+Autouse fixtures run automatically in all packages depending on pyrig,
+validating project health and enforcing conventions without explicit invocation.
 
 ## How Autouse Works
 
@@ -26,7 +27,8 @@ graph TD
     style I fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-Autouse fixtures run automatically based on their scope without being referenced in test signatures.
+Autouse fixtures run automatically based on their scope without being referenced
+in test signatures.
 
 ## Session-Level Fixtures
 
@@ -36,7 +38,8 @@ Run once per test session before any tests execute.
 
 **Purpose**: Prevent tests from running with uncommitted changes in CI.
 
-**Assertion**: Checks `git status` before and after test session for unstaged changes.
+**Assertion**: Checks `git status` before and after test session for unstaged
+changes.
 
 **Scope**: Session (CI only, will not run on local development)
 
@@ -52,7 +55,8 @@ Run once per test session before any tests execute.
 
 - Checks all `ConfigFile` subclasses with `is_correct()`
 - Runs `make_project_root()` if any incorrect
-- Creates `.experiment.py` in CI (needed so the `ConfigFile` system does not complain that is_correct() is False)
+- Creates `.experiment.py` in CI (needed so the `ConfigFile` system does not
+  complain that is_correct() is False)
 
 **Scope**: Session
 
@@ -82,13 +86,19 @@ Run once per test session before any tests execute.
 
 **Assertion**:
 
-- Verifies only one source package exists at the root (besides `tests` and `docs`)
-- Ensures the source package contains only: `src/`, `dev/`, `resources/` subdirectories and `main.py`
+- Verifies only one source package exists at the root (besides `tests` and
+  `docs`)
+- Ensures the source package contains only: `src/`, `dev/`, `resources/`
+  subdirectories and `main.py`
 - Prevents code from being scattered across multiple top-level packages
 
 **Scope**: Session
 
-**Why**: Maintains clean project structure with a single source of truth. All application code should be in `src/`, development tools in `dev/`, and resources in `resources/`. This enforces the convention that imports use `my_project.src.module` rather than `my_project.module`, which provides clear separation between the package namespace and source code.
+**Why**: Maintains clean project structure with a single source of truth. All
+application code should be in `src/`, development tools in `dev/`, and resources
+in `resources/`. This enforces the convention that imports use
+`my_project.src.module` rather than `my_project.module`, which provides clear
+separation between the package namespace and source code.
 
 ---
 
@@ -103,7 +113,10 @@ Run once per test session before any tests execute.
 
 **Scope**: Session
 
-**Why**: Maintains consistent naming between project and package. The convention pyrig asserts here is that the project name is the same as the package name, but with dashes instead of underscores. This is the convention we use for all our projects.
+**Why**: Maintains consistent naming between project and package. The convention
+pyrig asserts here is that the project name is the same as the package name, but
+with dashes instead of underscores. This is the convention we use for all our
+projects.
 
 ---
 
@@ -120,9 +133,10 @@ Run once per test session before any tests execute.
 
 **Scope**: Session
 
-**Why**: Enforces complete test coverage at module level.
-We think it is good to call at least every function. This has shown during pyrig's development already
-that it catches a lot of things early and helps long term. We recognize it can be annoying, but we believe it is worth it for real projects in the long run.
+**Why**: Enforces complete test coverage at module level. We think it is good to
+call at least every function. This has shown during pyrig's development already
+that it catches a lot of things early and helps long term. We recognize it can
+be annoying, but we believe it is worth it for real projects in the long run.
 
 ---
 
@@ -134,7 +148,9 @@ that it catches a lot of things early and helps long term. We recognize it can b
 
 **Scope**: Session
 
-**Why**: Maintains consistent testing framework across codebase. If you want mocks, please use pytest-mock, it is already installed as dev dependency via pyrig-dev.
+**Why**: Maintains consistent testing framework across codebase. If you want
+mocks, please use pytest-mock, it is already installed as dev dependency via
+pyrig-dev.
 
 ---
 
@@ -150,7 +166,10 @@ that it catches a lot of things early and helps long term. We recognize it can b
 
 **Scope**: Session
 
-**Why**: Enforces that dependencies are kept current. If this fails, run `uv lock --upgrade && uv sync` locally and commit the updated lock file. This ensures your project uses the latest compatible versions when dependencies are specified with `>=` constraints.
+**Why**: Enforces that dependencies are kept current. If this fails, run
+`uv lock --upgrade && uv sync` locally and commit the updated lock file. This
+ensures your project uses the latest compatible versions when dependencies are
+specified with `>=` constraints.
 
 ---
 
@@ -180,7 +199,8 @@ that it catches a lot of things early and helps long term. We recognize it can b
 
 **Scope**: Session
 
-**Why**: Ensures production code doesn't depend on development tools. This catches accidental imports of dev dependencies in source code.
+**Why**: Ensures production code doesn't depend on development tools. This
+catches accidental imports of dev dependencies in source code.
 
 ---
 
@@ -188,7 +208,8 @@ that it catches a lot of things early and helps long term. We recognize it can b
 
 **Purpose**: Prevent `src` from importing `dev` code.
 
-**Assertion**: Scans all source files for dev imports of packages depending on pyrig using regex pattern matching.
+**Assertion**: Scans all source files for dev imports of packages depending on
+pyrig using regex pattern matching.
 
 **Scope**: Session
 
@@ -219,7 +240,8 @@ that it catches a lot of things early and helps long term. We recognize it can b
 
 **Scope**: Session (local only, skipped in CI)
 
-**Why**: Keeps the package manager tooling current for development. Unlike dependency updates, this actively updates `uv` if a new version is available.
+**Why**: Keeps the package manager tooling current for development. Unlike
+dependency updates, this actively updates `uv` if a new version is available.
 
 ---
 
@@ -267,7 +289,8 @@ Run once per test module.
 
 **Why**: Enforces complete test coverage at function/class level.
 
-This does not fail if the src module does not exist. This way you can have extra test files outside of the mirrored structure.
+This does not fail if the src module does not exist. This way you can have extra
+test files outside of the mirrored structure.
 
 ---
 
@@ -295,11 +318,14 @@ Run once per test class.
 
 ## Fixture Execution Order
 
-**Note**: The execution order of session-level autouse fixtures is not guaranteed by pytest and may vary between test runs. The diagram below shows the logical grouping and scope hierarchy, not a guaranteed execution sequence.
+**Note**: The execution order of session-level autouse fixtures is not
+guaranteed by pytest and may vary between test runs. The diagram below shows the
+logical grouping and scope hierarchy, not a guaranteed execution sequence.
 
 ```mermaid
 graph TD
-    A[Session Start] --> B[Session-level autouse fixtures run<br/>order not guaranteed]
+    A[Session Start]
+    --> B[Session-level autouse fixtures run<br/>order not guaranteed]
     B --> C[For each test module]
     C --> D[assert_all_funcs_and_classes_tested]
     D --> E[For each test class in module]
@@ -366,4 +392,5 @@ Available decorators:
 - `@autouse_class_fixture` - Runs once per test class
 - `@autouse_function_fixture` - Runs for every test function
 
-Custom autouse fixtures automatically run in all packages that depend on your package.
+Custom autouse fixtures automatically run in all packages that depend on your
+package.

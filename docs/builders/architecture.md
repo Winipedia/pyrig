@@ -1,6 +1,7 @@
 # Builder Architecture
 
-pyrig's builder system uses automatic discovery to find and execute all Builder subclasses across packages, enabling extensible artifact creation.
+pyrig's builder system uses automatic discovery to find and execute all Builder
+subclasses across packages, enabling extensible artifact creation.
 
 ## How It Works
 
@@ -54,17 +55,22 @@ graph LR
 ### Discovery Process
 
 1. **Find all packages** depending on pyrig using dependency graph
-2. **Locate builders modules** equivalent to `pyrig.dev.builders` in each package
+2. **Locate builders modules** equivalent to `pyrig.dev.builders` in each
+   package
 3. **Find all Builder subclasses** in those modules
-4. **Filter non-abstract classes** (discard parent classes, keep leaf implementations)
+4. **Filter non-abstract classes** (discard parent classes, keep leaf
+   implementations)
 5. **Instantiate each builder** to trigger the build process
 
-This means only the most specific (leaf) implementations are executed.
-If you have a non-abstract Builder in package A and then subclass that class in package B, then only the subclass in B will be executed. The same behavior applies to ConfigFiles.
+This means only the most specific (leaf) implementations are executed. If you
+have a non-abstract Builder in package A and then subclass that class in package
+B, then only the subclass in B will be executed. The same behavior applies to
+ConfigFiles.
 
 ## Builder Base Class
 
-The `Builder` abstract base class provides the framework for creating custom builders. All builders must:
+The `Builder` abstract base class provides the framework for creating custom
+builders. All builders must:
 
 - Inherit from `Builder`
 - Implement the `create_artifacts` method
@@ -74,13 +80,13 @@ When instantiated, the builder automatically triggers the build process.
 
 ### Key Methods
 
-| Method | Purpose |
-|--------|---------|
-| `create_artifacts` | **Abstract** - Implement to define build logic |
-| `build` | Orchestrates temp directory, artifact creation, and moving |
-| `get_artifacts_dir` | Returns final output directory (default: `dist/`) |
-| `rename_artifacts` | Adds platform suffix to artifacts |
-| `get_non_abstract_subclasses` | Discovers all builders across packages |
+| Method                        | Purpose                                                    |
+| ----------------------------- | ---------------------------------------------------------- |
+| `create_artifacts`            | **Abstract** - Implement to define build logic             |
+| `build`                       | Orchestrates temp directory, artifact creation, and moving |
+| `get_artifacts_dir`           | Returns final output directory (default: `dist/`)          |
+| `rename_artifacts`            | Adds platform suffix to artifacts                          |
+| `get_non_abstract_subclasses` | Discovers all builders across packages                     |
 
 ## Build Process
 
@@ -88,11 +94,13 @@ The build process follows these steps:
 
 ### 1. Temporary Directory Creation
 
-Builds happen in isolated temporary directories to avoid polluting the workspace.
+Builds happen in isolated temporary directories to avoid polluting the
+workspace.
 
 ### 2. Artifact Creation
 
-Your `create_artifacts` implementation writes artifacts to the temporary directory.
+Your `create_artifacts` implementation writes artifacts to the temporary
+directory.
 
 ### 3. Artifact Collection
 
@@ -138,7 +146,10 @@ myapp/
         └── documentation.py  # DocumentationBuilder defined here
 ```
 
-Note: You actually should not need a documentation builder because pyrig will host your documentation for you on GitHub Pages via the workflows and build them via MkDocs. This is just an example of how subclassing the Builder base class works.
+Note: You actually should not need a documentation builder because pyrig will
+host your documentation for you on GitHub Pages via the workflows and build them
+via MkDocs. This is just an example of how subclassing the Builder base class
+works.
 
 ### Automatic Discovery
 
@@ -173,14 +184,17 @@ Running `uv run pyrig build`:
 
 The `Builder` class provides utilities for accessing project paths:
 
-| Method | Returns |
-|--------|---------|
-| `get_app_name()` | Project name from pyproject.toml |
-| `get_root_path()` | Project root directory |
-| `get_main_path()` | Path to main.py entry point |
-| `get_resources_path()` | Path to resources directory |
-| `get_src_pkg_path()` | Path to source package |
+| Method                 | Returns                          |
+| ---------------------- | -------------------------------- |
+| `get_app_name()`       | Project name from pyproject.toml |
+| `get_root_path()`      | Project root directory           |
+| `get_main_path()`      | Path to main.py entry point      |
+| `get_resources_path()` | Path to resources directory      |
+| `get_src_pkg_path()`   | Path to source package           |
 
-These are particularly useful for PyInstaller builders and custom build processes.
+These are particularly useful for PyInstaller builders and custom build
+processes.
 
-Note: If you set up your project correctly, you should never need to manually execute `uv run pyrig build` because the CI/CD pipeline will automatically build artifacts, upload them to GitHub, and add them to releases.
+Note: If you set up your project correctly, you should never need to manually
+execute `uv run pyrig build` because the CI/CD pipeline will automatically build
+artifacts, upload them to GitHub, and add them to releases.

@@ -4,7 +4,9 @@ GitHub Actions workflows for CI/CD automation in pyrig projects.
 
 ## Overview
 
-Pyrig provides a declarative API for building GitHub Actions workflows through the `Workflow` base class. All workflow config files inherit from this class and generate YAML files in `.github/workflows/`.
+Pyrig provides a declarative API for building GitHub Actions workflows through
+the `Workflow` base class. All workflow config files inherit from this class and
+generate YAML files in `.github/workflows/`.
 
 ## Inheritance Hierarchy
 
@@ -34,7 +36,8 @@ The `Workflow` class provides:
 
 - **Jobs**: Define workflow jobs with dependencies, strategies, and steps
 - **Steps**: Individual actions or shell commands within jobs
-- **Triggers**: Events that start the workflow (push, PR, schedule, workflow_run)
+- **Triggers**: Events that start the workflow (push, PR, schedule,
+  workflow_run)
 - **Permissions**: GitHub token permissions for the workflow
 - **Matrix Strategies**: Run jobs across OS and Python version combinations
 
@@ -92,13 +95,20 @@ class MyWorkflow(Workflow):
 
 ### Naming Conventions
 
-- **Workflow name**: Generated from class name (e.g., `HealthCheckWorkflow` → `"Health Check"`)
-- **Job IDs**: Generated from method names (e.g., `job_health_check_matrix` → `"health_check_matrix"`)
-- **Step IDs**: Generated from method names (e.g., `step_run_tests` → `"run_tests"`)
+- **Workflow name**: Generated from class name (e.g., `HealthCheckWorkflow` →
+  `"Health Check"`)
+- **Job IDs**: Generated from method names (e.g., `job_health_check_matrix` →
+  `"health_check_matrix"`)
+- **Step IDs**: Generated from method names (e.g., `step_run_tests` →
+  `"run_tests"`)
 
 ### Opt-Out Mechanism
 
-Workflows can be opted out by replacing all steps with `step_opt_out_of_workflow()`. This creates a valid workflow that never runs, allowing users to disable workflows without deleting files. Or if you empty the file it will be regenerated on next `uv run pyrig mkroot` with the opt-out steps for you. So just empty the file and run `uv run pyrig mkroot` to opt out.
+Workflows can be opted out by replacing all steps with
+`step_opt_out_of_workflow()`. This creates a valid workflow that never runs,
+allowing users to disable workflows without deleting files. Or if you empty the
+file it will be regenerated on next `uv run pyrig mkroot` with the opt-out steps
+for you. So just empty the file and run `uv run pyrig mkroot` to opt out.
 
 ## Concrete Workflows
 
@@ -145,13 +155,15 @@ graph LR
 **Jobs**:
 
 - **protect_repository**: Applies branch protection rules
-- **health_check_matrix**: Runs across OS (Ubuntu, Windows, macOS) and Python versions
+- **health_check_matrix**: Runs across OS (Ubuntu, Windows, macOS) and Python
+  versions
   - Linting (ruff)
   - Type checking (ty, mypy)
   - Security scanning (bandit)
   - Tests with coverage (pytest)
   - Coverage upload (codecov)
-- **health_check**: Aggregates matrix and protection results (required status check for PRs)
+- **health_check**: Aggregates matrix and protection results (required status
+  check for PRs)
 
 **Purpose**: Continuous integration - ensures code quality on every change.
 
@@ -222,7 +234,7 @@ graph LR
     C -->|Success| D[Release]
     D -->|Success| E[Publish]
 
-    B -.->|Tests, Linting,<br/>Type Checking,<br/>Security Scan| B1[Matrix: OS × Python]
+    B -.->|Tests, Linting, Type Checking, Security Scan| B1[Matrix: OS × Python]
     C -.->|Build Artifacts| C1[Artifacts + Container]
     D -.->|Version Bump,<br/>Git Tag,<br/>Changelog| D1[GitHub Release]
     E -.->|PyPI Package| E1[PyPI]
@@ -285,11 +297,17 @@ class CustomWorkflow(Workflow):
         )
 ```
 
-After creating the file, run `uv run pyrig mkroot` to generate `.github/workflows/custom.yaml`.
+After creating the file, run `uv run pyrig mkroot` to generate
+`.github/workflows/custom.yaml`.
 
 ## Best Practices
 
-1. **Don't edit YAML directly**: Modify the Python workflow classes instead by subclassing them as you can with all ConfigFiles
-2. **Use opt-out for customization**: Replace steps with `step_opt_out_of_workflow()` to disable
-3. **Configure secrets**: Add REPO_TOKEN, PYPI_TOKEN, CODECOV_TOKEN to repository secrets (see [Getting Started](../../more/getting-started.md#accounts--tokens))
-4. **Test locally**: Run `uv run pyrig mkroot` to regenerate workflows after changes
+1. **Don't edit YAML directly**: Modify the Python workflow classes instead by
+   subclassing them as you can with all ConfigFiles
+2. **Use opt-out for customization**: Replace steps with
+   `step_opt_out_of_workflow()` to disable
+3. **Configure secrets**: Add REPO_TOKEN, PYPI_TOKEN, CODECOV_TOKEN to
+   repository secrets (see
+   [Getting Started](../../more/getting-started.md#accounts--tokens))
+4. **Test locally**: Run `uv run pyrig mkroot` to regenerate workflows after
+   changes

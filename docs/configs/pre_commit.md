@@ -1,6 +1,7 @@
 # Pre-Commit Configuration
 
-The `PreCommitConfigConfigFile` manages the `.pre-commit-config.yaml` file for automated code quality checks before commits.
+The `PreCommitConfigConfigFile` manages the `.pre-commit-config.yaml` file for
+automated code quality checks before commits.
 
 ## Overview
 
@@ -13,7 +14,8 @@ Creates a pre-commit configuration that:
 - Uses local hooks (no external repositories)
 - Runs on every commit automatically
 
-Note: Future plans are to only use ty and not mypy. However, astral-sh/ty is still very new and so for now we keep both.
+Note: Future plans are to only use ty and not mypy. However, astral-sh/ty is
+still very new and so for now we keep both.
 
 ## Inheritance
 
@@ -43,17 +45,22 @@ graph TD
 
 **Extension**: `.yaml` - Standard pre-commit configuration file extension.
 
-**Special filename handling**: `get_filename()` transforms the class name by adding a dot prefix and replacing underscores with hyphens: `PreCommitConfigConfigFile` → `.pre-commit-config`.
+**Special filename handling**: `get_filename()` transforms the class name by
+adding a dot prefix and replacing underscores with hyphens:
+`PreCommitConfigConfigFile` → `.pre-commit-config`.
 
 ## How It Works
 
 ### Automatic Generation
 
-When initialized via `uv run pyrig mkroot`, the `.pre-commit-config.yaml` file is created with:
+When initialized via `uv run pyrig mkroot`, the `.pre-commit-config.yaml` file
+is created with:
 
 1. **Local repository configuration**: All hooks run locally using system tools
-2. **Five quality check hooks**: Linting, formatting, type checking (2 types), and security scanning
-3. **Automatic execution**: Hooks run on every commit before changes are committed
+2. **Five quality check hooks**: Linting, formatting, type checking (2 types),
+   and security scanning
+3. **Automatic execution**: Hooks run on every commit before changes are
+   committed
 
 ### Generated Configuration
 
@@ -109,7 +116,8 @@ This ensures comprehensive quality checks on every commit.
 
 **Command**: `ruff check --fix`
 
-**Purpose**: Checks code for style violations and common errors, automatically fixing issues when possible.
+**Purpose**: Checks code for style violations and common errors, automatically
+fixing issues when possible.
 
 **What it checks**:
 
@@ -123,7 +131,8 @@ This ensures comprehensive quality checks on every commit.
 
 **Command**: `ruff format`
 
-**Purpose**: Automatically formats code to a consistent style (similar to Black).
+**Purpose**: Automatically formats code to a consistent style (similar to
+Black).
 
 **What it does**:
 
@@ -136,7 +145,8 @@ This ensures comprehensive quality checks on every commit.
 
 **Command**: `ty check`
 
-**Purpose**: Modern type checker from Astral (creators of Ruff) that validates type annotations.
+**Purpose**: Modern type checker from Astral (creators of Ruff) that validates
+type annotations.
 
 **What it checks**:
 
@@ -280,17 +290,21 @@ repos:
 
 ## Best Practices
 
-1. **Keep pyrig hooks**: Don't remove the default hooks - they ensure code quality
-2. **Run manually before committing**: Use `uv run pre-commit run --all-files` to catch issues early
+1. **Keep pyrig hooks**: Don't remove the default hooks - they ensure code
+   quality
+2. **Run manually before committing**: Use `uv run pre-commit run --all-files`
+   to catch issues early
 3. **Fix issues, don't skip**: Avoid `--no-verify` - fix the actual problems
-4. **Keep tools updated**: Update tool versions in `pyproject.toml` to get latest features
+4. **Keep tools updated**: Update tool versions in `pyproject.toml` to get
+   latest features
 5. **Use in CI/CD**: pyrig runs the same hooks in CI/CD pipeline health check
 
 ## Why Local Hooks?
 
 Pyrig uses `repo: local` instead of external repositories because:
 
-1. **Version consistency**: Uses the exact tool versions from your `pyproject.toml`
+1. **Version consistency**: Uses the exact tool versions from your
+   `pyproject.toml`
 2. **No network dependency**: Works offline, no downloading hook repositories
 3. **Faster execution**: No repository cloning or environment setup
 4. **Custom tools**: Can use pyrig-specific tools like `ty check`
@@ -298,7 +312,8 @@ Pyrig uses `repo: local` instead of external repositories because:
 
 ## Integration with CI/CD
 
-The same hooks run in GitHub Actions workflows. See the workflow documentation for how pre-commit integrates with continuous integration.
+The same hooks run in GitHub Actions workflows. See the workflow documentation
+for how pre-commit integrates with continuous integration.
 
 Example from a workflow:
 
@@ -322,15 +337,17 @@ uv run mypy --exclude-gitignore
 
 ### Hooks are slow
 
-The hooks run on the entire codebase (`always_run: true`). This is intentional to catch all issues, but you can modify specific hooks to only run on changed files:
+The hooks run on the entire codebase (`always_run: true`). This is intentional
+to catch all issues, but you can modify specific hooks to only run on changed
+files:
 
 ```yaml
 - id: lint-code
   name: lint-code
   entry: ruff check --fix
   language: system
-  always_run: false  # Changed from true
-  pass_filenames: true  # Changed from false
+  always_run: false # Changed from true
+  pass_filenames: true # Changed from false
   types: [python]
 ```
 

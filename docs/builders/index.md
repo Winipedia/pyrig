@@ -1,6 +1,8 @@
 # Builder Documentation
 
-pyrig provides an extensible builder system for creating distributable artifacts. Builders are automatically discovered and executed across all packages in the dependency chain.
+pyrig provides an extensible builder system for creating distributable
+artifacts. Builders are automatically discovered and executed across all
+packages in the dependency chain.
 
 ## Documentation Pages
 
@@ -68,7 +70,8 @@ Build all artifacts:
 uv run pyrig build
 ```
 
-This discovers and executes all non-abstract Builder subclasses in your project and its dependencies that also depend on pyrig.
+This discovers and executes all non-abstract Builder subclasses in your project
+and its dependencies that also depend on pyrig.
 
 ## Creating a Custom Builder
 
@@ -87,4 +90,6 @@ class MyBuilder(Builder):
         output_file.write_text("artifact content")
 ```
 
-Place this in `myapp/dev/builders/my_builder.py` and it will be automatically discovered when running `uv run pyrig build`. Any other file location within the `dev/builders` module will also work.
+Place this in `myapp/dev/builders/my_builder.py` and it will be automatically
+discovered when running `uv run pyrig build`. Any other file location within the
+`dev/builders` module will also work.

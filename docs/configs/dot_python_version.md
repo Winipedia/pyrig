@@ -1,6 +1,7 @@
 # .python-version Configuration
 
-The `DotPythonVersionConfigFile` manages the `.python-version` file for Python version managers.
+The `DotPythonVersionConfigFile` manages the `.python-version` file for Python
+version managers.
 
 ## Overview
 
@@ -57,7 +58,9 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 ### Version Configuration
 
-The version is automatically determined from the `requires-python` field in `pyproject.toml`. Pyrig extracts the first (minimum) supported Python version and writes it to the file.
+The version is automatically determined from the `requires-python` field in
+`pyproject.toml`. Pyrig extracts the first (minimum) supported Python version
+and writes it to the file.
 
 Example: If `requires-python = ">=3.10"`, the file contains `3.10`.
 
@@ -100,11 +103,15 @@ The version is determined from `pyproject.toml`:
 requires-python = ">=3.12"
 ```
 
-Pyrig extracts the first supported version (`3.12`) and writes it to `.python-version`.
+Pyrig extracts the first supported version (`3.12`) and writes it to
+`.python-version`.
 
 ## Best Practices
 
-1. **Keep in sync**: Ensure `.python-version` matches `requires-python` in pyproject.toml
+1. **Keep in sync**: Ensure `.python-version` matches `requires-python` in
+   pyproject.toml
 2. **Commit the file**: Include `.python-version` in version control
-3. **Use version managers**: Install pyenv, asdf, mise, or similar tools to manage Python versions
-4. **Update when needed**: Re-run `uv run pyrig mkroot` when updating `requires-python`
+3. **Use version managers**: Install pyenv, asdf, mise, or similar tools to
+   manage Python versions
+4. **Update when needed**: Re-run `uv run pyrig mkroot` when updating
+   `requires-python`

@@ -1,6 +1,7 @@
 # Tooling
 
-pyrig makes opinionated tooling choices to provide a consistent, modern development experience. This document explains which tools are used and why.
+pyrig makes opinionated tooling choices to provide a consistent, modern
+development experience. This document explains which tools are used and why.
 
 ## Tool Ecosystem
 
@@ -72,7 +73,8 @@ uv version --bump    # Bump version
 - Auto-fixes most issues
 - Written in Rust for speed
 
-**Configuration**: Enables ALL rules with minimal exceptions (D203, D213, COM812, ANN401)
+**Configuration**: Enables ALL rules with minimal exceptions (D203, D213,
+COM812, ANN401)
 
 ### Mypy
 
@@ -97,7 +99,8 @@ uv version --bump    # Bump version
 - Catches type errors that mypy misses
 - Configured to error on warnings for strictness
 
-Note: In the future we will only use ty and not mypy. However, astral-sh/ty is still very new and so for now we keep both.
+Note: In the future we will only use ty and not mypy. However, astral-sh/ty is
+still very new and so for now we keep both.
 
 ### Bandit
 
@@ -157,7 +160,9 @@ Note: In the future we will only use ty and not mypy. However, astral-sh/ty is s
 - Tracks coverage across matrix builds
 - Free for open source
 
-**Setup**: See [Getting Started - Codecov Account](getting-started.md#accounts--tokens) for setup instructions
+**Setup**: See
+[Getting Started - Codecov Account](getting-started.md#accounts--tokens) for
+setup instructions
 
 ## Documentation
 
@@ -289,8 +294,14 @@ pyrig's tooling choices prioritize:
 3. **Simplicity**: Fewer tools that do more (ruff replaces 5+ tools)
 4. **Security**: Podman over Docker, bandit scanning, signed commits
 5. **Automation**: Pre-commit hooks, autouse fixtures, CI/CD workflows
-6. **Modern**: Latest Python versions, modern build backends, current best practices
+6. **Modern**: Latest Python versions, modern build backends, current best
+   practices
 
-These choices are opinionated but proven to create maintainable, high-quality Python projects.
+These choices are opinionated but proven to create maintainable, high-quality
+Python projects.
 
-**Tool Evolution**: pyrig will switch tools when better alternatives emerge. For example, we migrated from poetry to uv when uv proved to be significantly faster and more capable. We continuously evaluate the ecosystem and adopt superior tools as they mature. Ty is another example. We will eventually replace mypy with ty.
+**Tool Evolution**: pyrig will switch tools when better alternatives emerge. For
+example, we migrated from poetry to uv when uv proved to be significantly faster
+and more capable. We continuously evaluate the ecosystem and adopt superior
+tools as they mature. Ty is another example. We will eventually replace mypy
+with ty.

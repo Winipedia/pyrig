@@ -1,15 +1,16 @@
 # Test Structure
 
-pyrig enforces a strict mirrored structure between source code and tests, ensuring comprehensive test coverage through convention.
+pyrig enforces a strict mirrored structure between source code and tests,
+ensuring comprehensive test coverage through convention.
 
 ## Naming Conventions
 
-| Source | Test | Prefix |
-|--------|------|--------|
-| `module.py` | `test_module.py` | `test_` |
+| Source            | Test                   | Prefix  |
+| ----------------- | ---------------------- | ------- |
+| `module.py`       | `test_module.py`       | `test_` |
 | `function_name()` | `test_function_name()` | `test_` |
-| `ClassName` | `TestClassName` | `Test` |
-| `method_name()` | `test_method_name()` | `test_` |
+| `ClassName`       | `TestClassName`        | `Test`  |
+| `method_name()`   | `test_method_name()`   | `test_` |
 
 ## Directory Structure
 
@@ -35,7 +36,8 @@ myapp/                          tests/
 
 ```mermaid
 graph LR
-    A[myapp.src.modules.parser] -->|Transform| B[tests.test_myapp.test_src.test_modules.test_parser]
+    A[myapp.src.modules.parser] 
+    -->|Transform| B[tests.test_myapp.test_src.test_modules.test_parser]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000

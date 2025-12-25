@@ -1,6 +1,7 @@
 # pyproject.toml Configuration
 
-The `PyprojectConfigFile` manages the `pyproject.toml` file - the central configuration for Python projects.
+The `PyprojectConfigFile` manages the `pyproject.toml` file - the central
+configuration for Python projects.
 
 ## Overview
 
@@ -69,20 +70,21 @@ name = "my-app"                    # Project name (from directory)
 version = "0.1.0"                 # Semantic version
 description = ""                  # Project description
 readme = "README.md"              # README file
-authors = [{name = "Owner"}]      # From git repo owner in remote or git config user.name
-maintainers = [{name = "Owner"}]  # From git repo owner in remote or git config user.name
-license = "MIT"                   # Auto-detected from LICENSE file using SPDX identifiers
+authors = [{name = "Owner"}]      # From git remote or git config user.name
+maintainers = [{name = "Owner"}]  # From git remote or git config user.name
+license = "MIT"                   # Auto-detected from LICENSE with SPDX
 license-files = ["LICENSE"]       # License file
 requires-python = ">=3.12"        # Minimum Python version
 classifiers = [                   # PyPI classifiers
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    # continues up to the latest Python version allowed by requires-python and found on python.org
+    # continues up to the latest Python version allowed 
+    # by requires-python and found on python.org
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
-keywords = []                     # PyPI search keywords (user-defined, see below)
-dependencies = [                  # Runtime dependencies
+keywords = []                   # PyPI search keywords (user-defined, see below)
+dependencies = [                # Runtime dependencies
     "pyrig>=3.0.1",
     # User dependencies (sorted)
 ]
@@ -95,13 +97,18 @@ Issues = "https://github.com/owner/my-app/issues" # Issue tracker
 Changelog = "https://github.com/owner/my-app/releases" # Release notes
 ```
 
-**Note**: We recommend always using the latest version of pyrig (and all dependencies). Pyrig follows semantic versioning and maintains backward compatibility within major versions.
+**Note**: We recommend always using the latest version of pyrig (and all
+dependencies). Pyrig follows semantic versioning and maintains backward
+compatibility within major versions.
 
-**Why**: Standard Python packaging metadata for PyPI distribution with enhanced discoverability through project URLs and auto-detected license.
+**Why**: Standard Python packaging metadata for PyPI distribution with enhanced
+discoverability through project URLs and auto-detected license.
 
 ### Keywords
 
-pyrig generates an **empty `keywords` list** as a placeholder. You should fill this with 5-8 relevant search terms that help users discover your project on PyPI.
+pyrig generates an **empty `keywords` list** as a placeholder. You should fill
+this with 5-8 relevant search terms that help users discover your project on
+PyPI.
 
 **Best Practices**:
 
@@ -109,10 +116,12 @@ pyrig generates an **empty `keywords` list** as a placeholder. You should fill t
 - Include primary use cases and features
 - Use hyphenated compound terms (e.g., "task-runner", "cli-framework")
 - Mix broad terms (e.g., "automation") with specific ones (e.g., "ci-cd")
-- Avoid redundancy with classifiers (don't repeat "python", "testing" if already in classifiers)
+- Avoid redundancy with classifiers (don't repeat "python", "testing" if already
+  in classifiers)
 - Focus on what users would actually search for
 
-**Note**: You only need keywords if you plan to publish your package to PyPI and add a `PYPI_TOKEN` to your repository secrets.
+**Note**: You only need keywords if you plan to publish your package to PyPI and
+add a `PYPI_TOKEN` to your repository secrets.
 
 **Example for a web framework**:
 
@@ -139,7 +148,10 @@ keywords = ["data-processing", "etl", "pipeline", "analytics", "big-data"]
 my-app = "pyrig.dev.cli.cli:main"      # Creates CLI command: my-app
 ```
 
-**Why**: Creates an executable command when the package is installed. The entry point references pyrig's CLI infrastructure, which automatically discovers and runs your project's subcommands. You can invoke it via `uv run my-app <command>` or just `my-app <command>` after installation.
+**Why**: Creates an executable command when the package is installed. The entry
+point references pyrig's CLI infrastructure, which automatically discovers and
+runs your project's subcommands. You can invoke it via `uv run my-app <command>`
+or just `my-app <command>` after installation.
 
 ### Dependencies
 
@@ -161,7 +173,8 @@ dev = [                           # Development dependencies
 
 - `dependencies`: Required for package to run (includes pyrig runtime)
 - `dev`: Only needed for development (testing, linting, etc.)
-- `pyrig-dev` auto-added to dev dependencies to ensure development tools are available
+- `pyrig-dev` auto-added to dev dependencies to ensure development tools are
+  available
 
 ### Build System
 
@@ -186,9 +199,9 @@ exclude = [".*"]  # Ignore dotfiles and folders
 [tool.ruff.lint]
 select = ["ALL"]                  # Enable ALL rules
 ignore = [
-    "D203",                       # one-blank-line-before-class (conflicts with D211)
-    "D213",                       # multi-line-summary-second-line (conflicts with D212)
-    "COM812",                     # missing-trailing-comma (conflicts with formatter)
+    "D203",                       # (conflicts with D211)
+    "D213",                       # (conflicts with D212)
+    "COM812",                     # (conflicts with formatter)
     "ANN401",                     # any-type (allow typing.Any)
 ]
 fixable = ["ALL"]                 # Auto-fix all rules
@@ -269,18 +282,18 @@ skips = ["*/tests/*.py"]          # Allow assert in tests
 
 Several values are determined automatically:
 
-| Setting | Source |
-|---------|--------|
-| `name` | Current directory name |
-| `authors` | Git repo owner from remote URL or `git config user.name` |
-| `maintainers` | Git repo owner from remote URL or `git config user.name` |
-| `license` | Auto-detected from LICENSE file using spdx-matcher library |
-| `requires-python` | Existing value or `>=3.12` (default) |
-| `classifiers` | Generated from `requires-python` + OS Independent + Typing :: Typed |
-| `keywords` | Empty list (user should fill with 5-8 search terms for PyPI) |
-| `urls` | Auto-generated from git remote (Homepage, Documentation, Source, Issues, Changelog) |
-| `scripts` | Package name → pyrig CLI entry point |
-| `module-name` | Package name (hyphens → underscores) |
+| Setting           | Source                                                                              |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| `name`            | Current directory name                                                              |
+| `authors`         | Git repo owner from remote URL or `git config user.name`                            |
+| `maintainers`     | Git repo owner from remote URL or `git config user.name`                            |
+| `license`         | Auto-detected from LICENSE file using spdx-matcher library                          |
+| `requires-python` | Existing value or `>=3.12` (default)                                                |
+| `classifiers`     | Generated from `requires-python` + OS Independent + Typing :: Typed                 |
+| `keywords`        | Empty list (user should fill with 5-8 search terms for PyPI)                        |
+| `urls`            | Auto-generated from git remote (Homepage, Documentation, Source, Issues, Changelog) |
+| `scripts`         | Package name → pyrig CLI entry point                                                |
+| `module-name`     | Package name (hyphens → underscores)                                                |
 
 ## Dependency Management
 
@@ -327,7 +340,8 @@ uv run pyrig mkroot  # Validates and merges changes
 
 ## Best Practices
 
-1. **Don't remove pyrig settings**: You can add, but don't remove required configs
+1. **Don't remove pyrig settings**: You can add, but don't remove required
+   configs
 2. **Use uv for dependencies**: Don't manually edit dependency lists
 3. **Keep coverage high**: 90% minimum enforced by pytest
 4. **Follow strict typing**: MyPy strict mode catches bugs early

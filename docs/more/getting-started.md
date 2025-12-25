@@ -2,7 +2,9 @@
 
 Complete guide to setting up a new pyrig project from scratch.
 
-pyrig provides **minimal best practices fully working defaults for everything a project needs**. This guide will walk you through setting up a complete, production-ready Python project in minutes.
+pyrig provides **minimal best practices fully working defaults for everything a
+project needs**. This guide will walk you through setting up a complete,
+production-ready Python project in minutes.
 
 ## Prerequisites
 
@@ -57,11 +59,18 @@ graph TD
     D --> D1[Optional]
     E --> E1[Recommended<br/>Required for private repos]
 
-    C --> C2[Used by: protect-repo<br/>Health Check workflow<br/>Release workflow<br/>Publish workflow]
+    C --> C2[Used by: 
+    protect-repo
+    codecov upload
+    release
+    ]
     D --> D2[Used by: Publish workflow<br/>to publish to PyPI]
     E --> E2[Used by: Health Check workflow<br/>to upload coverage]
 
-    C2 --> C3[Permissions:<br/>administration: read, write<br/>contents: read, write<br/>pages: read, write]
+    C2 --> C3[Permissions:
+    administration: read, write
+    contents: read, write
+    pages: read, write]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
@@ -81,7 +90,8 @@ graph TD
 
 **GitHub Personal Access Token (REPO_TOKEN)** - **Required**:
 
-1. Go to GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens
+1. Go to GitHub Settings → Developer settings → Personal access tokens →
+   Fine-grained tokens
 2. Select scopes:
    - `administration: read, write` (for `pyrig protect-repo`)
    - `contents: read, write` (for CI/CD)
@@ -94,7 +104,8 @@ graph TD
 
 1. Create account at [pypi.org](https://pypi.org)
 2. Create an API token
-3. Scope: "Entire account" (recommended change to specific project after first publish)
+3. Scope: "Entire account" (recommended change to specific project after first
+   publish)
 4. Click "Add token"
 5. **Copy token immediately** (you won't see it again)
 6. Add token to your repository secrets
@@ -115,7 +126,9 @@ graph TD
 **Note**:
 
 - **For private repos**: CODECOV_TOKEN is **required**
-- **For public repos**: CODECOV_TOKEN is **recommended** but optional. Without it, you must enable tokenless upload in Codecov settings (Settings → General → "Allow tokenless upload")
+- **For public repos**: CODECOV_TOKEN is **recommended** but optional. Without
+  it, you must enable tokenless upload in Codecov settings (Settings → General →
+  "Allow tokenless upload")
 - The token provides better reliability and security for all repos
 
 ## Setup Steps
@@ -128,7 +141,9 @@ graph TD
 # 2. Name: my-project
 # 3. Description: Your project description
 # 4. Public or Private
-# 5. You do not need to initialize with README, .gitignore bc pyrig will create it for you. (create a licence if you do not want the MIT license)
+# 5. You do not need to initialize with README, 
+#   .gitignore bc pyrig will create it for you. 
+#   (create a licence if you do not want the MIT license)
 # 6. Click "Create repository"
 ```
 
@@ -144,8 +159,12 @@ git remote -v
 # Should show: origin  https://github.com/YourUsername/my-project.git
 ```
 
-**Note**: Git user.name doesn't have to match GitHub username exactly, as long as `git remote -v` shows the correct GitHub URL after cloning. But if you use pyrig init before having cloned the repo and therefore not having a remote set, pyrig will default to your user name under `git config user.name`.
-pyrig's init command will also work without a cloned repo, but it is recommended to clone it first and then run `uv run pyrig init` to avoid any potential issues.
+**Note**: Git user.name doesn't have to match GitHub username exactly, as long
+as `git remote -v` shows the correct GitHub URL after cloning. But if you use
+pyrig init before having cloned the repo and therefore not having a remote set,
+pyrig will default to your user name under `git config user.name`. pyrig's init
+command will also work without a cloned repo, but it is recommended to clone it
+first and then run `uv run pyrig init` to avoid any potential issues.
 
 ### 3. Initialize Project with uv
 
@@ -168,7 +187,9 @@ uv add pyrig
 uv run pyrig init
 ```
 
-This command runs 9 automated steps to set up your complete project. See the [init command documentation](../cli/commands/init.md) for detailed information about each step.
+This command runs 9 automated steps to set up your complete project. See the
+[init command documentation](../cli/commands/init.md) for detailed information
+about each step.
 
 **Summary of steps:**
 
@@ -292,7 +313,7 @@ my-project/
 │       └── publish.yaml             # PyPI and docs publishing
 │
 ├── .env                             # Environment variables (not committed)
-├── .experiment.py                   # Scratch file for local experiments (not committed)
+├── .experiment.py                   # file for experiments (not committed)
 ├── .gitignore                       # Git ignore patterns
 ├── .pre-commit-config.yaml          # Pre-commit hooks
 ├── .python-version                  # Python version (3.12+)
@@ -317,11 +338,15 @@ my-project/
 - `LICENSE` - MIT license
 - `.env` - Environment variables (not committed)
 
-... and more config files detailed in [Configs Documentation](../configs/index.md)
+... and more config files detailed in
+[Configs Documentation](../configs/index.md)
 
-**CI/CD Workflows**: See [Workflows Documentation](../configs/workflows/index.md) for details on health check, build, release, and publish workflows.
+**CI/CD Workflows**: See
+[Workflows Documentation](../configs/workflows/index.md) for details on health
+check, build, release, and publish workflows.
 
-**Development Tools**: See [Tooling Documentation](tooling.md) for complete tool choices and rationale.
+**Development Tools**: See [Tooling Documentation](tooling.md) for complete tool
+choices and rationale.
 
 **CLI Commands**:
 
@@ -344,10 +369,13 @@ After completing setup:
 
 ## Additional Resources
 
-- [CLI Documentation](../cli/index.md) - Command reference and creating custom commands
-- [Configuration Files](../configs/index.md) - Config file system and customization
+- [CLI Documentation](../cli/index.md) - Command reference and creating custom
+  commands
+- [Configuration Files](../configs/index.md) - Config file system and
+  customization
 - [Testing Documentation](../tests/index.md) - Test structure and fixtures
-- [Builder Documentation](../builders/index.md) - Creating distributable artifacts
+- [Builder Documentation](../builders/index.md) - Creating distributable
+  artifacts
 - [Example Usage](example-usage.md) - Real-world microservices ecosystem example
 - [Tooling](tooling.md) - Tool choices and rationale
 - [Trade-offs](drawbacks.md) - What you sacrifice and gain

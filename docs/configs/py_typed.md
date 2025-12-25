@@ -1,6 +1,7 @@
 # py.typed Configuration
 
-The `PyTypedConfigFile` manages the `py.typed` marker file for PEP 561 compliance.
+The `PyTypedConfigFile` manages the `py.typed` marker file for PEP 561
+compliance.
 
 ## Overview
 
@@ -55,7 +56,8 @@ When initialized via `uv run pyrig mkroot`, the file is created:
 
 ### Empty File
 
-The file is always empty - it's just a marker. Any attempt to add content will be rejected during validation.
+The file is always empty - it's just a marker. Any attempt to add content will
+be rejected during validation.
 
 ## Usage
 
@@ -100,7 +102,8 @@ result = some_function()  # No type checking
 
 ## PEP 561 Compliance
 
-The `py.typed` file indicates your package follows [PEP 561](https://peps.python.org/pep-0561/):
+The `py.typed` file indicates your package follows
+[PEP 561](https://peps.python.org/pep-0561/):
 
 - **Inline type hints**: Your package includes type annotations
 - **Distributable types**: Type information is included in the package

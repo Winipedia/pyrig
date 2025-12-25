@@ -1,6 +1,8 @@
 # Trade-offs
 
-pyrig makes deliberate trade-offs to provide a standardized, automated development experience. This document explains what you sacrifice and what you gain.
+pyrig makes deliberate trade-offs to provide a standardized, automated
+development experience. This document explains what you sacrifice and what you
+gain.
 
 ## Opinionated Tooling
 
@@ -15,14 +17,17 @@ pyrig makes deliberate trade-offs to provide a standardized, automated developme
 **What You Gain**:
 
 - **Zero configuration time** - Start coding immediately
-- **Best-in-class tools** - Carefully selected for speed and quality (ruff is 10-100x faster than alternatives)
+- **Best-in-class tools** - Carefully selected for speed and quality (ruff is
+  10-100x faster than alternatives)
 - **Consistent experience** - Same tools across all pyrig projects
 - **Automatic updates** - Tool improvements without manual migration
 - **Proven stack** - Battle-tested combinations that work well together
-- **Tool evolution** - pyrig switches to better alternatives as they emerge (poetry → uv, mypy → ty)
+- **Tool evolution** - pyrig switches to better alternatives as they emerge
+  (poetry → uv, mypy → ty)
 - **No decision fatigue** - Skip hours of research and comparison
 
-**Bottom Line**: Sacrifice tool choice for instant, optimized setup and continuous improvement.
+**Bottom Line**: Sacrifice tool choice for instant, optimized setup and
+continuous improvement.
 
 ## Runtime Dev Folder
 
@@ -30,24 +35,31 @@ pyrig makes deliberate trade-offs to provide a standardized, automated developme
 
 **What You Sacrifice**:
 
-- Minimal package size increase (mostly empty folders and `__init__.py` files when unused)
+- Minimal package size increase (mostly empty folders and `__init__.py` files
+  when unused)
 - Perception of shipping "development code" with production
 
 **What You Gain**:
 
-- **Multi-package architecture** - Downstream packages can extend your infrastructure
-- **CLI extensibility** - Other packages can add commands to your CLI automatically
+- **Multi-package architecture** - Downstream packages can extend your
+  infrastructure
+- **CLI extensibility** - Other packages can add commands to your CLI
+  automatically
 - **Builder inheritance** - Share build processes across packages
 - **Config reusability** - Extend configuration systems
 - **Shared infrastructure** - Test fixtures, utilities, and patterns propagate
-- **Simplified packaging** - No complex build exclusions or dual package structures
+- **Simplified packaging** - No complex build exclusions or dual package
+  structures
 - **Ecosystem power** - Build interconnected package families
 
-**Reality Check**: The `dev/` folder is extremely lightweight when unused (just empty directories). When used, it enables powerful multi-package ecosystems.
+**Reality Check**: The `dev/` folder is extremely lightweight when unused (just
+empty directories). When used, it enables powerful multi-package ecosystems.
 
-See: [Multi-Package Architecture](../cli/architecture.md) | [CLI Documentation](../cli/index.md)
+See: [Multi-Package Architecture](../cli/architecture.md) |
+[CLI Documentation](../cli/index.md)
 
-**Bottom Line**: Sacrifice a few KB for architectural flexibility and ecosystem benefits.
+**Bottom Line**: Sacrifice a few KB for architectural flexibility and ecosystem
+benefits.
 
 ## Strict Requirements
 
@@ -69,7 +81,8 @@ See: [Multi-Package Architecture](../cli/architecture.md) | [CLI Documentation](
 - **Team alignment** - Everyone follows the same standards
 - **Reduced technical debt** - Quality enforced from day one
 
-**Bottom Line**: Sacrifice flexibility for guaranteed code quality and consistency.
+**Bottom Line**: Sacrifice flexibility for guaranteed code quality and
+consistency.
 
 ## Python Version Constraint
 
@@ -83,15 +96,18 @@ See: [Multi-Package Architecture](../cli/architecture.md) | [CLI Documentation](
 
 **What You Gain**:
 
-- **Modern type hints** - PEP 695 (type parameters), PEP 698 (override decorator)
+- **Modern type hints** - PEP 695 (type parameters), PEP 698 (override
+  decorator)
 - **Better performance** - Python 3.12+ is significantly faster
 - **Latest features** - Pattern matching, structural pattern matching, etc.
 - **Future-proof** - Already using current best practices
 - **Simpler code** - Modern syntax is more concise and readable
 
-**Reality Check**: Python 3.12 was released in October 2023 and is widely available. Python 3.13 and 3.14 are also supported.
+**Reality Check**: Python 3.12 was released in October 2023 and is widely
+available. Python 3.13 and 3.14 are also supported.
 
-**Bottom Line**: Sacrifice legacy compatibility for modern features and performance.
+**Bottom Line**: Sacrifice legacy compatibility for modern features and
+performance.
 
 ## Learning Curve
 
@@ -111,7 +127,8 @@ See: [Multi-Package Architecture](../cli/architecture.md) | [CLI Documentation](
 - **Less decision-making** - Clear conventions reduce cognitive load
 - **Faster onboarding** - New team members learn once, apply everywhere
 
-**Bottom Line**: Sacrifice initial learning time for long-term productivity and consistency.
+**Bottom Line**: Sacrifice initial learning time for long-term productivity and
+consistency.
 
 ## Structured Conventions
 
@@ -132,7 +149,8 @@ See: [Multi-Package Architecture](../cli/architecture.md) | [CLI Documentation](
 - **Reduced setup** - No configuration needed for standard structure
 - **Team efficiency** - No debates about project organization
 
-**Bottom Line**: Sacrifice organizational freedom for automation and predictability.
+**Bottom Line**: Sacrifice organizational freedom for automation and
+predictability.
 
 ## GitHub-Centric
 
@@ -147,14 +165,17 @@ See: [Multi-Package Architecture](../cli/architecture.md) | [CLI Documentation](
 
 - **Complete CI/CD** - Health check, build, release, publish workflows ready
 - **Repository protection** - Automated branch protection and rulesets
-- **Matrix builds** - Test across OS (Ubuntu, Windows, macOS) and Python versions (3.12, 3.13, 3.14)
+- **Matrix builds** - Test across OS (Ubuntu, Windows, macOS) and Python
+  versions (3.12, 3.13, 3.14)
 - **Automated releases** - Version bumping, changelog, GitHub releases
 - **GitHub Pages** - Documentation auto-deployed
 - **Zero CI/CD config** - Workflows generated and maintained automatically
 
-**Reality Check**: GitHub is the industry standard for open source. Workflows can be adapted for other platforms if needed.
+**Reality Check**: GitHub is the industry standard for open source. Workflows
+can be adapted for other platforms if needed.
 
-**Bottom Line**: Sacrifice platform flexibility for complete, automated GitHub integration.
+**Bottom Line**: Sacrifice platform flexibility for complete, automated GitHub
+integration.
 
 ## Autouse Fixtures
 
@@ -168,13 +189,15 @@ See: [Multi-Package Architecture](../cli/architecture.md) | [CLI Documentation](
 **What You Gain**:
 
 - **Continuous validation** - Project health checked automatically
-- **Catch issues early** - Missing tests, namespace packages, incorrect configs detected immediately
+- **Catch issues early** - Missing tests, namespace packages, incorrect configs
+  detected immediately
 - **No manual checks** - Never forget to run validation
 - **Consistent quality** - Every test run ensures project integrity
 - **Automatic test generation** - Missing test files created automatically
 - **Zero maintenance** - Validation happens without thinking about it
 
-**Bottom Line**: Sacrifice a fraction of a second for automatic project health monitoring.
+**Bottom Line**: Sacrifice a fraction of a second for automatic project health
+monitoring.
 
 ## Configuration Management
 
@@ -194,7 +217,8 @@ See: [Multi-Package Architecture](../cli/architecture.md) | [CLI Documentation](
 - **Automatic fixes** - Broken configs repaired automatically
 - **Less maintenance** - Don't manually update configs across projects
 
-**Bottom Line**: Sacrifice full config control for automatic maintenance and consistency.
+**Bottom Line**: Sacrifice full config control for automatic maintenance and
+consistency.
 
 ## When to Use pyrig
 
@@ -220,12 +244,17 @@ Consider alternatives if you need:
 
 ## Philosophy
 
-pyrig's core philosophy is to provide **minimal best practices fully working defaults for everything a project needs**. This means:
+pyrig's core philosophy is to provide **minimal best practices fully working
+defaults for everything a project needs**. This means:
 
-- **Complete out-of-the-box**: Every configuration, workflow, and tool is pre-configured and working from day one
-- **Best practices by default**: Opinionated choices based on industry standards and modern Python development
-- **Minimal configuration**: Zero setup required - sensible defaults that work for most projects
-- **Fully functional**: Not just templates or boilerplate, but a complete, tested, production-ready setup
+- **Complete out-of-the-box**: Every configuration, workflow, and tool is
+  pre-configured and working from day one
+- **Best practices by default**: Opinionated choices based on industry standards
+  and modern Python development
+- **Minimal configuration**: Zero setup required - sensible defaults that work
+  for most projects
+- **Fully functional**: Not just templates or boilerplate, but a complete,
+  tested, production-ready setup
 
 This philosophy drives pyrig's intentional trade-offs. It prioritizes:
 
@@ -235,11 +264,13 @@ This philosophy drives pyrig's intentional trade-offs. It prioritizes:
 - **Standards** over customization
 - **Working defaults** over endless configuration options
 
-If these priorities align with your goals, pyrig's benefits far outweigh its trade-offs.
+If these priorities align with your goals, pyrig's benefits far outweigh its
+trade-offs.
 
 ## Partial Opt-Out: Use pyrig Without the Automation
 
-You can use pyrig for initial setup and CLI framework while opting out of automation features.
+You can use pyrig for initial setup and CLI framework while opting out of
+automation features.
 
 ### What You Keep
 
@@ -280,8 +311,8 @@ You can use pyrig for initial setup and CLI framework while opting out of automa
 - You maintain configs yourself
 
 You can also disable the cli by removing the entry point from `pyproject.toml`.
-If you disable that too you can also just delete the `dev/` folder.
-You will still be left with a nice initial project structure and tooling.
+If you disable that too you can also just delete the `dev/` folder. You will
+still be left with a nice initial project structure and tooling.
 
 ### How to Opt Out
 
@@ -378,6 +409,9 @@ pyrig will validate and update configs to current standards.
 
 ### Bottom Line
 
-pyrig is flexible enough to use as a **one-time setup tool** with an optional CLI framework, or as a **full automation system**. You choose how much automation you want.
+pyrig is flexible enough to use as a **one-time setup tool** with an optional
+CLI framework, or as a **full automation system**. You choose how much
+automation you want.
 
-The partial opt-out approach gives you the best of both worlds: excellent initial setup with the option to take full manual control afterward.
+The partial opt-out approach gives you the best of both worlds: excellent
+initial setup with the option to take full manual control afterward.

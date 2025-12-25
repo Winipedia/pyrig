@@ -1,6 +1,7 @@
 # Example Usage: Microservices Ecosystem
 
-This guide demonstrates pyrig's power in a real-world scenario: building a standardized microservices ecosystem for a company.
+This guide demonstrates pyrig's power in a real-world scenario: building a
+standardized microservices ecosystem for a company.
 
 ## Scenario
 
@@ -27,7 +28,8 @@ graph TD
     style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Dependency chain**: `pyrig` → `company-base` → `auth-service`, `payment-service`, `notification-service`
+**Dependency chain**: `pyrig` → `company-base` → `auth-service`,
+`payment-service`, `notification-service`
 
 ## Step 1: Create Base Package
 
@@ -78,7 +80,7 @@ class LoggingConfigFile(YamlConfigFile):
                 "formatters": {
                     "json": {
                         "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
-                        "format": "%(asctime)s %(name)s %(levelname)s %(message)s"
+                        "format": "%(name)s %(levelname)s %(message)s"
                     }
                 },
                 "handlers": {
@@ -98,7 +100,8 @@ class LoggingConfigFile(YamlConfigFile):
 
 **What happens**:
 
-- File created at `config/logging_config.yaml` when you run `uv run pyrig mkroot`
+- File created at `config/logging_config.yaml` when you run
+  `uv run pyrig mkroot`
 - **Automatically discovered** via pyrig's ConfigFile discovery system
 - **Inherited by all services** that depend on `company-base`
 
@@ -113,10 +116,10 @@ Customize documentation theme for company branding.
 
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.docs.mkdocs import MkdocsConfigFile as BaseMkdocsConfigFile
+from pyrig.dev.configs.docs.mkdocs import MkdocsConfigFile as BaseMkdocsCF
 
 
-class MkdocsConfigFile(BaseMkdocsConfigFile):
+class MkdocsConfigFile(BaseMkdocsCF):
     """Company-branded documentation theme."""
 
     @classmethod
@@ -156,7 +159,8 @@ class MkdocsConfigFile(BaseMkdocsConfigFile):
 **Key mechanism**:
 
 - **Subclass** pyrig's `MkdocsConfigFile` with same name
-- **`discard_parents=True`** ensures only your subclass is initialized because it is the last leaf in that class inheritance chain.
+- **`discard_parents=True`** ensures only your subclass is initialized because
+  it is the last leaf in that class inheritance chain.
 - **All microservices** automatically get company branding
 
 ## Step 4: Adjust Pyproject Settings
@@ -169,10 +173,10 @@ Add company-specific dependencies and settings.
 """Company pyproject.toml with additional dependencies."""
 
 from typing import Any
-from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyprojectConfigFile
+from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyprojectCF
 
 
-class PyprojectConfigFile(BasePyprojectConfigFile):
+class PyprojectConfigFile(BasePyprojectCF):
     """Company pyproject with monitoring and logging."""
 
     @classmethod
@@ -226,8 +230,9 @@ uv add git+https://github.com/company/company-base.git  # This also brings in py
 uv run pyrig init
 ```
 
-Note:
-If you are a company your repos probably will not be public so you will need tokens and stuff to do uv add. If you manage a package ecosystem for pypi then you can use uv add like usual
+Note: If you are a company your repos probably will not be public so you will
+need tokens and stuff to do uv add. If you manage a package ecosystem for pypi
+then you can use uv add like usual
 
 **What gets created automatically**:
 
@@ -246,13 +251,15 @@ auth-service/
 └── tests/                          # ✓ Mirrored structure
 ```
 
-See the full generated project tree at: [Getting Started Documentation](getting-started.md)
+See the full generated project tree at:
+[Getting Started Documentation](getting-started.md)
 
 **All company standards applied automatically!**
 
 ## Step 6: The Magic - Automatic Synchronization
 
-Here's where pyrig shines. When you update `company-base`, all services heal themselves.
+Here's where pyrig shines. When you update `company-base`, all services heal
+themselves.
 
 ### Update Company Standards
 
@@ -294,13 +301,16 @@ uv add company-base --upgrade
 
 # Run tests (triggers autouse fixtures)
 uv run pytest
-# or just do 
+# or just do
 uv run pyrig mkroot
 ```
 
-Note: A nice thing is that this can not go unnoticed.
-Lets say you add a change like described above here. Then your pipelines in Github that pyrig creates for you will fail because the ConfigFile is not correct anymore. So the responsible autouse fixture will fail and GitHub will notify you because the health-check workflow failed.
-Then you just need to open your repo in your IDE, run `pyrig mkroot` or `pytest` review the changes and commit and push.
+Note: A nice thing is that this can not go unnoticed. Lets say you add a change
+like described above here. Then your pipelines in Github that pyrig creates for
+you will fail because the ConfigFile is not correct anymore. So the responsible
+autouse fixture will fail and GitHub will notify you because the health-check
+workflow failed. Then you just need to open your repo in your IDE, run
+`pyrig mkroot` or `pytest` review the changes and commit and push.
 
 **What happens automatically**:
 
@@ -308,9 +318,16 @@ Then you just need to open your repo in your IDE, run `pyrig mkroot` or `pytest`
 2. **Detects** `pyproject.toml` is missing `cryptography>=42.0.0`
 3. **Calls** `make_project_root()` to fix it
 4. **Adds** the missing dependency to the file
-5. **Tests fails** pytest will raise with a descriptive error message of which Config Files were not correct. Then you can check the git diff of what changed
+5. **Tests fails** pytest will raise with a descriptive error message of which
+   Config Files were not correct. Then you can check the git diff of what
+   changed
 
-Note: We decided against it to just autoadd these changes as that would be too much magic and also things possibly can interfere with other customisations you made, so yprig raises to not do things silently. The only changes pyrig silently autoadds are `uv lock --upgrade` in the release workflow, which keeps your dependecies automatically up to date even when you do not work on a project for a while.
+Note: We decided against it to just autoadd these changes as that would be too
+much magic and also things possibly can interfere with other customisations you
+made, so yprig raises to not do things silently. The only changes pyrig silently
+autoadds are `uv lock --upgrade` in the release workflow, which keeps your
+dependecies automatically up to date even when you do not work on a project for
+a while.
 
 **Only minimal manual intervention needed!**
 
@@ -376,10 +393,13 @@ uv init && uv add company-base && uv run pyrig init
 
 ## How It Works: The Discovery Mechanism
 
-pyrig uses a sophisticated discovery system to find and initialize configurations across package dependencies. For complete technical details, see:
+pyrig uses a sophisticated discovery system to find and initialize
+configurations across package dependencies. For complete technical details, see:
 
-- **[ConfigFile Architecture](../configs/architecture.md)** - Discovery, validation, and initialization process
-- **[Fixture Sharing](../tests/fixtures.md)** - How fixtures are discovered and shared
+- **[ConfigFile Architecture](../configs/architecture.md)** - Discovery,
+  validation, and initialization process
+- **[Fixture Sharing](../tests/fixtures.md)** - How fixtures are discovered and
+  shared
 - **[Autouse Fixtures](../tests/autouse.md)** - Self-healing validation system
 
 ### Quick Overview
@@ -398,28 +418,34 @@ pyrig uses a sophisticated discovery system to find and initialize configuration
 2. Discover fixtures from all packages in dependency chain
 3. `assert_root_is_correct` runs on every test session
 4. Validates all ConfigFiles are correct
-5. Raises descriptive error if validation fails (prompting you to review the changes from `make_project_root` that the autouse fixture did to fix the issue)
+5. Raises descriptive error if validation fails (prompting you to review the
+   changes from `make_project_root` that the autouse fixture did to fix the
+   issue)
 
 ## Propagation Flow
 
-When you update the base package, changes automatically propagate to all dependent services:
+When you update the base package, changes automatically propagate to all
+dependent services:
 
 1. **Update company-base** - Make changes to config files
 2. **Release new version** - GitHub Actions automatically creates release
 3. **Services update dependency** - Run `uv add company-base --upgrade`
 4. **Run pytest or pyrig mkroot** - Triggers validation
 5. **assert_root_is_correct runs** - Autouse fixture validates all configs
-6. **If incorrect** - `make_project_root()` discovers and initializes all ConfigFiles
+6. **If incorrect** - `make_project_root()` discovers and initializes all
+   ConfigFiles
 7. **Files created/updated** - Missing configs added, incorrect values fixed
 8. **Tests continue** - Or fail with descriptive error showing what changed
 
-See [Autouse Fixtures](../tests/autouse.md) for details on the validation system.
+See [Autouse Fixtures](../tests/autouse.md) for details on the validation
+system.
 
 ## Real-World Benefits
 
 ### Scenario: Security Audit Requires New Dependency
 
-**Problem**: Security audit requires all services use `bandit` for security scanning.
+**Problem**: Security audit requires all services use `bandit` for security
+scanning.
 
 **Solution** (5 minutes):
 
@@ -451,7 +477,8 @@ See [Autouse Fixtures](../tests/autouse.md) for details on the validation system
 
 **Solution** (2 minutes):
 
-1. **Update `company-base/dev/configs/docs/mkdocs.py`**: Change colors, then do the same steps as above
+1. **Update `company-base/dev/configs/docs/mkdocs.py`**: Change colors, then do
+   the same steps as above
 2. **Release** new version
 3. **Services update** → All docs sites automatically rebranded at GitHub Pages
 
@@ -470,11 +497,14 @@ uv init && uv add company-base && uv run pyrig init
 ## Key Takeaways
 
 1. **One source of truth**: `company-base` defines all standards
-2. **Automatic propagation**: Changes flow to all services via dependency updates
+2. **Automatic propagation**: Changes flow to all services via dependency
+   updates
 3. **Self-healing**: Autouse fixtures ensure compliance on every test run
-4. **Override flexibility**: Services can customize while keeping standards by overriding subclasses
+4. **Override flexibility**: Services can customize while keeping standards by
+   overriding subclasses
 5. **Leaf class pattern**: Subclassing with same name overrides parent configs
-6. **Discovery mechanism**: Dependency graph + module replacement enables multi-package architecture
+6. **Discovery mechanism**: Dependency graph + module replacement enables
+   multi-package architecture
 7. **Zero manual sync**: No need to manually update 50+ services
 
 ## Advanced: Multi-Level Inheritance
@@ -537,6 +567,10 @@ pyrig's multi-package architecture enables:
 4. **Self-healing** via autouse fixtures on every test run
 5. **Zero manual sync** across unlimited services
 
-This pattern scales from 2 services to infinite+ services with the same simplicity.
+This pattern scales from 2 services to infinite+ services with the same
+simplicity.
 
-Note: If you somehow end up creating a structure over 20 dependencies deep in a dependency chain, the health check cron will get confused as the day has only 24 hours and it staggers it per hour. See more at: [Health Check Documentation](../configs/workflows/health_check.md)
+Note: If you somehow end up creating a structure over 20 dependencies deep in a
+dependency chain, the health check cron will get confused as the day has only 24
+hours and it staggers it per hour. See more at:
+[Health Check Documentation](../configs/workflows/health_check.md)

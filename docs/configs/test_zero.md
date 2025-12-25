@@ -42,7 +42,8 @@ graph TD
 
 **Extension**: `.py` - Python source file.
 
-**Filename**: `test_zero` - Derived from class name `ZeroTestConfigFile` with special handling to reverse the parts (zero_test → test_zero).
+**Filename**: `test_zero` - Derived from class name `ZeroTestConfigFile` with
+special handling to reverse the parts (zero_test → test_zero).
 
 ## How It Works
 
@@ -85,7 +86,8 @@ This file ensures that:
 - Autouse fixtures execute (which validate project structure)
 - CI/CD pipelines don't fail due to "no tests collected"
 
-See the [Testing documentation](../tests/index.md) for details on the test infrastructure.
+See the [Testing documentation](../tests/index.md) for details on the test
+infrastructure.
 
 ## Best Practices
 
