@@ -283,5 +283,5 @@ After creating the file, run `uv run pyrig mkroot` to generate `.github/workflow
 
 1. **Don't edit YAML directly**: Modify the Python workflow classes instead by subclassing them as you can with all ConfigFiles
 2. **Use opt-out for customization**: Replace steps with `step_opt_out_of_workflow()` to disable
-3. **Configure secrets**: Add REPO_TOKEN, PYPI_TOKEN, CODECOV_TOKEN to repository secrets (see [Getting Started](../../more/getting-started.md#required-accounts--tokens))
+3. **Configure secrets**: Add REPO_TOKEN, PYPI_TOKEN, CODECOV_TOKEN to repository secrets (see [Getting Started](../../more/getting-started.md#accounts--tokens))
 4. **Test locally**: Run `uv run pyrig mkroot` to regenerate workflows after changes

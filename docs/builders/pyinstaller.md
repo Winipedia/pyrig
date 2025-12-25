@@ -2,7 +2,7 @@
 
 pyrig provides `PyInstallerBuilder`, an abstract builder for creating standalone executables from Python projects using PyInstaller.
 
-Note: The entire reasoin your main.py file is generated with a `if __name__ == "__main__":` guard is so that we could use it as an executable. becuase pyinstaller needs to execute that file and create a proper executable. And we also kept it becuase it is a python standard. However we prefer our CLI framework for running code.
+Note: The entire reason your main.py file is generated with a `if __name__ == "__main__":` guard is so that it can be used as an executable entry point. PyInstaller needs to execute that file to create a proper executable. We also kept it because it is a Python standard. However, we prefer using the CLI framework for running code.
 
 ## Overview
 
@@ -40,7 +40,7 @@ myapp/
     └── icon.png  # 256x256 PNG recommended
 ```
 
-Not you could also override `get_app_icon_png_path` to use a different icon at a custom location. I recommend keeping it in the resources directory though.
+Note: You can also override `get_app_icon_png_path` to use a different icon at a custom location. However, it's recommended to keep it in the resources directory.
 
 ### 3. Build
 
@@ -116,21 +116,9 @@ datas = collect_data_files('myapp.resources')
 PyInstaller requires platform-specific icon formats:
 - **Windows**: `.ico`
 - **macOS**: `.icns`
-- **Linux**: `.png`
+- **Linux**: Not supported (PyInstaller ignores the `--icon` parameter on Linux)
 
-`PyInstallerBuilder` automatically converts your `icon.png`:
-
-```python
-@classmethod
-def get_app_icon_path(cls, temp_dir: Path) -> Path:
-    if platform.system() == "Windows":
-        return cls.convert_png_to_format("ico", temp_dir)
-    if platform.system() == "Darwin":
-        return cls.convert_png_to_format("icns", temp_dir)
-    return cls.convert_png_to_format("png", temp_dir)
-```
-
-Note: Linux does not support icons, so pyinstaller just ignores the icon option on Linux.
+`PyInstallerBuilder` automatically converts your `icon.png` to the appropriate format for Windows and macOS. On Linux, the icon is still converted to PNG format for consistency, but PyInstaller will ignore it as Linux executables do not support embedded icons.
 
 ### Custom Icon Location
 
@@ -158,6 +146,7 @@ The builder generates these PyInstaller options:
 | `--onefile` | Enabled | Single executable file |
 | `--noconsole` | Enabled | No console window (GUI mode) |
 | `--clean` | Enabled | Clean build cache |
+| `--noconfirm` | Enabled | Replace output directory without confirmation |
 | `--icon` | Platform-specific icon | Application icon |
 | `--add-data` | All resource packages | Bundle resources |
 | `--workpath` | Temp directory | Build artifacts location |
@@ -263,15 +252,14 @@ Running `uv run pyrig build`:
 
 ## Requirements
 
-PyInstaller builder requires these dependencies in your `pyproject.toml`:
+PyInstaller builder requires PyInstaller and Pillow (for icon conversion). These dependencies are included automatically when you add `pyrig-dev` to your development dependencies:
 
 ```toml
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "pyinstaller>=6.0.0",
-    "pillow>=10.0.0",  # For icon conversion
+    "pyrig-dev>=0.1.1",
 ]
 ```
 
-These are included automatically when depending on pyrig via the standard dev dependency `pyrig-dev`.
+The `pyrig-dev` package includes all necessary build tools including PyInstaller and Pillow.
 

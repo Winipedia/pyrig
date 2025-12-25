@@ -40,13 +40,7 @@ graph TD
 
 **Extension**: `.py` - Python source file.
 
-**Filename**: `test_zero` - Reversed from class name `ZeroTestConfigFile`.
-
-**Special filename handling**: The `get_filename()` method reverses the class name parts:
-```python
-filename = super().get_filename()  # "zero_test"
-return "_".join(reversed(filename.split("_")))  # "test_zero"
-```
+**Filename**: `test_zero` - Derived from class name `ZeroTestConfigFile` with special handling to reverse the parts (zero_test → test_zero).
 
 ## How It Works
 

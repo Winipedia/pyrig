@@ -54,34 +54,9 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 ### Version Configuration
 
-```python
-@classmethod
-def get_configs(cls) -> dict[str, Any]:
-    """Get the expected Python version from pyproject.toml."""
-    return {
-        cls.VERSION_KEY: str(
-            PyprojectConfigFile.get_first_supported_python_version()
-        )
-    }
-```
+The version is automatically determined from the `requires-python` field in `pyproject.toml`. Pyrig extracts the first (minimum) supported Python version and writes it to the file.
 
 Example: If `requires-python = ">=3.10"`, the file contains `3.10`.
-
-### Loading and Dumping
-
-```python
-@classmethod
-def load(cls) -> dict[str, Any]:
-    """Load the Python version from the file."""
-    return {cls.VERSION_KEY: cls.get_path().read_text(encoding="utf-8")}
-
-@classmethod
-def dump(cls, config: dict[str, Any] | list[Any]) -> None:
-    """Write the Python version to the file."""
-    if not isinstance(config, dict):
-        raise TypeError(f"Cannot dump {config} to .python-version file.")
-    cls.get_path().write_text(config[cls.VERSION_KEY], encoding="utf-8")
-```
 
 ## Usage
 
@@ -128,6 +103,6 @@ Pyrig extracts the first supported version (`3.12`) and writes it to `.python-ve
 
 1. **Keep in sync**: Ensure `.python-version` matches `requires-python` in pyproject.toml
 2. **Commit the file**: Include `.python-version` in version control
-3. **Use pyenv**: Install uv to manage Python versions
-4. **Update when needed**: Change the version when updating `requires-python`
+3. **Use version managers**: Install pyenv, asdf, mise, or similar tools to manage Python versions
+4. **Update when needed**: Re-run `uv run pyrig mkroot` when updating `requires-python`
 

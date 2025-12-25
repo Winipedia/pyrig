@@ -51,26 +51,11 @@ When initialized via `uv run pyrig mkroot`, the file is created:
 
 ### Loading Environment Variables
 
-```python
-@classmethod
-def load(cls) -> dict[str, str | None]:
-    """Load environment variables from the .env file."""
-    return dotenv_values(cls.get_path())
-```
-
-Uses the `python-dotenv` library to parse the file.
+The `.env` file is loaded using the `python-dotenv` library's `dotenv_values()` function, which parses the file and returns a dictionary mapping variable names to their values.
 
 ### Dump Protection
 
-```python
-@classmethod
-def dump(cls, config: dict[str, Any] | list[Any]) -> None:
-    """Prevent writing to .env files."""
-    if config:
-        raise ValueError(f"Cannot dump {config} to .env file.")
-```
-
-Pyrig prevents accidental writes to `.env` files.
+Pyrig prevents accidental writes to `.env` files. If you attempt to dump configuration to this file, it will raise a `ValueError`. This is intentional - the `.env` file is user-managed and should be edited manually.
 
 ## Usage
 
@@ -118,14 +103,7 @@ print(env_vars["DATABASE_URL"])
 
 ## Validation Logic
 
-The `is_correct()` method checks if the file exists:
-
-```python
-@classmethod
-def is_correct(cls) -> bool:
-    """Check if the .env file exists."""
-    return super().is_correct() or cls.get_path().exists()
-```
+The validation checks if the `.env` file exists. The file can be empty - pyrig only requires that it exists on disk.
 
 **Required element**: File must exist (can be empty).
 

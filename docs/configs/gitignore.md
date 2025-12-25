@@ -53,39 +53,17 @@ When initialized via `uv run pyrig mkroot`, the `.gitignore` file is created by:
 
 The `.gitignore` file combines patterns from multiple sources:
 
-```python
-[
-    *cls.get_github_python_gitignore_as_list(),  # GitHub's standard Python patterns
-    "# vscode stuff",
-    ".vscode/",
-    "",
-    "# pyrig stuff",
-    ".git/",
-    ".experiment.py",
-    "# others",
-    ".env",
-    ".coverage",
-    "coverage.xml",
-    ".mypy_cache/",
-    ".pytest_cache/",
-    ".ruff_cache/",
-    ".venv/",
-    "dist/",
-    "/site/",
-]
-```
+1. **GitHub's standard Python patterns** - Comprehensive Python-specific patterns
+2. **VS Code workspace files** - `.vscode/` directory
+3. **Pyrig-specific patterns** - `.git/`, `.experiment.py`
+4. **Tool caches** - `.mypy_cache/`, `.pytest_cache/`, `.ruff_cache/`, `.rumdl_cache/`
+5. **Environment and secrets** - `.env`
+6. **Coverage reports** - `.coverage`, `coverage.xml`
+7. **Build artifacts** - `.venv/`, `dist/`, `/site/`
 
 ### Validation Logic
 
-The `get_configs()` method implements smart merging:
-
-```python
-existing = cls.load()  # Load current patterns
-needed = [p for p in needed if p not in set(existing)]  # Filter out duplicates
-return existing + needed  # Append only missing patterns
-```
-
-This ensures:
+The configuration implements smart merging that ensures:
 - User patterns are never removed
 - Required patterns are always added
 - No duplicate patterns
@@ -97,25 +75,15 @@ The GitIgnore config adapts to your project automatically:
 
 ### GitHub Python Patterns
 
-```python
-@return_resource_content_on_fetch_error(resource_name="GITIGNORE")
-def get_github_python_gitignore_as_str(cls) -> str:
-    url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
-    res = requests.get(url, timeout=10)
-    res.raise_for_status()
-    return res.text
-```
+Pyrig fetches the latest standard Python patterns from GitHub's official gitignore repository at `https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore`.
 
-**Fallback mechanism**: If the network request fails, uses a bundled resource file from `pyrig/resources/GITIGNORE`.
+**Fallback mechanism**: If the network request fails, pyrig uses a bundled resource file from `pyrig/resources/GITIGNORE` to ensure the `.gitignore` file is always created successfully.
 
 ### Project-Specific Files
 
-```python
-DotExperimentConfigFile.get_path().as_posix()  # .experiment.py
-DotEnvConfigFile.get_path().as_posix()  # .env
-```
-
-Automatically includes paths to other config files that should be ignored.
+Automatically includes paths to other config files that should be ignored:
+- `.experiment.py` - Experimental code file
+- `.env` - Environment variables and secrets
 
 ## Usage
 
@@ -180,6 +148,7 @@ This uses the `pathspec` library with `gitwildmatch` for accurate pattern matchi
 - `.mypy_cache/` - MyPy type checker cache
 - `.pytest_cache/` - Pytest cache
 - `.ruff_cache/` - Ruff linter cache
+- `.rumdl_cache/` - Rumdl cache
 - `.coverage`, `coverage.xml` - Coverage reports
 
 ### Build Artifacts
@@ -199,13 +168,7 @@ This uses the `pathspec` library with `gitwildmatch` for accurate pattern matchi
 
 ### Network Failure Handling
 
-If GitHub is unreachable, pyrig uses a bundled fallback:
-
-```python
-@return_resource_content_on_fetch_error(resource_name="GITIGNORE")
-```
-
-The bundled `pyrig/resources/GITIGNORE` file contains a recent copy of GitHub's Python.gitignore.
+If GitHub is unreachable, pyrig uses a bundled fallback resource file at `pyrig/resources/GITIGNORE` which contains a recent copy of GitHub's Python.gitignore. This ensures the `.gitignore` file is always created successfully, even without internet access.
 
 ### Pattern Matching
 

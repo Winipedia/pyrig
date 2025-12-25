@@ -1,6 +1,6 @@
 # mkroot
 
-Creates the project root structure by initializing all config files and creating missing `__init__.py` files.
+Creates the project root structure by initializing all config files (including `__init__.py` files for package structure).
 
 ## Usage
 

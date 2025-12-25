@@ -40,46 +40,41 @@ print(config_path)  # Development: /path/to/myapp/resources/config.json
                     # PyInstaller: /tmp/_MEIxxxxxx/myapp/resources/config.json
 ```
 
+**Important**: The returned `Path` object is valid for the lifetime of the process. In PyInstaller bundles, resources are extracted to a temporary directory (`_MEIPASS`) that persists until the application exits. You can store and reuse the path throughout your application's runtime.
+
 ### How It Works
+
+`get_resource_path` uses `importlib.resources.files()` and `as_file()` to provide a unified interface:
 
 ```mermaid
 graph TD
-    A[get_resource_path called] --> B{Running in PyInstaller?}
-    B -->|No| C[Return filesystem path]
-    B -->|Yes| D[Extract from bundle to _MEIPASS]
-    C --> E[Path object returned]
-    D --> E
-    
+    A[get_resource_path called] --> B[importlib.resources.files package / name]
+    B --> C[as_file context manager]
+    C --> D{Environment?}
+    D -->|Development| E[Returns actual file path]
+    D -->|PyInstaller| F[Returns path in _MEIPASS]
+    E --> G[Path object]
+    F --> G
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
-`get_resource_path` uses `importlib.resources` internally, which:
-1. **In development**: Returns the actual file path
-2. **In PyInstaller**: Extracts the bundled file to `_MEIPASS` temp directory
-3. **Returns**: A `Path` object that works in both environments
+**What happens:**
+1. **Development**: `importlib.resources` returns the actual filesystem path to the resource
+2. **PyInstaller**: `importlib.resources` extracts the bundled resource to the `_MEIPASS` temporary directory and returns that path
+3. **Result**: A `Path` object that works identically in both environments
 
-### Function Signature
+The environment detection and extraction is handled automatically by `importlib.resources` - your code doesn't need to know which environment it's running in.
 
-```python
-def get_resource_path(name: str, package: ModuleType) -> Path:
-    """Get the filesystem path to a resource file.
-    
-    Args:
-        name: Filename including extension (e.g., "icon.png")
-        package: The resources package module object
-    
-    Returns:
-        Path object pointing to the resource file
-    """
-```
+## Usage Examples
 
-## Examples
-
-### How Pyinstaller gets the icon.png
+### Loading an Image File
 
 ```python
 from PIL import Image
@@ -92,60 +87,111 @@ def load_icon() -> Image.Image:
     return Image.open(icon_path)
 ```
 
-### Example with Subpackage
+### Loading Data from a Subpackage
 
 ```python
 import pandas as pd
 from pyrig.src.resource import get_resource_path
-from myapp.resources import subpkg
+from myapp.resources import data  # subpackage
 
-def load_data() -> pd.DataFrame:
-    """Load CSV data."""
-    data_path = get_resource_path("data.csv", subpkg)
-    return pd.read_csv(data_path)
+def load_csv() -> pd.DataFrame:
+    """Load CSV data from resources/data/ subpackage."""
+    csv_path = get_resource_path("users.csv", data)
+    return pd.read_csv(csv_path)
 ```
 
-### Example with another pkg depending on pyrig
+### Reading Configuration Files
 
 ```python
-import pandas as pd
+import json
 from pyrig.src.resource import get_resource_path
-from pkg_a.resources import subpkg
+from myapp import resources
 
-def load_data() -> pd.DataFrame:
-    """Load CSV data."""
-    data_path = get_resource_path("data.csv", subpkg)
-    return pd.read_csv(data_path)
+def load_config() -> dict:
+    """Load JSON configuration."""
+    config_path = get_resource_path("config.json", resources)
+    return json.loads(config_path.read_text())
 ```
 
-You see there is no multiarchitectureneeded for this and in fact this works with any package and its files as this uses `importlib.resources` under the hood.
+## Accessing Resources from Dependencies
 
-## Multi-Package Resource Inheritance
+Each package has its own `resources/` directory. You can access resources from any package in your dependency chain by importing that package's resources module:
 
-Resources from all packages in the dependency chain are available, simply import the resources module from the package you want to access and pass it to `get_resource_path` with the file name that you want to access:
+```python
+# Access your own resources
+from myapp import resources as myapp_resources
+icon = get_resource_path("icon.png", myapp_resources)
+
+# Access dependency resources
+from pkg_a import resources as pkg_a_resources
+template = get_resource_path("template.html", pkg_a_resources)
+
+# Access pyrig's resources
+from pyrig import resources as pyrig_resources
+gitignore = get_resource_path("GITIGNORE", pyrig_resources)
+```
 
 ```mermaid
-graph LR
-    A[pyrig.resources] --> D[All available in myapp]
-    B[pkg_a.resources] --> D
-    C[myapp.resources] --> D
-    
+graph TD
+    A[myapp] --> B[myapp.resources]
+    A --> C[pkg_a dependency]
+    C --> D[pkg_a.resources]
+    A --> E[pyrig dependency]
+    E --> F[pyrig.resources]
+
+    B --> G[myapp can access all]
+    D --> G
+    F --> G
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-## Files in pyrig resources
+**Key point**: Resources are not "inherited" or merged - each package maintains its own resources. You simply import the specific package's resources module to access its files.
 
-Pyrig provides the following resources:
-- GITIGNORE
-- LATEST_PYTHON_VERSION
-- MIT_LICENSE_TEMPLATE
+## Pyrig's Built-in Resources
 
-These are all used during the `pyrig init` or better `pyrig mkroot` command.
-These files are used as fallbacks if the API request to fetch the latest information of these files fail.
-pyrig also keeps them automatically updated in itself. So when github changes its gitgnore file for python then pyrig on its next release will have the updated file in resources and once your pyrig version gets updated you will get the updated file as well. As updates happen automatically via autouse fixtures and github workflows, this will be seemless and you wont even notice it probably.
+Pyrig includes the following resource files in `pyrig/resources/`:
+
+- **GITIGNORE** - GitHub's standard Python .gitignore template
+- **LATEST_PYTHON_VERSION** - Latest stable Python version number
+- **MIT_LICENSE_TEMPLATE** - MIT license template text
+
+### How They're Used
+
+These files serve as **fallback templates** when creating new projects with `uv run pyrig mkroot` (which is called by `uv run pyrig init`).
+
+When pyrig needs these files, it:
+1. **First attempts** to fetch the latest version from the internet (GitHub API, endoflife.date API, etc.)
+2. **Falls back** to the bundled resource file if the network request fails
+3. **Automatically updates** the bundled resource file when running as pyrig itself (not in user projects)
+
+This is implemented using the `@return_resource_content_on_fetch_error` decorator, which:
+- Catches network errors when fetching latest versions
+- Returns the bundled resource content as fallback
+- Updates the bundled file when pyrig runs its own tests (if content changed)
+
+### Example: GitIgnore Fallback
+
+When creating `.gitignore`, pyrig tries to fetch from GitHub:
+
+```python
+@return_resource_content_on_fetch_error(resource_name="GITIGNORE")
+def get_github_python_gitignore_as_str(cls) -> str:
+    url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
+    res = requests.get(url, timeout=10)
+    res.raise_for_status()
+    return res.text
+```
+
+If the request fails (no internet, rate limit, etc.), it returns the content from `pyrig/resources/GITIGNORE` instead.
+
+This ensures your project can be initialized even without internet access, while still getting the latest templates when possible.
 
 
 

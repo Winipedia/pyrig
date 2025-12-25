@@ -40,11 +40,11 @@ brew install podman
 podman --version
 ```
 
-### Required Accounts & Tokens
+### Accounts & Tokens
 
 ```mermaid
 graph TD
-    A[Required Accounts & Tokens] --> B[GitHub Account]
+    A[Accounts & Tokens] --> B[GitHub Account]
     A --> C[REPO_TOKEN]
     A --> D[PYPI_TOKEN]
     A --> E[CODECOV_TOKEN]
@@ -52,7 +52,7 @@ graph TD
     B --> B1[Required]
     C --> C1[Required]
     D --> D1[Optional]
-    E --> E1[Optional]
+    E --> E1[Recommended<br/>Required for private repos]
 
     C --> C2[Used by: protect-repo<br/>Health Check workflow<br/>Release workflow<br/>Publish workflow]
     D --> D2[Used by: Publish workflow<br/>to publish to PyPI]
@@ -68,7 +68,7 @@ graph TD
     style B1 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
     style C1 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
     style D1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style E1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style E1 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
 ```
 
 **GitHub Account**:
@@ -93,7 +93,7 @@ graph TD
 5. **Copy token immediately** (you won't see it again)
 6. Add token to your repository secrets
 
-**Codecov Account** - **Required** (for coverage badge and reporting):
+**Codecov Account** - **Recommended** (for coverage badge and reporting):
 1. Visit [codecov.io](https://codecov.io)
 2. Click "Log in with GitHub" to create account and link GitHub
 3. That's it - your account is ready
@@ -104,7 +104,10 @@ graph TD
 3. Copy the repository upload token
 4. Add token to your GitHub repository secrets as `CODECOV_TOKEN`
 
-**Note**: Without the token, you must enable tokenless upload in Codecov settings (Settings → General → "Allow tokenless upload"). However, adding the token is recommended for reliability and security.
+**Note**:
+- **For private repos**: CODECOV_TOKEN is **required**
+- **For public repos**: CODECOV_TOKEN is **recommended** but optional. Without it, you must enable tokenless upload in Codecov settings (Settings → General → "Allow tokenless upload")
+- The token provides better reliability and security for all repos
 
 ## Setup Steps
 
@@ -169,7 +172,7 @@ This command runs 9 automated steps to set up your complete project. See the [in
 8. Running tests (validate everything works)
 9. Committing initial changes (create initial git commit)
 
-### 7. Add Repository Secrets (for CI/CD)
+### 6. Add Repository Secrets (for CI/CD)
 
 On GitHub.com, go to your repository:
 
@@ -195,14 +198,14 @@ On GitHub.com, go to your repository:
 - Secret: Your Codecov token
 - Click "Add secret"
 
-### 8. Push to GitHub
+### 7. Push to GitHub
 
 ```bash
 # Push initial commit
 git push -u origin main
 ```
 
-### 9. Verify Workflows
+### 8. Verify Workflows
 
 On GitHub.com:
 1. Go to Actions tab

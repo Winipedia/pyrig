@@ -43,8 +43,8 @@ Shared commands are discovered through dependency graph traversal:
 
 ```mermaid
 graph TD
-    A[pyrig] -->|depends on| B[myapp]
-    B -->|depends on| C[myplugin]
+    A[pyrig] -->|depended on by| B[myapp]
+    B -->|depended on by| C[myplugin]
 
     D[pyrig.dev.cli.shared_subcommands] -->|version| E[Commands]
     F[myapp.dev.cli.shared_subcommands] -->|status| E
@@ -64,11 +64,11 @@ graph TD
 Example dependency chain:
 
 ```
-pyrig
+myplugin
   ↓ (depends on)
 myapp
   ↓ (depends on)
-myplugin
+pyrig
 ```
 
 Running `uv run myplugin version` discovers shared commands from:

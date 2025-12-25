@@ -98,32 +98,7 @@ For a project named "myapp" with description "A sample application":
 
 ### Content Generation Logic
 
-The `ReadmeConfigFile` uses the parent class `BadgesMarkdownConfigFile.get_content_str()` directly without modification:
-
-```python
-# Inherited from BadgesMarkdownConfigFile
-@classmethod
-def get_content_str(cls) -> str:
-    """Generate the README content with project header."""
-    project_name = PyprojectConfigFile.get_project_name()
-    badges = cls.get_badges()
-    badges_str = ""
-    for badge_category, badge_list in badges.items():
-        badges_str += f"<!-- {badge_category} -->\n"
-        badges_str += "\n".join(badge_list) + "\n"
-    badges_str = badges_str.removesuffix("\n")
-    description = PyprojectConfigFile.get_project_description()
-    return f"""# {project_name}
-
-{badges_str}
-
----
-
-> {description}
-
----
-"""
-```
+The `ReadmeConfigFile` inherits content generation from `BadgesMarkdownConfigFile` without modification.
 
 **Key behavior**:
 - Uses project name as-is (unlike `IndexConfigFile` which adds " Documentation")
@@ -137,36 +112,19 @@ The README adapts to your project automatically:
 
 ### Project Name
 
-```python
-PyprojectConfigFile.get_project_name()  # From pyproject.toml [project] name
-```
-
-Automatically uses your project name.
+Automatically uses your project name from `pyproject.toml` `[project]` `name` field.
 
 ### Project Description
 
-```python
-PyprojectConfigFile.get_project_description()  # From pyproject.toml [project] description
-```
-
-Displays as a blockquote below the badges.
+Displays the project description from `pyproject.toml` `[project]` `description` field as a blockquote below the badges.
 
 ### Repository Information
 
-```python
-repo_owner, repo_name = get_repo_owner_and_name_from_git(check_repo_url=False)
-```
-
-Extracts from Git remote URL for badge links.
+Extracts repository owner and name from Git remote URL for badge links.
 
 ### Python Versions
 
-```python
-python_versions = PyprojectConfigFile.get_supported_python_versions()
-joined_python_versions = "|".join(str(v) for v in python_versions)
-```
-
-Shows supported Python versions in the Python badge.
+Shows supported Python versions from `pyproject.toml` `requires-python` field in the Python badge (e.g., `3.10|3.11|3.12`).
 
 ## Badge Categories
 
@@ -220,42 +178,20 @@ The validation only checks that required elements exist, so you can add as much 
 
 ### Validation Logic
 
-The `is_correct()` method checks:
-
-```python
-@classmethod
-def is_correct(cls) -> bool:
-    """Check if the README file is valid."""
-    file_content = cls.get_file_content()
-    badges = [badge for _group, badges in cls.get_badges().items() for badge in badges]
-    all_badges_in_file = all(badge in file_content for badge in badges)
-    description_in_file = PyprojectConfigFile.get_project_description() in file_content
-    project_name_in_file = PyprojectConfigFile.get_project_name() in file_content
-    return super().is_correct() or (
-        all_badges_in_file and description_in_file and project_name_in_file
-    )
-```
+The validation checks that the README file contains all required elements:
 
 **Required elements**:
 1. All badges from all categories
 2. Project description
 3. Project name
 
-**Flexible structure**: As long as these elements exist somewhere in the file, it's considered valid.
+**Flexible structure**: As long as these elements exist somewhere in the file, it's considered valid. You can add custom content anywhere.
 
 ### Always Required
 
-The `is_unwanted()` method always returns `False`:
+The `README.md` file is always required and never marked as unwanted. This ensures it's never removed or skipped during project initialization.
 
-```python
-@classmethod
-def is_unwanted(cls) -> bool:
-    """Check if README is unwanted (always False)."""
-    return False
-```
-
-This ensures `README.md` is never removed or skipped during project initialization.
-We can not think of a possible reason why you would not want a README.md file, but in case you want to override this behavior, you can subclass `ReadmeConfigFile` and override `is_unwanted()` to return `True` and then empty the file.
+**Note**: We can't think of a reason why you would not want a README.md file, but if you need to override this behavior, you can subclass `ReadmeConfigFile` and override `is_unwanted()` to return `True`.
 
 ## Best Practices
 

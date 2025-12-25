@@ -72,14 +72,7 @@ The test relies on the `main_test_fixture` autouse fixture to do the actual vali
 
 ### Validation Logic
 
-The `is_correct()` method checks for the test function:
-
-```python
-@classmethod
-def is_correct(cls) -> bool:
-    """Check if the test file is valid."""
-    return super().is_correct() or "def test_main" in cls.get_file_content()
-```
+The validation checks for the test function:
 
 **Required element**: A `def test_main` function.
 

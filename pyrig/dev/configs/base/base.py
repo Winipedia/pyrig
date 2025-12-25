@@ -135,11 +135,9 @@ class ConfigFile(ABC):
     def get_priority(cls) -> float:
         """Get the priority for this config file.
 
-        If None is returned, the config files are processed in a random order.
-
         Returns:
-            The priority as an integer. Higher numbers are processed first.
-            Or None if the order doesn't matter.
+            The priority as a float. Higher numbers are processed first.
+            Return 0 (default) if order doesn't matter.
         """
         return 0
 
@@ -185,7 +183,8 @@ class ConfigFile(ABC):
         """Merge expected configuration into the current file.
 
         Adds any missing keys or values from the expected configuration
-        to the current configuration without overwriting existing values.
+        to the current configuration. Overwrites existing values that don't
+        match the expected configuration to ensure correctness.
 
         Returns:
             The merged configuration.

@@ -35,19 +35,7 @@ uv run pyrig protect-repo
 
 ## Global Options
 
-All commands support verbosity and quiet flags:
-
-```bash
-# Increase verbosity (specify before command)
-uv run pyrig -v init           # DEBUG level
-uv run pyrig -vv build         # DEBUG with module names
-uv run pyrig -vvv mktests      # DEBUG with timestamps
-
-# Quiet mode
-uv run pyrig -q build          # Only warnings and errors
-```
-
-See [CLI Architecture](../architecture.md#global-options) for details on logging levels.
+All commands support verbosity and quiet flags. See [CLI Architecture - Global Options](../architecture.md#global-options) for complete details on logging levels and usage.
 
 ## Command Discovery
 

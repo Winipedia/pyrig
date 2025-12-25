@@ -63,13 +63,6 @@ When initialized via `uv run pyrig mkroot`, the `main.py` file is created with:
 
 ### Source Module
 
-```python
-@classmethod
-def get_src_module(cls) -> ModuleType:
-    """Get the source module to copy."""
-    return main  # pyrig.main
-```
-
 The entire content of `pyrig/main.py` is copied to your project.
 
 ### Generated Content
@@ -88,62 +81,26 @@ if __name__ == "__main__":
 
 ### Legacy Cleanup
 
-The `uv run pyrig init` method automatically cleans up old main.py files at root level:
+When running `uv run pyrig init`, any root-level `main.py` file is automatically deleted.
 
-```python
-def __init__(self) -> None:
-    """Initialize and clean up any root-level main.py."""
-    super().__init__()
-    self.__class__.delete_root_main()
-
-@classmethod
-def delete_root_main(cls) -> None:
-    """Delete any root-level main.py file."""
-    root_main_path = Path("main.py")
-    if root_main_path.exists():
-        root_main_path.unlink()
-```
-
-**Why this is needed**: uv creates a `main.py` at the project root. This cleanup ensures the file is only in `myapp/`.
+**Why this is needed**: uv creates a `main.py` at the project root during initialization. This cleanup ensures the file is only in `myapp/`.
 
 ## Dynamic Configuration
 
 ### Package Name
 
-```python
-PyprojectConfigFile.get_package_name()  # From pyproject.toml [project] name
-```
-
-The package name determines the target path:
+The package name from `pyproject.toml` `[project]` `name` determines the target path:
 - Project name: `my-app`
 - Package name: `my_app`
 - Target path: `my_app/main.py`
 
 ### Module Path Transformation
 
-```python
-src_module = cls.get_src_module()  # pyrig.main
-new_module_name = get_module_name_replacing_start_module(
-    src_module, PyprojectConfigFile.get_package_name()
-)
-# pyrig.main → myapp.main
-```
-
-This transformation ensures the file is placed in the correct location for your project.
+The module path is automatically transformed from `pyrig.main` to `{package_name}.main` to ensure the file is placed in the correct location for your project.
 
 ## Validation Logic
 
-The `is_correct()` method checks for required structure:
-
-```python
-@classmethod
-def is_correct(cls) -> bool:
-    """Check if the main.py file is valid."""
-    return super().is_correct() or (
-        "def main" in cls.get_file_content()
-        and 'if __name__ == "__main__":' in cls.get_file_content()
-    )
-```
+The validation checks for required structure:
 
 **Required elements**:
 1. A `def main` function definition

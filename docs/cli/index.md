@@ -54,19 +54,5 @@ See [Commands](commands/index.md) for detailed documentation on each command.
 
 ## Global Options
 
-All commands support global verbosity and quiet flags:
-
-```bash
-# Increase verbosity (can be repeated)
-uv run pyrig -v build          # DEBUG level with level prefix
-uv run pyrig -vv build         # DEBUG level with module names
-uv run pyrig -vvv build        # DEBUG level with timestamps
-
-# Quiet mode (only warnings and errors)
-uv run pyrig -q build          # Suppress info messages
-```
-
-**Note**: Global options must come **before** the command name (e.g., `pyrig -v build`, not `pyrig build -v`).
-
-See [Architecture](architecture.md) for technical details on how global options are implemented.
+All commands support global verbosity and quiet flags. See [CLI Architecture - Global Options](architecture.md#global-options) for complete details on logging levels and usage.
 

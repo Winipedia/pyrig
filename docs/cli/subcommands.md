@@ -27,7 +27,7 @@ def mkroot(
     make_project_root(priority=priority)
 ```
 
-The function name becomes the command name (converted to kebab-case), and the docstring becomes the help text.
+The function name becomes the command name (Typer automatically converts underscores to hyphens), and the docstring becomes the help text.
 
 ### Adding Command-Line Arguments
 

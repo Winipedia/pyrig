@@ -52,36 +52,13 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 ### License Fetching
 
-```python
-@classmethod
-@return_resource_content_on_fetch_error(resource_name="MIT_LICENSE_TEMPLATE")
-def get_mit_license(cls) -> str:
-    """Get the MIT license text from GitHub's SPDX API."""
-    url = "https://api.github.com/licenses/mit"
-    resp = requests.get(url, timeout=10)
-    resp.raise_for_status()
-    data = resp.json()
-    return data["body"]
-```
-
-If the API call fails, the decorator returns a bundled MIT license template.
+Pyrig fetches the MIT license text from GitHub's SPDX API at `https://api.github.com/licenses/mit`. If the API call fails, it uses a bundled MIT license template from `pyrig/resources/MIT_LICENSE_TEMPLATE`.
 
 ### Placeholder Replacement
 
-```python
-@classmethod
-def get_mit_license_with_year_and_owner(cls) -> str:
-    """Get the MIT license text with year and owner."""
-    mit_license = cls.get_mit_license()
-    year = datetime.now(tz=UTC).year
-    owner, _ = get_repo_owner_and_name_from_git(check_repo_url=False)
-    mit_license = mit_license.replace("[year]", str(year))
-    return mit_license.replace("[fullname]", owner)
-```
-
-Automatically fills in:
+The license text contains placeholders that are automatically filled in:
 - `[year]` → Current year (e.g., `2025`)
-- `[fullname]` → Git repo owner (e.g., `Winipedia`)
+- `[fullname]` → Git repo owner extracted from git config (e.g., `Winipedia`)
 
 ## Usage
 
@@ -122,17 +99,7 @@ curl https://www.gnu.org/licenses/gpl-3.0.txt > LICENSE
 
 ## Validation Logic
 
-The `is_correct()` method checks if the file exists and is non-empty:
-
-```python
-@classmethod
-def is_correct(cls) -> bool:
-    """Check if the LICENSE file is valid."""
-    return super().is_correct() or (
-        cls.get_path().exists()
-        and bool(cls.get_path().read_text(encoding="utf-8").strip())
-    )
-```
+The validation checks if the LICENSE file exists and contains text (is non-empty).
 
 **Required element**: File must exist and contain text.
 

@@ -91,40 +91,15 @@ repos:
         pass_filenames: false
 ```
 
-### Hook Builder Method
+### Hook Configuration
 
-The `get_hook()` method creates standardized hook configurations:
+Each hook is configured with these key settings:
 
-```python
-@classmethod
-def get_hook(
-    cls,
-    name: str,
-    args: list[str],
-    *,
-    language: str = "system",
-    pass_filenames: bool = False,
-    always_run: bool = True,
-    **kwargs: Any,
-) -> dict[str, Any]:
-    """Create a pre-commit hook configuration."""
-    hook: dict[str, Any] = {
-        "id": name,
-        "name": name,
-        "entry": str(Args(args)),  # Converts list to space-separated string
-        "language": language,
-        "always_run": always_run,
-        "pass_filenames": pass_filenames,
-        **kwargs,
-    }
-    return hook
-```
+- **language: "system"** - Uses tools from your environment (not isolated)
+- **always_run: true** - Runs on every commit, even if no matching files changed
+- **pass_filenames: false** - Runs on entire codebase, not just changed files
 
-**Key features**:
-- `Args(args)` converts list to space-separated command string
-- `language: "system"` uses tools from your environment (not isolated)
-- `always_run: true` runs on every commit, even if no matching files changed
-- `pass_filenames: false` runs on entire codebase, not just changed files
+This ensures comprehensive quality checks on every commit.
 
 ## Configured Hooks
 
@@ -157,12 +132,12 @@ def get_hook(
 
 **Command**: `ty check`
 
-**Purpose**: Pyrig's custom type checker that validates type annotations.
+**Purpose**: Modern type checker from Astral (creators of Ruff) that validates type annotations.
 
 **What it checks**:
 - Type annotation correctness
 - Type consistency
-- Custom pyrig type rules
+- Runtime type validation
 
 ### 4. check-static-types (MyPy Type Checking)
 
@@ -216,19 +191,19 @@ uv run pre-commit install
 Run all hooks on all files:
 
 ```bash
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 Run a specific hook:
 
 ```bash
-pre-commit run lint-code
+uv run pre-commit run lint-code
 ```
 
 Run with verbose output:
 
 ```bash
-pre-commit run --all-files --verbose
+uv run pre-commit run --all-files --verbose
 ```
 
 ### Automatic Execution
@@ -297,10 +272,10 @@ repos:
 ## Best Practices
 
 1. **Keep pyrig hooks**: Don't remove the default hooks - they ensure code quality
-2. **Run manually before committing**: Use `pre-commit run --all-files` to catch issues early
+2. **Run manually before committing**: Use `uv run pre-commit run --all-files` to catch issues early
 3. **Fix issues, don't skip**: Avoid `--no-verify` - fix the actual problems
-4. **Update regularly**: Run `pre-commit autoupdate` to get latest hook versions
-5. **Use in CI/CD**: pyrig runs the hooks also in CI/CD pipeline health check
+4. **Keep tools updated**: Update tool versions in `pyproject.toml` to get latest features
+5. **Use in CI/CD**: pyrig runs the same hooks in CI/CD pipeline health check
 
 ## Why Local Hooks?
 
@@ -355,7 +330,7 @@ The hooks run on the entire codebase (`always_run: true`). This is intentional t
 If hooks don't run, reinstall:
 
 ```bash
-pre-commit install
+uv run pre-commit install
 ```
 
 ### Hooks run but tools not found

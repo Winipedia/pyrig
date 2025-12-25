@@ -53,20 +53,7 @@ When initialized via `uv run pyrig mkroot`, the file is created:
 
 ### Empty File
 
-```python
-@classmethod
-def load(cls) -> dict[str, Any] | list[Any]:
-    """Load the py.typed file (always empty)."""
-    return {}
-
-@classmethod
-def dump(cls, config: dict[str, Any] | list[Any]) -> None:
-    """Validate that py.typed files remain empty."""
-    if config:
-        raise ValueError(f"Cannot dump {config} to py.typed file.")
-```
-
-The file is always empty - it's just a marker.
+The file is always empty - it's just a marker. Any attempt to add content will be rejected during validation.
 
 ## Usage
 

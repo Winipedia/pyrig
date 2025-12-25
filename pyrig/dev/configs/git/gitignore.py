@@ -105,6 +105,7 @@ class GitIgnoreConfigFile(ConfigFile):
             ".mypy_cache/",  # bc of mypy cache
             ".pytest_cache/",  # bc of pytest cache
             ".ruff_cache/",  # bc of ruff cache
+            ".rumdl_cache/",  # bc of rumdl cache
             ".venv/",  # bc of uv venv
             "dist/",  # bc of uv publish
             "/site/",  # bc of mkdocs
