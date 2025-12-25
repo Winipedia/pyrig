@@ -13,14 +13,17 @@ The health check workflow is the first step in the CI/CD pipeline. It runs on ev
 ## Triggers
 
 ### Pull Request
+
 - **Events**: `opened`, `synchronize`, `reopened`
 - **Purpose**: Validate changes before merging
 
 ### Push
+
 - **Branches**: `main`
 - **Purpose**: Validate main branch after merge
 
 ### Schedule
+
 - **Cron**: `0 {hour} * * *` (daily at staggered hour)
 - **Staggering**: Hour offset based on dependency depth to pyrig
 - **Purpose**: Catch issues from dependency updates
@@ -28,6 +31,7 @@ The health check workflow is the first step in the CI/CD pipeline. It runs on ev
 **Why staggered?** If your package depends on pyrig, and pyrig releases at midnight, your package runs at 1 AM. This prevents failures when dependencies release right before your scheduled run and keeps all packages up to date at the same time if you have lots of packages depending in a line.
 
 ### Workflow Dispatch
+
 - **Purpose**: Manual trigger for testing
 
 ## Job Flow
@@ -144,6 +148,7 @@ graph TD
 **Runs on**: Matrix of OS × Python versions  
 **Strategy**: `fail-fast: true` (stop all jobs if one fails)  
 **Matrix**:
+
 - **OS**: Ubuntu, Windows, macOS (latest)
 - **Python**: All versions from `pyproject.toml` `requires-python` (e.g., 3.12, 3.13, 3.14)
 

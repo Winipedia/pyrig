@@ -42,9 +42,9 @@ All commands support verbosity and quiet flags. See [CLI Architecture - Global O
 All commands are automatically discovered from `dev/cli/subcommands.py`. Each function in this module becomes a CLI command.
 
 For packages depending on pyrig, you can define your own commands in `myapp/dev/cli/subcommands.py`:
+
 ```bash
 uv run myapp deploy    # Custom command defined in myapp
 uv run myapp status    # Custom command defined in myapp
 uv run myapp version   # Shared command available in all packages
 ```
-

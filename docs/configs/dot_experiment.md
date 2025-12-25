@@ -5,6 +5,7 @@ The `DotExperimentConfigFile` manages the `.experiment.py` file, which serves as
 ## Overview
 
 Creates a .experiment.py file that:
+
 - Provides a scratch space for testing code locally
 - Automatically excluded from version control (in `.gitignore`)
 - Located at the project root for easy access
@@ -19,7 +20,7 @@ graph TD
     A[ConfigFile] --> B[TextConfigFile]
     B --> C[PythonConfigFile]
     C --> D[DotExperimentConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -29,6 +30,7 @@ graph TD
 **Inherits from**: `PythonConfigFile`
 
 **What this means**:
+
 - Python file format (`.py` extension)
 - Text-based validation (checks if required content exists)
 - Users can add any content after the docstring
@@ -241,7 +243,8 @@ cat .gitignore | grep experiment
 ```
 
 Should show:
-```
+
+```text
 .experiment.py
 ```
 

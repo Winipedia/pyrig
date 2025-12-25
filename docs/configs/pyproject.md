@@ -5,6 +5,7 @@ The `PyprojectConfigFile` manages the `pyproject.toml` file - the central config
 ## Overview
 
 Manages pyproject.toml with:
+
 - Project metadata (name, version, description, authors)
 - Dependencies (runtime and dev)
 - Build system configuration (uv)
@@ -18,7 +19,7 @@ Manages pyproject.toml with:
 graph TD
     A[ConfigFile] --> B[TomlConfigFile]
     B --> C[PyprojectConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -27,6 +28,7 @@ graph TD
 **Inherits from**: `TomlConfigFile`
 
 **What this means**:
+
 - TOML format using tomlkit (preserves formatting and comments)
 - Subset validation (user can add, not remove)
 - Intelligent merging of configurations
@@ -102,6 +104,7 @@ Changelog = "https://github.com/owner/my-app/releases" # Release notes
 pyrig generates an **empty `keywords` list** as a placeholder. You should fill this with 5-8 relevant search terms that help users discover your project on PyPI.
 
 **Best Practices**:
+
 - Use 5-8 keywords (optimal for discoverability)
 - Include primary use cases and features
 - Use hyphenated compound terms (e.g., "task-runner", "cli-framework")
@@ -112,16 +115,19 @@ pyrig generates an **empty `keywords` list** as a placeholder. You should fill t
 **Note**: You only need keywords if you plan to publish your package to PyPI and add a `PYPI_TOKEN` to your repository secrets.
 
 **Example for a web framework**:
+
 ```toml
 keywords = ["web-framework", "async", "api", "rest", "microservices"]
 ```
 
 **Example for a CLI tool**:
+
 ```toml
 keywords = ["cli", "automation", "task-runner", "productivity", "devops"]
 ```
 
 **Example for a data processing library**:
+
 ```toml
 keywords = ["data-processing", "etl", "pipeline", "analytics", "big-data"]
 ```
@@ -152,6 +158,7 @@ dev = [                           # Development dependencies
 ```
 
 **Why**:
+
 - `dependencies`: Required for package to run (includes pyrig runtime)
 - `dev`: Only needed for development (testing, linting, etc.)
 - `pyrig-dev` auto-added to dev dependencies to ensure development tools are available
@@ -194,6 +201,7 @@ convention = "google"             # Use Google docstring style
 ```
 
 **Why**:
+
 - `select = ["ALL"]`: Maximum code quality enforcement
 - Minimal ignores: Only conflicts and practical exceptions
 - `fixable = ["ALL"]`: Auto-fix on `ruff check --fix`
@@ -220,6 +228,7 @@ files = "."                       # Check all files in the project from root
 ```
 
 **Why**:
+
 - `strict = true`: Maximum type safety (no implicit Any, no untyped defs, etc.)
 - `warn_unreachable`: Catch dead code
 - `show_error_codes`: Easier to configure ignores
@@ -234,6 +243,7 @@ addopts = "--cov=my_app --cov-report=term-missing --cov-fail-under=90"
 ```
 
 **Why**:
+
 - `testpaths`: Where to find tests
 - `--cov=my_app`: Measure code coverage
 - `--cov-report=term-missing`: Show uncovered lines
@@ -250,6 +260,7 @@ skips = ["*/tests/*.py"]          # Allow assert in tests
 ```
 
 **Why**:
+
 - Security scanning for common vulnerabilities
 - Allow assert in tests (required by pytest)
 - Ignore dotfiles (e.g., .experiment.py)
@@ -276,6 +287,7 @@ Several values are determined automatically:
 ### Normalization
 
 When dumping, pyrig normalizes dependencies:
+
 - Removes version specifiers for comparison
 - Merges user deps with standard dev deps
 - Sorts and deduplicates
@@ -284,6 +296,7 @@ When dumping, pyrig normalizes dependencies:
 ### Standard Dev Dependencies
 
 Pyrig automatically adds:
+
 - `pyrig-dev`: Development tools
 
 ## Usage
@@ -319,5 +332,3 @@ uv run pyrig mkroot  # Validates and merges changes
 3. **Keep coverage high**: 90% minimum enforced by pytest
 4. **Follow strict typing**: MyPy strict mode catches bugs early
 5. **Let ruff auto-fix**: Run `uv run ruff check --fix` before committing
-
-

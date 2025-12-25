@@ -13,6 +13,7 @@ The release workflow runs after successful artifact builds. It bumps the version
 ## Triggers
 
 ### Workflow Run
+
 - **Workflow**: `Build`
 - **Event**: `completed`
 - **Condition**: Only runs if build succeeded
@@ -20,6 +21,7 @@ The release workflow runs after successful artifact builds. It bumps the version
 **Why workflow_run?** Ensures releases are only created after artifacts are successfully built.
 
 ### Workflow Dispatch
+
 - **Purpose**: Manual trigger for testing
 
 ## Permissions

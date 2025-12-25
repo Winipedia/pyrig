@@ -5,6 +5,7 @@ The `GitIgnoreConfigFile` manages the project's `.gitignore` file for excluding 
 ## Overview
 
 Creates a comprehensive `.gitignore` file that:
+
 - Fetches GitHub's standard Python.gitignore patterns
 - Adds VS Code workspace files
 - Includes pyrig-specific patterns
@@ -16,7 +17,7 @@ Creates a comprehensive `.gitignore` file that:
 ```mermaid
 graph TD
     A[ConfigFile] --> B[GitIgnoreConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
@@ -24,6 +25,7 @@ graph TD
 **Inherits from**: `ConfigFile` (directly)
 
 **What this means**:
+
 - Custom implementation of `load()` and `dump()` methods
 - Works with list of patterns instead of dict
 - Validation checks if all required patterns exist
@@ -64,6 +66,7 @@ The `.gitignore` file combines patterns from multiple sources:
 ### Validation Logic
 
 The configuration implements smart merging that ensures:
+
 - User patterns are never removed
 - Required patterns are always added
 - No duplicate patterns
@@ -82,6 +85,7 @@ Pyrig fetches the latest standard Python patterns from GitHub's official gitigno
 ### Project-Specific Files
 
 Automatically includes paths to other config files that should be ignored:
+
 - `.experiment.py` - Experimental code file
 - `.env` - Environment variables and secrets
 
@@ -90,6 +94,7 @@ Automatically includes paths to other config files that should be ignored:
 ### Automatic Updates
 
 The `.gitignore` file is automatically updated when:
+
 - Running `uv run pyrig mkroot`
 - New pyrig patterns are added in updates
 - GitHub's Python.gitignore is updated (on next initialization)
@@ -173,6 +178,7 @@ If GitHub is unreachable, pyrig uses a bundled fallback resource file at `pyrig/
 ### Pattern Matching
 
 The `path_is_in_gitignore()` method handles:
+
 - Relative and absolute paths
 - Directory vs file detection
 - Proper trailing slash handling for directories

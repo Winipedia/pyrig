@@ -5,6 +5,7 @@ The `SubcommandsConfigFile` manages the `dev/cli/subcommands.py` file.
 ## Overview
 
 Creates a subcommands.py file that:
+
 - Copies only the docstring from `pyrig.dev.cli.subcommands`
 - Provides a place to define custom CLI subcommands
 - Automatically discovered by pyrig's CLI system
@@ -20,7 +21,7 @@ graph TD
     D --> E[CopyModuleConfigFile]
     E --> F[CopyModuleOnlyDocstringConfigFile]
     F --> G[SubcommandsConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -33,6 +34,7 @@ graph TD
 **Inherits from**: `CopyModuleOnlyDocstringConfigFile`
 
 **What this means**:
+
 - Copies only the docstring from the source module
 - Allows you to add custom implementation
 - Automatically determines target path

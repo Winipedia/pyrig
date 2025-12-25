@@ -6,7 +6,7 @@ pyrig's resource system provides unified access to static files that works seaml
 
 Resources are stored in a dedicated package within your project:
 
-```
+```text
 myapp/
 └── resources/
     ├── __init__.py          # Required for package
@@ -66,6 +66,7 @@ graph TD
 ```
 
 **What happens:**
+
 1. **Development**: `importlib.resources` returns the actual filesystem path to the resource
 2. **PyInstaller**: `importlib.resources` extracts the bundled resource to the `_MEIPASS` temporary directory and returns that path
 3. **Result**: A `Path` object that works identically in both environments
@@ -167,11 +168,13 @@ Pyrig includes the following resource files in `pyrig/resources/`:
 These files serve as **fallback templates** when creating new projects with `uv run pyrig mkroot` (which is called by `uv run pyrig init`).
 
 When pyrig needs these files, it:
+
 1. **First attempts** to fetch the latest version from the internet (GitHub API, endoflife.date API, etc.)
 2. **Falls back** to the bundled resource file if the network request fails
 3. **Automatically updates** the bundled resource file when running as pyrig itself (not in user projects)
 
 This is implemented using the `@return_resource_content_on_fetch_error` decorator, which:
+
 - Catches network errors when fetching latest versions
 - Returns the bundled resource content as fallback
 - Updates the bundled file when pyrig runs its own tests (if content changed)
@@ -192,7 +195,4 @@ def get_github_python_gitignore_as_str(cls) -> str:
 If the request fails (no internet, rate limit, etc.), it returns the content from `pyrig/resources/GITIGNORE` instead.
 
 This ensures your project can be initialized even without internet access, while still getting the latest templates when possible.
-
-
-
 

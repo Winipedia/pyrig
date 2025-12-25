@@ -5,6 +5,7 @@ The `PreCommitConfigConfigFile` manages the `.pre-commit-config.yaml` file for a
 ## Overview
 
 Creates a pre-commit configuration that:
+
 - Runs linting with Ruff
 - Formats code with Ruff
 - Checks types with `ty` and MyPy
@@ -20,7 +21,7 @@ Note: Future plans are to only use ty and not mypy. However, astral-sh/ty is sti
 graph TD
     A[ConfigFile] --> B[YamlConfigFile]
     B --> C[PreCommitConfigConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
@@ -29,6 +30,7 @@ graph TD
 **Inherits from**: `YamlConfigFile`
 
 **What this means**:
+
 - Uses YAML format for configuration
 - Loads/dumps with PyYAML
 - Validation checks if all required hooks exist
@@ -110,6 +112,7 @@ This ensures comprehensive quality checks on every commit.
 **Purpose**: Checks code for style violations and common errors, automatically fixing issues when possible.
 
 **What it checks**:
+
 - PEP 8 style violations
 - Unused imports and variables
 - Code complexity
@@ -123,6 +126,7 @@ This ensures comprehensive quality checks on every commit.
 **Purpose**: Automatically formats code to a consistent style (similar to Black).
 
 **What it does**:
+
 - Consistent indentation
 - Line length enforcement
 - Quote normalization
@@ -135,6 +139,7 @@ This ensures comprehensive quality checks on every commit.
 **Purpose**: Modern type checker from Astral (creators of Ruff) that validates type annotations.
 
 **What it checks**:
+
 - Type annotation correctness
 - Type consistency
 - Runtime type validation
@@ -146,6 +151,7 @@ This ensures comprehensive quality checks on every commit.
 **Purpose**: Industry-standard static type checker for Python.
 
 **What it checks**:
+
 - Type annotation correctness
 - Type compatibility
 - Missing type annotations
@@ -158,6 +164,7 @@ This ensures comprehensive quality checks on every commit.
 **Purpose**: Scans code for common security vulnerabilities.
 
 **What it checks**:
+
 - Hardcoded passwords
 - SQL injection risks
 - Use of insecure functions
@@ -173,7 +180,9 @@ Pre-commit hooks are automatically installed when you run:
 ```bash
 uv run pyrig init
 ```
+
 Or when running tests
+
 ```bash
 uv run pytest
 ```

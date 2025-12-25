@@ -5,14 +5,18 @@ pyrig provides an extensible builder system for creating distributable artifacts
 ## Documentation Pages
 
 ### [Builder Architecture](architecture.md)
+
 Learn how the builder system works:
+
 - Automatic builder discovery
 - Multi-package support
 - Build process flow
 - Artifact management
 
 ### [PyInstaller Builder](pyinstaller.md)
+
 Use the built-in PyInstaller builder for creating standalone executables:
+
 - Creating executables from Python projects
 - Resource bundling
 - Icon management
@@ -22,6 +26,7 @@ Use the built-in PyInstaller builder for creating standalone executables:
 ## Quick Overview
 
 The builder system provides:
+
 - **Automatic discovery** of all Builder subclasses across packages
 - **Multi-package support** through dependency graph traversal
 - **Platform-specific artifacts** with automatic naming
@@ -58,6 +63,7 @@ graph LR
 ## Quick Start
 
 Build all artifacts:
+
 ```bash
 uv run pyrig build
 ```
@@ -82,4 +88,3 @@ class MyBuilder(Builder):
 ```
 
 Place this in `myapp/dev/builders/my_builder.py` and it will be automatically discovered when running `uv run pyrig build`. Any other file location within the `dev/builders` module will also work.
-

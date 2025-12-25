@@ -5,6 +5,7 @@ The `PyTypedConfigFile` manages the `py.typed` marker file for PEP 561 complianc
 ## Overview
 
 Creates a py.typed file that:
+
 - Indicates the package supports type checking (PEP 561)
 - Located in the source package directory
 - Always empty (just a marker file)
@@ -17,7 +18,7 @@ Creates a py.typed file that:
 graph TD
     A[ConfigFile] --> B[TypedConfigFile]
     B --> C[PyTypedConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -26,6 +27,7 @@ graph TD
 **Inherits from**: `TypedConfigFile`
 
 **What this means**:
+
 - Empty file (no content)
 - Extension is `.typed`
 - Located in package directory
@@ -65,7 +67,7 @@ uv run pyrig mkroot
 
 ### File Content
 
-```
+```text
 (empty file)
 ```
 

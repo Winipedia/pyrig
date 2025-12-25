@@ -54,6 +54,7 @@ def deploy(
 ```
 
 This creates a command with options:
+
 ```bash
 uv run myapp deploy --environment production
 uv run myapp deploy --dry-run
@@ -158,7 +159,7 @@ Function names are converted to CLI command names:
 
 When a package depends on pyrig, it can define its own subcommands:
 
-```
+```text
 myapp/
   dev/
     cli/

@@ -5,6 +5,7 @@ The `LicenceConfigFile` manages the `LICENSE` file for the project.
 ## Overview
 
 Creates a LICENSE file that:
+
 - Defaults to MIT License with current year and repo owner
 - Fetches license text from GitHub's SPDX API
 - Falls back to bundled template if API fails
@@ -17,7 +18,7 @@ Creates a LICENSE file that:
 graph TD
     A[ConfigFile] --> B[TextConfigFile]
     B --> C[LicenceConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -26,6 +27,7 @@ graph TD
 **Inherits from**: `TextConfigFile`
 
 **What this means**:
+
 - Text-based validation
 - Simple content generation
 - No structured format (YAML/TOML)
@@ -57,6 +59,7 @@ Pyrig fetches the MIT license text from GitHub's SPDX API at `https://api.github
 ### Placeholder Replacement
 
 The license text contains placeholders that are automatically filled in:
+
 - `[year]` → Current year (e.g., `2025`)
 - `[fullname]` → Git repo owner extracted from git config (e.g., `Winipedia`)
 
@@ -70,7 +73,7 @@ uv run pyrig mkroot
 
 ### Generated Content
 
-```
+```text
 MIT License
 
 Copyright (c) 2025 Winipedia

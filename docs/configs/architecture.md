@@ -71,7 +71,7 @@ graph TD
     F --> G{Is correct now?}
     G -->|Yes| H
     G -->|No| I[Raise ValueError]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -88,6 +88,7 @@ graph TD
 ### Validation Logic
 
 A config file is considered correct if:
+
 1. **Empty file** - User opted out of this configuration file
 2. **Superset validation** - Actual config contains all expected keys/values
 
@@ -96,6 +97,7 @@ The validation recursively checks that the expected configuration is a subset of
 ### Smart Merging
 
 When configs are missing or incorrect, the system intelligently merges them:
+
 - **Dict values** - Missing keys are added. **Important**: Keys with incorrect values are overwritten with the expected values from `get_configs()`. This ensures required configuration is always correct.
 - **List values** - Missing items are inserted at the correct index
 - **User additions** - Preserved during merge (extra keys in dicts, extra items in lists)
@@ -147,6 +149,7 @@ def get_priority(cls) -> float:
 ```
 
 **Priority values in pyrig**:
+
 - `LicenceConfigFile`: 30 (must exist before pyproject.toml for license detection)
 - `PyprojectConfigFile`: 20 (must exist before other configs that read from it)
 - `ConfigsInitConfigFile`: 10 (creates package structure)
@@ -162,18 +165,21 @@ The initialization process groups config files by priority and processes each gr
 3. **Parallel within groups**: All files within the same priority group are initialized in parallel using ThreadPoolExecutor
 
 **Example execution order**:
+
 - Priority 30 group (LICENSE) - Initialized first
 - Priority 20 group (pyproject.toml) - Initialized second
 - Priority 10 group (ConfigsInitConfigFile, FixturesInitConfigFile) - Initialized third, both in parallel
 - Priority 0 group (all other configs) - Initialized last, all in parallel
 
 **Key methods**:
+
 - `ConfigFile.init_all_subclasses()` - Initialize all discovered config files
 - `ConfigFile.init_priority_subclasses()` - Initialize only files with priority > 0
 - `ConfigFile.get_all_subclasses()` - Discover all config files (sorted by priority)
 - `ConfigFile.get_priority_subclasses()` - Get only config files with priority > 0
 
 **Priority-only initialization**:
+
 ```bash
 uv run pyrig mkroot --priority
 ```
@@ -183,6 +189,7 @@ This creates only the essential files (priority > 0) during initial project setu
 #### Performance Benefits
 
 The hybrid priority-based approach provides:
+
 - **Correctness** - Dependencies are respected through priority ordering
 - **Performance** - Files without dependencies initialize concurrently
 - **Flexibility** - Same priority = can run in parallel, different priority = guaranteed order
@@ -398,6 +405,7 @@ Filenames are automatically derived from class names:
 | `GitIgnoreConfigFile` | `git_ignore` |
 
 The system:
+
 1. Removes abstract parent class suffixes (`ConfigFile`, `YamlConfigFile`, etc.)
 2. Converts to snake_case
 3. Adds the file extension
@@ -476,4 +484,3 @@ class DatabaseConfigFile(YamlConfigFile):
 ```
 
 Place in `myapp/dev/configs/database.py` and it will create `config/database.yaml` with the required structure.
-

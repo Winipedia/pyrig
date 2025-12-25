@@ -9,6 +9,7 @@ pyrig provides **minimal best practices fully working defaults for everything a 
 ### Required Software
 
 **Git**:
+
 ```bash
 # Verify installation
 git --version
@@ -19,6 +20,7 @@ git config --global user.email "your.email@example.com"
 ```
 
 **uv** (Python package manager):
+
 ```bash
 # Install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -28,6 +30,7 @@ uv --version
 ```
 
 **Podman** (for containerization):
+
 ```bash
 # Linux
 sudo apt install podman  # Debian/Ubuntu
@@ -72,10 +75,12 @@ graph TD
 ```
 
 **GitHub Account**:
+
 - Create account at [github.com](https://github.com)
 - Verify email address
 
 **GitHub Personal Access Token (REPO_TOKEN)** - **Required**:
+
 1. Go to GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens
 2. Select scopes:
    - `administration: read, write` (for `pyrig protect-repo`)
@@ -86,6 +91,7 @@ graph TD
 5. Add token to your repository secrets
 
 **PyPI Token (PYPI_TOKEN)** - **Optional** (for publishing):
+
 1. Create account at [pypi.org](https://pypi.org)
 2. Create an API token
 3. Scope: "Entire account" (recommended change to specific project after first publish)
@@ -94,17 +100,20 @@ graph TD
 6. Add token to your repository secrets
 
 **Codecov Account** - **Recommended** (for coverage badge and reporting):
+
 1. Visit [codecov.io](https://codecov.io)
 2. Click "Log in with GitHub" to create account and link GitHub
 3. That's it - your account is ready
 
 **Codecov Token (CODECOV_TOKEN)** - **Recommended** (for uploading coverage):
+
 1. Go to your repository on Codecov
 2. Navigate to Settings → General
 3. Copy the repository upload token
 4. Add token to your GitHub repository secrets as `CODECOV_TOKEN`
 
 **Note**:
+
 - **For private repos**: CODECOV_TOKEN is **required**
 - **For public repos**: CODECOV_TOKEN is **recommended** but optional. Without it, you must enable tokenless upload in Codecov settings (Settings → General → "Allow tokenless upload")
 - The token provides better reliability and security for all repos
@@ -162,6 +171,7 @@ uv run pyrig init
 This command runs 9 automated steps to set up your complete project. See the [init command documentation](../cli/commands/init.md) for detailed information about each step.
 
 **Summary of steps:**
+
 1. Adding dev dependencies (pyrig-dev)
 2. Syncing venv (install all dependencies)
 3. Creating priority config files (LICENSE, pyproject.toml, etc.)
@@ -181,6 +191,7 @@ On GitHub.com, go to your repository:
 3. Add each secret:
 
 **REPO_TOKEN**:
+
 - Name: `REPO_TOKEN`
 - Secret: Your GitHub fine-grained personal access token with permissions:
   - `administration: read, write`
@@ -189,11 +200,13 @@ On GitHub.com, go to your repository:
 - Click "Add secret"
 
 **PYPI_TOKEN** (optional):
+
 - Name: `PYPI_TOKEN`
 - Secret: Your PyPI token
 - Click "Add secret"
 
 **CODECOV_TOKEN** (optional, but recommended):
+
 - Name: `CODECOV_TOKEN`
 - Secret: Your Codecov token
 - Click "Add secret"
@@ -208,6 +221,7 @@ git push -u origin main
 ### 8. Verify Workflows
 
 On GitHub.com:
+
 1. Go to Actions tab
 2. Health Check workflow should run automatically
 3. Verify all jobs pass (should just take a 2-3 minutes on an empty project)
@@ -217,7 +231,8 @@ On GitHub.com:
 After completing setup, your project has:
 
 **Complete Project Structure**:
-```
+
+```text
 my-project/
 ├── my_project/                      # Source code package
 │   ├── __init__.py
@@ -288,10 +303,12 @@ my-project/
 ├── pyproject.toml                   # Project metadata and tool configs
 └── uv.lock                          # Dependency lock file
 ```
+
 - `docs/` - MkDocs documentation
 - `.github/workflows/` - CI/CD workflows
 
 **Configuration Files**:
+
 - `pyproject.toml` - Project metadata, dependencies, tool configs
 - `.gitignore` - Git ignore patterns
 - `.pre-commit-config.yaml` - Pre-commit hooks
@@ -307,6 +324,7 @@ my-project/
 **Development Tools**: See [Tooling Documentation](tooling.md) for complete tool choices and rationale.
 
 **CLI Commands**:
+
 ```bash
 uv run my-project --help     # Your CLI
 uv run my-project version    # Display version
@@ -333,4 +351,3 @@ After completing setup:
 - [Example Usage](example-usage.md) - Real-world microservices ecosystem example
 - [Tooling](tooling.md) - Tool choices and rationale
 - [Trade-offs](drawbacks.md) - What you sacrifice and gain
-

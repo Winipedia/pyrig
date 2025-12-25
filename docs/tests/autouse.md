@@ -14,7 +14,7 @@ graph TD
     F --> G[Module fixtures run per module]
     G --> H[Class fixtures run per class]
     H --> I[Individual tests execute]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -48,7 +48,8 @@ Run once per test session before any tests execute.
 
 **Purpose**: Validate project configuration files are correct.
 
-**Assertion**: 
+**Assertion**:
+
 - Checks all `ConfigFile` subclasses with `is_correct()`
 - Runs `make_project_root()` if any incorrect
 - Creates `.experiment.py` in CI (needed so the `ConfigFile` system does not complain that is_correct() is False)
@@ -64,6 +65,7 @@ Run once per test session before any tests execute.
 **Purpose**: Ensure all packages have `__init__.py` files.
 
 **Assertion**:
+
 - Scans project for namespace packages (directories without `__init__.py`)
 - Creates missing `__init__.py` files
 - Fails if any namespace packages found
@@ -79,6 +81,7 @@ Run once per test session before any tests execute.
 **Purpose**: Enforce single source package structure.
 
 **Assertion**:
+
 - Verifies only one source package exists at the root (besides `tests` and `docs`)
 - Ensures the source package contains only: `src/`, `dev/`, `resources/` subdirectories and `main.py`
 - Prevents code from being scattered across multiple top-level packages
@@ -94,6 +97,7 @@ Run once per test session before any tests execute.
 **Purpose**: Verify source package name matches project name.
 
 **Assertion**:
+
 - Checks that source package name is derived from project name
 - Ensures naming convention is followed (project-name → project_name)
 
@@ -108,6 +112,7 @@ Run once per test session before any tests execute.
 **Purpose**: Ensure every source module has a test module.
 
 **Assertion**:
+
 - Walks entire source package
 - Checks for corresponding test modules
 - Generates missing test skeletons for missing modules
@@ -138,6 +143,7 @@ that it catches a lot of things early and helps long term. We recognize it can b
 **Purpose**: Verify dependencies are already up to date.
 
 **Assertion**:
+
 - Runs `uv lock --upgrade` to check for available updates
 - Runs `uv sync` to check for missing installations
 - Fails if either command makes changes
@@ -165,6 +171,7 @@ that it catches a lot of things early and helps long term. We recognize it can b
 **Purpose**: Verify source code has no dev dependencies.
 
 **Assertion**:
+
 - Copies project to temp directory
 - Installs dependencies with `uv sync --no-group dev`
 - Verifies pytest is not installed or importable
@@ -181,7 +188,7 @@ that it catches a lot of things early and helps long term. We recognize it can b
 
 **Purpose**: Prevent `src` from importing `dev` code.
 
-**Assertion**: Scans all source files for dev imports of packages depending on pyrig using regex pattern matching. 
+**Assertion**: Scans all source files for dev imports of packages depending on pyrig using regex pattern matching.
 
 **Scope**: Session
 
@@ -206,6 +213,7 @@ that it catches a lot of things early and helps long term. We recognize it can b
 **Purpose**: Ensure project management tool (uv) is latest version.
 
 **Assertion**: Runs `uv self update` and expects either:
+
 - Success message indicating already on latest version
 - Acceptable failure (GitHub rate limit, network issues)
 
@@ -248,6 +256,7 @@ Run once per test module.
 **Purpose**: Ensure all functions and classes in module have tests.
 
 **Assertion**:
+
 - Gets current test module from pytest request
 - Finds corresponding source module
 - Verifies all functions and classes have test counterparts
@@ -271,6 +280,7 @@ Run once per test class.
 **Purpose**: Ensure all methods in class have tests.
 
 **Assertion**:
+
 - Gets current test class from pytest request
 - Finds corresponding source class
 - Verifies all methods have test counterparts
@@ -310,6 +320,7 @@ graph TD
 ```
 
 **Session-level fixtures** (run once, order not guaranteed):
+
 - `assert_no_unstaged_changes` (before and after)
 - `assert_root_is_correct`
 - `assert_no_namespace_packages`
@@ -327,9 +338,11 @@ graph TD
 - `assert_container_engine_is_installed` (local only)
 
 **Module-level fixtures** (run once per test module):
+
 - `assert_all_funcs_and_classes_tested`
 
 **Class-level fixtures** (run once per test class):
+
 - `assert_all_methods_tested`
 
 ## Creating Custom Autouse Fixtures
@@ -347,6 +360,7 @@ def my_custom_validation() -> None:
 ```
 
 Available decorators:
+
 - `@autouse_session_fixture` - Runs once per test session
 - `@autouse_module_fixture` - Runs once per test module
 - `@autouse_class_fixture` - Runs once per test class

@@ -5,6 +5,7 @@ The `MkdocsConfigFile` manages the project's `mkdocs.yml` configuration file for
 ## Overview
 
 Creates a minimal MkDocs configuration that:
+
 - Sets the site name from your project name
 - Configures basic navigation with home page
 - Enables search and Mermaid diagram plugins
@@ -18,7 +19,7 @@ graph TD
     A[ConfigFile] --> B[YamlConfigFile]
     B --> C[YmlConfigFile]
     C --> D[MkdocsConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -28,6 +29,7 @@ graph TD
 **Inherits from**: `YmlConfigFile`
 
 **What this means**:
+
 - File is YAML format with `.yml` extension (not `.yaml`)
 - Uses PyYAML for parsing and serialization
 - Validation checks if required keys exist in the file
@@ -69,6 +71,7 @@ theme:
 ### Required Configuration
 
 **Four required keys**:
+
 1. **`site_name`**: Automatically pulled from `pyproject.toml` project name
 2. **`nav`**: Navigation with at least a Home entry pointing to `index.md` in the docs directory
 3. **`plugins`**: Search and Mermaid2 plugins enabled (mermaid2 allows beautiful diagrams in markdown, included via `pyrig-dev`)
@@ -77,6 +80,7 @@ theme:
 ### Validation Logic
 
 Inherits standard YAML validation from `YmlConfigFile`:
+
 - Loads existing `mkdocs.yml` file
 - Checks if all required keys are present with the standard subset/superset logic
 - Verifies values match or extend required configuration
@@ -99,6 +103,7 @@ The navigation automatically points to `index.md` in the docs directory, which i
 ### Material Theme
 
 Pyrig uses the Material theme by default, which provides:
+
 - Modern, responsive design
 - Built-in search functionality
 - Mobile-friendly navigation
@@ -108,6 +113,7 @@ Pyrig uses the Material theme by default, which provides:
 The Material theme is included as a dependency via `pyrig-dev`, so it's automatically available.
 
 **Color Schemes**:
+
 - **`slate`** (default): Dark mode optimized for developers who prefer dark themes
 - **`default`**: Light mode available via toggle button in the header
 
@@ -184,12 +190,14 @@ As long as the four required keys (`site_name`, `nav`, `plugins`, `theme`) are p
 ### Adding Documentation Pages
 
 1. Create markdown files in the `docs/` directory:
+
    ```bash
    mkdir -p docs/guide
    echo "# Installation" > docs/guide/installation.md
    ```
 
 2. Add them to navigation in `mkdocs.yml`:
+
    ```yaml
    nav:
      - Home: index.md
@@ -197,6 +205,7 @@ As long as the four required keys (`site_name`, `nav`, `plugins`, `theme`) are p
    ```
 
 3. Serve to preview:
+
    ```bash
    uv run mkdocs serve
    ```

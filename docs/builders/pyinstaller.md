@@ -7,6 +7,7 @@ Note: The entire reason your main.py file is generated with a `if __name__ == "_
 ## Overview
 
 `PyInstallerBuilder` handles:
+
 - **Executable creation** with PyInstaller
 - **Resource bundling** from multiple packages
 - **Icon conversion** to platform-specific formats
@@ -34,7 +35,8 @@ A use case we had was that we needed to add the migrations folder for a database
 ### 2. Add an Icon
 
 Place `icon.png` in your resources directory:
-```
+
+```text
 myapp/
 └── resources/
     └── icon.png  # 256x256 PNG recommended
@@ -60,7 +62,7 @@ graph TD
     D --> E[Run PyInstaller]
     E --> F[Executable created in temp dir]
     F --> G[Move to dist/ with platform suffix]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -75,6 +77,7 @@ graph TD
 ### Automatic Resource Discovery
 
 Resources are automatically collected from:
+
 1. **All packages depending on pyrig** - their `resources` modules
 2. **Your additional packages** - specified in `get_additional_resource_pkgs`
 
@@ -83,7 +86,7 @@ graph LR
     A[pyrig.resources] --> D[Bundled in executable]
     B[pkg_a.resources] --> D
     C[myapp.resources] --> D
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -92,7 +95,7 @@ graph LR
 
 ### Resource Package Structure
 
-```
+```text
 myapp/
 └── resources/
     ├── __init__.py
@@ -103,6 +106,7 @@ myapp/
 ```
 
 All files in resource packages are bundled into the executable as additional data files via the same relative path using the pyinstaller method from its utils hooks:
+
 ```python
 from PyInstaller.utils.hooks import collect_data_files
 
@@ -114,6 +118,7 @@ datas = collect_data_files('myapp.resources')
 ### Icon Conversion
 
 PyInstaller requires platform-specific icon formats:
+
 - **Windows**: `.ico`
 - **macOS**: `.icns`
 - **Linux**: Not supported (PyInstaller ignores the `--icon` parameter on Linux)
@@ -129,7 +134,7 @@ class MyAppBuilder(PyInstallerBuilder):
     @classmethod
     def get_additional_resource_pkgs(cls) -> list[ModuleType]:
         return [myapp.another_resources_pkg]
-    
+
     @classmethod
     def get_app_icon_png_path(cls) -> Path:
         """Use custom icon location."""
@@ -162,18 +167,18 @@ class MyAppBuilder(PyInstallerBuilder):
     @classmethod
     def get_additional_resource_pkgs(cls) -> list[ModuleType]:
         return [myapp.resources]
-    
+
     @classmethod
     def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
         """Customize PyInstaller options."""
         options = super().get_pyinstaller_options(temp_artifacts_dir)
-        
+
         # Remove --noconsole to show console
         options.remove("--noconsole")
-        
+
         # Add hidden imports
         options.extend(["--hidden-import", "my_hidden_module"])
-        
+
         return options
 ```
 
@@ -203,7 +208,7 @@ class MyConsoleAppBuilder(PyInstallerBuilder):
     @classmethod
     def get_additional_resource_pkgs(cls) -> list[ModuleType]:
         return [myapp.resources]
-    
+
     @classmethod
     def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
         options = super().get_pyinstaller_options(temp_artifacts_dir)
@@ -216,7 +221,7 @@ class MyConsoleAppBuilder(PyInstallerBuilder):
 ```python
 class MyAppBuilder(PyInstallerBuilder):
     ARTIFACTS_DIR_NAME = "build/executables"  # Custom output directory
-    
+
     @classmethod
     def get_additional_resource_pkgs(cls) -> list[ModuleType]:
         return [myapp.resources]
@@ -224,7 +229,7 @@ class MyAppBuilder(PyInstallerBuilder):
 
 ## Multi-Package Example
 
-```
+```text
 pyrig (base package)
 ├── resources/
 │   └── base-config.json
@@ -262,4 +267,3 @@ dev = [
 ```
 
 The `pyrig-dev` package includes all necessary build tools including PyInstaller and Pillow.
-

@@ -37,6 +37,7 @@ pyrig is an opinionated Python project toolkit that eliminates setup time and en
 ### Key Features
 
 **Zero Configuration Setup**:
+
 - Complete project structure in minutes
 - Pre-configured tools (uv, ruff, mypy, pytest, MkDocs)
 - GitHub Actions workflows (health check, build, release, publish)
@@ -44,6 +45,7 @@ pyrig is an opinionated Python project toolkit that eliminates setup time and en
 - Pre-commit hooks with all quality checks
 
 **Automated Project Management**:
+
 - CLI framework with automatic command discovery
 - Configuration file system with validation
 - Automatic test skeleton generation
@@ -51,6 +53,7 @@ pyrig is an opinionated Python project toolkit that eliminates setup time and en
 - Multi-package architecture support
 
 **Opinionated Best Practices**:
+
 - Python >=3.12 with modern type hints
 - All ruff linting rules enabled
 - Strict mypy type checking
@@ -88,7 +91,9 @@ After running `uv run pyrig init`, you get a complete project with:
 - **90% test coverage** enforcement
 - **Pre-commit hooks** with all quality checks
 
-See the [Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/) for the complete project structure and detailed setup instructions.
+See the
+[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/)
+for the complete project structure and detailed setup instructions.
 
 ### CLI Commands
 
@@ -104,7 +109,8 @@ uv run my-project --help # Your custom CLI
 
 New to pyrig? Start here:
 
-**[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/)** - Complete setup from zero to fully configured project
+- *[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/)*
+- Complete setup from zero to fully configured project
 
 **[Full Documentation](https://winipedia.github.io/pyrig/)** - Comprehensive documentation on GitHub Pages
 

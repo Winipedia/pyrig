@@ -23,6 +23,7 @@ graph TD
 **Inherits from**: `JsonConfigFile`
 
 **What this means**:
+
 - Uses JSON format for configuration
 - Loads/dumps with Python's `json` module
 - Validation checks if configuration matches GitHub's ruleset schema
@@ -101,33 +102,41 @@ The file contains a complete GitHub ruleset definition:
 ## Key Configuration Elements
 
 ### Ruleset Name
+
 - **Value**: `"main-protection"`
 - **Purpose**: Identifies the ruleset in GitHub
 
 ### Target
+
 - **Value**: `"branch"`
 - **Purpose**: Applies rules to branches (not tags or pushes)
 
 ### Enforcement
+
 - **Value**: `"active"`
 - **Purpose**: Rules are enforced (alternatives: `"disabled"`, `"evaluate"`)
 
 ### Conditions
+
 - **Include**: `["~DEFAULT_BRANCH"]` (applies to main branch)
 - **Exclude**: `[]` (no exclusions)
 
 ### Rules
 
 **Creation/Update/Deletion Protection**:
+
 - Prevents unauthorized branch operations
 
 **Required Linear History**:
+
 - Enforces linear commit history (no merge commits)
 
 **Required Signatures**:
+
 - Requires signed commits for security
 
 **Pull Request Requirements**:
+
 - 1 approving review required
 - Stale reviews dismissed on new pushes
 - Code owner approval required
@@ -136,14 +145,17 @@ The file contains a complete GitHub ruleset definition:
 - Only squash and rebase merges allowed
 
 **Required Status Checks**:
+
 - `health_check` job must pass
 - Branch must be up to date before merging and pass tests and other checks
 - Not enforced on branch creation
 
 **Non-Fast-Forward Protection**:
+
 - Prevents force pushes
 
 ### Bypass Actors
+
 - **Actor ID 5**: Repository admins
 - **Bypass Mode**: Always allowed to bypass rules
 
@@ -159,6 +171,7 @@ When initialized via `uv run pyrig mkroot`, the `branch-protection.json` file is
 4. **Applying security defaults**: Enforces pyrig's opinionated protection rules
 
 The class programmatically generates the configuration using:
+
 - Health check workflow job IDs for required status checks
 - Standard GitHub actor IDs for bypass permissions (actor_id: 5 = Repository admins)
 - Pyrig's opinionated security defaults
@@ -172,6 +185,7 @@ uv run pyrig protect-repo
 ```
 
 This command:
+
 1. Loads `branch-protection.json` using `BranchProtectionConfigFile.load()`
 2. Checks if a ruleset with the same name exists
 3. Creates or updates the ruleset via GitHub API
@@ -251,7 +265,7 @@ Or export the current ruleset from GitHub and compare with your local file.
 3. **Export from GitHub for reference**: Manually configure rules in GitHub UI, export the ruleset, and use that structure for customization
 4. **Test in a separate repository**: Test custom protection rules in a test repository before applying to production
 5. **Keep bypass actors minimal**: Only allow repository admins to bypass rules
-7. **Use the CI/CD pipeline**: Let the health check workflow apply protection automatically instead of manual uploads
+6. **Use the CI/CD pipeline**: Let the health check workflow apply protection automatically instead of manual uploads
 
 ## Related
 

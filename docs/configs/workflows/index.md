@@ -5,6 +5,7 @@ GitHub Actions workflow configuration files for CI/CD automation.
 ## Overview
 
 Pyrig generates GitHub Actions workflows that automate:
+
 - Continuous integration (linting, type checking, testing)
 - Building artifacts (wheels, container images)
 - Creating releases (versioning, changelogs, GitHub releases)
@@ -15,6 +16,7 @@ All workflows are defined in Python using the `Workflow` base class and automati
 ## Architecture
 
 See [Workflow Architecture](architecture.md) for details on:
+
 - Workflow base class and declarative API
 - Inheritance hierarchy
 - Naming conventions
@@ -24,15 +26,19 @@ See [Workflow Architecture](architecture.md) for details on:
 ## Workflow Files
 
 ### [health_check.yaml](health_check.md)
+
 Continuous integration workflow that validates code quality and runs tests across OS and Python versions.
 
 ### [build.yaml](build.md)
+
 Artifact building workflow that creates platform-specific executables and container images.
 
 ### [release.yaml](release.md)
+
 Release creation workflow that versions, tags, and publishes GitHub releases with artifacts.
 
 ### [publish.yaml](publish.md)
+
 Publishing workflow that distributes packages to PyPI and documentation to GitHub Pages.
 
 ## Quick Start
@@ -55,11 +61,11 @@ Add these to your GitHub repository secrets:
   - pages: read, write (needed to activate and publish documentation to GitHub Pages in the publish workflow)
 - **PYPI_TOKEN**: PyPI API token (for publishing packages)
 - **CODECOV_TOKEN**: Codecov token (recommended for all repos, required for private repos)
-  - See [Getting Started - Codecov setup](../more/getting-started.md#accounts--tokens) for details
+  - See [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens) for details
 
 ### Workflow Pipeline
 
-```
+```text
 1. Health Check (on PR/push/schedule)
    ↓
 2. Build (on health check success, main only)
@@ -94,4 +100,3 @@ The workflow will exist but never execute.
 3. **Use matrix strategies**: Test across OS and Python versions
 4. **Configure secrets properly**: Workflows fail without required tokens
 5. **Monitor workflow runs**: Check GitHub Actions tab for failures
-

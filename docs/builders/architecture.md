@@ -15,7 +15,7 @@ graph TD
     G --> H[create_artifacts in temp dir]
     H --> I[Move artifacts to dist/]
     I --> J[Add platform suffix]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -37,14 +37,14 @@ graph LR
     A[pyrig.dev.builders] --> B[Package A builders]
     B --> C[Package B builders]
     C --> D[Package C builders]
-    
+
     A -.->|Discovered in| B
     A -.->|Discovered in| C
     A -.->|Discovered in| D
     B -.->|Discovered in| C
     B -.->|Discovered in| D
     C -.->|Discovered in| D
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -65,6 +65,7 @@ If you have a non-abstract Builder in package A and then subclass that class in 
 ## Builder Base Class
 
 The `Builder` abstract base class provides the framework for creating custom builders. All builders must:
+
 - Inherit from `Builder`
 - Implement the `create_artifacts` method
 - Be placed in a `dev/builders/` module
@@ -100,6 +101,7 @@ All files in the temp directory are collected as artifacts.
 ### 4. Platform-Specific Naming
 
 Artifacts are moved to `dist/` with platform suffixes:
+
 - `my-app-Linux` on Linux
 - `my-app-Darwin` on macOS
 - `my-app-Windows` on Windows
@@ -117,10 +119,10 @@ class DocumentationBuilder(Builder):
     @classmethod
     def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
         """Build documentation as a zip file."""
-        
+
         docs_dir = cls.get_root_path() / "docs"
         output_zip = temp_artifacts_dir / "docs"
-        
+
         shutil.make_archive(str(output_zip), 'zip', docs_dir)
 ```
 
@@ -128,7 +130,7 @@ class DocumentationBuilder(Builder):
 
 Place builders in your package's builders module:
 
-```
+```text
 myapp/
 └── dev/
     └── builders/
@@ -141,6 +143,7 @@ Note: You actually should not need a documentation builder because pyrig will ho
 ### Automatic Discovery
 
 When you run `uv run pyrig build`, pyrig:
+
 1. Finds `myapp.dev.builders` module
 2. Discovers `DocumentationBuilder` class
 3. Instantiates it, triggering the build
@@ -148,7 +151,7 @@ When you run `uv run pyrig build`, pyrig:
 
 ## Multi-Package Example
 
-```
+```text
 pyrig (no concrete builders)
 │
 Package A (depends on pyrig)

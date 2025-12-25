@@ -15,6 +15,7 @@ Shared subcommands enable cross-package functionality:
 Add a function to `shared_subcommands.py`:
 
 Pyrig already has a version command that is available in all packages.
+
 ```python
 def version() -> None:
     """Display the version information."""
@@ -63,7 +64,7 @@ graph TD
 
 Example dependency chain:
 
-```
+```text
 myplugin
   ↓ (depends on)
 myapp
@@ -72,6 +73,7 @@ pyrig
 ```
 
 Running `uv run myplugin version` discovers shared commands from:
+
 - `pyrig.dev.cli.shared_subcommands`
 - `myapp.dev.cli.shared_subcommands`
 - `myplugin.dev.cli.shared_subcommands`

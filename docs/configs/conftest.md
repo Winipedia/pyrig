@@ -5,6 +5,7 @@ The `ConftestConfigFile` manages the `tests/conftest.py` file.
 ## Overview
 
 Creates a conftest.py file that:
+
 - Imports pyrig's test fixtures and plugins as a pytest plugin
 - Configures pytest for the test suite
 - Sets up fixtures and hooks for all test scopes
@@ -18,7 +19,7 @@ graph TD
     B --> C[PythonConfigFile]
     C --> D[PythonTestsConfigFile]
     D --> E[ConftestConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
@@ -29,6 +30,7 @@ graph TD
 **Inherits from**: `PythonTestsConfigFile`
 
 **What this means**:
+
 - Python file in the tests directory
 - Located at `tests/conftest.py`
 - Text-based validation (checks for required content)
@@ -98,6 +100,7 @@ uv run pyrig mkroot
 ### Purpose
 
 This file configures pytest to use pyrig's test infrastructure, including:
+
 - Autouse fixtures (session, package, module, class, function scopes)
 - Factory fixtures (`config_file_factory`, `builder_factory`)
 - Custom pytest hooks and plugins

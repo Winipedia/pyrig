@@ -13,6 +13,7 @@ The publish workflow is the final step in the CI/CD pipeline. It runs after succ
 ## Triggers
 
 ### Workflow Run
+
 - **Workflow**: `Release`
 - **Event**: `completed`
 - **Condition**: Only runs if release succeeded
@@ -20,6 +21,7 @@ The publish workflow is the final step in the CI/CD pipeline. It runs after succ
 **Why workflow_run?** Ensures publishing only happens after version is tagged and release is created.
 
 ### Workflow Dispatch
+
 - **Purpose**: Manual trigger for testing
 
 ## Job Flow
@@ -112,6 +114,7 @@ graph TD
 **Runs on**: Ubuntu latest  
 **Condition**: `github.event.workflow_run.conclusion == 'success'`  
 **Permissions**:
+
 - **pages**: `write` (deploy to GitHub Pages)
 - **id-token**: `write` (OIDC authentication for Pages)
 
@@ -174,10 +177,12 @@ graph TD
 ## Publishing Destinations
 
 ### PyPI
+
 - **URL**: `https://pypi.org/project/{package-name}/`
 - **Install**: `pip install {package-name}` or `uv add {package-name}`
 
 ### GitHub Pages
+
 - **URL**: `https://{username}.github.io/{repo}/`
 - **Content**: MkDocs documentation site with Material theme
 
@@ -194,6 +199,7 @@ GitHub Actions tab → Publish → Run workflow
 ### Viewing Published Content
 
 **PyPI Package**:
+
 ```bash
 pip install myapp
 # or
@@ -211,4 +217,3 @@ Visit `https://{username}.github.io/{repo}/`
 4. **Verify PyPI upload**: Check package page after publishing
 5. **Check Pages deployment**: Visit docs URL after workflow completes
 6. **Use trusted publishing**: Consider configuring PyPI trusted publishing instead of tokens
-

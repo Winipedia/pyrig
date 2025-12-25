@@ -5,6 +5,7 @@ The `DotPythonVersionConfigFile` manages the `.python-version` file for Python v
 ## Overview
 
 Creates a .python-version file that:
+
 - Specifies the Python version for the project
 - Used by pyenv and similar version managers
 - Automatically set to the first supported Python version from pyproject.toml
@@ -16,7 +17,7 @@ Creates a .python-version file that:
 ```mermaid
 graph TD
     A[ConfigFile] --> B[DotPythonVersionConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
@@ -24,6 +25,7 @@ graph TD
 **Inherits from**: `ConfigFile`
 
 **What this means**:
+
 - Direct inheritance from ConfigFile
 - Custom `load()` and `dump()` implementations
 - Reads Python version from pyproject.toml
@@ -37,7 +39,8 @@ graph TD
 
 **Filename**: Empty string to produce `.python-version`.
 
-**Special filename handling**: 
+**Special filename handling**:
+
 - `get_filename()` returns `""`
 - `get_file_extension()` returns `"python-version"`
 - Combined: `.python-version`
@@ -68,7 +71,7 @@ uv run pyrig mkroot
 
 ### File Content
 
-```
+```text
 3.10
 ```
 

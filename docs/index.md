@@ -83,19 +83,25 @@ git push -u origin main
 ## Documentation
 
 ### [CLI Documentation](cli/index.md)
+
 Learn how pyrig's CLI system works, including command discovery, multi-package support, and how to create your own commands.
 
 ### [Testing Documentation](tests/index.md)
+
 Understand pyrig's testing framework, including mirrored test structure, automatic fixture sharing, and autouse validation fixtures.
 
 ### [Builder Documentation](builders/index.md)
+
 Create distributable artifacts with pyrig's builder system, including PyInstaller executables and custom build processes.
 
 ### [Resources Documentation](resources/index.md)
+
 Manage static files (images, configs, templates) that work seamlessly in both development and PyInstaller executables.
 
 ### [Configuration Files Documentation](configs/index.md)
+
 Understand pyrig's configuration file system, including automatic discovery, validation, and creating custom config files. This is the main feature of pyrig that generates a complete project structure for you, ready to use and start developing your project.
 
 ### [Additional Information](more/index.md)
+
 See more documentation about pyrig's drawbacks, how to get started, tooling choices and a detailed example usage.

@@ -5,6 +5,7 @@ The `ContainerfileConfigFile` manages the project's Containerfile for building c
 ## Overview
 
 Creates a production-ready Containerfile in the project root that:
+
 - Uses the latest compatible Python slim image
 - Installs dependencies with uv
 - Runs as non-root user for security
@@ -17,7 +18,7 @@ Creates a production-ready Containerfile in the project root that:
 graph TD
     A[ConfigFile] --> B[TextConfigFile]
     B --> C[ContainerfileConfigFile]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
@@ -26,6 +27,7 @@ graph TD
 **Inherits from**: `TextConfigFile`
 
 **What this means**:
+
 - File is plain text (not YAML/TOML/JSON)
 - Validation checks if required content is present
 - Users can add custom content before or after required layers
@@ -89,6 +91,7 @@ return super().is_correct() or all_layers_in_file
 ```
 
 This allows you to:
+
 - Add comments between layers
 - Add custom layers before or after required ones
 - Modify layer order (though not recommended)

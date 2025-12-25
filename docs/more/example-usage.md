@@ -5,6 +5,7 @@ This guide demonstrates pyrig's power in a real-world scenario: building a stand
 ## Scenario
 
 You're building multiple Python microservices that need:
+
 - **Consistent standards** across all services
 - **Custom company-wide configurations** (logging, monitoring, security)
 - **Automatic synchronization** when standards change
@@ -18,7 +19,7 @@ graph TD
     B --> C[auth-service]
     B --> D[payment-service]
     B --> E[notification-service]
-    
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
@@ -96,6 +97,7 @@ class LoggingConfigFile(YamlConfigFile):
 ```
 
 **What happens**:
+
 - File created at `config/logging_config.yaml` when you run `uv run pyrig mkroot`
 - **Automatically discovered** via pyrig's ConfigFile discovery system
 - **Inherited by all services** that depend on `company-base`
@@ -116,12 +118,12 @@ from pyrig.dev.configs.docs.mkdocs import MkdocsConfigFile as BaseMkdocsConfigFi
 
 class MkdocsConfigFile(BaseMkdocsConfigFile):
     """Company-branded documentation theme."""
-    
+
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
         """Override theme with company colors."""
         config = super().get_configs()
-        
+
         # Add company branding
         config["theme"]["palette"] = [
             {
@@ -143,15 +145,16 @@ class MkdocsConfigFile(BaseMkdocsConfigFile):
                 },
             },
         ]
-        
+
         # Add company logo
         config["theme"]["logo"] = "assets/logo.png"
         config["theme"]["favicon"] = "assets/favicon.ico"
-        
+
         return config
 ```
 
 **Key mechanism**:
+
 - **Subclass** pyrig's `MkdocsConfigFile` with same name
 - **`discard_parents=True`** ensures only your subclass is initialized because it is the last leaf in that class inheritance chain.
 - **All microservices** automatically get company branding
@@ -202,6 +205,7 @@ class PyprojectConfigFile(BasePyprojectConfigFile):
 ```
 
 **What this does**:
+
 - **Adds dependencies** to all microservices automatically
 - **Adjusts linting rules** company-wide
 - **Lowers coverage** to 85% (more realistic for microservices)
@@ -227,7 +231,7 @@ If you are a company your repos probably will not be public so you will need tok
 
 **What gets created automatically**:
 
-```
+```text
 auth-service/
 ├── config/
 │   └── logging_config.yaml        # ✓ From company-base
@@ -241,6 +245,7 @@ auth-service/
 │   └── src/                       # ✓ Your auth logic here
 └── tests/                          # ✓ Mirrored structure
 ```
+
 See the full generated project tree at: [Getting Started Documentation](getting-started.md)
 
 **All company standards applied automatically!**
@@ -270,6 +275,7 @@ def get_dependencies(cls) -> list[str]:
 ```
 
 **Commit and release**:
+
 ```bash
 cd company-base
 git add .
@@ -343,6 +349,7 @@ class AuthConfigFile(YamlConfigFile):
 ```
 
 **Result**: `auth-service` has both:
+
 - ✓ Company-wide `logging_config.yaml` (from `company-base`)
 - ✓ Service-specific `auth_config.yaml` (from `auth-service`)
 
@@ -359,6 +366,7 @@ uv init && uv add company-base && uv run pyrig init
 ```
 
 **All three services now have**:
+
 - ✓ Same logging configuration
 - ✓ Same documentation theme
 - ✓ Same dependencies (including `cryptography`)
@@ -377,6 +385,7 @@ pyrig uses a sophisticated discovery system to find and initialize configuration
 ### Quick Overview
 
 **ConfigFile Discovery**:
+
 1. Build dependency graph: `pyrig → company-base → auth-service`
 2. Find all `<package>.dev.configs` modules
 3. Discover all ConfigFile subclasses
@@ -384,6 +393,7 @@ pyrig uses a sophisticated discovery system to find and initialize configuration
 5. Initialize all leaf classes
 
 **Autouse Fixture Healing**:
+
 1. `tests/conftest.py` activates pyrig's test plugins
 2. Discover fixtures from all packages in dependency chain
 3. `assert_root_is_correct` runs on every test session
@@ -414,6 +424,7 @@ See [Autouse Fixtures](../tests/autouse.md) for details on the validation system
 **Solution** (5 minutes):
 
 1. **Update `company-base/dev/configs/pyproject.py`**:
+
    ```python
    @classmethod
    def get_dev_dependencies(cls) -> list[str]:
@@ -424,6 +435,7 @@ See [Autouse Fixtures](../tests/autouse.md) for details on the validation system
 2. **Commit and push** → GitHub Actions releases `company-base` v1.2.0
 
 3. **In each service**:
+
    ```bash
    # all you gotta do
    uv lock --upgrade && uv sync
@@ -469,7 +481,7 @@ uv init && uv add company-base && uv run pyrig init
 
 You can create deeper hierarchies:
 
-```
+```text
 pyrig
   └── company-base (company standards)
       ├── backend-base (backend-specific: databases, APIs)
@@ -487,6 +499,7 @@ Each level adds/overrides configs, and leaf services inherit the entire chain.
 Verify everything works if you want:
 
 **In `company-base`**:
+
 ```bash
 # Verify config discovery
 uv run python -c "
@@ -502,6 +515,7 @@ uv run pytest -v
 ```
 
 **In `auth-service`**:
+
 ```bash
 # Verify inherited configs
 cat mkdocs.yml  # Should show company theme
@@ -526,5 +540,3 @@ pyrig's multi-package architecture enables:
 This pattern scales from 2 services to infinite+ services with the same simplicity.
 
 Note: If you somehow end up creating a structure over 20 dependencies deep in a dependency chain, the health check cron will get confused as the day has only 24 hours and it staggers it per hour. See more at: [Health Check Documentation](../configs/workflows/health_check.md)
-
-
