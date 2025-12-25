@@ -97,14 +97,14 @@ def get_repo_owner_and_name_from_git(
         owner = get_git_username()
         repo = get_project_name_from_cwd()
         logger.debug("Derived repository: %s/%s", owner, repo)
-        return owner, repo
-
-    parts = url.removesuffix(".git").split("/")
-    # keep last two parts
-    owner, repo = parts[-2:]
-    if ":" in owner:
-        owner = owner.split(":")[-1]
+    else:
+        parts = url.removesuffix(".git").split("/")
+        # keep last two parts
+        owner, repo = parts[-2:]
+        if ":" in owner:
+            owner = owner.split(":")[-1]
     if url_encode:
+        logger.debug("Url encoding owner and repo")
         owner = quote(owner)
         repo = quote(repo)
     return owner, repo
