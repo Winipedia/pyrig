@@ -99,7 +99,7 @@ Generates test skeletons for all code by calling `mktests` internally. See
 Runs all pre-commit hooks to format and lint the code:
 
 - Ruff formatting and linting
-- Type checking with mypy
+- Type checking with ty
 - Security scanning with bandit
 - Documentation updates
 

@@ -19,15 +19,15 @@ repos:
     language: system
     always_run: true
     pass_filenames: false
-  - id: check-static-types
-    name: check-static-types
-    entry: mypy --exclude-gitignore
-    language: system
-    always_run: true
-    pass_filenames: false
   - id: check-security
     name: check-security
     entry: bandit -c pyproject.toml -r .
+    language: system
+    always_run: true
+    pass_filenames: false
+  - id: check-markdown
+    name: check-markdown
+    entry: rumdl check
     language: system
     always_run: true
     pass_filenames: false

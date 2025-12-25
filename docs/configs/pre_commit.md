@@ -9,13 +9,11 @@ Creates a pre-commit configuration that:
 
 - Runs linting with Ruff
 - Formats code with Ruff
-- Checks types with `ty` and MyPy
+- Checks types with `ty`
 - Scans for security issues with Bandit
+- Lints markdown with rumdl
 - Uses local hooks (no external repositories)
 - Runs on every commit automatically
-
-Note: Future plans are to only use ty and not mypy. However, astral-sh/ty is
-still very new and so for now we keep both.
 
 ## Inheritance
 
@@ -86,12 +84,6 @@ repos:
         language: system
         always_run: true
         pass_filenames: false
-      - id: check-static-types
-        name: check-static-types
-        entry: mypy --exclude-gitignore
-        language: system
-        always_run: true
-        pass_filenames: false
       - id: check-security
         name: check-security
         entry: bandit -c pyproject.toml -r .
@@ -154,20 +146,7 @@ type annotations.
 - Type consistency
 - Runtime type validation
 
-### 4. check-static-types (MyPy Type Checking)
-
-**Command**: `mypy --exclude-gitignore`
-
-**Purpose**: Industry-standard static type checker for Python.
-
-**What it checks**:
-
-- Type annotation correctness
-- Type compatibility
-- Missing type annotations
-- Excludes files in `.gitignore`
-
-### 5. check-security (Bandit Security Scanning)
+### 4. check-security (Bandit Security Scanning)
 
 **Command**: `bandit -c pyproject.toml -r .`
 
@@ -180,6 +159,20 @@ type annotations.
 - Use of insecure functions
 - Weak cryptography
 - And many other security issues
+
+### 5. check-markdown (rumdl Markdown Linting)
+
+**Command**: `rumdl check`
+
+**Purpose**: Lints markdown files for consistency and best practices.
+
+**What it checks**:
+
+- Markdown syntax errors
+- Heading structure
+- Line length
+- Trailing whitespace
+- Link validity
 
 ## Usage
 
@@ -332,7 +325,8 @@ Try running the tool directly to see more details:
 
 ```bash
 uv run ruff check --fix
-uv run mypy --exclude-gitignore
+uv run ty check
+uv run rumdl check
 ```
 
 ### Hooks are slow

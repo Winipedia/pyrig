@@ -99,12 +99,6 @@ convention = "google"
 [tool.ty.terminal]
 error-on-warning = true
 
-[tool.mypy]
-strict = true
-warn_unreachable = true
-show_error_codes = true
-files = "."
-
 [tool.pytest.ini_options]
 addopts = "--cov=pyrig --cov-report=term-missing --cov-fail-under=90"
 testpaths = [

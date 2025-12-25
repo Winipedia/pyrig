@@ -65,7 +65,7 @@ The `.gitignore` file combines patterns from multiple sources:
    patterns
 2. **VS Code workspace files** - `.vscode/` directory
 3. **Pyrig-specific patterns** - `.git/`, `.experiment.py`
-4. **Tool caches** - `.mypy_cache/`, `.pytest_cache/`, `.ruff_cache/`,
+4. **Tool caches** - `.pytest_cache/`, `.ruff_cache/`, `.rumdl_cache/`,
    `.rumdl_cache/`
 5. **Environment and secrets** - `.env`
 6. **Coverage reports** - `.coverage`, `coverage.xml`
@@ -163,10 +163,9 @@ matching.
 
 ### Tool Caches
 
-- `.mypy_cache/` - MyPy type checker cache
 - `.pytest_cache/` - Pytest cache
 - `.ruff_cache/` - Ruff linter cache
-- `.rumdl_cache/` - Rumdl cache
+- `.rumdl_cache/` - Rumdl markdown linter cache
 - `.coverage`, `coverage.xml` - Coverage reports
 
 ### Build Artifacts

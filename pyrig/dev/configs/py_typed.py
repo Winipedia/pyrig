@@ -2,7 +2,7 @@
 
 This module provides the PyTypedConfigFile class for creating the
 py.typed marker file that indicates PEP 561 compliance for type
-checkers like mypy.
+checkers like ty.
 """
 
 from pathlib import Path

@@ -10,7 +10,7 @@ Creates a py.typed file that:
 - Indicates the package supports type checking (PEP 561)
 - Located in the source package directory
 - Always empty (just a marker file)
-- Enables type checkers like mypy to use the package's type hints
+- Enables type checkers like ty to use the package's type hints
 - Required for distributing type information
 
 ## Inheritance
@@ -83,7 +83,7 @@ With `py.typed` present:
 # Users can install your package and get type checking
 pip install myapp
 
-# mypy will use your package's type hints
+# Type checkers will use your package's type hints
 from myapp import some_function
 
 # Type checker knows the types
@@ -93,7 +93,7 @@ result: str = some_function()  # Type checked!
 Without `py.typed`:
 
 ```python
-# mypy treats your package as untyped
+# Type checkers treat your package as untyped
 from myapp import some_function
 
 # Type checker doesn't know the types
@@ -107,14 +107,14 @@ The `py.typed` file indicates your package follows
 
 - **Inline type hints**: Your package includes type annotations
 - **Distributable types**: Type information is included in the package
-- **Type checker support**: Tools like mypy can use your types
+- **Type checker support**: Tools like ty can use your types
 
 ## Best Practices
 
 1. **Keep it empty**: Don't add content to py.typed
 2. **Commit the file**: Include py.typed in version control
 3. **Add type hints**: Ensure your code has proper type annotations
-4. **Test with mypy**: Run mypy on your package to verify types
+4. **Test with type checkers**: Run ty on your package to verify types
 5. **Include in package**: Ensure py.typed is included in distributions
 
 ## Package Distribution

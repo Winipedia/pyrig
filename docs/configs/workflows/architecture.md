@@ -158,7 +158,7 @@ graph LR
 - **health_check_matrix**: Runs across OS (Ubuntu, Windows, macOS) and Python
   versions
   - Linting (ruff)
-  - Type checking (ty, mypy)
+  - Type checking (ty)
   - Security scanning (bandit)
   - Tests with coverage (pytest)
   - Coverage upload (codecov)

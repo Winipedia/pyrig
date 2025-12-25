@@ -219,7 +219,7 @@ graph TD
 
 7. **Run Pre Commit Hooks**
    - Runs `uv run pre-commit run --all-files`
-   - Executes: ruff (linting), ty (type checking), mypy (strict types), bandit
+   - Executes: ruff (linting), ty (type checking), bandit (security), rumdl
      (security)
    - Fails if any hook fails
 

@@ -6,7 +6,7 @@ gain.
 
 ## Opinionated Tooling
 
-**Trade-off**: pyrig chooses tools for you (uv, ruff, mypy, pytest, etc.)
+**Trade-off**: pyrig chooses tools for you (uv, ruff, ty, pytest, etc.)
 
 **What You Sacrifice**:
 
@@ -23,7 +23,7 @@ gain.
 - **Automatic updates** - Tool improvements without manual migration
 - **Proven stack** - Battle-tested combinations that work well together
 - **Tool evolution** - pyrig switches to better alternatives as they emerge
-  (poetry → uv, mypy → ty)
+  (poetry → uv for package management, mypy → ty for type checking)
 - **No decision fatigue** - Skip hours of research and comparison
 
 **Bottom Line**: Sacrifice tool choice for instant, optimized setup and
@@ -277,7 +277,7 @@ automation features.
 **Initial Setup**:
 
 - Complete project structure from `pyrig init`
-- All tool configurations (ruff, mypy, pytest, etc.)
+- All tool configurations (ruff, ty, pytest, bandit, rumdl, etc.)
 - Pre-commit hooks configuration
 - GitHub Actions workflows
 - Documentation setup

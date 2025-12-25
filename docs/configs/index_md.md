@@ -82,10 +82,10 @@ For a project named "myapp" with description "A sample application":
 
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
-[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
 [![codecov](https://codecov.io/gh/owner/myapp/branch/main/graph/badge.svg)](https://codecov.io/gh/owner/myapp)
+[![rumdl](https://img.shields.io/badge/markdown-rumdl-darkgreen)](https://github.com/rvben/rumdl)
 
 <!-- package-info -->
 
@@ -156,11 +156,11 @@ the Python badge (e.g., `3.10|3.11|3.12`).
 ### 2. Code Quality Badges
 
 - **ruff**: Linting and formatting
-- **ty**: Type checking
-- **mypy**: Static type checking
+- **ty**: Strict type checking
 - **bandit**: Security scanning
 - **pytest**: Testing framework
 - **codecov**: Code coverage
+- **rumdl**: Markdown linting
 
 ### 3. Package Info Badges
 

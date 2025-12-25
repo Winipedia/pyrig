@@ -21,7 +21,7 @@ def make_project_root(*, priority: bool = False) -> None:
         - pyproject.toml
         - GitHub workflows
         - Pre-commit configuration
-        - Ruff/mypy configuration
+        - Ruff/ty/rumdl configuration
         - Source and test directory structure
 
     This is the implementation for the `pyrig create-root` command.

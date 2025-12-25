@@ -8,10 +8,11 @@
 [![MkDocs](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://www.mkdocs.org/)
 <!-- code-quality -->
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
+[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
 [![codecov](https://codecov.io/gh/Winipedia/pyrig/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/pyrig)
+[![rumdl](https://img.shields.io/badge/markdown-rumdl-darkgreen)](https://github.com/rvben/rumdl)
 <!-- package-info -->
 [![PyPI](https://img.shields.io/pypi/v/pyrig?logo=pypi&logoColor=white)](https://pypi.org/project/pyrig)
 [![Python](https://img.shields.io/badge/python-3.12|3.13|3.14-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -46,7 +47,7 @@ your application, project or library.
 **Zero Configuration Setup**:
 
 - Complete project structure in minutes
-- Pre-configured tools (uv, ruff, mypy, pytest, MkDocs)
+- Pre-configured tools (uv, ruff, ty, pytest, MkDocs)
 - GitHub Actions workflows (health check, build, release, publish)
 - 90% test coverage enforcement
 - Pre-commit hooks with all quality checks
@@ -63,7 +64,7 @@ your application, project or library.
 
 - Python >=3.12 with modern type hints
 - All ruff linting rules enabled
-- Strict mypy type checking
+- Strict type checking with ty
 - Signed commits and linear history
 - Repository protection rules
 
@@ -93,7 +94,7 @@ uv run pyrig init
 After running `uv run pyrig init`, you get a complete project with:
 
 - **Complete directory structure** with source code, tests, docs, and CI/CD
-- **Pre-configured tools** (uv, ruff, mypy, pytest, MkDocs, Podman)
+- **Pre-configured tools** (uv, ruff, ty, pytest, MkDocs, Podman)
 - **GitHub Actions workflows** (health check, build, release, publish)
 - **90% test coverage** enforcement
 - **Pre-commit hooks** with all quality checks

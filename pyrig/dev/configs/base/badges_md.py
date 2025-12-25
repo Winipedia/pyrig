@@ -96,11 +96,11 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             ],
             "code-quality": [
                 r"[![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)",
-                r"[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)"
-                r"[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)",
+                r"[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)",
                 r"[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)",
                 r"[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)",
                 rf"[![codecov]({get_codecov_url_from_git()}/branch/{DEFAULT_BRANCH}/graph/badge.svg)]({get_codecov_url_from_git()})",
+                r"[![rumdl](https://img.shields.io/badge/markdown-rumdl-darkgreen)](https://github.com/rvben/rumdl)",
             ],
             "package-info": [
                 rf"[![PyPI]({get_pypi_badge_url_from_git()})]({get_pypi_url_from_git()})",

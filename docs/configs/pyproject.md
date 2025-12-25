@@ -10,7 +10,7 @@ Manages pyproject.toml with:
 - Project metadata (name, version, description, authors)
 - Dependencies (runtime and dev)
 - Build system configuration (uv)
-- Tool configurations (ruff, mypy, pytest, bandit, ty)
+- Tool configurations (ruff, ty, pytest, bandit, rumdl)
 - CLI entry points
 - Python version requirements
 
@@ -53,7 +53,7 @@ graph LR
     B -.-> B1[Metadata, deps,<br/>scripts, classifiers]
     C -.-> C1[uv backend]
     D -.-> D1[dev: pyrig-dev]
-    E -.-> E1[ruff, mypy, ty,<br/>pytest, bandit]
+    E -.-> E1[ruff, ty,<br/>pytest, bandit, rumdl]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -230,23 +230,6 @@ error-on-warning = true  # Treat warnings as errors
 
 **Why**: Strict type checking - no warnings allowed.
 
-### MyPy (Static Type Checker)
-
-```toml
-[tool.mypy]
-strict = true                     # Enable all strict checks
-warn_unreachable = true           # Warn about unreachable code
-show_error_codes = true           # Show error codes in output
-files = "."                       # Check all files in the project from root
-```
-
-**Why**:
-
-- `strict = true`: Maximum type safety (no implicit Any, no untyped defs, etc.)
-- `warn_unreachable`: Catch dead code
-- `show_error_codes`: Easier to configure ignores
-- `files = "."`: Check entire project
-
 ### Pytest (Test Runner)
 
 ```toml
@@ -344,5 +327,5 @@ uv run pyrig mkroot  # Validates and merges changes
    configs
 2. **Use uv for dependencies**: Don't manually edit dependency lists
 3. **Keep coverage high**: 90% minimum enforced by pytest
-4. **Follow strict typing**: MyPy strict mode catches bugs early
+4. **Follow strict typing**: ty strict mode catches bugs early
 5. **Let ruff auto-fix**: Run `uv run ruff check --fix` before committing

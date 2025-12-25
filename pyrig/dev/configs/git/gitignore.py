@@ -102,7 +102,6 @@ class GitIgnoreConfigFile(ConfigFile):
             DotEnvConfigFile.get_path().as_posix(),
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov
-            ".mypy_cache/",  # bc of mypy cache
             ".pytest_cache/",  # bc of pytest cache
             ".ruff_cache/",  # bc of ruff cache
             ".rumdl_cache/",  # bc of rumdl cache

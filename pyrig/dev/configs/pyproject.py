@@ -2,12 +2,13 @@
 
 This module provides the PyprojectConfigFile class for managing the
 project's pyproject.toml file. It handles project metadata, dependencies,
-tool configurations (ruff, mypy, pytest, bandit), and build settings.
+tool configurations (ruff, ty, pytest, bandit, rumdl), and build settings.
 
 The configuration enforces pyrig's opinionated defaults:
     - All ruff rules enabled (with minimal exceptions)
-    - Strict mypy type checking
+    - Strict ty type checking
     - Bandit security scanning
+    - Markdown linting with rumdl
     - uv as the build backend
 """
 
@@ -47,7 +48,7 @@ class PyprojectConfigFile(TomlConfigFile):
     Manages the central project configuration including:
         - Project metadata (name, description, dependencies)
         - Build system configuration (uv)
-        - Tool configurations (ruff, mypy, pytest, bandit)
+        - Tool configurations (ruff, ty, pytest, bandit, rumdl)
         - CLI entry points
 
     The class provides utilities for querying project information
@@ -169,12 +170,6 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 "rumdl": {
                     "respect_gitignore": True,
-                },
-                "mypy": {
-                    "strict": True,
-                    "warn_unreachable": True,
-                    "show_error_codes": True,
-                    "files": ".",
                 },
                 "pytest": {
                     "ini_options": {

@@ -22,8 +22,9 @@ class PreCommitConfigConfigFile(YamlConfigFile):
 
     Configures local pre-commit hooks for:
         - ruff linting and formatting
-        - mypy type checking
+        - ty type checking
         - bandit security scanning
+        - rumdl markdown linting
     """
 
     @classmethod
@@ -102,12 +103,12 @@ class PreCommitConfigConfigFile(YamlConfigFile):
                 ["ty", "check"],
             ),
             cls.get_hook(
-                "check-static-types",
-                ["mypy", "--exclude-gitignore"],
-            ),
-            cls.get_hook(
                 "check-security",
                 ["bandit", "-c", "pyproject.toml", "-r", "."],
+            ),
+            cls.get_hook(
+                "check-markdown",
+                ["rumdl", "check"],
             ),
         ]
         return {

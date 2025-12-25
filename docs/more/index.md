@@ -24,7 +24,7 @@ Step-by-step instructions from zero to fully configured project.
 Understand pyrig's opinionated tooling choices and why they were selected:
 
 - **Package Management**: uv for fast dependency management
-- **Code Quality**: ruff, mypy, ty, bandit for comprehensive code checking
+- **Code Quality**: ruff, ty, bandit, rumdl for comprehensive code checking
 - **Testing**: pytest with 90% coverage requirement
 - **Documentation**: MkDocs with Material theme and Mermaid diagrams
 - **Containerization**: Podman for secure, daemonless containers

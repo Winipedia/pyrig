@@ -9,7 +9,7 @@ development experience. This document explains which tools are used and why.
 graph LR
     A[pyrig Tools] --> B[uv]
     A --> C[ruff]
-    A --> D[mypy/ty]
+    A --> D[ty]
     A --> E[pytest]
     A --> F[MkDocs]
     A --> G[Podman]
@@ -76,19 +76,6 @@ uv version --bump    # Bump version
 **Configuration**: Enables ALL rules with minimal exceptions (D203, D213,
 COM812, ANN401)
 
-### Mypy
-
-**Purpose**: Type checker
-
-**Why**:
-
-- Industry standard for Python type checking
-- Strict mode enforced for maximum safety
-- Catches type errors before runtime
-- Improves code documentation through types
-
-**Configuration**: Strict mode with unreachable code warnings
-
 ### ty
 
 **Purpose**: Type checker
@@ -96,11 +83,9 @@ COM812, ANN401)
 **Why**:
 
 - Validates types at runtime during development
-- Catches type errors that mypy misses
+- Catches type errors during execution
 - Configured to error on warnings for strictness
-
-Note: In the future we will only use ty and not mypy. However, astral-sh/ty is
-still very new and so for now we keep both.
+- Modern, fast type checker from Astral (creators of ruff and uv)
 
 ### Bandit
 
@@ -230,7 +215,7 @@ setup instructions
 
 - Runs quality checks before commits
 - Prevents bad code from entering repository
-- Configurable hooks (ruff, mypy, ty, bandit)
+- Configurable hooks (ruff, ty, bandit, rumdl)
 - Enforces consistency across team
 
 ### GitHub
@@ -302,6 +287,5 @@ Python projects.
 
 **Tool Evolution**: pyrig will switch tools when better alternatives emerge. For
 example, we migrated from poetry to uv when uv proved to be significantly faster
-and more capable. We continuously evaluate the ecosystem and adopt superior
-tools as they mature. Ty is another example. We will eventually replace mypy
-with ty.
+and more capable, and from mypy to ty for faster, runtime type checking. We
+continuously evaluate the ecosystem and adopt superior tools as they mature.
