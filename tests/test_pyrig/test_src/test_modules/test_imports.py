@@ -11,6 +11,7 @@ from pyrig.src.modules.imports import (
     get_modules_and_packages_from_package,
     import_pkg_from_dir,
     import_pkg_with_dir_fallback,
+    import_pkg_with_dir_fallback_with_default,
     module_is_package,
     walk_package,
 )
@@ -153,3 +154,14 @@ def test_import_pkg_from_dir(tmp_path: Path) -> None:
         init_file.write_text('"""Test package."""\n')
         package = import_pkg_from_dir(subdir)
         assert package.__name__ == "test_package.subdir"
+
+
+def test_import_pkg_with_dir_fallback_with_default() -> None:
+    """Test function."""
+    assert import_pkg_with_dir_fallback_with_default(Path("non_existing")) is None
+    assert (
+        import_pkg_with_dir_fallback_with_default(
+            Path("non_existing"), default="default"
+        )
+        == "default"
+    )

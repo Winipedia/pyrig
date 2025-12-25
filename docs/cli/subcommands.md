@@ -18,9 +18,7 @@ def mkroot(
 ) -> None:
     """Creates the root of the project.
 
-    This inits all ConfigFiles and creates __init__.py files for the src
-    and tests package where they are missing. It does not overwrite any
-    existing files.
+    This inits all ConfigFiles.
     """
     # local imports in pyrig to avoid cli failure when installing without dev deps
     # as some pyrig commands are dependend on dev deps and can only be used in a dev env

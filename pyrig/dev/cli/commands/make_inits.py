@@ -1,6 +1,7 @@
 """A func that creates __init__.py files for all packages and modules."""
 
 import logging
+from concurrent.futures import ThreadPoolExecutor
 
 from pyrig.dev.utils.packages import get_namespace_packages
 from pyrig.src.modules.path import ModulePath, make_init_module
@@ -22,7 +23,10 @@ def make_init_files() -> None:
         return
 
     # make init files for all namespace packages
-    for package in any_namespace_packages:
-        pkg_dir = ModulePath.pkg_name_to_relative_dir_path(package)
-        make_init_module(pkg_dir)
+    pkg_paths = [
+        ModulePath.pkg_name_to_relative_dir_path(pkg) for pkg in any_namespace_packages
+    ]
+    with ThreadPoolExecutor() as executor:
+        list(executor.map(make_init_module, pkg_paths))
+
     logger.info("Created __init__.py files for all namespace packages")

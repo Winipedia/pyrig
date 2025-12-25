@@ -61,11 +61,12 @@ Installs the `pyrig-dev` package group to the project.
 Installs all dependencies including the newly added dev dependencies.
 
 ### 3. Creating Priority Config Files
-Creates essential config files that must exist before other setup steps:
-- `pyproject.toml` - Project metadata and dependencies
-- `.gitignore` - Git ignore patterns
-- `LICENSE` - Project license
-- And other foundational configuration files
+Creates essential config files with `get_priority() > 0`, grouped by priority:
+- **Priority 30**: `LICENSE` - Must exist before pyproject.toml for license detection
+- **Priority 20**: `pyproject.toml` - Project metadata and dependencies
+- **Priority 10**: `myapp/dev/configs/__init__.py` and `myapp/dev/tests/fixtures/__init__.py` - Package structure files (initialized in parallel)
+
+Priority groups are processed sequentially (highest first), with files in the same group initialized in parallel. These files are required before other setup steps can proceed.
 
 ### 4. Syncing Venv (Again)
 Ensures the venv reflects the newly created config files and uv installs the project itself.

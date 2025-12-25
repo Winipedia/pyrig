@@ -5,11 +5,14 @@ main.py file in the package's src directory. This file serves
 as the CLI entry point.
 """
 
+import logging
 from pathlib import Path
 from types import ModuleType
 
 from pyrig import main
 from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
+
+logger = logging.getLogger(__name__)
 
 
 class MainConfigFile(CopyModuleConfigFile):
@@ -56,4 +59,5 @@ class MainConfigFile(CopyModuleConfigFile):
         """
         root_main_path = Path("main.py")
         if root_main_path.exists():
+            logger.info("Deleting root-level main.py file")
             root_main_path.unlink()

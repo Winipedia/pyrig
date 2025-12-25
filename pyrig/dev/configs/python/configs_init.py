@@ -19,6 +19,16 @@ class ConfigsInitConfigFile(InitConfigFile):
     """
 
     @classmethod
+    def get_priority(cls) -> float:
+        """Get the priority for this config file.
+
+        Returns:
+            The priority as a float. Higher numbers are processed first.
+            This file needs to be created before the other config files.
+        """
+        return 10
+
+    @classmethod
     def get_src_module(cls) -> ModuleType:
         """Get the source module to mirror.
 

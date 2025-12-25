@@ -24,6 +24,16 @@ class LicenceConfigFile(TextConfigFile):
     """
 
     @classmethod
+    def get_priority(cls) -> float:
+        """Get the priority for this config file.
+
+        Returns:
+            The priority as a float. Higher numbers are processed first.
+            This file needs to be created before the other config files.
+        """
+        return 30
+
+    @classmethod
     def get_filename(cls) -> str:
         """Get the LICENSE filename.
 

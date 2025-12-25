@@ -3,11 +3,17 @@
 from pathlib import Path
 
 from pyrig.dev.configs.licence import LicenceConfigFile
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.testing.assertions import assert_with_msg
 
 
 class TestLicenceConfigFile:
     """Test class."""
+
+    def test_get_priority(self) -> None:
+        """Test method."""
+        # assert is bigger than PyprojectConfigFile
+        assert LicenceConfigFile.get_priority() > PyprojectConfigFile.get_priority()
 
     def test_is_correct(self) -> None:
         """Test method."""

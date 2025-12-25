@@ -156,55 +156,18 @@ uv add pyrig
 uv run pyrig init
 ```
 
-This runs 9 steps:
+This command runs 9 automated steps to set up your complete project. See the [init command documentation](../cli/commands/init.md) for detailed information about each step.
 
-```mermaid
-graph TD
-    A[uv run pyrig init] --> B[1. Adding dev dependencies]
-    B --> C[2. Syncing venv]
-    C --> D[3. Creating priority config files]
-    D --> E[4. Syncing venv]
-    E --> F[5. Creating project root]
-    F --> G[6. Creating test files]
-    G --> H[7. Running pre-commit hooks]
-    H --> I[8. Running tests]
-    I --> J[9. Committing initial changes]
-    J --> K[Setup complete!]
-
-    B -.->|Installs| B1[pyrig-dev package]
-    C -.->|Installs| C1[All dependencies]
-    D -.->|Creates| D1[pyproject.toml<br/>.gitignore<br/>LICENSE<br/>etc.]
-    E -.->|Installs| E1[Project itself<br/>Activates CLI]
-    F -.->|Generates| F1[All config files<br/>Directory structure]
-    G -.->|Creates| G1[Test skeletons<br/>for all code]
-    H -.->|Runs| H1[ruff format<br/>ruff check<br/>mypy<br/>bandit]
-    I -.->|Validates| I1[pytest with<br/>90% coverage]
-    J -.->|Creates| J1[Initial git commit]
-
-    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style I fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style J fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style K fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-```
-
-**Step Details:**
-
-1. **Adding dev dependencies** - Installs pyrig-dev
-2. **Syncing venv** - Installs all dependencies
-3. **Creating priority config files** - Runs `pyrig mkroot --priority` to create essential files (pyproject.toml, .gitignore, LICENSE, main.py, and package __init__.py files) needed before dependency installation
-4. **Syncing venv** - Installs project itself, activates CLI
-5. **Creating project root** - Runs `pyrig mkroot` to create all config files and directory structure
-6. **Creating test files** - Test skeletons for all code
-7. **Running pre-commit hooks** - Formats and lints code
-8. **Running tests** - Validates everything works
-9. **Committing initial changes** - Creates initial commit
+**Summary of steps:**
+1. Adding dev dependencies (pyrig-dev)
+2. Syncing venv (install all dependencies)
+3. Creating priority config files (LICENSE, pyproject.toml, etc.)
+4. Syncing venv (install project itself, activate CLI)
+5. Creating project root (all config files and directory structure)
+6. Creating test files (test skeletons for all code)
+7. Running pre-commit hooks (format and lint)
+8. Running tests (validate everything works)
+9. Committing initial changes (create initial git commit)
 
 ### 7. Add Repository Secrets (for CI/CD)
 
@@ -336,31 +299,35 @@ my-project/
 
 ... and more config files detailed in [Configs Documentation](../configs/index.md)
 
-**CI/CD Workflows**:
-- **Health Check** - Runs on every PR (tests, linting, type checking)
-- **Build** - Creates executables and container images
-- **Release** - Version bumping and GitHub releases
-- **Publish** - PyPI and documentation publishing
+**CI/CD Workflows**: See [Workflows Documentation](../configs/workflows/index.md) for details on health check, build, release, and publish workflows.
 
-**Development Tools**:
-- **uv** - Package management
-- **ruff** - Linting and formatting
-- **mypy** - Type checking
-- **pytest** - Testing with 90% coverage
-- **pre-commit** - Git hooks
-- **MkDocs** - Documentation
+**Development Tools**: See [Tooling Documentation](tooling.md) for complete tool choices and rationale.
 
 **CLI Commands**:
 ```bash
 uv run my-project --help     # Your CLI
-uv run my-projectversion     # Display version
+uv run my-project version    # Display version
 ```
+
+See [CLI Documentation](../cli/index.md) for all available commands.
+
+## Next Steps
+
+After completing setup:
+
+- **Add your code** to `my_project/src/`
+- **Create custom commands** in `my_project/dev/cli/subcommands.py`
+- **Add custom configs** in `my_project/dev/configs/`
+- **Write tests** in `tests/` (mirroring source structure)
+- **Build artifacts** with `uv run pyrig build`
 
 ## Additional Resources
 
-- [CLI Documentation](../cli/index.md) - Command reference
-- [Configuration Files](../configs/index.md) - Config file details
-- [Workflows](../configs/workflows/index.md) - CI/CD workflow documentation
+- [CLI Documentation](../cli/index.md) - Command reference and creating custom commands
+- [Configuration Files](../configs/index.md) - Config file system and customization
+- [Testing Documentation](../tests/index.md) - Test structure and fixtures
+- [Builder Documentation](../builders/index.md) - Creating distributable artifacts
+- [Example Usage](example-usage.md) - Real-world microservices ecosystem example
 - [Tooling](tooling.md) - Tool choices and rationale
 - [Trade-offs](drawbacks.md) - What you sacrifice and gain
 

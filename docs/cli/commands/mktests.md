@@ -16,7 +16,7 @@ uv run pyrig -v mktests
 The `mktests` command:
 
 1. **Discovers all functions and classes** in the source package
-2. **Generates test files** with skeleton test functions for each
+2. **Generates test files** with skeleton test functions for each (in parallel for performance)
 3. **Creates test structure** mirroring the source package structure
 
 ### Generated Test Structure

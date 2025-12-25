@@ -90,14 +90,16 @@ The configuration system provides:
 - **Automatic discovery** of config files across all packages depending on pyrig
 - **Intelligent validation** ensuring configs are supersets of required values
 - **Smart merging** of missing configuration without overwriting user changes
-- **Multi-format support** for YAML, TOML, Python, Markdown, and plain text
+- **Multi-format support** for YAML, TOML, Python, Markdown, JSON, and plain text
+- **Priority-based initialization** for dependency ordering
+- **Parallel initialization** for performance
 - **Opt-out mechanism** via empty files
+
+See [Architecture](architecture.md) for complete technical details on how the system works.
 
 ## Quick Start
 
 ### Using Existing Config Files
-
-When you run `uv run pyrig mkroot`, all ConfigFile subclasses are discovered and initialized:
 
 ```bash
 # Create all config files
@@ -107,15 +109,7 @@ uv run pyrig mkroot
 uv run pyrig mkroot --priority
 ```
 
-This creates:
-- `pyproject.toml` - Project metadata and tool configurations
-- `.gitignore` - Git ignore patterns
-- `LICENSE` - Project license
-- `README.md` - Project documentation
-- `main.py` - CLI entry point
-- And many more...
-
-The `--priority` flag creates only essential config files needed before installing dependencies (pyproject.toml, .gitignore, LICENSE, main.py, and package __init__.py files).
+The `--priority` flag creates only essential files needed before installing dependencies (LICENSE, pyproject.toml, `__init__.py` files).
 
 ### Creating a Custom Config File
 
@@ -128,7 +122,7 @@ class MyConfigFile(YamlConfigFile):
     @classmethod
     def get_parent_path(cls) -> Path:
         """Directory containing the config file."""
-        return Path(".")
+        return Path("config")
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:
@@ -141,14 +135,12 @@ class MyConfigFile(YamlConfigFile):
         }
 ```
 
-Place this in `myapp/dev/configs/my_config.py` and it will be automatically discovered and initialized.
+Place this in `myapp/dev/configs/my_config.py` and it will be automatically discovered and create `config/my_config.yaml`.
 
-## Why Use ConfigFile?
-
-The ConfigFile system solves several problems:
-- **Consistency** across all pyrig projects
-- **Automatic updates** when pyrig adds new required configurations
-- **User customization** without breaking required structure
-- **Multi-package inheritance** of configurations
-- **Validation** ensuring configs remain correct
+See [Architecture](architecture.md) for:
+- Setting priority for initialization order
+- Format-specific subclasses (YAML, TOML, JSON, etc.)
+- Custom validation logic
+- Filename derivation rules
+- Best practices
 

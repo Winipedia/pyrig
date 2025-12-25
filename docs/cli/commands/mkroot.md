@@ -24,25 +24,21 @@ uv run pyrig -v mkroot
 The `mkroot` command:
 
 1. **Discovers all ConfigFile subclasses** across the project and its dependencies
-2. **Initializes config files** in three phases by calling `make_project_root()`:
-   - **Priority files** - Essential files required by other configs or the build process
-   - **Ordered files** - Files with specific ordering dependencies
-   - **Unordered files** - All remaining config files
+2. **Initializes config files** in two phases by calling `ConfigFile.init_all_subclasses()`:
+   - **Priority files** (priority > 0) - Essential files required by other configs, initialized sequentially in order of priority (highest first)
+   - **Non-priority files** (priority <= 0) - Independent files, initialized in parallel using ThreadPoolExecutor for performance
 
 When using `--priority`, only the priority files are created.
 
 ### Priority Config Files
 
-When using `--priority`, only these essential files are created:
+When using `--priority`, only files with `get_priority() > 0` are created, in sequential order by priority:
 
-1. **GitIgnoreConfigFile** (`.gitignore`) - Git ignore patterns
-2. **LicenceConfigFile** (`LICENSE`) - Project license (must be created before pyproject.toml for license auto-detection)
-3. **PyprojectConfigFile** (`pyproject.toml`) - Project metadata and dependencies
-4. **MainConfigFile** (`main.py`) - CLI entry point
-5. **ConfigsInitConfigFile** (`dev/configs/__init__.py`) - Configs package initialization
-6. **BuildersInitConfigFile** (`dev/builders/__init__.py`) - Builders package initialization
-7. **ZeroTestConfigFile** (`tests/test_zero.py`) - Initial test file
-8. **FixturesInitConfigFile** (`dev/tests/fixtures/__init__.py`) - Fixtures package initialization
+**Current priority files in pyrig**:
+- **LicenceConfigFile** (`LICENSE`) - Priority 30 (highest - must exist before pyproject.toml for license auto-detection)
+- **PyprojectConfigFile** (`pyproject.toml`) - Priority 20 (project metadata and dependencies)
+- **ConfigsInitConfigFile** (`dev/configs/__init__.py`) - Priority 10 (configs package initialization)
+- **FixturesInitConfigFile** (`dev/tests/fixtures/__init__.py`) - Priority 10 (must exist before conftest.py)
 
 These files are required before installing dependencies or running other initialization steps.
 
@@ -61,6 +57,24 @@ Without `--priority`, all config files defined in the project are created or upd
 See [Configs Documentation](../../configs/index.md) for complete details on all config files.
 
 ## Behavior
+
+### Without `--priority` flag
+
+All config files are initialized using a hybrid approach:
+
+1. **Group by priority** - Files are grouped by their `get_priority()` value
+2. **Sequential group processing** - Priority groups processed in order (highest first)
+3. **Parallel within groups** - Files in the same priority group initialize concurrently
+
+This ensures:
+- **Correct ordering** - Dependencies respected through priority values
+- **Fast initialization** - Independent files (same priority) run in parallel
+
+### With `--priority` flag
+
+Only files with `get_priority() > 0` are initialized, using the same grouped approach (groups processed sequentially, files within each group in parallel).
+
+### General Behavior
 
 - **Creates files that do not exist yet**
 - **Does overwrite existing files if they are not correct**
@@ -84,6 +98,24 @@ Use `mkroot --priority` when:
 This command **runs automatically** in the `assert_root_is_correct` autouse fixture at session scope. See [Autouse Fixtures](../../tests/autouse.md#assert_root_is_correct) for details.
 
 The fixture checks if any config files are incorrect and automatically runs `mkroot` to fix them before tests run.
+
+## Implementation
+
+The command delegates to:
+- `ConfigFile.init_all_subclasses()` when called without `--priority`
+- `ConfigFile.init_priority_subclasses()` when called with `--priority`
+
+See [Configuration Architecture](../../configs/architecture.md) for details on the priority system and parallel initialization.
+
+## Examples
+
+```bash
+# Create all config files
+uv run pyrig mkroot
+
+# Create only priority files (during initial setup)
+uv run pyrig mkroot --priority
+```
 
 ## Related
 

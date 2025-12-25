@@ -7,6 +7,7 @@ NotImplementedError to indicate tests that need to be written.
 """
 
 import logging
+from concurrent.futures import Future, ThreadPoolExecutor
 from types import ModuleType
 
 from pyrig.dev.utils.packages import get_src_package
@@ -22,9 +23,7 @@ from pyrig.src.modules.module import (
     get_isolated_obj_name,
     get_module_content_as_str,
 )
-from pyrig.src.modules.package import (
-    create_package,
-)
+from pyrig.src.modules.package import create_package
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import (
     get_test_obj_from_obj,
@@ -55,12 +54,16 @@ def create_tests_for_package(package: ModuleType) -> None:
     test packages and modules for each package and module found in the source.
     """
     logger.debug("Creating tests for package: %s", package.__name__)
-    module_count = 0
-    for pkg, modules in walk_package(package):
-        create_test_package(pkg)
-        for module in modules:
-            create_test_module(module)
-            module_count += 1
+    futures: list[Future[None]] = []
+    with ThreadPoolExecutor() as executor:
+        for pkg, modules in walk_package(package):
+            futures.append(executor.submit(create_test_package, pkg))
+            futures.extend(
+                executor.submit(create_test_module, module) for module in modules
+            )
+        for future in futures:
+            # call result so errors raise
+            future.result()
 
 
 def create_test_package(package: ModuleType) -> None:

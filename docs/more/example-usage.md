@@ -368,89 +368,42 @@ uv init && uv add company-base && uv run notification-service init
 
 ## How It Works: The Discovery Mechanism
 
-### ConfigFile Discovery
+pyrig uses a sophisticated discovery system to find and initialize configurations across package dependencies. For complete technical details, see:
 
-When you run `uv run pyrig mkroot`:
+- **[ConfigFile Architecture](../configs/architecture.md)** - Discovery, validation, and initialization process
+- **[Fixture Sharing](../tests/fixtures.md)** - How fixtures are discovered and shared
+- **[Autouse Fixtures](../tests/autouse.md)** - Self-healing validation system
 
-1. **Dependency graph built**: `DependencyGraph.cached().get_all_depending_on("pyrig")`
-   - Returns: `[pyrig, company-base, auth-service]`
+### Quick Overview
 
-2. **Find config modules**: For each package, find `<package>.dev.configs`
-   - `pyrig.dev.configs`
-   - `company_base.dev.configs`
-   - `auth_service.dev.configs`
+**ConfigFile Discovery**:
+1. Build dependency graph: `pyrig → company-base → auth-service`
+2. Find all `<package>.dev.configs` modules
+3. Discover all ConfigFile subclasses
+4. Keep only leaf classes (discard parents with `discard_parents=True`)
+5. Initialize all leaf classes
 
-3. **Discover ConfigFile subclasses**: In each module
-   - `pyrig`: `MkdocsConfigFile`, `PyprojectConfigFile`, `GitIgnoreConfigFile`, etc.
-   - `company-base`: `LoggingConfigFile`, `MkdocsConfigFile` (overrides pyrig's), `PyprojectConfigFile` (overrides pyrig's)
-   - `auth-service`: `AuthConfigFile`
-
-4. **Discard parents**: `discard_parents=True` keeps only leaf classes
-   - ❌ `pyrig.dev.configs.docs.mkdocs.MkdocsConfigFile` (parent)
-   - ✓ `company_base.dev.configs.docs.mkdocs.MkdocsConfigFile` (leaf)
-   - ❌ `pyrig.dev.configs.pyproject.PyprojectConfigFile` (parent)
-   - ✓ `company_base.dev.configs.pyproject.PyprojectConfigFile` (leaf)
-   - ✓ `company_base.dev.configs.logging_config.LoggingConfigFile` (leaf)
-   - ✓ `auth_service.dev.configs.auth_config.AuthConfigFile` (leaf)
-
-5. **Initialize all leaf classes**: Each creates/validates its file
-
-### Autouse Fixture Healing
-
-When you run `uv run pytest` in `auth-service`:
-
-1. **`tests/conftest.py` activates**: `pytest_plugins = ["pyrig.dev.tests.conftest"]`
-
-2. **Fixture discovery**: Same mechanism as configs
-   - Finds `pyrig.dev.tests.fixtures`, `company_base.dev.tests.fixtures`, `auth_service.dev.tests.fixtures`
-   - Registers all as pytest plugins
-
-3. **`assert_root_is_correct` runs** (session-level autouse):
-   ```python
-   # Simplified version
-   incorrect = []
-   for c in ConfigFile.get_all_subclasses():
-       if not c.is_correct():
-           incorrect.append(c)
-   if incorrect:
-       # raises with an assertion and msg
-   ```
-
-4. **Validation checks**:
-   - `LoggingConfigFile.is_correct()` → Checks `config/logging_config.yaml` exists with required structure
-   - `MkdocsConfigFile.is_correct()` → Checks `mkdocs.yml` has company theme
-   - `PyprojectConfigFile.is_correct()` → Checks all dependencies present
-   - `AuthConfigFile.is_correct()` → Checks `config/auth_config.yaml` exists
-
-5. **Auto-healing**: If any check fails, `make_project_root()` runs and fixes everything. And you will get notified via the assertion that fails after and gives you a descriptive error message.
+**Autouse Fixture Healing**:
+1. `tests/conftest.py` activates pyrig's test plugins
+2. Discover fixtures from all packages in dependency chain
+3. `assert_root_is_correct` runs on every test session
+4. Validates all ConfigFiles are correct
+5. Raises descriptive error if validation fails (prompting you to review the changes from `make_project_root` that the autouse fixture did to fix the issue)
 
 ## Propagation Flow
 
-```mermaid
-graph TD
-    A[Update company-base] --> B[Release new version]
-    B --> C[Services update dependency]
-    C --> D[Run pytest or pyrig mkroot]
-    D --> E[assert_root_is_correct runs]
-    E --> F{All configs correct?}
-    F -->|No| G[make_project_root]
-    G --> H[Discover all ConfigFiles]
-    H --> I[Initialize leaf classes]
-    I --> J[Files created/updated]
-    F -->|Yes| K[Tests continue]
+When you update the base package, changes automatically propagate to all dependent services:
 
-    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style F fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style H fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style I fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style J fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style K fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-```
+1. **Update company-base** - Make changes to config files
+2. **Release new version** - GitHub Actions automatically creates release
+3. **Services update dependency** - Run `uv add company-base --upgrade`
+4. **Run pytest or pyrig mkroot** - Triggers validation
+5. **assert_root_is_correct runs** - Autouse fixture validates all configs
+6. **If incorrect** - `make_project_root()` discovers and initializes all ConfigFiles
+7. **Files created/updated** - Missing configs added, incorrect values fixed
+8. **Tests continue** - Or fail with descriptive error showing what changed
+
+See [Autouse Fixtures](../tests/autouse.md) for details on the validation system.
 
 ## Real-World Benefits
 
