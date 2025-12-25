@@ -61,9 +61,9 @@ def create_tests_for_package(package: ModuleType) -> None:
             futures.extend(
                 executor.submit(create_test_module, module) for module in modules
             )
-        for future in futures:
-            # call result so errors raise
-            future.result()
+    for future in futures:
+        # call result so errors raise
+        future.result()
 
 
 def create_test_package(package: ModuleType) -> None:
