@@ -25,7 +25,6 @@ from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.create_tests import make_test_skeletons
 from pyrig.dev.cli.commands.make_inits import make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
-from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
@@ -297,12 +296,17 @@ def assert_no_unit_test_package_usage() -> None:
         AssertionError: If the unit test package is used
 
     """
+    unit_test_str = "UnitTest".lower()
+    pkgs = find_packages()
     paths: list[str] = []
-    for path in Path().rglob("*.py"):
-        if GitIgnoreConfigFile.path_is_in_gitignore(path):
-            continue
-        if "UnitTest".lower() in path.read_text(encoding="utf-8"):
-            paths.append(path.as_posix())
+    for pkg in pkgs:
+        paths.extend(
+            [
+                path.as_posix()
+                for path in Path(pkg).rglob("*.py")
+                if unit_test_str in path.read_text(encoding="utf-8")
+            ]
+        )
 
     msg = f"""Found {"UnitTest".lower()} package usage in:
     {make_summary_error_msg(paths)}

@@ -62,8 +62,21 @@ graph LR
 
 ## Quick Start
 
-### [Getting Started](more/getting-started.md)
-Complete guide to setting up a new pyrig project from scratch. Covers prerequisites (Git, uv, Podman), required tokens (GitHub, PyPI, Codecov), and step-by-step setup from creating a repository to running your first workflows.
+```bash
+# Create repository on GitHub, then clone it
+git clone https://github.com/username/my-project.git
+cd my-project
+
+# Initialize with uv and pyrig
+uv init
+uv add pyrig
+uv run pyrig init
+
+# Push to GitHub
+git push -u origin main
+```
+
+**New to pyrig?** See the [Getting Started Guide](more/getting-started.md) for complete setup instructions including prerequisites, required tokens, and detailed explanations.
 
 ---
 
@@ -82,7 +95,7 @@ Create distributable artifacts with pyrig's builder system, including PyInstalle
 Manage static files (images, configs, templates) that work seamlessly in both development and PyInstaller executables.
 
 ### [Configuration Files Documentation](configs/index.md)
-Understand pyrig's configuration file system, including automatic discovery, validation, and creating custom config files. This is the main feature of pyrig that generates a comlete project structure for you, ready to use and start developing you project.
+Understand pyrig's configuration file system, including automatic discovery, validation, and creating custom config files. This is the main feature of pyrig that generates a complete project structure for you, ready to use and start developing your project.
 
 ### [Additional Information](more/index.md)
 See more documentation about pyrig's drawbacks, how to get started, tooling choices and a detailed example usage.

@@ -23,6 +23,8 @@ Subclasses must implement:
 import inspect
 import logging
 from abc import ABC, abstractmethod
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -128,6 +130,18 @@ class ConfigFile(ABC):
         if not self.is_correct():
             msg = f"Config file {path} is not correct."
             raise ValueError(msg)
+
+    @classmethod
+    def get_priority(cls) -> float:
+        """Get the priority for this config file.
+
+        If None is returned, the config files are processed in a random order.
+
+        Returns:
+            The priority as an integer. Higher numbers are processed first.
+            Or None if the order doesn't matter.
+        """
+        return 0
 
     @classmethod
     def get_path(cls) -> Path:
@@ -272,9 +286,54 @@ class ConfigFile(ABC):
         Returns:
             List of ConfigFile subclass types.
         """
-        return get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
+        subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
             cls,
             pyrig,
             configs,
             discard_parents=True,
         )
+        return sorted(subclasses, key=lambda x: x.get_priority(), reverse=True)
+
+    @classmethod
+    def get_priority_subclasses(cls) -> list[type["ConfigFile"]]:
+        """Get all ConfigFile subclasses with a priority.
+
+        Returns:
+            List of ConfigFile subclass types, that are > 0.
+            Sorted by priority.
+        """
+        return [cf for cf in cls.get_all_subclasses() if cf.get_priority() > 0]
+
+    @classmethod
+    def init_subclasses(
+        cls,
+        *subclasses: type["ConfigFile"],
+    ) -> None:
+        """Initialize all ConfigFile subclasses.
+
+        Groups them by priority and initializes them in order.
+        Each group is initialized in parallel.
+
+        Args:
+            subclasses: The ConfigFile subclasses to initialize.
+        """
+        subclasses_by_priority: dict[float, list[type[ConfigFile]]] = defaultdict(list)
+        for cf in subclasses:
+            subclasses_by_priority[cf.get_priority()].append(cf)
+
+        for priority, cf_group in subclasses_by_priority.items():
+            logger.debug("Initializing config files with priority: %s", priority)
+            with ThreadPoolExecutor() as executor:
+                list(executor.map(lambda cf: cf(), cf_group))
+
+    @classmethod
+    def init_all_subclasses(cls) -> None:
+        """Initialize all ConfigFile subclasses."""
+        logger.info("Creating all config files")
+        cls.init_subclasses(*cls.get_all_subclasses())
+
+    @classmethod
+    def init_priority_subclasses(cls) -> None:
+        """Initialize all ConfigFile subclasses with a priority."""
+        logger.info("Creating priority config files")
+        cls.init_subclasses(*cls.get_priority_subclasses())

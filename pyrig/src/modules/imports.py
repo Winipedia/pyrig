@@ -7,6 +7,7 @@ import pkgutil
 from collections.abc import Generator
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 from pyrig.src.modules.module import (
     import_module_with_default,
@@ -81,6 +82,24 @@ def import_pkg_with_dir_fallback(path: Path) -> ModuleType:
     if isinstance(pkg, ModuleType):
         return pkg
     return import_pkg_from_dir(path)
+
+
+def import_pkg_with_dir_fallback_with_default(
+    path: Path, default: Any = None
+) -> ModuleType | Any:
+    """Import a package from a path, returning a default on failure.
+
+    Args:
+        path: Filesystem path to the package.
+        default: Value to return if the package cannot be imported.
+
+    Returns:
+        The imported package, or `default` if import fails.
+    """
+    try:
+        return import_pkg_with_dir_fallback(path)
+    except FileNotFoundError:
+        return default
 
 
 def get_modules_and_packages_from_package(

@@ -32,6 +32,7 @@ pyrig's testing system ensures:
 - **Strict structure mirroring** between source and tests
 - **Automatic fixture sharing** across package dependencies
 - **Self-healing tests** with automatic skeleton generation
+- **Parallel test generation** - Test skeletons are created concurrently for improved performance
 - **Project health validation** on every test run
 
 Run tests:

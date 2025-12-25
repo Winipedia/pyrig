@@ -50,6 +50,8 @@ uv run myapp <command>   # Run myapp-specific commands
 uv run myapp version     # Shared commands work too
 ```
 
+See [Commands](commands/index.md) for detailed documentation on each command.
+
 ## Global Options
 
 All commands support global verbosity and quiet flags:
@@ -65,4 +67,6 @@ uv run pyrig -q build          # Suppress info messages
 ```
 
 **Note**: Global options must come **before** the command name (e.g., `pyrig -v build`, not `pyrig build -v`).
+
+See [Architecture](architecture.md) for technical details on how global options are implemented.
 

@@ -80,92 +80,15 @@ uv run pyrig init
 
 ### What You Get
 
-**Complete Project Structure**:
-```
-my-project/
-├── my_project/                      # Source code package
-│   ├── __init__.py
-│   ├── main.py                      # CLI entry point
-│   ├── py.typed                     # PEP 561 type marker
-│   ├── dev/                         # Development infrastructure
-│   │   ├── __init__.py
-│   │   ├── builders/                # Build artifact definitions
-│   │   │   ├── __init__.py
-│   │   ├── cli/                     # CLI command system
-│   │   │   ├── __init__.py
-│   │   │   ├── subcommands.py       # Project commands
-│   │   │   ├── shared_subcommands.py # Shared commands
-│   │   ├── configs/                 # Config file managers
-│   │   │   ├── __init__.py
-│   │   ├── tests/                   # Test infrastructure
-│   │   │   ├── __init__.py
-│   │   │   └── fixtures/
-│   │   │       └── __init__.py
-│   ├── resources/                   # Static resources
-│   │   └── __init__.py
-│   └── src/                         # Application logic
-│       └── __init__.py
-│
-├── tests/                           # Test files (mirrors source)
-│   ├── __init__.py
-│   ├── conftest.py                  # Pytest configuration
-│   ├── test_zero.py                 # Initial test
-│   └── test_my_project/             # Mirrors my_project/ structure
-│       ├── __init__.py
-│       ├── test_main.py
-│       ├── test_dev/                # Mirrors my_project/dev/
-│       │   ├── __init__.py
-│       │   ├── test_builders/
-│       │   │   └── __init__.py
-│       │   ├── test_cli/
-│       │   │   ├── __init__.py
-│       │   │   ├── test_subcommands.py
-│       │   │   └── test_shared_subcommands.py
-│       │   ├── test_configs/
-│       │   │   └── __init__.py
-│       │   └── test_tests/
-│       │       └── __init__.py
-│       ├── test_resources/          # Mirrors my_project/resources/
-│       │   └── __init__.py
-│       └── test_src/                # Mirrors my_project/src/
-│           └── __init__.py
-│
-├── docs/                            # MkDocs documentation
-│   └── index.md                     # Documentation homepage
-│
-├── .github/                         # GitHub configuration
-│   └── workflows/                   # CI/CD workflows
-│       ├── health_check.yaml        # Tests, linting, type checking
-│       ├── build.yaml               # Build artifacts
-│       ├── release.yaml             # Version and release
-│       └── publish.yaml             # PyPI and docs publishing
-│
-├── .env                             # Environment variables (not committed)
-├── .experiment.py                   # Scratch file for local experiments (not committed)
-├── .gitignore                       # Git ignore patterns
-├── .pre-commit-config.yaml          # Pre-commit hooks
-├── .python-version                  # Python version (3.12+)
-├── Containerfile                    # Podman/Docker image definition
-├── LICENSE                          # MIT license
-├── README.md                        # Project readme
-├── mkdocs.yml                       # MkDocs configuration
-├── pyproject.toml                   # Project metadata and tool configs
-└── uv.lock                          # Dependency lock file
-```
+After running `uv run pyrig init`, you get a complete project with:
 
-**CI/CD Workflows**:
-- **Health Check** - Tests, linting, type checking on every PR
-- **Build** - Creates executables and container images
-- **Release** - Automated version bumping and GitHub releases
-- **Publish** - PyPI and GitHub Pages deployment
+- **Complete directory structure** with source code, tests, docs, and CI/CD
+- **Pre-configured tools** (uv, ruff, mypy, pytest, MkDocs, Podman)
+- **GitHub Actions workflows** (health check, build, release, publish)
+- **90% test coverage** enforcement
+- **Pre-commit hooks** with all quality checks
 
-**Development Tools**:
-- **uv** - Fast package management (10-100x faster than pip)
-- **ruff** - Linting and formatting (all rules enabled)
-- **mypy** - Static type checking (strict mode)
-- **pytest** - Testing with coverage reporting
-- **MkDocs** - Documentation generation
-- **Podman** - Container support
+See the [Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/) for the complete project structure and detailed setup instructions.
 
 ### CLI Commands
 

@@ -71,6 +71,38 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
+    def test_get_priority(self) -> None:
+        """Test method."""
+        assert ConfigFile.get_priority() == 0
+
+    def test_get_priority_subclasses(self) -> None:
+        """Test method."""
+        priority_subclasses = ConfigFile.get_priority_subclasses()
+        assert isinstance(priority_subclasses, list)
+        assert all(issubclass(cf, ConfigFile) for cf in priority_subclasses)
+
+    def test_init_subclasses(
+        self, mocker: MockFixture, my_test_config_file: type[ConfigFile]
+    ) -> None:
+        """Test method."""
+        mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
+        ConfigFile.init_subclasses(my_test_config_file)
+        mock.assert_called_once()
+
+    def test_init_all_subclasses(self, mocker: MockFixture) -> None:
+        """Test method."""
+        num_subclasses = ConfigFile.get_all_subclasses()
+        mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
+        ConfigFile.init_all_subclasses()
+        assert mock.call_count == len(num_subclasses)
+
+    def test_init_priority_subclasses(self, mocker: MockFixture) -> None:
+        """Test method."""
+        num_priority_subclasses = ConfigFile.get_priority_subclasses()
+        mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
+        ConfigFile.init_priority_subclasses()
+        assert mock.call_count == len(num_priority_subclasses)
+
     def test_get_extension_sep(self) -> None:
         """Test method."""
         assert ConfigFile.get_extension_sep() == "."

@@ -81,6 +81,8 @@ graph TD
     style I fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
+**Note**: Config files are grouped by priority and initialized sequentially by group (highest priority first). Within each priority group, files are initialized in parallel using ThreadPoolExecutor for improved performance.
+
 ### Validation Logic
 
 A config file is considered correct if:
@@ -127,59 +129,88 @@ Note: I highly recommend doing any changes to config files via a subclass and no
 
 ### Initialization Order
 
-Config files are initialized in three phases during `pyrig init` or `pyrig mkroot`:
+Config files are initialized in two phases during `pyrig init` or `pyrig mkroot`:
 
-1. **Priority files** - Required by other configs (e.g. pyproject.toml, .gitignore, LICENSE, main.py), these must exist before other initialization can proceed.
-2. **Ordered files** - Have dependencies on each other (e.g. fixtures/__init__.py, conftest.py)
-3. **Remaining files** - All other discovered configs in a non-deterministic order.
+1. **Priority files** (priority > 0) - Required by other configs, initialized sequentially in order of priority (highest first)
+2. **Non-priority files** (priority <= 0) - Independent configs, initialized in parallel for performance
 
 #### Priority Initialization System
 
-The priority initialization system is implemented in `pyrig/dev/cli/commands/create_root.py` with three key functions:
+The priority initialization system is now implemented directly in the `ConfigFile` base class through the `get_priority()` method and related class methods.
 
-**`get_priority_config_files()`** - Returns config files that must be initialized first:
+**Priority Method** - Each ConfigFile subclass can override `get_priority()`:
 ```python
-def get_priority_config_files() -> list[type[ConfigFile]]:
-    """Get config files that must be initialized first.
+@classmethod
+def get_priority(cls) -> float:
+    """Get the priority for this config file.
 
-    These files are required by other config files or the build
-    process and must exist before other initialization can proceed.
+    Returns:
+        The priority as a float. Higher numbers are processed first.
+        Return 0 (default) if order doesn't matter.
     """
-    return [
-        GitIgnoreConfigFile,      # Git ignore patterns
-        LicenceConfigFile,        # Project license (must be before pyproject.toml for auto-detection)
-        PyprojectConfigFile,      # Project metadata and dependencies
-        MainConfigFile,           # CLI entry point
-        ConfigsInitConfigFile,    # configs/__init__.py
-        BuildersInitConfigFile,   # builders/__init__.py
-        ZeroTestConfigFile,       # Initial test file
-        FixturesInitConfigFile,   # fixtures/__init__.py
-    ]
+    return 0  # Default: no priority
 ```
 
-**`get_ordered_config_files()`** - Returns config files with specific ordering requirements:
-```python
-def get_ordered_config_files() -> list[type[ConfigFile]]:
-    """Get config files that must be initialized in a specific order.
+**Priority Values in pyrig**:
+- `LicenceConfigFile`: 30 (highest - must exist before pyproject.toml for license detection)
+- `PyprojectConfigFile`: 20 (must exist before other configs)
+- `ConfigsInitConfigFile`: 10 (creates package structure)
+- `FixturesInitConfigFile`: 10 (must exist before conftest.py)
+- All others: 0 (no specific order required)
 
-    These files have dependencies on each other and must be
-    initialized after priority files but before general files.
+**Initialization Methods**:
+
+`ConfigFile.init_subclasses(*subclasses)` - Core initialization method:
+```python
+@classmethod
+def init_subclasses(cls, *subclasses: type["ConfigFile"]) -> None:
+    """Initialize ConfigFile subclasses grouped by priority.
+
+    Groups subclasses by priority and initializes each group in parallel.
+    Groups are processed sequentially in order of priority (highest first).
     """
-    return []  # Currently empty, but available for future use
+    # Group by priority
+    subclasses_by_priority: dict[float, list[type[ConfigFile]]] = defaultdict(list)
+    for cf in subclasses:
+        subclasses_by_priority[cf.get_priority()].append(cf)
+
+    # Process each priority group sequentially (highest first)
+    # Within each group, initialize in parallel
+    for priority, cf_group in subclasses_by_priority.items():
+        with ThreadPoolExecutor() as executor:
+            list(executor.map(lambda cf: cf(), cf_group))
 ```
 
-**`get_unordered_config_files()`** - Returns all remaining config files:
+`ConfigFile.init_all_subclasses()` - Initialize all config files:
 ```python
-def get_unordered_config_files() -> list[type[ConfigFile]]:
-    """Get all remaining config files.
-
-    These files have no dependencies on each other and can be
-    initialized in any order after priority and ordered files.
-    """
-    all_config_files = ConfigFile.get_all_subclasses()
-    priority_and_ordered = get_priority_config_files() + get_ordered_config_files()
-    return [cf for cf in all_config_files if cf not in priority_and_ordered]
+@classmethod
+def init_all_subclasses(cls) -> None:
+    """Initialize all ConfigFile subclasses."""
+    cls.init_subclasses(*cls.get_all_subclasses())
 ```
+
+`ConfigFile.init_priority_subclasses()` - Initialize only priority files:
+```python
+@classmethod
+def init_priority_subclasses(cls) -> None:
+    """Initialize all ConfigFile subclasses with priority > 0."""
+    cls.init_subclasses(*cls.get_priority_subclasses())
+```
+
+**Discovery and Sorting**:
+
+`ConfigFile.get_all_subclasses()` now returns subclasses sorted by priority:
+```python
+@classmethod
+def get_all_subclasses(cls) -> list[type["ConfigFile"]]:
+    """Get all ConfigFile subclasses, sorted by priority (highest first)."""
+    subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(...)
+    return sorted(subclasses, key=lambda x: x.get_priority(), reverse=True)
+```
+
+**Helper Methods**:
+- `get_priority_subclasses()` - Returns only config files with priority > 0 (sorted by priority)
+- `init_subclasses(*subclasses)` - Initialize specific subclasses, grouped by priority with parallel execution within each group
 
 You can create only priority config files using:
 ```bash
@@ -187,6 +218,28 @@ uv run pyrig mkroot --priority
 ```
 
 This is useful during initial project setup when you need the essential files before installing dependencies.
+
+### Performance Optimization
+
+pyrig uses a hybrid approach that groups config files by priority and parallelizes within each group:
+
+**How it works**:
+1. **Group by priority** - All config files are grouped by their priority value
+2. **Sequential group processing** - Priority groups are processed sequentially (highest priority first)
+3. **Parallel within groups** - All files within the same priority group are initialized in parallel using ThreadPoolExecutor
+
+**Example execution**:
+- Priority 30 group (LICENSE) - Initialized first, alone
+- Priority 20 group (pyproject.toml) - Initialized second, alone
+- Priority 10 group (ConfigsInitConfigFile, FixturesInitConfigFile) - Initialized third, both in parallel
+- Priority 0 group (all other configs) - Initialized last, all in parallel
+
+**Benefits**:
+- **Correctness** - Dependencies are respected through priority ordering
+- **Performance** - Files without dependencies initialize concurrently
+- **Flexibility** - Same priority = can run in parallel, different priority = guaranteed order
+
+This approach is significantly faster for projects with many config files while ensuring that dependencies (like LICENSE before pyproject.toml) are always met.
 
 ## Format-Specific Subclasses
 These subclasses implement already all the required methods for you that they can and simplfy creating ConfigFiles for the specific format.

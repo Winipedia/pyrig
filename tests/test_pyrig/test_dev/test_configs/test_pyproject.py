@@ -10,6 +10,7 @@ from pytest_mock import MockFixture
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
+from pyrig.dev.configs.python.configs_init import ConfigsInitConfigFile
 from pyrig.src.testing.assertions import assert_with_msg
 
 
@@ -29,6 +30,10 @@ def my_test_pyproject_config_file(
 
 class TestPyprojectConfigFile:
     """Test class."""
+
+    def test_get_priority(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.get_priority() > ConfigsInitConfigFile.get_priority()
 
     def test_detect_project_licence(self) -> None:
         """Test method."""
