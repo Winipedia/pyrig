@@ -320,9 +320,10 @@ class ConfigFile(ABC):
         for cf in subclasses:
             subclasses_by_priority[cf.get_priority()].append(cf)
 
-        for priority, cf_group in subclasses_by_priority.items():
-            logger.debug("Initializing config files with priority: %s", priority)
-            with ThreadPoolExecutor() as executor:
+        biggest_group = max(subclasses_by_priority.values(), key=len)
+        with ThreadPoolExecutor(max_workers=len(biggest_group)) as executor:
+            for priority, cf_group in subclasses_by_priority.items():
+                logger.debug("Initializing config files with priority: %s", priority)
                 list(executor.map(lambda cf: cf(), cf_group))
 
     @classmethod
