@@ -121,18 +121,31 @@ class VersionConstraint:
     def get_lower_inclusive(
         self, default: str | Version | None = None
     ) -> Version | None:
-        """Get the minimum version.
+        """Get the inclusive lower bound of the version constraint.
 
-        Is given inclusive. E.g. >=3.8, <3.12 -> 3.8
-        if >3.7, <3.12 -> 3.7.1
-
-        E.g. >=3.8, <3.12 -> 3.8
+        Converts exclusive lower bounds to inclusive equivalents by incrementing
+        the micro version. For example, ">3.7.0" becomes ">=3.7.1".
 
         Args:
-            default: The default value to return if there is no minimum version
+            default: Default version to return if no lower bound is specified
+                in the constraint. Can be a string or Version object.
 
         Returns:
-            The minimum version
+            The inclusive lower bound as a Version object, or None if no lower
+            bound exists and no default is provided.
+
+        Example:
+            >>> vc = VersionConstraint(">=3.8,<3.12")
+            >>> vc.get_lower_inclusive()
+            <Version('3.8')>
+
+            >>> vc = VersionConstraint(">3.7.5,<3.12")
+            >>> vc.get_lower_inclusive()
+            <Version('3.7.6')>
+
+            >>> vc = VersionConstraint("<3.12")
+            >>> vc.get_lower_inclusive(default="3.8")
+            <Version('3.8')>
         """
         default = str(default) if default else None
         if self.lower_inclusive is None:
@@ -143,16 +156,31 @@ class VersionConstraint:
     def get_upper_exclusive(
         self, default: str | Version | None = None
     ) -> Version | None:
-        """Get the maximum version.
+        """Get the exclusive upper bound of the version constraint.
 
-        Is given exclusive. E.g. >=3.8, <3.12 -> 3.12
-        if >=3.8, <=3.12 -> 3.12.1
+        Converts inclusive upper bounds to exclusive equivalents by incrementing
+        the micro version. For example, "<=3.11.5" becomes "<3.11.6".
 
         Args:
-            default: The default value to return if there is no maximum version
+            default: Default version to return if no upper bound is specified
+                in the constraint. Can be a string or Version object.
 
         Returns:
-            The maximum version
+            The exclusive upper bound as a Version object, or None if no upper
+            bound exists and no default is provided.
+
+        Example:
+            >>> vc = VersionConstraint(">=3.8,<3.12")
+            >>> vc.get_upper_exclusive()
+            <Version('3.12')>
+
+            >>> vc = VersionConstraint(">=3.8,<=3.11.5")
+            >>> vc.get_upper_exclusive()
+            <Version('3.11.6')>
+
+            >>> vc = VersionConstraint(">=3.8")
+            >>> vc.get_upper_exclusive(default="4.0")
+            <Version('4.0')>
         """
         default = str(default) if default else None
         if self.upper_exclusive is None:
@@ -163,16 +191,33 @@ class VersionConstraint:
     def get_upper_inclusive(
         self, default: str | Version | None = None
     ) -> Version | None:
-        """Get the maximum version.
+        """Get the inclusive upper bound of the version constraint.
 
-        Is given inclusive. E.g. >=3.8, <3.12 -> 3.11
-        if >=3.8, <=3.12 -> 3.12
+        Converts exclusive upper bounds to inclusive equivalents by decrementing
+        the appropriate version component. For example, "<3.12.0" becomes "<=3.11".
 
         Args:
-            default: The default value to return if there is no maximum version
+            default: Default version to return if no upper bound is specified
+                in the constraint. Can be a string or Version object. The default
+                is automatically incremented by one micro version to convert it
+                to an exclusive bound internally.
 
         Returns:
-            The maximum version
+            The inclusive upper bound as a Version object, or None if no upper
+            bound exists and no default is provided.
+
+        Example:
+            >>> vc = VersionConstraint(">=3.8,<3.12")
+            >>> vc.get_upper_inclusive()
+            <Version('3.11')>
+
+            >>> vc = VersionConstraint(">=3.8,<=3.11.5")
+            >>> vc.get_upper_inclusive()
+            <Version('3.11.5')>
+
+            >>> vc = VersionConstraint(">=3.8,<3.12.0")
+            >>> vc.get_upper_inclusive()
+            <Version('3.11')>
         """
         # increment the default by 1 micro to make it exclusive
         if default:
@@ -196,22 +241,43 @@ class VersionConstraint:
         lower_default: str | Version | None = None,
         upper_default: str | Version | None = None,
     ) -> list[Version]:
-        """Get the version range.
+        """Generate a list of versions within the constraint at the specified precision.
 
-        returns a range of versions according to the level
-
-        E.g. >=3.8, <3.12; level=major -> 3
-            >=3.8, <4.12; level=major -> 3, 4
-        E.g. >=3.8, <=3.12; level=minor -> 3.8, 3.9, 3.10, 3.11, 3.12
-        E.g. >=3.8.1, <=4.12.1; level=micro -> 3.8.1, 3.8.2, ... 4.12.1
+        Creates a list of all versions that satisfy the constraint, incrementing
+        at the specified level (major, minor, or micro). This is useful for
+        generating test matrices or listing supported versions.
 
         Args:
-            level: The level of the version to return
-            lower_default: The default lower bound if none is specified
-            upper_default: The default upper bound if none is specified
+            level: The precision level for version increments:
+                - "major": Increment major version (e.g., 3, 4, 5)
+                - "minor": Increment minor version (e.g., 3.8, 3.9, 3.10)
+                - "micro": Increment micro version (e.g., 3.8.1, 3.8.2, 3.8.3)
+            lower_default: Default lower bound if the constraint doesn't specify one.
+                Can be a string or Version object.
+            upper_default: Default upper bound if the constraint doesn't specify one.
+                Can be a string or Version object.
 
         Returns:
-            A list of versions
+            List of Version objects satisfying the constraint, sorted in ascending
+            order. Only versions that pass the constraint's `contains()` check are
+            included.
+
+        Raises:
+            ValueError: If no lower or upper bound can be determined (either from
+                the constraint or defaults).
+
+        Example:
+            >>> vc = VersionConstraint(">=3.8,<3.12")
+            >>> vc.get_version_range(level="minor")
+            [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
+
+            >>> vc = VersionConstraint(">=3.8,<4.0")
+            >>> vc.get_version_range(level="major")
+            [<Version('3')>]
+
+            >>> vc = VersionConstraint(">=3.10.1,<=3.10.3")
+            >>> vc.get_version_range(level="micro")
+            [<Version('3.10.1')>, <Version('3.10.2')>, <Version('3.10.3')>]
         """
         lower = self.get_lower_inclusive(lower_default)
         upper = self.get_upper_inclusive(upper_default)

@@ -25,6 +25,7 @@ import os
 from pathlib import Path
 from typing import Any, Literal
 
+import pathspec
 from dotenv import dotenv_values
 from github import Github
 from github.Auth import Token
@@ -35,6 +36,8 @@ logger = logging.getLogger(__name__)
 DEFAULT_BRANCH = "main"
 
 DEFAULT_RULESET_NAME = f"{DEFAULT_BRANCH}-protection"
+
+GITIGNORE_PATH = Path(".gitignore")
 
 
 def get_rules_payload(  # noqa: PLR0913
@@ -329,3 +332,43 @@ def get_github_repo_token() -> str:
 
     msg = f"Expected REPO_TOKEN in {dotenv_path}"
     raise ValueError(msg)
+
+
+def path_is_in_gitignore(relative_path: str | Path) -> bool:
+    """Check if a path matches any pattern in .gitignore.
+
+    Args:
+        relative_path: Path to check, relative to repository root.
+
+    Returns:
+        True if the path matches any gitignore pattern.
+    """
+    if not GITIGNORE_PATH.exists():
+        return False
+    as_path = Path(relative_path)
+    if as_path.is_absolute():
+        as_path = as_path.relative_to(Path.cwd())
+    is_dir = (
+        bool(as_path.suffix == "") or as_path.is_dir() or str(as_path).endswith(os.sep)
+    )
+    is_dir = is_dir and not as_path.is_file()
+
+    as_posix = as_path.as_posix()
+    if is_dir and not as_posix.endswith("/"):
+        as_posix += "/"
+
+    spec = pathspec.PathSpec.from_lines(
+        "gitwildmatch",
+        load_gitignore(),
+    )
+
+    return spec.match_file(as_posix)
+
+
+def load_gitignore(path: Path = GITIGNORE_PATH) -> list[str]:
+    """Load the .gitignore file as a list of patterns.
+
+    Returns:
+        List of gitignore patterns, one per line.
+    """
+    return path.read_text(encoding="utf-8").splitlines()

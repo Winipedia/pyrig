@@ -1,16 +1,22 @@
 """module."""
 
+from contextlib import chdir
+from pathlib import Path
+
 from github.Repository import Repository
 
 from pyrig.dev.cli.commands.protect_repo import get_default_ruleset_params
-from pyrig.dev.utils.github import (
+from pyrig.dev.utils.git import (
     DEFAULT_RULESET_NAME,
+    GITIGNORE_PATH,
     create_or_update_ruleset,
     get_all_rulesets,
     get_github_repo_token,
     get_repo,
     get_rules_payload,
     github_api_request,
+    load_gitignore,
+    path_is_in_gitignore,
     ruleset_exists,
 )
 from pyrig.src.git import (
@@ -138,3 +144,51 @@ def test_github_api_request() -> None:
         "rulesets",
         method="GET",
     )
+
+
+def test_path_is_in_gitignore(tmp_path: Path) -> None:
+    """Test func for path_is_in_gitignore."""
+    with chdir(tmp_path):
+        content = """
+# Comment line
+*.pyc
+__pycache__/
+.venv/
+# This is a comment
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+"""
+        GITIGNORE_PATH.write_text(content)
+        assert path_is_in_gitignore("folder/file.pyc")
+
+        assert path_is_in_gitignore(".venv")
+        assert path_is_in_gitignore(".venv/")
+        assert path_is_in_gitignore(".venv/file.py")
+
+        assert path_is_in_gitignore("build")
+        assert path_is_in_gitignore("build/")
+        assert path_is_in_gitignore("build/file.py")
+
+        assert path_is_in_gitignore("dist")
+        assert path_is_in_gitignore("dist/")
+        assert path_is_in_gitignore("dist/file.py")
+
+
+def test_load_gitignore(tmp_path: Path) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        content = """
+# Comment line
+*.pyc
+__pycache__/
+.venv/
+# This is a comment
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+"""
+        GITIGNORE_PATH.write_text(content)
+        assert load_gitignore() == content.splitlines()

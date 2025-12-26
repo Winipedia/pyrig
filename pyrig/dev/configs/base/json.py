@@ -12,7 +12,27 @@ from pyrig.dev.configs.base.base import ConfigFile
 class JsonConfigFile(ConfigFile):
     """Abstract base class for JSON configuration files.
 
-    Provides JSON-specific load and dump implementations using PyYAML.
+    Provides JSON-specific load and dump implementations using Python's
+    built-in json module. JSON files are formatted with 4-space indentation
+    for readability.
+
+    Subclasses must implement:
+        - `get_parent_path`: Directory containing the JSON file
+        - `get_configs`: Expected JSON configuration structure
+
+    Example:
+        >>> from pathlib import Path
+        >>> from typing import Any
+        >>> from pyrig.dev.configs.base.json import JsonConfigFile
+        >>>
+        >>> class MyConfigFile(JsonConfigFile):
+        ...     @classmethod
+        ...     def get_parent_path(cls) -> Path:
+        ...         return Path()
+        ...
+        ...     @classmethod
+        ...     def get_configs(cls) -> dict[str, Any]:
+        ...         return {"setting": "value"}
     """
 
     @classmethod

@@ -22,7 +22,7 @@ from typing import Any
 
 from pyrig.dev.configs.branch_protection import BranchProtectionConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.utils.github import (
+from pyrig.dev.utils.git import (
     DEFAULT_BRANCH,
     create_or_update_ruleset,
     get_github_repo_token,

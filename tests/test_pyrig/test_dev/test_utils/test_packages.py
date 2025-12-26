@@ -6,7 +6,9 @@ from pathlib import Path
 from pytest_mock import MockFixture
 
 import pyrig
+from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.utils import packages
+from pyrig.dev.utils.git import path_is_in_gitignore
 from pyrig.dev.utils.packages import (
     find_packages,
     get_namespace_packages,
@@ -118,6 +120,15 @@ def test_get_namespace_packages(tmp_path: Path) -> None:
         (Path.cwd() / "src").mkdir()
         assert get_namespace_packages() == ["src"]
         (Path.cwd() / "src" / "__init__.py").write_text("")
+        assert get_namespace_packages() == []
+
+        # make pkg in gitignore
+        GitIgnoreConfigFile()
+        # assert exists
+        assert (Path.cwd() / ".gitignore").exists()
+        assert path_is_in_gitignore("dist")
+
+        (Path.cwd() / "dist").mkdir()
         assert get_namespace_packages() == []
 
 

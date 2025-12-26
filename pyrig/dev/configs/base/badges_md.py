@@ -9,7 +9,7 @@ from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.dev.configs.workflows.release import ReleaseWorkflow
-from pyrig.dev.utils.github import DEFAULT_BRANCH
+from pyrig.dev.utils.git import DEFAULT_BRANCH
 from pyrig.src.git import (
     get_codecov_url_from_git,
     get_github_pages_url_from_git,
