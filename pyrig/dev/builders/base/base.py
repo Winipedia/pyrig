@@ -5,32 +5,39 @@ interface and orchestration logic for creating distributable artifacts from
 pyrig projects.
 
 The Builder class implements a complete build lifecycle:
-    1. Creates a temporary build directory
-    2. Invokes the subclass's `create_artifacts` method
-    3. Collects all created artifacts
-    4. Renames artifacts with platform-specific suffixes
-    5. Moves artifacts to the final output directory
+    1. Creates a temporary build directory via `tempfile.TemporaryDirectory()`
+    2. Creates an artifacts subdirectory within the temp directory
+    3. Invokes the subclass's `create_artifacts()` method
+    4. Collects all files created in the artifacts subdirectory
+    5. Renames artifacts with platform-specific suffixes (e.g., `-Linux`)
+    6. Moves renamed artifacts to the final output directory (`dist/` by default)
+    7. Cleans up temporary directory automatically (via context manager)
 
 The builder system leverages pyrig's multi-package architecture to automatically
 discover all non-abstract Builder subclasses across packages depending on pyrig.
-When `pyrig build` is executed, all discovered builders are instantiated, which
-triggers their build process.
+When `pyrig build` is executed, all discovered builders are instantiated
+**sequentially** (not in parallel), which triggers their build process.
 
 Build Process Flow:
-    1. `__init__` is called (when builder is instantiated)
-    2. `build` method is invoked automatically
-    3. Temporary directory is created
-    4. `create_artifacts` is called (implemented by subclass)
-    5. Artifacts are collected from temp directory
-    6. `rename_artifacts` adds platform suffixes
-    7. Artifacts are moved to final output directory
-    8. Temporary directory is cleaned up
+    1. Builder subclass is instantiated (e.g., `MyBuilder()`)
+    2. `__init__()` calls `cls.build()` automatically
+    3. `build()` creates temporary directory via context manager
+    4. `build()` creates artifacts subdirectory via `get_temp_artifacts_path()`
+    5. `build()` calls `create_artifacts()` (implemented by subclass)
+    6. `build()` collects artifacts via `get_temp_artifacts()`
+    7. `build()` renames and moves artifacts via `rename_artifacts()`
+    8. Temporary directory is cleaned up automatically when context exits
 
 Platform-Specific Naming:
-    Artifacts are automatically renamed with platform suffixes:
-    - Linux: `artifact-Linux`
-    - Windows: `artifact-Windows`
-    - macOS: `artifact-Darwin`
+    Artifacts are automatically renamed with platform suffixes determined by
+    `platform.system()`:
+    - Linux: `artifact-Linux` (e.g., `myapp-Linux`)
+    - Windows: `artifact-Windows` (e.g., `myapp-Windows.exe`)
+    - macOS: `artifact-Darwin` (e.g., `myapp-Darwin`)
+
+    The suffix is inserted before the file extension if one exists:
+    - `docs.zip` → `docs-Linux.zip`
+    - `myapp` → `myapp-Linux`
 
 Example:
     Create a custom builder::
@@ -51,14 +58,15 @@ Example:
     The builder is automatically discovered and invoked::
 
         $ uv run pyrig build
-        # Creates: dist/docs-Linux.zip
+        # Creates: dist/docs-Linux.zip (or platform-specific name)
 
 Module Attributes:
-    logger: Logger instance for builder operations.
+    logger (logging.Logger): Logger instance for builder operations. Uses the
+        module's `__name__` for the logger name.
 
 See Also:
-    pyrig.dev.builders.pyinstaller: PyInstaller-specific builder implementation
-    pyrig.dev.cli.commands.build_artifacts: Build command that invokes builders
+    pyrig.dev.builders.pyinstaller.PyInstallerBuilder: PyInstaller builder
+    pyrig.dev.cli.commands.build_artifacts.build_artifacts: Build command
     pyrig.src.modules.package.get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep:
         Discovery mechanism for finding builder subclasses
 """
