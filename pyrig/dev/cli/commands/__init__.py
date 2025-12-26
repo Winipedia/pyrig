@@ -1,24 +1,58 @@
-"""CLI command implementations for pyrig.
+"""CLI command implementation functions for pyrig.
 
-This package contains the implementation functions for pyrig's CLI commands.
-Each module provides the core logic for a specific command, which is then
-wrapped by a thin CLI interface in `pyrig.dev.cli.subcommands`.
+This package contains the core implementation logic for pyrig's CLI commands.
+Each module provides the actual functionality for a specific command, separated
+from the CLI interface layer defined in `pyrig.dev.cli.subcommands`.
 
-Commands:
-    - `init_project`: Complete project initialization sequence
-    - `create_root`: Generate project structure and config files
-    - `create_tests`: Generate test skeletons for source code
-    - `make_inits`: Create missing __init__.py files
-    - `build_artifacts`: Build all distributable artifacts
-    - `protect_repo`: Configure GitHub repository protection
+Architecture:
+    The separation between command implementation (this package) and CLI
+    interface (`pyrig.dev.cli.subcommands`) provides several benefits:
 
-The separation between command implementation and CLI interface allows:
-- Testing command logic independently of CLI framework
-- Reusing command logic programmatically
-- Keeping CLI definitions clean and focused on argument parsing
+    - **Testability**: Implementation functions can be tested independently of
+      the CLI framework (Typer)
+    - **Reusability**: Command logic can be called programmatically without
+      going through the CLI
+    - **Clean interfaces**: CLI wrappers focus solely on argument parsing and
+      validation
+    - **Lazy imports**: Dev dependencies are imported only when commands execute,
+      preventing import errors when pyrig is installed without dev dependencies
+
+Modules:
+    - `init_project`: Complete project initialization orchestration (9 steps)
+    - `create_root`: Project structure and configuration file generation
+    - `create_tests`: Test skeleton generation for all source code
+    - `make_inits`: __init__.py file creation for namespace packages
+    - `build_artifacts`: Artifact build orchestration via Builder discovery
+    - `protect_repo`: GitHub repository protection and security configuration
+
+Usage Pattern:
+    Each module exports one or more implementation functions that are called
+    by corresponding wrapper functions in `pyrig.dev.cli.subcommands`. The
+    wrappers handle CLI argument parsing and then delegate to these
+    implementations.
 
 Example:
-    >>> from pyrig.dev.cli.commands.create_tests import make_test_skeletons
-    >>> # Call command logic directly without CLI
-    >>> make_test_skeletons()
+    Calling implementation functions directly (programmatic usage)::
+
+        from pyrig.dev.cli.commands.create_tests import make_test_skeletons
+        from pyrig.dev.cli.commands.create_root import make_project_root
+
+        # Call command logic without CLI
+        make_project_root(priority=True)
+        make_test_skeletons()
+
+    Calling via CLI (normal usage)::
+
+        $ uv run pyrig mkroot --priority
+        $ uv run pyrig mktests
+
+Note:
+    - All modules in this package may import dev dependencies, so they should
+      only be imported when actually executing commands
+    - The CLI wrappers in `pyrig.dev.cli.subcommands` use local imports to
+      avoid import errors when dev dependencies are not installed
+
+See Also:
+    pyrig.dev.cli.subcommands: CLI wrapper functions that call these implementations
+    pyrig.dev.cli.cli: Command discovery and registration system
 """
