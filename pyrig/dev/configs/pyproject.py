@@ -18,6 +18,11 @@ The configuration enforces pyrig's opinionated defaults:
     - Bandit security scanning (excluding test directories)
     - Markdown linting with rumdl
     - uv as the build backend
+
+Note:
+    The validation uses subset checking, so users can add additional tool
+    configurations (e.g., [tool.mypy]) beyond what pyrig generates. The file
+    is considered valid as long as it contains all required configurations.
     - Coverage threshold enforcement via pytest
 
 The class provides utility methods for:
@@ -177,7 +182,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 - project: Project metadata, dependencies, and entry points
                 - dependency-groups: Development dependencies
                 - build-system: uv build backend configuration
-                - tool: Configurations for ruff, ty, pytest, bandit, rumdl
+                - tool: Configurations for uv, ruff, ty, pytest, bandit, rumdl
 
         Note:
             This method makes external calls to:

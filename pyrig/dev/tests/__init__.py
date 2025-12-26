@@ -64,7 +64,7 @@ Session-Level Validations:
     - All source code in single package
     - Source package correctly named
     - All modules have corresponding test modules
-    - No unittest package usage (pytest only)
+    - No unit-test package usage (pytest only)
     - Dependencies are up to date
     - Pre-commit hooks installed
     - Source code runs without dev dependencies

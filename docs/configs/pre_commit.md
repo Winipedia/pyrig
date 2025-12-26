@@ -55,8 +55,8 @@ When initialized via `uv run pyrig mkroot`, the `.pre-commit-config.yaml` file
 is created with:
 
 1. **Local repository configuration**: All hooks run locally using system tools
-2. **Five quality check hooks**: Linting, formatting, type checking (2 types),
-   and security scanning
+2. **Code quality check hooks**: Linting, formatting, type checking, security
+   scanning, and markdown linting
 3. **Automatic execution**: Hooks run on every commit before changes are
    committed
 
@@ -87,6 +87,12 @@ repos:
       - id: check-security
         name: check-security
         entry: bandit -c pyproject.toml -r .
+        language: system
+        always_run: true
+        pass_filenames: false
+      - id: check-markdown
+        name: check-markdown
+        entry: rumdl check
         language: system
         always_run: true
         pass_filenames: false

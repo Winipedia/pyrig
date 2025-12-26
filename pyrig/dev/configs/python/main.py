@@ -1,25 +1,26 @@
-"""Configuration for the {package_name}/src/main.py CLI entry point.
+"""Configuration for the {package_name}/main.py template file.
 
 This module provides the MainConfigFile class for creating the
-{package_name}/src/main.py file that serves as the CLI entry point for
-the project.
+{package_name}/main.py file that provides an empty main() function template.
 
 The generated file:
     - Copies the entire pyrig.main module as a template
-    - Provides a main() function as the CLI entry point
+    - Provides an empty main() function that can be customized
     - Includes the standard if __name__ == "__main__": guard
-    - Is referenced in pyproject.toml as the CLI script entry point
+    - Gets automatically discovered and registered as a CLI command by
+      pyrig.dev.cli.cli
     - Automatically cleans up any legacy root-level main.py files
 
-The main.py file integrates with Click for CLI functionality and serves
-as the primary interface for command-line interactions.
+The main() function is discovered by pyrig's CLI system and registered as a
+Typer command, but the template itself contains no CLI functionality.
 
 See Also:
     pyrig.main
         Source module that is copied as a template
+    pyrig.dev.cli.cli
+        CLI system that discovers and registers the main() function
     pyrig.dev.configs.pyproject.PyprojectConfigFile
-        Configures the CLI script entry point
-    Click documentation: https://click.palletsprojects.com/
+        Configures the CLI script entry point (pyrig.dev.cli.cli:main)
 """
 
 import logging
@@ -33,40 +34,39 @@ logger = logging.getLogger(__name__)
 
 
 class MainConfigFile(CopyModuleConfigFile):
-    """Configuration file manager for {package_name}/src/main.py.
+    """Configuration file manager for {package_name}/main.py.
 
-    Generates a {package_name}/src/main.py file by copying pyrig's main module
-    as a template. This file serves as the CLI entry point for the project.
+    Generates a {package_name}/main.py file by copying pyrig's main module
+    as a template. This file provides an empty main() function that gets
+    automatically discovered and registered as a CLI command.
 
     The generated file:
-        - Contains a main() function as the CLI entry point
-        - Uses Click for command-line interface functionality
+        - Contains an empty main() function template
         - Includes the standard if __name__ == "__main__": guard
-        - Is referenced in pyproject.toml [project.scripts] section
-        - Can be customized with project-specific CLI commands
+        - Gets discovered by pyrig.dev.cli.cli.add_subcommands()
+        - Gets registered as a Typer command automatically
+        - Can be customized with project-specific application logic
 
     Cleanup Behavior:
         - Automatically deletes any root-level main.py files on initialization
-        - This ensures main.py is always in the correct location (src/)
+        - This ensures main.py is always in the correct location ({package_name}/)
 
     Examples:
-        Generate {package_name}/src/main.py::
+        Generate {package_name}/main.py::
 
             from pyrig.dev.configs.python.main import MainConfigFile
 
-            # Creates {package_name}/src/main.py and cleans up root main.py
+            # Creates {package_name}/main.py and cleans up root main.py
             MainConfigFile()
 
         The generated file structure::
 
-            \"\"\"CLI entry point for {package_name}.\"\"\"
+            \"\"\"Main entrypoint for the project.\"\"\"
 
-            import click
 
-            @click.command()
-            def main():
-                \"\"\"Main CLI entry point.\"\"\"
-                click.echo("Hello from {package_name}!")
+            def main() -> None:
+                \"\"\"Main entrypoint for the project.\"\"\"
+
 
             if __name__ == "__main__":
                 main()
@@ -74,8 +74,8 @@ class MainConfigFile(CopyModuleConfigFile):
     See Also:
         pyrig.main
             Source module copied as a template
-        pyrig.dev.configs.pyproject.PyprojectConfigFile
-            Configures the CLI script entry point
+        pyrig.dev.cli.cli.add_subcommands
+            Function that discovers and registers the main() function
         pyrig.dev.configs.base.copy_module.CopyModuleConfigFile
             Base class for copying entire modules
     """
@@ -83,13 +83,13 @@ class MainConfigFile(CopyModuleConfigFile):
     def __init__(self) -> None:
         """Initialize the MainConfigFile and clean up legacy files.
 
-        Creates the {package_name}/src/main.py file and automatically deletes
-        any root-level main.py files to ensure the entry point is in the
-        correct location.
+        Creates the {package_name}/main.py file and automatically deletes
+        any root-level main.py files to ensure the file is in the correct
+        location.
 
         Side Effects:
-            - Creates {package_name}/src/main.py
-            - Deletes ./main.py if it exists (legacy cleanup)
+            - Creates {package_name}/main.py
+            - Deletes ./main.py if it exists (legacy cleanup from uv init)
             - Logs deletion of root-level main.py if found
         """
         super().__init__()
@@ -143,8 +143,8 @@ class MainConfigFile(CopyModuleConfigFile):
         """Delete any root-level main.py file.
 
         Cleans up legacy main.py files that were created at the project root
-        instead of in the src/ directory. This ensures the CLI entry point is
-        always in the correct location.
+        by uv init. This ensures main.py is always in the correct location
+        ({package_name}/ directory).
 
         Side Effects:
             - Deletes ./main.py if it exists
@@ -152,7 +152,9 @@ class MainConfigFile(CopyModuleConfigFile):
 
         Note:
             This is called automatically during __init__() to ensure cleanup
-            happens whenever the config file is created or updated.
+            happens whenever the config file is created or updated. The uv
+            init command creates a main.py at the project root, which needs
+            to be removed.
 
         Examples:
             >>> MainConfigFile.delete_root_main()

@@ -31,7 +31,7 @@ Fixtures:
     assert_all_modules_tested: Verify every module has a corresponding test
         module. Creates test skeletons if needed.
 
-    assert_no_unit_test_package_usage: Verify unittest package is not used
+    assert_no_unit_test_package_usage: Verify unit-test package is not used
         (pytest only).
 
     assert_dependencies_are_up_to_date: Verify dependencies are up to date.
@@ -69,7 +69,7 @@ Validation Categories:
     - All modules have test modules
 
     **Code Quality**:
-    - No unittest usage (pytest only)
+    - No unit-test usage (pytest only)
     - Source doesn't import dev code
 
     **Dependencies**:
@@ -653,54 +653,33 @@ def assert_all_modules_tested() -> None:
 
 @autouse_session_fixture
 def assert_no_unit_test_package_usage() -> None:
-    """Verify that unittest is not used in the project (pytest only).
+    """Verify that unit-test is not used in the project (pytest only).
 
     This session-scoped autouse fixture runs automatically once per test session
-    to verify that the unittest package is not used anywhere in the project.
-    Pyrig projects use pytest exclusively for testing, and mixing unittest with
+    to verify that the unit-test package is not used anywhere in the project.
+    Pyrig projects use pytest exclusively for testing, and mixing unit-test with
     pytest can cause issues and inconsistencies.
 
     The fixture:
     1. Scans all Python files in all packages
-    2. Searches for the string "unittest" (case-insensitive)
-    3. Collects all files containing unittest references
+    2. Searches for the string "unit-test" (case-insensitive)
+    3. Collects all files containing unit-test references
     4. Fails with a detailed error message listing the files
 
     This ensures that:
     - Only pytest is used for testing
-    - No unittest imports or usage exist
+    - No unit-test imports or usage exist
     - Testing approach is consistent across the project
     - No mixing of testing frameworks
 
     Raises:
-        AssertionError: If any files contain "unittest" references. The error
-            message lists all files containing unittest usage.
-
-    Example:
-        If unittest is used::
-
-            # tests/test_calculator.py
-            import unittest  # BAD!
-
-            class TestCalculator(unittest.TestCase):  # BAD!
-                def test_add(self):
-                    pass
-
-            # Fixture fails with:
-            # "Found unittest package usage in:
-            #  - tests/test_calculator.py"
-
-        Correct approach (pytest only)::
-
-            # tests/test_calculator.py
-            def test_add():
-                '''Use pytest, not unittest.'''
-                assert add(1, 2) == 3
+        AssertionError: If any files contain "unit-test" references. The error
+            message lists all files containing unit-test usage.
 
     Note:
         - This fixture runs once per test session
         - It scans all Python files in the project
-        - The search is case-insensitive
+        - The search is case-sensitive
         - Both imports and usage are detected
 
     See Also:

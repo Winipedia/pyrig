@@ -1,18 +1,21 @@
 # main.py Configuration
 
-The `MainConfigFile` manages the `main.py` file, which serves as the CLI entry
-point for your project.
+The `MainConfigFile` manages the `main.py` file, which provides a template
+`main()` function that gets registered as a CLI command by pyrig's command
+discovery system.
 
 ## Overview
 
 Creates a main.py file that:
 
-- Serves as the CLI entry point for your application
-- Copies the complete implementation from `pyrig.main`
-- Provides a working CLI with subcommand support
+- Provides an empty `main()` function template for your application logic
+- Copies the template implementation from `pyrig.main`
+- Gets automatically discovered and registered as a CLI command by
+  `pyrig.dev.cli.cli`
 - Automatically cleans up legacy root-level main.py files
-- Allows customization while maintaining required structure
-- Located in the `myapp/` directory (not project root)
+- Allows customization while maintaining required structure (`def main` and
+  `if __name__ == "__main__":`)
+- Located in the `{package_name}/` directory (not project root)
 
 ## Inheritance
 
@@ -76,17 +79,27 @@ The entire content of `pyrig/main.py` is copied to your project.
 
 ### Generated Content
 
-The copied `main.py` includes an empty `main()` function:
+The copied `main.py` includes an empty `main()` function template:
 
 ```python
-"""CLI entry point for the application."""
+"""Main entrypoint for the project."""
+
 
 def main() -> None:
-    """Main entry point for the CLI."""
+    """Main entrypoint for the project."""
+
 
 if __name__ == "__main__":
     main()
 ```
+
+This template provides:
+
+- An empty `main()` function where you can add your application logic
+- A docstring that should be customized for your project
+- The `if __name__ == "__main__":` guard for direct script execution
+- No CLI functionality by default - that comes from pyrig's command discovery
+  system
 
 ### Legacy Cleanup
 

@@ -60,19 +60,21 @@ class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
         Add project-specific subcommands to the generated file::
 
             # In {package_name}/dev/cli/subcommands.py
-            import click
-
-            @click.command()
-            def my_command():
+            def my_command() -> None:
                 \"\"\"Project-specific command.\"\"\"
-                click.echo("Hello from my project!")
+                from myproject.core import do_something
+                do_something()
+
+        The function is automatically discovered and registered as a Typer
+        command by pyrig's CLI system. No decorators needed.
 
     See Also:
         pyrig.dev.cli.subcommands
             Source module for the docstring
         pyrig.dev.configs.python.shared_subcommands.SharedSubcommandsConfigFile
             Shared subcommands available in all projects
-        Click documentation: https://click.palletsprojects.com/
+        pyrig.dev.cli.cli.add_subcommands
+            Function that discovers and registers subcommands
     """
 
     @classmethod
