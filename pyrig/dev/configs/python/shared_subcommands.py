@@ -59,19 +59,21 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
         Add shared subcommands to the generated file::
 
             # In {package_name}/dev/cli/shared_subcommands.py
-            import click
-
-            @click.command()
-            def my_shared_command():
+            def my_shared_command() -> None:
                 \"\"\"Shared command available in all projects.\"\"\"
-                click.echo("Hello from shared command!")
+                from myproject.utils import shared_functionality
+                shared_functionality()
+
+        The function is automatically discovered and registered as a Typer
+        command by pyrig's CLI system. No decorators needed.
 
     See Also:
         pyrig.dev.cli.shared_subcommands
             Source module for the docstring
         pyrig.dev.configs.python.subcommands.SubcommandsConfigFile
             Project-specific subcommands
-        Click documentation: https://click.palletsprojects.com/
+        pyrig.dev.cli.cli.add_shared_subcommands
+            Function that discovers and registers shared subcommands
     """
 
     @classmethod
