@@ -47,6 +47,11 @@ control.
 
 Python version specification file for pyenv and other version managers.
 
+### [api.md](api_md.md)
+
+API reference documentation page generated from Python docstrings using
+mkdocstrings.
+
 ### [fixtures/**init**.py](fixtures_init.md)
 
 Package initialization file for the test fixtures directory structure.

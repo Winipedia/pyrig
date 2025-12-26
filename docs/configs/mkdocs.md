@@ -8,8 +8,8 @@ generating documentation websites with MkDocs.
 Creates a minimal MkDocs configuration that:
 
 - Sets the site name from your project name
-- Configures basic navigation with home page
-- Enables search and Mermaid diagram plugins
+- Configures basic navigation with home page and API reference
+- Enables search, Mermaid diagram, and mkdocstrings plugins
 - Uses Material theme for modern, professional documentation
 - Allows user customization while maintaining required structure
 
@@ -55,9 +55,20 @@ with minimal required configuration:
 site_name: my-project
 nav:
   - Home: index.md
+  - API: api.md
 plugins:
   - search
   - mermaid2
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            members: true
+            show_source: true
+            inherited_members: true
+            filters: []
+            show_submodules: true
 theme:
   name: material
   palette:
@@ -76,10 +87,12 @@ theme:
 **Four required keys**:
 
 1. **`site_name`**: Automatically pulled from `pyproject.toml` project name
-2. **`nav`**: Navigation with at least a Home entry pointing to `index.md` in
-   the docs directory
-3. **`plugins`**: Search and Mermaid2 plugins enabled (mermaid2 allows beautiful
-   diagrams in markdown, included via `pyrig-dev`)
+2. **`nav`**: Navigation with at least Home and API entries pointing to
+   `index.md` and `api.md` in the docs directory
+3. **`plugins`**: Search, Mermaid2, and mkdocstrings plugins enabled
+   - `search`: Full-text search across documentation
+   - `mermaid2`: Beautiful diagrams in markdown (included via `pyrig-dev`)
+   - `mkdocstrings`: Automatic API documentation from Python docstrings
 4. **`theme`**: Material theme with dark mode as default and light/dark toggle
 
 ### Validation Logic
@@ -104,11 +117,17 @@ The MkDocs config adapts to your project automatically:
 Automatically uses your project name from `pyproject.toml`. If your project is
 named `my-awesome-project`, the site name becomes `my-awesome-project`.
 
-### Home Page Path
+### Navigation
 
-The navigation automatically points to `index.md` in the docs directory, which
-is created by pyrig's `IndexConfigFile`. This ensures the homepage is always
-correctly referenced.
+The navigation automatically includes two pages:
+
+- **Home** (`index.md`): Created by pyrig's `IndexConfigFile`, serves as the
+  documentation homepage
+- **API** (`api.md`): Created by pyrig's `ApiConfigFile`, provides automatic API
+  reference documentation from Python docstrings
+
+This ensures both the homepage and API documentation are always correctly
+referenced.
 
 ### Material Theme
 
@@ -246,6 +265,38 @@ graph TD
 
 This is why pyrig's documentation can include architecture diagrams directly in
 markdown files.
+
+### mkdocstrings Plugin
+
+Automatically generates API reference documentation from Python docstrings.
+Configured with:
+
+```yaml
+mkdocstrings:
+  handlers:
+    python:
+      options:
+        docstring_style: google
+        members: true
+        show_source: true
+        inherited_members: true
+        filters: []
+        show_submodules: true
+```
+
+**Options explained**:
+
+- **`docstring_style: google`**: Uses Google-style docstrings (Args, Returns,
+  Raises sections)
+- **`members: true`**: Shows all class/module members
+- **`show_source: true`**: Includes links to source code
+- **`inherited_members: true`**: Shows inherited methods from parent classes
+- **`filters: []`**: No filtering (shows all members including private)
+- **`show_submodules: true`**: Includes submodules in documentation
+
+The plugin processes special `::: module.name` syntax in markdown files to
+generate documentation. See [api.md](api_md.md) for details on how this is used
+in the API reference page.
 
 ## Best Practices
 

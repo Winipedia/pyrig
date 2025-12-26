@@ -303,7 +303,8 @@ my-project/
 │           └── __init__.py
 │
 ├── docs/                            # MkDocs documentation
-│   └── index.md                     # Documentation homepage
+│   ├── index.md                     # Documentation homepage
+│   └── api.md                       # API reference (auto-generated)
 │
 ├── .github/                         # GitHub configuration
 │   └── workflows/                   # CI/CD workflows
@@ -325,8 +326,15 @@ my-project/
 └── uv.lock                          # Dependency lock file
 ```
 
-- `docs/` - MkDocs documentation
-- `.github/workflows/` - CI/CD workflows
+**Documentation**:
+
+- `docs/index.md` - Documentation homepage with badges and project description
+- `docs/api.md` - API reference auto-generated from Python docstrings
+- `mkdocs.yml` - MkDocs configuration with Material theme
+
+**CI/CD**:
+
+- `.github/workflows/` - GitHub Actions workflows for automation
 
 **Configuration Files**:
 

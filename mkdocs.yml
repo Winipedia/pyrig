@@ -1,9 +1,20 @@
 site_name: pyrig
 nav:
 - Home: index.md
+- API: api.md
 plugins:
 - search
 - mermaid2
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          docstring_style: google
+          members: true
+          show_source: true
+          inherited_members: true
+          filters: []
+          show_submodules: true
 theme:
   name: material
   palette:

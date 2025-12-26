@@ -40,8 +40,28 @@ class MkdocsConfigFile(YmlConfigFile):
             "site_name": PyprojectConfigFile.get_project_name(),
             "nav": [
                 {"Home": IndexConfigFile.get_path().name},
+                {"API": "api.md"},
             ],
-            "plugins": ["search", "mermaid2"],
+            "plugins": [
+                "search",
+                "mermaid2",
+                {
+                    "mkdocstrings": {
+                        "handlers": {
+                            "python": {
+                                "options": {
+                                    "docstring_style": "google",
+                                    "members": True,
+                                    "show_source": True,
+                                    "inherited_members": True,
+                                    "filters": [],
+                                    "show_submodules": True,
+                                },
+                            },
+                        },
+                    },
+                },
+            ],
             "theme": {
                 "name": "material",
                 "palette": [
