@@ -46,7 +46,32 @@ class DiGraph:
 
     @classmethod
     def cached(cls) -> Self:
-        """Get a cached instance of the graph."""
+        """Get a cached singleton instance of the graph.
+
+        Returns the same DiGraph instance on every call, enabling efficient
+        reuse of the graph across multiple function calls without rebuilding.
+        This is particularly useful for expensive graph operations like
+        dependency analysis.
+
+        Returns:
+            A cached DiGraph instance. The same instance is returned on all
+            subsequent calls.
+
+        Example:
+            >>> graph1 = DiGraph.cached()
+            >>> graph2 = DiGraph.cached()
+            >>> graph1 is graph2
+            True
+
+        Note:
+            The caching is implemented using `functools.cache` via
+            `get_cached_instance`, so the instance persists for the lifetime
+            of the Python process.
+
+        See Also:
+            pyrig.src.modules.class_.get_cached_instance: Caching implementation
+            pyrig.src.modules.package.DependencyGraph.cached: Subclass usage
+        """
         return get_cached_instance(cls)  # type: ignore[no-any-return, arg-type]
 
     def __init__(self) -> None:

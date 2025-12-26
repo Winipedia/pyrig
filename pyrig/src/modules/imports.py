@@ -1,4 +1,37 @@
-"""Common utilities for importing Python modules and packages."""
+"""Module and package import utilities with fallback mechanisms.
+
+This module provides utilities for importing Python modules and packages,
+including package detection, recursive package traversal, and dynamic module
+importing with fallback strategies.
+
+The utilities handle edge cases like:
+    - Distinguishing between modules and packages
+    - Walking package hierarchies recursively
+    - Importing modules that may not exist
+    - Loading modules from file paths
+
+These are used throughout pyrig for dynamic discovery of ConfigFile subclasses,
+Builder implementations, and CLI commands across multiple packages.
+
+Example:
+    >>> from pyrig.src.modules.imports import walk_package, module_is_package
+    >>> import pyrig.dev.configs
+    >>>
+    >>> # Check if a module is a package
+    >>> module_is_package(pyrig.dev.configs)
+    True
+    >>>
+    >>> # Walk all submodules in a package
+    >>> for module in walk_package(pyrig.dev.configs):
+    ...     print(module.__name__)
+    pyrig.dev.configs.base
+    pyrig.dev.configs.gitignore
+    ...
+
+See Also:
+    pyrig.src.modules.module: Module loading and path conversion
+    pyrig.src.modules.path: Path utilities for modules
+"""
 
 import importlib.machinery
 import importlib.util

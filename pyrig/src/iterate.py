@@ -1,4 +1,25 @@
-"""Utilities for iterating over data structures."""
+"""Utilities for deep comparison and validation of nested data structures.
+
+This module provides utilities for comparing nested dictionaries and lists,
+primarily used for configuration file validation. The core function enables
+checking whether one nested structure is a subset of another, with optional
+auto-correction callbacks.
+
+The primary use case is validating that configuration files contain all required
+settings while allowing users to add extra configuration. This powers pyrig's
+ConfigFile system, which automatically adds missing configuration values to
+existing files.
+
+Example:
+    >>> from pyrig.src.iterate import nested_structure_is_subset
+    >>> required = {"database": {"host": "localhost", "port": 5432}}
+    >>> actual = {"database": {"host": "localhost", "port": 5432, "ssl": True}}
+    >>> nested_structure_is_subset(required, actual)
+    True
+
+See Also:
+    pyrig.dev.configs.base.base.ConfigFile: Uses this for config validation
+"""
 
 import logging
 from collections.abc import Callable, Iterable
@@ -16,41 +37,73 @@ def nested_structure_is_subset(  # noqa: C901
 ) -> bool:
     """Check if a nested structure is a subset of another nested structure.
 
-    Performs deep comparison of nested dictionaries and lists to verify that
-    all keys/values in `subset` exist in `superset`. This enables validation
+    Performs deep recursive comparison of nested dictionaries and lists to verify
+    that all keys/values in `subset` exist in `superset`. This enables validation
     that required configuration values are present while allowing additional
     values in the superset.
 
-    The comparison rules are:
-        - Dictionaries: All keys in subset must exist in superset with matching
-          values (superset may have additional keys).
-        - Lists: All items in subset must exist somewhere in superset
-          (order does not matter, superset may have additional items).
-        - Primitives: Must be exactly equal.
+    The comparison is performed recursively with the following rules:
+        - **Dictionaries**: All keys in subset must exist in superset with
+          matching values. Superset may have additional keys that are ignored.
+        - **Lists**: All items in subset must exist somewhere in superset.
+          Order does not matter, and superset may have additional items.
+        - **Primitives**: Must be exactly equal (using `==` comparison).
+
+    Optional action callbacks enable auto-correction: when a mismatch is detected,
+    the callback can modify the superset to add the missing value, and the
+    comparison is automatically retried. This powers pyrig's ConfigFile system,
+    which automatically adds missing required settings to configuration files.
 
     Args:
-        subset: The structure that should be contained within superset.
-            Can be a dict, list, or primitive value.
-        superset: The structure to check against. Should contain all
-            elements from subset (and possibly more).
-        on_false_dict_action: Optional callback invoked when a dict comparison
-            fails. Receives (subset_dict, superset_dict, failing_key). Can
-            modify the structures to fix the mismatch; comparison is retried
-            after the action.
-        on_false_list_action: Optional callback invoked when a list comparison
-            fails. Receives (subset_list, superset_list, failing_index). Can
-            modify the structures to fix the mismatch; comparison is retried
-            after the action.
+        subset: The structure that should be contained within superset. Can be
+            a dict, list, or primitive value (str, int, bool, etc.).
+        superset: The structure to check against. Should contain all elements
+            from subset (and possibly more).
+        on_false_dict_action: Optional callback invoked when a dictionary key
+            comparison fails. Receives `(subset_dict, superset_dict, failing_key)`.
+            Can modify `superset_dict` to add the missing key/value; the
+            comparison is retried after the callback returns.
+        on_false_list_action: Optional callback invoked when a list item
+            comparison fails. Receives `(subset_list, superset_list, failing_index)`.
+            Can modify `superset_list` to add the missing item; the comparison
+            is retried after the callback returns.
 
     Returns:
         True if all elements in subset exist in superset with matching values,
-        False otherwise.
+        False otherwise. When action callbacks are provided and successfully
+        fix mismatches, returns True after the fixes are applied.
+
+    Example:
+        Basic subset checking::
+
+            >>> subset = {"a": 1, "b": [2, 3]}
+            >>> superset = {"a": 1, "b": [2, 3, 4], "c": 5}
+            >>> nested_structure_is_subset(subset, superset)
+            True
+
+        With auto-correction callback::
+
+            >>> def add_missing(subset_dict, superset_dict, key):
+            ...     superset_dict[key] = subset_dict[key]
+            >>> subset = {"required": "value"}
+            >>> superset = {}
+            >>> nested_structure_is_subset(subset, superset, add_missing)
+            True
+            >>> superset
+            {'required': 'value'}
 
     Note:
-        The optional action callbacks enable auto-correction behavior: when a
-        mismatch is found, the callback can modify the superset to include the
-        missing value, and the comparison is retried. This is used by ConfigFile
-        to automatically add missing required settings to config files.
+        - The function is recursive and handles arbitrarily nested structures.
+        - When callbacks are provided, they can modify the superset in-place.
+        - If a callback fails to fix the mismatch, a debug log is generated
+          showing the subset and superset for troubleshooting.
+        - List comparison is order-independent: `[1, 2]` is a subset of `[2, 1]`.
+
+    See Also:
+        pyrig.dev.configs.base.base.ConfigFile.add_missing_configs: Uses this
+            with callbacks to auto-add missing configuration values
+        pyrig.dev.configs.base.base.ConfigFile.is_correct_recursively: Uses this
+            for validation without callbacks
     """
     if isinstance(subset, dict) and isinstance(superset, dict):
         iterable: Iterable[tuple[Any, Any]] = subset.items()
