@@ -3,35 +3,65 @@
 This module provides the `PyInstallerBuilder` abstract base class for creating
 platform-specific standalone executables from pyrig projects using PyInstaller.
 
-The PyInstallerBuilder handles all aspects of executable creation including:
-    - Automatic resource bundling from multiple packages
-    - Platform-specific icon conversion (PNG to ICO/ICNS)
-    - PyInstaller configuration and invocation
-    - Resource discovery across the dependency chain
-    - Single-file executable generation
+The PyInstallerBuilder extends the Builder base class with PyInstaller-specific
+functionality, handling all aspects of executable creation including resource
+bundling, icon conversion, and PyInstaller configuration.
 
-Resource Bundling:
-    Resources are automatically collected from:
-    1. All packages depending on pyrig (their `resources` modules)
-    2. Additional packages specified by `get_additional_resource_pkgs()`
+Key Capabilities:
+    - **Single-file executables**: Creates standalone executables via PyInstaller's
+      `--onefile` option
+    - **Automatic resource bundling**: Collects resources from multiple packages
+      across the dependency chain
+    - **Platform-specific icon conversion**: Converts PNG icons to ICO (Windows),
+      ICNS (macOS), or copies PNG (Linux)
+    - **Multi-package resource discovery**: Automatically finds and bundles
+      `resources` modules from all packages depending on pyrig
+    - **PyInstaller configuration**: Generates complete command-line options
+      for PyInstaller
+    - **No console window**: Uses `--noconsole` for GUI applications
 
-    This enables multi-package applications to bundle resources from all
-    their dependencies automatically.
+Resource Bundling System:
+    Resources are automatically collected from two sources:
 
-Icon Handling:
-    The builder automatically converts the application icon to the appropriate
-    format for each platform:
-    - Windows: PNG → ICO
-    - macOS: PNG → ICNS
-    - Linux: PNG (copied to temp directory)
+    1. **Default resources** (automatic discovery):
+       - Finds all `resources` modules in packages depending on pyrig
+       - Uses `get_same_modules_from_deps_depen_on_dep()` for discovery
+       - Example: If `myapp` depends on `pyrig`, both `pyrig.resources` and
+         `myapp.resources` are included automatically
+
+    2. **Additional resources** (subclass-specified):
+       - Packages specified by `get_additional_resource_pkgs()` implementation
+       - Allows bundling resources from non-standard locations
+       - Example: Plugin resources, third-party package resources
+
+    All resources are bundled using PyInstaller's `--add-data` option and are
+    accessible at runtime via `importlib.resources` or `pyrig.src.resource`.
+
+Icon Conversion:
+    The builder expects an `icon.png` file in the resources directory and
+    automatically converts it to the appropriate format for each platform:
+
+    - **Windows**: PNG → ICO format via PIL/Pillow
+    - **macOS**: PNG → ICNS format via PIL/Pillow
+    - **Linux**: PNG copied to temp directory (no conversion needed)
+
+    The converted icon is passed to PyInstaller via the `--icon` argument.
+    For best results, use a square PNG (e.g., 512x512 or 1024x1024).
 
 PyInstaller Configuration:
-    The builder generates PyInstaller command-line options including:
-    - `--onefile`: Create a single executable file
-    - `--noconsole`: Hide console window (GUI applications)
-    - `--clean`: Clean PyInstaller cache before building
-    - `--add-data`: Bundle all discovered resources
-    - `--icon`: Platform-specific application icon
+    The builder generates the following PyInstaller command-line options:
+
+    - Entry point: Path to `main.py` from `get_main_path()`
+    - `--name`: Application name from `pyproject.toml`
+    - `--clean`: Remove PyInstaller cache before building
+    - `--noconfirm`: Replace output directory without confirmation
+    - `--onefile`: Create a single executable file (not a directory)
+    - `--noconsole`: Hide console window (for GUI applications)
+    - `--workpath`: Temporary directory for PyInstaller's intermediate files
+    - `--specpath`: Directory for generated `.spec` file
+    - `--distpath`: Output directory for the executable (temp artifacts dir)
+    - `--icon`: Platform-specific icon file path
+    - `--add-data`: One argument per resource file (format: `source:destination`)
 
 Example:
     Create a builder for your application::
@@ -45,7 +75,7 @@ Example:
 
             @classmethod
             def get_additional_resource_pkgs(cls) -> list[ModuleType]:
-                '''Include application-specific resources.'''
+                '''Specify additional resource packages to bundle.'''
                 return [myapp.resources]
 
     Build the executable::
@@ -53,14 +83,22 @@ Example:
         $ uv run pyrig build
         # Creates: dist/myapp-Linux (or platform-specific name)
 
+    The executable will include:
+    - All Python code from the project
+    - All resources from `pyrig.resources` (auto-discovered)
+    - All resources from `myapp.resources` (auto-discovered)
+    - Platform-specific icon
+    - All dependencies
+
 Module Attributes:
-    None
+    None (no module-level constants or variables)
 
 See Also:
     pyrig.dev.builders.base.base.Builder: Base builder class
     pyrig.src.modules.package.get_same_modules_from_deps_depen_on_dep:
         Resource discovery mechanism
     pyrig.src.resource: Runtime resource access utilities
+    PyInstaller.utils.hooks.collect_data_files: Resource collection utility
 """
 
 import os

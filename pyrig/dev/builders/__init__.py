@@ -2,29 +2,54 @@
 
 This package provides the builder system for creating distributable artifacts
 from pyrig projects. Builders are automatically discovered across all packages
-depending on pyrig and invoked when running the `pyrig build` command.
+depending on pyrig and executed sequentially when running `pyrig build`.
 
-The builder system leverages pyrig's multi-package architecture to discover
-all non-abstract Builder subclasses across the dependency graph. When a builder
-is instantiated, it automatically triggers the build process, creating artifacts
-in a temporary directory before moving them to the final output location with
-platform-specific naming.
+Architecture Overview:
+    The builder system uses pyrig's multi-package discovery mechanism to find
+    all concrete Builder subclasses across the dependency graph. When a builder
+    is instantiated, it automatically triggers its build process via `__init__`,
+    creating artifacts in a temporary directory before moving them to the final
+    output location with platform-specific naming.
 
-Features:
-    - **Automatic discovery**: Finds all Builder subclasses across dependent packages
-    - **PyInstaller support**: Built-in support for creating standalone executables
+    Build execution is **sequential**, not parallel. Each builder completes
+    before the next one starts.
+
+Class Hierarchy:
+    The builder system provides a two-tier abstract class hierarchy:
+
+    1. **Builder** (abstract base class): Provides build orchestration framework,
+       temporary directory management, artifact collection, and platform-specific
+       renaming. Subclasses must implement `create_artifacts()`.
+
+    2. **PyInstallerBuilder** (abstract): Extends Builder with PyInstaller-specific
+       functionality including resource bundling, icon conversion, and executable
+       creation. Subclasses must implement `get_additional_resource_pkgs()`.
+
+    Concrete builders must inherit from one of these and implement the required
+    abstract methods.
+
+Key Features:
+    - **Automatic discovery**: Finds all Builder subclasses across dependent
+      packages using pyrig's module discovery system
+    - **PyInstaller support**: Built-in abstract builder for creating standalone
+      executables with automatic resource bundling
     - **Resource bundling**: Automatically collects and bundles resource files
-    - **Platform-specific naming**: Adds platform suffixes (e.g., `-Linux`, `-Windows`)
-    - **Custom build processes**: Extensible via Builder subclasses
-    - **Parallel execution**: Builds can run concurrently when possible
+      from multiple packages in the dependency chain
+    - **Platform-specific naming**: Adds platform suffixes to artifacts
+      (e.g., `-Linux`, `-Windows`, `-Darwin`)
+    - **Temporary directory management**: Builds in isolated temp directories
+      with automatic cleanup
+    - **Extensible**: Create custom builders by subclassing Builder or
+      PyInstallerBuilder
 
-Architecture:
-    The builder system uses a two-tier class hierarchy:
-
-    1. `Builder` (abstract base class): Provides the build orchestration framework
-    2. `PyInstallerBuilder` (abstract): Specialized builder for PyInstaller executables
-
-    Concrete builders must inherit from one of these and implement required methods.
+Build Process Flow:
+    1. User runs `uv run pyrig build`
+    2. Command calls `Builder.init_all_non_abstract_subclasses()`
+    3. Discovery finds all concrete Builder subclasses across packages
+    4. Each builder is instantiated sequentially
+    5. Instantiation triggers `__init__` → `build()` → `create_artifacts()`
+    6. Artifacts are collected, renamed with platform suffix, and moved to `dist/`
+    7. Temporary directories are cleaned up automatically
 
 Example:
     Create a custom PyInstaller builder::
@@ -38,17 +63,18 @@ Example:
 
             @classmethod
             def get_additional_resource_pkgs(cls) -> list[ModuleType]:
-                '''Include application resources in the executable.'''
+                '''Specify additional resource packages to bundle.'''
                 return [myapp.resources]
 
-    Then build all artifacts::
+    Build all artifacts::
 
         $ uv run pyrig build
 
-    This will create `dist/myapp-Linux` (or platform-specific equivalent).
+    This discovers MyAppBuilder and any other builders, then creates artifacts
+    like `dist/myapp-Linux` (or platform-specific equivalent).
 
 See Also:
-    pyrig.dev.builders.base.base: Base Builder class and build orchestration
-    pyrig.dev.builders.pyinstaller: PyInstaller-specific builder implementation
+    pyrig.dev.builders.base.base.Builder: Base class for all builders
+    pyrig.dev.builders.pyinstaller.PyInstallerBuilder: PyInstaller builder
     pyrig.dev.cli.commands.build_artifacts: Build command implementation
 """
