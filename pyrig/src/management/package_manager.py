@@ -1,18 +1,67 @@
-"""UV package manager utilities.
+"""UV package manager wrapper for Python project dependency management.
 
-This module provides utilities for managing Python project dependencies
-using the uv package manager. It centralizes command construction for
-common dependency management tasks.
+This module provides a type-safe wrapper for UV package manager commands.
+The `PackageManager` class constructs uv command arguments for all common
+package management operations including:
+    - Project initialization
+    - Dependency installation and updates
+    - Package building and publishing
+    - Version bumping
+    - Running commands in the project environment
+
+UV is pyrig's primary package manager, replacing pip and virtualenv with a
+faster, more reliable alternative written in Rust.
+
+Example:
+    >>> from pyrig.src.management.package_manager import PackageManager
+    >>> # Install dependencies
+    >>> install_args = PackageManager.get_install_dependencies_args()
+    >>> print(install_args)
+    uv sync
+    >>> install_args.run()
+    >>>
+    >>> # Add a new dependency
+    >>> add_args = PackageManager.get_add_dependencies_args("requests")
+    >>> add_args.run()
+
+See Also:
+    pyrig.src.management.base.base.Tool: Base class for tool wrappers
+    pyrig.dev.cli.subcommands: CLI commands that use PackageManager
 """
 
 from pyrig.src.management.base.base import Args, Tool
 
 
 class PackageManager(Tool):
-    """UV package manager tool for Python projects.
+    """UV package manager tool wrapper for Python projects.
 
-    Provides methods for constructing uv command arguments for package
-    management, project initialization, building, and publishing.
+    Provides methods for constructing uv command arguments for all package
+    management operations. UV is a fast, reliable package manager written in
+    Rust that replaces pip, virtualenv, and other Python packaging tools.
+
+    The class provides methods for:
+        - **Project setup**: init, sync
+        - **Dependencies**: add, update
+        - **Building**: build, publish
+        - **Versioning**: version bumping
+        - **Execution**: run commands in the project environment
+
+    All methods return `Args` objects that can be executed via `.run()` or
+    converted to strings for display.
+
+    Example:
+        >>> # Install all dependencies
+        >>> PackageManager.get_install_dependencies_args().run()
+        >>>
+        >>> # Add a development dependency
+        >>> PackageManager.get_add_dev_dependencies_args("pytest").run()
+        >>>
+        >>> # Build the package
+        >>> PackageManager.get_build_args().run()
+
+    See Also:
+        pyrig.src.management.base.base.Tool: Base class
+        pyrig.dev.cli.subcommands: CLI commands using PackageManager
     """
 
     @classmethod

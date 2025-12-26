@@ -1,16 +1,55 @@
-"""Pre-commit utilities.
+"""Pre-commit hook manager wrapper for code quality enforcement.
 
-This module provides utilities for managing pre-commit hooks.
+This module provides a type-safe wrapper for pre-commit hook management commands.
+The `PreCommitter` class constructs pre-commit command arguments for installing
+git hooks and running code quality checks.
+
+Pre-commit is used in pyrig projects to enforce code quality standards before
+commits are made. It runs linters, formatters, and other checks automatically.
+
+Example:
+    >>> from pyrig.src.management.pre_committer import PreCommitter
+    >>> # Install pre-commit hooks
+    >>> install_args = PreCommitter.get_install_args()
+    >>> install_args.run()
+    >>>
+    >>> # Run hooks on all files
+    >>> run_args = PreCommitter.get_run_all_files_args()
+    >>> run_args.run()
+
+See Also:
+    pyrig.src.management.base.base.Tool: Base class for tool wrappers
+    pyrig.dev.configs.pre_commit: Pre-commit configuration management
 """
 
 from pyrig.src.management.base.base import Args, Tool
 
 
 class PreCommitter(Tool):
-    """Pre-commit code quality tool.
+    """Pre-commit hook manager tool wrapper.
 
-    Provides methods for constructing pre-commit command arguments for
-    installing and running hooks.
+    Provides methods for constructing pre-commit command arguments for installing
+    git hooks and running code quality checks. Pre-commit runs configured hooks
+    (linters, formatters, type checkers) automatically before commits.
+
+    The class provides methods for:
+        - **Installation**: Install hooks into git
+        - **Execution**: Run hooks on staged files or all files
+        - **Verbosity**: Control output detail level
+
+    All methods return `Args` objects that can be executed via `.run()` or
+    converted to strings for display.
+
+    Example:
+        >>> # Install hooks
+        >>> PreCommitter.get_install_args().run()
+        >>>
+        >>> # Run on all files with verbose output
+        >>> PreCommitter.get_run_all_files_verbose_args().run()
+
+    See Also:
+        pyrig.src.management.base.base.Tool: Base class
+        pyrig.dev.configs.pre_commit.PreCommitConfigFile: Hook configuration
     """
 
     @classmethod

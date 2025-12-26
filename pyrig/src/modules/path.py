@@ -1,8 +1,36 @@
 """Path utilities for module and package management.
 
 This module provides utilities for working with Python module and package paths,
-including support for frozen environments (PyInstaller) and conversions between
-module names and file paths.
+including bidirectional conversions between module names and file paths, support
+for frozen environments (PyInstaller), and package structure creation.
+
+The `ModulePath` class provides static methods for:
+    - **Path conversions**: Module names ↔ file/directory paths
+    - **Frozen environment detection**: PyInstaller bundle detection
+    - **Package creation**: Creating __init__.py files and package structures
+    - **Working directory handling**: CWD that works in frozen environments
+
+These utilities are essential for pyrig's dynamic module loading and code
+generation features, ensuring they work correctly both during development and
+when bundled with PyInstaller.
+
+Example:
+    >>> from pyrig.src.modules.path import ModulePath
+    >>> # Convert module name to file path
+    >>> ModulePath.module_name_to_relative_file_path("pyrig.src.git")
+    PosixPath('pyrig/src/git.py')
+    >>>
+    >>> # Convert package name to directory path
+    >>> ModulePath.pkg_name_to_relative_dir_path("pyrig.src")
+    PosixPath('pyrig/src')
+    >>>
+    >>> # Check if running in PyInstaller bundle
+    >>> ModulePath.in_frozen_env()
+    False
+
+See Also:
+    pyrig.src.modules.module: Module loading and importing
+    pyrig.src.resource: Resource file access in frozen environments
 """
 
 import logging
@@ -19,6 +47,25 @@ class ModulePath:
     Provides static methods for converting between module names and file paths,
     handling frozen environments (PyInstaller), and working with Python package
     structures. All methods are static and do not require instantiation.
+
+    The class handles:
+        - **Bidirectional conversions**: Module names ↔ file/directory paths
+        - **Frozen environment support**: PyInstaller _MEIPASS detection
+        - **Package structure creation**: __init__.py file generation
+        - **Path normalization**: Consistent path handling across platforms
+
+    Example:
+        >>> # Module name to file path
+        >>> ModulePath.module_name_to_relative_file_path("pkg.module")
+        PosixPath('pkg/module.py')
+        >>>
+        >>> # File path to module name
+        >>> ModulePath.relative_file_path_to_module_name(Path("pkg/module.py"))
+        'pkg.module'
+
+    See Also:
+        pyrig.src.modules.module: Module loading utilities
+        pyrig.src.resource.get_resource_path: Resource access in frozen environments
     """
 
     @staticmethod

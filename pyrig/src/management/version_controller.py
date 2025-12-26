@@ -1,18 +1,71 @@
-"""Version control utilities.
+"""Git version control wrapper for repository management.
 
-This module provides utilities for managing version control operations,
-specifically git. It centralizes command construction for common version
-control tasks.
+This module provides a type-safe wrapper for Git version control commands.
+The `VersionController` class constructs git command arguments for all common
+version control operations including:
+    - Repository initialization
+    - Staging files (add)
+    - Committing changes
+    - Pushing to remotes
+    - Tagging releases
+
+Git is the primary version control system used by pyrig projects.
+
+Example:
+    >>> from pyrig.src.management.version_controller import VersionController
+    >>> # Stage all files
+    >>> add_args = VersionController.get_add_all_args()
+    >>> add_args.run()
+    >>>
+    >>> # Commit with message
+    >>> commit_args = VersionController.get_commit_no_verify_args("Update docs")
+    >>> commit_args.run()
+    >>>
+    >>> # Push to remote
+    >>> push_args = VersionController.get_push_args()
+    >>> push_args.run()
+
+See Also:
+    pyrig.src.management.base.base.Tool: Base class for tool wrappers
+    pyrig.src.git: Git repository information utilities
+    pyrig.dev.cli.subcommands: CLI commands using VersionController
 """
 
 from pyrig.src.management.base.base import Args, Tool
 
 
 class VersionController(Tool):
-    """Git version control tool.
+    """Git version control tool wrapper.
 
-    Provides methods for constructing git command arguments for common
-    version control operations.
+    Provides methods for constructing git command arguments for all common
+    version control operations. This centralizes git command construction
+    and provides type-safe, discoverable methods for git operations.
+
+    The class provides methods for:
+        - **Repository setup**: init
+        - **Staging**: add files, add all, add specific files
+        - **Committing**: commit with various options
+        - **Remote operations**: push, push tags
+        - **Tagging**: create and push tags
+
+    All methods return `Args` objects that can be executed via `.run()` or
+    converted to strings for display.
+
+    Example:
+        >>> # Initialize repository
+        >>> VersionController.get_init_args().run()
+        >>>
+        >>> # Stage and commit
+        >>> VersionController.get_add_all_args().run()
+        >>> VersionController.get_commit_no_verify_args("Initial commit").run()
+        >>>
+        >>> # Tag and push
+        >>> VersionController.get_tag_args("v1.0.0").run()
+        >>> VersionController.get_push_tags_args().run()
+
+    See Also:
+        pyrig.src.management.base.base.Tool: Base class
+        pyrig.src.git: Git repository information utilities
     """
 
     @classmethod
