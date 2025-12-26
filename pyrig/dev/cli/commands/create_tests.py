@@ -161,12 +161,12 @@ def get_test_functions_content(
     ]
 
     for test_func_name in untested_funcs_names:
-        test_module_content += f"""
+        test_module_content += f'''
 
 def {test_func_name}() -> None:
-    \"\"\"Test function.\"\"\"
+    """Test function."""
     raise {NotImplementedError.__name__}
-"""
+'''
 
     return test_module_content
 
@@ -241,17 +241,17 @@ def get_test_classes_content(
         test_class_name,
         untested_methods_names,
     ) in untested_test_class_to_methods_names.items():
-        test_class_declaration = f"""
+        test_class_declaration = f'''
 class {test_class_name}:
-    \"\"\"Test class.\"\"\"
-"""
+    """Test class."""
+'''
         test_class_content = test_class_declaration
         for untested_method_name in untested_methods_names:
-            test_class_content += f"""
+            test_class_content += f'''
     def {untested_method_name}(self) -> None:
-        \"\"\"Test method.\"\"\"
+        """Test method."""
         raise {NotImplementedError.__name__}
-"""
+'''
         parts = test_module_content.split(test_class_declaration)
         expected_parts = 2
         if len(parts) > expected_parts:

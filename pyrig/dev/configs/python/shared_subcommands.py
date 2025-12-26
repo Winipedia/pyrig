@@ -1,8 +1,23 @@
-"""Shared subcommands ConfigFile.
+"""Configuration for the {package_name}/dev/cli/shared_subcommands.py file.
 
-This module provides the SharedSubcommandsConfigFile class for creating
-a shared_subcommands.py file where users can define custom CLI subcommands
-that are available in all pyrig projects.
+This module provides the SharedSubcommandsConfigFile class for creating a
+{package_name}/dev/cli/shared_subcommands.py file where users can define
+custom CLI subcommands that are available in all pyrig projects.
+
+The generated file:
+    - Copies the docstring from pyrig.dev.cli.shared_subcommands
+    - Provides a place for shared CLI subcommands
+    - Enables custom CLI functionality across all pyrig projects
+    - Integrates with pyrig's CLI framework
+
+Shared subcommands defined here are automatically discovered and added to
+the CLI for all pyrig projects.
+
+See Also:
+    pyrig.dev.cli.shared_subcommands
+        Source module for the docstring
+    pyrig.dev.cli.subcommands
+        Project-specific subcommands
 """
 
 from types import ModuleType
@@ -16,9 +31,47 @@ from pyrig.dev.configs.base.copy_module_docstr import (
 class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     """Configuration file manager for shared_subcommands.py.
 
-    Creates a shared_subcommands.py file with only the docstring from pyrig's
-    shared_subcommands module, allowing users to add custom CLI subcommands
-    that are available in all pyrig projects.
+    Generates a {package_name}/dev/cli/shared_subcommands.py file with pyrig's
+    shared_subcommands module docstring, providing a starting point for custom
+    CLI subcommands that are shared across all pyrig projects.
+
+    The generated file:
+        - Contains only the docstring from pyrig.dev.cli.shared_subcommands
+        - Provides a place for shared CLI subcommands
+        - Enables custom CLI functionality
+        - Integrates with pyrig's CLI framework
+
+    Shared vs Project-Specific Subcommands:
+        - **Shared**: Available in all pyrig projects (defined here)
+        - **Project-Specific**: Available only in the current project
+          (defined in subcommands.py)
+
+    Examples:
+        Generate shared_subcommands.py::
+
+            from pyrig.dev.configs.python.shared_subcommands import (
+                SharedSubcommandsConfigFile,
+            )
+
+            # Creates {package_name}/dev/cli/shared_subcommands.py
+            SharedSubcommandsConfigFile()
+
+        Add shared subcommands to the generated file::
+
+            # In {package_name}/dev/cli/shared_subcommands.py
+            import click
+
+            @click.command()
+            def my_shared_command():
+                \"\"\"Shared command available in all projects.\"\"\"
+                click.echo("Hello from shared command!")
+
+    See Also:
+        pyrig.dev.cli.shared_subcommands
+            Source module for the docstring
+        pyrig.dev.configs.python.subcommands.SubcommandsConfigFile
+            Project-specific subcommands
+        Click documentation: https://click.palletsprojects.com/
     """
 
     @classmethod
@@ -26,6 +79,10 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
         """Get the source module to copy docstring from.
 
         Returns:
-            The pyrig.dev.cli.shared_subcommands module.
+            ModuleType: The pyrig.dev.cli.shared_subcommands module.
+
+        Note:
+            Only the docstring is copied; no code is included in the
+            generated file.
         """
         return shared_subcommands

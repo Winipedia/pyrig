@@ -1,8 +1,30 @@
 """GitHub Actions workflow for health checks and CI.
 
-This module provides the HealthCheckWorkflow class for creating
-a workflow that runs on pull requests, pushes, and scheduled intervals
-to verify code quality and run tests.
+This module provides the HealthCheckWorkflow class for creating a GitHub Actions
+workflow that runs continuous integration checks to verify code quality and
+functionality.
+
+The workflow runs:
+    - **On Pull Requests**: Validates changes before merging
+    - **On Pushes to Main**: Ensures main branch stays healthy
+    - **On Schedule**: Daily checks with staggered timing based on dependency depth
+
+Checks Performed:
+    - **Linting**: ruff check for code quality
+    - **Formatting**: ruff format for code style
+    - **Type Checking**: ty check for type safety
+    - **Security**: bandit for vulnerability scanning
+    - **Markdown**: rumdl for documentation quality
+    - **Tests**: pytest with coverage reporting
+
+The workflow uses a matrix strategy to test across:
+    - Multiple OS (Ubuntu, macOS, Windows)
+    - Multiple Python versions (from pyproject.toml)
+
+See Also:
+    GitHub Actions: https://docs.github.com/en/actions
+    pyrig.dev.configs.workflows.base.base.Workflow
+        Base class for workflow generation
 """
 
 from datetime import UTC, datetime, timedelta
@@ -15,11 +37,39 @@ from pyrig.src.modules.package import DependencyGraph
 
 
 class HealthCheckWorkflow(Workflow):
-    """Workflow for continuous integration health checks.
+    """GitHub Actions workflow for continuous integration health checks.
 
-    Triggers on pull requests, pushes to main, and scheduled intervals.
-    Runs linting, type checking, security scanning, and tests across
-    a matrix of OS and Python versions.
+    Generates a .github/workflows/health_check.yml file that runs comprehensive
+    code quality checks and tests on pull requests, pushes, and scheduled intervals.
+
+    The workflow includes:
+        - **Quality Checks**: Linting, formatting, type checking, security scanning
+        - **Tests**: pytest with coverage reporting across OS and Python version matrix
+        - **Staggered Scheduling**: Daily runs with timing based on dependency depth
+          to avoid conflicts when dependencies release updates
+
+    Triggers:
+        - Pull requests to any branch
+        - Pushes to main branch
+        - Scheduled daily runs (staggered by dependency depth)
+
+    Matrix Strategy:
+        - OS: Ubuntu (latest), macOS (latest), Windows (latest)
+        - Python: All supported versions from pyproject.toml
+
+    Examples:
+        Generate health_check.yml workflow::
+
+            from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
+
+            # Creates .github/workflows/health_check.yml
+            HealthCheckWorkflow()
+
+    See Also:
+        pyrig.dev.configs.workflows.build.BuildWorkflow
+            Runs after this workflow completes on main branch
+        pyrig.dev.configs.workflows.base.base.Workflow
+            Base class with workflow generation utilities
     """
 
     BASE_CRON_HOUR = 0

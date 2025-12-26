@@ -1,7 +1,20 @@
 """GitHub Actions workflow for publishing to PyPI.
 
-This module provides the PublishWorkflow class for creating
-a workflow that publishes the package to PyPI after a successful release.
+This module provides the PublishWorkflow class for creating a GitHub Actions
+workflow that publishes packages to PyPI and documentation to GitHub Pages
+after successful releases.
+
+The workflow publishes:
+    - **Python Package**: Uploads wheel to PyPI for public distribution
+    - **Documentation**: Builds and deploys MkDocs site to GitHub Pages
+
+This is the final step in the automated release pipeline.
+
+See Also:
+    pyrig.dev.configs.workflows.release.ReleaseWorkflow
+        Must complete successfully before this workflow runs
+    PyPI: https://pypi.org/
+    GitHub Pages: https://pages.github.com/
 """
 
 from typing import Any
@@ -11,10 +24,42 @@ from pyrig.dev.configs.workflows.release import ReleaseWorkflow
 
 
 class PublishWorkflow(Workflow):
-    """Workflow for publishing packages to PyPI.
+    """GitHub Actions workflow for publishing to PyPI and GitHub Pages.
 
-    Triggers after the release workflow completes successfully.
-    Builds a wheel and publishes it to PyPI.
+    Generates a .github/workflows/publish.yml file that publishes the package
+    to PyPI and documentation to GitHub Pages after successful releases.
+
+    The workflow:
+        - Triggers after ReleaseWorkflow completes successfully
+        - Downloads artifacts from release workflow
+        - Publishes Python wheel to PyPI using trusted publishing
+        - Builds MkDocs documentation site
+        - Deploys documentation to GitHub Pages
+
+    Publishing Process:
+        1. Download wheel artifact from release workflow
+        2. Publish to PyPI using OIDC trusted publishing (no API token needed)
+        3. Build MkDocs documentation site
+        4. Deploy to GitHub Pages (gh-pages branch)
+
+    Examples:
+        Generate publish.yml workflow::
+
+            from pyrig.dev.configs.workflows.publish import PublishWorkflow
+
+            # Creates .github/workflows/publish.yml
+            PublishWorkflow()
+
+    Note:
+        Requires PyPI trusted publishing to be configured for the repository.
+        See: https://docs.pypi.org/trusted-publishers/
+
+    See Also:
+        pyrig.dev.configs.workflows.release.ReleaseWorkflow
+            Triggers this workflow on completion
+        pyrig.dev.configs.docs.mkdocs.MkdocsConfigFile
+            Configures the documentation site
+        PyPI Trusted Publishing: https://docs.pypi.org/trusted-publishers/
     """
 
     @classmethod

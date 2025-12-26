@@ -1,8 +1,22 @@
 """GitHub Actions workflow for creating releases.
 
-This module provides the ReleaseWorkflow class for creating
-a workflow that creates tags and publishes GitHub releases
-after successful build workflow completion.
+This module provides the ReleaseWorkflow class for creating a GitHub Actions
+workflow that creates GitHub releases with version tags and changelogs after
+successful artifact builds.
+
+The workflow:
+    - Downloads artifacts from the build workflow
+    - Creates version tags (e.g., v1.2.3)
+    - Generates changelogs from commit history
+    - Publishes GitHub releases with artifacts attached
+
+This enables automated semantic versioning and release management.
+
+See Also:
+    pyrig.dev.configs.workflows.build.BuildWorkflow
+        Must complete successfully before this workflow runs
+    pyrig.dev.configs.workflows.publish.PublishWorkflow
+        Runs after this workflow to publish to PyPI
 """
 
 from typing import Any
@@ -12,11 +26,41 @@ from pyrig.dev.configs.workflows.build import BuildWorkflow
 
 
 class ReleaseWorkflow(Workflow):
-    """Workflow for creating GitHub releases.
+    """GitHub Actions workflow for creating GitHub releases.
 
-    Triggers after build workflow completes successfully.
-    Downloads artifacts from the build workflow, creates version tags,
-    generates changelogs, and publishes GitHub releases.
+    Generates a .github/workflows/release.yml file that creates GitHub releases
+    with version tags and changelogs after successful builds.
+
+    The workflow:
+        - Triggers after BuildWorkflow completes successfully
+        - Downloads artifacts (wheels, container images) from build workflow
+        - Creates version tags based on pyproject.toml version
+        - Generates changelogs from commit history
+        - Publishes GitHub releases with artifacts attached
+        - Requires write permissions for contents and read for actions
+
+    Release Process:
+        1. Download artifacts from build workflow
+        2. Extract version from pyproject.toml
+        3. Create git tag (e.g., v1.2.3)
+        4. Generate changelog from commits since last tag
+        5. Create GitHub release with tag, changelog, and artifacts
+
+    Examples:
+        Generate release.yml workflow::
+
+            from pyrig.dev.configs.workflows.release import ReleaseWorkflow
+
+            # Creates .github/workflows/release.yml
+            ReleaseWorkflow()
+
+    See Also:
+        pyrig.dev.configs.workflows.build.BuildWorkflow
+            Triggers this workflow on completion
+        pyrig.dev.configs.workflows.publish.PublishWorkflow
+            Runs after this workflow completes
+        pyrig.dev.configs.pyproject.PyprojectConfigFile
+            Provides version information for tagging
     """
 
     @classmethod

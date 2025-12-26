@@ -1,8 +1,19 @@
 """Configuration management for LICENSE files.
 
-This module provides the LicenceConfigFile class for managing the
-project's LICENSE file. The file is created empty and users are
-expected to add their own license text.
+This module provides the LicenceConfigFile class for managing the project's
+LICENSE file. By default, it creates a LICENSE file with the MIT license text,
+automatically filled with the current year and repository owner.
+
+The MIT license is fetched from GitHub's SPDX license API. If the API is
+unavailable, a fallback MIT license template from resources is used.
+
+Users can replace the LICENSE file content with their preferred license text
+after initialization. The license type is automatically detected from the
+LICENSE file content and included in pyproject.toml.
+
+See Also:
+    GitHub SPDX License API: https://api.github.com/licenses
+    SPDX License List: https://spdx.org/licenses/
 """
 
 from datetime import UTC, datetime
@@ -16,20 +27,53 @@ from pyrig.src.git import get_repo_owner_and_name_from_git
 
 
 class LicenceConfigFile(TextConfigFile):
-    """Configuration file manager for LICENSE.
+    """Configuration file manager for LICENSE files.
 
-    Creates an empty LICENSE file in the project root. Users should
-    add their preferred license text manually.
-    It defaults to the MIT license the file does not exist.
+    Creates a LICENSE file in the project root with the MIT license text by
+    default. The license is automatically populated with the current year and
+    repository owner extracted from git configuration.
+
+    The MIT license text is fetched from GitHub's SPDX license API. If the API
+    is unavailable, a fallback template from resources is used. Users can
+    replace the content with their preferred license after initialization.
+
+    This config file has priority 30, ensuring it's created early so that
+    pyproject.toml can detect and include the license type.
+
+    Examples:
+        Initialize the LICENSE file::
+
+            from pyrig.dev.configs.licence import LicenceConfigFile
+
+            # Creates LICENSE with MIT license
+            LicenceConfigFile()
+
+        The generated LICENSE will contain::
+
+            MIT License
+
+            Copyright (c) 2025 username
+
+            Permission is hereby granted, free of charge, ...
+
+    Note:
+        This method makes an external API call to GitHub to fetch the MIT
+        license template. On failure, it uses a fallback template from
+        resources.
+
+    See Also:
+        pyrig.dev.configs.pyproject.PyprojectConfigFile.detect_project_licence
+            Method that reads the LICENSE file to detect license type
     """
 
     @classmethod
     def get_priority(cls) -> float:
-        """Get the priority for this config file.
+        """Get the initialization priority for this config file.
 
         Returns:
-            The priority as a float. Higher numbers are processed first.
-            This file needs to be created before the other config files.
+            float: Priority value of 30. Higher values are initialized first.
+                This file has elevated priority because pyproject.toml needs
+                to read the LICENSE file to detect the license type.
         """
         return 30
 
@@ -38,7 +82,7 @@ class LicenceConfigFile(TextConfigFile):
         """Get the LICENSE filename.
 
         Returns:
-            The string "LICENSE".
+            str: The string "LICENSE" (uppercase, no extension).
         """
         return "LICENSE"
 
@@ -47,34 +91,40 @@ class LicenceConfigFile(TextConfigFile):
         """Get the path to the LICENSE file.
 
         Returns:
-            Path to LICENSE in the project root.
+            Path: Path to LICENSE in the project root (e.g., Path("LICENSE")).
         """
         return Path(cls.get_filename())
 
     @classmethod
     def get_parent_path(cls) -> Path:
-        """Get the project root directory.
+        """Get the parent directory for LICENSE.
 
         Returns:
-            Path to the project root.
+            Path: Empty Path() representing the project root directory.
         """
         return Path()
 
     @classmethod
     def get_file_extension(cls) -> str:
-        """Get an empty file extension.
+        """Get the file extension for LICENSE.
 
         Returns:
-            Empty string (LICENSE has no extension).
+            str: Empty string (LICENSE has no file extension).
         """
         return ""
 
     @classmethod
     def get_content_str(cls) -> str:
-        """Get the initial content (empty).
+        """Get the initial LICENSE file content.
+
+        Generates MIT license text with the current year and repository owner.
 
         Returns:
-            Empty string.
+            str: MIT license text with placeholders filled in.
+
+        Note:
+            This method makes an external API call to GitHub and reads from
+            git configuration to get the repository owner.
         """
         return cls.get_mit_license_with_year_and_owner()
 
@@ -82,8 +132,14 @@ class LicenceConfigFile(TextConfigFile):
     def is_correct(cls) -> bool:
         """Check if the LICENSE file is valid.
 
+        Validates that the LICENSE file exists and contains non-whitespace content.
+
         Returns:
-            True if the file exists and is non-empty.
+            bool: True if the file exists and is non-empty (after stripping
+                whitespace), False otherwise.
+
+        Note:
+            This method reads the entire LICENSE file to check if it's non-empty.
         """
         return super().is_correct() or (
             cls.get_path().exists()
@@ -93,13 +149,24 @@ class LicenceConfigFile(TextConfigFile):
     @classmethod
     @return_resource_content_on_fetch_error(resource_name="MIT_LICENSE_TEMPLATE")
     def get_mit_license(cls) -> str:
-        """Get the MIT license text.
+        """Fetch the MIT license text from GitHub's SPDX license API.
 
-        Fetch the MIT license text from GitHub's SPDX license API.
-        On exception returns a default MIT license text.
+        Makes an HTTP request to GitHub's license API to get the MIT license
+        template with placeholders for year and owner.
 
         Returns:
-            The MIT license text.
+            str: MIT license text with placeholders [year] and [fullname].
+
+        Raises:
+            requests.HTTPError: If the API request fails and no fallback is
+                available.
+
+        Note:
+            The @return_resource_content_on_fetch_error decorator provides a
+            fallback MIT license template from resources if the API call fails.
+            The returned text contains placeholders that should be replaced:
+                - [year]: Current year
+                - [fullname]: Copyright holder name
         """
         url = "https://api.github.com/licenses/mit"
         resp = requests.get(url, timeout=10)
@@ -110,10 +177,26 @@ class LicenceConfigFile(TextConfigFile):
 
     @classmethod
     def get_mit_license_with_year_and_owner(cls) -> str:
-        """Get the MIT license text with year and owner.
+        """Get the MIT license text with year and owner filled in.
+
+        Fetches the MIT license template and replaces placeholders with the
+        current year and repository owner from git configuration.
 
         Returns:
-            The MIT license text with year and owner.
+            str: Complete MIT license text with year and owner filled in.
+
+        Note:
+            This method makes an external API call to GitHub and reads from
+            git configuration.
+
+        Examples:
+            Returns text like::
+
+                MIT License
+
+                Copyright (c) 2025 username
+
+                Permission is hereby granted, free of charge, ...
         """
         mit_license = cls.get_mit_license()
         year = datetime.now(tz=UTC).year

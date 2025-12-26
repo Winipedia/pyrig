@@ -1,8 +1,32 @@
 """Base class for GitHub Actions workflow configuration.
 
-This module provides the Workflow base class that all workflow
-configuration files inherit from. It includes utilities for
-building jobs, steps, triggers, and matrix strategies.
+This module provides the Workflow base class that all workflow configuration
+files inherit from. It includes comprehensive utilities for building GitHub
+Actions workflows programmatically.
+
+The Workflow class provides:
+    - **Job Builders**: Methods for creating common CI/CD jobs (test, build,
+      release, publish)
+    - **Step Builders**: Reusable step templates (checkout, setup Python, cache,
+      run commands)
+    - **Trigger Builders**: Methods for defining workflow triggers (push, PR,
+      schedule, workflow_run)
+    - **Matrix Strategies**: OS and Python version matrix configuration
+    - **Artifact Management**: Upload/download artifact utilities
+    - **Environment Setup**: Automatic uv, Python, and dependency installation
+
+Key Features:
+    - Type-safe workflow configuration using Python dicts
+    - Reusable templates for common CI/CD patterns
+    - Integration with pyrig's management tools (Pyrigger, PackageManager, etc.)
+    - Support for multi-OS testing (Ubuntu, macOS, Windows)
+    - Support for multi-Python version testing
+    - Automatic caching for dependencies and build artifacts
+
+See Also:
+    pyrig.dev.configs.workflows
+        Concrete workflow implementations
+    GitHub Actions: https://docs.github.com/en/actions
 """
 
 from abc import abstractmethod
@@ -32,16 +56,54 @@ from pyrig.src.string import (
 class Workflow(YamlConfigFile):
     """Abstract base class for GitHub Actions workflow configuration.
 
-    Provides a declarative API for building workflow YAML files with
-    jobs, steps, triggers, and matrix strategies. Subclasses must
-    implement get_jobs() to define the workflow's jobs.
+    Provides a declarative API for building GitHub Actions workflow YAML files
+    programmatically. Subclasses define specific workflows by implementing
+    get_jobs() and optionally overriding trigger/permission methods.
+
+    The class provides extensive utilities for:
+        - Creating jobs with matrix strategies
+        - Building reusable step sequences
+        - Defining workflow triggers (push, PR, schedule, workflow_run)
+        - Managing artifacts and caching
+        - Setting up Python environments with uv
+        - Running pyrig management commands
+
+    Subclasses should:
+        1. Implement get_jobs() to define workflow jobs
+        2. Override get_workflow_triggers() to customize triggers
+        3. Override get_permissions() if special permissions needed
 
     Attributes:
-        UBUNTU_LATEST: Runner label for Ubuntu.
-        WINDOWS_LATEST: Runner label for Windows.
-        MACOS_LATEST: Runner label for macOS.
-        ARTIFACTS_DIR_NAME: Directory name for build artifacts.
-        ARTIFACTS_PATTERN: Glob pattern for artifact files.
+        UBUNTU_LATEST (str): Runner label for Ubuntu ("ubuntu-latest")
+        WINDOWS_LATEST (str): Runner label for Windows ("windows-latest")
+        MACOS_LATEST (str): Runner label for macOS ("macos-latest")
+        ARTIFACTS_DIR_NAME (str): Directory name for build artifacts
+        ARTIFACTS_PATTERN (str): Glob pattern for artifact files
+
+    Examples:
+        Create a custom workflow::
+
+            from pyrig.dev.configs.workflows.base.base import Workflow
+
+            class MyWorkflow(Workflow):
+                @classmethod
+                def get_jobs(cls) -> dict[str, Any]:
+                    return {
+                        "test": cls.job_test(),
+                        "build": cls.job_build_artifacts(),
+                    }
+
+                @classmethod
+                def get_workflow_triggers(cls) -> dict[str, Any]:
+                    triggers = super().get_workflow_triggers()
+                    triggers.update(cls.on_push())
+                    return triggers
+
+    See Also:
+        pyrig.dev.configs.workflows.health_check.HealthCheckWorkflow
+            Example concrete workflow implementation
+        pyrig.dev.configs.base.yaml.YamlConfigFile
+            Base class for YAML configuration files
     """
 
     UBUNTU_LATEST = "ubuntu-latest"

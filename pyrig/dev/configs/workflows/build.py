@@ -1,8 +1,21 @@
 """GitHub Actions workflow for building artifacts.
 
-This module provides the BuildWorkflow class for creating
-a workflow that builds artifacts across OS matrix after
-successful health checks on main branch.
+This module provides the BuildWorkflow class for creating a GitHub Actions
+workflow that builds project artifacts and container images after successful
+health checks on the main branch.
+
+The workflow builds:
+    - **Python Wheels**: Distribution packages for PyPI
+    - **Container Images**: Docker/Podman images for deployment
+
+Artifacts are uploaded and made available for the release workflow to create
+GitHub releases and for the publish workflow to publish to PyPI.
+
+See Also:
+    pyrig.dev.configs.workflows.health_check.HealthCheckWorkflow
+        Must complete successfully before this workflow runs
+    pyrig.dev.configs.workflows.release.ReleaseWorkflow
+        Uses artifacts from this workflow
 """
 
 from typing import Any
@@ -12,11 +25,36 @@ from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 
 
 class BuildWorkflow(Workflow):
-    """Workflow for building project artifacts.
+    """GitHub Actions workflow for building project artifacts.
 
-    Triggers after health check workflow completes on main branch.
-    Builds artifacts across OS matrix and uploads them for the
-    release workflow to use.
+    Generates a .github/workflows/build.yml file that builds Python wheels and
+    container images after health checks pass on the main branch.
+
+    The workflow:
+        - Triggers after HealthCheckWorkflow completes on main branch
+        - Builds Python wheels across OS matrix
+        - Builds container images (Containerfile/Dockerfile)
+        - Uploads artifacts for release and publish workflows
+
+    Artifacts Built:
+        - **Python Wheels**: Built with uv, uploaded as GitHub artifacts
+        - **Container Images**: Built with Docker/Podman, tagged with version
+
+    Examples:
+        Generate build.yml workflow::
+
+            from pyrig.dev.configs.workflows.build import BuildWorkflow
+
+            # Creates .github/workflows/build.yml
+            BuildWorkflow()
+
+    See Also:
+        pyrig.dev.configs.workflows.health_check.HealthCheckWorkflow
+            Triggers this workflow on completion
+        pyrig.dev.configs.workflows.release.ReleaseWorkflow
+            Downloads and uses artifacts from this workflow
+        pyrig.dev.configs.containers.container_file.ContainerfileConfigFile
+            Generates the Containerfile used for image builds
     """
 
     @classmethod
