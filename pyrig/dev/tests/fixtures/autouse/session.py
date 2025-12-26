@@ -1,10 +1,114 @@
-"""Session-level test fixtures and utilities.
+"""Session-scoped autouse fixtures for project-wide validation and setup.
 
-These fixtures in this module are automatically applied to the test session
-through pytest's autouse mechanism. Pyrig automatically adds this module to
-pytest_plugins in conftest.py. However you still have decorate the fixture
-with @autouse_session_fixture from pyrig.src.testing.fixtures or with pytest's
-autouse mechanism @pytest.fixture(scope="session", autouse=True).
+This module provides autouse fixtures that run automatically once per test
+session to enforce project structure, code quality, and development environment
+standards. These fixtures validate project-wide concerns before any tests run.
+
+The fixtures are automatically registered via pytest_plugins in conftest.py,
+and they use the `@autouse_session_fixture` decorator to run automatically at
+the start of the test session without requiring explicit fixture requests.
+
+Session-scoped fixtures run once per entire test session (all tests), making
+them suitable for expensive validations like dependency checks, project structure
+validation, and development environment setup.
+
+Fixtures:
+    assert_no_unstaged_changes: Verify no unstaged git changes (CI only).
+        Checks before and after test session.
+
+    assert_root_is_correct: Verify project root structure is correct. Creates
+        missing config files if needed.
+
+    assert_no_namespace_packages: Verify all packages have __init__.py files.
+        Creates missing __init__.py files if needed.
+
+    assert_all_src_code_in_one_package: Verify all source code is in a single
+        package with expected structure (main, src, dev, resources).
+
+    assert_src_package_correctly_named: Verify source package name matches
+        project name and directory structure.
+
+    assert_all_modules_tested: Verify every module has a corresponding test
+        module. Creates test skeletons if needed.
+
+    assert_no_unit_test_package_usage: Verify unittest package is not used
+        (pytest only).
+
+    assert_dependencies_are_up_to_date: Verify dependencies are up to date.
+        Runs `uv lock --upgrade` and `uv sync`.
+
+    assert_pre_commit_is_installed: Verify pre-commit hooks are installed.
+        Runs `pre-commit install`.
+
+    assert_src_runs_without_dev_deps: Verify source code runs without dev
+        dependencies. Creates isolated environment and tests.
+
+    assert_src_does_not_use_dev: Verify source code doesn't import dev code.
+        Scans for dev imports in src.
+
+    assert_all_dev_deps_in_deps: Verify all standard dev dependencies are
+        declared in pyproject.toml.
+
+    assert_project_mgt_is_up_to_date: Verify project management tool (uv) is
+        up to date. Runs `uv self update` (local only).
+
+    assert_version_control_is_installed: Verify git is installed.
+
+    assert_container_engine_is_installed: Verify podman is installed (local only).
+
+Validation Categories:
+    **Git and Version Control**:
+    - No unstaged changes (CI only)
+    - Git is installed
+
+    **Project Structure**:
+    - Project root is correct
+    - No namespace packages
+    - All source code in one package
+    - Source package correctly named
+    - All modules have test modules
+
+    **Code Quality**:
+    - No unittest usage (pytest only)
+    - Source doesn't import dev code
+
+    **Dependencies**:
+    - Dependencies are up to date
+    - All dev dependencies declared
+    - Source runs without dev dependencies
+
+    **Development Environment**:
+    - Pre-commit hooks installed
+    - Project management tool (uv) up to date
+    - Container engine (podman) installed (local only)
+
+Automatic Fixes:
+    Many fixtures automatically fix issues they detect:
+    - Creates missing config files
+    - Creates missing __init__.py files
+    - Creates missing test modules
+    - Updates dependencies
+    - Installs pre-commit hooks
+
+    After fixing, the fixtures fail with a detailed error message explaining
+    what was fixed, allowing developers to review and commit the changes.
+
+CI vs Local Behavior:
+    Some fixtures behave differently in CI (GitHub Actions) vs local:
+    - `assert_no_unstaged_changes`: Only runs in CI
+    - `assert_project_mgt_is_up_to_date`: Only runs locally
+    - `assert_container_engine_is_installed`: Only runs locally
+
+Module Attributes:
+    logger (logging.Logger): Logger instance for this module.
+
+See Also:
+    pyrig.dev.cli.commands.create_root.make_project_root: Project root creation
+    pyrig.dev.cli.commands.create_tests.make_test_skeletons: Test skeleton generation
+    pyrig.dev.cli.commands.make_inits.make_init_files: __init__.py creation
+    pyrig.src.git: Git utilities
+    pyrig.src.management.package_manager.PackageManager: Package management
+    pyrig.src.management.pre_committer.PreCommitter: Pre-commit management
 """
 
 import logging
@@ -72,15 +176,39 @@ logger = logging.getLogger(__name__)
 
 @autouse_session_fixture
 def assert_no_unstaged_changes() -> Generator[None, None, None]:
-    """Verify that there are no unstaged changes.
+    """Verify that there are no unstaged git changes before and after tests.
 
-    Checks before and after the test session if there are unstaged changes.
-    If there are unstaged changes before the test session, it fails.
-    If there are unstaged changes after the test session, it fails.
+    This session-scoped autouse fixture runs automatically in CI (GitHub Actions)
+    to ensure that:
+    1. Tests start with a clean git working directory (no unstaged changes)
+    2. Tests don't create any unstaged changes during execution
+
+    The fixture checks for unstaged changes before yielding (before tests run)
+    and after yielding (after tests complete). If unstaged changes are found at
+    either point, the fixture fails with a detailed error message listing the
+    changed files.
+
+    This prevents:
+    - Running tests with uncommitted local changes in CI
+    - Tests that modify files without cleaning up
+    - Accidental file modifications during test execution
+
+    Yields:
+        None: Control is yielded to run tests, then checks again after tests.
 
     Raises:
-        AssertionError: If there are unstaged changes
+        AssertionError: If unstaged changes are detected before or after the
+            test session. The error message includes the list of unstaged files.
 
+    Note:
+        - This fixture only runs in CI (GitHub Actions), not locally
+        - Uses `running_in_github_actions()` to detect CI environment
+        - Checks both before and after the test session
+        - Unstaged changes include modified, added, or deleted files
+
+    See Also:
+        pyrig.src.git.running_in_github_actions: CI detection
+        pyrig.src.git.get_git_unstaged_changes: Get list of unstaged files
     """
     in_github_actions = running_in_github_actions()
 
@@ -106,15 +234,54 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
 
 @autouse_session_fixture
 def assert_root_is_correct() -> None:
-    """Verify that the dev dependencies are installed.
+    """Verify that the project root structure is correct and complete.
 
-    This fixture runs once per test session and checks that the dev dependencies
-    are installed by trying to import them.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that all ConfigFile subclasses report correct state via their
+    `is_correct()` method. If any config files are incorrect or missing, the
+    fixture automatically attempts to fix them by calling `make_project_root()`.
+
+    The fixture:
+    1. Creates `.experiment.py` if running in CI and it doesn't exist
+    2. Checks all ConfigFile subclasses via `ConfigFile.get_all_subclasses()`
+    3. Identifies incorrect config files via `cf.is_correct()`
+    4. Calls `make_project_root()` to create/fix incorrect config files
+    5. Fails with a detailed error message listing what was fixed
+
+    This ensures that:
+    - All required config files exist (pyproject.toml, README.md, etc.)
+    - All config files have correct content
+    - Project structure is complete before tests run
+    - Developers are notified of missing/incorrect config files
 
     Raises:
-        ImportError: If a dev dependency is not installed
+        AssertionError: If any config files were incorrect and had to be fixed.
+            The error message lists the paths of all fixed config files and
+            prompts the developer to review the changes.
 
-    """
+    Example:
+        If pyproject.toml is missing or incorrect::
+
+            # Fixture automatically:
+            # 1. Detects PyprojectConfigFile.is_correct() returns False
+            # 2. Calls make_project_root() to create/fix it
+            # 3. Fails with error:
+            #    "Found 1 incorrect ConfigFiles.
+            #     Attempted correcting them automatically.
+            #     Please verify the changes at the following paths:
+            #     - /path/to/pyproject.toml"
+
+    Note:
+        - This fixture runs once per test session
+        - It automatically fixes issues before failing
+        - The developer must review and commit the fixes
+        - In CI, it creates `.experiment.py` if missing
+
+    See Also:
+        pyrig.dev.cli.commands.create_root.make_project_root: Project root creation
+        pyrig.dev.configs.base.base.ConfigFile: Base class for config files
+        pyrig.dev.configs.python.dot_experiment.DotExperimentConfigFile: Experiment config
+    """  # noqa: E501
     # if we are in CI then we must create experiment.py if it doesn't exist
     running_in_ci = running_in_github_actions()
     if running_in_ci:
@@ -140,14 +307,54 @@ def assert_root_is_correct() -> None:
 
 @autouse_session_fixture
 def assert_no_namespace_packages() -> None:
-    """Verify that there are no namespace packages in the project.
+    """Verify that all packages have __init__.py files (no namespace packages).
 
-    This fixture runs once per test session and checks that all packages in the
-    project are regular packages with __init__.py files, not namespace packages.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that all packages in the project are regular packages with
+    __init__.py files, not namespace packages. Namespace packages can cause
+    import issues and are not compatible with pyrig's architecture.
+
+    The fixture:
+    1. Scans for namespace packages via `get_namespace_packages()`
+    2. Creates missing __init__.py files via `make_init_files()`
+    3. Fails with a detailed error message listing created files
+
+    This ensures that:
+    - All packages have __init__.py files
+    - No namespace packages exist in the project
+    - Import behavior is predictable and consistent
+    - Package structure is explicit
 
     Raises:
-        AssertionError: If any namespace packages are found
+        AssertionError: If any namespace packages were found and had to be fixed.
+            The error message lists the paths where __init__.py files were
+            created and prompts the developer to review the changes.
 
+    Example:
+        If a package is missing __init__.py::
+
+            myapp/
+            └── utils/
+                └── helpers.py  # Missing: utils/__init__.py
+
+            # Fixture automatically:
+            # 1. Detects utils/ is a namespace package
+            # 2. Creates utils/__init__.py
+            # 3. Fails with error:
+            #    "Found 1 namespace packages.
+            #     Created __init__.py files for them.
+            #     Please verify the changes at the following paths:
+            #     - myapp/utils"
+
+    Note:
+        - This fixture runs once per test session
+        - It automatically creates __init__.py files before failing
+        - The developer must review and commit the created files
+        - Empty __init__.py files are created by default
+
+    See Also:
+        pyrig.dev.cli.commands.make_inits.make_init_files: __init__.py creator
+        pyrig.dev.utils.packages.get_namespace_packages: Namespace package detector
     """
     any_namespace_packages = get_namespace_packages()
     if any_namespace_packages:
@@ -166,14 +373,71 @@ def assert_no_namespace_packages() -> None:
 
 @autouse_session_fixture
 def assert_all_src_code_in_one_package() -> None:
-    """Verify that all source code is in a single package.
+    """Verify that all source code is in a single package with correct structure.
 
-    This fixture runs once per test session and checks that there is only one
-    source package besides the tests package.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that the project follows pyrig's single-package architecture. It
+    ensures that:
+    1. Only expected top-level packages exist (source package, tests, docs)
+    2. The source package has exactly the expected subpackages (dev, src, resources)
+    3. The source package has exactly the expected submodules (main)
+
+    The fixture enforces pyrig's standard project structure where all source
+    code lives in a single package with a specific internal organization.
 
     Raises:
-        AssertionError: If there are multiple source packages
+        AssertionError: If the project structure doesn't match expectations.
+            Possible failures:
+            - Unexpected top-level packages exist
+            - Source package has unexpected subpackages
+            - Source package has unexpected submodules
 
+    Example:
+        Expected structure::
+
+            myapp/  # Source package
+            ├── main.py  # Entry point module
+            ├── dev/  # Development tools
+            ├── src/  # Production code
+            └── resources/  # Resource files
+            tests/  # Test package
+            docs/  # Documentation
+
+        Invalid structure (multiple source packages)::
+
+            myapp/  # Source package
+            another_package/  # INVALID: Second source package
+            tests/
+
+            # Fixture fails with:
+            # "Expected only packages {tests, myapp, docs},
+            #  but found {tests, myapp, docs, another_package}"
+
+        Invalid structure (unexpected subpackage)::
+
+            myapp/
+            ├── main.py
+            ├── dev/
+            ├── src/
+            ├── resources/
+            └── utils/  # INVALID: Unexpected subpackage
+
+            # Fixture fails with:
+            # "Expected subpackages {dev, src, resources},
+            #  but found {dev, src, resources, utils}"
+
+    Note:
+        - This fixture runs once per test session
+        - It validates both top-level and source package structure
+        - The source package name is determined from pyproject.toml
+        - Expected subpackages: dev, src, resources
+        - Expected submodules: main
+
+    See Also:
+        pyrig.dev.utils.packages.find_packages: Package discovery
+        pyrig.dev.utils.packages.get_src_package: Source package identification
+        pyrig.src.modules.imports.get_modules_and_packages_from_package:
+            Package content inspection
     """
     packages = find_packages(depth=0)
     src_package = get_src_package()
@@ -212,14 +476,62 @@ def assert_all_src_code_in_one_package() -> None:
 
 @autouse_session_fixture
 def assert_src_package_correctly_named() -> None:
-    """Verify that the source package is correctly named.
+    """Verify that the source package name matches project naming conventions.
 
-    This fixture runs once per test session and checks that the source package
-    is correctly named after the project.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that the source package is correctly named according to pyrig's
+    naming conventions. It performs three checks:
+
+    1. Current working directory name matches project name from pyproject.toml
+    2. Source package name matches expected name derived from directory name
+    3. Source package name matches package name from pyproject.toml
+
+    This ensures consistency between:
+    - Directory structure (filesystem)
+    - Package names (Python imports)
+    - Project configuration (pyproject.toml)
 
     Raises:
-        AssertionError: If the source package is not correctly named
+        AssertionError: If any naming mismatch is detected. Possible failures:
+            - CWD name doesn't match project name in pyproject.toml
+            - Source package name doesn't match expected name from CWD
+            - Source package name doesn't match package name in pyproject.toml
 
+    Example:
+        Correct naming::
+
+            # Directory: /path/to/my-project/
+            # pyproject.toml: name = "my-project"
+            # Package: my_project/
+
+            # All checks pass:
+            # - CWD name: "my-project" == project name: "my-project" ✓
+            # - Package name: "my_project" == expected from CWD: "my_project" ✓
+            # - Package name: "my_project" == pyproject package: "my_project" ✓
+
+        Incorrect naming (package name mismatch)::
+
+            # Directory: /path/to/my-project/
+            # pyproject.toml: name = "my-project", package = "my_project"
+            # Package: myproject/  # WRONG: Should be my_project/
+
+            # Fixture fails with:
+            # "Expected source package to be named my_project,
+            #  but it is named myproject"
+
+    Note:
+        - This fixture runs once per test session
+        - It validates three different naming aspects
+        - Package names use underscores, project names use hyphens
+        - The conversion follows Python package naming conventions
+
+    See Also:
+        pyrig.dev.configs.pyproject.PyprojectConfigFile.get_project_name:
+            Project name from pyproject.toml
+        pyrig.dev.configs.pyproject.PyprojectConfigFile.get_package_name:
+            Package name from pyproject.toml
+        pyrig.src.modules.package.get_pkg_name_from_project_name:
+            Project name to package name conversion
     """
     cwd_name = Path.cwd().name
     project_name = PyprojectConfigFile.get_project_name()
@@ -247,14 +559,68 @@ def assert_src_package_correctly_named() -> None:
 
 @autouse_session_fixture
 def assert_all_modules_tested() -> None:
-    """Verify that the project structure is mirrored in tests.
+    """Verify that every source module has a corresponding test module.
 
-    This fixture runs once per test session and checks that for every package and
-    module in the source package, there is a corresponding test package and module.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that the project structure is mirrored in the tests directory. It
+    ensures that for every package and module in the source package, there is a
+    corresponding test package and test module.
+
+    The fixture:
+    1. Gets the source package via `get_src_package()`
+    2. Walks through all packages and modules via `walk_package()`
+    3. For each package/module, checks if corresponding test exists
+    4. Generates test skeletons for missing tests via `make_test_skeletons()`
+    5. Fails with a detailed error message listing missing tests
+
+    This ensures that:
+    - Every source module has a test module
+    - Every source package has a test package
+    - Test structure mirrors source structure
+    - New modules automatically get test skeletons
+    - Test coverage never decreases
 
     Raises:
-        AssertionError: If any package or module doesn't have a corresponding test
+        AssertionError: If any source modules lack corresponding test modules.
+            The error message lists all missing tests and indicates that test
+            skeletons were automatically generated.
 
+    Example:
+        Given this source structure::
+
+            myapp/
+            ├── src/
+            │   ├── calculator.py
+            │   └── utils/
+            │       └── helpers.py
+
+        Expected test structure::
+
+            tests/
+            ├── test_calculator.py
+            └── test_utils/
+                └── test_helpers.py
+
+        If `test_utils/test_helpers.py` is missing::
+
+            # Fixture automatically:
+            # 1. Detects missing test module
+            # 2. Creates tests/test_utils/__init__.py
+            # 3. Creates tests/test_utils/test_helpers.py with skeleton
+            # 4. Fails with error listing what was created
+
+    Note:
+        - This fixture runs once per test session
+        - It automatically generates test skeletons before failing
+        - Test skeletons include test functions for all source functions/classes
+        - The developer must fill in the generated test skeletons
+
+    See Also:
+        pyrig.dev.cli.commands.create_tests.make_test_skeletons:
+            Test skeleton generator
+        pyrig.src.testing.convention.make_test_obj_importpath_from_obj:
+            Test path mapping
+        pyrig.src.modules.imports.walk_package: Package traversal
     """
     src_package = get_src_package()
 
@@ -287,14 +653,58 @@ def assert_all_modules_tested() -> None:
 
 @autouse_session_fixture
 def assert_no_unit_test_package_usage() -> None:
-    """Verify that the unit test package is not used in the project.
+    """Verify that unittest is not used in the project (pytest only).
 
-    This fixture runs once per test session and checks that the unit test package
-    is not used in the project.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that the unittest package is not used anywhere in the project.
+    Pyrig projects use pytest exclusively for testing, and mixing unittest with
+    pytest can cause issues and inconsistencies.
+
+    The fixture:
+    1. Scans all Python files in all packages
+    2. Searches for the string "unittest" (case-insensitive)
+    3. Collects all files containing unittest references
+    4. Fails with a detailed error message listing the files
+
+    This ensures that:
+    - Only pytest is used for testing
+    - No unittest imports or usage exist
+    - Testing approach is consistent across the project
+    - No mixing of testing frameworks
 
     Raises:
-        AssertionError: If the unit test package is used
+        AssertionError: If any files contain "unittest" references. The error
+            message lists all files containing unittest usage.
 
+    Example:
+        If unittest is used::
+
+            # tests/test_calculator.py
+            import unittest  # BAD!
+
+            class TestCalculator(unittest.TestCase):  # BAD!
+                def test_add(self):
+                    pass
+
+            # Fixture fails with:
+            # "Found unittest package usage in:
+            #  - tests/test_calculator.py"
+
+        Correct approach (pytest only)::
+
+            # tests/test_calculator.py
+            def test_add():
+                '''Use pytest, not unittest.'''
+                assert add(1, 2) == 3
+
+    Note:
+        - This fixture runs once per test session
+        - It scans all Python files in the project
+        - The search is case-insensitive
+        - Both imports and usage are detected
+
+    See Also:
+        pyrig.dev.utils.packages.find_packages: Package discovery
     """
     unit_test_str = "UnitTest".lower()
     pkgs = find_packages()
@@ -316,10 +726,60 @@ def assert_no_unit_test_package_usage() -> None:
 
 @autouse_session_fixture
 def assert_dependencies_are_up_to_date() -> None:
-    """Verify that the dependencies are up to date.
+    """Verify that project dependencies are up to date.
 
-    This fixture runs once per test session
-    to make sure the dependencies are up to date.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that all project dependencies are up to date. It runs both
+    `uv lock --upgrade` and `uv sync` to check for and install any updates.
+
+    The fixture performs two operations:
+    1. **Update check**: Runs `uv lock --upgrade` to check for dependency updates
+    2. **Sync check**: Runs `uv sync` to install any missing dependencies
+
+    If either operation results in changes (updates or installations), the
+    fixture fails, indicating that dependencies were not up to date before
+    running tests.
+
+    This ensures that:
+    - All dependencies are at their latest compatible versions
+    - Lock file is up to date with pyproject.toml
+    - All dependencies are installed
+    - Tests run with current dependencies
+
+    Raises:
+        AssertionError: If dependencies were updated or installed. The error
+            message includes the full output from both `uv lock --upgrade` and
+            `uv sync` commands, showing what changed.
+
+    Example:
+        If dependencies are outdated::
+
+            # Running tests triggers:
+            # 1. `uv lock --upgrade` finds updates
+            # 2. `uv sync` installs updates
+            # 3. Fixture fails with:
+            #    "Dependencies were not up to date.
+            #     This fixture ran `uv lock --upgrade` and `uv sync`.
+            #     upgrade output:
+            #     Updated pytest from 7.0.0 to 7.1.0
+            #     ...
+            #     install output:
+            #     Installed pytest-7.1.0
+            #     ..."
+
+    Note:
+        - This fixture runs once per test session
+        - It runs `uv lock --upgrade` to check for updates
+        - It runs `uv sync` to install dependencies
+        - Both commands run even if the first one fails
+        - The fixture detects updates by looking for "Updated" in output
+        - The fixture detects installations by looking for "==" in output
+
+    See Also:
+        pyrig.src.management.package_manager.PackageManager.get_update_dependencies_args:
+            Update command builder
+        pyrig.src.management.package_manager.PackageManager.get_install_dependencies_args:
+            Install command builder
     """
     # update the dependencies
     args = PackageManager.get_update_dependencies_args()
@@ -360,10 +820,50 @@ install output:
 
 @autouse_session_fixture
 def assert_pre_commit_is_installed() -> None:
-    """Verify that pre-commit is installed.
+    """Verify that pre-commit hooks are installed.
 
-    This fixture runs once per test session and runs pre-commit install
-    to make sure pre-commit is installed.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that pre-commit hooks are installed in the git repository. It runs
+    `pre-commit install` and checks that the installation was successful.
+
+    Pre-commit hooks automatically run code quality checks (linting, formatting,
+    type checking, etc.) before each commit, ensuring code quality standards are
+    maintained.
+
+    The fixture:
+    1. Runs `pre-commit install` via PreCommitter.get_install_args()
+    2. Checks the output for "pre-commit installed at"
+    3. Fails if the expected output is not found
+
+    This ensures that:
+    - Pre-commit hooks are installed in .git/hooks/
+    - Code quality checks run automatically before commits
+    - All developers have the same pre-commit configuration
+    - Commits are validated before being created
+
+    Raises:
+        AssertionError: If pre-commit installation fails. The error message
+            includes the full output from `pre-commit install`.
+
+    Example:
+        If pre-commit is not installed::
+
+            # Fixture runs `pre-commit install`
+            # Expected output: "pre-commit installed at .git/hooks/pre-commit"
+            # If output doesn't contain expected string, fixture fails with:
+            # "Pre-commits are not installed.
+            #  This fixture ran `pre-commit install` but it failed.
+            #  Output: <actual output>"
+
+    Note:
+        - This fixture runs once per test session
+        - It runs `pre-commit install` every time tests run
+        - If hooks are already installed, the command is idempotent
+        - Pre-commit configuration is in .pre-commit-config.yaml
+
+    See Also:
+        pyrig.src.management.pre_committer.PreCommitter.get_install_args:
+            Pre-commit install command builder
     """
     args = PreCommitter.get_install_args()
     completed_process = args.run()
@@ -383,10 +883,65 @@ def assert_pre_commit_is_installed() -> None:
 def assert_src_runs_without_dev_deps(
     tmp_path_factory: pytest.TempPathFactory,
 ) -> None:
-    """Verify that the source code runs without dev dependencies.
+    """Verify that source code runs without dev dependencies installed.
 
-    This fixture runs once per test session and checks that the source code
-    runs without dev dependencies.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that the source code can run without any dev dependencies installed.
+    This ensures proper separation between production code (src) and development
+    code (dev), and that the package can be installed and used in production
+    environments without dev dependencies.
+
+    The fixture performs an extensive test by:
+    1. Creating an isolated temporary directory
+    2. Copying the source package to the temp directory
+    3. Copying minimal config files (pyproject.toml, README.md, LICENSE)
+    4. Installing dependencies WITHOUT dev group (`uv sync --no-group dev`)
+    5. Verifying pytest is NOT installed
+    6. Importing all modules in src to catch dev dependency imports
+    7. Running the main module to verify CLI works
+    8. Running the CLI help command to verify entry point works
+
+    This ensures that:
+    - Source code has no imports from dev dependencies
+    - Package can be installed without dev dependencies
+    - CLI entry point works without dev dependencies
+    - All src modules can be imported without dev dependencies
+    - Production deployment won't fail due to missing dev dependencies
+
+    Args:
+        tmp_path_factory: Pytest's session-scoped temporary directory factory.
+            Used to create an isolated environment for testing.
+
+    Raises:
+        AssertionError: If source code cannot run without dev dependencies.
+            Possible failures:
+            - Dev dependency is importable (shouldn't be installed)
+            - Import error when importing src modules (dev dependency used)
+            - CLI doesn't work (entry point issue)
+            - Main module doesn't run (import issue)
+
+    Example:
+        If src imports a dev dependency::
+
+            # myapp/src/calculator.py
+            from pytest import fixture  # BAD! pytest is a dev dependency
+
+            # Fixture automatically:
+            # 1. Creates isolated environment
+            # 2. Installs without dev dependencies
+            # 3. Tries to import calculator.py
+            # 4. Fails with ModuleNotFoundError: No module named 'pytest'
+
+    Note:
+        - This fixture runs once per test session
+        - It creates a complete isolated environment
+        - It skips if no internet connection is available
+        - It tests both import and CLI execution
+        - The test is comprehensive but expensive (runs once per session)
+
+    See Also:
+        assert_src_does_not_use_dev: Static analysis for dev imports
+        pyrig.src.management.package_manager.PackageManager: Package management
     """
     project_name = PyprojectConfigFile.get_project_name()
     func_name = assert_src_runs_without_dev_deps.__name__  # ty:ignore[possibly-missing-attribute]
@@ -510,9 +1065,52 @@ If this fails then there is likely an import in src that depends on dev dependen
 
 @autouse_session_fixture
 def assert_src_does_not_use_dev() -> None:
-    """Verify that the source code does not import any code from dev.
+    """Verify that source code does not import any dev code.
 
-    This tests that the src folder has no code that depends on dev code.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that the src folder has no code that depends on dev code. This
+    ensures proper separation of concerns and that production code doesn't
+    depend on development-only code.
+
+    The fixture:
+    1. Gets the source package's src subpackage
+    2. Builds a regex pattern matching all possible dev imports
+    3. Scans all Python files in src for dev import statements
+    4. Fails with a detailed error message listing any dev imports found
+
+    This ensures that:
+    - Production code (src) doesn't depend on development code (dev)
+    - Source code can run without dev dependencies installed
+    - Proper separation between production and development code
+    - No accidental dev imports in production code
+
+    Raises:
+        AssertionError: If any dev imports are found in src code. The error
+            message lists all files containing dev imports and the specific
+            import statements found.
+
+    Example:
+        If src code imports dev::
+
+            # myapp/src/calculator.py
+            from myapp.dev.utils import debug_helper  # BAD!
+
+            # Fixture automatically:
+            # 1. Scans all files in myapp/src/
+            # 2. Finds dev import in calculator.py
+            # 3. Fails with error:
+            #    "Found dev usage in src:
+            #     - myapp/src/calculator.py: myapp.dev.utils"
+
+    Note:
+        - This fixture runs once per test session
+        - It scans all Python files in the src subpackage
+        - Uses regex to detect dev imports across all dependent packages
+        - Checks for both direct imports and from imports
+
+    See Also:
+        assert_src_runs_without_dev_deps: Verifies src runs without dev deps
+        pyrig.src.modules.package.DependencyGraph: Dependency graph utilities
     """
     src_package = get_src_package()
 
@@ -552,7 +1150,66 @@ def assert_src_does_not_use_dev() -> None:
 
 @autouse_session_fixture
 def assert_all_dev_deps_in_deps() -> None:
-    """Checks that all of pyrigs dev deps are in toml."""
+    """Verify that all standard dev dependencies are declared in pyproject.toml.
+
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that all of pyrig's standard dev dependencies are declared in the
+    project's pyproject.toml file. This ensures that projects using pyrig have
+    all the necessary development tools configured.
+
+    The fixture:
+    1. Gets all dependencies from pyproject.toml
+    2. Gets pyrig's standard dev dependencies
+    3. Strips version specifiers from both sets
+    4. Verifies standard dev deps are a subset of all deps
+
+    Standard dev dependencies include tools like:
+    - pytest (testing framework)
+    - ruff (linter and formatter)
+    - mypy (type checker)
+    - pre-commit (git hooks)
+    - And other essential development tools
+
+    This ensures that:
+    - All required dev tools are declared
+    - Project has complete development environment
+    - No missing dev dependencies
+    - Consistent dev setup across projects
+
+    Raises:
+        AssertionError: If any standard dev dependencies are missing from
+            pyproject.toml. The error message shows which dependencies are
+            missing.
+
+    Example:
+        If pytest is missing from pyproject.toml::
+
+            # pyproject.toml
+            [project.optional-dependencies]
+            dev = [
+                "ruff",
+                "mypy",
+                # Missing: "pytest"
+            ]
+
+            # Fixture fails with:
+            # "Expected {'pytest', 'ruff', 'mypy', ...} to be a subset of
+            #  {'ruff', 'mypy', ...}"
+
+    Note:
+        - This fixture runs once per test session
+        - It compares dependency names only (versions are stripped)
+        - Standard dev dependencies are defined in PyprojectConfigFile
+        - The check is case-insensitive
+
+    See Also:
+        pyrig.dev.configs.pyproject.PyprojectConfigFile.get_all_dependencies:
+            Get all project dependencies
+        pyrig.dev.configs.pyproject.PyprojectConfigFile.get_standard_dev_dependencies:
+            Get pyrig's standard dev dependencies
+        pyrig.dev.configs.pyproject.PyprojectConfigFile.remove_version_from_dep:
+            Strip version specifiers
+    """
     all_deps = set(PyprojectConfigFile.get_all_dependencies())
     standard_dev_deps = set(PyprojectConfigFile.get_standard_dev_dependencies())
 
@@ -570,7 +1227,58 @@ def assert_all_dev_deps_in_deps() -> None:
 
 @autouse_session_fixture
 def assert_project_mgt_is_up_to_date() -> None:
-    """Verify that the project management tool is up to date."""
+    """Verify that uv (project management tool) is up to date.
+
+    This session-scoped autouse fixture runs automatically once per test session
+    (except in CI) to verify that uv, the project management tool, is up to date.
+    It runs `uv self update` to check for and install updates.
+
+    The fixture:
+    1. Skips if running in GitHub Actions (CI)
+    2. Runs `uv self update` to check for updates
+    3. Checks output for success messages or known acceptable errors
+    4. Fails if update check fails unexpectedly
+
+    This ensures that:
+    - Developers use the latest version of uv
+    - Bug fixes and improvements are available
+    - Consistent tooling across development environments
+    - No outdated tool versions
+
+    Raises:
+        AssertionError: If `uv self update` fails unexpectedly. The error
+            message includes the full output from the command.
+
+    Expected success messages:
+        - "success: You're on the latest version of uv"
+        - "GitHub API rate limit exceeded" (acceptable, can't check)
+        - "Temporary failure in name resolution" (acceptable, network issue)
+
+    Example:
+        If uv is outdated::
+
+            # Fixture runs `uv self update`
+            # Output: "Updated uv from 0.1.0 to 0.2.0"
+            # Fixture passes (update successful)
+
+        If update check fails::
+
+            # Fixture runs `uv self update`
+            # Output: "Error: Unknown error"
+            # Fixture fails with:
+            # "Expected one of [...] in stderr or stdout, got: Error: Unknown error
+            #  This fixture ran `uv self update` but it failed."
+
+    Note:
+        - This fixture runs once per test session
+        - It only runs locally, not in CI (GitHub Actions)
+        - Network errors are acceptable (can't update without internet)
+        - Rate limit errors are acceptable (GitHub API limits)
+        - The fixture updates uv automatically if outdated
+
+    See Also:
+        pyrig.src.git.running_in_github_actions: CI detection
+    """
     if not running_in_github_actions():
         # update project mgt
         completed_process = run_subprocess(["uv", "self", "update"], check=False)
@@ -593,9 +1301,50 @@ def assert_project_mgt_is_up_to_date() -> None:
 
 @autouse_session_fixture
 def assert_version_control_is_installed() -> None:
-    """Verify that git is installed.
+    """Verify that git is installed and available.
 
-    As pyrig needs and expects git to be installed.
+    This session-scoped autouse fixture runs automatically once per test session
+    to verify that git is installed and available on the system. Pyrig requires
+    git for version control, commit history analysis, and various development
+    workflows.
+
+    The fixture:
+    1. Runs `git --version` to check if git is installed
+    2. Parses the output using regex to find version number
+    3. Fails if git is not found or version can't be determined
+
+    This ensures that:
+    - Git is installed on the system
+    - Git is accessible from the command line
+    - Version control operations will work
+    - Development workflows can proceed
+
+    Raises:
+        AssertionError: If git is not installed or not accessible. The error
+            message includes the full output from `git --version`.
+
+    Example:
+        If git is installed::
+
+            # Fixture runs `git --version`
+            # Output: "git version 2.39.1"
+            # Fixture passes (version found)
+
+        If git is not installed::
+
+            # Fixture runs `git --version`
+            # Output: "command not found: git"
+            # Fixture fails with:
+            # "Expected git to be installed, got: command not found: git"
+
+    Note:
+        - This fixture runs once per test session
+        - It runs in all environments (local and CI)
+        - Git is a hard requirement for pyrig projects
+        - The version number must match pattern: "git version X.Y.Z"
+
+    See Also:
+        pyrig.src.git: Git utilities and operations
     """
     completed_process = run_subprocess(["git", "--version"], check=False)
     stderr = completed_process.stderr.decode("utf-8")
@@ -609,9 +1358,52 @@ def assert_version_control_is_installed() -> None:
 
 @autouse_session_fixture
 def assert_container_engine_is_installed() -> None:
-    """Verify that podman is installed.
+    """Verify that podman (container engine) is installed and available.
 
-    As pyrig needs and expects podman to be installed.
+    This session-scoped autouse fixture runs automatically once per test session
+    (except in CI) to verify that podman is installed and available on the system.
+    Pyrig uses podman for containerization, isolated testing environments, and
+    deployment workflows.
+
+    The fixture:
+    1. Skips if running in GitHub Actions (CI)
+    2. Runs `podman --version` to check if podman is installed
+    3. Parses the output using regex to find version number
+    4. Fails if podman is not found or version can't be determined
+
+    This ensures that:
+    - Podman is installed on the system
+    - Podman is accessible from the command line
+    - Container operations will work
+    - Development workflows requiring containers can proceed
+
+    Raises:
+        AssertionError: If podman is not installed or not accessible. The error
+            message includes the full output from `podman --version`.
+
+    Example:
+        If podman is installed::
+
+            # Fixture runs `podman --version`
+            # Output: "podman version 4.3.1"
+            # Fixture passes (version found)
+
+        If podman is not installed::
+
+            # Fixture runs `podman --version`
+            # Output: "command not found: podman"
+            # Fixture fails with:
+            # "Expected podman to be installed, got: command not found: podman"
+
+    Note:
+        - This fixture runs once per test session
+        - It only runs locally, not in CI (GitHub Actions)
+        - Podman is required for container-based workflows
+        - The version number must match pattern: "podman version X.Y.Z"
+        - Podman is preferred over Docker for rootless containers
+
+    See Also:
+        pyrig.src.git.running_in_github_actions: CI detection
     """
     if not running_in_github_actions():
         completed_process = run_subprocess(["podman", "--version"], check=False)
