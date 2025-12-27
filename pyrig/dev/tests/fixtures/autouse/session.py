@@ -160,7 +160,9 @@ from pyrig.src.modules.package import (
     get_pkg_name_from_project_name,
     get_project_name_from_pkg_name,
 )
+from pyrig.src.modules.path import ModulePath
 from pyrig.src.os.os import run_subprocess
+from pyrig.src.string import re_search_excluding_docstrings
 from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
@@ -686,21 +688,23 @@ def assert_no_unit_test_package_usage() -> None:
         pyrig.dev.utils.packages.find_packages: Package discovery
     """
     unit_test_str = "UnitTest".lower()
+    unit_test_pattern = re.compile(unit_test_str)
     pkgs = find_packages()
-    paths: list[str] = []
+    usages: list[str] = []
     for pkg in pkgs:
-        paths.extend(
-            [
-                path.as_posix()
-                for path in Path(pkg).rglob("*.py")
-                if unit_test_str in path.read_text(encoding="utf-8")
-            ]
-        )
+        pkg_path = ModulePath.pkg_name_to_relative_dir_path(pkg)
+        for path in pkg_path.rglob("*.py"):
+            content = path.read_text(encoding="utf-8")
+            is_unit_test_used = re_search_excluding_docstrings(
+                unit_test_pattern, content
+            )
+            if is_unit_test_used:
+                usages.append(f"{path}: {is_unit_test_used.group()}")
 
     msg = f"""Found {"UnitTest".lower()} package usage in:
-    {make_summary_error_msg(paths)}
+    {make_summary_error_msg(usages)}
 """
-    assert not paths, msg
+    assert not usages, msg
 
 
 @autouse_session_fixture
@@ -1114,7 +1118,9 @@ def assert_src_does_not_use_dev() -> None:
     for path in folder_path.rglob("*.py"):
         content = path.read_text(encoding="utf-8")
 
-        is_dev_used = re.search(possible_dev_usages_pattern, content)
+        is_dev_used = re_search_excluding_docstrings(
+            possible_dev_usages_pattern, content
+        )
         if is_dev_used:
             usages.append(f"{path}: {is_dev_used.group()}")
 

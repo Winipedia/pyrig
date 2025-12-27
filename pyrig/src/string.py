@@ -176,3 +176,24 @@ def make_name_from_obj(
     if capitalize:
         parts = [part.capitalize() for part in parts]
     return join_on.join(parts)
+
+
+def re_search_excluding_docstrings(
+    pattern: str | re.Pattern[str], content: str
+) -> re.Match[str] | None:
+    """Search for a pattern in content, excluding triple-quoted docstrings.
+
+    Removes all triple-quoted string blocks from the content
+    before performing the regex search. This prevents false positives when
+    searching for patterns that might appear in documentation.
+
+    Args:
+        pattern: Regex pattern to search for (string or compiled pattern).
+        content: Text content to search within.
+
+    Returns:
+        Match object if pattern is found outside docstrings, None otherwise.
+    """
+    content = re.sub(r'"""[\s\S]*?"""', "", content)
+    content = re.sub(r"'''[\s\S]*?'''", "", content)
+    return re.search(pattern, content)

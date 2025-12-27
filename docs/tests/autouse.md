@@ -144,7 +144,8 @@ be annoying, but we believe it is worth it for real projects in the long run.
 
 **Purpose**: Prevent `unittest` usage in favor of pytest.
 
-**Assertion**: Scans all Python files for "unittest" string.
+**Assertion**: Scans all Python files for "unittest" string, excluding
+triple-quoted docstrings to avoid false positives from documentation.
 
 **Scope**: Session
 
@@ -209,7 +210,8 @@ catches accidental imports of dev dependencies in source code.
 **Purpose**: Prevent `src` from importing `dev` code.
 
 **Assertion**: Scans all source files for dev imports of packages depending on
-pyrig using regex pattern matching.
+pyrig using regex pattern matching, excluding triple-quoted docstrings to avoid
+false positives from documentation.
 
 **Scope**: Session
 

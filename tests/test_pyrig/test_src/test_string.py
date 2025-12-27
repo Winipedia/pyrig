@@ -4,6 +4,7 @@ from types import ModuleType
 
 from pyrig.src.string import (
     make_name_from_obj,
+    re_search_excluding_docstrings,
     split_on_uppercase,
 )
 from pyrig.src.testing.assertions import assert_with_msg
@@ -74,3 +75,30 @@ def test_make_name_from_obj() -> None:
         result == expected,
         f"Expected '{expected}', got '{result}'",
     )
+
+
+def test_re_search_excluding_docstrings() -> None:
+    """Test func for re_search_excluding_docstrings."""
+    content = '''"""Test module."""
+
+def test_function() -> str:
+    """Test function."""
+    return "test"
+'''
+    # first pattern is: Test module.
+    pattern = r"Test\s+module\."
+    result = re_search_excluding_docstrings(pattern, content)
+    # should not find bc it is in docstring
+    assert result is None, f"Expected no match for '{pattern}', got {result}"
+
+    # second pattern is: Test function.
+    pattern = r"Test\s+function\."
+    result = re_search_excluding_docstrings(pattern, content)
+    # should not find bc it is in docstring
+    assert result is None, f"Expected no match for '{pattern}', got {result}"
+
+    # third pattern is: return "test"
+    pattern = r'return\s+"test"'
+    result = re_search_excluding_docstrings(pattern, content)
+    # should find it
+    assert result is not None, f"Expected match for '{pattern}', got {result}"
