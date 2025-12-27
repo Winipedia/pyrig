@@ -1,20 +1,7 @@
-"""Repository protection and security configuration.
+"""GitHub repository protection and security configuration.
 
-This module provides functions to configure secure repository settings and
-branch protection rulesets on GitHub. It implements pyrig's opinionated
-security defaults, including required reviews, status checks, and merge
-restrictions.
-
-The protection rules enforce:
-    - Required pull request reviews with code owner approval
-    - Required status checks (health check workflow must pass)
-    - Linear commit history (no merge commits)
-    - Signed commits
-    - No force pushes or deletions
-
-Example:
-    >>> from pyrig.src.git.github.repo.protect import protect_repository
-    >>> protect_repository()  # Applies all protection rules
+Configures secure repository settings and branch protection rulesets on GitHub,
+implementing pyrig's opinionated security defaults.
 """
 
 import logging
@@ -36,10 +23,9 @@ logger = logging.getLogger(__name__)
 
 
 def protect_repository() -> None:
-    """Apply all security protections to the repository.
+    """Apply security protections to the GitHub repository.
 
-    Configures both repository-level settings and branch protection
-    rulesets. This is the main entry point for securing a repository.
+    Configures repository-level settings and branch protection rulesets.
     """
     logger.info("Protecting repository")
     set_secure_repo_settings()
@@ -48,14 +34,10 @@ def protect_repository() -> None:
 
 
 def set_secure_repo_settings() -> None:
-    """Configure repository-level settings for security and consistency.
+    """Configure repository-level security and merge settings.
 
-    Sets the following repository settings:
-        - Description from pyproject.toml
-        - Default branch to 'main'
-        - Delete branches on merge
-        - Allow update branch button
-        - Disable merge commits (squash and rebase only)
+    Sets description, default branch, merge options, and branch cleanup
+    settings based on pyproject.toml and pyrig defaults.
     """
     logger.info("Configuring secure repository settings")
     owner, repo_name = get_repo_owner_and_name_from_git()
@@ -79,10 +61,10 @@ def set_secure_repo_settings() -> None:
 
 
 def create_or_update_default_branch_ruleset() -> None:
-    """Create or update the default branch protection ruleset.
+    """Create or update branch protection ruleset for the default branch.
 
-    Applies pyrig's standard protection rules to the default branch (main).
-    If a ruleset with the same name already exists, it is updated.
+    Applies pyrig's standard protection rules to the main branch. Updates
+    existing ruleset if present.
     """
     token = get_github_repo_token()
     owner, repo_name = get_repo_owner_and_name_from_git()
@@ -95,14 +77,9 @@ def create_or_update_default_branch_ruleset() -> None:
 
 
 def get_default_ruleset_params() -> dict[str, Any]:
-    """Build the parameter dictionary for the default branch ruleset.
-
-    Constructs the complete ruleset configuration including:
-        - Branch targeting (default branch only)
-        - Bypass permissions for repository admins
-        - All protection rules (reviews, status checks, etc.)
+    """Load branch protection ruleset parameters from configuration.
 
     Returns:
-        A dictionary of parameters suitable for `create_or_update_ruleset()`.
+        Dictionary of parameters for `create_or_update_ruleset()`.
     """
     return BranchProtectionConfigFile.load()

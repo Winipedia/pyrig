@@ -1,9 +1,7 @@
-"""Project structure creation utilities.
+"""Project structure and configuration file creation.
 
-This module provides the `create_root` function which generates all
-configuration files and directory structure for a pyrig project.
-It delegates to the ConfigFile system to discover and initialize
-all registered config file types.
+Generates all configuration files and directory structure by discovering
+and initializing ConfigFile subclasses.
 """
 
 import logging
@@ -14,17 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 def make_project_root(*, priority: bool = False) -> None:
-    """Create all configuration files and project structure.
+    """Create project configuration files and directory structure.
 
-    Discovers all ConfigFile subclasses and initializes each one,
-    creating the complete project structure including:
-        - pyproject.toml
-        - GitHub workflows
-        - Pre-commit configuration
-        - Ruff/ty/rumdl configuration
-        - Source and test directory structure
+    Discovers and initializes all ConfigFile subclasses to create the complete
+    project structure.
 
-    This is the implementation for the `pyrig create-root` command.
+    Args:
+        priority: If True, only creates high-priority config files (e.g.,
+            pyproject.toml, .gitignore). If False, creates all config files.
     """
     logger.info("Creating project root")
     if priority:

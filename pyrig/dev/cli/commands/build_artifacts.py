@@ -1,7 +1,7 @@
 """Artifact build orchestration.
 
-This module provides the main entry point for building all project
-artifacts. It discovers all Builder subclasses and invokes each one.
+Provides the entry point for building all project artifacts by discovering
+and invoking all Builder subclasses.
 """
 
 import logging
@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 
 
 def build_artifacts() -> None:
-    """Build all artifacts by invoking all registered Builder subclasses.
+    """Build all project artifacts.
 
-    Discovers all non-abstract Builder subclasses across all packages
-    depending on pyrig and invokes each one to create its artifacts.
+    Discovers and invokes all non-abstract Builder subclasses to create
+    distributable artifacts.
     """
     logger.info("Building all artifacts")
     Builder.init_all_non_abstract_subclasses()

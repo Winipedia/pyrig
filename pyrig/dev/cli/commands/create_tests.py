@@ -1,9 +1,8 @@
-"""Utilities for automatically creating test files for the project.
+"""Automatic test skeleton generation for source code.
 
-This module provides functions to generate test files for all modules and classes
-in the project, ensuring that every function and method has a corresponding test.
-It creates the basic test structure and generates skeleton test functions with
-NotImplementedError to indicate tests that need to be written.
+Generates test files mirroring the source package structure, creating skeleton
+test functions and classes with NotImplementedError placeholders for all
+untested code.
 """
 
 import logging
@@ -35,10 +34,10 @@ logger = logging.getLogger(__name__)
 
 
 def make_test_skeletons() -> None:
-    """Create all test files for the project.
+    """Create test skeleton files for all source code.
 
-    This function orchestrates the test creation process by first setting up the base
-    test structure and then creating test files for all source packages.
+    Walks the source package hierarchy and creates corresponding test packages,
+    modules, classes, and functions for all untested code.
     """
     logger.info("Creating test skeletons")
     src_package = get_src_package()
@@ -48,10 +47,13 @@ def make_test_skeletons() -> None:
 
 
 def create_tests_for_package(package: ModuleType) -> None:
-    """Create test files for all modules in the source package.
+    """Create test files for all modules in a source package.
 
-    This function walks through the source package hierarchy and creates corresponding
-    test packages and modules for each package and module found in the source.
+    Walks the package hierarchy and creates corresponding test packages and
+    modules using parallel execution.
+
+    Args:
+        package: The source package to create tests for.
     """
     logger.debug("Creating tests for package: %s", package.__name__)
     futures: list[Future[None]] = []
@@ -71,11 +73,7 @@ def create_test_package(package: ModuleType) -> None:
     """Create a test package for a source package.
 
     Args:
-        package: The source package module to create a test package for
-
-    This function creates a test package with the appropriate naming convention
-    if it doesn't already exist.
-
+        package: The source package to create a test package for.
     """
     test_package_name = make_test_obj_importpath_from_obj(package)
     test_package_path = ModulePath.pkg_name_to_relative_dir_path(test_package_name)
@@ -86,14 +84,11 @@ def create_test_package(package: ModuleType) -> None:
 def create_test_module(module: ModuleType) -> None:
     """Create a test module for a source module.
 
+    Generates test module content with skeleton test functions and classes,
+    then writes it to the test module file.
+
     Args:
-        module: The source module to create a test module for
-
-    This function:
-    1. Creates a test module with the appropriate naming convention
-    2. Generates the test module content with skeleton test functions
-    3. Writes the content to the test module file
-
+        module: The source module to create a test module for.
     """
     test_module_name = make_test_obj_importpath_from_obj(module)
     test_module_path = ModulePath.module_name_to_relative_file_path(test_module_name)
@@ -105,19 +100,16 @@ def create_test_module(module: ModuleType) -> None:
 
 
 def get_test_module_content(module: ModuleType) -> str:
-    """Generate the content for a test module.
+    """Generate test module content for a source module.
+
+    Combines existing test content with new test functions and classes for
+    untested code.
 
     Args:
-        module: The source module to generate test content for
+        module: The source module to generate test content for.
 
     Returns:
-        The generated test module content as a string
-
-    This function:
-    1. Gets the existing test module content if it exists
-    2. Adds test functions for all functions in the source module
-    3. Adds test classes for all classes in the source module
-
+        The complete test module content as a string.
     """
     test_module = get_test_obj_from_obj(module)
     test_module_content = get_module_content_as_str(test_module)
@@ -134,21 +126,15 @@ def get_test_functions_content(
     test_module: ModuleType,
     test_module_content: str,
 ) -> str:
-    """Generate test function content for a module.
+    """Generate test function skeletons for untested functions.
 
     Args:
-        module: The source module containing functions to test
-        test_module: The test module to add function tests to
-        test_module_content: The current content of the test module
+        module: The source module containing functions to test.
+        test_module: The test module to add function tests to.
+        test_module_content: The current content of the test module.
 
     Returns:
-        The updated test module content with function tests added
-
-    This function:
-    1. Identifies all functions in the source module
-    2. Determines which functions don't have corresponding tests
-    3. Generates skeleton test functions for untested functions
-
+        Updated test module content with new test function skeletons.
     """
     funcs = get_all_functions_from_module(module)
     test_functions = get_all_functions_from_module(test_module)
@@ -176,27 +162,22 @@ def get_test_classes_content(
     test_module: ModuleType,
     test_module_content: str,
 ) -> str:
-    """Generate test class content for a module.
+    """Generate test class skeletons for untested classes and methods.
+
+    Identifies untested classes and methods, generates skeleton test classes
+    and methods, and inserts them into the test module content.
 
     Args:
-        module: The source module containing classes to test
-        test_module: The test module to add class tests to
-        test_module_content: The current content of the test module
+        module: The source module containing classes to test.
+        test_module: The test module to add class tests to.
+        test_module_content: The current content of the test module.
 
     Returns:
-        The updated test module content with class tests added
-
-    This function:
-    1. Identifies all classes in the source module
-    2. Determines which classes and methods don't have corresponding tests
-    3. Generates skeleton test classes and methods for untested classes and methods
-    4. Inserts the new test classes into the existing content
-       if the class already exists
+        Updated test module content with new test class skeletons.
 
     Raises:
-        ValueError: If a test class declaration appears multiple
-                    times in the test module
-
+        ValueError: If a test class declaration appears multiple times in the
+            test module.
     """
     classes = get_all_cls_from_module(module)
     test_classes = get_all_cls_from_module(test_module)
