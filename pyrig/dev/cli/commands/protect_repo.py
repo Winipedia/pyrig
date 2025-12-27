@@ -7,7 +7,7 @@ implementing pyrig's opinionated security defaults.
 import logging
 from typing import Any
 
-from pyrig.dev.configs.branch_protection import BranchProtectionConfigFile
+from pyrig.dev.configs.git.branch_protection import BranchProtectionConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.utils.git import (
     DEFAULT_BRANCH,

@@ -247,7 +247,7 @@ To customize branch protection rules, subclass `BranchProtectionConfigFile`:
 
 ```python
 from typing import Any
-from pyrig.dev.configs.branch_protection import BranchProtectionConfigFile
+from pyrig.dev.configs.git.branch_protection import BranchProtectionConfigFile
 
 class MyBranchProtectionConfigFile(BranchProtectionConfigFile):
     @classmethod
@@ -261,7 +261,7 @@ class MyBranchProtectionConfigFile(BranchProtectionConfigFile):
         return config
 ```
 
-Place in `myapp/dev/configs/branch_protection.py` and it will override the
+Place in `myapp/dev/configs/git/branch_protection.py` and it will override the
 default configuration.
 
 ### Verifying Configuration

@@ -52,7 +52,7 @@ Examples:
 
 See Also:
     pyrig.dev.cli.commands.protect_repo: High-level repository protection
-    pyrig.dev.configs.branch_protection: Branch protection configuration
+    pyrig.dev.configs.git.branch_protection: Branch protection configuration
 """
 
 import logging

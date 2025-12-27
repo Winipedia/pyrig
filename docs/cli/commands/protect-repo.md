@@ -94,7 +94,7 @@ uv run pyrig mkroot
 ```
 
 The `BranchProtectionConfigFile` class (in
-`pyrig.dev.configs.branch_protection`) programmatically generates this
+`pyrig.dev.configs.git.branch_protection`) programmatically generates this
 configuration file. The `protect-repo` command loads this file and applies it to
 GitHub via the API.
 
