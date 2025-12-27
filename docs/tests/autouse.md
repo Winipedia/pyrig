@@ -219,18 +219,6 @@ false positives from documentation.
 
 ---
 
-### `assert_all_dev_deps_in_deps`
-
-**Purpose**: Verify standard dev dependencies are declared.
-
-**Assertion**: Checks `STANDARD_DEV_DEPS` is subset of declared dependencies.
-
-**Scope**: Session
-
-**Why**: Ensures required development tools are available.
-
----
-
 ### `assert_project_mgt_is_up_to_date`
 
 **Purpose**: Ensure project management tool (uv) is latest version.
@@ -360,7 +348,6 @@ graph TD
 - `assert_pre_commit_is_installed`
 - `assert_src_runs_without_dev_deps`
 - `assert_src_does_not_use_dev`
-- `assert_all_dev_deps_in_deps`
 - `assert_project_mgt_is_up_to_date` (local only)
 - `assert_version_control_is_installed`
 - `assert_container_engine_is_installed` (local only)

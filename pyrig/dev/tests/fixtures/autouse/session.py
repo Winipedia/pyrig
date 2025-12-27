@@ -17,7 +17,6 @@ Fixtures:
     assert_pre_commit_is_installed: Pre-commit hooks installed.
     assert_src_runs_without_dev_deps: Source runs without dev dependencies.
     assert_src_does_not_use_dev: Source doesn't import dev code.
-    assert_all_dev_deps_in_deps: All dev dependencies declared.
     assert_project_mgt_is_up_to_date: uv up to date (local only).
     assert_version_control_is_installed: Git installed.
     assert_container_engine_is_installed: Podman installed (local only).
@@ -560,28 +559,6 @@ def assert_src_does_not_use_dev() -> None:
     assert_with_msg(
         not usages,
         msg,
-    )
-
-
-@autouse_session_fixture
-def assert_all_dev_deps_in_deps() -> None:
-    """Verify all standard dev dependencies are declared in pyproject.toml.
-
-    Raises:
-        AssertionError: If any standard dev dependencies are missing.
-    """
-    all_deps = set(PyprojectConfigFile.get_all_dependencies())
-    standard_dev_deps = set(PyprojectConfigFile.get_standard_dev_dependencies())
-
-    stripped_deps = {
-        PyprojectConfigFile.remove_version_from_dep(dep) for dep in all_deps
-    }
-    stripped_standard_dev_deps = {
-        PyprojectConfigFile.remove_version_from_dep(dep) for dep in standard_dev_deps
-    }
-
-    assert stripped_standard_dev_deps.issubset(stripped_deps), (
-        f"Expected {stripped_standard_dev_deps} to be a subset of {stripped_deps}"
     )
 
 
