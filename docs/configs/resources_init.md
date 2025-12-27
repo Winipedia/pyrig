@@ -1,6 +1,6 @@
 # resources/**init**.py Configuration
 
-The `ResourcesInitConfigFile` manages the `dev/artifacts/resources/__init__.py`
+The `ResourcesInitConfigFile` manages the `{package_name}/resources/__init__.py`
 file.
 
 ## Overview

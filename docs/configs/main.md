@@ -56,8 +56,8 @@ graph TD
 
 **Filename**: `main` - Extracted from the source module name (`pyrig.main`).
 
-**Path transformation**: `pyrig.main` → `{package_name}.src.main` →
-`{package_name}/src/main.py`
+**Path transformation**: `pyrig.main` → `{package_name}.main` →
+`{package_name}/main.py`
 
 ## How It Works
 
