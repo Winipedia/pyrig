@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from pyrig.dev.configs.workflows.base.base import Workflow
+from pyrig.dev.configs.base.workflow import Workflow
 from pyrig.src.testing.assertions import assert_with_msg
 
 

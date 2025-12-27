@@ -23,7 +23,7 @@ The workflow uses a matrix strategy to test across:
 
 See Also:
     GitHub Actions: https://docs.github.com/en/actions
-    pyrig.dev.configs.workflows.base.base.Workflow
+    pyrig.dev.configs.base.workflow.Workflow
         Base class for workflow generation
 """
 
@@ -31,7 +31,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pyrig
-from pyrig.dev.configs.workflows.base.base import Workflow
+from pyrig.dev.configs.base.workflow import Workflow
 from pyrig.dev.utils.packages import get_src_package
 from pyrig.src.modules.package import DependencyGraph
 
@@ -68,7 +68,7 @@ class HealthCheckWorkflow(Workflow):
     See Also:
         pyrig.dev.configs.workflows.build.BuildWorkflow
             Runs after this workflow completes on main branch
-        pyrig.dev.configs.workflows.base.base.Workflow
+        pyrig.dev.configs.base.workflow.Workflow
             Base class with workflow generation utilities
     """
 

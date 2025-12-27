@@ -19,7 +19,7 @@ See Also:
 
 from typing import Any
 
-from pyrig.dev.configs.workflows.base.base import Workflow
+from pyrig.dev.configs.base.workflow import Workflow
 from pyrig.dev.configs.workflows.release import ReleaseWorkflow
 
 
