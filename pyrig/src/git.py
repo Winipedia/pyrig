@@ -1,43 +1,7 @@
 """Git repository utilities for URL parsing and GitHub integration.
 
-This module provides utilities for extracting repository information from git
-configuration and generating GitHub-related URLs. It supports common git
-operations like reading remote URLs, extracting owner/repo names, and
-constructing URLs for GitHub Pages, PyPI, badges, and workflows.
-
-The utilities are designed to work with local git repositories and derive
-repository information from git configuration, enabling automatic generation
-of URLs for documentation, badges, and CI/CD workflows.
-
-Key capabilities:
-    - **Git config reading**: Extract remote URLs and user information from
-      local git configuration
-    - **URL parsing**: Parse GitHub owner and repository names from HTTPS and
-      SSH remote URLs
-    - **URL generation**: Construct URLs for GitHub Pages, PyPI, Codecov,
-      badges, and workflow runs
-    - **Git operations**: Stage files and check for uncommitted changes
-    - **Environment detection**: Detect GitHub Actions CI/CD environment
-
-Example:
-    >>> from pyrig.src.git import (
-    ...     get_repo_owner_and_name_from_git,
-    ...     get_repo_url_from_git
-    ... )
-    >>> owner, repo = get_repo_owner_and_name_from_git()
-    >>> print(f"{owner}/{repo}")
-    'myorg/myrepo'
-    >>> print(get_repo_url_from_git())
-    'https://github.com/myorg/myrepo'
-
-Note:
-    This module is part of `pyrig.src` and has minimal dependencies, making it
-    suitable for runtime use. For GitHub API operations and token management,
-    see `pyrig.dev.utils.git`.
-
-See Also:
-    pyrig.dev.utils.git: GitHub API operations and token management
-    pyrig.src.os.os.run_subprocess: Subprocess execution used by git commands
+Provides utilities for extracting repository information from git config and generating
+GitHub-related URLs (Pages, PyPI, badges, workflows).
 """
 
 import logging
@@ -55,40 +19,17 @@ logger = logging.getLogger(__name__)
 
 @cache
 def get_repo_remote_from_git(*, check: bool = True) -> str:
-    """Get the remote origin URL from the local git repository.
-
-    Executes `git config --get remote.origin.url` to retrieve the URL of the
-    origin remote. The result is cached to avoid repeated subprocess calls.
-
-    The remote URL can be in either HTTPS or SSH format:
-        - HTTPS: `https://github.com/owner/repo.git`
-        - SSH: `git@github.com:owner/repo.git`
+    """Get the remote origin URL from git config.
 
     Args:
-        check: Whether to raise an exception if the git command fails. When
-            False, allows the function to return empty string if no remote is
-            configured.
+        check: Whether to raise exception if command fails.
 
     Returns:
-        The remote origin URL with any trailing whitespace removed. Returns
-        empty string if `check=False` and no remote is configured.
+        Remote origin URL (HTTPS or SSH format).
+        Empty string if check=False and no remote.
 
     Raises:
-        subprocess.CalledProcessError: If `check=True` and the command fails
-            (e.g., not in a git repository or origin remote not configured).
-
-    Example:
-        >>> url = get_repo_remote_from_git()
-        >>> print(url)
-        'https://github.com/myorg/myrepo.git'
-
-    Note:
-        This function is cached using `functools.cache`, so repeated calls
-        return the same result without executing the git command again.
-
-    See Also:
-        get_repo_owner_and_name_from_git: Parse owner and repo from the URL
-        pyrig.src.os.os.run_subprocess: Subprocess execution wrapper
+        subprocess.CalledProcessError: If check=True and command fails.
     """
     stdout: str = run_subprocess(
         ["git", "config", "--get", "remote.origin.url"], check=check

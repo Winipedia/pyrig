@@ -1,134 +1,37 @@
-'''Declarative configuration file management system for Python projects.
+"""Declarative configuration file management system.
 
-This package provides the ConfigFile system, the core of pyrig's project automation.
-It automatically discovers, creates, validates, and updates all configuration files
-needed for a complete Python project through a declarative, extensible architecture.
+Provides the ConfigFile system for automatic discovery, creation, validation,
+and updating of project configuration files.
+Uses subset validation to preserve user customizations while
+ensuring required configuration exists.
 
-The ConfigFile system is declarative: you define what config files should exist and
-what they should contain, and the system ensures they match that specification. User
-customizations are preserved through subset validation - the system only adds missing
-values, never removes or modifies existing ones.
+Architecture:
+    - Automatic subclass discovery across packages
+    - Priority-based initialization (parallel within priority groups)
+    - Subset validation (only adds missing values, never removes)
+    - Multiple formats: YAML, TOML, JSON, Python, Markdown, text
 
-Architecture
-------------
-The system uses automatic subclass discovery to find all ConfigFile implementations
-across all packages that depend on pyrig. When initialized, ConfigFiles are processed
-in priority order (higher priority first), with files at the same priority level
-initialized in parallel for performance.
-
-Each ConfigFile subclass:
-    - Defines its location via ``get_parent_path()`` and ``get_file_extension()``
-    - Specifies expected content via ``get_configs()``
-    - Implements format-specific loading/dumping via ``load()`` and ``dump()``
-    - Optionally sets initialization priority via ``get_priority()``
-
-Features
---------
-- **Automatic Discovery**: Finds all ConfigFile subclasses across packages
-- **Subset Validation**: User configs can extend but not contradict base
-- **Intelligent Merging**: Only missing values are added, existing preserved
-- **Multiple Formats**: YAML, TOML, JSON, Python, Markdown, plain text
-- **Priority-Based Init**: Control initialization order when dependencies exist
-- **Parallel Execution**: Same-priority files initialized concurrently
-- **Idempotent**: Safe to run multiple times, no duplicate additions
-- **Opt-Out Support**: Empty files signal user doesn't want that config
-
-Key Components
---------------
 Base Classes:
-    - ``base.base.ConfigFile``: Abstract base for all config files
-    - ``base.toml.TomlConfigFile``: Base for TOML files
-    - ``base.yaml.YamlConfigFile``: Base for YAML files
-    - ``base.python.PythonConfigFile``: Base for Python files
-    - ``base.markdown.MarkdownConfigFile``: Base for Markdown files
+    base.base.ConfigFile: Abstract base
+    base.toml.TomlConfigFile: TOML files
+    base.yaml.YamlConfigFile: YAML files
+    base.python.PythonConfigFile: Python files
+    base.markdown.MarkdownConfigFile: Markdown files
 
 Core Config Files:
-    - ``pyproject.PyprojectConfigFile``: Manages pyproject.toml
-    - ``git.gitignore.GitIgnoreConfigFile``: Manages .gitignore
-    - ``git.pre_commit.PreCommitConfigFile``: Manages .pre-commit-config.yaml
-    - ``docs.mkdocs.MkDocsConfigFile``: Manages mkdocs.yml
-    - ``workflows.*``: GitHub Actions workflow configurations
+    pyproject.PyprojectConfigFile: pyproject.toml
+    git.gitignore.GitIgnoreConfigFile: .gitignore
+    git.pre_commit.PreCommitConfigFile: .pre-commit-config.yaml
+    docs.mkdocs.MkDocsConfigFile: mkdocs.yml
+    workflows.*: GitHub Actions workflows
 
-How It Works
-------------
-1. User runs ``pyrig mkroot`` (or ``ConfigFile.init_all_subclasses()``)
-2. System discovers all ConfigFile subclasses via ``get_all_subclasses()``
-3. Subclasses are grouped by priority and sorted (highest first)
-4. Each priority group is initialized in parallel via ThreadPoolExecutor
-5. For each ConfigFile:
+How It Works:
+    1. Run `pyrig mkroot` or `ConfigFile.init_all_subclasses()`
+    2. Discover all ConfigFile subclasses
+    3. Group by priority, initialize in parallel
+    4. For each file: create if missing, validate, add missing configs
 
-   a. Parent directories are created if needed
-   b. File is created with default content if it doesn't exist
-   c. Existing content is validated via ``is_correct()``
-   d. Missing values are added via ``add_missing_configs()``
-   e. Final validation ensures file is correct or raises ValueError
-
-Subset Validation
------------------
-The system uses ``nested_structure_is_subset()`` to validate that expected
-configuration is present in actual configuration. This allows users to:
-
-- Add extra configuration keys
-- Extend lists with additional items
-- Override values (as long as required structure exists)
-
-A file is considered "correct" if:
-
-- It's empty (user opted out), OR
-- Expected config is a subset of actual config
-
-Examples:
---------
-Create a custom config file::
-
-    from pathlib import Path
-    from typing import Any
-    from pyrig.dev.configs.base.toml import TomlConfigFile
-
-    class MyConfigFile(TomlConfigFile):
-        """Custom TOML configuration for myapp."""
-
-        @classmethod
-        def get_parent_path(cls) -> Path:
-            """Place file in project root."""
-            return Path()
-
-        @classmethod
-        def get_configs(cls) -> dict[str, Any]:
-            """Define expected configuration structure."""
-            return {
-                "tool": {
-                    "myapp": {
-                        "setting": "default_value",
-                        "enabled": True
-                    }
-                }
-            }
-
-        @classmethod
-        def get_priority(cls) -> float:
-            """Initialize after pyproject.toml (priority 100)."""
-            return 50
-
-Then run::
-
-    uv run myapp mkroot
-
-The system will:
-
-- Create myconfig.toml if it doesn't exist
-- Add missing keys if file exists but incomplete
-- Preserve any extra keys user added
-- Validate final result matches expected structure
-
-See Also:
---------
-pyrig.dev.configs.base.base.ConfigFile
-    Base class and core logic
-pyrig.dev.cli.commands.create_root.make_project_root
-    CLI command that initializes all config files
-pyrig.src.iterate.nested_structure_is_subset
-    Subset validation logic
-pyrig.src.modules.package.get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep
-    Discovery mechanism for finding ConfigFile subclasses across packages
-'''
+Subset Validation:
+    Files are correct if empty (opt-out) OR expected config ⊆ actual config.
+    Users can add extra keys, extend lists, override values.
+"""

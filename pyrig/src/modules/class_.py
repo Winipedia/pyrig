@@ -1,29 +1,8 @@
 """Class introspection and subclass discovery utilities.
 
-This module provides utilities for inspecting Python classes, extracting their
-methods, and discovering subclasses across packages. The subclass discovery
-system is central to pyrig's plugin architecture, enabling automatic discovery
-of ConfigFile implementations, Builder subclasses, and other extensible
-components.
-
-Key features:
-    - Method extraction with optional parent class filtering
-    - Class discovery within modules
-    - Recursive subclass discovery with package loading
-    - Intelligent "leaf class" filtering via `discard_parents`
-
-The `discard_parents` feature is particularly important: when multiple packages
-define subclasses in a chain (e.g., BaseConfig -> PyrigConfig -> UserConfig),
-only the most specific (leaf) classes are kept. This enables clean override
-behavior where user customizations replace base implementations.
-
-Example:
-    >>> from pyrig.src.modules.class_ import get_all_nonabstract_subclasses
-    >>> subclasses = get_all_nonabstract_subclasses(
-    ...     ConfigFile,
-    ...     load_package_before=my_package.dev.configs,
-    ...     discard_parents=True
-    ... )
+Utilities for inspecting classes, extracting methods, and discovering subclasses across
+packages. Central to pyrig's plugin architecture for automatic discovery of ConfigFile
+implementations and Builder subclasses.
 """
 
 import inspect
@@ -53,31 +32,16 @@ def get_all_methods_from_cls(
 ) -> list[Callable[..., Any]]:
     """Extract all methods from a class.
 
-    Retrieves all method-like attributes from a class, including instance
-    methods, static methods, class methods, and properties. Methods are
-    returned sorted by their definition order in the source code.
-
-    This is used by pyrig to generate test skeletons for each method
-    in a class.
+    Includes instance methods, static methods, class methods, and properties.
+    Returns methods sorted by definition order.
 
     Args:
-        class_: The class to extract methods from.
-        exclude_parent_methods: If True, only includes methods defined directly
-            in this class, excluding inherited methods. Useful when generating
-            tests only for new methods in a subclass.
-        include_annotate: If False (default), excludes `__annotate__` methods
-            introduced in Python 3.14.
+        class_: Class to extract methods from.
+        exclude_parent_methods: If True, excludes inherited methods.
+        include_annotate: If False, excludes `__annotate__` (Python 3.14+).
 
     Returns:
-        A list of callable method objects, sorted by their line number
-        in the source file.
-
-    Example:
-        >>> class MyClass:
-        ...     def method_a(self): pass
-        ...     def method_b(self): pass
-        >>> methods = get_all_methods_from_cls(MyClass)
-        >>> [m.__name__ for m in methods]
+        List of method objects sorted by line number.
         ['method_a', 'method_b']
     """
     methods = [
@@ -102,29 +66,14 @@ def get_all_methods_from_cls(
 def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
     """Extract all classes defined directly in a module.
 
-    Retrieves all class objects that are defined in the specified module,
-    excluding classes imported from other modules. Classes are returned
-    sorted by their definition order.
-
-    This is used by pyrig to discover classes for test skeleton generation.
-
     Args:
-        module: The module to extract classes from. Can be a module object
-            or a fully qualified module name string.
+        module: Module object or fully qualified module name.
 
     Returns:
-        A list of class types defined in the module, sorted by their
-        definition order in the source file.
+        List of class types sorted by definition order.
 
     Note:
-        Handles edge cases like Rust-backed classes (e.g., cryptography's
-        AESGCM) that may not have standard `__module__` attributes.
-
-    Example:
-        >>> import my_module
-        >>> classes = get_all_cls_from_module(my_module)
-        >>> [c.__name__ for c in classes]
-        ['ClassA', 'ClassB']
+        Handles edge cases like Rust-backed classes (e.g., cryptography's AESGCM).
     """
     if isinstance(module, str):
         module = import_module(module)
@@ -148,33 +97,17 @@ def get_all_subclasses[T: type](
 ) -> set[T]:
     """Recursively discover all subclasses of a class.
 
-    Finds all direct and indirect subclasses of the given class. Because
-    Python's `__subclasses__()` only returns classes that have been imported,
-    you can optionally specify a package to walk (import) before discovery.
+    Python's `__subclasses__()` only returns imported classes. Optionally specify a
+    package to walk (import) before discovery.
 
     Args:
-        cls: The base class to find subclasses of.
-        load_package_before: Optional package to walk before discovery. All
-            modules in this package will be imported, ensuring any subclasses
-            defined there are registered with Python's subclass tracking.
-            When provided, results are filtered to only include classes from
-            this package.
-        discard_parents: If True, removes parent classes from the result when
-            both a parent and its child are present. This keeps only the most
-            specific (leaf) classes, enabling clean override behavior.
+        cls: Base class to find subclasses of.
+        load_package_before: Optional package to walk before discovery.
+            When provided, results are filtered to classes from this package.
+        discard_parents: If True, keeps only leaf classes.
 
     Returns:
-        A set of all subclasses (including the original class itself when
-        `load_package_before` is not specified).
-
-    Example:
-        >>> class Base: pass
-        >>> class Child(Base): pass
-        >>> class GrandChild(Child): pass
-        >>> get_all_subclasses(Base)
-        {Base, Child, GrandChild}
-        >>> get_all_subclasses(Base, discard_parents=True)
-        {GrandChild}
+        Set of all subclasses.
     """
     logger.debug("Discovering subclasses of %s", cls.__name__)
     if load_package_before:
@@ -203,30 +136,16 @@ def get_all_nonabstract_subclasses[T: type](
 ) -> set[T]:
     """Find all concrete (non-abstract) subclasses of a class.
 
-    Similar to `get_all_subclasses`, but filters out abstract classes
-    (those with unimplemented abstract methods). This is the primary
-    function used by pyrig to discover implementations of ConfigFile,
-    Builder, and other extensible base classes.
+    Filters out abstract classes (those with unimplemented abstract methods).
+    Primary function for discovering ConfigFile and Builder implementations.
 
     Args:
-        cls: The base class to find subclasses of.
+        cls: Base class to find subclasses of.
         load_package_before: Optional package to walk before discovery.
-            See `get_all_subclasses` for details.
-        discard_parents: If True, keeps only leaf classes when a parent
-            and child are both present.
+        discard_parents: If True, keeps only leaf classes.
 
     Returns:
-        A set of all non-abstract subclasses.
-
-    Example:
-        >>> from abc import ABC, abstractmethod
-        >>> class Base(ABC):
-        ...     @abstractmethod
-        ...     def method(self): pass
-        >>> class Concrete(Base):
-        ...     def method(self): pass
-        >>> get_all_nonabstract_subclasses(Base)
-        {Concrete}
+        Set of all non-abstract subclasses.
     """
     return {
         subclass
@@ -247,19 +166,15 @@ def init_all_nonabstract_subclasses[T: type](
 ) -> None:
     """Discover and instantiate all concrete subclasses of a class.
 
-    Finds all non-abstract subclasses and calls their default constructor
-    (no arguments). This is used by pyrig's ConfigFile and Builder systems
-    to automatically initialize all discovered implementations.
+    Used by ConfigFile and Builder systems to auto-initialize implementations.
 
     Args:
-        cls: The base class to find and instantiate subclasses of.
+        cls: Base class to find and instantiate subclasses of.
         load_package_before: Optional package to walk before discovery.
         discard_parents: If True, only instantiates leaf classes.
 
     Note:
-        All subclasses must have a no-argument `__init__` or be classes
-        that can be called with no arguments (e.g., using `__init_subclass__`
-        or `__new__` for initialization).
+        All subclasses must have a no-argument `__init__`.
     """
     for subclass in get_all_nonabstract_subclasses(
         cls,
@@ -282,25 +197,14 @@ def discard_parent_classes[T: type](
 ) -> list[T] | set[T]:
     """Remove parent classes when their children are also present.
 
-    Filters a collection of classes to keep only "leaf" classes - those
-    that have no subclasses in the collection. This enables clean override
-    behavior: if you subclass a ConfigFile, only your subclass will be used.
+    Keeps only "leaf" classes - those with no subclasses in the collection.
+    Enables clean override behavior.
 
     Args:
-        classes: A list or set of class types to filter. Modified in place.
+        classes: List or set of class types to filter (modified in place).
 
     Returns:
-        The same collection with parent classes removed. The return type
-        matches the input type (list or set).
-
-    Example:
-        >>> class A: pass
-        >>> class B(A): pass
-        >>> class C(B): pass
-        >>> discard_parent_classes({A, B, C})
-        {C}
-        >>> discard_parent_classes([A, C])  # B not in list, so A stays
-        [A, C]
+        Same collection with parent classes removed.
     """
     for cls in classes.copy():
         if any(child in classes for child in cls.__subclasses__()):
@@ -313,9 +217,9 @@ def get_cached_instance[T](cls: type[T]) -> T:
     """Get a cached instance of a class.
 
     Args:
-        cls: The class to instantiate.
+        cls: Class to instantiate.
 
     Returns:
-        A cached instance of the class.
+        Cached instance.
     """
     return cls()

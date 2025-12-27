@@ -1,19 +1,6 @@
-"""Directed graph implementation for dependency analysis.
+"""Directed graph implementation for package dependency analysis.
 
-This module provides a simple but efficient directed graph (DiGraph) data structure
-used primarily for analyzing Python package dependency relationships. The graph
-supports bidirectional traversal, enabling both "what does X depend on" and
-"what depends on X" queries.
-
-The implementation maintains both forward and reverse edge mappings for O(1)
-neighbor lookups in either direction, at the cost of doubled memory for edges.
-
-Example:
-    >>> graph = DiGraph()
-    >>> graph.add_edge("app", "library")
-    >>> graph.add_edge("library", "utils")
-    >>> graph.ancestors("utils")  # What depends on utils?
-    {'app', 'library'}
+Provides a DiGraph with bidirectional traversal for analyzing dependency relationships.
 """
 
 from typing import Self
@@ -22,72 +9,36 @@ from pyrig.src.modules.class_ import get_cached_instance
 
 
 class DiGraph:
-    """A directed graph with efficient bidirectional traversal.
+    """Directed graph with efficient bidirectional traversal.
 
-    This graph implementation maintains both forward edges (node -> dependencies)
-    and reverse edges (node -> dependents) to support efficient queries in both
-    directions. It is designed for package dependency analysis where you often
-    need to find all packages that depend on a given package.
+    Maintains forward and reverse edges for O(1) neighbor lookups.
 
     Attributes:
-        _nodes: Set of all node identifiers in the graph.
-        _edges: Forward adjacency mapping (node -> set of outgoing neighbors).
-        _reverse_edges: Reverse adjacency mapping (node -> set of incoming neighbors).
-
-    Example:
-        >>> g = DiGraph()
-        >>> g.add_edge("A", "B")  # A depends on B
-        >>> g.add_edge("A", "C")  # A depends on C
-        >>> g["A"]  # What does A depend on?
-        {'B', 'C'}
-        >>> g.ancestors("B")  # What depends on B?
-        {'A'}
+        _nodes: Set of all node identifiers.
+        _edges: Forward adjacency (node → outgoing neighbors).
+        _reverse_edges: Reverse adjacency (node → incoming neighbors).
     """
 
     @classmethod
     def cached(cls) -> Self:
         """Get a cached singleton instance of the graph.
 
-        Returns the same DiGraph instance on every call, enabling efficient
-        reuse of the graph across multiple function calls without rebuilding.
-        This is particularly useful for expensive graph operations like
-        dependency analysis.
-
         Returns:
-            A cached DiGraph instance. The same instance is returned on all
-            subsequent calls.
-
-        Example:
-            >>> graph1 = DiGraph.cached()
-            >>> graph2 = DiGraph.cached()
-            >>> graph1 is graph2
-            True
-
-        Note:
-            The caching is implemented using `functools.cache` via
-            `get_cached_instance`, so the instance persists for the lifetime
-            of the Python process.
-
-        See Also:
-            pyrig.src.modules.class_.get_cached_instance: Caching implementation
-            pyrig.src.modules.package.DependencyGraph.cached: Subclass usage
+            Cached DiGraph instance (same instance on all calls).
         """
         return get_cached_instance(cls)  # type: ignore[no-any-return, arg-type]
 
     def __init__(self) -> None:
-        """Initialize an empty directed graph with no nodes or edges."""
+        """Initialize an empty directed graph."""
         self._nodes: set[str] = set()
         self._edges: dict[str, set[str]] = {}  # node -> outgoing neighbors
         self._reverse_edges: dict[str, set[str]] = {}  # node -> incoming neighbors
 
     def add_node(self, node: str) -> None:
-        """Add a node to the graph if it doesn't already exist.
-
-        Initializes empty edge sets for the node in both forward and reverse
-        adjacency mappings.
+        """Add a node to the graph.
 
         Args:
-            node: The identifier for the node to add.
+            node: Node identifier to add.
         """
         self._nodes.add(node)
         if node not in self._edges:
@@ -98,12 +49,9 @@ class DiGraph:
     def add_edge(self, source: str, target: str) -> None:
         """Add a directed edge from source to target.
 
-        Both nodes are automatically added to the graph if they don't exist.
-        The edge represents that `source` depends on `target`.
-
         Args:
-            source: The node that depends on target (edge origin).
-            target: The node that source depends on (edge destination).
+            source: Edge origin (depends on target).
+            target: Edge destination (dependency of source).
         """
         self.add_node(source)
         self.add_node(target)
@@ -114,10 +62,10 @@ class DiGraph:
         """Check if a node exists in the graph.
 
         Args:
-            node: The node identifier to check.
+            node: Node identifier to check.
 
         Returns:
-            True if the node is in the graph, False otherwise.
+            True if node exists, False otherwise.
         """
         return node in self._nodes
 
@@ -125,11 +73,10 @@ class DiGraph:
         """Get the outgoing neighbors (dependencies) of a node.
 
         Args:
-            node: The node to get dependencies for.
+            node: Node to get dependencies for.
 
         Returns:
-            Set of nodes that the given node depends on. Returns empty set
-            if the node doesn't exist or has no dependencies.
+            Set of dependencies (empty if node doesn't exist).
         """
         return self._edges.get(node, set())
 
@@ -137,7 +84,7 @@ class DiGraph:
         """Return all nodes in the graph.
 
         Returns:
-            A set containing all node identifiers in the graph.
+            Set of all node identifiers.
         """
         return self._nodes
 
@@ -145,28 +92,22 @@ class DiGraph:
         """Check if a directed edge exists from source to target.
 
         Args:
-            source: The potential edge origin.
-            target: The potential edge destination.
+            source: Potential edge origin.
+            target: Potential edge destination.
 
         Returns:
-            True if an edge exists from source to target, False otherwise.
+            True if edge exists, False otherwise.
         """
         return target in self._edges.get(source, set())
 
     def ancestors(self, target: str) -> set[str]:
-        """Find all nodes that can reach the target node (transitive dependents).
-
-        Performs a breadth-first traversal of the reverse edges to find all
-        nodes that directly or indirectly depend on the target. This is useful
-        for determining the "blast radius" of a change to a package.
+        """Find all nodes that can reach the target (transitive dependents).
 
         Args:
-            target: The node to find ancestors for.
+            target: Node to find ancestors for.
 
         Returns:
-            Set of all nodes that have a path to target (i.e., all packages
-            that depend on target, directly or transitively). Does not include
-            target itself.
+            Set of all nodes with a path to target (excludes target itself).
         """
         if target not in self:
             return set()
@@ -185,20 +126,15 @@ class DiGraph:
     def shortest_path_length(self, source: str, target: str) -> int:
         """Find the shortest path length between source and target.
 
-        Uses breadth-first search to find the minimum number of edges
-        between two nodes. Useful for determining dependency depth.
-
         Args:
-            source: The starting node.
-            target: The destination node.
+            source: Starting node.
+            target: Destination node.
 
         Returns:
-            The number of edges in the shortest path from source to target.
-            Returns 0 if source and target are the same node.
+            Number of edges in shortest path (0 if source == target).
 
         Raises:
-            ValueError: If either node is not in the graph, or if no path
-                exists between the nodes.
+            ValueError: If either node not in graph or no path exists.
         """
         if source not in self or target not in self:
             msg = f"Node not in graph: {source if source not in self else target}"
@@ -223,37 +159,18 @@ class DiGraph:
         raise ValueError(msg)
 
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
-        """Topologically sort a subset of nodes in the graph.
+        """Topologically sort a subset of nodes (dependencies before dependents).
 
-        Performs Kahn's algorithm for topological sorting on the specified
-        subset of nodes. The result is ordered such that dependencies come
-        before their dependents.
-
-        In the dependency graph, an edge A → B means "A depends on B".
-        The topological sort ensures B appears before A in the result.
-
-        This is useful for ordering packages by their dependency relationships,
-        ensuring that dependencies are processed before their dependents.
+        Uses Kahn's algorithm. Edge A → B means "A depends on B", so B appears before A.
 
         Args:
-            nodes: Set of node identifiers to sort. Only edges between nodes
-                in this set are considered.
+            nodes: Set of nodes to sort (only edges within this set considered).
 
         Returns:
-            List of nodes in topological order (dependencies before dependents).
-            If multiple valid orderings exist, the result is deterministic but
-            arbitrary among the valid orderings.
+            Nodes in topological order (dependencies first).
 
         Raises:
-            ValueError: If the subgraph contains a cycle, making topological
-                sort impossible.
-
-        Example:
-            >>> g = DiGraph()
-            >>> g.add_edge("pkg2", "pkg1")  # pkg2 depends on pkg1
-            >>> g.add_edge("pkg1", "pyrig")  # pkg1 depends on pyrig
-            >>> g.topological_sort_subgraph({"pyrig", "pkg1", "pkg2"})
-            ['pyrig', 'pkg1', 'pkg2']  # Dependencies first
+            ValueError: If subgraph contains a cycle.
         """
         # Count outgoing edges (dependencies) for each node in the subgraph
         # Nodes with 0 outgoing edges have no dependencies
