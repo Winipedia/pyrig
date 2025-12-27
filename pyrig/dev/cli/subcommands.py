@@ -1,32 +1,7 @@
-"""Project-specific CLI command wrappers for pyrig.
+"""Project-specific CLI commands.
 
-Defines the main CLI commands for pyrig. All public functions are automatically
-discovered and registered as CLI commands by pyrig's dynamic command discovery
-system.
-
-Architecture:
-    Thin wrapper functions delegate to implementation functions in
-    `pyrig.dev.cli.commands`. This separation provides:
-    - Clean CLI interface focused on argument parsing
-    - Testable logic independent of CLI framework
-    - Lazy imports to avoid dev dependency errors
-
-Commands:
-    - `init`: Complete project initialization (9-step automated setup)
-    - `mkroot`: Create project structure and configuration files
-    - `mktests`: Generate test skeleton files for all source code
-    - `mkinits`: Create missing __init__.py files for namespace packages
-    - `build`: Build all distributable artifacts
-    - `protect_repo`: Configure GitHub repository protection rules
-
-Extensibility:
-    Projects depending on pyrig can create their own `subcommands.py` at
-    `<package>/dev/cli/subcommands.py`. All public functions will be
-    automatically discovered and registered as CLI commands.
-
-Note:
-    Imports from `pyrig.dev.cli.commands` are local (inside functions) to
-    avoid import errors when dev dependencies are not installed.
+Add custom CLI commands here as public functions. All public functions are
+automatically discovered and registered as CLI commands.
 """
 
 import typer
