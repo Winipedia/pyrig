@@ -1,38 +1,11 @@
 """Configuration management for Containerfile files.
 
-This module provides the ContainerfileConfigFile class for managing the project's
-Containerfile, which is a Docker-compatible container build file used to create
-production-ready container images.
-
-The generated Containerfile follows best practices:
-    - Uses Python slim base image for smaller image size
-    - Installs uv package manager for fast dependency installation
-    - Creates non-root user (appuser) for security
-    - Optimizes layer caching by copying dependencies first
-    - Sets proper file permissions
-    - Configures entrypoint and default command
-    - Removes unnecessary files after installation
-
-The Containerfile is compatible with Docker, Podman, and other OCI-compliant
-container runtimes.
-
-Example Containerfile structure:
-    FROM python:3.13-slim
-    WORKDIR /myproject
-    COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
-    COPY README.md LICENSE pyproject.toml uv.lock ./
-    RUN useradd -m -u 1000 appuser
-    RUN chown -R appuser:appuser .
-    USER appuser
-    COPY --chown=appuser:appuser mypackage mypackage
-    RUN uv sync --no-group dev
-    RUN rm README.md LICENSE pyproject.toml uv.lock
-    ENTRYPOINT ["uv", "run", "myproject"]
-    CMD ["pyrig.main:main"]
+Manages Docker-compatible Containerfile generation with best practices: Python slim
+base, uv package manager, non-root user (appuser), optimized layer caching, and
+proper permissions. Compatible with Docker, Podman, and OCI-compliant runtimes.
 
 See Also:
-    Containerfile specification: https://github.com/containers/common/blob/main/docs/Containerfile.5.md
-    Docker documentation: https://docs.docker.com/engine/reference/builder/
+    Containerfile spec: https://github.com/containers/common/blob/main/docs/Containerfile.5.md
 """
 
 import json
@@ -45,48 +18,25 @@ from pyrig.src.management.package_manager import PackageManager
 
 
 class ContainerfileConfigFile(TextConfigFile):
-    """Configuration file manager for Containerfile.
+    """Containerfile configuration manager.
 
-    Generates a production-ready Containerfile in the project root that builds
-    optimized container images for Python applications. The Containerfile uses
-    multi-stage builds, layer caching, and security best practices.
-
-    Key Features:
-        - **Slim Base Image**: Uses python:X.Y-slim for smaller image size
-        - **Fast Dependencies**: Integrates uv package manager
-        - **Security**: Runs as non-root user (appuser, UID 1000)
-        - **Layer Optimization**: Copies dependencies before source code
-        - **Clean Images**: Removes build artifacts after installation
-        - **Flexible Execution**: Configurable entrypoint and command
-
-    The generated Containerfile is compatible with Docker, Podman, buildah, and
-    other OCI-compliant container runtimes.
+    Generates production-ready Containerfile with Python slim base, uv package
+    manager, non-root user (appuser, UID 1000), optimized layer caching, and
+    configurable entrypoint. Compatible with Docker, Podman, and buildah.
 
     Examples:
-        Generate a Containerfile::
+        Generate Containerfile::
 
-            from pyrig.dev.configs.containers.container_file import (
-                ContainerfileConfigFile,
-            )
-
-            # Creates Containerfile in project root
             ContainerfileConfigFile()
 
-        Build and run the container::
+        Build and run::
 
-            # Using Docker
             docker build -t myproject .
             docker run myproject
 
-            # Using Podman
-            podman build -t myproject .
-            podman run myproject
-
     See Also:
         pyrig.dev.configs.pyproject.PyprojectConfigFile
-            Used to determine Python version and project metadata
         pyrig.src.management.package_manager.PackageManager
-            Provides the run command for the entrypoint
     """
 
     @classmethod
@@ -94,7 +44,7 @@ class ContainerfileConfigFile(TextConfigFile):
         """Get the Containerfile filename.
 
         Returns:
-            str: The string "Containerfile" (capitalized, no extension).
+            str: "Containerfile".
         """
         return "Containerfile"
 
@@ -103,7 +53,7 @@ class ContainerfileConfigFile(TextConfigFile):
         """Get the parent directory for Containerfile.
 
         Returns:
-            Path: Empty Path() representing the project root directory.
+            Path: Project root.
         """
         return Path()
 
@@ -112,7 +62,7 @@ class ContainerfileConfigFile(TextConfigFile):
         """Get the file extension for Containerfile.
 
         Returns:
-            str: Empty string (Containerfile has no file extension).
+            str: Empty string (no extension).
         """
         return ""
 
@@ -121,7 +71,7 @@ class ContainerfileConfigFile(TextConfigFile):
         """Get the extension separator for Containerfile.
 
         Returns:
-            str: Empty string (no separator needed since there's no extension).
+            str: Empty string (no separator).
         """
         return ""
 
@@ -129,15 +79,11 @@ class ContainerfileConfigFile(TextConfigFile):
     def get_content_str(cls) -> str:
         """Get the complete Containerfile content.
 
-        Builds a production-ready Containerfile by joining all layers with
-        double newlines for readability.
-
         Returns:
-            str: Complete Containerfile content with all build instructions.
+            str: Complete Containerfile with all build instructions.
 
         Note:
-            This method calls get_layers() which reads from pyproject.toml
-            and may make external API calls to determine the Python version.
+            Reads from pyproject.toml and may make API calls for Python version.
         """
         return "\n\n".join(cls.get_layers())
 
@@ -145,17 +91,10 @@ class ContainerfileConfigFile(TextConfigFile):
     def is_correct(cls) -> bool:
         """Check if the Containerfile is valid and complete.
 
-        Validates that all expected layers are present in the Containerfile.
-        This ensures the file hasn't been corrupted or manually edited to
-        remove critical build steps.
+        Validates all expected layers are present.
 
         Returns:
-            bool: True if all layers from get_layers() are present in the file,
-                False otherwise.
-
-        Note:
-            This method reads the Containerfile from disk and compares it
-            against the expected layers.
+            bool: True if all layers present, False otherwise.
         """
         all_layers_in_file = all(
             layer in cls.get_file_content() for layer in cls.get_layers()
@@ -164,46 +103,17 @@ class ContainerfileConfigFile(TextConfigFile):
 
     @classmethod
     def get_layers(cls) -> list[str]:
-        r"""Get the individual layers (instructions) of the Containerfile.
+        """Get Containerfile build instructions.
 
-        Generates a list of Containerfile instructions that build an optimized
-        container image. The layers are ordered to maximize Docker layer caching:
-            1. Base image selection
-            2. Working directory setup
-            3. uv package manager installation
-            4. Dependency files copy (for caching)
-            5. User creation and permissions
-            6. Source code copy
-            7. Dependency installation
-            8. Cleanup
-            9. Entrypoint and command configuration
+        Generates optimized layer sequence: base image, workdir, uv install,
+        dependency copy (for caching), user creation, source copy, dependency
+        install, cleanup, entrypoint/command.
 
         Returns:
-            list[str]: List of Containerfile instructions, each as a string.
-                Instructions include FROM, WORKDIR, COPY, RUN, USER, ENTRYPOINT,
-                and CMD directives.
+            list[str]: Containerfile instructions (FROM, WORKDIR, COPY, RUN, etc.).
 
         Note:
-            This method reads from pyproject.toml and may make external API calls
-            to determine the latest supported Python version.
-
-        Examples:
-            Returns a list like::
-
-                [
-                    "FROM python:3.13-slim",
-                    "WORKDIR /myproject",
-                    "COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv",
-                    "COPY README.md LICENSE pyproject.toml uv.lock ./",
-                    "RUN useradd -m -u 1000 appuser",
-                    "RUN chown -R appuser:appuser .",
-                    "USER appuser",
-                    "COPY --chown=appuser:appuser mypackage mypackage",
-                    "RUN uv sync --no-group dev",
-                    "RUN rm README.md LICENSE pyproject.toml uv.lock",
-                    "ENTRYPOINT ["uv", "run", "myproject"]",
-                    "CMD ["pyrig.main:main"]"
-                ]
+            Reads from pyproject.toml and may make API calls for Python version.
         """
         latest_python_version = PyprojectConfigFile.get_latest_possible_python_version()
         project_name = PyprojectConfigFile.get_project_name()

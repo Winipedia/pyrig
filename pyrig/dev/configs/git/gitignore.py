@@ -1,20 +1,8 @@
 """Configuration management for .gitignore files.
 
-This module provides the GitIgnoreConfigFile class for managing the project's
-.gitignore file, which specifies intentionally untracked files that Git should
-ignore.
-
-The generated .gitignore file combines:
-    - **GitHub's Standard Python Patterns**: Fetched from the official GitHub
-      gitignore repository, covering common Python build artifacts, bytecode,
-      virtual environments, and IDE files
-    - **VS Code Patterns**: Excludes .vscode/ workspace settings
-    - **pyrig-Specific Patterns**: Excludes .experiment, .env, and pyrig caches
-    - **Tool-Specific Caches**: Excludes .ruff_cache, .rumdl_cache, .pytest_cache
-    - **Build Artifacts**: Excludes dist/, site/, .coverage files
-
-The class intelligently merges existing patterns with new ones, avoiding
-duplicates and preserving user customizations.
+Manages .gitignore by combining GitHub's standard Python patterns with
+pyrig-specific patterns (.experiment, .env, tool caches, build artifacts).
+Intelligently merges with existing patterns, avoiding duplicates.
 
 See Also:
     GitHub gitignore templates: https://github.com/github/gitignore
@@ -35,43 +23,27 @@ from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 
 
 class GitIgnoreConfigFile(ConfigFile):
-    """Configuration file manager for .gitignore files.
+    """Gitignore configuration manager.
 
-    Creates and maintains a comprehensive .gitignore file by combining GitHub's
-    standard Python gitignore patterns with pyrig-specific patterns. The class
-    fetches the latest Python.gitignore from GitHub and adds patterns for:
-        - VS Code workspace files (.vscode/)
-        - pyrig-specific files (.experiment, .env)
-        - Tool caches (.ruff_cache, .rumdl_cache, .pytest_cache)
-        - Build artifacts (dist/, site/, coverage files)
-        - Virtual environments (.venv/)
-
-    The class preserves existing patterns and only adds missing ones, ensuring
-    user customizations are not lost.
+    Combines GitHub's standard Python patterns with pyrig-specific patterns
+    (.vscode/, .experiment, .env, tool caches, build artifacts). Preserves
+    existing patterns and only adds missing ones.
 
     Examples:
-        Initialize the .gitignore file::
+        Initialize .gitignore::
 
-            from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
-
-            # Creates or updates .gitignore
             GitIgnoreConfigFile()
 
-        Load and inspect patterns::
+        Load patterns::
 
             patterns = GitIgnoreConfigFile.load()
-            print(f"Ignoring {len(patterns)} patterns")
 
     Note:
-        This class makes an external HTTP request to GitHub to fetch the
-        standard Python.gitignore template. On failure, it uses a fallback
-        template from resources.
+        Makes HTTP request to GitHub for Python.gitignore. Uses fallback on failure.
 
     See Also:
         pyrig.dev.utils.git.load_gitignore
-            Utility function for loading gitignore files
         pyrig.dev.configs.dot_env.DotEnvConfigFile
-            .env file is automatically added to .gitignore
     """
 
     @classmethod
@@ -79,17 +51,16 @@ class GitIgnoreConfigFile(ConfigFile):
         """Get an empty filename to produce ".gitignore".
 
         Returns:
-            str: Empty string so the final path becomes ".gitignore" instead
-                of "gitignore.gitignore".
+            str: Empty string (produces ".gitignore" not "gitignore.gitignore").
         """
-        return ""  # so it builds the path .gitignore and not gitignore.gitignore
+        return ""
 
     @classmethod
     def get_parent_path(cls) -> Path:
         """Get the parent directory for .gitignore.
 
         Returns:
-            Path: Empty Path() representing the project root directory.
+            Path: Project root.
         """
         return Path()
 
@@ -98,8 +69,7 @@ class GitIgnoreConfigFile(ConfigFile):
         """Get the file extension for .gitignore.
 
         Returns:
-            str: The string "gitignore" (combined with empty filename to
-                produce ".gitignore").
+            str: "gitignore" (combined with empty filename produces ".gitignore").
         """
         return "gitignore"
 
@@ -107,16 +77,11 @@ class GitIgnoreConfigFile(ConfigFile):
     def load(cls) -> list[str]:
         """Load the .gitignore file as a list of patterns.
 
-        Reads the .gitignore file from disk and returns each line as a
-        separate pattern in a list.
-
         Returns:
-            list[str]: List of gitignore patterns, one per line. Empty lines
-                and comments are preserved.
+            list[str]: Gitignore patterns (one per line, preserves comments).
 
-        Note:
-            This method reads from disk. If the file doesn't exist, it will
-            raise a FileNotFoundError.
+        Raises:
+            FileNotFoundError: If file doesn't exist.
         """
         return load_gitignore(path=cls.get_path())
 
@@ -124,19 +89,14 @@ class GitIgnoreConfigFile(ConfigFile):
     def dump(cls, config: list[str] | dict[str, Any]) -> None:
         """Write patterns to the .gitignore file.
 
-        Writes a list of gitignore patterns to the .gitignore file, joining
-        them with newlines.
-
         Args:
-            config (list[str]): List of gitignore patterns to write. Each
-                element becomes a line in the file.
+            config (list[str]): Gitignore patterns (one per line).
 
         Raises:
             TypeError: If config is not a list.
 
         Note:
-            This method overwrites the entire .gitignore file. Use get_configs()
-            to merge with existing patterns.
+            Overwrites entire file. Use get_configs() to merge with existing.
         """
         if not isinstance(config, list):
             msg = f"Cannot dump {config} to .gitignore file."
@@ -145,44 +105,17 @@ class GitIgnoreConfigFile(ConfigFile):
 
     @classmethod
     def get_configs(cls) -> list[str]:
-        """Get the complete .gitignore patterns with intelligent merging.
+        """Get complete .gitignore patterns with intelligent merging.
 
-        Combines GitHub's standard Python gitignore patterns with pyrig-specific
-        patterns, while preserving existing patterns and avoiding duplicates.
-
-        The method:
-            1. Fetches GitHub's Python.gitignore (or uses fallback)
-            2. Adds VS Code patterns (.vscode/)
-            3. Adds pyrig-specific patterns (.experiment, .git/)
-            4. Adds tool caches (.ruff_cache, .rumdl_cache, .pytest_cache)
-            5. Adds build artifacts (dist/, site/, coverage files)
-            6. Adds .env file for secrets
-            7. Loads existing patterns from disk
-            8. Merges new patterns with existing ones (no duplicates)
+        Combines GitHub's Python patterns with pyrig-specific patterns (.vscode/,
+        .experiment, .env, tool caches, build artifacts). Preserves existing
+        patterns and avoids duplicates.
 
         Returns:
-            list[str]: Complete list of gitignore patterns, combining existing
-                patterns with any missing standard patterns.
+            list[str]: Complete gitignore patterns (existing + missing standard).
 
         Note:
-            This method makes an external HTTP request to GitHub. On failure,
-            it uses a fallback template from resources.
-
-        Examples:
-            Returns a list like::
-
-                [
-                    "# Byte-compiled / optimized / DLL files",
-                    "__pycache__/",
-                    "*.py[cod]",
-                    ...
-                    "# vscode stuff",
-                    ".vscode/",
-                    "# pyrig stuff",
-                    ".experiment",
-                    ".env",
-                    ...
-                ]
+            Makes HTTP request to GitHub. Uses fallback on failure.
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
         needed = [
@@ -216,27 +149,17 @@ class GitIgnoreConfigFile(ConfigFile):
     @classmethod
     @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
     def get_github_python_gitignore_as_str(cls) -> str:
-        """Fetch GitHub's standard Python gitignore patterns as a string.
-
-        Makes an HTTP GET request to GitHub's gitignore repository to fetch
-        the latest Python.gitignore template. On failure, the decorator
-        provides a fallback template from resources.
+        """Fetch GitHub's standard Python gitignore patterns.
 
         Returns:
-            str: Complete Python.gitignore content from GitHub, including
-                comments and all standard Python patterns.
+            str: Python.gitignore content from GitHub.
 
         Raises:
-            requests.HTTPError: If the HTTP request fails (caught by decorator).
-            RuntimeError: If fetch fails and no fallback resource exists.
+            requests.HTTPError: If HTTP request fails (caught by decorator).
+            RuntimeError: If fetch fails and no fallback exists.
 
         Note:
-            This method makes an external HTTP request with a 10-second timeout.
-            The @return_resource_content_on_fetch_error decorator provides
-            automatic fallback to a bundled template on network errors.
-
-        See Also:
-            GitHub Python.gitignore: https://github.com/github/gitignore/blob/main/Python.gitignore
+            Makes HTTP request with 10s timeout. Decorator provides fallback.
         """
         url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
         res = requests.get(url, timeout=10)
@@ -247,20 +170,12 @@ class GitIgnoreConfigFile(ConfigFile):
     def get_github_python_gitignore_as_list(cls) -> list[str]:
         """Fetch GitHub's standard Python gitignore patterns as a list.
 
-        Fetches the Python.gitignore template from GitHub and splits it into
-        individual lines for easier processing.
-
         Returns:
-            list[str]: List of gitignore patterns from GitHub's Python.gitignore,
-                one pattern per line. Includes comments and empty lines.
+            list[str]: Python.gitignore patterns (one per line).
 
         Raises:
-            requests.HTTPError: If the HTTP request fails (caught by decorator).
-            RuntimeError: If fetch fails and no fallback resource exists.
-
-        Note:
-            This method makes an external HTTP request. Use the result to build
-            a comprehensive .gitignore file with additional custom patterns.
+            requests.HTTPError: If HTTP request fails.
+            RuntimeError: If fetch fails and no fallback exists.
         """
         gitignore_str = cls.get_github_python_gitignore_as_str()
         return gitignore_str.splitlines()
