@@ -1,25 +1,7 @@
-"""Configuration management for Markdown files that contain badges.
+"""Markdown badge file configuration management.
 
-This module provides the BadgesMarkdownConfigFile class for creating and
-managing Markdown files that contain project badges (README.md, etc.).
-
-BadgesMarkdownConfigFile automatically generates:
-- Project header with name and description
-- Categorized badges (tooling, code quality, package info, CI/CD, docs)
-- Links to project resources (PyPI, GitHub, documentation)
-
-The badges are dynamically generated from:
-- Project metadata in pyproject.toml
-- Git repository information
-- Workflow configurations
-- Python version support
-
-Badge Categories:
-    - **Tooling**: pyrig, uv, Podman, pre-commit, MkDocs
-    - **Code Quality**: ruff, ty, bandit, pytest, codecov, rumdl
-    - **Package Info**: PyPI version, Python versions, license
-    - **CI/CD**: Health check workflow, release workflow
-    - **Documentation**: GitHub Pages link
+Provides BadgesMarkdownConfigFile for creating Markdown files with auto-generated
+project badges from pyproject.toml and Git metadata.
 
 Example:
     >>> from pathlib import Path
@@ -34,8 +16,7 @@ Example:
     ...     def get_filename(cls) -> str:
     ...         return "README"
     >>>
-    >>> ReadmeFile()
-    # Creates README.md with project header, badges, and description
+    >>> ReadmeFile()  # Creates README.md with badges
 """
 
 import pyrig
@@ -57,44 +38,13 @@ from pyrig.src.git import (
 
 
 class BadgesMarkdownConfigFile(MarkdownConfigFile):
-    """Abstract base class for Markdown files that contain project badges.
+    """Base class for Markdown files with auto-generated project badges.
 
-    Extends MarkdownConfigFile to automatically generate project badges from
-    metadata in pyproject.toml and Git repository information. The generated
-    content includes:
-
-    - Project name as H1 header
-    - Categorized badges (tooling, code quality, package info, CI/CD, docs)
-    - Project description
-    - Horizontal rules for visual separation
-
-    The badges are organized into categories with HTML comments for clarity:
-    - <!-- tooling -->: Development tools (pyrig, uv, Podman, etc.)
-    - <!-- code-quality -->: Quality tools (ruff, ty, bandit, pytest, etc.)
-    - <!-- package-info -->: Package metadata (PyPI, Python versions, license)
-    - <!-- ci/cd -->: CI/CD workflows (health check, release)
-    - <!-- documentation -->: Documentation links (GitHub Pages)
-
-    Validation Behavior:
-        A file is considered correct if it contains:
-        - All badges from get_badges()
-        - The project description from pyproject.toml
-        - The project name from pyproject.toml
-
-        This allows users to add extra content while ensuring required
-        elements are present.
+    Generates badges from pyproject.toml and Git metadata. Validates that file
+    contains required badges, project name, and description.
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the Markdown file
-
-    Example:
-        >>> from pathlib import Path
-        >>> from pyrig.dev.configs.base.badges_md import BadgesMarkdownConfigFile
-        >>>
-        >>> class ReadmeFile(BadgesMarkdownConfigFile):
-        ...     @classmethod
-        ...     def get_parent_path(cls) -> Path:
-        ...         return Path()
 
     See Also:
         pyrig.dev.configs.base.markdown.MarkdownConfigFile: Parent class
@@ -104,56 +54,10 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
     @classmethod
     def get_content_str(cls) -> str:
-        """Generate the Markdown content with project header and badges.
-
-        Creates a formatted Markdown document with:
-        1. Project name as H1 header
-        2. Categorized badges with HTML comments
-        3. Horizontal rule separator
-        4. Project description as blockquote
-        5. Horizontal rule separator
-
-        The badges are organized by category with HTML comments for clarity:
-        - <!-- tooling -->: Development tools
-        - <!-- code-quality -->: Quality tools
-        - <!-- package-info -->: Package metadata
-        - <!-- ci/cd -->: CI/CD workflows
-        - <!-- documentation -->: Documentation links
+        """Generate Markdown with project name, categorized badges, and description.
 
         Returns:
-            Markdown content with project name, badges, and description.
-
-        Example:
-            Generated content::
-
-                # MyProject
-
-                <!-- tooling -->
-                [![pyrig](...)][...]
-                [![uv](...)][...]
-
-                <!-- code-quality -->
-                [![ruff](...)][...]
-                [![pytest](...)][...]
-
-                <!-- package-info -->
-                [![PyPI](...)][...]
-
-                <!-- ci/cd -->
-                [![CI](...)][...]
-
-                <!-- documentation -->
-                [![Documentation](...)][...]
-
-                ---
-
-                > Project description goes here.
-
-                ---
-
-        Note:
-            The badges are generated dynamically from get_badges() and may
-            vary based on project configuration.
+            Formatted Markdown with H1 header, badge categories, and description.
         """
         project_name = PyprojectConfigFile.get_project_name()
         badges = cls.get_badges()
@@ -176,46 +80,10 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
     @classmethod
     def is_correct(cls) -> bool:
-        r"""Check if the Markdown file contains required badges and content.
-
-        Validates that the file contains:
-        1. All badges from get_badges() (across all categories)
-        2. The project description from pyproject.toml
-        3. The project name from pyproject.toml
-
-        This validation is more lenient than exact content matching, allowing
-        users to add extra content while ensuring required elements are present.
+        """Check if file contains all required badges, description, and project name.
 
         Returns:
-            True if the file is empty (opted out), has exact match, or contains
-            all required badges, description, and project name.
-
-        Example:
-            Valid files::
-
-                # Empty file (opted out)
-                ""
-
-                # Exact match (from get_content_str())
-                "# MyProject\n\n[![badge]...]\n\n---\n\n> Description\n\n---\n"
-
-                # Has all required elements + extra content
-                "# MyProject\n\n[![badge]...]\n\n> Description\n\n## Extra\n"
-
-            Invalid files::
-
-                # Missing badges
-                "# MyProject\n\n> Description\n"
-
-                # Missing description
-                "# MyProject\n\n[![badge]...]\n"
-
-                # Missing project name
-                "[![badge]...]\n\n> Description\n"
-
-        Note:
-            The validation checks for presence, not exact formatting. Users can
-            reorder or add content as long as required elements are present.
+            True if empty (opted out), exact match, or contains all required elements.
         """
         file_content = cls.get_file_content()
         badges = [
@@ -232,54 +100,11 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
     @classmethod
     def get_badges(cls) -> dict[str, list[str]]:
-        """Get categorized badges for the Markdown file.
-
-        Generates a dictionary of badge categories, each containing a list of
-        Markdown badge strings. The badges are dynamically generated from:
-        - Project metadata in pyproject.toml
-        - Git repository information
-        - Workflow configurations
-        - Python version support
-
-        Badge Categories:
-            - **tooling**: Development tools (pyrig, uv, Podman, pre-commit, MkDocs)
-            - **code-quality**: Quality tools (ruff, ty, bandit, pytest, codecov, rumdl)
-            - **package-info**: Package metadata (PyPI, Python versions, license)
-            - **ci/cd**: CI/CD workflows (health check, release)
-            - **documentation**: Documentation links (GitHub Pages)
+        """Get categorized badges from project metadata and Git info.
 
         Returns:
-            Dictionary mapping category names to lists of badge Markdown strings.
-            Each badge is a Markdown link with an embedded image.
-
-        Example:
-            Get badges::
-
-                badges = cls.get_badges()
-                # Returns:
-                # {
-                #     "tooling": [
-                #         "[![pyrig](...)](...)",
-                #         "[![uv](...)](...)",
-                #         ...
-                #     ],
-                #     "code-quality": [
-                #         "[![ruff](...)](...)",
-                #         ...
-                #     ],
-                #     ...
-                # }
-
-            Use in content generation::
-
-                for category, badge_list in badges.items():
-                    print(f"<!-- {category} -->")
-                    for badge in badge_list:
-                        print(badge)
-
-        Note:
-            The badges use shields.io for consistent styling and include
-            dynamic information like Python versions and workflow status.
+            Dict mapping category names (tooling, code-quality, package-info, ci/cd,
+            documentation) to lists of badge Markdown strings.
         """
         python_versions = PyprojectConfigFile.get_supported_python_versions()
         joined_python_versions = "|".join(str(v) for v in python_versions)

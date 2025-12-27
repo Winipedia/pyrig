@@ -1,7 +1,6 @@
-r"""Configuration management for .txt files.
+r""".txt file configuration management.
 
-This module provides the TxtConfigFile class for managing .txt text files.
-This is a convenience subclass of TextConfigFile that sets the extension to "txt".
+Provides TxtConfigFile base class for .txt files with required content.
 
 Example:
     >>> from pathlib import Path
@@ -14,51 +13,26 @@ Example:
     ...
     ...     @classmethod
     ...     def get_content_str(cls) -> str:
-    ...         return "# Project Notes\n\n"
+    ...         return "# Project Notes\n"
 """
 
 from pyrig.dev.configs.base.text import TextConfigFile
 
 
 class TxtConfigFile(TextConfigFile):
-    r"""Abstract base class for .txt text files.
+    """Base class for .txt files.
 
-    Extends TextConfigFile to use the "txt" file extension. All functionality
-    is inherited from TextConfigFile - only the extension differs.
+    Extends TextConfigFile with "txt" extension. Inherits content-based validation.
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the .txt file
-        - `get_content_str`: Required content that must be present
-
-    Example:
-        >>> from pathlib import Path
-        >>> from pyrig.dev.configs.base.txt import TxtConfigFile
-        >>>
-        >>> class MyTextFile(TxtConfigFile):
-        ...     @classmethod
-        ...     def get_parent_path(cls) -> Path:
-        ...         return Path()
-        ...
-        ...     @classmethod
-        ...     def get_content_str(cls) -> str:
-        ...         return "Required content\n"
+        - `get_content_str`: Required content
 
     See Also:
-        pyrig.dev.configs.base.text.TextConfigFile: Parent class with full docs
+        pyrig.dev.configs.base.text.TextConfigFile: Parent class
     """
 
     @classmethod
     def get_file_extension(cls) -> str:
-        """Get the .txt file extension.
-
-        Returns:
-            The string "txt" (without the leading dot).
-
-        Example:
-            For a class named NotesConfigFile::
-
-                get_filename() -> "notes"
-                get_file_extension() -> "txt"
-                get_path() -> Path("notes.txt")
-        """
+        """Return "txt"."""
         return "txt"

@@ -1,97 +1,52 @@
 """Base classes for configuration file management.
 
-This package provides the foundational infrastructure for the ConfigFile system,
-including the abstract ``ConfigFile`` base class and format-specific subclasses
-for managing project configuration files.
+Provides foundational infrastructure for the ConfigFile system: abstract base class
+and format-specific subclasses for managing project configuration files.
 
 Architecture
 ------------
 
-The base package is organized into three layers:
+Three layers:
 
-1. **Core Base Class** (``base.py``):
-   - ``ConfigFile``: Abstract base class defining the configuration lifecycle
+1. **Core**: ``ConfigFile`` (base.py) - Abstract base defining config lifecycle
 
-2. **Format-Specific Base Classes**:
-   - ``TomlConfigFile``: TOML files (pyproject.toml, etc.)
-   - ``YamlConfigFile`` / ``YmlConfigFile``: YAML files (.pre-commit-config.yaml, etc.)
-   - ``JsonConfigFile``: JSON files (package.json, etc.)
-   - ``TextConfigFile``: Plain text files with required content
-   - ``PythonConfigFile``: Python source files (.py)
-   - ``MarkdownConfigFile``: Markdown files (README.md, etc.)
+2. **Format-Specific**:
+   - ``TomlConfigFile``: TOML files (pyproject.toml)
+   - ``YamlConfigFile`` / ``YmlConfigFile``: YAML files (.pre-commit-config.yaml)
+   - ``JsonConfigFile``: JSON files (package.json)
+   - ``TextConfigFile``: Plain text with required content
+   - ``PythonConfigFile``: Python source (.py)
+   - ``MarkdownConfigFile``: Markdown (.md)
    - ``TxtConfigFile``: Text files (.txt)
-   - ``TypedConfigFile``: PEP 561 marker files (py.typed)
+   - ``TypedConfigFile``: PEP 561 marker (py.typed)
 
-3. **Specialized Base Classes**:
-   - ``PythonPackageConfigFile``: Python package files (__init__.py)
-   - ``PythonTestsConfigFile``: Python test files in tests/
-   - ``CopyModuleConfigFile``: Files that replicate module content
-   - ``CopyModuleOnlyDocstringConfigFile``: Files that copy only docstrings
-   - ``InitConfigFile``: __init__.py files with copied docstrings
-   - ``BadgesMarkdownConfigFile``: Markdown files with project badges
+3. **Specialized**:
+   - ``PythonPackageConfigFile``: Package files (__init__.py)
+   - ``PythonTestsConfigFile``: Test files in tests/
+   - ``CopyModuleConfigFile``: Replicate module content
+   - ``CopyModuleOnlyDocstringConfigFile``: Copy only docstrings
+   - ``InitConfigFile``: __init__.py with copied docstrings
+   - ``BadgesMarkdownConfigFile``: Markdown with project badges
 
-Format-Specific Features
--------------------------
+Format Features
+---------------
 
-Each format-specific base class provides:
-
-- **TOML** (``toml.py``):
-  - Uses tomlkit for format-preserving parsing
-  - Multiline arrays for readability
-  - Inline tables for lists of dicts
-  - Preserves comments and formatting
-
-- **YAML** (``yaml.py``, ``yml.py``):
-  - Uses PyYAML's safe_load/safe_dump
-  - Prevents arbitrary code execution
-  - Preserves key order
-
-- **JSON** (``json.py``):
-  - Uses Python's built-in json module
-  - 4-space indentation for readability
-
-- **Text** (``text.py``):
-  - Content-based validation (substring matching)
-  - Preserves user additions by appending
-  - Suitable for files with required headers
-
-- **Python** (``python.py``):
-  - Extends TextConfigFile
-  - .py extension
-
-- **Markdown** (``markdown.py``):
-  - Extends TextConfigFile
-  - .md extension
+- **TOML**: tomlkit for format-preserving parsing, multiline arrays, inline tables
+- **YAML**: PyYAML safe_load/dump, prevents code execution, preserves order
+- **JSON**: Built-in json module, 4-space indentation
+- **Text**: Content-based validation, appends user additions
+- **Python**: Extends TextConfigFile with .py extension
+- **Markdown**: Extends TextConfigFile with .md extension
 
 Specialized Classes
 -------------------
 
-- **PythonPackageConfigFile** (``py_package.py``):
-  - Ensures parent directory is a valid Python package
-  - Creates __init__.py files in parent directories
-
-- **PythonTestsConfigFile** (``py_tests.py``):
-  - Automatically places files in tests/ directory
-  - Simplifies test file creation
-
-- **CopyModuleConfigFile** (``copy_module.py``):
-  - Replicates pyrig's internal module structure
-  - Transforms module paths (pyrig -> target project)
-  - Enables customization through subclassing
-
-- **CopyModuleOnlyDocstringConfigFile** (``copy_module_docstr.py``):
-  - Extracts only the docstring from source module
-  - Creates stub files with documentation
-  - Allows users to provide custom implementations
-
-- **InitConfigFile** (``init.py``):
-  - Creates __init__.py files with copied docstrings
-  - Derives parent path from source module name
-
-- **BadgesMarkdownConfigFile** (``badges_md.py``):
-  - Generates Markdown with project badges
-  - Reads project metadata from pyproject.toml
-  - Creates CI/CD, quality, and package badges
+- **PythonPackageConfigFile**: Ensures parent is valid package, creates __init__.py
+- **PythonTestsConfigFile**: Auto-places files in tests/
+- **CopyModuleConfigFile**: Replicates module structure, transforms paths
+- **CopyModuleOnlyDocstringConfigFile**: Extracts docstrings, creates stubs
+- **InitConfigFile**: Creates __init__.py with copied docstrings
+- **BadgesMarkdownConfigFile**: Generates Markdown with badges from pyproject.toml
 
 Usage Examples
 --------------

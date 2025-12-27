@@ -1,12 +1,6 @@
-'''Configuration management for Python source files.
+r"""Python source file configuration management.
 
-This module provides the PythonConfigFile class for managing Python source files
-(.py files) that require specific content but allow user extensions.
-
-PythonConfigFile is useful for:
-- Creating Python files with required imports or boilerplate
-- Ensuring specific functions or classes are present
-- Maintaining consistent file headers across a project
+Provides PythonConfigFile base class for .py files with required content.
 
 Example:
     >>> from pathlib import Path
@@ -19,43 +13,23 @@ Example:
     ...
     ...     @classmethod
     ...     def get_content_str(cls) -> str:
-    ...         return """Module docstring."""
-    ...                from typing import Any
-    ...                import sys
-    ...                """
-'''
+    ...         return "from typing import Any\nimport sys"
+"""
 
 from pyrig.dev.configs.base.text import TextConfigFile
 
 
 class PythonConfigFile(TextConfigFile):
-    """Abstract base class for Python source file configuration.
+    """Base class for Python (.py) source files.
 
-    Extends TextConfigFile to use the "py" file extension. All functionality
-    is inherited from TextConfigFile - only the extension differs.
-
-    This class is useful for creating Python files with required content
-    (imports, boilerplate, etc.) while allowing users to add their own code.
+    Extends TextConfigFile with "py" extension. Inherits content-based validation.
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the .py file
-        - `get_content_str`: Required Python code that must be present
-
-    Example:
-        >>> from pathlib import Path
-        >>> from pyrig.dev.configs.base.python import PythonConfigFile
-        >>>
-        >>> class MyPythonFile(PythonConfigFile):
-        ...     @classmethod
-        ...     def get_parent_path(cls) -> Path:
-        ...         return Path("src")
-        ...
-        ...     @classmethod
-        ...     def get_content_str(cls) -> str:
-        ...         return "from typing import Any"
+        - `get_content_str`: Required Python code
 
     See Also:
-        pyrig.dev.configs.base.text.TextConfigFile: Parent class with full docs
+        pyrig.dev.configs.base.text.TextConfigFile: Parent class
         pyrig.dev.configs.base.py_package.PythonPackageConfigFile: For package files
     """
 
@@ -63,16 +37,5 @@ class PythonConfigFile(TextConfigFile):
 
     @classmethod
     def get_file_extension(cls) -> str:
-        """Get the Python file extension.
-
-        Returns:
-            The string "py" (without the leading dot).
-
-        Example:
-            For a class named MyModuleConfigFile::
-
-                get_filename() -> "my_module"
-                get_file_extension() -> "py"
-                get_path() -> Path("my_module.py")
-        """
+        """Return "py"."""
         return "py"
