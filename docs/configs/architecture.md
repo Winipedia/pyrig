@@ -358,7 +358,7 @@ For GitHub Actions workflow files in `.github/workflows/`:
 
 ```python
 from typing import Any
-from pyrig.dev.configs.workflows.base.base import Workflow
+from pyrig.dev.configs.base.workflow import Workflow
 
 class MyWorkflow(Workflow):
     @classmethod

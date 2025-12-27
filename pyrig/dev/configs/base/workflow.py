@@ -83,7 +83,7 @@ class Workflow(YamlConfigFile):
     Examples:
         Create a custom workflow::
 
-            from pyrig.dev.configs.workflows.base.base import Workflow
+            from pyrig.dev.configs.base.workflow import Workflow
 
             class MyWorkflow(Workflow):
                 @classmethod
