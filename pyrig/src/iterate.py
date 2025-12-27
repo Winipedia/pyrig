@@ -19,33 +19,30 @@ def nested_structure_is_subset(  # noqa: C901
     | None = None,
     on_false_list_action: Callable[[list[Any], list[Any], int], Any] | None = None,
 ) -> bool:
-    """Check if a nested structure is a subset of another.
+    """Check if nested structure is subset of another.
 
-    Recursively compares nested dicts/lists to verify
-    all keys/values in subset exist in superset.
-    Superset may contain additional elements.
+    Recursively compares nested dicts/lists. Superset may contain additional elements.
 
     Comparison rules:
         - Dicts: All subset keys must exist in superset with matching values.
         - Lists: All subset items must exist in superset (order-independent).
         - Primitives: Must be exactly equal.
 
-    Optional callbacks enable auto-correction: when a mismatch is detected, the callback
-    can modify superset and the comparison is retried.
+    Optional callbacks enable auto-correction when mismatches detected.
 
     Args:
-        subset: Structure that should be contained within superset.
+        subset: Structure to check.
         superset: Structure to check against.
-        on_false_dict_action: Callback for dict mismatches:
-            (subset_dict, superset_dict, key).
-        on_false_list_action: Callback for list mismatches:
-            (subset_list, superset_list, index).
+        on_false_dict_action:
+            Callback for dict mismatches (subset_dict, superset_dict, key).
+        on_false_list_action:
+            Callback for list mismatches (subset_list, superset_list, index).
 
     Returns:
-        True if subset is contained in superset, False otherwise.
+        True if subset contained in superset.
 
     Note:
-        List comparison is order-independent: [1, 2] is a subset of [2, 1].
+        List comparison is order-independent.
     """
     if isinstance(subset, dict) and isinstance(superset, dict):
         iterable: Iterable[tuple[Any, Any]] = subset.items()

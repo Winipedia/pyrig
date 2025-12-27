@@ -9,36 +9,36 @@ from pyrig.src.modules.class_ import get_cached_instance
 
 
 class DiGraph:
-    """Directed graph with efficient bidirectional traversal.
+    """Directed graph with bidirectional traversal.
 
     Maintains forward and reverse edges for O(1) neighbor lookups.
 
     Attributes:
-        _nodes: Set of all node identifiers.
+        _nodes: All node identifiers.
         _edges: Forward adjacency (node → outgoing neighbors).
         _reverse_edges: Reverse adjacency (node → incoming neighbors).
     """
 
     @classmethod
     def cached(cls) -> Self:
-        """Get a cached singleton instance of the graph.
+        """Get cached singleton instance.
 
         Returns:
-            Cached DiGraph instance (same instance on all calls).
+            Cached DiGraph instance.
         """
         return get_cached_instance(cls)  # type: ignore[no-any-return, arg-type]
 
     def __init__(self) -> None:
-        """Initialize an empty directed graph."""
+        """Initialize empty directed graph."""
         self._nodes: set[str] = set()
         self._edges: dict[str, set[str]] = {}  # node -> outgoing neighbors
         self._reverse_edges: dict[str, set[str]] = {}  # node -> incoming neighbors
 
     def add_node(self, node: str) -> None:
-        """Add a node to the graph.
+        """Add node to graph.
 
         Args:
-            node: Node identifier to add.
+            node: Node identifier.
         """
         self._nodes.add(node)
         if node not in self._edges:
@@ -47,7 +47,7 @@ class DiGraph:
             self._reverse_edges[node] = set()
 
     def add_edge(self, source: str, target: str) -> None:
-        """Add a directed edge from source to target.
+        """Add directed edge from source to target.
 
         Args:
             source: Edge origin (depends on target).
@@ -59,21 +59,21 @@ class DiGraph:
         self._reverse_edges[target].add(source)
 
     def __contains__(self, node: str) -> bool:
-        """Check if a node exists in the graph.
+        """Check if node exists.
 
         Args:
-            node: Node identifier to check.
+            node: Node identifier.
 
         Returns:
-            True if node exists, False otherwise.
+            True if node exists.
         """
         return node in self._nodes
 
     def __getitem__(self, node: str) -> set[str]:
-        """Get the outgoing neighbors (dependencies) of a node.
+        """Get outgoing neighbors (dependencies) of node.
 
         Args:
-            node: Node to get dependencies for.
+            node: Node identifier.
 
         Returns:
             Set of dependencies (empty if node doesn't exist).
@@ -81,7 +81,7 @@ class DiGraph:
         return self._edges.get(node, set())
 
     def nodes(self) -> set[str]:
-        """Return all nodes in the graph.
+        """Return all nodes.
 
         Returns:
             Set of all node identifiers.
@@ -89,25 +89,25 @@ class DiGraph:
         return self._nodes
 
     def has_edge(self, source: str, target: str) -> bool:
-        """Check if a directed edge exists from source to target.
+        """Check if directed edge exists.
 
         Args:
-            source: Potential edge origin.
-            target: Potential edge destination.
+            source: Edge origin.
+            target: Edge destination.
 
         Returns:
-            True if edge exists, False otherwise.
+            True if edge exists.
         """
         return target in self._edges.get(source, set())
 
     def ancestors(self, target: str) -> set[str]:
-        """Find all nodes that can reach the target (transitive dependents).
+        """Find all nodes that can reach target (transitive dependents).
 
         Args:
             target: Node to find ancestors for.
 
         Returns:
-            Set of all nodes with a path to target (excludes target itself).
+            Set of all nodes with path to target (excludes target).
         """
         if target not in self:
             return set()
@@ -124,7 +124,7 @@ class DiGraph:
         return visited
 
     def shortest_path_length(self, source: str, target: str) -> int:
-        """Find the shortest path length between source and target.
+        """Find shortest path length between nodes.
 
         Args:
             source: Starting node.
@@ -134,7 +134,7 @@ class DiGraph:
             Number of edges in shortest path (0 if source == target).
 
         Raises:
-            ValueError: If either node not in graph or no path exists.
+            ValueError: If node not in graph or no path exists.
         """
         if source not in self or target not in self:
             msg = f"Node not in graph: {source if source not in self else target}"
@@ -159,18 +159,18 @@ class DiGraph:
         raise ValueError(msg)
 
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
-        """Topologically sort a subset of nodes (dependencies before dependents).
+        """Topologically sort subset of nodes (dependencies before dependents).
 
         Uses Kahn's algorithm. Edge A → B means "A depends on B", so B appears before A.
 
         Args:
-            nodes: Set of nodes to sort (only edges within this set considered).
+            nodes: Nodes to sort (only edges within this set considered).
 
         Returns:
             Nodes in topological order (dependencies first).
 
         Raises:
-            ValueError: If subgraph contains a cycle.
+            ValueError: If subgraph contains cycle.
         """
         # Count outgoing edges (dependencies) for each node in the subgraph
         # Nodes with 0 outgoing edges have no dependencies

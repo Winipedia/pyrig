@@ -7,7 +7,4 @@ Subpackages:
     src: Runtime utilities (introspection, CLI, Git, string, testing)
     dev: Development tools (config generators, builders, CLI commands, testing)
     resources: Static resource files (templates, licenses)
-
-Entry Point:
-    Main CLI: `pyrig.dev.cli.cli:main` (console script: `pyrig`)
 """

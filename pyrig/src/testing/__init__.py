@@ -1,8 +1,7 @@
-"""Testing utilities and test generation infrastructure.
+"""Testing utilities.
 
-Provides utilities for test creation, validation, and naming conventions. Includes
-automatic test skeleton generation, assertion helpers, and bidirectional mapping
-between source and test objects.
+Test creation, validation, naming conventions, assertion helpers, and bidirectional
+mapping between source and test objects.
 
 Modules:
     assertions: Custom assertions with enhanced error messages

@@ -1,78 +1,56 @@
-"""Podman container engine wrapper for building and managing containers.
+"""Podman container engine wrapper.
 
-This module provides a type-safe wrapper for Podman container engine commands.
-The `ContainerEngine` class constructs podman command arguments for building
-container images and saving them to archives.
-
-Podman is used in pyrig for creating containerized builds of applications,
-particularly for PyInstaller-based executables that need to be built in
-isolated environments.
+Provides type-safe wrapper for Podman commands (build, save).
+Used for creating containerized builds, particularly PyInstaller executables.
 
 Example:
     >>> from pyrig.src.management.container_engine import ContainerEngine
     >>> build_args = ContainerEngine.get_build_args("-t", "myapp:latest", ".")
-    >>> print(build_args)
-    podman build -t myapp:latest .
     >>> build_args.run()
-
-See Also:
-    pyrig.src.management.base.base.Tool: Base class for tool wrappers
-    pyrig.dev.builders: Uses ContainerEngine for containerized builds
 """
 
 from pyrig.src.management.base.base import Args, Tool
 
 
 class ContainerEngine(Tool):
-    """Podman container engine tool wrapper.
+    """Podman container engine wrapper.
 
-    Provides methods for constructing podman command arguments for building
-    container images and saving them to archives. This is used primarily for
-    creating isolated build environments for PyInstaller executables.
-
-    All methods return `Args` objects that can be executed via `.run()` or
-    converted to strings for display.
+    Constructs podman command arguments for building and saving container images.
 
     Example:
-        >>> build_args = ContainerEngine.get_build_args("-t", "app:v1", ".")
-        >>> save_args = ContainerEngine.get_save_args("-o", "app.tar", "app:v1")
-        >>> build_args.run()
-        >>> save_args.run()
-
-    See Also:
-        pyrig.src.management.base.base.Tool: Base class
-        pyrig.dev.builders.pyinstaller.PyInstallerBuilder: Uses this for builds
+        >>> ContainerEngine.get_build_args("-t", "app:v1", ".").run()
+        >>> ContainerEngine.get_save_args("-o", "app.tar", "app:v1").run()
     """
 
     @classmethod
     def name(cls) -> str:
-        """Get the tool name.
+        """Get tool name.
 
         Returns:
-            str: The string 'podman'.
+            'podman'
         """
         return "podman"
 
     @classmethod
     def get_build_args(cls, *args: str) -> Args:
-        """Construct podman build command arguments.
+        """Construct podman build arguments.
 
         Args:
-            *args: Additional arguments to append to the build command.
+            *args: Build command arguments.
 
         Returns:
-            Args: Command arguments for 'podman build'.
+            Args for 'podman build'.
         """
         return cls.get_args("build", *args)
 
     @classmethod
     def get_save_args(cls, *args: str) -> Args:
-        """Construct podman save command arguments.
+        """Construct podman save arguments.
 
         Args:
-            *args: Additional arguments to append to the save command.
+            *args: Save command arguments.
 
         Returns:
-            Args: Command arguments for 'podman save'.
+            Args for 'podman save'.
         """
         return cls.get_args("save", *args)
