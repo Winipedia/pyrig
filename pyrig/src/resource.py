@@ -10,19 +10,19 @@ from types import ModuleType
 
 
 def get_resource_path(name: str, package: ModuleType) -> Path:
-    """Get the filesystem path to a resource file.
+    """Get filesystem path to resource file.
 
-    Works in both development and PyInstaller environments using `importlib.resources`.
+    Works in development and PyInstaller environments.
 
     Args:
-        name: Resource filename (e.g., "icon.png", "config.json").
-        package: Package module containing the resource (e.g., `myapp.resources`).
+        name: Resource filename.
+        package: Package module containing resource.
 
     Returns:
-        Path to the resource file (valid for process lifetime).
+        Path to resource file (valid for process lifetime).
 
     Note:
-        In PyInstaller bundles, files are extracted to a temporary directory.
+        In PyInstaller bundles, files extracted to temporary directory.
     """
     resource_path = files(package) / name
     with as_file(resource_path) as path:

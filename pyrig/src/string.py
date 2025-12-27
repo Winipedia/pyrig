@@ -11,20 +11,17 @@ from typing import Any
 
 
 def split_on_uppercase(string: str) -> list[str]:
-    """Split a string at uppercase letter boundaries.
-
-    Splits PascalCase or camelCase identifiers into component words.
+    """Split string at uppercase letter boundaries.
 
     Args:
-        string: String to split (e.g., "MyClassName", "parseHTMLDocument").
+        string: String to split (e.g., "MyClassName").
 
     Returns:
-        List of substrings split before each uppercase letter.
-            Empty strings filtered out.
+        List of substrings split before each uppercase letter (empty strings filtered).
 
     Note:
-        Consecutive uppercase letters are split individually: "XMLParser"
-            → ['X', 'M', 'L', 'Parser'].
+        Consecutive uppercase split individually:
+            "XMLParser" → ['X', 'M', 'L', 'Parser'].
     """
     return [s for s in re.split(r"(?=[A-Z])", string) if s]
 
@@ -36,26 +33,25 @@ def make_name_from_obj(
     *,
     capitalize: bool = True,
 ) -> str:
-    """Create a human-readable name from a Python object or string.
+    """Create human-readable name from Python object or string.
 
-    Transforms Python identifiers into formatted display names. Commonly used for
-    generating CLI command names from function names.
+    Transforms Python identifiers into formatted display names.
 
     Args:
         obj: Object to extract name from (module, function, class, or string).
-        split_on: Character(s) to split on (default: "_").
-        join_on: Character(s) to join with (default: "-").
-        capitalize: Whether to capitalize each word (default: True).
+        split_on: Character(s) to split on.
+        join_on: Character(s) to join with.
+        capitalize: Whether to capitalize each word.
 
     Returns:
-        Formatted string with parts split and rejoined.
+        Formatted string.
 
     Raises:
-        ValueError: If object has no `__name__` attribute and is not a string.
+        ValueError: If object has no `__name__` and is not string.
 
     Note:
-        For non-string objects, only the last component of `__name__` is used.
-        Does not handle PascalCase splitting; use `split_on_uppercase` first if needed.
+        For non-string objects, only last component of `__name__` used.
+        Does not handle PascalCase; use `split_on_uppercase` first if needed.
     """
     if not isinstance(obj, str):
         name = getattr(obj, "__name__", "")
@@ -74,14 +70,14 @@ def make_name_from_obj(
 def re_search_excluding_docstrings(
     pattern: str | re.Pattern[str], content: str
 ) -> re.Match[str] | None:
-    """Search for a pattern in content, excluding triple-quoted docstrings.
+    """Search for pattern in content, excluding triple-quoted docstrings.
 
     Args:
-        pattern: Regex pattern to search for.
-        content: Text content to search within.
+        pattern: Regex pattern.
+        content: Text content.
 
     Returns:
-        Match object if pattern found outside docstrings, None otherwise.
+        Match object if found outside docstrings, None otherwise.
     """
     content = re.sub(r'"""[\s\S]*?"""', "", content)
     content = re.sub(r"'''[\s\S]*?'''", "", content)

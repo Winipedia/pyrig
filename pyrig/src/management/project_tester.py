@@ -1,28 +1,12 @@
-"""Pytest test runner wrapper for executing project tests.
+"""Pytest test runner wrapper.
 
-This module provides a type-safe wrapper for pytest test execution commands.
-The `ProjectTester` class constructs pytest command arguments that are run
-through UV's environment management (uv run pytest).
-
-Pytest is pyrig's test framework of choice, providing powerful test discovery,
-fixtures, and reporting capabilities.
+Provides type-safe wrapper for pytest commands executed through UV (uv run pytest).
+Ensures tests run in correct virtual environment.
 
 Example:
     >>> from pyrig.src.management.project_tester import ProjectTester
-    >>> # Run all tests
-    >>> test_args = ProjectTester.get_run_tests_args()
-    >>> print(test_args)
-    uv run pytest
-    >>> test_args.run()
-    >>>
-    >>> # Run tests with coverage in CI
-    >>> ci_args = ProjectTester.get_run_tests_in_ci_args()
-    >>> ci_args.run()
-
-See Also:
-    pyrig.src.management.base.base.Tool: Base class for tool wrappers
-    pyrig.src.management.package_manager.PackageManager: UV wrapper
-    pyrig.dev.cli.subcommands.test: CLI test command
+    >>> ProjectTester.get_run_tests_args().run()
+    >>> ProjectTester.get_run_tests_in_ci_args().run()
 """
 
 from pyrig.src.management.base.base import Args, Tool
@@ -30,61 +14,48 @@ from pyrig.src.management.package_manager import PackageManager
 
 
 class ProjectTester(Tool):
-    """Pytest test runner tool wrapper.
+    """Pytest test runner wrapper.
 
-    Provides methods for constructing pytest command arguments that are executed
-    through UV's environment management. This ensures tests run in the correct
-    virtual environment with all dependencies available.
+    Constructs pytest command arguments executed through UV.
 
-    The class provides methods for:
-        - **Basic testing**: Run pytest with custom arguments
-        - **CI testing**: Run with CI-specific flags (logging, coverage XML)
-
-    All methods return `Args` objects that can be executed via `.run()` or
-    converted to strings for display.
+    Operations:
+        - Basic testing: Run pytest with custom arguments
+        - CI testing: Run with CI flags (logging, coverage XML)
 
     Example:
-        >>> # Run specific test file
         >>> ProjectTester.get_run_tests_args("tests/test_module.py").run()
-        >>>
-        >>> # Run with coverage
         >>> ProjectTester.get_run_tests_args("--cov=mypackage").run()
-
-    See Also:
-        pyrig.src.management.base.base.Tool: Base class
-        pyrig.src.management.package_manager.PackageManager: UV wrapper
     """
 
     @classmethod
     def name(cls) -> str:
-        """Get the tool name.
+        """Get tool name.
 
         Returns:
-            str: The string 'pytest'.
+            'pytest'
         """
         return "pytest"
 
     @classmethod
     def get_run_tests_args(cls, *args: str) -> Args:
-        """Construct uv run pytest command arguments.
+        """Construct uv run pytest arguments.
 
         Args:
-            *args: Additional arguments to append to the pytest command.
+            *args: Pytest command arguments.
 
         Returns:
-            Args: Command arguments for 'uv run pytest'.
+            Args for 'uv run pytest'.
         """
         return PackageManager.get_run_args(cls.name(), *args)
 
     @classmethod
     def get_run_tests_in_ci_args(cls, *args: str) -> Args:
-        """Construct uv run pytest command arguments for CI environment.
+        """Construct uv run pytest arguments for CI.
 
         Args:
-            *args: Additional arguments to append to the pytest command.
+            *args: Pytest command arguments.
 
         Returns:
-            Args: Command arguments for 'uv run pytest' with CI-specific flags
-                including log level INFO and XML coverage report.
+            Args for 'uv run pytest' with CI flags (log level INFO, XML coverage).
         """
         return cls.get_run_tests_args("--log-cli-level=INFO", "--cov-report=xml", *args)
