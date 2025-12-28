@@ -26,8 +26,8 @@ class GitIgnoreConfigFile(ConfigFile):
     """Gitignore configuration manager.
 
     Combines GitHub's standard Python patterns with pyrig-specific patterns
-    (.vscode/, .experiment, .env, tool caches, build artifacts). Preserves
-    existing patterns and only adds missing ones.
+    (.experiment, .env, tool caches, build artifacts). Preserves existing
+    patterns and only adds missing ones.
 
     Examples:
         Initialize .gitignore::
@@ -107,8 +107,8 @@ class GitIgnoreConfigFile(ConfigFile):
     def get_configs(cls) -> list[str]:
         """Get complete .gitignore patterns with intelligent merging.
 
-        Combines GitHub's Python patterns with pyrig-specific patterns (.vscode/,
-        .experiment, .env, tool caches, build artifacts). Preserves existing
+        Combines GitHub's Python patterns with pyrig-specific patterns
+        (.experiment, .env, tool caches, build artifacts). Preserves existing
         patterns and avoids duplicates.
 
         Returns:

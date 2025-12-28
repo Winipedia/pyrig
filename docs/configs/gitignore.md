@@ -8,7 +8,6 @@ files from version control.
 Creates a comprehensive `.gitignore` file that:
 
 - Fetches GitHub's standard Python.gitignore patterns
-- Adds VS Code workspace files
 - Includes pyrig-specific patterns
 - Covers common cache directories
 - Preserves user customizations while adding missing patterns
@@ -63,13 +62,10 @@ The `.gitignore` file combines patterns from multiple sources:
 
 1. **GitHub's standard Python patterns** - Comprehensive Python-specific
    patterns
-2. **VS Code workspace files** - `.vscode/` directory
-3. **Pyrig-specific patterns** - `.git/`, `.experiment.py`
-4. **Tool caches** - `.pytest_cache/`, `.ruff_cache/`, `.rumdl_cache/`,
-   `.rumdl_cache/`
-5. **Environment and secrets** - `.env`
-6. **Coverage reports** - `.coverage`, `coverage.xml`
-7. **Build artifacts** - `.venv/`, `dist/`, `/site/`
+2. **Pyrig-specific patterns** - `.experiment.py`, `.env`
+3. **Tool caches** - `.pytest_cache/`, `.ruff_cache/`, `.rumdl_cache/`
+4. **Coverage reports** - `.coverage`, `coverage.xml`
+5. **Build artifacts** - `.venv/`, `dist/`, `/site/`
 
 ### Validation Logic
 
@@ -156,13 +152,8 @@ pattern matching.
 - `.venv/`, `venv/` - Virtual environments
 - And many more standard Python patterns
 
-### VS Code
-
-- `.vscode/` - VS Code workspace settings
-
 ### Pyrig-Specific
 
-- `.git/` - Git directory (redundant but explicit)
 - `.experiment.py` - Experimental code file
 - `.env` - Environment variables and secrets
 
