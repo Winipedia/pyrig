@@ -214,17 +214,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-# vscode stuff
-.vscode/
 
 # pyrig stuff
-.git/
 .experiment.py
-# others
 .env
-.mypy_cache/
+.coverage
+coverage.xml
 .pytest_cache/
 .ruff_cache/
-.venv/
-/site/
 .rumdl_cache/
+.venv/
+dist/
+/site/

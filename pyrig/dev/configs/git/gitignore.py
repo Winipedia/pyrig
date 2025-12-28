@@ -120,13 +120,9 @@ class GitIgnoreConfigFile(ConfigFile):
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
         needed = [
             *cls.get_github_python_gitignore_as_list(),
-            "# vscode stuff",
-            ".vscode/",
             "",
             f"# {pyrig.__name__} stuff",
-            ".git/",
             DotExperimentConfigFile.get_path().as_posix(),
-            "# others",
             DotEnvConfigFile.get_path().as_posix(),
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov
