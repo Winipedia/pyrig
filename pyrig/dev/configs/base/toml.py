@@ -47,7 +47,7 @@ class TomlConfigFile(ConfigFile):
     """
 
     @classmethod
-    def load(cls) -> dict[str, Any]:
+    def _load(cls) -> dict[str, Any]:
         """Load and parse TOML file using tomlkit.parse.
 
         Returns:
@@ -56,7 +56,7 @@ class TomlConfigFile(ConfigFile):
         return tomlkit.parse(cls.get_path().read_text(encoding="utf-8"))
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         """Write configuration to TOML with pretty formatting.
 
         Args:

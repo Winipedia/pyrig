@@ -1,5 +1,6 @@
 """module."""
 
+import copy
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, ClassVar
@@ -38,12 +39,12 @@ def my_test_config_file(
             return "txt"
 
         @classmethod
-        def load(cls) -> dict[str, Any] | list[Any]:
+        def _load(cls) -> dict[str, Any] | list[Any]:
             """Load the config file."""
-            return cls.STORAGE_DICT
+            return copy.deepcopy(cls.STORAGE_DICT)
 
         @classmethod
-        def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
             """Dump the config file."""
             if not isinstance(config, dict):
                 msg = f"Cannot dump {config} to txt file."
@@ -70,6 +71,35 @@ def my_test_config_file(
 
 class TestConfigFile:
     """Test class."""
+
+    def test__load(self, my_test_config_file: type[ConfigFile]) -> None:
+        """Test method."""
+        loaded = my_test_config_file._load()  # noqa: SLF001
+        assert loaded["key0"] == "value0"
+
+        # assert cache works
+        # _dump to change STORAGE_DICT
+        loaded = my_test_config_file.load()
+        assert loaded["key0"] == "value0"
+        loaded = copy.deepcopy(loaded)
+        loaded["key0"] = "new_value0"
+        my_test_config_file._dump(loaded)  # noqa: SLF001
+        loaded = my_test_config_file.load()
+        assert loaded["key0"] == "value0"  # cache still has old value
+
+        # clear cache and assert new value
+        my_test_config_file.load.cache_clear()
+        loaded = my_test_config_file.load()
+        assert loaded["key0"] == "new_value0"
+
+    def test__dump(self, my_test_config_file: type[ConfigFile]) -> None:
+        """Test method."""
+        my_test_config_file._dump({"key": "value"})  # noqa: SLF001
+        assert my_test_config_file.load()["key"] == "value"
+
+        # dump and assert cache is cleared
+        my_test_config_file.dump({"key": "new_value"})
+        assert my_test_config_file.load()["key"] == "new_value"
 
     def test_get_priority(self) -> None:
         """Test method."""

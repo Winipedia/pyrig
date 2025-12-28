@@ -39,7 +39,7 @@ class TypedConfigFile(ConfigFile):
         return "typed"
 
     @classmethod
-    def load(cls) -> dict[str, Any] | list[Any]:
+    def _load(cls) -> dict[str, Any] | list[Any]:
         """Return empty dict (PEP 561 requires empty files).
 
         Returns:
@@ -48,7 +48,7 @@ class TypedConfigFile(ConfigFile):
         return {}
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         """Validate config is empty (PEP 561 requirement).
 
         Args:

@@ -1,20 +1,16 @@
 """Resource fallback decorators for network operations.
 
-This module provides decorators that enable graceful fallback to local resource
-files when network operations fail. This is particularly useful for fetching
-remote configuration files or data that should have a cached local copy for
-offline operation or when external services are unavailable.
+Decorators that enable graceful fallback to local resource files when network
+operations fail. Useful for fetching remote configuration with cached local copies
+for offline operation.
 
-The decorators use the tenacity library for exception handling and integrate with
-pyrig's resource management system. When running in pyrig development mode, they
-automatically update resource files with successful fetch results, keeping the
-fallback content fresh.
+Uses tenacity for exception handling and integrates with pyrig's resource system.
+In pyrig development mode, automatically updates resource files with successful
+fetch results to keep fallback content fresh.
 
 Functions:
-    return_resource_file_content_on_exceptions: Generic fallback decorator for
-        any exception types
-    return_resource_content_on_fetch_error: Specialized decorator for HTTP
-        request errors (requests.RequestException)
+    return_resource_file_content_on_exceptions: Generic fallback decorator
+    return_resource_content_on_fetch_error: HTTP request error fallback decorator
 
 Examples:
     Fetch with fallback to resource file::
@@ -22,39 +18,15 @@ Examples:
         >>> from pyrig.dev.utils.resources import (
         ...     return_resource_content_on_fetch_error
         ... )
-        >>> import requests
-        >>>
         >>> @return_resource_content_on_fetch_error(resource_name="LATEST_VERSION")
         ... def fetch_latest_version() -> str:
         ...     response = requests.get("https://api.example.com/version")
         ...     response.raise_for_status()
         ...     return response.text
-        >>>
-        >>> # If the request fails, returns content from resources/LATEST_VERSION
-        >>> version = fetch_latest_version()
-        >>> print(version)
-        '1.2.3'
-
-    Custom exception handling::
-
-        >>> from pyrig.dev.utils.resources import (
-        ...     return_resource_file_content_on_exceptions
-        ... )
-        >>>
-        >>> @return_resource_file_content_on_exceptions(
-        ...     resource_name="CONFIG",
-        ...     exceptions=(TimeoutError, ConnectionError),
-        ...     overwrite_resource=False
-        ... )
-        ... def fetch_config() -> str:
-        ...     # Fetch configuration from remote source
-        ...     return remote_config
 
 Note:
-    When running in pyrig development mode (detected via src_pkg_is_pyrig()),
-    successful function results are automatically written back to the resource
-    file to keep fallback content up-to-date. This behavior can be disabled
-    by setting overwrite_resource=False.
+    In pyrig development mode, successful results are written back to resource
+    files. Disable with overwrite_resource=False.
 """
 
 from collections.abc import Callable
@@ -81,75 +53,40 @@ def return_resource_file_content_on_exceptions(
 ) -> Callable[[Callable[P, str]], Callable[P, str]]:
     """Create a decorator that falls back to resource file content on exceptions.
 
-    Wraps a function that returns a string. If the function raises any of the
-    specified exceptions, the decorator returns the content of a resource file
-    instead. When running in pyrig development mode, successful function results
-    are automatically written back to the resource file to keep it up-to-date.
+    Wraps a function returning a string. If the function raises specified exceptions,
+    returns resource file content instead. In pyrig development mode, successful
+    results are written back to keep resource files fresh.
 
-    The decorator uses tenacity for exception handling but does not retry - it
-    catches the exception once and immediately returns the fallback content.
+    Uses tenacity but does not retry - catches exception once and returns fallback.
 
     Args:
-        resource_name: Name of the resource file (without path or directory prefix)
-            in the resources directory. For example, "LATEST_VERSION" refers to
-            `pyrig/resources/LATEST_VERSION`. The file must exist.
-        exceptions: Tuple of exception types that should trigger the fallback to
-            resource file content. If the decorated function raises any of these
-            exception types (or their subclasses), the resource file content is
-            returned instead of propagating the exception.
-        overwrite_resource: If True and running in pyrig development mode (detected
-            via src_pkg_is_pyrig()), successful function results are written back
-            to the resource file and staged in git. This keeps the fallback content
-            fresh. Defaults to True. Set to False to prevent resource file updates.
-        **tenacity_kwargs: Additional keyword arguments passed to tenacity's retry
-            decorator for advanced configuration.
-            Note that stop and retry_error_callback are already configured
-            and will be overridden if provided.
+        resource_name: Resource file name (without path). E.g., "LATEST_VERSION"
+            refers to `pyrig/resources/LATEST_VERSION`. Must exist.
+        exceptions: Tuple of exception types that trigger fallback. Subclasses
+            also trigger fallback.
+        overwrite_resource: If True and in pyrig dev mode, write successful results
+            back to resource file and stage in git. Defaults to True.
+        **tenacity_kwargs: Additional tenacity retry decorator arguments. Note that
+            stop and retry_error_callback are already configured.
 
     Returns:
-        A decorator function that can be applied to functions with signature
-        `(*args: P.args, **kwargs: P.kwargs) -> str`. The decorated function will
-        have the same signature but with fallback behavior added.
+        Decorator function for functions with signature `(*args, **kwargs) -> str`.
 
     Examples:
         Fallback to resource file on network errors::
 
-            >>> from pyrig.dev.utils.resources import (
-            ...     return_resource_file_content_on_exceptions
-            ... )
-            >>> import requests
-            >>>
             >>> @return_resource_file_content_on_exceptions(
             ...     "GITHUB_GITIGNORE",
-            ...     (requests.RequestException, TimeoutError),
-            ...     overwrite_resource=True
+            ...     (requests.RequestException, TimeoutError)
             ... )
             ... def fetch_gitignore() -> str:
             ...     response = requests.get("https://example.com/.gitignore")
             ...     response.raise_for_status()
             ...     return response.text
-            >>>
-            >>> # If request fails, returns content from resources/GITHUB_GITIGNORE
-            >>> content = fetch_gitignore()
-
-        Disable resource file updates::
-
-            >>> @return_resource_file_content_on_exceptions(
-            ...     "CONFIG",
-            ...     (IOError,),
-            ...     overwrite_resource=False
-            ... )
-            ... def fetch_config() -> str:
-            ...     return read_remote_config()
 
     Note:
-        The decorator strips whitespace from both the resource file content and
-        the function result using .strip(). This ensures consistent formatting
-        regardless of trailing newlines in the resource file.
-
-        The decorator uses tenacity with stop_after_attempt(1), meaning it doesn't
-        actually retry the operation - it just catches the exception once and
-        returns the fallback content.
+        Strips whitespace from both resource content and function result for
+        consistent formatting. Uses stop_after_attempt(1) - no actual retries.
     """
     resource_path = get_resource_path(resource_name, resources)
     content = resource_path.read_text(encoding="utf-8").strip()
@@ -186,71 +123,32 @@ def return_resource_content_on_fetch_error(
 ) -> Callable[[Callable[P, str]], Callable[P, str]]:
     """Create a decorator that falls back to resource file on HTTP request errors.
 
-    Convenience wrapper around return_resource_file_content_on_exceptions specifically
-    for HTTP requests using the requests library. Catches all requests.RequestException
-    subclasses and returns the resource file content as a fallback.
-
-    This decorator is equivalent to calling return_resource_file_content_on_exceptions
-    with exceptions=(RequestException,), but provides a more concise and semantically
-    clear interface for the common case of HTTP request fallbacks.
+    Convenience wrapper around return_resource_file_content_on_exceptions for HTTP
+    requests. Catches all requests.RequestException subclasses.
 
     Args:
-        resource_name: Name of the resource file (without path or directory prefix)
-            in the resources directory to use as fallback content. For example,
-            "LATEST_PYTHON_VERSION" refers to `pyrig/resources/LATEST_PYTHON_VERSION`.
+        resource_name: Resource file name (without path) for fallback content.
+            E.g., "LATEST_PYTHON_VERSION" refers to
+            `pyrig/resources/LATEST_PYTHON_VERSION`.
 
     Returns:
-        A decorator function for functions that make HTTP requests and return strings.
-        The decorated function will fall back to the resource file content if any
-        requests.RequestException is raised.
+        Decorator function for HTTP request functions returning strings.
 
     Examples:
         Fetch with fallback to resource file::
 
-            >>> from pyrig.dev.utils.resources import (
-            ...     return_resource_content_on_fetch_error
-            ... )
-            >>> import requests
-            >>>
-            >>> @return_resource_content_on_fetch_error(
-            ...     resource_name="LATEST_PYTHON_VERSION"
-            ... )
+            >>> @return_resource_content_on_fetch_error("LATEST_PYTHON_VERSION")
             ... def fetch_latest_python_version() -> str:
             ...     response = requests.get("https://endoflife.date/api/python.json")
             ...     response.raise_for_status()
-            ...     data = response.json()
-            ...     return data[0]["latest"]
-            >>>
-            >>> # If the API is down, returns content from resource file
-            >>> version = fetch_latest_python_version()
-            >>> print(version)
-            '3.12.1'
-
-        Use in pyrig configuration files::
-
-            >>> @return_resource_content_on_fetch_error("GITIGNORE")
-            ... def fetch_github_gitignore() -> str:
-            ...     url = "https://raw.githubusercontent.com/github/gitignore/..."
-            ...     response = requests.get(url, timeout=10)
-            ...     response.raise_for_status()
-            ...     return response.text
+            ...     return response.json()[0]["latest"]
 
     Note:
-        This decorator catches all requests.RequestException subclasses, including:
-
-        - HTTPError: HTTP error responses (4xx, 5xx status codes)
-        - ConnectionError: Network connection failures
-        - Timeout: Request timeout
-        - TooManyRedirects: Exceeded maximum redirects
-        - URLRequired: Invalid URL
-        - And all other requests exceptions
-
-        The overwrite_resource parameter defaults to True, meaning successful
-        fetches will update the resource file when running in pyrig development mode.
+        Catches all RequestException subclasses (HTTPError, ConnectionError,
+        Timeout, etc.). Successful fetches update resource file in pyrig dev mode.
 
     See Also:
-        return_resource_file_content_on_exceptions: For custom exception handling
-            with different exception types or configuration.
+        return_resource_file_content_on_exceptions: For custom exception types.
     """
     exceptions = (RequestException,)
     return return_resource_file_content_on_exceptions(

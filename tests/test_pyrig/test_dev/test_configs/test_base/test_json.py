@@ -34,13 +34,13 @@ def my_test_json_config_file(
 class TestJsonConfigFile:
     """Test class."""
 
-    def test_load(self, my_test_json_config_file: type[JsonConfigFile]) -> None:
+    def test__load(self, my_test_json_config_file: type[JsonConfigFile]) -> None:
         """Test method."""
         my_test_json_config_file()
         loaded = my_test_json_config_file.load()
         assert loaded == {"key": "value"}
 
-    def test_dump(self, my_test_json_config_file: type[JsonConfigFile]) -> None:
+    def test__dump(self, my_test_json_config_file: type[JsonConfigFile]) -> None:
         """Test method."""
         my_test_json_config_file.dump({"key": "value"})
         loaded = my_test_json_config_file.load()

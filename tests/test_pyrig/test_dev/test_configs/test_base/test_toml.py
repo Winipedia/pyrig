@@ -51,14 +51,14 @@ class TestTomlConfigFile:
             "Expected dump to work",
         )
 
-    def test_load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
+    def test__load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method for load."""
         my_test_toml_config_file()
         expected = {"key": "value"}
         actual = my_test_toml_config_file.load()
         assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
 
-    def test_dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
+    def test__dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method for dump."""
         my_test_toml_config_file.dump({"key": "value"})
         assert_with_msg(

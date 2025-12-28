@@ -26,12 +26,12 @@ class DotEnvConfigFile(ConfigFile):
     """
 
     @classmethod
-    def load(cls) -> dict[str, str | None]:
+    def _load(cls) -> dict[str, str | None]:
         """Load environment variables from .env file."""
         return dotenv_values(cls.get_path())
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         """Prevent writing to .env (raises ValueError if config is non-empty)."""
         if config:
             msg = f"Cannot dump {config} to .env file."

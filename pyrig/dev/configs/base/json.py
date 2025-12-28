@@ -46,7 +46,7 @@ class JsonConfigFile(ConfigFile):
     """
 
     @classmethod
-    def load(cls) -> dict[str, Any]:
+    def _load(cls) -> dict[str, Any]:
         """Load and parse the JSON file.
 
         Returns:
@@ -57,7 +57,7 @@ class JsonConfigFile(ConfigFile):
         return data
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         """Write configuration to JSON file with 4-space indentation.
 
         Args:

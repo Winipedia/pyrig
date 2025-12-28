@@ -25,7 +25,7 @@ def my_test_dotenv_config_file(
 class TestDotEnvConfigFile:
     """Test class."""
 
-    def test_load(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
+    def test__load(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
         """Test method for load."""
         # Create the .env file with some content
         my_test_dotenv_config_file.get_path().parent.mkdir(parents=True, exist_ok=True)
@@ -39,7 +39,7 @@ class TestDotEnvConfigFile:
         assert_with_msg(loaded["KEY2"] == "value2", "Expected KEY2=value2")
         assert_with_msg(loaded["KEY3"] == "", "Expected KEY3 to be empty string")
 
-    def test_dump(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
+    def test__dump(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
         """Test method for dump."""
         # dump should raise ValueError if config is not empty (truthy)
         with pytest.raises(ValueError, match=r"Cannot dump .* to \.env file"):

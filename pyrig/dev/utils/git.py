@@ -1,12 +1,10 @@
 """GitHub repository API utilities and ruleset management.
 
-This module provides utilities for interacting with the GitHub API, specifically
-for repository rulesets and gitignore file handling. It uses the PyGithub library
-for authentication and API calls.
+Utilities for interacting with the GitHub API, specifically for repository rulesets
+and gitignore file handling. Uses PyGithub for authentication and API calls.
 
 GitHub rulesets are the modern mechanism for branch protection, offering more
-flexibility and features than the legacy branch protection rules. This module
-provides functions to create, update, and query rulesets programmatically.
+flexibility than legacy branch protection rules.
 
 Functions:
     get_rules_payload: Build a rules array for GitHub rulesets
@@ -15,14 +13,14 @@ Functions:
     get_repo: Get a PyGithub Repository object
     ruleset_exists: Check if a ruleset with a given name exists
     github_api_request: Make a generic GitHub API request
-    get_github_repo_token: Retrieve GitHub token from environment or .env file
-    path_is_in_gitignore: Check if a path matches gitignore patterns
+    get_github_repo_token: Retrieve GitHub token from environment or .env
+    path_is_in_gitignore_lines: Check if a path matches gitignore patterns
     load_gitignore: Load gitignore file as a list of patterns
 
 Module Attributes:
-    DEFAULT_BRANCH (str): The default branch name used by pyrig ("main")
-    DEFAULT_RULESET_NAME (str): The name of the default protection ruleset
-    GITIGNORE_PATH (Path): Path to the .gitignore file
+    DEFAULT_BRANCH (str): Default branch name ("main")
+    DEFAULT_RULESET_NAME (str): Default protection ruleset name
+    GITIGNORE_PATH (Path): Path to .gitignore file
 
 Examples:
     Create a ruleset with pull request requirements::
@@ -33,26 +31,13 @@ Examples:
         ...     deletion={}
         ... )
         >>> create_or_update_ruleset(
-        ...     token="ghp_...",
-        ...     owner="myorg",
-        ...     repo_name="myrepo",
-        ...     name="main-protection",
-        ...     target="branch",
-        ...     enforcement="active",
-        ...     rules=rules
+        ...     token="ghp_...", owner="myorg", repo_name="myrepo",
+        ...     name="main-protection", target="branch",
+        ...     enforcement="active", rules=rules
         ... )
-
-    Check if a path is gitignored::
-
-        >>> from pyrig.dev.utils.git import path_is_in_gitignore
-        >>> path_is_in_gitignore("__pycache__/")
-        True
-        >>> path_is_in_gitignore("src/main.py")
-        False
 
 See Also:
     pyrig.dev.cli.commands.protect_repo: High-level repository protection
-    pyrig.dev.configs.git.branch_protection: Branch protection configuration
 """
 
 import logging
@@ -102,91 +87,61 @@ def get_rules_payload(  # noqa: PLR0913
 ) -> list[dict[str, Any]]:
     """Build a rules array for a GitHub repository ruleset.
 
-    Constructs a list of rule objects from the provided parameters. Each parameter
-    corresponds to a specific GitHub ruleset rule type. Only non-None parameters
-    are included in the output. Empty dictionaries create rules without parameters,
-    while dictionaries with content create rules with those parameters.
+    Constructs a list of rule objects from provided parameters. Each parameter
+    corresponds to a GitHub ruleset rule type. Only non-None parameters are included.
+    Empty dicts create rules without parameters; dicts with content include those
+    parameters.
 
     Args:
-        creation: Restrict creation of matching refs to users with bypass permission.
-            Pass an empty dict ({}) to enable without parameters.
-        update: Restrict updates to matching refs to users with bypass permission.
-            Pass an empty dict ({}) to enable without parameters.
-        deletion: Restrict deletion of matching refs to users with bypass permission.
-            Pass an empty dict ({}) to enable without parameters.
-        required_linear_history: Prevent merge commits from being pushed to matching
-            refs. Pass an empty dict ({}) to enable.
-        merge_queue: Require merges to be performed via a merge queue. Parameters
-            should specify merge queue configuration.
-        required_deployments: Require successful deployments to specified environments
-            before refs can be pushed. Parameters should include environment names.
-        required_signatures: Require commits pushed to matching refs to have verified
-            signatures. Pass an empty dict ({}) to enable.
-        pull_request: Require all commits to be made to a non-target branch and
-            submitted via a pull request. Parameters may include required approving
-            review count, dismiss stale reviews, etc.
-        required_status_checks: Require specified status checks to pass before the
-            ref is updated. Parameters should include status check contexts.
-        non_fast_forward: Prevent users with push access from force pushing to refs.
-            Pass an empty dict ({}) to enable.
-        commit_message_pattern: Enforce commit message patterns. Parameters should
-            include pattern, operator, and optionally negate.
-        commit_author_email_pattern: Enforce commit author email patterns. Parameters
-            should include pattern, operator, and optionally negate.
-        committer_email_pattern: Enforce committer email patterns. Parameters should
-            include pattern, operator, and optionally negate.
-        branch_name_pattern: Enforce branch name patterns. Parameters should include
-            pattern, operator, and optionally negate.
-        tag_name_pattern: Enforce tag name patterns. Parameters should include
-            pattern, operator, and optionally negate.
-        file_path_restriction: Prevent commits that include changes in specified
-            file and folder paths. Parameters should include restricted file paths.
-        max_file_path_length: Prevent commits with file paths exceeding the specified
-            character limit. Parameters should include max_file_path_length value.
-        file_extension_restriction: Prevent commits that include files with specified
-            file extensions. Parameters should include restricted file extensions.
-        max_file_size: Prevent commits with individual files exceeding the specified
-            size limit. Parameters should include max_file_size value in bytes.
-        workflows: Require all changes to a targeted branch to pass specified
-            workflows. Parameters should include workflow file paths.
-        code_scanning: Require specified code scanning tools to provide results
-            before the reference is updated. Parameters should include tool names.
-        copilot_code_review: Request GitHub Copilot code review for new pull requests
-            automatically. Pass an empty dict ({}) to enable.
+        creation: Restrict ref creation to bypass users. Pass {} to enable.
+        update: Restrict ref updates to bypass users. Pass {} to enable.
+        deletion: Restrict ref deletion to bypass users. Pass {} to enable.
+        required_linear_history: Prevent merge commits. Pass {} to enable.
+        merge_queue: Require merge queue. Parameters specify configuration.
+        required_deployments: Require deployments. Parameters include environments.
+        required_signatures: Require verified signatures. Pass {} to enable.
+        pull_request: Require pull requests. Parameters may include review count,
+            dismiss stale reviews, etc.
+        required_status_checks: Require status checks. Parameters include contexts.
+        non_fast_forward: Prevent force pushing. Pass {} to enable.
+        commit_message_pattern: Enforce commit message patterns. Parameters:
+            pattern, operator, optionally negate.
+        commit_author_email_pattern: Enforce author email patterns. Parameters:
+            pattern, operator, optionally negate.
+        committer_email_pattern: Enforce committer email patterns. Parameters:
+            pattern, operator, optionally negate.
+        branch_name_pattern: Enforce branch name patterns. Parameters: pattern,
+            operator, optionally negate.
+        tag_name_pattern: Enforce tag name patterns. Parameters: pattern,
+            operator, optionally negate.
+        file_path_restriction: Prevent commits with changes in specified paths.
+            Parameters include restricted paths.
+        max_file_path_length: Prevent long file paths. Parameters include
+            max_file_path_length value.
+        file_extension_restriction: Prevent specified file extensions.
+            Parameters include restricted extensions.
+        max_file_size: Prevent large files. Parameters include max_file_size
+            in bytes.
+        workflows: Require workflows to pass. Parameters include workflow paths.
+        code_scanning: Require code scanning. Parameters include tool names.
+        copilot_code_review: Request Copilot code review. Pass {} to enable.
 
     Returns:
-        A list of rule dictionaries, each with a "type" key and optionally a
-        "parameters" key. The list only includes rules for which non-None arguments
-        were provided. Empty list if no rules are specified.
+        List of rule dictionaries with "type" and optionally "parameters" keys.
+        Empty list if no rules specified.
 
     Examples:
         Create a simple deletion protection rule::
 
             >>> rules = get_rules_payload(deletion={})
-            >>> print(rules)
             [{'type': 'deletion'}]
-
-        Create a pull request rule with required reviews::
-
-            >>> rules = get_rules_payload(
-            ...     pull_request={"required_approving_review_count": 1}
-            ... )
-            >>> print(rules)
-            [{'type': 'pull_request', 'parameters': {...}}]
 
         Create multiple rules::
 
             >>> rules = get_rules_payload(
             ...     deletion={},
-            ...     creation={},
             ...     pull_request={"required_approving_review_count": 2}
             ... )
-            >>> len(rules)
-            3
-
-    Note:
-        The order of rules in the returned list matches the order of parameters
-        in the function signature, not the order in which they were provided.
     """
     rules: list[dict[str, Any]] = []
 
@@ -230,66 +185,32 @@ def create_or_update_ruleset(
 ) -> Any:
     """Create or update a GitHub repository ruleset.
 
-    Checks if a ruleset with the specified name already exists. If it does, the
-    ruleset is updated with the new parameters. If it doesn't exist, a new ruleset
-    is created. This function handles the idempotent creation/update pattern for
-    repository rulesets.
+    Checks if a ruleset with the specified name exists. If yes, updates it;
+    otherwise, creates a new one. Handles idempotent creation/update pattern.
 
     Args:
-        token: GitHub API token with repository administration permissions. The
-            token must have the `repo` scope or equivalent permissions to manage
-            rulesets.
+        token: GitHub API token with repo administration permissions (repo scope).
         owner: Repository owner username or organization name.
-        repo_name: Repository name (without the owner prefix).
-        **ruleset_params: Keyword arguments for the ruleset configuration as
-            expected by the GitHub API. Must include a "name" key. Common parameters
-            include:
-
-            - name (str): Ruleset name (required)
-            - target (str): Target type, typically "branch" or "tag"
-            - enforcement (str): Enforcement level ("active", "evaluate", "disabled")
-            - rules (list): List of rule objects (use get_rules_payload to build)
-            - conditions (dict): Conditions for when the ruleset applies
-            - bypass_actors (list): Users/teams who can bypass the ruleset
+        repo_name: Repository name (without owner prefix).
+        **ruleset_params: Ruleset configuration for GitHub API. Must include "name".
+            Common parameters: name (str), target (str), enforcement (str),
+            rules (list), conditions (dict), bypass_actors (list).
 
     Returns:
-        The API response dictionary containing the created or updated ruleset data,
-        including the ruleset ID, name, rules, and other configuration details.
+        API response dictionary with ruleset data (ID, name, rules, etc.).
 
     Raises:
-        KeyError: If "name" is not present in ruleset_params.
-        github.GithubException: If the API request fails due to authentication,
-            permissions, or invalid parameters.
+        KeyError: If "name" not in ruleset_params.
+        github.GithubException: If API request fails.
 
     Examples:
         Create a new ruleset::
 
-            >>> from pyrig.dev.utils.git import create_or_update_ruleset
-            >>> result = create_or_update_ruleset(
-            ...     token="ghp_...",
-            ...     owner="myorg",
-            ...     repo_name="myrepo",
-            ...     name="main-protection",
-            ...     target="branch",
-            ...     enforcement="active",
-            ...     rules=[{"type": "deletion"}]
+            >>> create_or_update_ruleset(
+            ...     token="ghp_...", owner="myorg", repo_name="myrepo",
+            ...     name="main-protection", target="branch",
+            ...     enforcement="active", rules=[{"type": "deletion"}]
             ... )
-
-        Update an existing ruleset::
-
-            >>> result = create_or_update_ruleset(
-            ...     token="ghp_...",
-            ...     owner="myorg",
-            ...     repo_name="myrepo",
-            ...     name="main-protection",  # Same name = update
-            ...     target="branch",
-            ...     enforcement="active",
-            ...     rules=[{"type": "deletion"}, {"type": "creation"}]
-            ... )
-
-    Note:
-        This function logs informational messages about whether a ruleset is being
-        created or updated. Debug logging includes the ruleset ID for updates.
     """
     logger.info("Creating or updating ruleset: %s", ruleset_params["name"])
     ruleset_name: str = ruleset_params["name"]
@@ -326,35 +247,28 @@ def create_or_update_ruleset(
 def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
     """Retrieve all rulesets defined for a repository.
 
-    Fetches the complete list of repository rulesets from the GitHub API. This
-    includes all rulesets regardless of their target (branch, tag) or enforcement
-    level (active, evaluate, disabled).
+    Fetches all repository rulesets regardless of target or enforcement level.
 
     Args:
         token: GitHub API token with repository read permissions.
         owner: Repository owner username or organization name.
-        repo_name: Repository name (without the owner prefix).
+        repo_name: Repository name (without owner prefix).
 
     Returns:
-        A list of ruleset dictionaries from the GitHub API. Each dictionary contains
-        ruleset metadata including id, name, target, enforcement, rules, and other
-        configuration details. Returns an empty list if no rulesets are defined.
+        List of ruleset dictionaries with metadata (id, name, target, enforcement,
+        rules, etc.). Empty list if no rulesets defined.
 
     Raises:
-        github.GithubException: If the API request fails due to authentication,
-            permissions, or network issues.
+        github.GithubException: If API request fails.
 
     Examples:
-        Get all rulesets for a repository::
+        Get all rulesets::
 
-            >>> from pyrig.dev.utils.git import get_all_rulesets
             >>> rulesets = get_all_rulesets(
-            ...     token="ghp_...",
-            ...     owner="myorg",
-            ...     repo_name="myrepo"
+            ...     token="ghp_...", owner="myorg", repo_name="myrepo"
             ... )
-            >>> for ruleset in rulesets:
-            ...     print(f"{ruleset['name']}: {ruleset['enforcement']}")
+            >>> for rs in rulesets:
+            ...     print(f"{rs['name']}: {rs['enforcement']}")
     """
     return github_api_request(
         token, owner, repo_name, endpoint="rulesets", method="GET"
@@ -364,40 +278,26 @@ def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
 def get_repo(token: str, owner: str, repo_name: str) -> Repository:
     """Get a PyGithub Repository object for API operations.
 
-    Creates an authenticated PyGithub client and retrieves a Repository object
-    for the specified repository. This object can be used for various GitHub API
-    operations through the PyGithub library.
+    Creates an authenticated PyGithub client and retrieves a Repository object.
 
     Args:
-        token: GitHub API token for authentication. The required permissions depend
-            on the operations you intend to perform with the returned Repository
-            object.
+        token: GitHub API token for authentication.
         owner: Repository owner username or organization name.
-        repo_name: Repository name (without the owner prefix).
+        repo_name: Repository name (without owner prefix).
 
     Returns:
-        A github.Repository.Repository object representing the specified repository.
-        This object provides methods for interacting with the repository through
-        the GitHub API.
+        github.Repository.Repository object for API operations.
 
     Raises:
-        github.UnknownObjectException: If the repository doesn't exist or the token
-            doesn't have permission to access it.
-        github.BadCredentialsException: If the token is invalid or expired.
+        github.UnknownObjectException: If repository doesn't exist or no access.
+        github.BadCredentialsException: If token is invalid or expired.
 
     Examples:
         Get a repository object::
 
-            >>> from pyrig.dev.utils.git import get_repo
-            >>> repo = get_repo(
-            ...     token="ghp_...",
-            ...     owner="myorg",
-            ...     repo_name="myrepo"
-            ... )
+            >>> repo = get_repo(token="ghp_...", owner="myorg", repo_name="myrepo")
             >>> print(repo.full_name)
             'myorg/myrepo'
-            >>> print(repo.default_branch)
-            'main'
     """
     auth = Token(token)
     github = Github(auth=auth)
@@ -407,43 +307,32 @@ def get_repo(token: str, owner: str, repo_name: str) -> Repository:
 def ruleset_exists(token: str, owner: str, repo_name: str, ruleset_name: str) -> int:
     """Check if a ruleset with the given name exists in a repository.
 
-    Searches through all rulesets in the repository to find one matching the
-    specified name. This is useful for determining whether to create a new ruleset
-    or update an existing one.
+    Searches all rulesets to find one matching the specified name.
 
     Args:
         token: GitHub API token with repository read permissions.
         owner: Repository owner username or organization name.
-        repo_name: Repository name (without the owner prefix).
-        ruleset_name: Name of the ruleset to search for. The comparison is
-            case-sensitive and must match exactly.
+        repo_name: Repository name (without owner prefix).
+        ruleset_name: Name of the ruleset (case-sensitive exact match).
 
     Returns:
-        The ruleset ID (a positive integer) if a ruleset with the given name exists,
-        or 0 if no matching ruleset is found.
+        Ruleset ID (positive integer) if found, or 0 if not found.
 
     Raises:
-        github.GithubException: If the API request fails due to authentication,
-            permissions, or network issues.
+        github.GithubException: If API request fails.
 
     Examples:
         Check if a ruleset exists::
 
-            >>> from pyrig.dev.utils.git import ruleset_exists
             >>> ruleset_id = ruleset_exists(
-            ...     token="ghp_...",
-            ...     owner="myorg",
-            ...     repo_name="myrepo",
+            ...     token="ghp_...", owner="myorg", repo_name="myrepo",
             ...     ruleset_name="main-protection"
             ... )
             >>> if ruleset_id:
             ...     print(f"Ruleset exists with ID: {ruleset_id}")
-            ... else:
-            ...     print("Ruleset does not exist")
 
     Note:
-        This function returns 0 (falsy) when the ruleset doesn't exist, making it
-        convenient for boolean checks: `if ruleset_exists(...): ...`
+        Returns 0 (falsy) when not found, convenient for boolean checks.
     """
     rulesets = get_all_rulesets(token, owner, repo_name)
     main_ruleset = next((rs for rs in rulesets if rs["name"] == ruleset_name), None)
@@ -461,56 +350,34 @@ def github_api_request(  # noqa: PLR0913
 ) -> Any:
     """Make a generic GitHub API request for a repository.
 
-    Performs an authenticated HTTP request to the GitHub API using PyGithub's
-    internal requester. This function provides a low-level interface for API
-    endpoints that may not be fully supported by PyGithub's high-level methods.
+    Performs an authenticated HTTP request using PyGithub's internal requester.
+    Provides low-level interface for endpoints not fully supported by PyGithub.
 
     Args:
-        token: GitHub API token for authentication. Required permissions depend on
-            the specific endpoint being accessed.
+        token: GitHub API token for authentication.
         owner: Repository owner username or organization name.
-        repo_name: Repository name (without the owner prefix).
-        endpoint: API endpoint path relative to the repository URL. For example,
-            "rulesets", "pages", "actions/workflows". Do not include leading slash.
-        method: HTTP method to use for the request. Defaults to "GET".
-        payload: Optional dictionary to send as JSON in the request body. Used for
-            POST, PUT, and PATCH requests. Ignored for GET and DELETE requests.
+        repo_name: Repository name (without owner prefix).
+        endpoint: API endpoint path relative to repository URL (e.g., "rulesets",
+            "pages"). Do not include leading slash.
+        method: HTTP method. Defaults to "GET".
+        payload: Optional dict to send as JSON. Used for POST, PUT, PATCH.
 
     Returns:
-        The parsed JSON response from the GitHub API as a Python dictionary or list.
-        The exact structure depends on the endpoint being called.
+        Parsed JSON response as dict or list.
 
     Raises:
-        github.GithubException: If the API request fails due to authentication,
-            permissions, invalid parameters, or network issues.
+        github.GithubException: If API request fails.
 
     Examples:
         Get all rulesets::
 
-            >>> from pyrig.dev.utils.git import github_api_request
             >>> rulesets = github_api_request(
-            ...     token="ghp_...",
-            ...     owner="myorg",
-            ...     repo_name="myrepo",
-            ...     endpoint="rulesets",
-            ...     method="GET"
-            ... )
-
-        Create a new ruleset::
-
-            >>> result = github_api_request(
-            ...     token="ghp_...",
-            ...     owner="myorg",
-            ...     repo_name="myrepo",
-            ...     endpoint="rulesets",
-            ...     method="POST",
-            ...     payload={"name": "my-ruleset", "target": "branch", ...}
+            ...     token="ghp_...", owner="myorg", repo_name="myrepo",
+            ...     endpoint="rulesets", method="GET"
             ... )
 
     Note:
-        This function uses PyGithub's internal `_requester` object to make the
-        request. It automatically includes the required GitHub API version header
-        and handles JSON encoding/decoding.
+        Uses PyGithub's internal `_requester` with automatic API version header.
     """
     logger.debug("GitHub API request: %s %s/%s/%s", method, owner, repo_name, endpoint)
     repo = get_repo(token, owner, repo_name)
@@ -534,43 +401,27 @@ def github_api_request(  # noqa: PLR0913
 def get_github_repo_token() -> str:
     """Retrieve the GitHub repository token for API authentication.
 
-    Searches for a GitHub API token in the following order of precedence:
-
-    1. The `REPO_TOKEN` environment variable
-    2. The `REPO_TOKEN` key in the project's `.env` file
-
-    This priority order ensures CI/CD environments (which typically set environment
-    variables) work seamlessly while allowing local development to use .env files
-    for token storage.
+    Searches for REPO_TOKEN in order: environment variable, then .env file.
 
     Returns:
-        The GitHub API token as a string.
+        GitHub API token string.
 
     Raises:
-        ValueError: If the .env file doesn't exist when the REPO_TOKEN environment
-            variable is not set, or if REPO_TOKEN is not found in the .env file.
+        ValueError: If .env doesn't exist when REPO_TOKEN not in environment,
+            or if REPO_TOKEN not found in .env.
 
     Examples:
-        Get the token from environment or .env::
+        Get the token::
 
-            >>> from pyrig.dev.utils.git import get_github_repo_token
             >>> token = get_github_repo_token()
-            >>> print(token[:7])  # Print first 7 chars
+            >>> print(token[:7])
             'ghp_...'
 
     Note:
-        The token should have appropriate permissions for the intended operations:
-
-        - `repo` scope: Full control of private repositories (includes rulesets)
-        - `public_repo` scope: Access to public repositories only
-        - `admin:repo_hook` scope: Repository webhook management
-
-        For repository ruleset management, the `repo` scope is required.
+        For ruleset management, token needs `repo` scope.
 
     Security:
-        Never commit tokens to version control. Always use environment variables
-        or .env files (which should be gitignored). The .env file is automatically
-        added to .gitignore by pyrig's initialization process.
+        Never commit tokens. Use environment variables or .env (gitignored).
     """
     # try os env first
     token = os.getenv("REPO_TOKEN")
@@ -593,53 +444,22 @@ def get_github_repo_token() -> str:
     raise ValueError(msg)
 
 
-def path_is_in_gitignore(relative_path: str | Path) -> bool:
-    """Check if a path matches any pattern in the .gitignore file.
-
-    Uses the pathspec library with gitwildmatch pattern matching (the same pattern
-    matching used by Git) to determine if a path would be ignored by Git. Handles
-    both files and directories, automatically appending a trailing slash to directory
-    paths for proper pattern matching.
+def path_is_in_gitignore_lines(
+    gitignore_lines: list[str], relative_path: str | Path
+) -> bool:
+    """Check if a path matches any pattern in a list of gitignore lines.
 
     Args:
-        relative_path: Path to check, either as a string or Path object. Can be
-            relative to the repository root or an absolute path (which will be
-            converted to relative). Directories can be specified with or without
-            a trailing slash.
+        gitignore_lines: List of gitignore pattern strings.
+        relative_path: Path to check (string or Path). Absolute paths converted
+            to relative. Directories can have optional trailing slash.
 
     Returns:
-        True if the path matches any pattern in .gitignore and would be ignored
-        by Git. False if the path doesn't match any patterns or if .gitignore
-        doesn't exist.
+        True if path matches any pattern and would be ignored by Git.
 
-    Examples:
-        Check if common paths are gitignored::
-
-            >>> from pyrig.dev.utils.git import path_is_in_gitignore
-            >>> path_is_in_gitignore("__pycache__")
-            True
-            >>> path_is_in_gitignore("__pycache__/")
-            True
-            >>> path_is_in_gitignore(".env")
-            True
-            >>> path_is_in_gitignore("src/main.py")
-            False
-
-        Check absolute paths::
-
-            >>> from pathlib import Path
-            >>> abs_path = Path.cwd() / "__pycache__"
-            >>> path_is_in_gitignore(abs_path)
-            True
-
-    Note:
-        This function automatically detects whether a path is a directory by
-        checking if it has no suffix, ends with a path separator, or exists as
-        a directory on the filesystem. Directories are matched with a trailing
-        slash appended to ensure proper gitignore pattern matching.
+    See Also:
+        load_gitignore: Load patterns from .gitignore file.
     """
-    if not GITIGNORE_PATH.exists():
-        return False
     as_path = Path(relative_path)
     if as_path.is_absolute():
         as_path = as_path.relative_to(Path.cwd())
@@ -654,7 +474,7 @@ def path_is_in_gitignore(relative_path: str | Path) -> bool:
 
     spec = pathspec.PathSpec.from_lines(
         "gitwildmatch",
-        load_gitignore(),
+        gitignore_lines,
     )
 
     return spec.match_file(as_posix)
@@ -663,38 +483,31 @@ def path_is_in_gitignore(relative_path: str | Path) -> bool:
 def load_gitignore(path: Path = GITIGNORE_PATH) -> list[str]:
     """Load a gitignore file as a list of pattern strings.
 
-    Reads the gitignore file and splits it into individual lines, preserving empty
-    lines and comments. This format is suitable for use with pathspec.PathSpec.
+    Reads gitignore file and splits into lines. Preserves empty lines and comments
+    for use with pathspec.PathSpec.
 
     Args:
-        path: Path to the gitignore file to load. Defaults to GITIGNORE_PATH
-            (".gitignore" in the current directory).
+        path: Path to gitignore file. Defaults to GITIGNORE_PATH (".gitignore").
 
     Returns:
-        A list of strings, one per line in the gitignore file. Includes empty lines
-        and comment lines (starting with #). The pathspec library handles filtering
-        these appropriately.
+        List of strings, one per line. Includes empty lines and comments.
 
     Raises:
-        FileNotFoundError: If the specified gitignore file doesn't exist.
-        UnicodeDecodeError: If the file contains invalid UTF-8 characters.
+        FileNotFoundError: If gitignore file doesn't exist.
+        UnicodeDecodeError: If file contains invalid UTF-8.
 
     Examples:
         Load the default .gitignore::
 
-            >>> from pyrig.dev.utils.git import load_gitignore
             >>> patterns = load_gitignore()
             >>> print(patterns[:3])
             ['# Byte-compiled / optimized / DLL files', '__pycache__/', '*.py[cod]']
 
-        Load a custom gitignore file::
-
-            >>> from pathlib import Path
-            >>> patterns = load_gitignore(Path("custom.gitignore"))
+    See Also:
+        path_is_in_gitignore_lines: Check if path matches patterns
 
     Note:
-        This function does not filter or process the patterns in any way. It simply
-        reads the file and splits on newlines. Pattern interpretation is handled by
-        the pathspec library when used with path_is_in_gitignore().
+        Does not filter or process patterns. Pattern interpretation handled by
+        pathspec library.
     """
     return path.read_text(encoding="utf-8").splitlines()

@@ -31,7 +31,7 @@ class TestTypedConfigFile:
         actual = my_test_typed_config_file.get_file_extension()
         assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
 
-    def test_load(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
+    def test__load(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method for load."""
         loaded = my_test_typed_config_file.load()
         assert_with_msg(
@@ -39,7 +39,7 @@ class TestTypedConfigFile:
             "Expected load to return empty dict",
         )
 
-    def test_dump(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
+    def test__dump(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method for dump."""
         # assert dumps empty dict successfully
         my_test_typed_config_file.dump({})

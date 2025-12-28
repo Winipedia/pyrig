@@ -61,7 +61,7 @@ class TextConfigFile(ConfigFile):
         """
 
     @classmethod
-    def load(cls) -> dict[str, str]:
+    def _load(cls) -> dict[str, str]:
         r"""Load file content as UTF-8 text wrapped in dict.
 
         Returns:
@@ -70,7 +70,7 @@ class TextConfigFile(ConfigFile):
         return {cls.CONTENT_KEY: cls.get_path().read_text(encoding="utf-8")}
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         r"""Write content to file, preserving user additions by appending.
 
         Args:

@@ -52,7 +52,7 @@ class TestDotPythonVersionConfigFile:
         actual = my_test_dot_python_version_config_file.get_parent_path()
         assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
 
-    def test_load(
+    def test__load(
         self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
     ) -> None:
         """Test method for load."""
@@ -67,7 +67,7 @@ class TestDotPythonVersionConfigFile:
             "Expected version to be non-empty",
         )
 
-    def test_dump(
+    def test__dump(
         self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
     ) -> None:
         """Test method for dump."""

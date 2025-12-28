@@ -126,12 +126,6 @@ class TestWorkflow:
         result = my_test_workflow.step_build_container_image()
         assert "run" in result, f"Expected 'run' in step, got {result}"
 
-    def test_load(self, my_test_workflow: type[Workflow]) -> None:
-        """Test method for load."""
-        my_test_workflow()
-        actual = my_test_workflow.load()
-        assert isinstance(actual, dict)
-
     def test_steps_core_installed_setup(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for steps_core_installed_setup."""
         result = my_test_workflow.steps_core_installed_setup(no_dev=True)

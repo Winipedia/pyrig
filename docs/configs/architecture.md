@@ -52,13 +52,27 @@ graph TD
 
 Every ConfigFile subclass must implement:
 
-| Method                 | Purpose                          | Returns          |
-| ---------------------- | -------------------------------- | ---------------- |
-| `get_parent_path()`    | Directory containing the file    | `Path`           |
-| `get_file_extension()` | File extension without dot       | `str`            |
-| `get_configs()`        | Expected configuration structure | `dict` or `list` |
-| `load()`               | Parse file content               | `dict` or `list` |
-| `dump(config)`         | Write configuration to file      | `None`           |
+| Method                 | Purpose                                    | Returns          |
+| ---------------------- | ------------------------------------------ | ---------------- |
+| `get_parent_path()`    | Directory containing the file              | `Path`           |
+| `get_file_extension()` | File extension without dot                 | `str`            |
+| `get_configs()`        | Expected configuration structure           | `dict` or `list` |
+| `_load()`              | Parse file content (internal)              | `dict` or `list` |
+| `_dump(config)`        | Write configuration to file (internal)     | `None`           |
+
+**Note**: Subclasses implement `_load()` and `_dump()` (internal methods).
+Users call `load()` and `dump()` (public API with caching).
+
+### Caching System
+
+The `load()` method uses `@functools.cache` to avoid redundant file reads:
+
+- **First call**: Reads file via `_load()` and caches the result
+- **Subsequent calls**: Returns cached data without disk I/O
+- **Cache invalidation**: `dump()` clears the cache before and after writing
+
+This provides significant performance improvements when config files
+are accessed multiple times, while ensuring data consistency after writes.
 
 ## Initialization Process
 
@@ -236,7 +250,7 @@ dependencies (like LICENSE before pyproject.toml) are always met.
 ## Format-Specific Subclasses
 
 These subclasses implement common methods for specific file formats, simplifying
-ConfigFile creation. They provide implementations for `load()`, `dump()`, and
+ConfigFile creation. They provide implementations for `_load()`, `_dump()`, and
 `get_file_extension()` so you only need to define the file location and expected
 content.
 

@@ -54,12 +54,12 @@ class DotPythonVersionConfigFile(ConfigFile):
         }
 
     @classmethod
-    def load(cls) -> dict[str, Any]:
+    def _load(cls) -> dict[str, Any]:
         """Load Python version from .python-version file."""
         return {cls.VERSION_KEY: cls.get_path().read_text(encoding="utf-8")}
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         """Write Python version to .python-version file."""
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to .python-version file."

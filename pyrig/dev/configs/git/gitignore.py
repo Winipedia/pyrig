@@ -74,7 +74,7 @@ class GitIgnoreConfigFile(ConfigFile):
         return "gitignore"
 
     @classmethod
-    def load(cls) -> list[str]:
+    def _load(cls) -> list[str]:
         """Load the .gitignore file as a list of patterns.
 
         Returns:
@@ -86,7 +86,7 @@ class GitIgnoreConfigFile(ConfigFile):
         return load_gitignore(path=cls.get_path())
 
     @classmethod
-    def dump(cls, config: list[str] | dict[str, Any]) -> None:
+    def _dump(cls, config: list[str] | dict[str, Any]) -> None:
         """Write patterns to the .gitignore file.
 
         Args:

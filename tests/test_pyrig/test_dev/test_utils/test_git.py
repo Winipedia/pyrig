@@ -16,7 +16,7 @@ from pyrig.dev.utils.git import (
     get_rules_payload,
     github_api_request,
     load_gitignore,
-    path_is_in_gitignore,
+    path_is_in_gitignore_lines,
     ruleset_exists,
 )
 from pyrig.src.git import (
@@ -146,7 +146,7 @@ def test_github_api_request() -> None:
     )
 
 
-def test_path_is_in_gitignore(tmp_path: Path) -> None:
+def test_path_is_in_gitignore_lines(tmp_path: Path) -> None:
     """Test func for path_is_in_gitignore."""
     with chdir(tmp_path):
         content = """
@@ -161,19 +161,16 @@ dist/
 .pytest_cache/
 """
         GITIGNORE_PATH.write_text(content)
-        assert path_is_in_gitignore("folder/file.pyc")
+        gitignore_lines = load_gitignore()
+        assert path_is_in_gitignore_lines(gitignore_lines, "folder/file.pyc")
 
-        assert path_is_in_gitignore(".venv")
-        assert path_is_in_gitignore(".venv/")
-        assert path_is_in_gitignore(".venv/file.py")
-
-        assert path_is_in_gitignore("build")
-        assert path_is_in_gitignore("build/")
-        assert path_is_in_gitignore("build/file.py")
-
-        assert path_is_in_gitignore("dist")
-        assert path_is_in_gitignore("dist/")
-        assert path_is_in_gitignore("dist/file.py")
+        assert path_is_in_gitignore_lines(gitignore_lines, "__pycache__/file.pdf")
+        assert path_is_in_gitignore_lines(gitignore_lines, ".venv/file.py")
+        assert path_is_in_gitignore_lines(gitignore_lines, "build/file.py")
+        assert path_is_in_gitignore_lines(gitignore_lines, "dist/file.py")
+        assert path_is_in_gitignore_lines(
+            gitignore_lines, "folder/folder.egg-info/file.py"
+        )
 
 
 def test_load_gitignore(tmp_path: Path) -> None:
