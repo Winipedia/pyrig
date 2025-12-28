@@ -146,6 +146,13 @@ def get_test_functions_content(
         f for f in supposed_test_funcs_names if f not in test_funcs_names
     ]
 
+    if untested_funcs_names:
+        logger.info(
+            "Creating test functions for %s: %s",
+            module.__name__,
+            untested_funcs_names,
+        )
+
     for test_func_name in untested_funcs_names:
         test_module_content += f'''
 
@@ -217,6 +224,13 @@ def get_test_classes_content(
             untested_test_class_to_methods_names[test_class_name] = (
                 untested_methods_names
             )
+
+    if untested_test_class_to_methods_names:
+        logger.info(
+            "Creating test classes for %s: %s",
+            module.__name__,
+            untested_test_class_to_methods_names,
+        )
 
     for (
         test_class_name,
