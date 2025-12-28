@@ -7,6 +7,7 @@ import shutil
 from contextlib import chdir
 from pathlib import Path
 
+import tomlkit
 from pytest_mock import MockFixture
 
 import pyrig
@@ -93,7 +94,7 @@ def test_running_pre_commit_hooks(mocker: MockFixture) -> None:
     mock_run.assert_called()
 
 
-def test_init_project(tmp_path: Path) -> None:
+def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     """Test func for init."""
     # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
@@ -188,8 +189,13 @@ def test_init_project(tmp_path: Path) -> None:
         expected = f"{project_name} version 0.1.0"
         assert expected in stdout, f"Expected {expected} in stdout, got {stdout}"
 
+        # assert pyproject.toml contains not pyrig specific overrides
+        pyproject_toml = tomlkit.parse((PyprojectConfigFile.get_path()).read_text())
+        keywords = pyproject_toml.get("project", {}).get("keywords")
+        assert keywords == []
+
     pkg_dir = src_project_dir / "src_project"
-    assert_with_msg(
-        (pkg_dir / "__init__.py").exists(),
-        f"Expected {pkg_dir / '__init__.py'} to be created",
+    assert pkg_dir.exists(), f"Expected {pkg_dir} to be created"
+    assert (pkg_dir / "__init__.py").exists(), (
+        f"Expected {pkg_dir / '__init__.py'} to be created"
     )

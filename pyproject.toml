@@ -20,16 +20,16 @@ dependencies = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Operating System :: OS Independent",
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Software Development :: Testing",
     "Topic :: System :: Installation/Setup",
     "Topic :: System :: Software Distribution",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
 keywords = [
@@ -71,7 +71,6 @@ module-root = ""
 [tool.ruff]
 exclude = [
     ".*",
-    "**/migrations/*.py",
 ]
 
 [tool.ruff.lint]

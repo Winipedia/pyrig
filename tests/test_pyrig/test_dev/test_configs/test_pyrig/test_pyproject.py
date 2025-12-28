@@ -1,0 +1,35 @@
+"""module."""
+
+from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyprojectConfigFile
+from pyrig.dev.configs.pyrig.pyproject import PyprojectConfigFile
+
+
+class TestPyprojectConfigFile:
+    """Test class."""
+
+    def test_make_python_version_classifiers(self) -> None:
+        """Test method."""
+        base_classifiers = BasePyprojectConfigFile.make_python_version_classifiers()
+        pyrig_classifiers = PyprojectConfigFile.make_python_version_classifiers()
+
+        assert pyrig_classifiers != base_classifiers
+        expected_extras = [
+            "Development Status :: 5 - Production/Stable",
+            "Intended Audience :: Developers",
+        ]
+        for classifier in expected_extras:
+            assert classifier in pyrig_classifiers
+            assert classifier not in base_classifiers
+
+    def test_get_configs(self) -> None:
+        """Test method."""
+        base_keywords = BasePyprojectConfigFile.get_configs()["project"]["keywords"]
+        pyrig_keywords = PyprojectConfigFile.get_configs()["project"]["keywords"]
+        assert base_keywords != pyrig_keywords
+        expected_extras = [
+            "project-setup",
+            "automation",
+        ]
+        for keyword in expected_extras:
+            assert keyword in pyrig_keywords
+            assert keyword not in base_keywords
