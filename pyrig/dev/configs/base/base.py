@@ -390,7 +390,8 @@ class ConfigFile(ABC):
     ) -> None:
         """Initialize specific ConfigFile subclasses with priority-based ordering.
 
-        Groups by priority, initializes highest first, parallel within groups.
+        Groups by priority, initializes in the order given, parallel within groups.
+        Order by priority is defined in get_all_subclasses and not reordered here.
 
         Args:
             subclasses: ConfigFile subclasses to initialize.
