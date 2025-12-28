@@ -115,6 +115,9 @@ __pycache__/
 def test_get_namespace_packages(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
+        # make pkg in gitignore
+        GitIgnoreConfigFile()
+
         (Path.cwd() / "docs").mkdir()
         assert get_namespace_packages() == []
         (Path.cwd() / "src").mkdir()
@@ -122,8 +125,6 @@ def test_get_namespace_packages(tmp_path: Path) -> None:
         (Path.cwd() / "src" / "__init__.py").write_text("")
         assert get_namespace_packages() == []
 
-        # make pkg in gitignore
-        GitIgnoreConfigFile()
         # assert exists
         assert (Path.cwd() / ".gitignore").exists()
         assert path_is_in_gitignore_lines(GitIgnoreConfigFile.load(), "dist")
