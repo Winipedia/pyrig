@@ -27,12 +27,12 @@ def sample_config_file(
             return Path()
 
         @classmethod
-        def load(cls) -> dict[str, Any]:
+        def _load(cls) -> dict[str, Any]:
             """Load the config."""
             return {}
 
         @classmethod
-        def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
             """Dump the config."""
 
         @classmethod

@@ -126,18 +126,23 @@ These will be preserved when pyrig adds new required patterns.
 
 ### Checking if Path is Ignored
 
-Use the `path_is_in_gitignore()` method to check if a path matches any pattern:
+Use `load_gitignore()` and `path_is_in_gitignore_lines()`
+to check if paths match patterns:
 
 ```python
-from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
+from pyrig.dev.utils.git import load_gitignore, path_is_in_gitignore_lines
 
-# Check if a path is ignored
-is_ignored = GitIgnoreConfigFile.path_is_in_gitignore("my_file.py")
-is_ignored = GitIgnoreConfigFile.path_is_in_gitignore(".venv/")
+# Load gitignore patterns once
+gitignore_lines = load_gitignore()
+
+# Check multiple paths efficiently
+is_ignored = path_is_in_gitignore_lines(gitignore_lines, "my_file.py")
+is_ignored = path_is_in_gitignore_lines(gitignore_lines, ".venv/")
 ```
 
-This uses the `pathspec` library with `gitwildmatch` for accurate pattern
-matching.
+This pattern is efficient when checking multiple paths, as the gitignore file
+is only read once. Uses the `pathspec` library with `gitwildmatch` for accurate
+pattern matching.
 
 ## Included Patterns
 
@@ -178,8 +183,8 @@ matching.
 1. **Don't remove required patterns**: Keep pyrig's patterns in the file
 2. **Add project-specific patterns**: Append your own patterns as needed
 3. **Use comments**: Organize patterns with comments for clarity
-4. **Test pattern matching**: Use `path_is_in_gitignore()` to verify patterns
-   work
+4. **Test pattern matching**: Use `path_is_in_gitignore_lines()` to verify
+   patterns work
 5. **Commit .gitignore**: Always version control your `.gitignore` file
 
 ## Advanced Features
@@ -193,7 +198,7 @@ successfully, even without internet access.
 
 ### Pattern Matching
 
-The `path_is_in_gitignore()` method handles:
+The `path_is_in_gitignore_lines()` function handles:
 
 - Relative and absolute paths
 - Directory vs file detection

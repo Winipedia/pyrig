@@ -69,7 +69,7 @@ class TestGitIgnoreConfigFile:
             f"Expected 'gitignore', got {extension}",
         )
 
-    def test_load(
+    def test__load(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
     ) -> None:
         """Test method for load."""
@@ -86,7 +86,7 @@ class TestGitIgnoreConfigFile:
             "Expected .env pattern in loaded config",
         )
 
-    def test_dump(
+    def test__dump(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
     ) -> None:
         """Test method for dump."""

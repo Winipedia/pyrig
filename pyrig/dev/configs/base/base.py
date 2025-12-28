@@ -9,8 +9,8 @@ Subclass Requirements:
     - `get_parent_path()`: Directory containing the file
     - `get_file_extension()`: File extension without leading dot
     - `get_configs()`: Expected configuration structure
-    - `load()`: Load and parse the file
-    - `dump(config)`: Write configuration to file
+    - `_load()`: Load and parse the file (internal implementation)
+    - `_dump(config)`: Write configuration to file (internal implementation)
 
     Optionally override:
     - `get_priority()`: Float priority (default 0, higher = first)
@@ -64,8 +64,9 @@ import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
+from functools import cache
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 
 import pyrig
 from pyrig.dev import configs
@@ -76,6 +77,9 @@ from pyrig.src.modules.package import (
 from pyrig.src.string import split_on_uppercase
 
 logger = logging.getLogger(__name__)
+
+
+ConfigType = TypeVar("ConfigType", dict[str, Any], list[Any])
 
 
 class ConfigFile(ABC):
@@ -89,8 +93,8 @@ class ConfigFile(ABC):
         - `get_parent_path()`: Directory containing the file
         - `get_file_extension()`: File extension (e.g., "toml", "yaml")
         - `get_configs()`: Expected configuration (dict or list)
-        - `load()`: Load and parse the file
-        - `dump(config)`: Write configuration to file
+        - `_load()`: Load and parse the file (internal implementation)
+        - `_dump(config)`: Write configuration to file (internal implementation)
 
         Optionally override:
         - `get_priority()`: Initialization priority (default 0)
@@ -114,7 +118,7 @@ class ConfigFile(ABC):
 
     @classmethod
     @abstractmethod
-    def load(cls) -> dict[str, Any] | list[Any]:
+    def _load(cls) -> ConfigType:
         """Load and parse configuration file.
 
         Returns:
@@ -123,7 +127,7 @@ class ConfigFile(ABC):
 
     @classmethod
     @abstractmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         """Write configuration to file.
 
         Args:
@@ -141,7 +145,7 @@ class ConfigFile(ABC):
 
     @classmethod
     @abstractmethod
-    def get_configs(cls) -> dict[str, Any] | list[Any]:
+    def get_configs(cls) -> ConfigType:
         """Return expected configuration structure.
 
         Returns:
@@ -177,6 +181,33 @@ class ConfigFile(ABC):
         if not self.is_correct():
             msg = f"Config file {path} is not correct."
             raise ValueError(msg)
+
+    @classmethod
+    @cache
+    def load(cls) -> ConfigType:
+        """Load and parse configuration file.
+
+        Cached to avoid multiple reads of same file.
+
+        Returns:
+            Parsed configuration as dict or list. Empty if file is empty (opt-out).
+        """
+        return cls._load()
+
+    @classmethod
+    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+        """Write configuration to file.
+
+        Clears the cache before writing to ensure the dump operation reads
+        the current file state if it loads, and after writing to ensure subsequent loads
+        reflect the latest state.
+
+        Args:
+            config: Configuration to write (dict or list).
+        """
+        cls.load.cache_clear()
+        cls._dump(config)
+        cls.load.cache_clear()
 
     @classmethod
     def get_priority(cls) -> float:
@@ -223,7 +254,7 @@ class ConfigFile(ABC):
         return "_".join(split_on_uppercase(name)).lower()
 
     @classmethod
-    def add_missing_configs(cls) -> dict[str, Any] | list[Any]:
+    def add_missing_configs(cls) -> ConfigType:
         """Merge expected config into current, preserving user customizations.
 
         Returns:
@@ -303,8 +334,8 @@ class ConfigFile(ABC):
 
     @staticmethod
     def is_correct_recursively(
-        expected_config: dict[str, Any] | list[Any],
-        actual_config: dict[str, Any] | list[Any],
+        expected_config: ConfigType,
+        actual_config: ConfigType,
     ) -> bool:
         """Recursively check if expected config is subset of actual.
 

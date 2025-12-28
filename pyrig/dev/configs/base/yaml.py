@@ -47,7 +47,7 @@ class YamlConfigFile(ConfigFile):
     """
 
     @classmethod
-    def load(cls) -> dict[str, Any] | list[Any]:
+    def _load(cls) -> dict[str, Any] | list[Any]:
         """Load and parse the YAML file using safe_load.
 
         Returns:
@@ -56,7 +56,7 @@ class YamlConfigFile(ConfigFile):
         return yaml.safe_load(cls.get_path().read_text(encoding="utf-8")) or {}
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         """Write configuration to YAML file using safe_dump.
 
         Args:

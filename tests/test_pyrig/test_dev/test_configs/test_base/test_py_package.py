@@ -34,10 +34,10 @@ def my_test_python_package_config_file(
             return '"""Test content."""\n'
 
         @classmethod
-        def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
             """Dump the config file."""
             with chdir(tmp_path):
-                super().dump(config)
+                super()._dump(config)
 
     return MyTestPythonPackageConfigFile
 
@@ -45,7 +45,7 @@ def my_test_python_package_config_file(
 class TestPythonPackageConfigFile:
     """Test class."""
 
-    def test_dump(
+    def test__dump(
         self, my_test_python_package_config_file: type[PythonPackageConfigFile]
     ) -> None:
         """Test method for dump."""

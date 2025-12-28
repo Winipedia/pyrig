@@ -93,7 +93,7 @@ class TestPyprojectConfigFile:
             "Expected config to be correct after initialization",
         )
 
-    def test_dump(
+    def test__dump(
         self,
         my_test_pyproject_config_file: type[PyprojectConfigFile],
         mocker: MockFixture,

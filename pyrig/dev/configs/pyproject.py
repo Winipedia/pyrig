@@ -60,13 +60,13 @@ class PyprojectConfigFile(TomlConfigFile):
         return 20
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
         """Write config with dependency normalization (modifies in-place)."""
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to pyproject.toml file."
             raise TypeError(msg)
         cls.remove_wrong_dependencies(config)
-        super().dump(config)
+        super()._dump(config)
 
     @classmethod
     def get_parent_path(cls) -> Path:

@@ -114,19 +114,6 @@ class Workflow(YamlConfigFile):
     ARTIFACTS_PATTERN = f"{ARTIFACTS_DIR_NAME}/*"
 
     @classmethod
-    def load(cls) -> dict[str, Any]:
-        """Load and parse the workflow configuration file.
-
-        Returns:
-            The parsed workflow configuration as a dict.
-        """
-        content = super().load()
-        if not isinstance(content, dict):
-            msg = f"Expected dict, got {type(content)}"
-            raise TypeError(msg)
-        return content
-
-    @classmethod
     def get_configs(cls) -> dict[str, Any]:
         """Build the complete workflow configuration.
 

@@ -49,7 +49,7 @@ class TestTextConfigFile:
             "Expected 'Test content.'",
         )
 
-    def test_load(self, my_test_text_config_file: type[TextConfigFile]) -> None:
+    def test__load(self, my_test_text_config_file: type[TextConfigFile]) -> None:
         """Test method for load."""
         my_test_text_config_file()
         loaded = my_test_text_config_file.load()
@@ -58,7 +58,7 @@ class TestTextConfigFile:
             "Expected 'Test content.'",
         )
 
-    def test_dump(self, my_test_text_config_file: type[TextConfigFile]) -> None:
+    def test__dump(self, my_test_text_config_file: type[TextConfigFile]) -> None:
         """Test method for dump."""
         my_test_text_config_file()
         # Test successful dump

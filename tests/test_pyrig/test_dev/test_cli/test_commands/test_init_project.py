@@ -163,7 +163,9 @@ def test_init_project(tmp_path: Path) -> None:
 
         # Verify pyrig was installed correctly by running init also assert init passes
         args = Pyrigger.get_venv_run_cmd_args(init)
-        args.run(env=clean_env)
+        res = args.run(env=clean_env)
+
+        assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
 
         # assert the pkgs own cli is available
         args = PackageManager.get_run_args(project_name, "--help")

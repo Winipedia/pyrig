@@ -49,10 +49,10 @@ def my_test_copy_module_only_docstring_config_file(
             return mock_module
 
         @classmethod
-        def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
             """Dump the config file."""
             with chdir(tmp_path):
-                super().dump(config)
+                super()._dump(config)
 
     return MyTestCopyModuleOnlyDocstringConfigFile
 
