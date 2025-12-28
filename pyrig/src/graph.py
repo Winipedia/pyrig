@@ -3,6 +3,8 @@
 Provides a DiGraph with bidirectional traversal for analyzing dependency relationships.
 """
 
+import heapq
+from collections import deque
 from typing import Self
 
 from pyrig.src.modules.class_ import get_cached_instance
@@ -103,6 +105,8 @@ class DiGraph:
     def ancestors(self, target: str) -> set[str]:
         """Find all nodes that can reach target (transitive dependents).
 
+        Uses BFS with deque for O(1) popleft instead of O(n) list.pop(0).
+
         Args:
             target: Node to find ancestors for.
 
@@ -113,18 +117,23 @@ class DiGraph:
             return set()
 
         visited: set[str] = set()
-        queue = list(self._reverse_edges.get(target, set()))
+        queue: deque[str] = deque(self._reverse_edges.get(target, set()))
 
         while queue:
-            node = queue.pop(0)
+            node = queue.popleft()
             if node not in visited:
                 visited.add(node)
-                queue.extend(self._reverse_edges.get(node, set()) - visited)
+                # Iterate directly to avoid creating intermediate set
+                for neighbor in self._reverse_edges.get(node, set()):
+                    if neighbor not in visited:
+                        queue.append(neighbor)
 
         return visited
 
     def shortest_path_length(self, source: str, target: str) -> int:
         """Find shortest path length between nodes.
+
+        Uses BFS with deque for O(1) popleft instead of O(n) list.pop(0).
 
         Args:
             source: Starting node.
@@ -144,10 +153,10 @@ class DiGraph:
             return 0
 
         visited: set[str] = {source}
-        queue: list[tuple[str, int]] = [(source, 0)]
+        queue: deque[tuple[str, int]] = deque([(source, 0)])
 
         while queue:
-            node, distance = queue.pop(0)
+            node, distance = queue.popleft()
             for neighbor in self._edges.get(node, set()):
                 if neighbor == target:
                     return distance + 1
@@ -161,7 +170,9 @@ class DiGraph:
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
         """Topologically sort subset of nodes (dependencies before dependents).
 
-        Uses Kahn's algorithm. Edge A → B means "A depends on B", so B appears before A.
+        Uses Kahn's algorithm with a min-heap for O(log n) insertions and O(1) pop
+        instead of O(n log n) sort + O(n) pop(0) per iteration.
+        Edge A → B means "A depends on B", so B appears before A.
 
         Args:
             nodes: Nodes to sort (only edges within this set considered).
@@ -181,14 +192,14 @@ class DiGraph:
                 if dependency in nodes:
                     out_degree[node] += 1
 
-        # Start with nodes that have no dependencies in the subgraph
-        queue = [node for node in nodes if out_degree[node] == 0]
+        # Use heapq for O(log n) insertion maintaining sorted order
+        # This replaces O(n log n) sort() + O(n) pop(0) with O(log n) heappop()
+        heap: list[str] = [node for node in nodes if out_degree[node] == 0]
+        heapq.heapify(heap)
         result: list[str] = []
 
-        while queue:
-            # Sort queue for deterministic ordering
-            queue.sort()
-            node = queue.pop(0)
+        while heap:
+            node = heapq.heappop(heap)
             result.append(node)
 
             # For each package that depends on this node (reverse edges)
@@ -196,7 +207,7 @@ class DiGraph:
                 if dependent in nodes:
                     out_degree[dependent] -= 1
                     if out_degree[dependent] == 0:
-                        queue.append(dependent)
+                        heapq.heappush(heap, dependent)
 
         # Check for cycles
         if len(result) != len(nodes):

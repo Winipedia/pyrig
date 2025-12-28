@@ -37,6 +37,13 @@ logger = logging.getLogger(__name__)
 
 DOCS_DIR_NAME = "docs"
 
+# Pre-compiled regex for parsing package names from requirement strings.
+# Matches everything before the first version specifier (>, <, =, [, ;, etc.)
+# Allows alphanumeric, underscore, hyphen, and period (for namespace packages).
+# Performance: compiled once at module load vs. per-call compilation.
+# Used by DependencyGraph and PyprojectConfigFile.
+PACKAGE_REQ_NAME_SPLIT_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
+
 
 def create_package(path: Path) -> ModuleType:
     """Create a package at the given path.
@@ -126,15 +133,17 @@ class DependencyGraph(DiGraph):
     def parse_pkg_name_from_req(req: str) -> str | None:
         """Extract package name from a requirement string.
 
+        Uses pre-compiled regex for better performance when parsing many requirements.
+
         Args:
             req: Requirement string (e.g., "requests>=2.0,<3.0").
 
         Returns:
             Normalized package name, or None if parsing fails.
         """
-        # split on the first non alphanumeric character like >, <, =, etc.
-        # keep - and _ for names like pyrig or pyrig
-        dep = re.split(r"[^a-zA-Z0-9_-]", req.strip())[0].strip()
+        # Split on the first non-alphanumeric character (except -, _, and .)
+        # Uses module-level compiled pattern for performance
+        dep = PACKAGE_REQ_NAME_SPLIT_PATTERN.split(req.strip(), maxsplit=1)[0].strip()
         return DependencyGraph.normalize_package_name(dep) if dep else None
 
     def get_all_depending_on(

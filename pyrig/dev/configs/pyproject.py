@@ -10,7 +10,6 @@ Utility methods: project info, dependencies, Python versions, license detection,
 classifiers.
 """
 
-import re
 from functools import cache
 from pathlib import Path
 from typing import Any, Literal
@@ -30,6 +29,7 @@ from pyrig.src.git import (
     get_repo_url_from_git,
 )
 from pyrig.src.modules.package import (
+    PACKAGE_REQ_NAME_SPLIT_PATTERN,
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
     get_project_name_from_cwd,
@@ -253,9 +253,10 @@ class PyprojectConfigFile(TomlConfigFile):
     def remove_version_from_dep(cls, dep: str) -> str:
         """Strip version specifier from dependency.
 
+        Uses REQ_NAME_SPLIT_PATTERN from package module for consistency.
         (e.g., 'requests>=2.0' -> 'requests').
         """
-        return re.split(r"[^a-zA-Z0-9_.-]", dep)[0]
+        return PACKAGE_REQ_NAME_SPLIT_PATTERN.split(dep)[0]
 
     @classmethod
     def get_package_name(cls) -> str:
