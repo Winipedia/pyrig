@@ -13,17 +13,13 @@ from pyrig.src.modules.inspection import (
     get_unwrapped_obj,
     inside_frozen_bundle,
 )
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_get_obj_members() -> None:
     """Test func for get_obj_members."""
     members = get_obj_members(test_get_obj_members)
     expected = ("__name__", test_get_obj_members.__name__)
-    assert_with_msg(
-        expected in members,
-        f"Expected {expected} in members, got {members}",
-    )
+    assert expected in members, f"Expected {expected} in members, got {members}"
 
 
 def test_get_def_line() -> None:
@@ -34,10 +30,7 @@ def test_get_def_line() -> None:
         """Test function."""
 
     line_num = get_def_line(test_function)
-    assert_with_msg(
-        line_num > 0,
-        f"Expected positive integer line number, got {line_num}",
-    )
+    assert line_num > 0, f"Expected positive integer line number, got {line_num}"
 
     # Test with a class method
     class TestClass:
@@ -50,23 +43,21 @@ def test_get_def_line() -> None:
             return "test"
 
     method_line = get_def_line(TestClass.test_method)
-    assert_with_msg(
-        method_line > 0,
-        f"Expected positive integer line number for method, got {method_line}",
+    assert method_line > 0, (
+        f"Expected positive integer line number for method, got {method_line}"
     )
 
     # Test with a property
     prop_line = get_def_line(TestClass.test_property)
-    assert_with_msg(
-        prop_line > 0,
-        f"Expected positive integer line number for property, got {prop_line}",
+    assert prop_line > 0, (
+        f"Expected positive integer line number for property, got {prop_line}"
     )
 
 
 def test_inside_frozen_bundle() -> None:
     """Test func for inside_frozen_bundle."""
     result = inside_frozen_bundle()
-    assert_with_msg(result is False, f"Expected False, got {result}")
+    assert result is False, f"Expected False, got {result}"
 
 
 def test_get_qualname_of_obj() -> None:
@@ -77,9 +68,8 @@ def test_get_qualname_of_obj() -> None:
         pass
 
     name = get_qualname_of_obj(test_function)
-    assert_with_msg(
-        name == "test_get_qualname_of_obj.<locals>.test_function",
-        f"Expected 'test_function', got {name}",
+    assert name == "test_get_qualname_of_obj.<locals>.test_function", (
+        f"Expected 'test_function', got {name}"
     )
 
     # Test with a class
@@ -87,9 +77,8 @@ def test_get_qualname_of_obj() -> None:
         pass
 
     name = get_qualname_of_obj(TestClass)
-    assert_with_msg(
-        name == "test_get_qualname_of_obj.<locals>.TestClass",
-        f"Expected 'TestClass', got {name}",
+    assert name == "test_get_qualname_of_obj.<locals>.TestClass", (
+        f"Expected 'TestClass', got {name}"
     )
 
     # Test with a method
@@ -98,9 +87,8 @@ def test_get_qualname_of_obj() -> None:
             pass
 
     name = get_qualname_of_obj(TestClass2.test_method)
-    assert_with_msg(
-        name == "test_get_qualname_of_obj.<locals>.TestClass2.test_method",
-        f"Expected 'test_method', got {name}",
+    assert name == "test_get_qualname_of_obj.<locals>.TestClass2.test_method", (
+        f"Expected 'test_method', got {name}"
     )
 
 
@@ -112,9 +100,7 @@ def test_get_unwrapped_obj() -> None:
         pass
 
     unwrapped = get_unwrapped_obj(test_function)
-    assert_with_msg(
-        unwrapped == test_function, f"Expected {test_function}, got {unwrapped}"
-    )
+    assert unwrapped == test_function, f"Expected {test_function}, got {unwrapped}"
 
     # Test with a class method
     class TestClass:
@@ -122,9 +108,8 @@ def test_get_unwrapped_obj() -> None:
             pass
 
     unwrapped = get_unwrapped_obj(TestClass.test_method)
-    assert_with_msg(
-        unwrapped == TestClass.test_method,
-        f"Expected {TestClass.test_method}, got {unwrapped}",
+    assert unwrapped == TestClass.test_method, (
+        f"Expected {TestClass.test_method}, got {unwrapped}"
     )
 
     # Test with a property
@@ -134,9 +119,8 @@ def test_get_unwrapped_obj() -> None:
             return "test"
 
     unwrapped = get_unwrapped_obj(TestClass2.test_property)
-    assert_with_msg(
-        unwrapped.__name__ == "test_property",
-        f"Expected 'test_property', got {unwrapped.__name__}",
+    assert unwrapped.__name__ == "test_property", (
+        f"Expected 'test_property', got {unwrapped.__name__}"
     )
 
 
@@ -148,9 +132,8 @@ def test_get_module_of_obj() -> None:
         pass
 
     module = get_module_of_obj(test_function)
-    assert_with_msg(
-        module.__name__ == __name__,
-        f"Expected module name {__name__}, got {module.__name__}",
+    assert module.__name__ == __name__, (
+        f"Expected module name {__name__}, got {module.__name__}"
     )
 
     # Test with a class method
@@ -163,21 +146,18 @@ def test_get_module_of_obj() -> None:
             return "test"
 
     method_module = get_module_of_obj(TestClass.test_method)
-    assert_with_msg(
-        method_module.__name__ == __name__,
-        f"Expected module name {__name__}, got {method_module.__name__}",
+    assert method_module.__name__ == __name__, (
+        f"Expected module name {__name__}, got {method_module.__name__}"
     )
 
     # Test with a property
     prop_module = get_module_of_obj(TestClass.test_property)
-    assert_with_msg(
-        prop_module.__name__ == __name__,
-        f"Expected module name {__name__}, got {prop_module.__name__}",
+    assert prop_module.__name__ == __name__, (
+        f"Expected module name {__name__}, got {prop_module.__name__}"
     )
 
     # Test with built-in function
     os_module = get_module_of_obj(os.path.join)
-    assert_with_msg(
-        "posixpath" in os_module.__name__ or "ntpath" in os_module.__name__,
-        f"Expected posixpath or ntpath module, got {os_module.__name__}",
+    assert "posixpath" in os_module.__name__ or "ntpath" in os_module.__name__, (
+        f"Expected posixpath or ntpath module, got {os_module.__name__}"
     )

@@ -11,7 +11,6 @@ from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.configs_init import ConfigsInitConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -77,10 +76,7 @@ class TestPyprojectConfigFile:
     def test_get_project_description(self) -> None:
         """Test method for get_project_description."""
         description = PyprojectConfigFile.get_project_description()
-        assert_with_msg(
-            isinstance(description, str),
-            "Expected description to be a string",
-        )
+        assert isinstance(description, str), "Expected description to be a string"
 
     def test_is_correct(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -88,10 +84,7 @@ class TestPyprojectConfigFile:
         """Test method for is_correct."""
         my_test_pyproject_config_file()
         is_correct = my_test_pyproject_config_file.is_correct()
-        assert_with_msg(
-            is_correct,
-            "Expected config to be correct after initialization",
-        )
+        assert is_correct, "Expected config to be correct after initialization"
 
     def test__dump(
         self,
@@ -115,41 +108,26 @@ class TestPyprojectConfigFile:
         """Test method for get_parent_path."""
         expected = Path()
         actual = my_test_pyproject_config_file.get_parent_path()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_configs(self) -> None:
         """Test method for get_configs."""
         # pyproject get configs internally uses load which makes it a special case
         # where the file must exist before calling get_configs
         configs = PyprojectConfigFile.get_configs()
-        assert_with_msg(
-            "project" in configs,
-            "Expected 'project' key in configs",
-        )
-        assert_with_msg(
-            "build-system" in configs,
-            "Expected 'build-system' key in configs",
-        )
-        assert_with_msg(
-            "tool" in configs,
-            "Expected 'tool' key in configs",
-        )
+        assert "project" in configs, "Expected 'project' key in configs"
+        assert "build-system" in configs, "Expected 'build-system' key in configs"
+        assert "tool" in configs, "Expected 'tool' key in configs"
 
     def test_get_package_name(self) -> None:
         """Test method for get_package_name."""
         package_name = PyprojectConfigFile.get_package_name()
-        assert_with_msg(
-            len(package_name) > 0,
-            "Expected package name to be non-empty",
-        )
+        assert len(package_name) > 0, "Expected package name to be non-empty"
 
     def test_get_project_name(self) -> None:
         """Test method for get_project_name."""
         project_name = PyprojectConfigFile.get_project_name()
-        assert_with_msg(
-            len(project_name) > 0,
-            "Expected project name to be non-empty",
-        )
+        assert len(project_name) > 0, "Expected project name to be non-empty"
 
     def test_make_dependency_versions(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -212,38 +190,28 @@ class TestPyprojectConfigFile:
             my_test_pyproject_config_file.get_latest_possible_python_version()
         )
         expected = Version("3.11")
-        assert_with_msg(
-            latest_version == expected,
-            f"Expected {expected}, got {latest_version}",
-        )
+        assert latest_version == expected, f"Expected {expected}, got {latest_version}"
         config["project"]["requires-python"] = ">=3.8, <=3.12"
         my_test_pyproject_config_file.dump(config)
         latest_version = (
             my_test_pyproject_config_file.get_latest_possible_python_version()
         )
         expected = Version("3.12")
-        assert_with_msg(
-            latest_version == expected,
-            f"Expected {expected}, got {latest_version}",
-        )
+        assert latest_version == expected, f"Expected {expected}, got {latest_version}"
         config["project"]["requires-python"] = ">=3.8, <3.11, ==3.10.*"
         my_test_pyproject_config_file.dump(config)
         latest_version = (
             my_test_pyproject_config_file.get_latest_possible_python_version()
         )
         expected = Version("3.10")
-        assert_with_msg(
-            latest_version == expected,
-            f"Expected {expected}, got {latest_version}",
-        )
+        assert latest_version == expected, f"Expected {expected}, got {latest_version}"
         config["project"]["requires-python"] = ">=3.8"
         my_test_pyproject_config_file.dump(config)
         latest_version = (
             my_test_pyproject_config_file.get_latest_possible_python_version()
         )
-        assert_with_msg(
-            latest_version > Version("3.13"),
-            "Expected get_latest_possible_python_version to return 3.x",
+        assert latest_version > Version("3.13"), (
+            "Expected get_latest_possible_python_version to return 3.x"
         )
 
     def test_fetch_latest_python_version(
@@ -251,9 +219,8 @@ class TestPyprojectConfigFile:
     ) -> None:
         """Test method for fetch_latest_python_version."""
         latest_version = my_test_pyproject_config_file.fetch_latest_python_version()
-        assert_with_msg(
-            Version(latest_version) >= Version("3.13"),
-            "Expected fetch_latest_python_version to return a version >= 3.11",
+        assert Version(latest_version) >= Version("3.13"), (
+            "Expected fetch_latest_python_version to return a version >= 3.11"
         )
 
     def test_get_supported_python_versions(
@@ -269,10 +236,7 @@ class TestPyprojectConfigFile:
         )
         actual = [str(v) for v in supported_versions]
         expected = ["3.8", "3.9", "3.10", "3.11"]
-        assert_with_msg(
-            actual == expected,
-            f"Expected {expected}, got {actual}",
-        )
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
         config["project"]["requires-python"] = ">=3.2, <=4.6"
         my_test_pyproject_config_file.dump(config)
@@ -292,10 +256,7 @@ class TestPyprojectConfigFile:
             "4.5",
             "4.6",
         ]
-        assert_with_msg(
-            actual == expected,
-            f"Expected {expected}, got {actual}",
-        )
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_first_supported_python_version(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -308,16 +269,14 @@ class TestPyprojectConfigFile:
         first_version = str(
             my_test_pyproject_config_file.get_first_supported_python_version()
         )
-        assert_with_msg(
-            first_version == "3.8",
-            "Expected get_first_supported_python_version to return 3.8",
+        assert first_version == "3.8", (
+            "Expected get_first_supported_python_version to return 3.8"
         )
         config["project"]["requires-python"] = "<=3.12, >3.8"
         my_test_pyproject_config_file.dump(config)
         first_version = str(
             my_test_pyproject_config_file.get_first_supported_python_version()
         )
-        assert_with_msg(
-            first_version == "3.8.1",
-            "Expected get_first_supported_python_version to return 3.8.1",
+        assert first_version == "3.8.1", (
+            "Expected get_first_supported_python_version to return 3.8.1"
         )

@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from pyrig.dev.configs.markdown.readme import ReadmeConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 class TestReadmeConfigFile:
@@ -15,15 +14,11 @@ class TestReadmeConfigFile:
 
     def test_get_filename(self) -> None:
         """Test method for get_filename."""
-        assert_with_msg(
-            ReadmeConfigFile.get_filename() == "README",
-            "Expected README",
-        )
+        assert ReadmeConfigFile.get_filename() == "README", "Expected README"
 
     def test_get_parent_path(self) -> None:
         """Test method for get_parent_path."""
         # just assert it returns a path
-        assert_with_msg(
-            isinstance(ReadmeConfigFile.get_parent_path(), Path),
-            f"Expected Path, got {type(ReadmeConfigFile.get_parent_path())}",
+        assert isinstance(ReadmeConfigFile.get_parent_path(), Path), (
+            f"Expected Path, got {type(ReadmeConfigFile.get_parent_path())}"
         )

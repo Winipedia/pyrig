@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 
 from pyrig.dev.configs.base.python import PythonConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -40,4 +39,4 @@ class TestPythonConfigFile:
         """Test method for get_file_extension."""
         expected = "py"
         actual = my_test_python_config_file.get_file_extension()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"

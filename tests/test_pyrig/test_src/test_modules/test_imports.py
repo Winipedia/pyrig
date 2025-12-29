@@ -16,7 +16,6 @@ from pyrig.src.modules.imports import (
     walk_package,
 )
 from pyrig.src.modules.module import make_obj_importpath
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_get_modules_and_packages_from_package(tmp_path: Path) -> None:
@@ -32,14 +31,10 @@ def test_get_modules_and_packages_from_package(tmp_path: Path) -> None:
         package = import_pkg_from_dir(package_dir)
 
         packages, modules = get_modules_and_packages_from_package(package)
-        assert_with_msg(
-            packages == [],
-            f"Expected no packages, got {packages}",
-        )
+        assert packages == [], f"Expected no packages, got {packages}"
         modules_names = [m.__name__ for m in modules]
-        assert_with_msg(
-            modules_names == [package.__name__ + ".test_module"],
-            f"Expected [package.test_module], got {modules}",
+        assert modules_names == [package.__name__ + ".test_module"], (
+            f"Expected [package.test_module], got {modules}"
         )
 
 
@@ -77,20 +72,17 @@ def test_walk_package(mocker: MockFixture) -> None:
         (sub_package2, [module3]),
     ]
 
-    assert_with_msg(
-        len(result) == len(expected),
-        f"Expected {len(expected)} results, got {len(result)}",
+    assert len(result) == len(expected), (
+        f"Expected {len(expected)} results, got {len(result)}"
     )
 
     for i, (pkg, modules) in enumerate(result):
         expected_pkg, expected_modules = expected[i]
-        assert_with_msg(
-            pkg == expected_pkg,
-            f"Expected package {expected_pkg}, got {pkg} at index {i}",
+        assert pkg == expected_pkg, (
+            f"Expected package {expected_pkg}, got {pkg} at index {i}"
         )
-        assert_with_msg(
-            modules == expected_modules,
-            f"Expected modules {expected_modules}, got {modules} at index {i}",
+        assert modules == expected_modules, (
+            f"Expected modules {expected_modules}, got {modules} at index {i}"
         )
 
 
@@ -103,14 +95,12 @@ def test_module_is_package() -> None:
     # Create a mock module without __path__ attribute (regular module)
     mock_module = ModuleType("test_module")
 
-    assert_with_msg(
-        module_is_package(mock_package) is True,
-        "Expected module with __path__ to be identified as package",
+    assert module_is_package(mock_package) is True, (
+        "Expected module with __path__ to be identified as package"
     )
 
-    assert_with_msg(
-        module_is_package(mock_module) is False,
-        "Expected module without __path__ to not be identified as package",
+    assert module_is_package(mock_module) is False, (
+        "Expected module without __path__ to not be identified as package"
     )
 
 

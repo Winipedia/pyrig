@@ -37,7 +37,6 @@ from pyrig.src.modules.module import (
 )
 from pyrig.src.modules.package import get_objs_from_obj
 from pyrig.src.os.os import run_subprocess
-from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     get_obj_from_test_obj,
     make_summary_error_msg,
@@ -115,10 +114,7 @@ def assert_no_untested_objs() -> Callable[
         {make_summary_error_msg(missing_test_obj_path_to_obj.keys())}
     """
 
-        assert_with_msg(
-            not missing_test_obj_path_to_obj,
-            msg,
-        )
+        assert not missing_test_obj_path_to_obj, msg
 
     return _assert_no_untested_objs
 
@@ -153,18 +149,15 @@ def main_test_fixture(mocker: MockerFixture) -> None:
             break
     else:
         cmd_strs = [" ".join(cmd) for cmd in cmds]
-        assert_with_msg(
-            success,
-            f"Expected {main.main.__name__} to be callable by one of {cmd_strs}",
-        )
+        msg = f"Expected {main.main.__name__} to be callable by one of {cmd_strs}"
+        assert success, msg
 
     main_module_name = get_module_name_replacing_start_module(main, src_package_name)
     main_module = import_module(main_module_name)
     main_mock = mocker.patch.object(main_module, main.main.__name__)
     main_module.main()
-    assert_with_msg(
-        main_mock.call_count == 1,
-        f"Expected main to be called, got {main_mock.call_count}",
+    assert main_mock.call_count == 1, (
+        f"Expected main to be called, got {main_mock.call_count} calls"
     )
 
     # must run main module directly as __main__

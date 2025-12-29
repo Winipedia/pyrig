@@ -23,7 +23,6 @@ from pyrig.src.modules.module import (
     make_obj_importpath,
 )
 from pyrig.src.modules.package import create_package
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_make_test_skeletons(mocker: MockFixture) -> None:
@@ -39,9 +38,8 @@ def test_make_test_skeletons(mocker: MockFixture) -> None:
 
     src_count = mock_create_tests_for_src_package.call_count
 
-    assert_with_msg(
-        src_count == 1,
-        f"Expected create_tests_for_src_package called once, got {src_count}",
+    assert src_count == 1, (
+        f"Expected create_tests_for_src_package called once, got {src_count}"
     )
 
 
@@ -166,21 +164,18 @@ def test_function_a() -> None:
         result = get_test_functions_content(
             source_module, test_module, test_module_content
         )
-        assert_with_msg(
-            "def test_function_b() -> None:" in result,
-            "Expected result to contain test_function_b",
+        assert "def test_function_b() -> None:" in result, (
+            "Expected result to contain test_function_b"
         )
 
         # both are just once in there
         function_a_count = result.count("def test_function_a() -> None:")
-        assert_with_msg(
-            function_a_count == 1,
-            f"Expected one test_function_a, found {function_a_count} occurrences",
+        assert function_a_count == 1, (
+            f"Expected one test_function_a, found {function_a_count} occurrences"
         )
         function_b_count = result.count("def test_function_b() -> None:")
-        assert_with_msg(
-            function_b_count == 1,
-            f"Expected one test_function_b, found {function_b_count} occurrences",
+        assert function_b_count == 1, (
+            f"Expected one test_function_b, found {function_b_count} occurrences"
         )
 
 
@@ -229,34 +224,26 @@ class TestCalculator:
         test_module = import_module_with_file_fallback(test_file)
         # assert inspect.getmembers retunr the classes
         members = inspect.getmembers(source_module, inspect.isclass)
-        assert_with_msg(
-            len(members) > 1,
-            f"Expected 2 classes, got {len(members)}",
-        )
+        assert len(members) > 1, f"Expected 2 classes, got {len(members)}"
         result = get_test_classes_content(
             source_module, test_module, test_module_content
         )
-        assert_with_msg(
-            "class TestStringHelper:" in result,
-            "Expected result to contain TestStringHelper",
+        assert "class TestStringHelper:" in result, (
+            "Expected result to contain TestStringHelper"
         )
-        assert_with_msg(
-            "def test_reverse(self) -> None:" in result,
-            "Expected result to contain test_reverse method",
+        assert "def test_reverse(self) -> None:" in result, (
+            "Expected result to contain test_reverse method"
         )
-        assert_with_msg(
-            "def test_multiply(self) -> None:" in result,
-            "Expected result to contain test_multiply method",
+        assert "def test_multiply(self) -> None:" in result, (
+            "Expected result to contain test_multiply method"
         )
 
         # both are just once in there
         test_string_helper_count = result.count("class TestStringHelper:")
-        assert_with_msg(
-            test_string_helper_count == 1,
-            f"Expected one TestStringHelper, found {test_string_helper_count} occurrences",  # noqa: E501
+        assert test_string_helper_count == 1, (
+            f"Expected one TestStringHelper, got {test_string_helper_count} occurrences"
         )
         test_multiply_count = result.count("def test_multiply(self) -> None:")
-        assert_with_msg(
-            test_multiply_count == 1,
-            f"Expected one test_multiply, found {test_multiply_count} occurrences",
+        assert test_multiply_count == 1, (
+            f"Expected one test_multiply, found {test_multiply_count} occurrences"
         )

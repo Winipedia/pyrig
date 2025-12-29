@@ -5,7 +5,6 @@ from collections.abc import Callable
 import pytest
 
 from pyrig.dev.configs.testing.conftest import ConftestConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -32,7 +31,6 @@ class TestConftestConfigFile:
     ) -> None:
         """Test method for get_content_str."""
         content_str = my_test_conftest_config_file.get_content_str()
-        assert_with_msg(
-            "pytest_plugins" in content_str,
-            "Expected 'pytest_plugins' in conftest content",
+        assert "pytest_plugins" in content_str, (
+            "Expected 'pytest_plugins' in conftest content"
         )

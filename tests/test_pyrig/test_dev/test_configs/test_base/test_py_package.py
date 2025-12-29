@@ -8,7 +8,6 @@ from typing import Any
 import pytest
 
 from pyrig.dev.configs.base.py_package import PythonPackageConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -50,9 +49,6 @@ class TestPythonPackageConfigFile:
     ) -> None:
         """Test method for dump."""
         my_test_python_package_config_file()
-        assert_with_msg(
-            (
-                my_test_python_package_config_file.get_path().parent / "__init__.py"
-            ).exists(),
-            "Expected __init__.py to be created",
-        )
+        assert (
+            my_test_python_package_config_file.get_path().parent / "__init__.py"
+        ).exists(), "Expected __init__.py to be created"

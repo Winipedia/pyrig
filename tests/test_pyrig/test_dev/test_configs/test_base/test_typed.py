@@ -5,7 +5,6 @@ from collections.abc import Callable
 import pytest
 
 from pyrig.dev.configs.base.typed import TypedConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -29,23 +28,19 @@ class TestTypedConfigFile:
         """Test method for get_file_extension."""
         expected = "typed"
         actual = my_test_typed_config_file.get_file_extension()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__load(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method for load."""
         loaded = my_test_typed_config_file.load()
-        assert_with_msg(
-            loaded == {},
-            "Expected load to return empty dict",
-        )
+        assert loaded == {}, "Expected load to return empty dict"
 
     def test__dump(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method for dump."""
         # assert dumps empty dict successfully
         my_test_typed_config_file.dump({})
-        assert_with_msg(
-            my_test_typed_config_file.load() == {},
-            "Expected dump to work with empty dict",
+        assert my_test_typed_config_file.load() == {}, (
+            "Expected dump to work with empty dict"
         )
         # assert raises ValueError if config is not empty
         with pytest.raises(ValueError, match=r"Cannot dump to py\.typed file"):
@@ -56,7 +51,4 @@ class TestTypedConfigFile:
     ) -> None:
         """Test method for get_configs."""
         configs = my_test_typed_config_file.get_configs()
-        assert_with_msg(
-            configs == {},
-            "Expected get_configs to return empty dict",
-        )
+        assert configs == {}, "Expected get_configs to return empty dict"

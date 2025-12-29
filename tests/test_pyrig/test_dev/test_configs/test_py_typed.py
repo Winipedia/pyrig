@@ -5,7 +5,6 @@ from collections.abc import Callable
 import pytest
 
 from pyrig.dev.configs.py_typed import PyTypedConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -29,7 +28,4 @@ class TestPyTypedConfigFile:
         """Test method for get_parent_path."""
         parent_path = my_test_py_typed_config_file.get_parent_path()
         # The parent path should be the package name
-        assert_with_msg(
-            len(parent_path.as_posix()) > 0,
-            "Expected parent_path to be non-empty",
-        )
+        assert len(parent_path.as_posix()) > 0, "Expected parent_path to be non-empty"

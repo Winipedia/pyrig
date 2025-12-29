@@ -5,7 +5,6 @@ import logging
 from pyrig.dev.cli.cli import configure_logging
 from pyrig.dev.cli.shared_subcommands import version
 from pyrig.src.management.pyrigger import Pyrigger
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_add_subcommands() -> None:
@@ -14,10 +13,7 @@ def test_add_subcommands() -> None:
     args = Pyrigger.get_venv_run_args("--help")
     result = args.run()
     stdout = result.stdout.decode("utf-8")
-    assert_with_msg(
-        "pyrig" in stdout,
-        f"Expected pyrig in stdout, got {stdout}",
-    )
+    assert "pyrig" in stdout, f"Expected pyrig in stdout, got {stdout}"
 
 
 def test_add_shared_subcommands() -> None:
@@ -25,20 +21,14 @@ def test_add_shared_subcommands() -> None:
     args = Pyrigger.get_venv_run_cmd_args(version)
     result = args.run()
     stdout = result.stdout.decode("utf-8")
-    assert_with_msg(
-        "version" in stdout,
-        f"Expected version in stdout, got {stdout}",
-    )
+    assert "version" in stdout, f"Expected version in stdout, got {stdout}"
 
 
 def test_main() -> None:
     """Test for the main cli entrypoint."""
     args = Pyrigger.get_venv_run_args("--help")
     result = args.run()
-    assert_with_msg(
-        result.returncode == 0,
-        "Expected returncode 0",
-    )
+    assert result.returncode == 0, "Expected returncode 0"
 
 
 def test_configure_logging() -> None:

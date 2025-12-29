@@ -14,7 +14,6 @@ from pyrig.dev.configs.base.base import (
 from pyrig.src.modules.package import (
     get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
 )
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -141,48 +140,33 @@ class TestConfigFile:
         """Test method for get_parent_path."""
         expected = Path("parent_dir")
         actual = my_test_config_file.get_parent_path()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_load(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for load."""
         # assert is dict
-        assert_with_msg(
-            isinstance(my_test_config_file.load(), dict),
-            "Expected dict",
-        )
+        assert isinstance(my_test_config_file.load(), dict), "Expected dict"
 
     def test_dump(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for dump."""
         # assert dumps correctly
         storage_dict = my_test_config_file.load()
         dunmp_dict = {"key": "value"}
-        assert_with_msg(
-            storage_dict != dunmp_dict,
-            "Expected different dicts",
-        )
+        assert storage_dict != dunmp_dict, "Expected different dicts"
 
         my_test_config_file.dump(dunmp_dict)
-        assert_with_msg(
-            my_test_config_file.load() == dunmp_dict,
-            "Expected dump to work",
-        )
+        assert my_test_config_file.load() == dunmp_dict, "Expected dump to work"
         # assert raises TypeError if not dict
         with pytest.raises(TypeError):
             my_test_config_file.dump([])
 
     def test_get_file_extension(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for get_file_extension."""
-        assert_with_msg(
-            my_test_config_file.get_file_extension() == "txt",
-            "Expected txt",
-        )
+        assert my_test_config_file.get_file_extension() == "txt", "Expected txt"
 
     def test_get_configs(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for get_configs."""
-        assert_with_msg(
-            isinstance(my_test_config_file.get_configs(), dict),
-            "Expected dict",
-        )
+        assert isinstance(my_test_config_file.get_configs(), dict), "Expected dict"
 
     def test___init__(
         self, my_test_config_file: type[ConfigFile], mocker: MockFixture
@@ -197,33 +181,25 @@ class TestConfigFile:
         after = my_test_config_file.load()
 
         # assert config is correct
-        assert_with_msg(
-            after
-            == {
-                "key0": "value0",
-                "key1": "value1",
-                "key2": {"key3": "value3"},
-                "key4": [
-                    ["notvalue4", "extra_value", "value4"],
-                    {"key5": "notvalue5", "key6": "value6"},
-                ],
-                "key7": "value7",
-            },
-            "Expected config to be correct",
-        )
+        assert after == {
+            "key0": "value0",
+            "key1": "value1",
+            "key2": {"key3": "value3"},
+            "key4": [
+                ["notvalue4", "extra_value", "value4"],
+                {"key5": "notvalue5", "key6": "value6"},
+            ],
+            "key7": "value7",
+        }, "Expected config to be correct"
 
         # remove file to trigger init dump
         my_test_config_file.get_path().unlink()
         my_test_config_file()
         # assert path exists
-        assert_with_msg(
-            my_test_config_file.get_path().exists(),
-            "Expected path to exist",
-        )
+        assert my_test_config_file.get_path().exists(), "Expected path to exist"
         # assert config is == get_configs, not any of previous config
-        assert_with_msg(
-            my_test_config_file.load() == my_test_config_file.get_configs(),
-            "Expected config to be correct",
+        assert my_test_config_file.load() == my_test_config_file.get_configs(), (
+            "Expected config to be correct"
         )
 
         # mock is_correct to return False
@@ -243,16 +219,15 @@ class TestConfigFile:
         expected = Path("parent_dir/my.txt")
         actual = my_test_config_file.get_path()
         # assert actual ends with expected
-        assert_with_msg(
-            actual.as_posix().endswith(expected.as_posix()),
-            f"Expected {expected}, got {actual}",
+        assert actual.as_posix().endswith(expected.as_posix()), (
+            f"Expected {expected}, got {actual}"
         )
 
     def test_get_filename(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for get_filename."""
         expected = "my"
         actual = my_test_config_file.get_filename()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_add_missing_configs(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for add_missing_configs."""
@@ -268,16 +243,14 @@ class TestConfigFile:
             "key7": "value7",
         }
         actual = my_test_config_file.add_missing_configs()
-        assert_with_msg(actual == expected, "Expected config to be correct")
+        assert actual == expected, "Expected config to be correct"
 
     def test_add_missing_dict_val(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for add_missing_dict_val."""
         expected: dict[str, Any] = {"key": "value"}
         actual: dict[str, Any] = {}
         my_test_config_file.add_missing_dict_val(expected, actual, "key")
-        assert_with_msg(
-            actual["key"] == expected["key"], "Expected config to be correct"
-        )
+        assert actual["key"] == expected["key"], "Expected config to be correct"
 
     def test_insert_missing_list_val(
         self, my_test_config_file: type[ConfigFile]
@@ -286,26 +259,17 @@ class TestConfigFile:
         expected: list[Any] = ["value"]
         actual: list[Any] = []
         my_test_config_file.insert_missing_list_val(expected, actual, 0)
-        assert_with_msg(actual[0] == expected[0], "Expected config to be correct")
+        assert actual[0] == expected[0], "Expected config to be correct"
 
     def test_is_correct(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for is_correct."""
-        assert_with_msg(
-            not my_test_config_file.is_correct(),
-            "Expected config to be correct",
-        )
-        assert_with_msg(
-            my_test_config_file().is_correct(),
-            "Expected config to be correct",
-        )
+        assert not my_test_config_file.is_correct(), "Expected config to be correct"
+        assert my_test_config_file().is_correct(), "Expected config to be correct"
 
     def test_is_unwanted(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for is_unwanted."""
         my_test_config_file().get_path().write_text("")
-        assert_with_msg(
-            my_test_config_file.is_unwanted(),
-            "Expected config to be unwanted",
-        )
+        assert my_test_config_file.is_unwanted(), "Expected config to be unwanted"
 
     def test_is_correct_recursively(
         self, my_test_config_file: type[ConfigFile]
@@ -332,15 +296,13 @@ class TestConfigFile:
             "key7": "value7",
             "key8": "value8",
         }
-        assert_with_msg(
-            my_test_config_file.is_correct_recursively(expected, actual),
-            "Expected config to be correct",
+        assert my_test_config_file.is_correct_recursively(expected, actual), (
+            "Expected config to be correct"
         )
         # change one in actual to not be correct
         actual["key2"]["key3"] = "notvalue3"
-        assert_with_msg(
-            not my_test_config_file.is_correct_recursively(expected, actual),
-            "Expected config to be correct",
+        assert not my_test_config_file.is_correct_recursively(expected, actual), (
+            "Expected config to be correct"
         )
 
     def test_get_all_subclasses(
@@ -355,7 +317,6 @@ class TestConfigFile:
             return_value={my_test_config_file},
         )
         actual = my_test_config_file.get_all_subclasses()
-        assert_with_msg(
-            my_test_config_file in actual,
-            "Expected my_test_config_file to be in actual",
+        assert my_test_config_file in actual, (
+            "Expected my_test_config_file to be in actual"
         )

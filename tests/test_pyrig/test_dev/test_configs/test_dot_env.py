@@ -7,7 +7,6 @@ from typing import Any
 import pytest
 
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -35,9 +34,9 @@ class TestDotEnvConfigFile:
 
         # Load and verify
         loaded = my_test_dotenv_config_file.load()
-        assert_with_msg(loaded["KEY1"] == "value1", "Expected KEY1=value1")
-        assert_with_msg(loaded["KEY2"] == "value2", "Expected KEY2=value2")
-        assert_with_msg(loaded["KEY3"] == "", "Expected KEY3 to be empty string")
+        assert loaded["KEY1"] == "value1", "Expected KEY1=value1"
+        assert loaded["KEY2"] == "value2", "Expected KEY2=value2"
+        assert loaded["KEY3"] == "", "Expected KEY3 to be empty string"
 
     def test__dump(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
         """Test method for dump."""
@@ -53,10 +52,7 @@ class TestDotEnvConfigFile:
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
     ) -> None:
         """Test method for get_file_extension."""
-        assert_with_msg(
-            my_test_dotenv_config_file.get_file_extension() == "env",
-            "Expected env",
-        )
+        assert my_test_dotenv_config_file.get_file_extension() == "env", "Expected env"
 
     def test_get_filename(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
@@ -65,7 +61,7 @@ class TestDotEnvConfigFile:
         # Should return empty string so path becomes .env not env.env
         expected = ""
         actual = my_test_dotenv_config_file.get_filename()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_parent_path(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
@@ -74,7 +70,7 @@ class TestDotEnvConfigFile:
         # Should return Path() (root)
         expected = Path()
         actual = my_test_dotenv_config_file.get_parent_path()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_configs(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
@@ -83,7 +79,7 @@ class TestDotEnvConfigFile:
         # Should return empty dict
         expected: dict[str, Any] = {}
         actual = my_test_dotenv_config_file.get_configs()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_is_correct(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
@@ -94,9 +90,8 @@ class TestDotEnvConfigFile:
         my_test_dotenv_config_file.get_path().touch()
 
         # Should be correct if file exists (even if empty)
-        assert_with_msg(
-            my_test_dotenv_config_file.is_correct(),
-            "Expected .env file to be correct when it exists",
+        assert my_test_dotenv_config_file.is_correct(), (
+            "Expected .env file to be correct when it exists"
         )
 
         # Remove the file
@@ -106,7 +101,6 @@ class TestDotEnvConfigFile:
         # and is_correct_recursively({}, {}) returns True (empty subset of empty)
         # The implementation: super().is_correct() or cls.get_path().exists()
         # Since get_configs() is {} and load() would be {}, they match
-        assert_with_msg(
-            my_test_dotenv_config_file.is_correct(),
-            "Expected .env file to be correct even when doesn't exist (empty)",
+        assert my_test_dotenv_config_file.is_correct(), (
+            "Expected .env file to be correct even when doesn't exist (empty)"
         )

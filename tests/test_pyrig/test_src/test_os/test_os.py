@@ -4,7 +4,6 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig.src.os.os import run_subprocess, which_with_raise
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_which_with_raise(mocker: MockFixture) -> None:
@@ -15,10 +14,7 @@ def test_which_with_raise(mocker: MockFixture) -> None:
 
     result = which_with_raise("python")
 
-    assert_with_msg(
-        result == expected_path,
-        f"Expected {expected_path}, got {result}",
-    )
+    assert result == expected_path, f"Expected {expected_path}, got {result}"
     mock_which.assert_called_with("python")
 
     # Test 2: Command not found
@@ -37,9 +33,8 @@ def test_which_with_raise(mocker: MockFixture) -> None:
 
     result = which_with_raise("custom-tool")
 
-    assert_with_msg(
-        result == expected_path_custom,
-        f"Expected {expected_path_custom}, got {result}",
+    assert result == expected_path_custom, (
+        f"Expected {expected_path_custom}, got {result}"
     )
 
 
@@ -47,4 +42,4 @@ def test_run_subprocess() -> None:
     """Test func for run_subprocess."""
     cmd = ["echo", "hello"]
     res = run_subprocess(cmd)
-    assert_with_msg(res.returncode == 0, "Expected returncode 0")
+    assert res.returncode == 0, "Expected returncode 0"

@@ -10,7 +10,6 @@ import pytest
 
 from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
 from pyrig.dev.configs.base.py_package import PythonPackageConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -64,14 +63,10 @@ class TestCopyModuleConfigFile:
     ) -> None:
         """Test method for get_src_module."""
         src_module = my_test_copy_module_config_file.get_src_module()
-        assert_with_msg(
-            isinstance(src_module, ModuleType),
-            "Expected ModuleType",
-        )
+        assert isinstance(src_module, ModuleType), "Expected ModuleType"
         expected_name = "test_package.test_subpackage.test_module"
-        assert_with_msg(
-            src_module.__name__ == expected_name,
-            f"Expected '{expected_name}', got {src_module.__name__}",
+        assert src_module.__name__ == expected_name, (
+            f"Expected '{expected_name}', got {src_module.__name__}"
         )
 
     def test_get_parent_path(
@@ -79,32 +74,20 @@ class TestCopyModuleConfigFile:
     ) -> None:
         """Test method for get_parent_path."""
         parent_path = my_test_copy_module_config_file.get_parent_path()
-        assert_with_msg(
-            isinstance(parent_path, Path),
-            "Expected Path",
-        )
+        assert isinstance(parent_path, Path), "Expected Path"
 
     def test_get_content_str(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method for get_content_str."""
         content_str = my_test_copy_module_config_file.get_content_str()
-        assert_with_msg(
-            len(content_str) > 0,
-            "Expected non-empty string",
-        )
+        assert len(content_str) > 0, "Expected non-empty string"
         # Verify it contains the module content
-        assert_with_msg(
-            "Test module content" in content_str,
-            "Expected module content in string",
-        )
+        assert "Test module content" in content_str, "Expected module content in string"
 
     def test_get_filename(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method for get_filename."""
         filename = my_test_copy_module_config_file.get_filename()
-        assert_with_msg(
-            filename == "test_module",
-            f"Expected 'test_module', got {filename}",
-        )
+        assert filename == "test_module", f"Expected 'test_module', got {filename}"
