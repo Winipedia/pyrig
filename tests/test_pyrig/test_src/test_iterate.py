@@ -3,7 +3,6 @@
 from typing import Any
 
 from pyrig.src.iterate import nested_structure_is_subset
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_nested_structure_is_subset() -> None:
@@ -17,9 +16,8 @@ def test_nested_structure_is_subset() -> None:
         "b": [2, 3, {"c": 4}, 5],
         "d": 6,
     }
-    assert_with_msg(
-        nested_structure_is_subset(subset, superset),
-        "Expected subset to be subset of superset",
+    assert nested_structure_is_subset(subset, superset), (
+        "Expected subset to be subset of superset"
     )
 
     subset = {
@@ -30,9 +28,8 @@ def test_nested_structure_is_subset() -> None:
         "a": 1,
         "b": [2, 3, {"c": 5}],
     }
-    assert_with_msg(
-        not nested_structure_is_subset(subset, superset),
-        "Expected subset not to be subset of superset",
+    assert not nested_structure_is_subset(subset, superset), (
+        "Expected subset not to be subset of superset"
     )
 
     false_values: list[Any] = []
@@ -61,9 +58,8 @@ def test_nested_structure_is_subset() -> None:
         subset, superset, on_false_dict_action, on_false_list_action
     )
     expected_false_values: list[Any] = [0, 4, {"c": 4}, [2, 0, {"c": 4}]]
-    assert_with_msg(
-        false_values == expected_false_values,
-        f"Expected false values to be {expected_false_values}, got {false_values}",
+    assert false_values == expected_false_values, (
+        f"Expected false values to be {expected_false_values}, got {false_values}"
     )
 
     subset = {
@@ -77,7 +73,4 @@ def test_nested_structure_is_subset() -> None:
     is_nested_subset = nested_structure_is_subset(
         subset, superset, on_false_dict_action, on_false_list_action
     )
-    assert_with_msg(
-        is_nested_subset,
-        "Expected subset to be subset of superset",
-    )
+    assert is_nested_subset, "Expected subset to be subset of superset"

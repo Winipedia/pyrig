@@ -7,7 +7,6 @@ from typing import Any
 import pytest
 
 from pyrig.dev.configs.base.toml import TomlConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -46,9 +45,8 @@ class TestTomlConfigFile:
     def test_pretty_dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method."""
         my_test_toml_config_file.pretty_dump({"key": ["value"]})
-        assert_with_msg(
-            my_test_toml_config_file.load() == {"key": ["value"]},
-            "Expected dump to work",
+        assert my_test_toml_config_file.load() == {"key": ["value"]}, (
+            "Expected dump to work"
         )
 
     def test__load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
@@ -56,21 +54,17 @@ class TestTomlConfigFile:
         my_test_toml_config_file()
         expected = {"key": "value"}
         actual = my_test_toml_config_file.load()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method for dump."""
         my_test_toml_config_file.dump({"key": "value"})
-        assert_with_msg(
-            my_test_toml_config_file.load() == {"key": "value"},
-            "Expected dump to work",
+        assert my_test_toml_config_file.load() == {"key": "value"}, (
+            "Expected dump to work"
         )
 
     def test_get_file_extension(
         self, my_test_toml_config_file: type[TomlConfigFile]
     ) -> None:
         """Test method for get_file_extension."""
-        assert_with_msg(
-            my_test_toml_config_file.get_file_extension() == "toml",
-            "Expected toml",
-        )
+        assert my_test_toml_config_file.get_file_extension() == "toml", "Expected toml"

@@ -22,42 +22,27 @@ from pyrig.dev.utils.git import (
 from pyrig.src.git import (
     get_repo_owner_and_name_from_git,
 )
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_get_rules_payload() -> None:
     """Test func for get_rules_payload."""
     # Test with no rules
     rules = get_rules_payload()
-    assert_with_msg(
-        rules == [],
-        "Expected empty list when no rules provided",
-    )
+    assert rules == [], "Expected empty list when no rules provided"
 
     # Test with single rule
     rules = get_rules_payload(deletion={})
-    assert_with_msg(
-        len(rules) == 1,
-        "Expected one rule",
-    )
-    assert_with_msg(
-        rules[0]["type"] == "deletion",
-        f"Expected type 'deletion', got {rules[0]['type']}",
+    assert len(rules) == 1, "Expected one rule"
+    assert rules[0]["type"] == "deletion", (
+        f"Expected type 'deletion', got {rules[0]['type']}"
     )
 
     # Test with rule that has parameters
     rules = get_rules_payload(pull_request={"required_approving_review_count": 1})
-    assert_with_msg(
-        len(rules) == 1,
-        "Expected one rule",
-    )
-    assert_with_msg(
-        "parameters" in rules[0],
-        "Expected 'parameters' key in rule",
-    )
-    assert_with_msg(
-        rules[0]["parameters"]["required_approving_review_count"] == 1,
-        "Expected parameter value to be 1",
+    assert len(rules) == 1, "Expected one rule"
+    assert "parameters" in rules[0], "Expected 'parameters' key in rule"
+    assert rules[0]["parameters"]["required_approving_review_count"] == 1, (
+        "Expected parameter value to be 1"
     )
 
     # Test with multiple rules
@@ -67,9 +52,8 @@ def test_get_rules_payload() -> None:
         pull_request={"required_approving_review_count": 1},
     )
     expected_multiple_rules = 3
-    assert_with_msg(
-        len(rules) == expected_multiple_rules,
-        f"Expected {expected_multiple_rules} rules, got {len(rules)}",
+    assert len(rules) == expected_multiple_rules, (
+        f"Expected {expected_multiple_rules} rules, got {len(rules)}"
     )
 
 
@@ -81,14 +65,8 @@ def test_get_repo() -> None:
         owner,
         repo_name,
     )
-    assert_with_msg(
-        isinstance(repo, Repository),
-        "Expected Repository object",
-    )
-    assert_with_msg(
-        repo.name == repo_name,
-        f"Expected repo name {repo_name}, got {repo.name}",
-    )
+    assert isinstance(repo, Repository), "Expected Repository object"
+    assert repo.name == repo_name, f"Expected repo name {repo_name}, got {repo.name}"
 
 
 def test_get_all_rulesets() -> None:
@@ -97,10 +75,7 @@ def test_get_all_rulesets() -> None:
         get_github_repo_token(),
         *get_repo_owner_and_name_from_git(),
     )
-    assert_with_msg(
-        isinstance(rulesets, list),
-        "Expected rulesets to be a list",
-    )
+    assert isinstance(rulesets, list), "Expected rulesets to be a list"
 
 
 def test_ruleset_exists() -> None:
@@ -110,10 +85,7 @@ def test_ruleset_exists() -> None:
         *get_repo_owner_and_name_from_git(),
         DEFAULT_RULESET_NAME,
     )
-    assert_with_msg(
-        ruleset_id > 0,
-        f"Expected ruleset id > 0, got {ruleset_id}",
-    )
+    assert ruleset_id > 0, f"Expected ruleset id > 0, got {ruleset_id}"
 
 
 def test_create_or_update_ruleset() -> None:
@@ -131,9 +103,7 @@ def test_create_or_update_ruleset() -> None:
 def test_get_github_repo_token() -> None:
     """Test func for get_github_token."""
     token = get_github_repo_token()
-    assert_with_msg(
-        isinstance(token, str), f"Expected token to be str, got {type(token)}"
-    )
+    assert isinstance(token, str), f"Expected token to be str, got {type(token)}"
 
 
 def test_github_api_request() -> None:

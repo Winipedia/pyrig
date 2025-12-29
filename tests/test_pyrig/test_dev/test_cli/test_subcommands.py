@@ -9,7 +9,6 @@ from pyrig.dev.cli.subcommands import (
     protect_repo,
 )
 from pyrig.src.management.pyrigger import Pyrigger
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_mkroot() -> None:
@@ -17,9 +16,8 @@ def test_mkroot() -> None:
     # run --help comd to see if its available
     args = Pyrigger.get_venv_run_cmd_args(mkroot, "--help")
     stoud = args.run().stdout.decode("utf-8")
-    assert_with_msg(
-        mkroot.__name__ in stoud,
-        f"Expected {mkroot.__name__} in stdout, got {stoud}",
+    assert mkroot.__name__ in stoud, (
+        f"Expected {mkroot.__name__} in stdout, got {stoud}"
     )
 
 
@@ -28,9 +26,8 @@ def test_mktests() -> None:
     # run --help comd to see if its available
     args = Pyrigger.get_venv_run_cmd_args(mktests, "--help")
     stoud = args.run().stdout.decode("utf-8")
-    assert_with_msg(
-        mktests.__name__ in stoud,
-        f"Expected {mktests.__name__} in stdout, got {stoud}",
+    assert mktests.__name__ in stoud, (
+        f"Expected {mktests.__name__} in stdout, got {stoud}"
     )
 
 
@@ -40,9 +37,8 @@ def test_mkinits() -> None:
     args = Pyrigger.get_venv_run_cmd_args(mkinits, "--help")
     stoud = args.run().stdout.decode("utf-8")
 
-    assert_with_msg(
-        mkinits.__name__ in stoud,
-        f"Expected {mkinits.__name__} in stdout, got {stoud}",
+    assert mkinits.__name__ in stoud, (
+        f"Expected {mkinits.__name__} in stdout, got {stoud}"
     )
 
 
@@ -51,10 +47,7 @@ def test_init() -> None:
     # run --help comd to see if its available
     args = Pyrigger.get_venv_run_cmd_args(init, "--help")
     stoud = args.run().stdout.decode("utf-8")
-    assert_with_msg(
-        init.__name__ in stoud,
-        f"Expected {init.__name__} in stdout, got {stoud}",
-    )
+    assert init.__name__ in stoud, f"Expected {init.__name__} in stdout, got {stoud}"
 
 
 def test_build() -> None:
@@ -62,10 +55,7 @@ def test_build() -> None:
     # run --help comd to see if its available
     args = Pyrigger.get_venv_run_cmd_args(build, "--help")
     stoud = args.run().stdout.decode("utf-8")
-    assert_with_msg(
-        build.__name__ in stoud,
-        f"Expected {build.__name__} in stdout, got {stoud}",
-    )
+    assert build.__name__ in stoud, f"Expected {build.__name__} in stdout, got {stoud}"
 
 
 def test_protect_repo() -> None:
@@ -74,7 +64,4 @@ def test_protect_repo() -> None:
     args = Pyrigger.get_venv_run_cmd_args(protect_repo, "--help")
     stoud = args.run().stdout.decode("utf-8")
     name = protect_repo.__name__.replace("_", "-")
-    assert_with_msg(
-        name in stoud,
-        f"Expected {name} in stdout, got {stoud}",
-    )
+    assert name in stoud, f"Expected {name} in stdout, got {stoud}"

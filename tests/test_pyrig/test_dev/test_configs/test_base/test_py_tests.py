@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 
 from pyrig.dev.configs.base.py_tests import PythonTestsConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
 
@@ -38,4 +37,4 @@ class TestPythonTestsConfigFile:
         """Test method for get_parent_path."""
         expected = Path(TESTS_PACKAGE_NAME)
         actual = my_test_python_tests_config_file.get_parent_path()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"

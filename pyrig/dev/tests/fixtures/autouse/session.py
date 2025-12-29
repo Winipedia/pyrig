@@ -74,7 +74,6 @@ from pyrig.src.modules.package import (
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.os.os import run_subprocess
 from pyrig.src.string import re_search_excluding_docstrings
-from pyrig.src.testing.assertions import assert_with_msg
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
     make_summary_error_msg,
@@ -106,17 +105,11 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
 
     if in_github_actions:
         unstaged_changes = get_git_unstaged_changes()
-        assert_with_msg(
-            not unstaged_changes,
-            msg=msg.format(unstaged_changes=unstaged_changes),
-        )
+        assert not unstaged_changes, msg.format(unstaged_changes=unstaged_changes)
     yield
     if in_github_actions:
         unstaged_changes = get_git_unstaged_changes()
-        assert_with_msg(
-            not unstaged_changes,
-            msg=msg.format(unstaged_changes=unstaged_changes),
-        )
+        assert not unstaged_changes, msg.format(unstaged_changes=unstaged_changes)
 
 
 @autouse_session_fixture
@@ -146,7 +139,7 @@ def assert_root_is_correct() -> None:
         msg += f"""
         - {cf.get_path()}
         """
-    assert_with_msg(not incorrect_cfs, msg)
+    assert not incorrect_cfs, msg
 
 
 @autouse_session_fixture
@@ -168,7 +161,7 @@ def assert_no_namespace_packages() -> None:
         msg += f"""
         - {package}
         """
-    assert_with_msg(not any_namespace_packages, msg)
+    assert not any_namespace_packages, msg
 
 
 @autouse_session_fixture
@@ -187,9 +180,8 @@ def assert_all_src_code_in_one_package() -> None:
     expected_packages = {TESTS_PACKAGE_NAME, src_package_name, DOCS_DIR_NAME}
 
     # pkgs must be subset of expected_packages
-    assert_with_msg(
-        set(packages).issubset(expected_packages),
-        f"Expected only packages {expected_packages}, but found {packages}",
+    assert set(packages).issubset(expected_packages), (
+        f"Expected only packages {expected_packages}, but found {packages}"
     )
 
     # assert the src package's only submodules are main, src and dev
@@ -206,13 +198,11 @@ def assert_all_src_code_in_one_package() -> None:
         ]
     }
     expected_submodules = {get_isolated_obj_name(main)}
-    assert_with_msg(
-        subpackage_names == expected_subpackages,
-        f"Expected subpackages {expected_subpackages}, but found {subpackage_names}",
+    assert subpackage_names == expected_subpackages, (
+        f"Expected subpackages {expected_subpackages}, but found {subpackage_names}"
     )
-    assert_with_msg(
-        submodule_names == expected_submodules,
-        f"Expected submodules {expected_submodules}, but found {submodule_names}",
+    assert submodule_names == expected_submodules, (
+        f"Expected submodules {expected_submodules}, but found {submodule_names}"
     )
 
 
@@ -227,26 +217,25 @@ def assert_src_package_correctly_named() -> None:
     """
     cwd_name = Path.cwd().name
     project_name = PyprojectConfigFile.get_project_name()
-    assert_with_msg(
-        cwd_name == project_name,
-        f"Expected cwd name to be {project_name}, but it is {cwd_name}",
+    assert cwd_name == project_name, (
+        f"Expected cwd name to be {project_name}, but it is {cwd_name}"
     )
 
     src_package_name = get_src_package().__name__
     src_package_name_from_cwd = get_pkg_name_from_project_name(cwd_name)
-    assert_with_msg(
-        src_package_name == src_package_name_from_cwd,
+    msg = (
         f"Expected source package to be named {src_package_name_from_cwd}, "
-        f"but it is named {src_package_name}",
+        f"but it is named {src_package_name}"
     )
+    assert src_package_name == src_package_name_from_cwd, msg
 
     src_package = get_src_package().__name__
     expected_package = PyprojectConfigFile.get_package_name()
-    assert_with_msg(
-        src_package == expected_package,
+    msg = (
         f"Expected source package to be named {expected_package}, "
-        f"but it is named {src_package}",
+        f"but it is named {src_package}"
     )
+    assert src_package == expected_package, msg
 
 
 @autouse_session_fixture
@@ -281,10 +270,7 @@ def assert_all_modules_tested() -> None:
     msg = f"""Found missing tests. Tests skeletons were automatically created for:
     {make_summary_error_msg(missing_tests_to_module.keys())}
 """
-    assert_with_msg(
-        not missing_tests_to_module,
-        msg,
-    )
+    assert not missing_tests_to_module, msg
 
 
 @autouse_session_fixture
@@ -483,12 +469,11 @@ def assert_src_runs_without_dev_deps(
                 "from pyrig import src; "
                 "from pyrig.src.modules.module import get_module_name_replacing_start_module; "  # noqa: E501
                 "from pyrig.src.modules.imports import walk_package; "
-                "from pyrig.src.testing.assertions import assert_with_msg; "
                 f"import {src_pkg_name}; "
                 f"src_module=import_module(get_module_name_replacing_start_module(src, {src_pkg_name}.__name__)); "  # noqa: E501
                 "pks=list(walk_package(src_module)); "
-                "assert_with_msg(isinstance(pks, list), 'Expected pks to be a list'); "
-                "assert_with_msg(len(pks) > 0, 'Expected pks to not be empty'); "
+                "assert isinstance(pks, list), 'Expected pks to be a list'; "
+                "assert len(pks) > 0, 'Expected pks to not be empty'; "
                 # also test that main can be called
                 f"main_module=import_module(get_module_name_replacing_start_module(main, {src_pkg_name}.__name__)); "  # noqa: E501
                 # add a print statement to see the output
@@ -556,10 +541,7 @@ def assert_src_does_not_use_dev() -> None:
     msg = f"""Found dev usage in src:
     {make_summary_error_msg(usages)}
 """
-    assert_with_msg(
-        not usages,
-        msg,
-    )
+    assert not usages, msg
 
 
 @autouse_session_fixture

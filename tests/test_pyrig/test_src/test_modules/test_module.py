@@ -27,7 +27,6 @@ from pyrig.src.modules.module import (
     import_obj_from_importpath,
     make_obj_importpath,
 )
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def test_get_module_content_as_str(tmp_path: Path) -> None:
@@ -60,9 +59,8 @@ class TestClass:
 
         # Test getting module content
         result = get_module_content_as_str(test_module)
-        assert_with_msg(
-            result == module_content,
-            f"Expected module content to match, got {result!r}",
+        assert result == module_content, (
+            f"Expected module content to match, got {result!r}"
         )
 
     finally:
@@ -93,7 +91,7 @@ def test_make_obj_importpath() -> None:
 
     result = make_obj_importpath(test_func)
     expected = f"{test_func.__module__}.{test_func.__qualname__}"
-    assert_with_msg(result == expected, f"Expected {expected}, got {result}")
+    assert result == expected, f"Expected {expected}, got {result}"
 
     # Test with a class
     class TestClass:
@@ -102,15 +100,15 @@ def test_make_obj_importpath() -> None:
 
     result = make_obj_importpath(TestClass)
     expected = f"{TestClass.__module__}.{TestClass.__qualname__}"
-    assert_with_msg(result == expected, f"Expected {expected}, got {result}")
+    assert result == expected, f"Expected {expected}, got {result}"
 
     result = make_obj_importpath(TestClass.test_method)
     expected = f"{TestClass.__module__}.{TestClass.test_method.__qualname__}"
-    assert_with_msg(result == expected, f"Expected {expected}, got {result}")
+    assert result == expected, f"Expected {expected}, got {result}"
 
     # Test with a module
     result = make_obj_importpath(sys)
-    assert_with_msg(result == "sys", f"Expected 'sys', got {result}")
+    assert result == "sys", f"Expected 'sys', got {result}"
 
 
 def test_import_obj_from_importpath() -> None:
@@ -119,22 +117,18 @@ def test_import_obj_from_importpath() -> None:
 
     result = import_obj_from_importpath("sys")
 
-    assert_with_msg(
-        result == sys and hasattr(result, "path"),
-        f"Expected sys module, got {result}",
-    )
+    assert result == sys, f"Expected sys module, got {result}"
+    assert hasattr(result, "path"), f"Expected sys module, got {result}"
 
     # Test importing a function from a module
     result = import_obj_from_importpath("os.path.join")
 
-    assert_with_msg(
-        result is os.path.join, f"Expected os.path.join function, got {result}"
-    )
+    assert result is os.path.join, f"Expected os.path.join function, got {result}"
 
     # Test importing a class
     result = import_obj_from_importpath("pathlib.Path")
 
-    assert_with_msg(result is Path, f"Expected pathlib.Path class, got {result}")
+    assert result is Path, f"Expected pathlib.Path class, got {result}"
 
     # Test error cases
     with pytest.raises(ImportError):
@@ -148,32 +142,27 @@ def test_get_isolated_obj_name() -> None:
     """Test func for get_isolated_obj_name."""
     # Test with a module
     result = get_isolated_obj_name(sys)
-    assert_with_msg(result == "sys", f"Expected 'sys', got {result}")
+    assert result == "sys", f"Expected 'sys', got {result}"
 
     # Test with a nested module
     result = get_isolated_obj_name(os.path)
     # On Windows, os.path is ntpath; on Unix, it's posixpath
     expected_names = ["path", "ntpath", "posixpath"]
-    assert_with_msg(
-        result in expected_names,
-        f"Expected one of {expected_names}, got {result}",
-    )
+    assert result in expected_names, f"Expected one of {expected_names}, got {result}"
 
     # Test with a class
     class TestClass:
         pass
 
     result = get_isolated_obj_name(TestClass)
-    assert_with_msg(result == "TestClass", f"Expected 'TestClass', got {result}")
+    assert result == "TestClass", f"Expected 'TestClass', got {result}"
 
     # Test with a function
     def test_function() -> None:
         pass
 
     result = get_isolated_obj_name(test_function)
-    assert_with_msg(
-        result == "test_function", f"Expected 'test_function', got {result}"
-    )
+    assert result == "test_function", f"Expected 'test_function', got {result}"
 
 
 def test_execute_all_functions_from_module(tmp_path: Path) -> None:
@@ -212,23 +201,19 @@ def func3() -> None:
 
         # Should have 3 results
         expected_exec_results_count = 3
-        assert_with_msg(
-            len(results) == expected_exec_results_count,
-            f"Expected {expected_exec_results_count} results, got {len(results)}",
+        assert len(results) == expected_exec_results_count, (
+            f"Expected {expected_exec_results_count} results, got {len(results)}"
         )
 
         # Check that we got the expected return values
-        assert_with_msg(
-            "result1" in results, f"Expected 'result1' in results, got {results}"
-        )
+        assert "result1" in results, f"Expected 'result1' in results, got {results}"
 
         test_return_value = 42
-        assert_with_msg(
-            test_return_value in results,
-            f"Expected {test_return_value} in results, got {results}",
+        assert test_return_value in results, (
+            f"Expected {test_return_value} in results, got {results}"
         )
 
-        assert_with_msg(None in results, f"Expected None in results, got {results}")
+        assert None in results, f"Expected None in results, got {results}"
 
     finally:
         # Clean up
@@ -242,18 +227,18 @@ def test_get_default_module_content() -> None:
     """Test func for get_default_module_content."""
     result = get_default_module_content()
     # assert is str
-    assert_with_msg(isinstance(result, str), f"Expected str, got {type(result)}")
+    assert isinstance(result, str), f"Expected str, got {type(result)}"
 
 
 def test_import_module_with_default() -> None:
     """Test func for import_module_with_default."""
     # Test importing a valid module
     result = import_module_with_default("sys")
-    assert_with_msg(result.__name__ == "sys", f"Expected sys module, got {result}")
+    assert result.__name__ == "sys", f"Expected sys module, got {result}"
 
     # Test importing a non-existent module with a default
     result = import_module_with_default("nonexistent", default="default")
-    assert_with_msg(result == "default", f"Expected default, got {result}")
+    assert result == "default", f"Expected default, got {result}"
 
 
 def test_get_module_name_replacing_start_module(mocker: MockFixture) -> None:
@@ -262,9 +247,8 @@ def test_get_module_name_replacing_start_module(mocker: MockFixture) -> None:
     mock_module.__name__ = "some.module.name"
     new_name = get_module_name_replacing_start_module(mock_module, "new")
     expected_new_name = "new.module.name"
-    assert_with_msg(
-        new_name == expected_new_name,
-        f"Expected {expected_new_name}, got {new_name}",
+    assert new_name == expected_new_name, (
+        f"Expected {expected_new_name}, got {new_name}"
     )
 
 

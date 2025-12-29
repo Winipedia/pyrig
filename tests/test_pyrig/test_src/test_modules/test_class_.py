@@ -19,7 +19,6 @@ from pyrig.src.modules.class_ import (
     get_cached_instance,
     init_all_nonabstract_subclasses,
 )
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -136,10 +135,9 @@ def test_get_all_methods_from_cls() -> None:
     methods = get_all_methods_from_cls(TestClass, exclude_parent_methods=True)
 
     # assert __annotate__ is not considered a method (3.14 introduces this injection)
-    assert_with_msg(
-        "__annotate__" not in [m.__name__ for m in methods if hasattr(m, "__name__")],
-        "Expected __annotate__ not to be considered a method",
-    )
+    assert "__annotate__" not in [
+        m.__name__ for m in methods if hasattr(m, "__name__")
+    ], "Expected __annotate__ not to be considered a method"
 
     # expected methods in order of definition
     expected_methods = [
@@ -150,9 +148,8 @@ def test_get_all_methods_from_cls() -> None:
         TestClass._private_method,  # noqa: SLF001
         TestClass.decorated_method,
     ]
-    assert_with_msg(
-        methods == expected_methods,
-        f"Expected methods {expected_methods}, got {methods}",
+    assert methods == expected_methods, (
+        f"Expected methods {expected_methods}, got {methods}"
     )
 
     # Test case 2: Get all methods including inherited methods
@@ -171,9 +168,8 @@ def test_get_all_methods_from_cls() -> None:
         TestClass._private_method,  # noqa: SLF001
         TestClass.decorated_method,
     ]
-    assert_with_msg(
-        methods == expected_methods,
-        f"Expected methods {expected_methods}, got {methods}",
+    assert methods == expected_methods, (
+        f"Expected methods {expected_methods}, got {methods}"
     )
 
 
@@ -195,9 +191,8 @@ def test_get_all_cls_from_module() -> None:
     ]
     expected_classes_names: list[str] = [c.__name__ for c in expected_classes]
     classes_names = [c.__name__ for c in classes]
-    assert_with_msg(
-        classes_names == expected_classes_names,
-        f"Expected classes {expected_classes_names}, got {classes_names}",
+    assert classes_names == expected_classes_names, (
+        f"Expected classes {expected_classes_names}, got {classes_names}"
     )
 
 
@@ -216,9 +211,8 @@ def test_get_all_subclasses() -> None:
     # Test with TestClass - should have no subclasses
     subclasses = get_all_subclasses(TestClass)
 
-    assert_with_msg(
-        subclasses == {TestClass},
-        f"Expected no subclasses for TestClass, got {subclasses}",
+    assert subclasses == {TestClass}, (
+        f"Expected no subclasses for TestClass, got {subclasses}"
     )
 
     # test with discard_parents
@@ -232,23 +226,20 @@ def test_get_all_nonabstract_subclasses() -> None:
     # Test with ParentClass - should find TestClass as non-abstract subclass
     subclasses = get_all_nonabstract_subclasses(ParentClass)
 
-    assert_with_msg(
-        TestClass in subclasses,
-        f"Expected TestClass to be in non-abstract subclasses, got {subclasses}",
+    assert TestClass in subclasses, (
+        f"Expected TestClass to be in non-abstract subclasses, got {subclasses}"
     )
 
     # Test with abstract class - should only find concrete implementations
     subclasses2 = get_all_nonabstract_subclasses(AbstractParent)
 
-    assert_with_msg(
-        ConcreteChild in subclasses2,
-        f"Expected ConcreteChild in non-abstract subclasses, got {subclasses2}",
+    assert ConcreteChild in subclasses2, (
+        f"Expected ConcreteChild in non-abstract subclasses, got {subclasses2}"
     )
 
-    assert_with_msg(
-        AnotherAbstractChild not in subclasses2,
+    assert AnotherAbstractChild not in subclasses2, (
         f"Expected AnotherAbstractChild NOT in non-abstract subclasses, "
-        f"got {subclasses2}",
+        f"got {subclasses2}"
     )
 
 
@@ -259,9 +250,8 @@ def test_init_all_nonabstract_subclasses(mocker: MockFixture) -> None:
 
     init_all_nonabstract_subclasses(AbstractParent)
 
-    assert_with_msg(
-        spy.call_count == 1,
-        f"Expected __init__ of ConcreteChild to be called once, got {spy.call_count}",
+    assert spy.call_count == 1, (
+        f"Expected __init__ of ConcreteChild to be called once, got {spy.call_count}"
     )
 
 

@@ -9,7 +9,6 @@ from pytest_mock import MockFixture
 
 from pyrig import main
 from pyrig.dev.configs.python.main import MainConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -54,7 +53,4 @@ class TestMainConfigFile:
         with chdir(tmp_path):
             Path("main.py").write_text("test")
             MainConfigFile.delete_root_main()
-            assert_with_msg(
-                not Path("main.py").exists(),
-                "Expected main.py to be deleted",
-            )
+            assert not Path("main.py").exists(), "Expected main.py to be deleted"
