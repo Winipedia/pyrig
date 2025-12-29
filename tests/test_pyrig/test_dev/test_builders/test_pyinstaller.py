@@ -12,7 +12,6 @@ from pytest_mock import MockFixture
 from pyrig.dev.builders import pyinstaller
 from pyrig.dev.builders.pyinstaller import PyInstallerBuilder
 from pyrig.src.modules.module import make_obj_importpath
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -54,16 +53,10 @@ class TestPyInstallerBuilder:
         # Test that default additional resource packages are discovered
         result = PyInstallerBuilder.get_default_additional_resource_pkgs()
         # Should return a list of modules
-        assert_with_msg(
-            isinstance(result, list),
-            f"Expected list, got {type(result)}",
-        )
+        assert isinstance(result, list), f"Expected list, got {type(result)}"
         # All items should be modules
         for pkg in result:
-            assert_with_msg(
-                hasattr(pkg, "__name__"),
-                f"Expected module, got {pkg}",
-            )
+            assert hasattr(pkg, "__name__"), f"Expected module, got {pkg}"
 
     def test_get_all_resource_pkgs(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
@@ -72,15 +65,9 @@ class TestPyInstallerBuilder:
         # Test that all resource packages includes both default and resources
         result = my_test_pyinstaller_builder.get_all_resource_pkgs()
         # Should return a list of modules
-        assert_with_msg(
-            isinstance(result, list),
-            f"Expected list, got {type(result)}",
-        )
+        assert isinstance(result, list), f"Expected list, got {type(result)}"
         # Should include at least the resources package
-        assert_with_msg(
-            len(result) > 0,
-            f"Expected at least one resource package, got {result}",
-        )
+        assert len(result) > 0, f"Expected at least one resource package, got {result}"
 
     def test_get_additional_resource_pkgs(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
@@ -92,17 +79,17 @@ class TestPyInstallerBuilder:
     def test_get_temp_distpath(self, tmp_path: Path) -> None:
         """Test method for get_temp_distpath."""
         result = PyInstallerBuilder.get_temp_distpath(tmp_path)
-        assert_with_msg(result.exists(), "Expected path to exist")
+        assert result.exists(), "Expected path to exist"
 
     def test_get_temp_workpath(self, tmp_path: Path) -> None:
         """Test method for get_temp_workpath."""
         result = PyInstallerBuilder.get_temp_workpath(tmp_path)
-        assert_with_msg(result.exists(), "Expected path to exist")
+        assert result.exists(), "Expected path to exist"
 
     def test_get_temp_specpath(self, tmp_path: Path) -> None:
         """Test method for get_temp_specpath."""
         result = PyInstallerBuilder.get_temp_specpath(tmp_path)
-        assert_with_msg(result.exists(), "Expected path to exist")
+        assert result.exists(), "Expected path to exist"
 
     def test_get_add_datas(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
@@ -119,14 +106,14 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method for get_pyinstaller_options."""
         options = my_test_pyinstaller_builder.get_pyinstaller_options(tmp_path)
-        assert_with_msg("--name" in options, "Expected --name option")
+        assert "--name" in options, "Expected --name option"
 
     def test_get_app_icon_png_path(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method for get_app_icon_path."""
         result = my_test_pyinstaller_builder.get_app_icon_png_path()
-        assert_with_msg(result.name == "icon.png", "Expected icon.ico")
+        assert result.name == "icon.png", "Expected icon.ico"
 
     def test_create_artifacts(
         self,
@@ -152,7 +139,7 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method for convert_png_to_format."""
         result = my_test_pyinstaller_builder.convert_png_to_format("ico", tmp_path)
-        assert_with_msg(result.name == "icon.ico", "Expected icon.ico")
+        assert result.name == "icon.ico", "Expected icon.ico"
 
     def test_get_app_icon_path(
         self,
@@ -161,4 +148,4 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method for get_app_icon_path."""
         result = my_test_pyinstaller_builder.get_app_icon_path(tmp_path)
-        assert_with_msg(result.stem == "icon", "Expected icon")
+        assert result.stem == "icon", "Expected icon"

@@ -5,7 +5,6 @@ from collections.abc import Callable
 import pytest
 
 from pyrig.dev.configs.testing.zero_test import ZeroTestConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -29,9 +28,8 @@ class TestZeroTestConfigFile:
         """Test method for get_filename."""
         filename = my_test_zero_test_config_file.get_filename()
         # ZeroTestConfigFile reverses the filename
-        assert_with_msg(
-            filename.startswith("test_"),
-            f"Expected filename to start with 'test_', got {filename}",
+        assert filename.startswith("test_"), (
+            f"Expected filename to start with 'test_', got {filename}"
         )
 
     def test_get_content_str(
@@ -39,7 +37,4 @@ class TestZeroTestConfigFile:
     ) -> None:
         """Test method for get_content_str."""
         content_str = my_test_zero_test_config_file.get_content_str()
-        assert_with_msg(
-            "test_zero" in content_str,
-            "Expected 'test_zero' in content",
-        )
+        assert "test_zero" in content_str, "Expected 'test_zero' in content"

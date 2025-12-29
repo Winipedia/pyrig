@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 
 from pyrig.dev.configs.dot_python_version import DotPythonVersionConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -34,7 +33,7 @@ class TestDotPythonVersionConfigFile:
         """Test method for get_filename."""
         expected = ""
         actual = my_test_dot_python_version_config_file.get_filename()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_file_extension(
         self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
@@ -42,7 +41,7 @@ class TestDotPythonVersionConfigFile:
         """Test method for get_file_extension."""
         expected = "python-version"
         actual = my_test_dot_python_version_config_file.get_file_extension()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_parent_path(
         self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
@@ -50,7 +49,7 @@ class TestDotPythonVersionConfigFile:
         """Test method for get_parent_path."""
         expected = Path()
         actual = my_test_dot_python_version_config_file.get_parent_path()
-        assert_with_msg(actual == expected, f"Expected {expected}, got {actual}")
+        assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__load(
         self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
@@ -58,13 +57,11 @@ class TestDotPythonVersionConfigFile:
         """Test method for load."""
         my_test_dot_python_version_config_file()
         loaded = my_test_dot_python_version_config_file.load()
-        assert_with_msg(
-            DotPythonVersionConfigFile.VERSION_KEY in loaded,
-            "Expected 'version' key in loaded config",
+        assert DotPythonVersionConfigFile.VERSION_KEY in loaded, (
+            "Expected 'version' key in loaded config"
         )
-        assert_with_msg(
-            len(loaded[DotPythonVersionConfigFile.VERSION_KEY]) > 0,
-            "Expected version to be non-empty",
+        assert len(loaded[DotPythonVersionConfigFile.VERSION_KEY]) > 0, (
+            "Expected version to be non-empty"
         )
 
     def test__dump(
@@ -75,9 +72,8 @@ class TestDotPythonVersionConfigFile:
         config = {DotPythonVersionConfigFile.VERSION_KEY: "3.11"}
         my_test_dot_python_version_config_file.dump(config)
         loaded = my_test_dot_python_version_config_file.load()
-        assert_with_msg(
-            loaded[DotPythonVersionConfigFile.VERSION_KEY] == "3.11",
-            "Expected version to be 3.11",
+        assert loaded[DotPythonVersionConfigFile.VERSION_KEY] == "3.11", (
+            "Expected version to be 3.11"
         )
 
     def test_dump_raises_type_error(
@@ -94,7 +90,6 @@ class TestDotPythonVersionConfigFile:
         """Test method for get_configs."""
         my_test_dot_python_version_config_file()
         configs = my_test_dot_python_version_config_file.get_configs()
-        assert_with_msg(
-            DotPythonVersionConfigFile.VERSION_KEY in configs,
-            "Expected 'version' key in configs",
+        assert DotPythonVersionConfigFile.VERSION_KEY in configs, (
+            "Expected 'version' key in configs"
         )

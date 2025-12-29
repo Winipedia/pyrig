@@ -28,7 +28,6 @@ from pyrig.src.management.package_manager import PackageManager
 from pyrig.src.management.pyrigger import Pyrigger
 from pyrig.src.management.version_controller import VersionController
 from pyrig.src.modules.path import ModulePath
-from pyrig.src.testing.assertions import assert_with_msg
 
 logger = logging.getLogger(__name__)
 
@@ -173,9 +172,8 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         res = args.run(env=clean_env)
         stdout = res.stdout.decode("utf-8")
         expected = project_name
-        assert_with_msg(
-            expected in stdout.lower(),
-            f"Expected {expected} in stdout, got {stdout}",
+        assert expected in stdout.lower(), (
+            f"Expected {expected} in stdout, got {stdout}"
         )
         #  assert running the main command works
         args = PackageManager.get_run_args(project_name, main.__name__)

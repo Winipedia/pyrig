@@ -9,7 +9,6 @@ import pytest
 
 from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.base.base import ConfigFile
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -52,28 +51,22 @@ def test_config_file_factory(
     sample_config_file: type[ConfigFile], tmp_path: Path
 ) -> None:
     """Test that config_file_factory wraps get_path to use tmp_path."""
-    assert_with_msg(
-        issubclass(sample_config_file, ConfigFile),
-        "Expected sample_config_file to be a class",
+    assert issubclass(sample_config_file, ConfigFile), (
+        "Expected sample_config_file to be a class"
     )
     # The factory should wrap the get_path method to use tmp_path
     path = sample_config_file.get_path()
 
     # The path should be inside tmp_path
-    assert_with_msg(
-        str(path).startswith(str(tmp_path)),
-        f"Expected path {path} to start with {tmp_path}",
+    assert str(path).startswith(str(tmp_path)), (
+        f"Expected path {path} to start with {tmp_path}"
     )
 
     # The path should have the correct extension
-    assert_with_msg(
-        path.suffix == ".test",
-        f"Expected extension '.test', got {path.suffix}",
-    )
+    assert path.suffix == ".test", f"Expected extension '.test', got {path.suffix}"
 
-    assert_with_msg(
-        path.name == "sample.test",
-        f"Expected filename 'sample.test', got {path.name}",
+    assert path.name == "sample.test", (
+        f"Expected filename 'sample.test', got {path.name}"
     )
 
 
@@ -97,20 +90,13 @@ def sample_builder(
 def test_builder_factory(sample_builder: type[Builder], tmp_path: Path) -> None:
     """Test func for builder_factory."""
     # check the cls
-    assert_with_msg(
-        issubclass(sample_builder, Builder),
-        "Expected sample_builder to be a class",
-    )
+    assert issubclass(sample_builder, Builder), "Expected sample_builder to be a class"
     # check get_artifacts_dir returns tmp_path / ARTIFACTS_DIR_NAME
-    assert_with_msg(
-        sample_builder.get_artifacts_dir() == tmp_path / Builder.ARTIFACTS_DIR_NAME,
-        "Expected artifacts dir to be in tmp_path",
-    )
+    assert (
+        sample_builder.get_artifacts_dir() == tmp_path / Builder.ARTIFACTS_DIR_NAME
+    ), "Expected artifacts dir to be in tmp_path"
     # check artifacts are created in tmp_path
     sample_builder()
-    assert_with_msg(
-        (
-            sample_builder.get_artifacts_dir() / f"sample-{platform.system()}.txt"
-        ).exists(),
-        "Expected artifact to be created",
-    )
+    assert (
+        sample_builder.get_artifacts_dir() / f"sample-{platform.system()}.txt"
+    ).exists(), "Expected artifact to be created"

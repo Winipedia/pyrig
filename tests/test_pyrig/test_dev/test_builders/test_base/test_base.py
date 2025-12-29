@@ -8,7 +8,6 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig.dev.builders.base.base import Builder
-from pyrig.src.testing.assertions import assert_with_msg
 
 
 @pytest.fixture
@@ -44,10 +43,7 @@ class TestBuilder:
     def test_get_artifacts_dir(self) -> None:
         """Test method for get_artifacts_dir."""
         # just assert it returns a path
-        assert_with_msg(
-            isinstance(Builder.get_artifacts_dir(), Path),
-            "Expected Path",
-        )
+        assert isinstance(Builder.get_artifacts_dir(), Path), "Expected Path"
 
     def test_rename_artifacts(
         self, tmp_path: Path, my_test_builder: type[Builder]
@@ -56,26 +52,22 @@ class TestBuilder:
         # write a file to the temp dir
         (tmp_path / "test.txt").write_text("Hello World!")
         my_test_builder.rename_artifacts([tmp_path / "test.txt"])
-        assert_with_msg(
-            (
-                my_test_builder.get_artifacts_dir() / f"test-{platform.system()}.txt"
-            ).exists(),
-            "Expected renamed file",
-        )
+        assert (
+            my_test_builder.get_artifacts_dir() / f"test-{platform.system()}.txt"
+        ).exists(), "Expected renamed file"
 
     def test_get_artifacts(self, my_test_builder: type[Builder]) -> None:
         """Test method for get_artifacts."""
         my_build = my_test_builder()
         artifacts = my_build.get_artifacts()
-        assert_with_msg(
-            artifacts[0].name == f"build-{platform.system()}.txt",
-            "Expected artifact to be built",
+        assert artifacts[0].name == f"build-{platform.system()}.txt", (
+            "Expected artifact to be built"
         )
 
     def test_get_temp_artifacts_path(self, tmp_path: Path) -> None:
         """Test method for get_temp_artifacts_path."""
         result = Builder.get_temp_artifacts_path(tmp_path)
-        assert_with_msg(result.exists(), "Expected path to exist")
+        assert result.exists(), "Expected path to exist"
 
     def test_create_artifacts(
         self, my_test_builder: type[Builder], mocker: MockFixture
@@ -89,9 +81,8 @@ class TestBuilder:
         spy.assert_called_once()
 
         artifacts = my_build.get_artifacts()
-        assert_with_msg(
-            artifacts[0].name == f"build-{platform.system()}.txt",
-            "Expected artifact to be built",
+        assert artifacts[0].name == f"build-{platform.system()}.txt", (
+            "Expected artifact to be built"
         )
 
     def test___init__(
@@ -124,18 +115,12 @@ class TestBuilder:
         # write a file to the temp dir
         (tmp_path / "test.txt").write_text("Hello World!")
         artifacts = Builder.get_temp_artifacts(tmp_path)
-        assert_with_msg(
-            len(artifacts) == 1,
-            "Expected one artifact",
-        )
+        assert len(artifacts) == 1, "Expected one artifact"
 
     def test_get_non_abstract_subclasses(self) -> None:
         """Test method for get_non_abstract_builders."""
         builders = Builder.get_non_abstract_subclasses()
-        assert_with_msg(
-            len(builders) == 0,
-            "Expected one builder",
-        )
+        assert len(builders) == 0, "Expected one builder"
 
     def test_init_all_non_abstract_subclasses(
         self, my_test_builder: type[Builder], mocker: MockFixture
@@ -149,32 +134,31 @@ class TestBuilder:
         )
         Builder.init_all_non_abstract_subclasses()
         artifacts = my_test_builder.get_artifacts()
-        assert_with_msg(
-            artifacts[0].name == f"build-{platform.system()}.txt",
-            "Expected artifact to be built",
+        assert artifacts[0].name == f"build-{platform.system()}.txt", (
+            "Expected artifact to be built"
         )
 
     def test_get_app_name(self, my_test_builder: type[Builder]) -> None:
         """Test method for get_app_name."""
         result = my_test_builder.get_app_name()
-        assert_with_msg(len(result) > 0, "Expected non-empty string")
+        assert len(result) > 0, "Expected non-empty string"
 
     def test_get_main_path_from_src_pkg(self, my_test_builder: type[Builder]) -> None:
         """Test method for get_main_path_from_src_pkg."""
         result = my_test_builder.get_main_path_from_src_pkg()
-        assert_with_msg(result == Path("main.py"), "Expected main.py")
+        assert result == Path("main.py"), "Expected main.py"
 
     def test_get_root_path(self, my_test_builder: type[Builder]) -> None:
         """Test method for get_root_path."""
         result = my_test_builder.get_root_path()
-        assert_with_msg(result.exists(), "Expected path to exist")
+        assert result.exists(), "Expected path to exist"
 
     def test_get_src_pkg_path(self, my_test_builder: type[Builder]) -> None:
         """Test method for get_src_pkg_path."""
         result = my_test_builder.get_src_pkg_path()
-        assert_with_msg(result.exists(), "Expected path to exist")
+        assert result.exists(), "Expected path to exist"
 
     def test_get_main_path(self, my_test_builder: type[Builder]) -> None:
         """Test method for get_main_path."""
         result = my_test_builder.get_main_path()
-        assert_with_msg(result.name == "main.py", "Expected main.py")
+        assert result.name == "main.py", "Expected main.py"
