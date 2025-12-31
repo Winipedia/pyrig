@@ -55,16 +55,26 @@ def config_file_factory[T: ConfigFile](
             """Test config file with tmp_path override."""
 
             @classmethod
-            def _load(cls) -> ConfigType:
-                """Load the config file."""
-                with chdir(tmp_path):
-                    return super()._load()
+            def get_parent_path(cls) -> Path:
+                """Get the parent path in tmp_path.
+
+                Returns:
+                    Path within tmp_path.
+                """
+                path = super().get_parent_path()
+                return Path(tmp_path / path)
 
             @classmethod
             def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
                 """Dump the config file."""
                 with chdir(tmp_path):
                     super()._dump(config)
+
+            @classmethod
+            def _load(cls) -> ConfigType:
+                """Load the config file."""
+                with chdir(tmp_path):
+                    return super()._load()
 
         return TestConfigFile  # ty:ignore[invalid-return-type]
 
