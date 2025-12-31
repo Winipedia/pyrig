@@ -182,7 +182,7 @@ class ConfigFile(ABC):
 
     @classmethod
     def create_file(cls) -> None:
-        """Create the config file if it doesn't exist."""
+        """Create the config file and its parent directories."""
         path = cls.get_path()
         logger.info("Creating config file %s at: %s", cls.__name__, path)
         path.parent.mkdir(parents=True, exist_ok=True)

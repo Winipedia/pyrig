@@ -82,8 +82,8 @@ COM812, ANN401)
 
 **Why**:
 
-- Validates types at runtime during development
-- Catches type errors during execution
+- Static type checker
+- Catches type errors before execution
 - Configured to error on warnings for strictness
 - Modern, fast type checker from Astral (creators of ruff and uv)
 

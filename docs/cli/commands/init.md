@@ -65,6 +65,8 @@ Installs all dependencies including the newly added dev dependencies.
 
 ### 3. Creating Priority Config Files
 
+Some config files need to exist before others and before some specific processes
+can run. So they are created with a priority system.
 Creates essential config files with `get_priority() > 0`, grouped by priority:
 
 - **Priority 30**: `LICENSE` - Must exist before pyproject.toml for license
@@ -76,7 +78,8 @@ Creates essential config files with `get_priority() > 0`, grouped by priority:
 
 Priority groups are processed sequentially (highest first), with files in the
 same group initialized in parallel. These files are required before other setup
-steps can proceed.
+steps can proceed. 0 is the default priority for files that can be created
+whenever after the priority files are created.
 
 ### 4. Syncing Venv (Again)
 

@@ -175,21 +175,6 @@ def test_my_builder(builder_factory):
 
 ### Assertion Fixtures
 
-These are mainly only used internally by pyrig.
-
-#### `assert_no_untested_objs`
-
-Validates that all objects in a module, class, or function have corresponding
-tests:
-
-```python
-def test_my_module(assert_no_untested_objs):
-    import myapp.src.module
-    assert_no_untested_objs(myapp.src.module)
-```
-
-**Purpose**: Programmatically verify test coverage for specific objects.
-
 #### `main_test_fixture`
 
 Tests that the main entry point works correctly:

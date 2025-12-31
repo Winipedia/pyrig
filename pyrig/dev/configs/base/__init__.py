@@ -27,6 +27,7 @@ Three layers:
    - ``CopyModuleOnlyDocstringConfigFile``: Copy only docstrings
    - ``InitConfigFile``: __init__.py with copied docstrings
    - ``BadgesMarkdownConfigFile``: Markdown with project badges
+   - ``MirrorTestConfigFile``: Test files mirroring source module structure
 
 Format Features
 ---------------
@@ -47,6 +48,7 @@ Specialized Classes
 - **CopyModuleOnlyDocstringConfigFile**: Extracts docstrings, creates stubs
 - **InitConfigFile**: Creates __init__.py with copied docstrings
 - **BadgesMarkdownConfigFile**: Generates Markdown with badges from pyproject.toml
+- **MirrorTestConfigFile**: Creates test files mirroring source module structure
 
 Usage Examples
 --------------
