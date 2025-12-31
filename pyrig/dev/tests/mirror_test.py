@@ -189,13 +189,20 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         untested_funcs = [
             f for f in cls.get_untested_func_names() if f not in test_module_content
         ]
+        untested_classes = [
+            c
+            for c in cls.get_untested_class_and_method_names()
+            if ("class " + c) not in test_module_content
+        ]
         untested_methods = [
             m
             for ms in cls.get_untested_class_and_method_names().values()
             for m in ms
             if ("def " + m) not in test_module_content
         ]
-        return super().is_correct() or (not untested_funcs and not untested_methods)
+        return super().is_correct() or not (
+            untested_funcs or untested_classes or untested_methods
+        )
 
     @classmethod
     def get_test_path(cls) -> Path:
