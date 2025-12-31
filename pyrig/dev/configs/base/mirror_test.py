@@ -160,14 +160,16 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
     @classmethod
     def override_content(cls) -> bool:
-        """Indicate that existing test file content should be extended, not replaced.
+        """Enable content override mode for skeleton insertion.
 
         Returns:
-            True, indicating skeleton insertion mode rather than full replacement.
+            True to enable override mode, allowing get_content_str() to provide
+            the complete merged content (existing tests plus new skeletons).
 
         Note:
-            Despite returning True for "override", the actual behavior is additive -
-            new skeletons are appended/inserted while preserving existing content.
+            The "override" refers to the parent class file-writing behavior.
+            The actual content returned by get_content_str() is additive -
+            new skeletons are appended/inserted while preserving existing tests.
         """
         return True
 
@@ -614,6 +616,10 @@ class {test_class_name}:
 
                 from myproject import core, utils, api
                 MirrorTestConfigFile.create_test_modules([core, utils, api])
+
+        See Also:
+            make_subclasses_for_modules: Creates and orders subclasses
+            init_subclasses: Inherited method that instantiates config subclasses
         """
         subclasses = cls.make_subclasses_for_modules(modules)
         cls.init_subclasses(*subclasses)

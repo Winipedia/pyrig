@@ -49,10 +49,13 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
 
     @classmethod
     def is_correct(cls) -> bool:
-        """Check if file starts with triple quotes (has docstring).
+        """Check if file content is valid.
+
+        Validates that the file either passes parent class validation (empty or
+        exact match) or starts with a docstring (triple quotes).
 
         Returns:
-            True if empty, exact match, or starts with triple quotes.
+            True if parent validation passes or content starts with triple quotes.
         """
         docstring = cls.get_file_content().strip()
         return super().is_correct() or starts_with_docstring(docstring)

@@ -12,9 +12,7 @@ graph TD
     C --> D[Discover all fixtures modules]
     D --> E[Register autouse fixtures]
     E --> F[Session fixtures run once]
-    F --> G[Module fixtures run per module]
-    G --> H[Class fixtures run per class]
-    H --> I[Individual tests execute]
+    F --> G[Individual tests execute]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -22,9 +20,7 @@ graph TD
     style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style F fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style G fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style H fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style I fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
 Autouse fixtures run automatically based on their scope without being referenced
@@ -122,21 +118,25 @@ projects.
 
 ### `assert_all_modules_tested`
 
-**Purpose**: Ensure every source module has a test module.
+**Purpose**: Ensure every source module has a test module with tests for all
+functions, classes, and methods.
 
 **Assertion**:
 
 - Walks entire source package
 - Checks for corresponding test modules
-- Generates missing test skeletons for missing modules
+- Verifies all functions and classes have test counterparts
+- Verifies all methods in classes have test counterparts
+- Generates missing test skeletons using `MirrorTestConfigFile`
 - Fails if any tests missing
 
 **Scope**: Session
 
-**Why**: Enforces complete test coverage at module level. We think it is good to
-call at least every function. This has shown during pyrig's development already
-that it catches a lot of things early and helps long term. We recognize it can
-be annoying, but we believe it is worth it for real projects in the long run.
+**Why**: Enforces complete test coverage at module, function, class, and method
+level. We think it is good to call at least every function. This has shown
+during pyrig's development already that it catches a lot of things early and
+helps long term. We recognize it can be annoying, but we believe it is worth it
+for real projects in the long run.
 
 ---
 
@@ -259,53 +259,6 @@ dependency updates, this actively updates `uv` if a new version is available.
 
 ---
 
-## Module-Level Fixtures
-
-Run once per test module.
-
-### `assert_all_funcs_and_classes_tested`
-
-**Purpose**: Ensure all functions and classes in module have tests.
-
-**Assertion**:
-
-- Gets current test module from pytest request
-- Finds corresponding source module
-- Verifies all functions and classes have test counterparts
-- Generates missing test skeletons
-- Fails if any tests missing
-
-**Scope**: Module
-
-**Why**: Enforces complete test coverage at function/class level.
-
-This does not fail if the src module does not exist. This way you can have extra
-test files outside of the mirrored structure.
-
----
-
-## Class-Level Fixtures
-
-Run once per test class.
-
-### `assert_all_methods_tested`
-
-**Purpose**: Ensure all methods in class have tests.
-
-**Assertion**:
-
-- Gets current test class from pytest request
-- Finds corresponding source class
-- Verifies all methods have test counterparts
-- Generates missing test skeletons
-- Fails if any tests missing
-
-**Scope**: Class
-
-**Why**: Enforces complete test coverage at method level.
-
----
-
 ## Fixture Execution Order
 
 **Note**: The execution order of session-level autouse fixtures is not
@@ -316,23 +269,15 @@ logical grouping and scope hierarchy, not a guaranteed execution sequence.
 graph TD
     A[Session Start]
     --> B[Session-level autouse fixtures run<br/>order not guaranteed]
-    B --> C[For each test module]
-    C --> D[assert_all_funcs_and_classes_tested]
-    D --> E[For each test class in module]
-    E --> F[assert_all_methods_tested]
-    F --> G[Run individual tests]
-    G --> H[Session End]
-    H --> I[assert_no_unstaged_changes after]
+    B --> C[Run individual tests]
+    C --> D[Session End]
+    D --> E[assert_no_unstaged_changes after]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style F fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style G fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style H fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style I fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
 **Session-level fixtures** (run once, order not guaranteed):
@@ -352,14 +297,6 @@ graph TD
 - `assert_version_control_is_installed`
 - `assert_container_engine_is_installed` (local only)
 
-**Module-level fixtures** (run once per test module):
-
-- `assert_all_funcs_and_classes_tested`
-
-**Class-level fixtures** (run once per test class):
-
-- `assert_all_methods_tested`
-
 ## Creating Custom Autouse Fixtures
 
 Define autouse fixtures in your package's fixtures module:
@@ -377,6 +314,7 @@ def my_custom_validation() -> None:
 Available decorators:
 
 - `@autouse_session_fixture` - Runs once per test session
+- `@autouse_package_fixture` - Runs once per test package
 - `@autouse_module_fixture` - Runs once per test module
 - `@autouse_class_fixture` - Runs once per test class
 - `@autouse_function_fixture` - Runs for every test function

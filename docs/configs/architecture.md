@@ -36,6 +36,7 @@ graph TD
     D3 --> D3B[PythonTestsConfigFile]
 
     D3A --> D3A1[CopyModuleConfigFile]
+    D3A --> D3A2[MirrorTestConfigFile]
     D3A1 --> D3A1A[CopyModuleOnlyDocstringConfigFile]
     D3A1A --> D3A1A1[InitConfigFile]
 
@@ -46,6 +47,7 @@ graph TD
     style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style B2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style D3A2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
 ### Required Methods
@@ -455,6 +457,26 @@ class ConfigsInitConfigFile(InitConfigFile):
 
 Creates `myapp/dev/configs/__init__.py` with the docstring from
 `pyrig.dev.configs`.
+
+### MirrorTestConfigFile
+
+Creates test files that mirror source module structure with skeleton tests:
+
+```python
+from types import ModuleType
+from pyrig.dev.configs.base.mirror_test import MirrorTestConfigFile
+import myapp.core
+
+class CoreMirrorTest(MirrorTestConfigFile):
+    @classmethod
+    def get_src_module(cls) -> ModuleType:
+        return myapp.core
+```
+
+Creates `tests/test_myapp/test_core.py` with test skeletons for all functions,
+classes, and methods in `myapp.core`. Existing tests are preserved; only missing
+skeletons are added. Used internally by the `mktests` command and autouse
+fixtures for automatic test generation.
 
 ## Filename Derivation
 

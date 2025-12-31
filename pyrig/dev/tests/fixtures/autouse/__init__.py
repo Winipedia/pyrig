@@ -5,7 +5,5 @@ to enforce test coverage and project standards.
 
 Modules:
     session: Session-scoped fixtures for project-wide validation (structure,
-        dependencies, git state, development environment).
-    module: Module-scoped fixtures for test coverage per test module.
-    class_: Class-scoped fixtures for test coverage per test class.
+        dependencies, git state, development environment, test coverage).
 """

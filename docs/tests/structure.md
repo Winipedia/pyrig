@@ -84,26 +84,28 @@ class TestCalculator:
 
 ## Automatic Test Generation
 
-When tests are missing, pyrig automatically generates skeleton tests:
+When tests are missing, pyrig automatically generates skeleton tests using the
+`MirrorTestConfigFile` system:
 
 ```mermaid
 graph TD
     A[Test run starts] --> B{All modules<br/>have tests?}
-    B -->|No| C[Generate test skeletons]
+    B -->|No| C[MirrorTestConfigFile generates skeletons]
     C --> D[Create test files with NotImplementedError]
     D --> E[Fail with error message]
-    B -->|Yes| F{All functions/classes<br/>have tests?}
-    F -->|No| C
-    F -->|Yes| G[Run tests]
+    B -->|Yes| G[Run tests]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style E fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style F fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style G fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
+
+The `assert_all_modules_tested` session fixture checks that every source module
+has a corresponding test module with tests for all functions, classes, and
+methods. Missing tests are generated as skeletons with `NotImplementedError`.
 
 ### Generated Skeleton
 
@@ -146,10 +148,7 @@ uv run pytest --cov-report=html  # Generate HTML report in htmlcov/
 
 ## Validation
 
-Three levels of automatic validation ensure complete test coverage:
-
-1. **Session-level**: Validates all modules have test modules
-2. **Module-level**: Validates all functions and classes have tests
-3. **Class-level**: Validates all methods have tests
-
-All validation happens automatically through autouse fixtures.
+The `assert_all_modules_tested` session-level fixture validates that all source
+modules have corresponding test modules with complete test coverage for all
+functions, classes, and methods. This happens automatically through autouse
+fixtures.
