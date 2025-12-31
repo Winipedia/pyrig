@@ -26,7 +26,7 @@ Example:
     Create a mirror test config for a specific module::
 
         from types import ModuleType
-        from pyrig.dev.configs.base.mirror_test import MirrorTestConfigFile
+        from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
         import myproject.core
 
         class CoreMirrorTest(MirrorTestConfigFile):
@@ -54,6 +54,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Self, cast
 
+from pyrig.dev import tests
 from pyrig.dev.configs.base.py_package import PythonPackageConfigFile
 from pyrig.src.modules.class_ import get_all_cls_from_module, get_all_methods_from_cls
 from pyrig.src.modules.function import get_all_functions_from_module
@@ -190,8 +191,9 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         ]
         untested_methods = [
             m
-            for m in cls.get_untested_class_and_method_names()
-            if m not in test_module_content
+            for ms in cls.get_untested_class_and_method_names().values()
+            for m in ms
+            if ("def " + m) not in test_module_content
         ]
         return super().is_correct() or (not untested_funcs and not untested_methods)
 
@@ -623,3 +625,15 @@ class {test_class_name}:
         """
         subclasses = cls.make_subclasses_for_modules(modules)
         cls.init_subclasses(*subclasses)
+
+    @classmethod
+    def leaf(cls) -> type[Self]:
+        """Get the final leaf subclass (deepest in the inheritance tree).
+
+        Returns:
+            Final leaf subclass type. Can be abstract.
+
+        See Also:
+            get_all_subclasses: Get all subclasses regardless of priority
+        """
+        return cls.get_final_leaf(tests)

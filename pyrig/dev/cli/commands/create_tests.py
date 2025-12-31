@@ -9,7 +9,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from types import ModuleType
 
-from pyrig.dev.configs.base.mirror_test import MirrorTestConfigFile
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils.packages import get_src_package
 from pyrig.src.modules.imports import walk_package
 from pyrig.src.modules.package import create_package
@@ -56,7 +56,8 @@ def create_tests_for_package(package: ModuleType) -> None:
         executor.map(create_test_package, pkgs_without_modules)
 
     # create test modules for all modules
-    MirrorTestConfigFile.create_test_modules(all_modules)
+    mirror_test_cls = MirrorTestConfigFile.leaf()
+    mirror_test_cls.create_test_modules(all_modules)
 
 
 def create_test_package(package: ModuleType) -> None:

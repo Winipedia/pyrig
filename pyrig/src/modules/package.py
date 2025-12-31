@@ -19,7 +19,7 @@ from pyrig.src.modules.class_ import (
     discard_parent_classes,
     get_all_cls_from_module,
     get_all_methods_from_cls,
-    get_all_nonabstract_subclasses,
+    get_all_subclasses,
 )
 from pyrig.src.modules.function import get_all_functions_from_module
 from pyrig.src.modules.imports import (
@@ -318,12 +318,13 @@ def get_same_modules_from_deps_depen_on_dep(
     return modules
 
 
-def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
+def get_all_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
     cls: T,
     dep: ModuleType,
     load_package_before: ModuleType,
     *,
     discard_parents: bool = False,
+    exclude_abstract: bool = False,
 ) -> list[T]:
     """Find non-abstract subclasses across all packages depending on a dependency.
 
@@ -336,6 +337,7 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
         dep: Dependency package (e.g., pyrig or smth).
         load_package_before: Module path within `dep` to use as template.
         discard_parents: If True, keeps only leaf classes.
+        exclude_abstract: If True, excludes abstract classes.
 
     Returns:
         List of discovered non-abstract subclasses.
@@ -348,10 +350,11 @@ def get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
     subclasses: list[T] = []
     for pkg in get_same_modules_from_deps_depen_on_dep(load_package_before, dep):
         subclasses.extend(
-            get_all_nonabstract_subclasses(
+            get_all_subclasses(
                 cls,
                 load_package_before=pkg,
                 discard_parents=discard_parents,
+                exclude_abstract=exclude_abstract,
             )
         )
     # as these are different modules and pks we need to discard parents again
