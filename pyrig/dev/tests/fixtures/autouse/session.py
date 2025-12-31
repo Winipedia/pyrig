@@ -114,7 +114,8 @@ def assert_root_is_correct() -> None:
     Raises:
         AssertionError: If config files were incorrect (lists fixed paths).
     """
-    # if we are in CI then we must create experiment.py if it doesn't exist
+    # if we are in CI then we must create config files that are gitignored
+    # as they are not pushed to the repository
     running_in_ci = running_in_github_actions()
     if running_in_ci:
         DotExperimentConfigFile()
