@@ -30,16 +30,15 @@ from collections.abc import Generator
 from contextlib import chdir
 from importlib import import_module
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
 
 import pyrig
 from pyrig import dev, main, resources, src
 from pyrig.dev.cli.commands.create_root import make_project_root
-from pyrig.dev.cli.commands.create_tests import make_test_skeletons
 from pyrig.dev.cli.commands.make_inits import make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.mirror_test import MirrorTestConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
@@ -63,7 +62,6 @@ from pyrig.src.modules.imports import (
 from pyrig.src.modules.module import (
     get_isolated_obj_name,
     get_module_name_replacing_start_module,
-    import_module_with_default,
 )
 from pyrig.src.modules.package import (
     DOCS_DIR_NAME,
@@ -77,11 +75,7 @@ from pyrig.src.string import re_search_excluding_docstrings
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
     make_summary_error_msg,
-    make_test_obj_importpath_from_obj,
 )
-
-if TYPE_CHECKING:
-    from types import ModuleType
 
 logger = logging.getLogger(__name__)
 
@@ -251,26 +245,20 @@ def assert_all_modules_tested() -> None:
 
     # we will now go through all the modules in the src package and check
     # that there is a corresponding test module
-    missing_tests_to_module: dict[str, ModuleType] = {}
-    for package, modules in walk_package(src_package):
-        test_package_name = make_test_obj_importpath_from_obj(package)
-        test_package = import_module_with_default(test_package_name)
-        if test_package is None:
-            missing_tests_to_module[test_package_name] = package
+    all_modules = []
+    for _, modules in walk_package(src_package):
+        all_modules.extend(modules)
 
-        for module in modules:
-            test_module_name = make_test_obj_importpath_from_obj(module)
-            test_module = import_module_with_default(test_module_name)
-            if test_module is None:
-                missing_tests_to_module[test_module_name] = module
+    subclasses = MirrorTestConfigFile.make_subclasses_for_modules(all_modules)
+    incorrect_subclasses = [sc for sc in subclasses if not sc.is_correct()]
 
-    if missing_tests_to_module:
-        make_test_skeletons()
+    if incorrect_subclasses:
+        MirrorTestConfigFile.init_subclasses(incorrect_subclasses)
 
-    msg = f"""Found missing tests. Tests skeletons were automatically created for:
-    {make_summary_error_msg(missing_tests_to_module.keys())}
+    msg = f"""Found incorrect test modules. Test skeletons were automatically created for:
+    {make_summary_error_msg([sc.get_path().as_posix() for sc in incorrect_subclasses])}
 """
-    assert not missing_tests_to_module, msg
+    assert not incorrect_subclasses, msg
 
 
 @autouse_session_fixture

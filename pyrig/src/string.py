@@ -82,3 +82,16 @@ def re_search_excluding_docstrings(
     content = re.sub(r'"""[\s\S]*?"""', "", content)
     content = re.sub(r"'''[\s\S]*?'''", "", content)
     return re.search(pattern, content)
+
+
+def starts_with_docstring(content: str) -> bool:
+    """Check if content starts with a docstring.
+
+    Args:
+        content: Text content.
+
+    Returns:
+        True if content starts with a docstring, False otherwise.
+    """
+    first_line = content.split("\n")[0]
+    return any(quote in first_line for quote in ('"""', "'''"))

@@ -82,11 +82,24 @@ class TextConfigFile(ConfigFile):
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to text file."
             raise TypeError(msg)
-        if cls.get_file_content().strip():
+        if not cls.override_content() and cls.get_file_content().strip():
             config[cls.CONTENT_KEY] = (
                 config[cls.CONTENT_KEY] + "\n" + cls.get_file_content()
             )
         cls.get_path().write_text(config[cls.CONTENT_KEY], encoding="utf-8")
+
+    @classmethod
+    def override_content(cls) -> bool:
+        """Override file content even if it exists.
+
+        If True the content of the TextConfigFile subclass will replace the
+        existing content. If False the content will be appended to the existing
+        content.
+
+        Returns:
+            True if content should be overridden, False if not.
+        """
+        return False
 
     @classmethod
     def get_configs(cls) -> dict[str, Any]:

@@ -33,8 +33,6 @@ class PythonConfigFile(TextConfigFile):
         pyrig.dev.configs.base.py_package.PythonPackageConfigFile: For package files
     """
 
-    CONTENT_KEY = "content"
-
     @classmethod
     def get_file_extension(cls) -> str:
         """Return "py"."""

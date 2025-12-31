@@ -167,10 +167,8 @@ class ConfigFile(ABC):
             self.__class__.__name__,
             path,
         )
-        path.parent.mkdir(parents=True, exist_ok=True)
         if not path.exists():
-            logger.info("Creating config file %s at: %s", self.__class__.__name__, path)
-            path.touch()
+            self.create_file()
             self.dump(self.get_configs())
 
         if not self.is_correct():
@@ -181,6 +179,14 @@ class ConfigFile(ABC):
         if not self.is_correct():
             msg = f"Config file {path} is not correct."
             raise ValueError(msg)
+
+    @classmethod
+    def create_file(cls) -> None:
+        """Create the config file if it doesn't exist."""
+        path = cls.get_path()
+        logger.info("Creating config file %s at: %s", cls.__name__, path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
 
     @classmethod
     @cache
@@ -317,8 +323,9 @@ class ConfigFile(ABC):
             is_unwanted: Check if user opted out
             is_correct_recursively: Perform subset validation
         """
-        return cls.is_unwanted() or cls.is_correct_recursively(
-            cls.get_configs(), cls.load()
+        return cls.get_path().exists() and (
+            cls.is_unwanted()
+            or cls.is_correct_recursively(cls.get_configs(), cls.load())
         )
 
     @classmethod
@@ -368,6 +375,20 @@ class ConfigFile(ABC):
             configs,
             discard_parents=True,
         )
+        return cls.get_subclasses_ordered_by_priority(*subclasses)
+
+    @classmethod
+    def get_subclasses_ordered_by_priority[T: type["ConfigFile"]](
+        cls, *subclasses: T
+    ) -> list[T]:
+        """Order subclasses by priority.
+
+        Args:
+            subclasses: ConfigFile subclasses to order.
+
+        Returns:
+            List of ConfigFile subclass types, sorted by priority (highest first).
+        """
         return sorted(subclasses, key=lambda x: x.get_priority(), reverse=True)
 
     @classmethod
