@@ -1,10 +1,9 @@
-import importlib
 import logging
 from abc import abstractmethod
 from collections import defaultdict
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Self, cast
+from typing import Self, cast
 
 from pyrig.dev.configs.base.py_package import PythonPackageConfigFile
 from pyrig.src.modules.class_ import get_all_cls_from_module, get_all_methods_from_cls
@@ -47,20 +46,21 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return cls.get_test_module_content_with_skeletons()
 
     @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
-        super()._dump(config)
-        # need to reload the test module to reflect the new content
-        importlib.reload(cls.get_test_module())
-
-    @classmethod
     def override_content(cls) -> bool:
         return True
 
     @classmethod
     def is_correct(cls) -> bool:
-        no_untested_funcs = cls.get_untested_func_names() == []
-        no_untested_classes = cls.get_untested_class_and_method_names() == {}
-        return super().is_correct() or (no_untested_funcs and no_untested_classes)
+        test_module_content = get_module_content_as_str(cls.get_test_module())
+        untested_funcs = [
+            f for f in cls.get_untested_func_names() if f not in test_module_content
+        ]
+        untested_methods = [
+            m
+            for m in cls.get_untested_class_and_method_names()
+            if m not in test_module_content
+        ]
+        return super().is_correct() or (not untested_funcs and not untested_methods)
 
     @classmethod
     def get_test_path(cls) -> Path:

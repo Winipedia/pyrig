@@ -55,13 +55,13 @@ def config_file_factory[T: ConfigFile](
             """Test config file with tmp_path override."""
 
             @classmethod
-            def get_parent_path(cls) -> Path:
+            def get_path(cls) -> Path:
                 """Get the parent path in tmp_path.
 
                 Returns:
                     Path within tmp_path.
                 """
-                path = super().get_parent_path()
+                path = super().get_path()
                 return Path(tmp_path / path)
 
             @classmethod
