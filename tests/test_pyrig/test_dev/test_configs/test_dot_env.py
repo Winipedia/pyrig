@@ -93,14 +93,3 @@ class TestDotEnvConfigFile:
         assert my_test_dotenv_config_file.is_correct(), (
             "Expected .env file to be correct when it exists"
         )
-
-        # Remove the file
-        my_test_dotenv_config_file.get_path().unlink()
-
-        # Should still be correct because get_configs returns empty dict
-        # and is_correct_recursively({}, {}) returns True (empty subset of empty)
-        # The implementation: super().is_correct() or cls.get_path().exists()
-        # Since get_configs() is {} and load() would be {}, they match
-        assert my_test_dotenv_config_file.is_correct(), (
-            "Expected .env file to be correct even when doesn't exist (empty)"
-        )

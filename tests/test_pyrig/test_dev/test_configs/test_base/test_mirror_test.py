@@ -65,11 +65,10 @@ class TestMirrorTestConfigFile:
     def test_get_parent_path(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
-        tmp_path: Path,
     ) -> None:
         """Test method."""
         parent_path = my_test_mirror_test_config_file.get_parent_path()
-        assert parent_path == tmp_path / Path(TESTS_PACKAGE_NAME)
+        assert parent_path == Path(TESTS_PACKAGE_NAME)
 
     def test_get_content_str(
         self,
@@ -84,12 +83,6 @@ class TestMirrorTestConfigFile:
             assert "def test_mirror_method" in content
             assert "def test_mirror_function" in content
             assert "class TestMirrorClass" in content
-
-    @pytest.mark.skip(reason="Doesn't work with tmp_path with module loading.")
-    def test__dump(
-        self,
-    ) -> None:
-        """Test method."""
 
     def test_override_content(self) -> None:
         """Test method."""
