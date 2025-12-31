@@ -998,7 +998,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "3.1.24"
+version = "3.1.25"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
