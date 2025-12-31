@@ -38,6 +38,7 @@ from pyrig import dev, main, resources, src
 from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.make_inits import make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
@@ -117,6 +118,7 @@ def assert_root_is_correct() -> None:
     running_in_ci = running_in_github_actions()
     if running_in_ci:
         DotExperimentConfigFile()
+        DotEnvConfigFile()
 
     subclasses = ConfigFile.get_all_subclasses()
     incorrect_cfs = [cf for cf in subclasses if not cf.is_correct()]
