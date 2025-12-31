@@ -255,7 +255,8 @@ def assert_all_modules_tested() -> None:
     if incorrect_subclasses:
         MirrorTestConfigFile.init_subclasses(incorrect_subclasses)
 
-    msg = f"""Found incorrect test modules. Test skeletons were automatically created for:
+    msg = f"""Found incorrect test modules.
+    Test skeletons were automatically created for:
     {make_summary_error_msg([sc.get_path().as_posix() for sc in incorrect_subclasses])}
 """
     assert not incorrect_subclasses, msg

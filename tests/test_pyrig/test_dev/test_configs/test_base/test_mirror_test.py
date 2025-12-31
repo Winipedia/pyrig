@@ -174,7 +174,7 @@ class TestMirrorTestConfigFile:
         """Test method."""
         # create the file first
         my_test_mirror_test_config_file.create_file()
-        content = my_test_mirror_test_config_file.get_test_module_content_with_class_skeletons(
+        content = my_test_mirror_test_config_file.get_test_module_content_with_class_skeletons(  # noqa: E501
             my_test_mirror_test_config_file.get_test_module_content_with_skeletons()
         )
         assert "def test_mirror_method" in content
