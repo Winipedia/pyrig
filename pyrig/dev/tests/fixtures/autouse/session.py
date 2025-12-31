@@ -38,11 +38,11 @@ from pyrig import dev, main, resources, src
 from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.make_inits import make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
-from pyrig.dev.configs.base.mirror_test import MirrorTestConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils.packages import (
     find_packages,
     get_namespace_packages,
@@ -249,11 +249,12 @@ def assert_all_modules_tested() -> None:
     for _, modules in walk_package(src_package):
         all_modules.extend(modules)
 
-    subclasses = MirrorTestConfigFile.make_subclasses_for_modules(all_modules)
+    mirror_test_cls = MirrorTestConfigFile.leaf()
+    subclasses = mirror_test_cls.make_subclasses_for_modules(all_modules)
     incorrect_subclasses = [sc for sc in subclasses if not sc.is_correct()]
 
     if incorrect_subclasses:
-        MirrorTestConfigFile.init_subclasses(incorrect_subclasses)
+        mirror_test_cls.init_subclasses(*incorrect_subclasses)
 
     msg = f"""Found incorrect test modules.
     Test skeletons were automatically created for:

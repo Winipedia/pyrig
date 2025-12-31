@@ -58,7 +58,7 @@ from pyrig.dev import builders
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.utils.packages import get_src_package
 from pyrig.src.modules.package import (
-    get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
+    get_all_subcls_from_mod_in_all_deps_depen_on_dep,
 )
 from pyrig.src.modules.path import ModulePath
 
@@ -249,11 +249,12 @@ class Builder(ABC):
         See Also:
             init_all_non_abstract_subclasses: Instantiates all discovered builders
         """
-        return get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
+        return get_all_subcls_from_mod_in_all_deps_depen_on_dep(
             cls,
             pyrig,
             builders,
             discard_parents=True,
+            exclude_abstract=True,
         )
 
     @classmethod

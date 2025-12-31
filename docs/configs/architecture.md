@@ -158,7 +158,7 @@ graph LR
     style F fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
-Discovery uses `get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep` with
+Discovery uses `get_all_subcls_from_mod_in_all_deps_depen_on_dep` with
 `discard_parents=True`, meaning only leaf implementations are initialized. This
 way you can subclass a config file and only your subclass will be initialized.
 This makes it easy to adjust any config file to your liking.
@@ -464,7 +464,7 @@ Creates test files that mirror source module structure with skeleton tests:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.mirror_test import MirrorTestConfigFile
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 import myapp.core
 
 class CoreMirrorTest(MirrorTestConfigFile):
@@ -477,6 +477,26 @@ Creates `tests/test_myapp/test_core.py` with test skeletons for all functions,
 classes, and methods in `myapp.core`. Existing tests are preserved; only missing
 skeletons are added. Used internally by the `mktests` command and autouse
 fixtures for automatic test generation.
+
+#### Customizing Test Generation
+
+Subclass `MirrorTestConfigFile` in your project's `dev/tests/` directory to
+customize skeleton generation. The `leaf()` method ensures your subclass is
+used. For example, to change the skeleton for test functions:
+
+```python
+# myapp/dev/tests/mirror_test.py
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile as BaseMirrorTest
+
+class MirrorTestConfigFile(BaseMirrorTest):
+    @classmethod
+    def get_test_func_skeleton(cls, test_func_name: str) -> str:
+        return f'''
+def {test_func_name}() -> None:
+    """Test function for {test_func_name.removeprefix("test_")}."""
+    pytest.skip("TODO: implement test")
+'''
+```
 
 ## Filename Derivation
 

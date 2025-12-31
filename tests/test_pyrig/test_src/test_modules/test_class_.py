@@ -8,16 +8,12 @@ from collections.abc import Callable
 from functools import wraps
 from typing import Any, ClassVar
 
-from pytest_mock import MockFixture
-
 from pyrig.src.modules.class_ import (
     discard_parent_classes,
     get_all_cls_from_module,
     get_all_methods_from_cls,
-    get_all_nonabstract_subclasses,
     get_all_subclasses,
     get_cached_instance,
-    init_all_nonabstract_subclasses,
 )
 
 
@@ -219,40 +215,6 @@ def test_get_all_subclasses() -> None:
     subclasses = get_all_subclasses(ParentClass, discard_parents=True)
     assert ParentClass not in subclasses, f"Expected ParentClass not in {subclasses}"
     assert TestClass in subclasses, f"Expected TestClass in {subclasses}"
-
-
-def test_get_all_nonabstract_subclasses() -> None:
-    """Test func for get_all_nonabstract_subclasses."""
-    # Test with ParentClass - should find TestClass as non-abstract subclass
-    subclasses = get_all_nonabstract_subclasses(ParentClass)
-
-    assert TestClass in subclasses, (
-        f"Expected TestClass to be in non-abstract subclasses, got {subclasses}"
-    )
-
-    # Test with abstract class - should only find concrete implementations
-    subclasses2 = get_all_nonabstract_subclasses(AbstractParent)
-
-    assert ConcreteChild in subclasses2, (
-        f"Expected ConcreteChild in non-abstract subclasses, got {subclasses2}"
-    )
-
-    assert AnotherAbstractChild not in subclasses2, (
-        f"Expected AnotherAbstractChild NOT in non-abstract subclasses, "
-        f"got {subclasses2}"
-    )
-
-
-def test_init_all_nonabstract_subclasses(mocker: MockFixture) -> None:
-    """Test func for init_all_nonabstract_subclasses."""
-    # spy on __init__ of ConcreteChild
-    spy = mocker.spy(ConcreteChild, ConcreteChild.__init__.__name__)
-
-    init_all_nonabstract_subclasses(AbstractParent)
-
-    assert spy.call_count == 1, (
-        f"Expected __init__ of ConcreteChild to be called once, got {spy.call_count}"
-    )
 
 
 def test_discard_parent_classes() -> None:

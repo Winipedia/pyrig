@@ -7,8 +7,8 @@ from types import ModuleType
 
 import pytest
 
-from pyrig.dev.configs.base import mirror_test
-from pyrig.dev.configs.base.mirror_test import MirrorTestConfigFile
+from pyrig.dev.tests import mirror_test
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.modules.module import create_module
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
@@ -47,6 +47,11 @@ def mirror_function():
 
 class TestMirrorTestConfigFile:
     """Test class."""
+
+    def test_leaf(self) -> None:
+        """Test method."""
+        leaf = MirrorTestConfigFile.leaf()
+        assert leaf is MirrorTestConfigFile
 
     def test_get_src_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]

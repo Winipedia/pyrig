@@ -23,7 +23,7 @@ from pyrig.src.modules.module import (
 from pyrig.src.modules.package import (
     DependencyGraph,
     create_package,
-    get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
+    get_all_subcls_from_mod_in_all_deps_depen_on_dep,
     get_objs_from_obj,
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
@@ -397,10 +397,10 @@ def test_create_package(tmp_path: Path) -> None:
         assert (package_dir / "__init__.py").exists()
 
 
-def test_get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep() -> None:
+def test_get_all_subcls_from_mod_in_all_deps_depen_on_dep() -> None:
     """Test func."""
-    subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
-        AbstractParent, pyrig, test_modules
+    subclasses = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
+        AbstractParent, pyrig, test_modules, exclude_abstract=True
     )
     assert ConcreteChild in subclasses, (
         f"Expected ConcreteChild in non-abstract subclasses, got {subclasses}"

@@ -94,6 +94,7 @@ def get_all_subclasses[T: type](
     load_package_before: ModuleType | None = None,
     *,
     discard_parents: bool = False,
+    exclude_abstract: bool = False,
 ) -> set[T]:
     """Recursively discover all subclasses of a class.
 
@@ -105,6 +106,7 @@ def get_all_subclasses[T: type](
         load_package_before: Optional package to walk before discovery.
             When provided, results are filtered to classes from this package.
         discard_parents: If True, keeps only leaf classes.
+        exclude_abstract: If True, excludes abstract classes.
 
     Returns:
         Set of all subclasses.
@@ -125,63 +127,12 @@ def get_all_subclasses[T: type](
         }
     if discard_parents:
         subclasses_set = discard_parent_classes(subclasses_set)
+
+    if exclude_abstract:
+        subclasses_set = {
+            subclass for subclass in subclasses_set if not inspect.isabstract(subclass)
+        }
     return subclasses_set
-
-
-def get_all_nonabstract_subclasses[T: type](
-    cls: T,
-    load_package_before: ModuleType | None = None,
-    *,
-    discard_parents: bool = False,
-) -> set[T]:
-    """Find all concrete (non-abstract) subclasses of a class.
-
-    Filters out abstract classes (those with unimplemented abstract methods).
-    Primary function for discovering ConfigFile and Builder implementations.
-
-    Args:
-        cls: Base class to find subclasses of.
-        load_package_before: Optional package to walk before discovery.
-        discard_parents: If True, keeps only leaf classes.
-
-    Returns:
-        Set of all non-abstract subclasses.
-    """
-    return {
-        subclass
-        for subclass in get_all_subclasses(
-            cls,
-            load_package_before=load_package_before,
-            discard_parents=discard_parents,
-        )
-        if not inspect.isabstract(subclass)
-    }
-
-
-def init_all_nonabstract_subclasses[T: type](
-    cls: T,
-    load_package_before: ModuleType | None = None,
-    *,
-    discard_parents: bool = False,
-) -> None:
-    """Discover and instantiate all concrete subclasses of a class.
-
-    Used by ConfigFile and Builder systems to auto-initialize implementations.
-
-    Args:
-        cls: Base class to find and instantiate subclasses of.
-        load_package_before: Optional package to walk before discovery.
-        discard_parents: If True, only instantiates leaf classes.
-
-    Note:
-        All subclasses must have a no-argument `__init__`.
-    """
-    for subclass in get_all_nonabstract_subclasses(
-        cls,
-        load_package_before=load_package_before,
-        discard_parents=discard_parents,
-    ):
-        subclass()
 
 
 @overload

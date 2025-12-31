@@ -8,12 +8,12 @@ from typing import Any, ClassVar
 import pytest
 from pytest_mock import MockFixture
 
+from pyrig.dev import configs, tests
 from pyrig.dev.configs.base.base import (
     ConfigFile,
 )
-from pyrig.src.modules.package import (
-    get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
-)
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
+from pyrig.src.modules.package import get_all_subcls_from_mod_in_all_deps_depen_on_dep
 
 
 @pytest.fixture
@@ -70,6 +70,14 @@ def my_test_config_file(
 
 class TestConfigFile:
     """Test class."""
+
+    def test_get_final_leaf(self) -> None:
+        """Test method."""
+        with pytest.raises(ValueError, match="Multiple final leaves found"):
+            ConfigFile.get_final_leaf(configs)
+
+        final_leaf = MirrorTestConfigFile.get_final_leaf(tests)
+        assert final_leaf is MirrorTestConfigFile
 
     def test_create_file(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method."""
@@ -321,11 +329,11 @@ class TestConfigFile:
         self, my_test_config_file: type[ConfigFile], mocker: MockFixture
     ) -> None:
         """Test method for get_all_subclasses."""
-        # mock get_all_nonabstract_subclasses to return my_test_config_file
+        # mock get_all_subcls to return my_test_config_file
         mocker.patch(
             ConfigFile.__module__
             + "."
-            + get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep.__name__,
+            + get_all_subcls_from_mod_in_all_deps_depen_on_dep.__name__,
             return_value={my_test_config_file},
         )
         actual = my_test_config_file.get_all_subclasses()
