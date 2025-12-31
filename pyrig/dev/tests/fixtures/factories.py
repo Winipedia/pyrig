@@ -12,12 +12,14 @@ Fixtures:
 """
 
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from pyrig.dev.builders.base.base import Builder
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.base import ConfigFile, ConfigType
 
 
 @pytest.fixture
@@ -53,14 +55,16 @@ def config_file_factory[T: ConfigFile](
             """Test config file with tmp_path override."""
 
             @classmethod
-            def get_path(cls) -> Path:
-                """Get the path to the config file in tmp_path.
+            def _load(cls) -> ConfigType:
+                """Load the config file."""
+                with chdir(tmp_path):
+                    return super()._load()
 
-                Returns:
-                    Path within tmp_path.
-                """
-                path = super().get_path()
-                return Path(tmp_path / path)
+            @classmethod
+            def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+                """Dump the config file."""
+                with chdir(tmp_path):
+                    super()._dump(config)
 
         return TestConfigFile  # ty:ignore[invalid-return-type]
 

@@ -71,6 +71,18 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
+    def test_create_file(self, my_test_config_file: type[ConfigFile]) -> None:
+        """Test method."""
+        my_test_config_file.create_file()
+        assert my_test_config_file.get_path().exists()
+
+    def test_get_subclasses_ordered_by_priority(
+        self, my_test_config_file: type[ConfigFile]
+    ) -> None:
+        """Test method."""
+        ordered = ConfigFile.get_subclasses_ordered_by_priority(my_test_config_file)
+        assert ordered == [my_test_config_file]
+
     def test__load(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method."""
         loaded = my_test_config_file._load()  # noqa: SLF001
