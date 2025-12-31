@@ -44,19 +44,19 @@ def create_tests_for_package(package: ModuleType) -> None:
         package: The source package to create tests for.
     """
     logger.debug("Creating tests for package: %s", package.__name__)
-    modules: list[ModuleType] = []
+    all_modules: list[ModuleType] = []
     pkgs_without_modules: list[ModuleType] = []
     for pkg, modules in walk_package(package):
         if not modules:
             pkgs_without_modules.append(pkg)
             continue
-        modules.extend(modules)
+        all_modules.extend(modules)
 
     with ThreadPoolExecutor() as executor:
         executor.map(create_test_package, pkgs_without_modules)
 
     # create test modules for all modules
-    MirrorTestConfigFile.create_test_modules(modules)
+    MirrorTestConfigFile.create_test_modules(all_modules)
 
 
 def create_test_package(package: ModuleType) -> None:
