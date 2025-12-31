@@ -6,6 +6,7 @@ from pyrig.src.string import (
     make_name_from_obj,
     re_search_excluding_docstrings,
     split_on_uppercase,
+    starts_with_docstring,
 )
 
 
@@ -83,3 +84,24 @@ def test_function() -> str:
     result = re_search_excluding_docstrings(pattern, content)
     # should find it
     assert result is not None, f"Expected match for '{pattern}', got {result}"
+
+
+def test_starts_with_docstring() -> None:
+    """Test function."""
+    content = '''"""Test module."""
+
+def test_function() -> str:
+    """Test function."""
+    return "test"
+'''
+    assert starts_with_docstring(content), "Expected True"
+
+    content = """'''Test module.'''
+    """
+    assert starts_with_docstring(content), "Expected False"
+
+    content = '''def test_function() -> str:
+    """Test function."""
+    return "test"
+'''
+    assert not starts_with_docstring(content), "Expected False"

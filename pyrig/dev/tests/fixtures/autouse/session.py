@@ -554,7 +554,7 @@ def assert_project_mgt_is_up_to_date() -> None:
         expected_in_err_or_out = any(exp in std_msg for exp in expected)
         msg = f"""Expected one of {expected} in stderr or stdout, got: {std_msg}
 
-        This fixture ran `uv self update` but it failed.
+        This fixture ran `uv self update` but determined that you were not up to date.
         """
         assert expected_in_err_or_out, msg
 

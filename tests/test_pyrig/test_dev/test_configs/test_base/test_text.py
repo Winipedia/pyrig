@@ -38,6 +38,10 @@ def my_test_text_config_file(
 class TestTextConfigFile:
     """Test class."""
 
+    def test_override_content(self) -> None:
+        """Test method."""
+        assert not TextConfigFile.override_content(), "Expected False"
+
     def test_get_content_str(
         self, my_test_text_config_file: type[TextConfigFile]
     ) -> None:
