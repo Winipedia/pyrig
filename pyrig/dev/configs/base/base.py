@@ -55,7 +55,7 @@ Example:
 See Also:
     pyrig.dev.configs: Package-level documentation
     pyrig.src.iterate.nested_structure_is_subset: Subset validation logic
-    pyrig.src.modules.package.get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep:
+    pyrig.src.modules.package.get_all_subcls_from_mod_in_all_deps_depen_on_dep:
         Subclass discovery mechanism
 """
 
@@ -66,13 +66,14 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 from pathlib import Path
-from typing import Any, TypeVar
+from types import ModuleType
+from typing import Any, Self, TypeVar
 
 import pyrig
 from pyrig.dev import configs
 from pyrig.src.iterate import nested_structure_is_subset
 from pyrig.src.modules.package import (
-    get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep,
+    get_all_subcls_from_mod_in_all_deps_depen_on_dep,
 )
 from pyrig.src.string import split_on_uppercase
 
@@ -359,7 +360,7 @@ class ConfigFile(ABC):
         return nested_structure_is_subset(expected_config, actual_config)
 
     @classmethod
-    def get_all_subclasses(cls) -> list[type["ConfigFile"]]:
+    def get_all_subclasses(cls) -> list[type[Self]]:
         """Discover all non-abstract ConfigFile subclasses across all packages.
 
         Returns:
@@ -369,16 +370,17 @@ class ConfigFile(ABC):
             get_priority_subclasses: Get only subclasses with priority > 0
             init_all_subclasses: Initialize all discovered subclasses
         """
-        subclasses = get_all_nonabst_subcls_from_mod_in_all_deps_depen_on_dep(
+        subclasses = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
             cls,
             pyrig,
             configs,
             discard_parents=True,
+            exclude_abstract=True,
         )
         return cls.get_subclasses_ordered_by_priority(*subclasses)
 
     @classmethod
-    def get_subclasses_ordered_by_priority[T: type["ConfigFile"]](
+    def get_subclasses_ordered_by_priority[T: type[Self]](
         cls, *subclasses: T
     ) -> list[T]:
         """Order subclasses by priority.
@@ -392,7 +394,7 @@ class ConfigFile(ABC):
         return sorted(subclasses, key=lambda x: x.get_priority(), reverse=True)
 
     @classmethod
-    def get_priority_subclasses(cls) -> list[type["ConfigFile"]]:
+    def get_priority_subclasses(cls) -> list[type[Self]]:
         """Get ConfigFile subclasses with priority > 0.
 
         Returns:
@@ -407,7 +409,7 @@ class ConfigFile(ABC):
     @classmethod
     def init_subclasses(
         cls,
-        *subclasses: type["ConfigFile"],
+        *subclasses: type[Self],
     ) -> None:
         """Initialize specific ConfigFile subclasses with priority-based ordering.
 
@@ -454,3 +456,31 @@ class ConfigFile(ABC):
         """
         logger.info("Creating priority config files")
         cls.init_subclasses(*cls.get_priority_subclasses())
+
+    @classmethod
+    def get_final_leaf(cls, pkg: ModuleType) -> type[Self]:
+        """Get the final leaf subclass (deepest in the inheritance tree).
+
+        Returns:
+            Final leaf subclass type. Can be abstract.
+
+        See Also:
+            get_all_subclasses: Get all subclasses regardless of priority
+        """
+        classes = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
+            cls=cls,
+            dep=pyrig,
+            load_package_before=pkg,
+            discard_parents=True,
+            exclude_abstract=False,
+        )
+        # raise if more than one final leaf
+        if len(classes) > 1:
+            msg = (
+                f"Multiple final leaves found for {cls.__name__} "
+                f"in {pkg.__name__}: {classes}"
+            )
+            raise ValueError(msg)
+        leaf = classes[0]
+        logger.debug("Found final leaf of %s: %s", cls.__name__, leaf.__name__)
+        return leaf
