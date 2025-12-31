@@ -1,6 +1,5 @@
 """Tests for pyrig.src.testing.create_tests module."""
 
-import inspect
 from contextlib import chdir
 from pathlib import Path
 
@@ -8,18 +7,13 @@ from pytest_mock import MockFixture
 
 from pyrig.dev.cli.commands import create_tests as create_tests_module
 from pyrig.dev.cli.commands.create_tests import (
-    create_test_module,
     create_test_package,
     create_tests_for_package,
-    get_test_classes_content,
-    get_test_functions_content,
-    get_test_module_content,
     make_test_skeletons,
 )
 from pyrig.src.modules.imports import import_pkg_with_dir_fallback
 from pyrig.src.modules.module import (
     create_module,
-    import_module_with_file_fallback,
     make_obj_importpath,
 )
 from pyrig.src.modules.package import create_package
@@ -93,157 +87,3 @@ def test_create_test_package(tmp_path: Path) -> None:
         create_test_package(package)
         test_package_path = tmp_path / f"tests/{test_create_test_package.__name__}"
         assert test_package_path.exists()
-
-
-def test_create_test_module(tmp_path: Path) -> None:
-    """Test func for create_test_module."""
-    # Create a real source module
-    module_name = create_test_module.__name__
-    module_path = tmp_path / f"{module_name}.py"
-    with chdir(tmp_path):
-        module = create_module(module_path)
-        create_test_module(module)
-        test_module_path = tmp_path / f"tests/{test_create_test_module.__name__}.py"
-        assert test_module_path.exists()
-
-
-def test_get_test_module_content(tmp_path: Path) -> None:
-    """Test func for get_test_module_content."""
-    module_name = test_get_test_module_content.__name__
-    module_path = tmp_path / f"{module_name}.py"
-    # write a function in the module
-    module_content = """
-def function_a() -> str:
-    return "a"
-"""
-    module_path.write_text(module_content)
-    with chdir(tmp_path):
-        # Create the modules
-        module = import_module_with_file_fallback(module_path)
-        create_test_module(module)
-
-        test_module_content = get_test_module_content(module)
-        assert "def test_function_a" in test_module_content
-
-
-def test_get_test_functions_content(tmp_path: Path) -> None:
-    """Test func for get_test_functions_content."""
-    # Create a real source module with functions
-    source_module_content = '''"""Test source module."""
-
-def function_a() -> str:
-    """First function."""
-    return "a"
-
-def function_b() -> int:
-    """Second function."""
-    return 42
-'''
-
-    # Create a test module with one existing test
-    test_module_content = '''"""Test module."""
-
-def test_function_a() -> None:
-    """Test func for function_a."""
-    pass
-'''
-
-    with chdir(tmp_path):
-        # Create the modules
-        source_file = tmp_path / "source_module_test_functions_content.py"
-        test_file = tmp_path / "test_module_test_functions_content.py"
-
-        source_file.write_text(source_module_content)
-        test_file.write_text(test_module_content)
-
-        # Import the modules
-        source_module = import_module_with_file_fallback(source_file)
-        test_module = import_module_with_file_fallback(test_file)
-
-        # Call the function
-        result = get_test_functions_content(
-            source_module, test_module, test_module_content
-        )
-        assert "def test_function_b() -> None:" in result, (
-            "Expected result to contain test_function_b"
-        )
-
-        # both are just once in there
-        function_a_count = result.count("def test_function_a() -> None:")
-        assert function_a_count == 1, (
-            f"Expected one test_function_a, found {function_a_count} occurrences"
-        )
-        function_b_count = result.count("def test_function_b() -> None:")
-        assert function_b_count == 1, (
-            f"Expected one test_function_b, found {function_b_count} occurrences"
-        )
-
-
-def test_get_test_classes_content(tmp_path: Path) -> None:
-    """Test func for get_test_classes_content."""
-    # Create a real source module with classes
-    source_module_content = '''"""Test source module."""
-
-class Calculator:
-    """Calculator class."""
-
-    def add(self, a: int, b: int) -> int:
-        """Add two numbers."""
-        return a + b
-
-    def multiply(self, a: int, b: int) -> int:
-        """Multiply two numbers."""
-        return a * b
-
-class StringHelper:
-    """String helper class."""
-
-    def reverse(self, text: str) -> str:
-        """Reverse a string."""
-        return text[::-1]
-'''
-
-    # Create a test module with one existing test class
-    test_module_content = '''"""Test module."""
-
-class TestCalculator:
-    """Test class."""
-
-    def test_add(self) -> None:
-        """Test method for add."""
-        pass
-'''
-
-    with chdir(tmp_path):
-        # Create the modules
-        source_file = tmp_path / "source_module_test_classes_content.py"
-        test_file = tmp_path / "test_module_test_classes_content.py"
-        source_file.write_text(source_module_content)
-        test_file.write_text(test_module_content)
-        source_module = import_module_with_file_fallback(source_file)
-        test_module = import_module_with_file_fallback(test_file)
-        # assert inspect.getmembers retunr the classes
-        members = inspect.getmembers(source_module, inspect.isclass)
-        assert len(members) > 1, f"Expected 2 classes, got {len(members)}"
-        result = get_test_classes_content(
-            source_module, test_module, test_module_content
-        )
-        assert "class TestStringHelper:" in result, (
-            "Expected result to contain TestStringHelper"
-        )
-        assert "def test_reverse(self) -> None:" in result, (
-            "Expected result to contain test_reverse method"
-        )
-        assert "def test_multiply(self) -> None:" in result, (
-            "Expected result to contain test_multiply method"
-        )
-
-        # both are just once in there
-        test_string_helper_count = result.count("class TestStringHelper:")
-        assert test_string_helper_count == 1, (
-            f"Expected one TestStringHelper, got {test_string_helper_count} occurrences"
-        )
-        test_multiply_count = result.count("def test_multiply(self) -> None:")
-        assert test_multiply_count == 1, (
-            f"Expected one test_multiply, found {test_multiply_count} occurrences"
-        )

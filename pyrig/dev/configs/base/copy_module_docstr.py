@@ -19,6 +19,7 @@ Example:
 """
 
 from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
+from pyrig.src.string import starts_with_docstring
 
 
 class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
@@ -54,9 +55,4 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
             True if empty, exact match, or starts with triple quotes.
         """
         docstring = cls.get_file_content().strip()
-        # is correct if file has """ or ''' in the first 5 characters
-        first_5_chars = docstring[:5]
-        triple_quotes_in_first_5_chars = any(
-            quote in first_5_chars for quote in ('"""', "'''")
-        )
-        return super().is_correct() or triple_quotes_in_first_5_chars
+        return super().is_correct() or starts_with_docstring(docstring)
