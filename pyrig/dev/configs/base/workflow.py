@@ -34,7 +34,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from pyrig.dev.builders.base.base import Builder
+from pyrig.dev.builders.base.base import BuilderConfigFile
 from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.yaml import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
@@ -110,7 +110,7 @@ class Workflow(YamlConfigFile):
     WINDOWS_LATEST = "windows-latest"
     MACOS_LATEST = "macos-latest"
 
-    ARTIFACTS_DIR_NAME = Builder.ARTIFACTS_DIR_NAME
+    ARTIFACTS_DIR_NAME = BuilderConfigFile.ARTIFACTS_DIR_NAME
     ARTIFACTS_PATTERN = f"{ARTIFACTS_DIR_NAME}/*"
 
     @classmethod
@@ -884,7 +884,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_make_dist_folder,
-            run=f"mkdir -p {Builder.ARTIFACTS_DIR_NAME}",
+            run=f"mkdir -p {cls.ARTIFACTS_DIR_NAME}",
             step=step,
         )
 
@@ -1395,7 +1395,7 @@ class Workflow(YamlConfigFile):
     def step_create_artifacts_folder(
         cls,
         *,
-        folder: str = Builder.ARTIFACTS_DIR_NAME,
+        folder: str = BuilderConfigFile.ARTIFACTS_DIR_NAME,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a step that creates the artifacts directory.

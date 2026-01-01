@@ -10,10 +10,14 @@ from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
+import pytest
 from pytest_mock import MockFixture
 
 import pyrig
 from pyrig import src
+from pyrig.dev import configs, tests
+from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils import packages
 from pyrig.dev.utils.packages import find_packages
 from pyrig.src.modules.module import (
@@ -24,6 +28,7 @@ from pyrig.src.modules.package import (
     DependencyGraph,
     create_package,
     get_all_subcls_from_mod_in_all_deps_depen_on_dep,
+    get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep,
     get_objs_from_obj,
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
@@ -405,3 +410,16 @@ def test_get_all_subcls_from_mod_in_all_deps_depen_on_dep() -> None:
     assert ConcreteChild in subclasses, (
         f"Expected ConcreteChild in non-abstract subclasses, got {subclasses}"
     )
+
+
+def test_get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep() -> None:
+    """Test function."""
+    with pytest.raises(ValueError, match="Multiple final leaves found"):
+        get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep(
+            cls=ConfigFile, dep=pyrig, pkg=configs
+        )
+
+    final_leaf = get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep(
+        cls=MirrorTestConfigFile, dep=pyrig, pkg=tests
+    )
+    assert final_leaf is MirrorTestConfigFile

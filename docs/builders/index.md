@@ -29,7 +29,7 @@ Use the built-in PyInstaller builder for creating standalone executables:
 
 The builder system provides:
 
-- **Automatic discovery** of all Builder subclasses across packages
+- **Automatic discovery** of all BuilderConfigFile subclasses across packages
 - **Multi-package support** through dependency graph traversal
 - **Platform-specific artifacts** with automatic naming
 - **Temporary build isolation** for clean builds
@@ -48,8 +48,12 @@ graph LR
     G --> C
     C --> H[All builders complete]
 
-    B -.->|Finds| B1[All Builder subclasses<br/>across dependency chain]
-    E -.->|Calls| E1[Builder.create_artifacts<br/>with temp_artifacts_dir]
+    B -.->|Finds| B1[
+        All BuilderConfigFile subclasses<br/>across dependency chain
+    ]
+    E -.->|Calls| E1[
+        BuilderConfigFile.create_artifacts<br/>with temp_artifacts_dir
+    ]
     F -.->|Outputs| F1[dist/artifact-name]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -70,18 +74,18 @@ Build all artifacts:
 uv run pyrig build
 ```
 
-This discovers and executes all non-abstract Builder subclasses in your project
-and its dependencies that also depend on pyrig.
+This discovers and executes all non-abstract BuilderConfigFile subclasses in
+your project and its dependencies that also depend on pyrig.
 
 ## Creating a Custom Builder
 
-Subclass `Builder` and implement `create_artifacts`:
+Subclass `BuilderConfigFile` and implement `create_artifacts`:
 
 ```python
 from pathlib import Path
-from pyrig.dev.builders.base.base import Builder
+from pyrig.dev.builders.base.base import BuilderConfigFile
 
-class MyBuilder(Builder):
+class MyBuilder(BuilderConfigFile):
     @classmethod
     def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
         """Create your artifacts."""

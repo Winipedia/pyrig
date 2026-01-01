@@ -1,17 +1,18 @@
 # Builder Architecture
 
-pyrig's builder system uses automatic discovery to find and execute all Builder
-subclasses across packages, enabling extensible artifact creation.
+pyrig's builder system uses automatic discovery to find and execute all
+BuilderConfigFile subclasses across packages, enabling extensible artifact
+creation.
 
 ## How It Works
 
 ```mermaid
 graph TD
     A[uv run pyrig build] --> B[build_artifacts command]
-    B --> C[Builder.init_all_non_abstract_subclasses]
-    C --> D[Discover all Builder subclasses]
+    B --> C[BuilderConfigFile.init_all_subclasses]
+    C --> D[Discover all BuilderConfigFile subclasses]
     D --> E[Instantiate each builder]
-    E --> F[Builder.__init__ triggers build]
+    E --> F[dump triggers build]
     F --> G[Create temp directory]
     G --> H[create_artifacts in temp dir]
     H --> I[Move artifacts to dist/]
@@ -57,36 +58,42 @@ graph LR
 1. **Find all packages** depending on pyrig using dependency graph
 2. **Locate builders modules** equivalent to `pyrig.dev.builders` in each
    package
-3. **Find all Builder subclasses** in those modules
+3. **Find all BuilderConfigFile subclasses** in those modules
 4. **Filter non-abstract classes** (discard parent classes, keep leaf
    implementations)
 5. **Instantiate each builder** to trigger the build process
 
 This means only the most specific (leaf) implementations are executed. If you
-have a non-abstract Builder in package A and then subclass that class in package
-B, then only the subclass in B will be executed. The same behavior applies to
-ConfigFiles.
+have a non-abstract BuilderConfigFile in package A and then subclass that class
+in package B, then only the subclass in B will be executed. The same behavior
+applies to ConfigFiles.
 
-## Builder Base Class
+## BuilderConfigFile Base Class
 
-The `Builder` abstract base class provides the framework for creating custom
-builders. All builders must:
+The `BuilderConfigFile` abstract base class provides the framework for creating
+custom builders. It inherits from `ConfigFile` but repurposes the interface for
+artifact generation rather than configuration file management.
 
-- Inherit from `Builder`
+See [ConfigFile Architecture](../configs/architecture.md) for details on the
+parent class.
+
+All builders must:
+
+- Inherit from `BuilderConfigFile`
 - Implement the `create_artifacts` method
 - Be placed in a `dev/builders/` module
 
-When instantiated, the builder automatically triggers the build process.
+When instantiated, the builder triggers the build process via `dump()`.
 
 ### Key Methods
 
-| Method                        | Purpose                                                    |
-| ----------------------------- | ---------------------------------------------------------- |
-| `create_artifacts`            | **Abstract** - Implement to define build logic             |
-| `build`                       | Orchestrates temp directory, artifact creation, and moving |
-| `get_artifacts_dir`           | Returns final output directory (default: `dist/`)          |
-| `rename_artifacts`            | Adds platform suffix to artifacts                          |
-| `get_non_abstract_subclasses` | Discovers all builders across packages                     |
+| Method             | Purpose                                                    |
+| ------------------ | ---------------------------------------------------------- |
+| `create_artifacts` | **Abstract** - Implement to define build logic             |
+| `build`            | Orchestrates temp directory, artifact creation, and moving |
+| `get_parent_path`  | Returns final output directory (default: `dist/`)          |
+| `rename_artifacts` | Adds platform suffix to artifacts                          |
+| `get_all_subclasses` | Discovers all builders across packages (inherited)       |
 
 ## Build Process
 
@@ -121,9 +128,9 @@ Artifacts are moved to `dist/` with platform suffixes:
 ```python
 import shutil
 from pathlib import Path
-from pyrig.dev.builders.base.base import Builder
+from pyrig.dev.builders.base.base import BuilderConfigFile
 
-class DocumentationBuilder(Builder):
+class DocumentationBuilder(BuilderConfigFile):
     @classmethod
     def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
         """Build documentation as a zip file."""
@@ -148,8 +155,8 @@ myapp/
 
 Note: You actually should not need a documentation builder because pyrig will
 host your documentation for you on GitHub Pages via the workflows and build them
-via MkDocs. This is just an example of how subclassing the Builder base class
-works.
+via MkDocs. This is just an example of how subclassing the BuilderConfigFile
+base class works.
 
 ### Automatic Discovery
 
@@ -182,7 +189,7 @@ Running `uv run pyrig build`:
 
 ## Helper Methods
 
-The `Builder` class provides utilities for accessing project paths:
+The `BuilderConfigFile` class provides utilities for accessing project paths:
 
 | Method                 | Returns                          |
 | ---------------------- | -------------------------------- |

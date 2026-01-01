@@ -16,12 +16,12 @@ from pyrig.src.modules.module import make_obj_importpath
 
 @pytest.fixture
 def my_test_pyinstaller_builder(
-    builder_factory: Callable[[type[PyInstallerBuilder]], type[PyInstallerBuilder]],
+    config_file_factory: Callable[[type[PyInstallerBuilder]], type[PyInstallerBuilder]],
     tmp_path: Path,
 ) -> type[PyInstallerBuilder]:
     """Create a test PyInstaller builder class."""
 
-    class MyTestPyInstallerBuilder(builder_factory(PyInstallerBuilder)):  # type: ignore [misc]
+    class MyTestPyInstallerBuilder(config_file_factory(PyInstallerBuilder)):  # type: ignore [misc]
         """Test PyInstaller builder class."""
 
         @classmethod
@@ -119,17 +119,11 @@ class TestPyInstallerBuilder:
         self,
         my_test_pyinstaller_builder: type[PyInstallerBuilder],
         mocker: MockFixture,
+        tmp_path: Path,
     ) -> None:
         """Test method for create_artifacts."""
         mock_run = mocker.patch(make_obj_importpath(pyinstaller) + ".run")
-        spy = mocker.spy(
-            my_test_pyinstaller_builder,
-            my_test_pyinstaller_builder.create_artifacts.__name__,
-        )
-        with pytest.raises(FileNotFoundError):
-            my_test_pyinstaller_builder()
-
-        spy.assert_called_once()
+        my_test_pyinstaller_builder.create_artifacts(tmp_path)
         mock_run.assert_called_once()
 
     def test_convert_png_to_format(

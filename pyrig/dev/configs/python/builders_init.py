@@ -27,9 +27,9 @@ class BuildersInitConfigFile(InitConfigFile):
         Add custom builders::
 
             # In {package_name}/dev/builders/__init__.py
-            from pyrig.dev.builders.base.base import Builder
+            from pyrig.dev.builders.base.base import BuilderConfigFile
 
-            class CustomBuilder(Builder):
+            class CustomBuilder(BuilderConfigFile):
                 """Custom artifact builder."""
                 pass
 

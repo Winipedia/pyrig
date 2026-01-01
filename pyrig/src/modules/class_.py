@@ -2,7 +2,7 @@
 
 Utilities for inspecting classes, extracting methods, and discovering subclasses across
 packages. Central to pyrig's plugin architecture for automatic discovery of ConfigFile
-implementations and Builder subclasses.
+implementations and BuilderConfigFile subclasses.
 """
 
 import inspect

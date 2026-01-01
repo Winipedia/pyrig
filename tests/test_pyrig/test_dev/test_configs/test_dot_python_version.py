@@ -1,6 +1,7 @@
 """module."""
 
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 
 import pytest
@@ -44,12 +45,15 @@ class TestDotPythonVersionConfigFile:
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_parent_path(
-        self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
+        self,
+        my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile],
+        tmp_path: Path,
     ) -> None:
         """Test method for get_parent_path."""
-        expected = Path()
-        actual = my_test_dot_python_version_config_file.get_parent_path()
-        assert actual == expected, f"Expected {expected}, got {actual}"
+        with chdir(tmp_path):
+            expected = Path()
+            actual = my_test_dot_python_version_config_file.get_parent_path()
+            assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__load(
         self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]

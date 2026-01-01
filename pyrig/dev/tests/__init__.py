@@ -11,5 +11,5 @@ Key Features:
     - Automatic fixture discovery across the dependency chain
     - Test coverage enforcement via autouse fixtures
     - Project structure and configuration validation
-    - Factory fixtures for isolated ConfigFile and Builder testing
+    - Factory fixtures for isolated ConfigFile testing
 """

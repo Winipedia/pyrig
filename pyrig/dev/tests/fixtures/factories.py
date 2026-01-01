@@ -1,4 +1,4 @@
-"""Factory fixtures for creating test-safe ConfigFile and Builder instances.
+"""Factory fixtures for creating test-safe ConfigFile instances.
 
 Provides factory fixtures that create dynamic subclasses with file operations
 redirected to pytest's ``tmp_path``, enabling isolated testing without affecting
@@ -6,9 +6,7 @@ real files or build artifacts.
 
 Fixtures:
     config_file_factory: Creates ConfigFile subclasses with ``get_path()``
-        redirected to tmp_path.
-    builder_factory: Creates Builder subclasses with ``get_artifacts_dir()``
-        redirected to tmp_path.
+        redirected to tmp_path. Also works for BuilderConfigFile subclasses.
 """
 
 from collections.abc import Callable
@@ -18,7 +16,6 @@ from typing import Any
 
 import pytest
 
-from pyrig.dev.builders.base.base import Builder
 from pyrig.dev.configs.base.base import ConfigFile, ConfigType
 
 
@@ -62,7 +59,10 @@ def config_file_factory[T: ConfigFile](
                     Path within tmp_path.
                 """
                 path = super().get_path()
-                return Path(tmp_path / path)
+                # append tmp_path to path if not already in tmp_path
+                if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
+                    path = tmp_path / path
+                return path
 
             @classmethod
             def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
@@ -76,48 +76,21 @@ def config_file_factory[T: ConfigFile](
                 with chdir(tmp_path):
                     return super()._load()
 
+            @classmethod
+            def get_parent_path(cls) -> Path:
+                """Get the parent path."""
+                # append tmp_path to path if not already in tmp_path
+                path = super().get_parent_path()
+                if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
+                    path = tmp_path / path
+                return path
+
+            @classmethod
+            def create_file(cls) -> None:
+                """Create the config file."""
+                with chdir(tmp_path):
+                    super().create_file()
+
         return TestConfigFile  # ty:ignore[invalid-return-type]
 
     return _make_test_config
-
-
-@pytest.fixture
-def builder_factory[T: Builder](tmp_path: Path) -> Callable[[type[T]], type[T]]:
-    """Provide a factory for creating test-safe Builder subclasses.
-
-    Creates dynamic subclasses that redirect ``get_artifacts_dir()`` to pytest's
-    tmp_path for isolated artifact generation testing.
-
-    Args:
-        tmp_path: Pytest's temporary directory, auto-provided per test.
-
-    Returns:
-        Factory function ``(type[T]) -> type[T]`` that wraps a Builder
-        subclass with tmp_path-based artifact output.
-    """
-
-    def _make_test_builder(base_class: type[T]) -> type[T]:
-        """Create a test builder class that uses tmp_path.
-
-        Args:
-            base_class: The Builder subclass to wrap.
-
-        Returns:
-            A subclass with get_artifacts_dir() redirected to tmp_path.
-        """
-
-        class TestBuilder(base_class):  # type: ignore [misc, valid-type]
-            """Test builder with tmp_path override."""
-
-            @classmethod
-            def get_artifacts_dir(cls) -> Path:
-                """Get the artifacts directory in tmp_path.
-
-                Returns:
-                    Path within tmp_path.
-                """
-                return Path(tmp_path / cls.ARTIFACTS_DIR_NAME)
-
-        return TestBuilder  # ty:ignore[invalid-return-type]
-
-    return _make_test_builder

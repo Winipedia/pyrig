@@ -1,8 +1,8 @@
 """Python module and package introspection utilities.
 
 Provides utilities for module discovery, class introspection, function extraction, and
-package traversal. Powers pyrig's automatic discovery of ConfigFile subclasses, Builder
-implementations, and test fixtures across multiple packages.
+package traversal. Powers pyrig's automatic discovery of ConfigFile subclasses,
+BuilderConfigFile implementations, and test fixtures across multiple packages.
 
 Modules:
     class_: Class introspection, method extraction, subclass discovery

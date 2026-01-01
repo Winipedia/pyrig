@@ -21,7 +21,7 @@ from pyrig.src.modules.module import (
     get_module_content_as_str,
     get_module_name_replacing_start_module,
 )
-from pyrig.src.os.os import run_subprocess
+from pyrig.src.processes import run_subprocess
 
 logger = logging.getLogger(__name__)
 

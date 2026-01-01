@@ -158,17 +158,18 @@ def test_my_config(config_file_factory):
 **Purpose**: Isolate config file tests from actual project files. Prevents file
 generation in your project if you define custom subclasses of ConfigFile.
 
-#### `builder_factory`
+#### Testing BuilderConfigFile subclasses
 
-Creates test versions of `Builder` subclasses using temporary paths:
+Use `config_file_factory` to create test versions of `BuilderConfigFile`
+subclasses using temporary paths:
 
 ```python
-def test_my_builder(builder_factory):
-    TestBuilder = builder_factory(MyBuilder)
-    # TestBuilder.get_artifacts_dir() returns path in tmp_path
+def test_my_builder(config_file_factory):
+    TestBuilder = config_file_factory(MyBuilder)
+    # TestBuilder.get_path() returns path in tmp_path
     builder = TestBuilder()
     builder.build()
-    assert TestBuilder.get_artifacts_dir().exists()
+    assert TestBuilder.get_parent_path().exists()
 ```
 
 **Purpose**: Isolate artifact generation tests from actual build directories.
@@ -214,7 +215,7 @@ def module_setup():
 
 ```text
 pyrig (base package)
-├── fixtures: config_file_factory, builder_factory, main_test_fixture
+├── fixtures: config_file_factory, main_test_fixture
 │
 Package A (depends on pyrig)
 ├── fixtures: database_fixture, api_client_fixture
@@ -226,7 +227,6 @@ Package B (depends on Package A)
 
 When Package B tests run:
 ✓ config_file_factory (from pyrig)
-✓ builder_factory (from pyrig)
 ✓ main_test_fixture (from pyrig)
 ✓ database_fixture (from Package A)
 ✓ api_client_fixture (from Package A)

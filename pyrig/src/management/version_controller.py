@@ -9,7 +9,8 @@ Example:
     >>> VersionController.get_push_args().run()
 """
 
-from pyrig.src.management.base.base import Args, Tool
+from pyrig.src.management.base.base import Tool
+from pyrig.src.processes import Args
 
 
 class VersionController(Tool):

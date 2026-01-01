@@ -8,7 +8,7 @@ from typing import Any, ClassVar
 import pytest
 from pytest_mock import MockFixture
 
-from pyrig.dev import configs, tests
+from pyrig.dev import configs
 from pyrig.dev.configs.base.base import (
     ConfigFile,
 )
@@ -71,13 +71,13 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
-    def test_get_final_leaf(self) -> None:
+    def test_get_definition_pkg(self) -> None:
         """Test method."""
-        with pytest.raises(ValueError, match="Multiple final leaves found"):
-            ConfigFile.get_final_leaf(configs)
+        assert ConfigFile.get_definition_pkg() is configs
 
-        final_leaf = MirrorTestConfigFile.get_final_leaf(tests)
-        assert final_leaf is MirrorTestConfigFile
+    def test_leaf(self) -> None:
+        """Test method."""
+        assert MirrorTestConfigFile.leaf() is MirrorTestConfigFile
 
     def test_create_file(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method."""

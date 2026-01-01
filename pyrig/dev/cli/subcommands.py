@@ -138,16 +138,16 @@ def init() -> None:
 def build() -> None:
     """Build all distributable artifacts for the project.
 
-    Discovers and invokes all Builder subclasses across the project and its
-    dependencies to create distributable artifacts (e.g., PyInstaller executables,
-    documentation archives, custom build processes).
+    Discovers and invokes all BuilderConfigFile subclasses across the project and
+    its dependencies to create distributable artifacts (e.g., PyInstaller
+    executables, documentation archives, custom build processes).
 
     Build Process:
-        1. Discovers all non-abstract Builder subclasses
-        2. Instantiates each builder (triggers build via `__init__`)
+        1. Discovers all non-abstract BuilderConfigFile subclasses
+        2. Instantiates each builder (triggers build via ``dump()``)
         3. Creates artifacts in temporary directories
-        4. Renames with platform-specific suffixes (e.g., `-Linux`, `-Windows`)
-        5. Moves artifacts to `dist/` directory
+        4. Renames with platform-specific suffixes (e.g., ``-Linux``, ``-Windows``)
+        5. Moves artifacts to ``dist/`` directory
 
     Builders execute sequentially. Each builder runs independently; if one fails,
     others are not affected.
@@ -156,8 +156,8 @@ def build() -> None:
         $ uv run pyrig build
 
     Note:
-        Artifacts are placed in `dist/` by default. Platform-specific naming
-        uses `platform.system()`. Only leaf Builder classes are executed.
+        Artifacts are placed in ``dist/`` by default. Platform-specific naming
+        uses ``platform.system()``. Only leaf BuilderConfigFile classes are executed.
     """
     from pyrig.dev.cli.commands.build_artifacts import build_artifacts  # noqa: PLC0415
 

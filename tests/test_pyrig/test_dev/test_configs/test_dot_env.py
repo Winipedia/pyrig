@@ -1,6 +1,7 @@
 """module."""
 
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 from typing import Any
 
@@ -64,13 +65,16 @@ class TestDotEnvConfigFile:
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_parent_path(
-        self, my_test_dotenv_config_file: type[DotEnvConfigFile]
+        self,
+        my_test_dotenv_config_file: type[DotEnvConfigFile],
+        tmp_path: Path,
     ) -> None:
         """Test method for get_parent_path."""
         # Should return Path() (root)
-        expected = Path()
-        actual = my_test_dotenv_config_file.get_parent_path()
-        assert actual == expected, f"Expected {expected}, got {actual}"
+        with chdir(tmp_path):
+            expected = Path()
+            actual = my_test_dotenv_config_file.get_parent_path()
+            assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_configs(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]

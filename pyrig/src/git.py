@@ -12,7 +12,7 @@ from subprocess import CompletedProcess  # nosec: B404
 from urllib.parse import quote
 
 from pyrig.src.modules.package import get_project_name_from_cwd
-from pyrig.src.os.os import run_subprocess
+from pyrig.src.processes import run_subprocess
 
 logger = logging.getLogger(__name__)
 

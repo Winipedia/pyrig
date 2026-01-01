@@ -205,6 +205,18 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         )
 
     @classmethod
+    def get_definition_pkg(cls) -> ModuleType:
+        """Get the package where the ConfigFile subclasses are supposed to be defined.
+
+        Default is pyrig.dev.tests. which overrides the default of pyrig.dev.configs.
+        But can be overridden by subclasses to define their own package.
+
+        Returns:
+            Package module where the ConfigFile subclass is defined.
+        """
+        return tests
+
+    @classmethod
     def get_test_path(cls) -> Path:
         """Compute the file path for the test module.
 
@@ -632,15 +644,3 @@ class {test_class_name}:
         """
         subclasses = cls.make_subclasses_for_modules(modules)
         cls.init_subclasses(*subclasses)
-
-    @classmethod
-    def leaf(cls) -> type[Self]:
-        """Get the final leaf subclass (deepest in the inheritance tree).
-
-        Returns:
-            Final leaf subclass type. Can be abstract.
-
-        See Also:
-            get_all_subclasses: Get all subclasses regardless of priority
-        """
-        return cls.get_final_leaf(tests)
