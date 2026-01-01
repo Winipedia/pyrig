@@ -278,22 +278,52 @@ def get_objs_from_obj(
 def discover_equivalent_modules_across_dependents(
     module: ModuleType, dep: ModuleType, until_pkg: ModuleType | None = None
 ) -> list[ModuleType]:
-    """Find equivalent modules across all packages depending on a dependency.
+    """Find equivalent module paths across all packages that depend on a dependency.
 
-    Key function for multi-package architecture. Given a module path within a dependency
-    (e.g., `smth.dev.configs`), finds the equivalent path in all packages that depend on
-    that dependency (e.g., `myapp.dev.configs`, `other_pkg.dev.configs`).
+    Core function for pyrig's multi-package architecture. Given a module path
+    within a base dependency (e.g., ``pyrig.dev.configs``), discovers and imports
+    the equivalent module path in every package that depends on that dependency
+    (e.g., ``myapp.dev.configs``, ``other_pkg.dev.configs``).
 
-    Enables automatic discovery of ConfigFile implementations and BuilderConfigFile
-    subclasses across the ecosystem.
+    This enables automatic discovery of plugin implementations across an entire
+    ecosystem of packages without requiring explicit registration.
+
+    The discovery process:
+        1. Uses ``DependencyGraph`` to find all packages depending on ``dep``
+        2. For each dependent package, constructs the equivalent module path
+           by replacing the ``dep`` prefix with the dependent package name
+        3. Imports each equivalent module (creating it if the path exists)
+        4. Returns all successfully imported modules in topological order
 
     Args:
-        module: Module to use as template (e.g., `smth.dev.configs`).
-        dep: Dependency package (e.g., pyrig or smth).
-        until_pkg: Optional package to stop at.
+        module: Template module whose path will be replicated across dependents.
+            For example, ``pyrig.dev.configs`` would find ``myapp.dev.configs``
+            in a package ``myapp`` that depends on ``pyrig``.
+        dep: The base dependency package. All packages depending on this will
+            be searched for equivalent modules.
+        until_pkg: Optional package to stop at. When provided, stops iterating
+            through dependents once this package is reached (inclusive).
+            Useful for limiting discovery scope.
 
     Returns:
-        List of equivalent modules from all packages depending on `dep`.
+        List of imported module objects from all dependent packages, in
+        topological order (base dependency first, then dependents in order).
+
+    Example:
+        >>> # Find all dev.configs modules across pyrig ecosystem
+        >>> from pyrig.dev import configs
+        >>> import pyrig
+        >>> modules = discover_equivalent_modules_across_dependents(configs, pyrig)
+        >>> # Returns: [pyrig.dev.configs, myapp.dev.configs, other_pkg.dev.configs]
+
+    Note:
+        The module path transformation is a simple string replacement of the
+        first occurrence of ``dep.__name__`` with each dependent package name.
+        This assumes consistent package structure across the ecosystem.
+
+    See Also:
+        DependencyGraph.get_all_depending_on: Finds dependent packages
+        discover_subclasses_across_dependents: Uses this to find subclasses
     """
     module_name = module.__name__
     logger.debug(
@@ -326,21 +356,74 @@ def discover_subclasses_across_dependents[T: type](
     discard_parents: bool = False,
     exclude_abstract: bool = False,
 ) -> list[T]:
-    """Find non-abstract subclasses across all packages depending on a dependency.
+    """Discover all subclasses of a class across the entire dependency ecosystem.
 
-    Core discovery function for multi-package architecture. Finds all packages depending
-    on `dep`, looks for the same relative module path as `load_package_before` in each,
-    and discovers subclasses of `cls` in those modules.
+    Primary discovery function for pyrig's multi-package plugin architecture.
+    Combines ``discover_equivalent_modules_across_dependents`` with
+    ``get_all_subclasses`` to find subclass implementations across all packages
+    that depend on a base dependency.
+
+    This is the main mechanism that enables:
+        - ConfigFile subclasses to be discovered across all dependent packages
+        - BuilderConfigFile implementations to be found and executed
+        - Plugin-style extensibility without explicit registration
+
+    The discovery process:
+        1. Finds all equivalent modules across dependent packages using
+           ``discover_equivalent_modules_across_dependents``
+        2. For each module, calls ``get_all_subclasses`` to discover subclasses
+           of ``cls`` defined in that module (applying ``discard_parents`` and
+           ``exclude_abstract`` filters per-module)
+        3. Aggregates all discovered subclasses into a single list
+        4. If ``discard_parents=True``, performs a second pass to remove any
+           parent classes across the aggregated list (necessary because a class
+           in package A may be a parent of a class in package B, which wouldn't
+           be caught by the per-module filtering)
 
     Args:
-        cls: Base class to find subclasses of.
-        dep: Dependency package (e.g., pyrig or smth).
-        load_pkg_before: Module path within `dep` to use as template.
-        discard_parents: If True, keeps only leaf classes.
-        exclude_abstract: If True, excludes abstract classes.
+        cls: Base class to find subclasses of. All returned classes will be
+            subclasses of this type (or the class itself).
+        dep: The base dependency package (e.g., ``pyrig``). The function will
+            search all packages that depend on this for subclass implementations.
+        load_pkg_before: Template module path to replicate across dependents.
+            For example, ``pyrig.dev.configs`` would search for subclasses in
+            ``myapp.dev.configs`` for each dependent package ``myapp``.
+        discard_parents: If True, removes classes that have subclasses also
+            in the result set. Essential for override patterns where a package
+            extends a config from another package - only the leaf (most derived)
+            class should be used.
+        exclude_abstract: If True, removes abstract classes (those with
+            unimplemented abstract methods). Typically True for discovering
+            classes that will be instantiated.
 
     Returns:
-        List of discovered non-abstract subclasses.
+        List of discovered subclass types. Order is based on topological
+        dependency order (base package classes first, then dependents).
+
+    Example:
+        >>> # Discover all ConfigFile implementations across ecosystem
+        >>> from pyrig.dev import configs
+        >>> import pyrig
+        >>> subclasses = discover_subclasses_across_dependents(
+        ...     cls=ConfigFile,
+        ...     dep=pyrig,
+        ...     load_pkg_before=configs,
+        ...     discard_parents=True,
+        ...     exclude_abstract=True,
+        ... )
+        >>> # Returns: [PyprojectConfigFile, RuffConfigFile, MyAppConfig, ...]
+
+    Note:
+        When ``discard_parents=True``, the filtering is performed twice: once
+        within each ``get_all_subclasses`` call (per-module) and once after
+        aggregation (cross-module). The second pass is essential because a
+        parent class from module A and its child from module B would both
+        survive the per-module filtering.
+
+    See Also:
+        discover_equivalent_modules_across_dependents: Module discovery
+        get_all_subclasses: Per-module subclass discovery
+        discover_leaf_subclass_across_dependents: When exactly one leaf expected
     """
     logger.debug(
         "Discovering subclasses of %s from modules in packages depending on %s",
@@ -372,19 +455,60 @@ def discover_subclasses_across_dependents[T: type](
 def discover_leaf_subclass_across_dependents[T: type](
     cls: T, dep: ModuleType, load_pkg_before: ModuleType
 ) -> T:
-    """Get the final leaf subclass (deepest in the inheritance tree).
+    """Discover the single deepest subclass in the inheritance hierarchy.
 
-    Loads the given package before to expose classes to __subclasses__
+    Specialized discovery function for cases where exactly one "final" subclass
+    is expected across the entire dependency ecosystem. Used when a base class
+    should have a single active implementation determined by the inheritance
+    chain.
+
+    This is typically used by ``ConfigFile.leaf()`` to find the most-derived
+    version of a config file class. For example, if:
+        - ``pyrig`` defines ``PyprojectConfigFile``
+        - ``mylib`` extends it as ``MyLibPyprojectConfigFile``
+        - ``myapp`` extends that as ``MyAppPyprojectConfigFile``
+
+    Then this function returns ``MyAppPyprojectConfigFile`` as the single leaf.
+
+    The discovery process:
+        1. Calls ``discover_subclasses_across_dependents`` with
+           ``discard_parents=True`` to get only leaf classes
+        2. Validates that exactly one leaf class was found
+        3. Returns that single leaf class
 
     Args:
-        cls: Base class to find subclasses of.
-        dep: Dependency package (e.g., pyrig or smth).
-        load_pkg_before: Module path within `dep` to use as template.
-
+        cls: Base class to find the leaf subclass of.
+        dep: The base dependency package (e.g., ``pyrig``).
+        load_pkg_before: Template module path to replicate across dependents.
 
     Returns:
-        Final leaf subclass type. Can be abstract.
+        The single leaf subclass type (deepest in inheritance tree).
+        May be abstract - use ``exclude_abstract`` in the caller if needed.
 
+    Raises:
+        ValueError: If multiple leaf classes are found. This indicates an
+            ambiguous inheritance structure where two classes both extend
+            the same parent without one extending the other.
+        IndexError: If no subclasses are found (empty result from discovery).
+
+    Example:
+        >>> # Find the final PyprojectConfigFile implementation
+        >>> leaf = discover_leaf_subclass_across_dependents(
+        ...     cls=PyprojectConfigFile,
+        ...     dep=pyrig,
+        ...     load_pkg_before=configs,
+        ... )
+        >>> # Returns the most-derived PyprojectConfigFile subclass
+
+    Note:
+        Abstract classes are NOT excluded - the leaf may be abstract if no
+        concrete implementation exists. This is intentional for cases where
+        the leaf class defines the interface but concrete instantiation
+        happens elsewhere.
+
+    See Also:
+        discover_subclasses_across_dependents: General multi-subclass discovery
+        ConfigFile.leaf: Primary use case for this function
     """
     classes = discover_subclasses_across_dependents(
         cls=cls,

@@ -98,18 +98,55 @@ def get_all_subclasses[T: type](
 ) -> set[T]:
     """Recursively discover all subclasses of a class.
 
-    Python's `__subclasses__()` only returns imported classes. Optionally specify a
-    package to walk (import) before discovery.
+    Python's ``__subclasses__()`` method only returns classes that have been
+    imported into the interpreter. This function addresses that limitation by
+    optionally walking (importing) a package before discovery, ensuring all
+    subclasses defined in that package are visible.
+
+    The discovery process:
+        1. If ``load_package_before`` is provided, recursively imports all
+           modules in that package (triggering class registration)
+        2. Recursively collects all subclasses via ``__subclasses__()``
+        3. If ``load_package_before`` was provided, filters results to only
+           include classes whose ``__module__`` contains the package name
+        4. Optionally removes parent classes (keeping only leaves)
+        5. Optionally removes abstract classes
 
     Args:
-        cls: Base class to find subclasses of.
-        load_package_before: Optional package to walk before discovery.
-            When provided, results are filtered to classes from this package.
-        discard_parents: If True, keeps only leaf classes.
-        exclude_abstract: If True, excludes abstract classes.
+        cls: Base class to find subclasses of. The base class itself is
+            included in the results.
+        load_package_before: Package to walk (import) before discovery.
+            When provided, all modules in this package are imported to ensure
+            subclasses are registered with Python. Results are then filtered
+            to only include classes from this package.
+        discard_parents: If True, removes classes that have subclasses also
+            in the result set, keeping only "leaf" classes. Useful for
+            override patterns where you want only the most derived class.
+        exclude_abstract: If True, removes classes with unimplemented
+            abstract methods (``inspect.isabstract()`` returns True).
 
     Returns:
-        Set of all subclasses.
+        Set of discovered subclass types (including ``cls`` itself unless
+        filtered out by other options).
+
+    Example:
+        >>> # Discover all ConfigFile subclasses in myapp.dev.configs
+        >>> from myapp.dev import configs
+        >>> subclasses = get_all_subclasses(
+        ...     ConfigFile,
+        ...     load_package_before=configs,
+        ...     discard_parents=True,
+        ...     exclude_abstract=True,
+        ... )
+
+    Note:
+        The recursive ``__subclasses__()`` traversal finds the complete
+        inheritance tree, not just direct children. This is essential for
+        discovering deeply nested subclasses.
+
+    See Also:
+        discard_parent_classes: Logic for filtering to leaf classes only
+        walk_package: Package traversal that triggers imports
     """
     logger.debug("Discovering subclasses of %s", cls.__name__)
     if load_package_before:
