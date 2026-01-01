@@ -13,7 +13,7 @@ from pyrig.dev.configs.base.base import (
     ConfigFile,
 )
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
-from pyrig.src.modules.package import get_all_subcls_from_mod_in_all_deps_depen_on_dep
+from pyrig.src.modules.package import discover_subclasses_across_dependents
 
 
 @pytest.fixture
@@ -333,7 +333,7 @@ class TestConfigFile:
         mocker.patch(
             ConfigFile.__module__
             + "."
-            + get_all_subcls_from_mod_in_all_deps_depen_on_dep.__name__,
+            + discover_subclasses_across_dependents.__name__,
             return_value={my_test_config_file},
         )
         actual = my_test_config_file.get_all_subclasses()

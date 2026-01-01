@@ -18,12 +18,12 @@ from pathlib import Path
 
 import pyrig
 from pyrig.dev.tests import fixtures
-from pyrig.src.modules.package import get_same_modules_from_deps_depen_on_dep
+from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
 from pyrig.src.modules.path import ModulePath
 
 # find the fixtures module in all packages that depend on pyrig
 # and add all paths to pytest_plugins
-fixtures_pkgs = get_same_modules_from_deps_depen_on_dep(fixtures, pyrig)
+fixtures_pkgs = discover_equivalent_modules_across_dependents(fixtures, pyrig)
 
 
 pytest_plugin_paths: list[Path] = []

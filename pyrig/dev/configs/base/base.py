@@ -55,7 +55,7 @@ Example:
 See Also:
     pyrig.dev.configs: Package-level documentation
     pyrig.src.iterate.nested_structure_is_subset: Subset validation logic
-    pyrig.src.modules.package.get_all_subcls_from_mod_in_all_deps_depen_on_dep:
+    pyrig.src.modules.package.discover_subclasses_across_dependents:
         Subclass discovery mechanism
 """
 
@@ -73,8 +73,8 @@ import pyrig
 from pyrig.dev import configs
 from pyrig.src.iterate import nested_structure_is_subset
 from pyrig.src.modules.package import (
-    get_all_subcls_from_mod_in_all_deps_depen_on_dep,
-    get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep,
+    discover_leaf_subclass_across_dependents,
+    discover_subclasses_across_dependents,
 )
 from pyrig.src.string import split_on_uppercase
 
@@ -383,7 +383,7 @@ class ConfigFile(ABC):
             get_priority_subclasses: Get only subclasses with priority > 0
             init_all_subclasses: Initialize all discovered subclasses
         """
-        subclasses = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
+        subclasses = discover_subclasses_across_dependents(
             cls,
             pyrig,
             cls.get_definition_pkg(),
@@ -440,8 +440,13 @@ class ConfigFile(ABC):
         for cf in subclasses:
             subclasses_by_priority[cf.get_priority()].append(cf)
 
-        biggest_group = max(subclasses_by_priority.values(), key=len)
-        with ThreadPoolExecutor(max_workers=len(biggest_group)) as executor:
+        biggest_group = (
+            max(subclasses_by_priority.values(), key=len)
+            if subclasses_by_priority
+            else []
+        )
+        max_workers = len(biggest_group) or 1
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
             for priority, cf_group in subclasses_by_priority.items():
                 logger.debug("Initializing config files with priority: %s", priority)
                 list(executor.map(lambda cf: cf(), cf_group))
@@ -480,6 +485,6 @@ class ConfigFile(ABC):
         See Also:
             get_all_subclasses: Get all subclasses regardless of priority
         """
-        return get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep(
-            cls=cls, dep=pyrig, pkg=cls.get_definition_pkg()
+        return discover_leaf_subclass_across_dependents(
+            cls=cls, dep=pyrig, load_pkg_before=cls.get_definition_pkg()
         )

@@ -43,7 +43,7 @@ from pyrig.src.modules.module import (
     get_module_name_replacing_start_module,
     import_module_with_file_fallback,
 )
-from pyrig.src.modules.package import get_same_modules_from_deps_depen_on_dep
+from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
 from pyrig.src.modules.path import ModulePath
 
 logger = logging.getLogger(__name__)
@@ -204,7 +204,7 @@ def add_shared_subcommands() -> None:
     """
     package_name = get_pkg_name_from_argv()
     package = import_module(package_name)
-    all_shared_subcommands_modules = get_same_modules_from_deps_depen_on_dep(
+    all_shared_subcommands_modules = discover_equivalent_modules_across_dependents(
         shared_subcommands,
         pyrig,
         until_pkg=package,

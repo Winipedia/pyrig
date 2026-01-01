@@ -169,7 +169,7 @@ graph LR
     style F fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
 ```
 
-Discovery uses `get_all_subcls_from_mod_in_all_deps_depen_on_dep` with
+Discovery uses `discover_subclasses_across_dependents` with
 `discard_parents=True`, meaning only leaf implementations are initialized. This
 way you can subclass a config file and only your subclass will be initialized.
 This makes it easy to adjust any config file to your liking.

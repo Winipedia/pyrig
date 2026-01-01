@@ -65,7 +65,7 @@ from PyInstaller.utils.hooks import collect_data_files
 import pyrig
 from pyrig import resources
 from pyrig.dev.builders.base.base import BuilderConfigFile
-from pyrig.src.modules.package import get_same_modules_from_deps_depen_on_dep
+from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
 
 
 class PyInstallerBuilder(BuilderConfigFile):
@@ -152,7 +152,7 @@ class PyInstallerBuilder(BuilderConfigFile):
             List of module objects representing resources packages from all
             packages in the dependency chain.
         """
-        return get_same_modules_from_deps_depen_on_dep(resources, pyrig)
+        return discover_equivalent_modules_across_dependents(resources, pyrig)
 
     @classmethod
     def get_all_resource_pkgs(cls) -> list[ModuleType]:

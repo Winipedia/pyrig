@@ -26,14 +26,14 @@ from pyrig.src.modules.module import (
 from pyrig.src.modules.package import (
     DependencyGraph,
     create_package,
-    get_all_subcls_from_mod_in_all_deps_depen_on_dep,
-    get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep,
+    discover_equivalent_modules_across_dependents,
+    discover_leaf_subclass_across_dependents,
+    discover_subclasses_across_dependents,
     get_objs_from_obj,
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
     get_project_name_from_cwd,
     get_project_name_from_pkg_name,
-    get_same_modules_from_deps_depen_on_dep,
 )
 from tests.test_pyrig.test_src import test_modules
 from tests.test_pyrig.test_src.test_modules.test_class_ import (
@@ -379,11 +379,11 @@ class TestClass2:
         assert result == [], f"Expected empty list for function, got {result}"
 
 
-def test_get_same_modules_from_deps_depen_on_dep() -> None:
+def test_discover_equivalent_modules_across_dependents() -> None:
     """Test function."""
     # Test getting the same module from all packages depending on pyrig
 
-    modules = get_same_modules_from_deps_depen_on_dep(src, pyrig)
+    modules = discover_equivalent_modules_across_dependents(src, pyrig)
     # Should at least include pyrig.src itself
     assert len(modules) > 0, f"Expected at least one module, got {modules}"
     assert src in modules, f"Expected pyrig.src in modules, got {modules}"
@@ -401,9 +401,9 @@ def test_create_package(tmp_path: Path) -> None:
         assert (package_dir / "__init__.py").exists()
 
 
-def test_get_all_subcls_from_mod_in_all_deps_depen_on_dep() -> None:
+def test_discover_subclasses_across_dependents() -> None:
     """Test func."""
-    subclasses = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
+    subclasses = discover_subclasses_across_dependents(
         AbstractParent, pyrig, test_modules, exclude_abstract=True
     )
     assert ConcreteChild in subclasses, (
@@ -411,17 +411,17 @@ def test_get_all_subcls_from_mod_in_all_deps_depen_on_dep() -> None:
     )
 
 
-def test_get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep() -> None:
+def test_discover_leaf_subclass_across_dependents() -> None:
     """Test function."""
     with pytest.raises(ValueError, match="Multiple final leaves found"):
-        get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep(
-            cls=ConfigFile, dep=pyrig, pkg=configs
+        discover_leaf_subclass_across_dependents(
+            cls=ConfigFile, dep=pyrig, load_pkg_before=configs
         )
 
     class MyTestConfigFile(ConfigFile):
         pass
 
-    final_leaf = get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep(
-        cls=MyTestConfigFile, dep=pyrig, pkg=test_modules
+    final_leaf = discover_leaf_subclass_across_dependents(
+        cls=MyTestConfigFile, dep=pyrig, load_pkg_before=test_modules
     )
     assert final_leaf is MyTestConfigFile

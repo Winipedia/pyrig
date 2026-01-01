@@ -275,7 +275,7 @@ def get_objs_from_obj(
     return []
 
 
-def get_same_modules_from_deps_depen_on_dep(
+def discover_equivalent_modules_across_dependents(
     module: ModuleType, dep: ModuleType, until_pkg: ModuleType | None = None
 ) -> list[ModuleType]:
     """Find equivalent modules across all packages depending on a dependency.
@@ -318,10 +318,10 @@ def get_same_modules_from_deps_depen_on_dep(
     return modules
 
 
-def get_all_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
+def discover_subclasses_across_dependents[T: type](
     cls: T,
     dep: ModuleType,
-    load_package_before: ModuleType,
+    load_pkg_before: ModuleType,
     *,
     discard_parents: bool = False,
     exclude_abstract: bool = False,
@@ -335,7 +335,7 @@ def get_all_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
     Args:
         cls: Base class to find subclasses of.
         dep: Dependency package (e.g., pyrig or smth).
-        load_package_before: Module path within `dep` to use as template.
+        load_pkg_before: Module path within `dep` to use as template.
         discard_parents: If True, keeps only leaf classes.
         exclude_abstract: If True, excludes abstract classes.
 
@@ -348,7 +348,7 @@ def get_all_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
         dep.__name__,
     )
     subclasses: list[T] = []
-    for pkg in get_same_modules_from_deps_depen_on_dep(load_package_before, dep):
+    for pkg in discover_equivalent_modules_across_dependents(load_pkg_before, dep):
         subclasses.extend(
             get_all_subclasses(
                 cls,
@@ -369,8 +369,8 @@ def get_all_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
     return subclasses
 
 
-def get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep[T: type](
-    cls: T, dep: ModuleType, pkg: ModuleType
+def discover_leaf_subclass_across_dependents[T: type](
+    cls: T, dep: ModuleType, load_pkg_before: ModuleType
 ) -> T:
     """Get the final leaf subclass (deepest in the inheritance tree).
 
@@ -379,17 +379,17 @@ def get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep[T: type](
     Args:
         cls: Base class to find subclasses of.
         dep: Dependency package (e.g., pyrig or smth).
-        pkg: Module path within `dep` to use as template.
+        load_pkg_before: Module path within `dep` to use as template.
 
 
     Returns:
         Final leaf subclass type. Can be abstract.
 
     """
-    classes = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
+    classes = discover_subclasses_across_dependents(
         cls=cls,
         dep=dep,
-        load_package_before=pkg,
+        load_pkg_before=load_pkg_before,
         discard_parents=True,
         exclude_abstract=False,
     )
@@ -397,7 +397,7 @@ def get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep[T: type](
     if len(classes) > 1:
         msg = (
             f"Multiple final leaves found for {cls.__name__} "
-            f"in {pkg.__name__}: {classes}"
+            f"in {load_pkg_before.__name__}: {classes}"
         )
         raise ValueError(msg)
     leaf = classes[0]
