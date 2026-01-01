@@ -15,9 +15,8 @@ from pytest_mock import MockFixture
 
 import pyrig
 from pyrig import src
-from pyrig.dev import configs, tests
+from pyrig.dev import configs
 from pyrig.dev.configs.base.base import ConfigFile
-from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils import packages
 from pyrig.dev.utils.packages import find_packages
 from pyrig.src.modules.module import (
@@ -419,7 +418,10 @@ def test_get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep() -> None:
             cls=ConfigFile, dep=pyrig, pkg=configs
         )
 
+    class MyTestConfigFile(ConfigFile):
+        pass
+
     final_leaf = get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep(
-        cls=MirrorTestConfigFile, dep=pyrig, pkg=tests
+        cls=MyTestConfigFile, dep=pyrig, pkg=test_modules
     )
-    assert final_leaf is MirrorTestConfigFile
+    assert final_leaf is MyTestConfigFile
