@@ -14,42 +14,12 @@ Example:
 """
 
 import logging
-import shutil
 import subprocess  # nosec: B404
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger(__name__)
-
-
-def which_with_raise(cmd: str, *, raise_error: bool = True) -> str | None:
-    """Find executable command path with optional error raising.
-
-    Wrapper around shutil.which() that optionally raises exception if command not found.
-
-    Args:
-        cmd: Command name to find (e.g., "git", "uv", "pytest").
-        raise_error: If True (default), raises FileNotFoundError when not found.
-            If False, returns None.
-
-    Returns:
-        Absolute path to command executable, or None if not found and raise_error=False.
-
-    Raises:
-        FileNotFoundError: If command not found and raise_error=True.
-
-    Example:
-        >>> which_with_raise("git")  # '/usr/bin/git'
-        >>> which_with_raise("nonexistent", raise_error=False)  # None
-    """
-    path = shutil.which(cmd)
-    if path is None:
-        logger.debug("Command not found: %s", cmd)
-        msg = f"Command {cmd} not found"
-        if raise_error:
-            raise FileNotFoundError(msg)
-    return path
 
 
 def run_subprocess(  # noqa: PLR0913
@@ -110,3 +80,48 @@ def run_subprocess(  # noqa: PLR0913
         raise
     else:
         return result
+
+
+class Args(tuple[str, ...]):
+    """Command-line arguments container with execution capabilities.
+
+    Immutable tuple subclass representing command arguments.
+    Return type for all Tool methods.
+
+    Methods:
+        __str__: Convert to space-separated string
+        run: Execute via subprocess
+
+    Example:
+        >>> args = Args(("uv", "sync"))
+        >>> print(args)
+        uv sync
+        >>> args.run()
+        CompletedProcess(...)
+    """
+
+    __slots__ = ()
+
+    def __str__(self) -> str:
+        """Convert to space-separated string.
+
+        Returns:
+            Space-separated command string.
+        """
+        return " ".join(self)
+
+    def run(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
+        """Execute command via subprocess.
+
+        Args:
+            *args: Additional arguments appended to command.
+            **kwargs: Keyword arguments passed to run_subprocess
+                (check, capture_output, cwd, etc.).
+
+        Returns:
+            CompletedProcess from subprocess execution.
+
+        Raises:
+            subprocess.CalledProcessError: If check=True and command fails.
+        """
+        return run_subprocess(self, *args, **kwargs)

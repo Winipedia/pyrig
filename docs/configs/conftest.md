@@ -103,7 +103,7 @@ uv run pyrig mkroot
 This file configures pytest to use pyrig's test infrastructure, including:
 
 - Autouse fixtures (session, package, module, class, function scopes)
-- Factory fixtures (`config_file_factory`, `builder_factory`)
+- Factory fixtures (`config_file_factory`)
 - Custom pytest hooks and plugins
 
 See the [Testing documentation](../tests/index.md) for details on the test

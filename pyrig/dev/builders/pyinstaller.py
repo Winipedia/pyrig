@@ -3,8 +3,8 @@
 Provides the `PyInstallerBuilder` abstract base class for creating platform-specific
 standalone executables from pyrig projects using PyInstaller.
 
-Extends the Builder base class with PyInstaller-specific functionality including
-resource bundling, icon conversion, and PyInstaller configuration.
+Extends the BuilderConfigFile base class with PyInstaller-specific functionality
+including resource bundling, icon conversion, and PyInstaller configuration.
 
 Key Features:
     - Single-file executables (`--onefile`)
@@ -48,7 +48,7 @@ Example:
         $ uv run pyrig build
 
 See Also:
-    pyrig.dev.builders.base.base.Builder: Base builder class
+    pyrig.dev.builders.base.base.BuilderConfigFile: Base builder class
     pyrig.src.resource: Runtime resource access utilities
 """
 
@@ -64,16 +64,16 @@ from PyInstaller.utils.hooks import collect_data_files
 
 import pyrig
 from pyrig import resources
-from pyrig.dev.builders.base.base import Builder
+from pyrig.dev.builders.base.base import BuilderConfigFile
 from pyrig.src.modules.package import get_same_modules_from_deps_depen_on_dep
 
 
-class PyInstallerBuilder(Builder):
+class PyInstallerBuilder(BuilderConfigFile):
     """Abstract builder for creating PyInstaller standalone executables.
 
-    Extends the Builder base class to provide PyInstaller-specific functionality
-    for creating single-file executables. Handles PyInstaller configuration,
-    resource bundling, and icon conversion.
+    Extends the BuilderConfigFile base class to provide PyInstaller-specific
+    functionality for creating single-file executables. Handles PyInstaller
+    configuration, resource bundling, and icon conversion.
 
     Creates executables with:
         - Single-file executable (`--onefile`)
@@ -101,7 +101,7 @@ class PyInstallerBuilder(Builder):
                     return [myapp.resources]
 
     See Also:
-        Builder: Base class providing build orchestration
+        BuilderConfigFile: Base class providing build orchestration
         get_pyinstaller_options: PyInstaller configuration
     """
 

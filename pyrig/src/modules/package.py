@@ -2,8 +2,8 @@
 
 Provides utilities for package discovery, recursive traversal, and dependency graph
 analysis. The `DependencyGraph` class enables automatic discovery of all packages
-that depend on pyrig, allowing discovery of ConfigFile implementations and Builder
-subclasses across the ecosystem.
+that depend on pyrig, allowing discovery of ConfigFile implementations and
+BuilderConfigFile subclasses across the ecosystem.
 """
 
 import importlib.metadata
@@ -284,8 +284,8 @@ def get_same_modules_from_deps_depen_on_dep(
     (e.g., `smth.dev.configs`), finds the equivalent path in all packages that depend on
     that dependency (e.g., `myapp.dev.configs`, `other_pkg.dev.configs`).
 
-    Enables automatic discovery of ConfigFile implementations and Builder subclasses
-    across the ecosystem.
+    Enables automatic discovery of ConfigFile implementations and BuilderConfigFile
+    subclasses across the ecosystem.
 
     Args:
         module: Module to use as template (e.g., `smth.dev.configs`).
@@ -367,3 +367,39 @@ def get_all_subcls_from_mod_in_all_deps_depen_on_dep[T: type](
         [c.__name__ for c in subclasses],
     )
     return subclasses
+
+
+def get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep[T: type](
+    cls: T, dep: ModuleType, pkg: ModuleType
+) -> T:
+    """Get the final leaf subclass (deepest in the inheritance tree).
+
+    Loads the given package before to expose classes to __subclasses__
+
+    Args:
+        cls: Base class to find subclasses of.
+        dep: Dependency package (e.g., pyrig or smth).
+        pkg: Module path within `dep` to use as template.
+
+
+    Returns:
+        Final leaf subclass type. Can be abstract.
+
+    """
+    classes = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
+        cls=cls,
+        dep=dep,
+        load_package_before=pkg,
+        discard_parents=True,
+        exclude_abstract=False,
+    )
+    # raise if more than one final leaf
+    if len(classes) > 1:
+        msg = (
+            f"Multiple final leaves found for {cls.__name__} "
+            f"in {pkg.__name__}: {classes}"
+        )
+        raise ValueError(msg)
+    leaf = classes[0]
+    logger.debug("Found final leaf of %s: %s", cls.__name__, leaf.__name__)
+    return leaf

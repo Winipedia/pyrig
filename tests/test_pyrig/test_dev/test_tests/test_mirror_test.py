@@ -7,6 +7,7 @@ from types import ModuleType
 
 import pytest
 
+from pyrig.dev import tests
 from pyrig.dev.tests import mirror_test
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.modules.module import create_module
@@ -48,6 +49,10 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
+    def test_get_definition_pkg(self) -> None:
+        """Test method."""
+        assert MirrorTestConfigFile.get_definition_pkg() is tests
+
     def test_leaf(self) -> None:
         """Test method."""
         leaf = MirrorTestConfigFile.leaf()
@@ -70,10 +75,13 @@ class TestMirrorTestConfigFile:
     def test_get_parent_path(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
+        tmp_path: Path,
     ) -> None:
         """Test method."""
-        parent_path = my_test_mirror_test_config_file.get_parent_path()
-        assert parent_path == Path(TESTS_PACKAGE_NAME)
+        # tmp path bc factory of pattern in config_file_factory
+        with chdir(tmp_path):
+            parent_path = my_test_mirror_test_config_file.get_parent_path()
+            assert parent_path == Path(TESTS_PACKAGE_NAME)
 
     def test_get_content_str(
         self,

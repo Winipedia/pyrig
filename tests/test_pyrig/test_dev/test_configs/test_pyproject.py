@@ -1,6 +1,7 @@
 """module."""
 
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 
 import pytest
@@ -103,12 +104,15 @@ class TestPyprojectConfigFile:
         spy.assert_called_once_with(config)
 
     def test_get_parent_path(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
+        tmp_path: Path,
     ) -> None:
         """Test method for get_parent_path."""
-        expected = Path()
-        actual = my_test_pyproject_config_file.get_parent_path()
-        assert actual == expected, f"Expected {expected}, got {actual}"
+        with chdir(tmp_path):
+            expected = Path()
+            actual = my_test_pyproject_config_file.get_parent_path()
+            assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_get_configs(self) -> None:
         """Test method for get_configs."""

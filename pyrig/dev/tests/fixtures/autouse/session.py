@@ -71,7 +71,7 @@ from pyrig.src.modules.package import (
     get_project_name_from_pkg_name,
 )
 from pyrig.src.modules.path import ModulePath
-from pyrig.src.os.os import run_subprocess
+from pyrig.src.processes import run_subprocess
 from pyrig.src.string import re_search_excluding_docstrings
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,

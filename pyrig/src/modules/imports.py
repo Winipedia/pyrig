@@ -2,7 +2,8 @@
 
 Provides utilities for importing modules/packages, package detection, recursive package
 traversal, and dynamic importing with fallback strategies. Used for dynamic discovery
-of ConfigFile subclasses, Builder implementations, and CLI commands across packages.
+of ConfigFile subclasses, BuilderConfigFile implementations, and CLI commands across
+packages.
 """
 
 import importlib.machinery

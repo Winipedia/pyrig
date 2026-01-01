@@ -1,6 +1,7 @@
 """module."""
 
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 
 import pytest
@@ -45,11 +46,14 @@ class TestPreCommitConfigConfigFile:
         )
 
     def test_get_parent_path(
-        self, my_test_pre_commit_config_file: type[PreCommitConfigConfigFile]
+        self,
+        my_test_pre_commit_config_file: type[PreCommitConfigConfigFile],
+        tmp_path: Path,
     ) -> None:
         """Test method for get_parent_path."""
-        parent_path = my_test_pre_commit_config_file.get_parent_path()
-        assert parent_path == Path(), f"Expected Path(), got {parent_path}"
+        with chdir(tmp_path):
+            parent_path = my_test_pre_commit_config_file.get_parent_path()
+            assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
     def test_get_configs(
         self, my_test_pre_commit_config_file: type[PreCommitConfigConfigFile]

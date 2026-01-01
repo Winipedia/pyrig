@@ -1,6 +1,7 @@
 """module."""
 
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 from typing import Any
 
@@ -158,12 +159,17 @@ class TestWorkflow:
         assert "on" in result, "Expected 'on' in configs"
         assert "jobs" in result, "Expected 'jobs' in configs"
 
-    def test_get_parent_path(self, my_test_workflow: type[Workflow]) -> None:
+    def test_get_parent_path(
+        self,
+        my_test_workflow: type[Workflow],
+        tmp_path: Path,
+    ) -> None:
         """Test method for get_parent_path."""
-        result = my_test_workflow.get_parent_path()
-        assert result == Path(".github/workflows"), (
-            f"Expected '.github/workflows', got {result}"
-        )
+        with chdir(tmp_path):
+            result = my_test_workflow.get_parent_path()
+            assert result == Path(".github/workflows"), (
+                f"Expected '.github/workflows', got {result}"
+            )
 
     def test_get_jobs(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for get_jobs."""

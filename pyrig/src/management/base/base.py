@@ -1,6 +1,6 @@
 """Base classes for type-safe command-line argument construction.
 
-Provides `Args` (executable command tuples) and `Tool` (base for tool wrappers).
+Provides `Tool` (base for tool wrappers).
 
 Design pattern:
     1. Each tool (uv, git, pytest) is a `Tool` subclass
@@ -25,57 +25,10 @@ Example:
 
 import logging
 from abc import ABC, abstractmethod
-from subprocess import CompletedProcess  # nosec: B404
-from typing import Any
 
-from pyrig.src.os.os import run_subprocess
+from pyrig.src.processes import Args
 
 logger = logging.getLogger(__name__)
-
-
-class Args(tuple[str, ...]):
-    """Command-line arguments container with execution capabilities.
-
-    Immutable tuple subclass representing command arguments.
-    Return type for all Tool methods.
-
-    Methods:
-        __str__: Convert to space-separated string
-        run: Execute via subprocess
-
-    Example:
-        >>> args = Args(("uv", "sync"))
-        >>> print(args)
-        uv sync
-        >>> args.run()
-        CompletedProcess(...)
-    """
-
-    __slots__ = ()
-
-    def __str__(self) -> str:
-        """Convert to space-separated string.
-
-        Returns:
-            Space-separated command string.
-        """
-        return " ".join(self)
-
-    def run(self, *args: str, **kwargs: Any) -> CompletedProcess[Any]:
-        """Execute command via subprocess.
-
-        Args:
-            *args: Additional arguments appended to command.
-            **kwargs: Keyword arguments passed to run_subprocess
-                (check, capture_output, cwd, etc.).
-
-        Returns:
-            CompletedProcess from subprocess execution.
-
-        Raises:
-            subprocess.CalledProcessError: If check=True and command fails.
-        """
-        return run_subprocess(self, *args, **kwargs)
 
 
 class Tool(ABC):

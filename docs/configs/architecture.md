@@ -22,6 +22,7 @@ graph TD
     A --> D[TextConfigFile]
     A --> E[TypedConfigFile]
     A --> F[JsonConfigFile]
+    A --> G[BuilderConfigFile]
 
     B --> B1[YmlConfigFile]
     B --> B2[Workflow]
@@ -40,15 +41,25 @@ graph TD
     D3A1 --> D3A1A[CopyModuleOnlyDocstringConfigFile]
     D3A1A --> D3A1A1[InitConfigFile]
 
+    G --> G1[PyInstallerBuilder]
+
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style B2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
     style D3A2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style G1 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
+
+**Note**: `BuilderConfigFile` is a special subclass for artifact generation
+(e.g., creating executables). It repurposes the ConfigFile interface for build
+operations rather than configuration file management. Builders are discovered
+separately from `pyrig.dev.builders` and invoked via `pyrig build`. See
+[Builder Documentation](../builders/index.md) for details.
 
 ### Required Methods
 

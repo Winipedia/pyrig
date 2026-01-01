@@ -74,6 +74,7 @@ from pyrig.dev import configs
 from pyrig.src.iterate import nested_structure_is_subset
 from pyrig.src.modules.package import (
     get_all_subcls_from_mod_in_all_deps_depen_on_dep,
+    get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep,
 )
 from pyrig.src.string import split_on_uppercase
 
@@ -360,6 +361,18 @@ class ConfigFile(ABC):
         return nested_structure_is_subset(expected_config, actual_config)
 
     @classmethod
+    def get_definition_pkg(cls) -> ModuleType:
+        """Get the package where the ConfigFile subclasses are supposed to be defined.
+
+        Default is pyrig.dev.configs.
+        But can be overridden by subclasses to define their own package.
+
+        Returns:
+            Package module where the ConfigFile subclass is defined.
+        """
+        return configs
+
+    @classmethod
     def get_all_subclasses(cls) -> list[type[Self]]:
         """Discover all non-abstract ConfigFile subclasses across all packages.
 
@@ -373,7 +386,7 @@ class ConfigFile(ABC):
         subclasses = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
             cls,
             pyrig,
-            configs,
+            cls.get_definition_pkg(),
             discard_parents=True,
             exclude_abstract=True,
         )
@@ -458,7 +471,7 @@ class ConfigFile(ABC):
         cls.init_subclasses(*cls.get_priority_subclasses())
 
     @classmethod
-    def get_final_leaf(cls, pkg: ModuleType) -> type[Self]:
+    def leaf(cls) -> type[Self]:
         """Get the final leaf subclass (deepest in the inheritance tree).
 
         Returns:
@@ -467,20 +480,6 @@ class ConfigFile(ABC):
         See Also:
             get_all_subclasses: Get all subclasses regardless of priority
         """
-        classes = get_all_subcls_from_mod_in_all_deps_depen_on_dep(
-            cls=cls,
-            dep=pyrig,
-            load_package_before=pkg,
-            discard_parents=True,
-            exclude_abstract=False,
+        return get_final_cls_leaf_from_mod_in_all_deps_depen_on_dep(
+            cls=cls, dep=pyrig, pkg=cls.get_definition_pkg()
         )
-        # raise if more than one final leaf
-        if len(classes) > 1:
-            msg = (
-                f"Multiple final leaves found for {cls.__name__} "
-                f"in {pkg.__name__}: {classes}"
-            )
-            raise ValueError(msg)
-        leaf = classes[0]
-        logger.debug("Found final leaf of %s: %s", cls.__name__, leaf.__name__)
-        return leaf

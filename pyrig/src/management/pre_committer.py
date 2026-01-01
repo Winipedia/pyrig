@@ -9,7 +9,8 @@ Example:
     >>> PreCommitter.get_run_all_files_args().run()
 """
 
-from pyrig.src.management.base.base import Args, Tool
+from pyrig.src.management.base.base import Tool
+from pyrig.src.processes import Args
 
 
 class PreCommitter(Tool):

@@ -94,7 +94,7 @@ Example:
 def build() -> None:
     """Build all artifacts.
 
-    Invokes every subclass of Builder in the builder package.
+    Invokes every subclass of BuilderConfigFile in the builder package.
     """
     from pyrig.dev.cli.commands.build_artifacts import build_artifacts
 

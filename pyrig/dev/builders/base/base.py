@@ -1,109 +1,82 @@
-"""Abstract base class for artifact builders.
+"""Base builder module for artifact generation.
 
-Provides the `Builder` abstract base class that defines the interface and
-orchestration logic for creating distributable artifacts from pyrig projects.
+This module provides the abstract base class for all builders in the pyrig framework.
+Builders are specialized configuration file handlers that create build artifacts
+(executables, documentation, packages, etc.) rather than configuration files.
 
-Build Lifecycle:
-    1. Create temporary build directory
-    2. Create artifacts subdirectory within temp directory
-    3. Invoke subclass's `create_artifacts()` method
-    4. Collect all files created in the artifacts subdirectory
-    5. Rename artifacts with platform suffixes (`-Linux`, `-Windows`, `-Darwin`)
-    6. Move renamed artifacts to final output directory (`dist/` by default)
-    7. Clean up temporary directory automatically
+The :class:`BuilderConfigFile` extends :class:`ConfigFile` but repurposes its
+interface for build operations:
 
-The builder system uses pyrig's multi-package architecture to automatically
-discover all non-abstract Builder subclasses across packages depending on pyrig.
-When `pyrig build` is executed, all discovered builders are instantiated
-sequentially, triggering their build process.
+- ``load()`` returns existing artifacts from the output directory
+- ``dump()`` triggers the build process
+- ``create_file()`` creates the output directory structure
+
+Subclasses implement :meth:`~BuilderConfigFile.create_artifacts` to define their
+specific build logic. The framework handles temporary directory management,
+artifact collection, and platform-specific naming.
 
 Example:
-    Create a custom builder::
+    ::
 
-        from pathlib import Path
-        from pyrig.dev.builders.base.base import Builder
-
-        class DocumentationBuilder(Builder):
-            '''Builder for creating documentation archives.'''
-
+        class MyBuilder(BuilderConfigFile):
             @classmethod
             def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
-                docs_archive = temp_artifacts_dir / "docs.zip"
-                # Build documentation and create archive
-                docs_archive.write_text("documentation content")
-
-    Build all artifacts::
-
-        $ uv run pyrig build
-        # Creates: dist/docs-Linux.zip (or platform-specific name)
-
-Module Attributes:
-    logger: Logger instance for builder operations.
-
-See Also:
-    pyrig.dev.builders.pyinstaller.PyInstallerBuilder: PyInstaller builder
-    pyrig.dev.cli.commands.build_artifacts.build_artifacts: Build command
+                output = temp_artifacts_dir / "my_app.exe"
+                # ... build logic ...
 """
 
 import logging
 import platform
 import shutil
 import tempfile
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from importlib import import_module
 from pathlib import Path
+from types import ModuleType
+from typing import Any
 
 import pyrig
 from pyrig import main, resources
 from pyrig.dev import builders
+from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.utils.packages import get_src_package
-from pyrig.src.modules.package import (
-    get_all_subcls_from_mod_in_all_deps_depen_on_dep,
-)
 from pyrig.src.modules.path import ModulePath
 
 logger = logging.getLogger(__name__)
 
 
-class Builder(ABC):
+class BuilderConfigFile(ConfigFile):
     """Abstract base class for artifact builders.
 
-    Provides the framework for creating distributable artifacts from pyrig projects.
-    Subclasses implement `create_artifacts` to define their build logic. The build
-    process is automatically triggered when the builder is instantiated.
+    BuilderConfigFile provides a framework for creating build artifacts with
+    platform-specific naming and organized output. It extends ConfigFile but
+    adapts its interface for build operations rather than configuration management.
 
-    Handles all build orchestration including temporary directory management,
-    artifact collection and validation, platform-specific naming, and moving
-    artifacts to the final output directory. Supports automatic discovery across
-    dependent packages.
+    The build lifecycle:
 
-    Subclasses must implement:
-        create_artifacts: Create artifacts in the provided temporary directory.
+    1. A temporary directory is created
+    2. :meth:`create_artifacts` is called (implemented by subclasses)
+    3. Artifacts are collected from the temporary directory
+    4. Artifacts are renamed with platform suffixes (e.g., ``-Linux``, ``-Windows``)
+    5. Artifacts are moved to the final output directory (default: ``dist/``)
+
+    Subclasses must implement :meth:`create_artifacts` to define their build logic.
 
     Attributes:
-        ARTIFACTS_DIR_NAME: Output directory name for built artifacts (default: "dist").
+        ARTIFACTS_DIR_NAME: Default output directory name (``"dist"``).
 
     Example:
-        Basic builder implementation::
+        ::
 
-            from pathlib import Path
-            from pyrig.dev.builders.base.base import Builder
-
-            class MyBuilder(Builder):
+            class ExecutableBuilder(BuilderConfigFile):
                 @classmethod
                 def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
-                    artifact = temp_artifacts_dir / "my-artifact.tar.gz"
-                    artifact.write_bytes(b"artifact content")
-
-        Trigger build::
-
-            MyBuilder()  # Automatically builds and outputs to dist/
-            # Or: uv run pyrig build
+                    exe_path = temp_artifacts_dir / f"{cls.get_app_name()}.exe"
+                    # ... compile and create executable ...
 
     See Also:
-        create_artifacts: Abstract method that subclasses must implement
-        build: Main build orchestration method
-        get_non_abstract_subclasses: Discovery mechanism for finding builders
+        :class:`~pyrig.dev.configs.base.base.ConfigFile`: Parent class providing
+            the configuration file interface.
     """
 
     ARTIFACTS_DIR_NAME = "dist"
@@ -132,22 +105,75 @@ class Builder(ABC):
                     output.write_text("documentation")
         """
 
-    def __init__(self) -> None:
-        """Initialize the builder and trigger the build process.
-
-        Instantiating a Builder subclass automatically triggers the build process.
-        The build runs synchronously and completes before this constructor returns.
-        """
-        self.__class__.build()
-
     @classmethod
-    def get_artifacts_dir(cls) -> Path:
-        """Get the final output directory for artifacts.
+    def get_parent_path(cls) -> Path:
+        """Get the parent directory for artifacts.
+
+        For builders, this is the directory where artifacts are stored. The default
+        is "dist", but can be overridden by subclasses.
 
         Returns:
-            Path to the artifacts output directory (default: "dist").
+            Path to the artifacts directory (e.g., "dist").
         """
         return Path(cls.ARTIFACTS_DIR_NAME)
+
+    @classmethod
+    def _load(cls) -> list[Path]:
+        """Get all artifacts from the output directory.
+
+        Returns:
+            List of artifact paths (non-recursive).
+        """
+        return list(cls.get_parent_path().glob("*"))
+
+    @classmethod
+    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:  # noqa: ARG003
+        """Build artifacts.
+
+        Args:
+            config: Not used.
+        """
+        cls.build()
+
+    @classmethod
+    def get_file_extension(cls) -> str:
+        """Not used for builders."""
+        return ""
+
+    @classmethod
+    def get_configs(cls) -> list[Path]:
+        """Not used for builders."""
+        return []
+
+    @classmethod
+    def is_correct(cls) -> bool:
+        """Check if the builder has created any artifacts.
+
+        Returns:
+            True if at least one artifact was created and exists.
+        """
+        return bool(cls.load())
+
+    @classmethod
+    def create_file(cls) -> None:
+        """Create the parent directory for artifacts.
+
+        Not creating the file itself, as the file creation is handled by the
+        create_artifacts() method.
+        """
+        cls.get_parent_path().mkdir(parents=True, exist_ok=True)
+
+    @classmethod
+    def get_definition_pkg(cls) -> ModuleType:
+        """Get the package where the BuilderConfigFile subclasses are to be defined.
+
+        Default is pyrig.dev.builders, which overrides the default pyrig.dev.configs.
+        But can be overridden by subclasses to define their own package.
+
+        Returns:
+            Package module where the BuilderConfigFile subclass is defined.
+        """
+        return builders
 
     @classmethod
     def build(cls) -> None:
@@ -158,16 +184,13 @@ class Builder(ABC):
         renames them with platform-specific suffixes, and moves them to the
         final output directory.
 
-        Raises:
-            FileNotFoundError: If `create_artifacts` doesn't create any files.
-
         See Also:
             create_artifacts: Subclass-implemented method that creates artifacts
             rename_artifacts: Adds platform suffixes and moves to output
         """
         logger.debug("Building artifacts with %s", cls.__name__)
-        with tempfile.TemporaryDirectory() as temp_build_dir:
-            temp_dir_path = Path(temp_build_dir)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_dir_path = Path(temp_dir)
             temp_artifacts_dir = cls.get_temp_artifacts_path(temp_dir_path)
             cls.create_artifacts(temp_artifacts_dir)
             artifacts = cls.get_temp_artifacts(temp_artifacts_dir)
@@ -184,14 +207,44 @@ class Builder(ABC):
         Args:
             artifacts: List of artifact paths from the temporary directory.
         """
-        artifacts_dir = cls.get_artifacts_dir()
-        artifacts_dir.mkdir(parents=True, exist_ok=True)
         for artifact in artifacts:
-            new_name = f"{artifact.stem}-{platform.system()}{artifact.suffix}"
-            new_path = artifacts_dir / new_name
-            logger.debug("Moving artifact: %s to: %s", artifact, new_path)
-            shutil.move(str(artifact), str(new_path))
-            logger.info("Created artifact: %s", new_path.name)
+            cls.rename_artifact(artifact)
+
+    @classmethod
+    def rename_artifact(cls, artifact: Path) -> None:
+        """Rename a single artifact with platform-specific suffix.
+
+        Args:
+            artifact: Path to the artifact.
+        """
+        platform_specific_path = cls.get_platform_specific_path(artifact)
+        logger.debug("Moving artifact: %s to: %s", artifact, platform_specific_path)
+        shutil.move(str(artifact), str(platform_specific_path))
+        logger.info("Created artifact: %s", platform_specific_path.name)
+
+    @classmethod
+    def get_platform_specific_path(cls, artifact: Path) -> Path:
+        """Get the platform-specific path for an artifact.
+
+        Args:
+            artifact: Path to the artifact.
+
+        Returns:
+            Platform-specific path for the artifact.
+        """
+        return cls.get_parent_path() / cls.get_platform_specific_name(artifact)
+
+    @classmethod
+    def get_platform_specific_name(cls, artifact: Path) -> str:
+        """Get the platform-specific name for an artifact.
+
+        Args:
+            artifact: Path to the artifact.
+
+        Returns:
+            Platform-specific name for the artifact.
+        """
+        return f"{artifact.stem}-{platform.system()}{artifact.suffix}"
 
     @classmethod
     def get_temp_artifacts(cls, temp_artifacts_dir: Path) -> list[Path]:
@@ -206,20 +259,7 @@ class Builder(ABC):
         Raises:
             FileNotFoundError: If no artifacts were created.
         """
-        paths = list(temp_artifacts_dir.glob("*"))
-        if not paths:
-            msg = f"Expected {temp_artifacts_dir} to contain files"
-            raise FileNotFoundError(msg)
-        return paths
-
-    @classmethod
-    def get_artifacts(cls) -> list[Path]:
-        """Get all artifacts from the final output directory.
-
-        Returns:
-            List of artifact paths from the output directory.
-        """
-        return list(cls.get_artifacts_dir().glob("*"))
+        return list(temp_artifacts_dir.glob("*"))
 
     @classmethod
     def get_temp_artifacts_path(cls, temp_dir: Path) -> Path:
@@ -234,43 +274,6 @@ class Builder(ABC):
         path = temp_dir / cls.ARTIFACTS_DIR_NAME
         path.mkdir(parents=True, exist_ok=True)
         return path
-
-    @classmethod
-    def get_non_abstract_subclasses(cls) -> list[type["Builder"]]:
-        """Discover all non-abstract Builder subclasses across dependent packages.
-
-        Uses pyrig's multi-package architecture to find all concrete Builder
-        subclasses across packages that depend on pyrig. Searches for `dev.builders`
-        modules in each package and returns only non-abstract leaf classes.
-
-        Returns:
-            List of concrete Builder subclass types (not instances).
-
-        See Also:
-            init_all_non_abstract_subclasses: Instantiates all discovered builders
-        """
-        return get_all_subcls_from_mod_in_all_deps_depen_on_dep(
-            cls,
-            pyrig,
-            builders,
-            discard_parents=True,
-            exclude_abstract=True,
-        )
-
-    @classmethod
-    def init_all_non_abstract_subclasses(cls) -> None:
-        """Instantiate all discovered Builder subclasses to trigger builds.
-
-        Discovers all non-abstract Builder subclasses across packages depending
-        on pyrig and instantiates each one sequentially. This is the implementation
-        of the `pyrig build` command.
-
-        See Also:
-            get_non_abstract_subclasses: Discovery mechanism for finding builders
-        """
-        builders = cls.get_non_abstract_subclasses()
-        for builder_cls in builders:
-            builder_cls()
 
     @classmethod
     def get_app_name(cls) -> str:
@@ -288,7 +291,7 @@ class Builder(ABC):
         Returns:
             Absolute path to the project root directory.
         """
-        src_pkg = get_src_package()
+        src_pkg = import_module(PyprojectConfigFile.get_package_name())
         src_path = ModulePath.pkg_type_to_dir_path(src_pkg)
         return src_path.parent
 
@@ -299,7 +302,7 @@ class Builder(ABC):
         Returns:
             Absolute path to main.py.
         """
-        return cls.get_src_pkg_path() / cls.get_main_path_from_src_pkg()
+        return cls.get_src_pkg_path() / cls.get_main_path_relative_to_src_pkg()
 
     @classmethod
     def get_resources_path(cls) -> Path:
@@ -308,7 +311,7 @@ class Builder(ABC):
         Returns:
             Absolute path to the resources directory.
         """
-        return cls.get_src_pkg_path() / cls.get_resources_path_from_src_pkg()
+        return cls.get_src_pkg_path() / cls.get_resources_path_relative_to_src_pkg()
 
     @classmethod
     def get_src_pkg_path(cls) -> Path:
@@ -320,7 +323,7 @@ class Builder(ABC):
         return cls.get_root_path() / PyprojectConfigFile.get_package_name()
 
     @classmethod
-    def get_main_path_from_src_pkg(cls) -> Path:
+    def get_main_path_relative_to_src_pkg(cls) -> Path:
         """Get the relative path to main.py from the source package.
 
         Returns:
@@ -331,7 +334,7 @@ class Builder(ABC):
         return project_main_file.relative_to(pyrig_pkg_dir)
 
     @classmethod
-    def get_resources_path_from_src_pkg(cls) -> Path:
+    def get_resources_path_relative_to_src_pkg(cls) -> Path:
         """Get the relative path to resources from the source package.
 
         Returns:

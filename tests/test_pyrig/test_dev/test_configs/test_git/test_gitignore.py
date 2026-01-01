@@ -1,6 +1,7 @@
 """module."""
 
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 
 import pytest
@@ -46,11 +47,14 @@ class TestGitIgnoreConfigFile:
         assert filename == "", f"Expected empty string, got {filename}"
 
     def test_get_parent_path(
-        self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
+        self,
+        my_test_gitignore_config_file: type[GitIgnoreConfigFile],
+        tmp_path: Path,
     ) -> None:
         """Test method for get_parent_path."""
-        parent_path = my_test_gitignore_config_file.get_parent_path()
-        assert parent_path == Path(), f"Expected Path(), got {parent_path}"
+        with chdir(tmp_path):
+            parent_path = my_test_gitignore_config_file.get_parent_path()
+            assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
     def test_get_file_extension(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]

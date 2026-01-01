@@ -1,6 +1,7 @@
 # build
 
-Builds all project artifacts by invoking all registered Builder subclasses.
+Builds all project artifacts by invoking all registered BuilderConfigFile
+subclasses.
 
 ## Usage
 
@@ -18,7 +19,8 @@ uv run pyrig -vv build
 
 The `build` command:
 
-1. **Discovers all Builder subclasses** across the project and its dependencies
+1. **Discovers all BuilderConfigFile subclasses** across the project and its
+   dependencies
 2. **Invokes each builder** to create its artifacts
 3. **Outputs artifacts** to the `dist/` directory
 
@@ -50,13 +52,13 @@ The build process:
 
 ## Creating Custom Builders
 
-Create a custom builder by subclassing `Builder`:
+Create a custom builder by subclassing `BuilderConfigFile`:
 
 ```python
 from pathlib import Path
-from pyrig.dev.builders.base.base import Builder
+from pyrig.dev.builders.base.base import BuilderConfigFile
 
-class MyBuilder(Builder):
+class MyBuilder(BuilderConfigFile):
     """Custom artifact builder."""
 
     @classmethod
