@@ -62,7 +62,7 @@ def creating_priority_config_files() -> None:
     that other initialization steps depend on via `uv run pyrig mkroot --priority`.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
-    args = Pyrigger.get_cmd_args(mkroot, "--priority")
+    args = PackageManager.get_run_args(*Pyrigger.get_cmd_args(mkroot, "--priority"))
     args.run()
 
 
@@ -83,7 +83,7 @@ def creating_project_root() -> None:
     Generates all remaining configuration files and directory structure via
     `uv run pyrig mkroot`.
     """
-    args = Pyrigger.get_cmd_args(mkroot)
+    args = PackageManager.get_run_args(*Pyrigger.get_cmd_args(mkroot))
     args.run()
 
 
@@ -93,7 +93,7 @@ def creating_test_files() -> None:
     Creates test files mirroring the source package structure with
     NotImplementedError placeholders via `uv run pyrig mktests`.
     """
-    args = Pyrigger.get_cmd_args(mktests)
+    args = PackageManager.get_run_args(*Pyrigger.get_cmd_args(mktests))
     args.run()
 
 
@@ -104,11 +104,11 @@ def running_pre_commit_hooks() -> None:
     to ensure the codebase follows style guidelines.
     """
     # install pre-commit hooks
-    PreCommitter.get_install_args().run()
+    PackageManager.get_run_args(*PreCommitter.get_install_args()).run()
     # add all files to git
     VersionController.get_add_all_args().run()
     # run pre-commit hooks
-    PreCommitter.get_run_all_files_args().run()
+    PackageManager.get_run_args(*PreCommitter.get_run_all_files_args()).run()
 
 
 def running_tests() -> None:
@@ -117,7 +117,7 @@ def running_tests() -> None:
     Validates that all generated code is syntactically correct and the project
     is properly configured via `pytest`.
     """
-    args = ProjectTester.get_args()
+    args = PackageManager.get_run_args(*ProjectTester.get_args())
     args.run()
 
 
