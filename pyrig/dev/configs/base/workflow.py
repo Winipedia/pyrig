@@ -908,7 +908,9 @@ class Workflow(YamlConfigFile):
             step = {}
         if src_pkg_is_pyrig():
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
-        run = str(ProjectTester.get_run_tests_in_ci_args())
+        run = str(
+            PackageManager.get_run_args(*ProjectTester.get_run_tests_in_ci_args())
+        )
         return cls.get_step(
             step_func=cls.step_run_tests,
             run=run,
@@ -1277,7 +1279,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_protect_repository,
-            run=str(Pyrigger.get_venv_run_cmd_args(protect_repo)),
+            run=str(PackageManager.get_run_args(*Pyrigger.get_cmd_args(protect_repo))),
             env={"REPO_TOKEN": cls.insert_repo_token()},
             step=step,
         )
@@ -1454,7 +1456,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_artifacts,
-            run=str(Pyrigger.get_venv_run_cmd_args(build)),
+            run=str(PackageManager.get_run_args(*Pyrigger.get_cmd_args(build))),
             step=step,
         )
 

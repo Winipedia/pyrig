@@ -117,7 +117,7 @@ def running_tests() -> None:
     Validates that all generated code is syntactically correct and the project
     is properly configured via `pytest`.
     """
-    args = ProjectTester.get_run_tests_args()
+    args = ProjectTester.get_args()
     args.run()
 
 

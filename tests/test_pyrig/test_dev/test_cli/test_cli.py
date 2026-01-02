@@ -3,14 +3,13 @@
 import logging
 
 from pyrig.dev.cli.cli import configure_logging
-from pyrig.dev.cli.shared_subcommands import version
 from pyrig.dev.management.pyrigger import Pyrigger
 
 
 def test_add_subcommands() -> None:
     """Test for the add_subcommands func."""
     # run --help comd to see if its available
-    args = Pyrigger.get_venv_run_args("--help")
+    args = Pyrigger.get_args("--help")
     result = args.run()
     stdout = result.stdout.decode("utf-8")
     assert "pyrig" in stdout, f"Expected pyrig in stdout, got {stdout}"
@@ -18,7 +17,7 @@ def test_add_subcommands() -> None:
 
 def test_add_shared_subcommands() -> None:
     """Test function."""
-    args = Pyrigger.get_venv_run_cmd_args(version)
+    args = Pyrigger.get_args("--help")
     result = args.run()
     stdout = result.stdout.decode("utf-8")
     assert "version" in stdout, f"Expected version in stdout, got {stdout}"
@@ -26,7 +25,7 @@ def test_add_shared_subcommands() -> None:
 
 def test_main() -> None:
     """Test for the main cli entrypoint."""
-    args = Pyrigger.get_venv_run_args("--help")
+    args = Pyrigger.get_args("--help")
     result = args.run()
     assert result.returncode == 0, "Expected returncode 0"
 

@@ -10,7 +10,6 @@ Example:
 """
 
 from pyrig.dev.management.base.base import Tool
-from pyrig.dev.management.package_manager import PackageManager
 from pyrig.src.processes import Args
 
 
@@ -38,18 +37,6 @@ class ProjectTester(Tool):
         return "pytest"
 
     @classmethod
-    def get_run_tests_args(cls, *args: str) -> Args:
-        """Construct uv run pytest arguments.
-
-        Args:
-            *args: Pytest command arguments.
-
-        Returns:
-            Args for 'uv run pytest'.
-        """
-        return PackageManager.get_run_args(cls.name(), *args)
-
-    @classmethod
     def get_run_tests_in_ci_args(cls, *args: str) -> Args:
         """Construct uv run pytest arguments for CI.
 
@@ -59,4 +46,4 @@ class ProjectTester(Tool):
         Returns:
             Args for 'uv run pytest' with CI flags (log level INFO, XML coverage).
         """
-        return cls.get_run_tests_args("--log-cli-level=INFO", "--cov-report=xml", *args)
+        return cls.get_args("--log-cli-level=INFO", "--cov-report=xml", *args)

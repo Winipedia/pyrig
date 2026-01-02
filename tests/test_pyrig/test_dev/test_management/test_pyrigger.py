@@ -27,21 +27,3 @@ class TestPyrigger:
 
         result = Pyrigger.get_cmd_args(my_command, "--help")
         assert result == ("pyrig", "my-command", "--help")
-
-    def test_get_venv_run_args(self) -> None:
-        """Test method."""
-        result = Pyrigger.get_venv_run_args("--help")
-        assert result == ("uv", "run", "pyrig", "--help")
-
-    def test_get_venv_run_cmd_args(self, mocker: MockFixture) -> None:
-        """Test method."""
-        mocker.patch(
-            pyrigger.__name__ + ".get_project_name_from_pkg_name",
-            return_value="my-command",
-        )
-
-        def my_command() -> None:
-            """Sample command."""
-
-        result = Pyrigger.get_venv_run_cmd_args(my_command, "--verbose")
-        assert result == ("uv", "run", "pyrig", "my-command", "--verbose")
