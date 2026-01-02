@@ -119,3 +119,7 @@ developing your project.
 
 See more documentation about pyrig's drawbacks, how to get started, tooling
 choices and a detailed example usage.
+
+### [CodeWiki Documentation](https://codewiki.google/github.com/winipedia/pyrig)
+
+AI-generated documentation for pyrig.
