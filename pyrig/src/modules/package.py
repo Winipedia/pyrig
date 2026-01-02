@@ -10,6 +10,7 @@ import importlib.metadata
 import logging
 import re
 from collections.abc import Callable, Iterable, Sequence
+from functools import cache
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -452,6 +453,7 @@ def discover_subclasses_across_dependents[T: type](
     return subclasses
 
 
+@cache
 def discover_leaf_subclass_across_dependents[T: type](
     cls: T, dep: ModuleType, load_pkg_before: ModuleType
 ) -> T:

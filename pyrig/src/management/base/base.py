@@ -25,7 +25,11 @@ Example:
 
 import logging
 from abc import ABC, abstractmethod
+from typing import Self
 
+import pyrig
+from pyrig.src import management
+from pyrig.src.modules.package import discover_leaf_subclass_across_dependents
 from pyrig.src.processes import Args
 
 logger = logging.getLogger(__name__)
@@ -78,3 +82,19 @@ class Tool(ABC):
             Subclasses provide higher-level methods calling this internally.
         """
         return Args((cls.name(), *args))
+
+    @classmethod
+    def leaf(cls) -> type[Self]:
+        """Get the final leaf subclass (deepest in the inheritance tree).
+
+        Returns:
+            Final leaf subclass type. Can be abstract.
+
+        See Also:
+            get_all_subclasses: Get all subclasses regardless of priority
+        """
+        return discover_leaf_subclass_across_dependents(
+            cls=cls,
+            dep=pyrig,
+            load_pkg_before=management,
+        )

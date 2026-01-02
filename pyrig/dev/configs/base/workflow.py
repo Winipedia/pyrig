@@ -42,6 +42,7 @@ from pyrig.dev.utils.packages import get_src_package, src_pkg_is_pyrig
 from pyrig.src.management.container_engine import (
     ContainerEngine,
 )
+from pyrig.src.management.docs_builder import DocsBuilder
 from pyrig.src.management.package_manager import PackageManager
 from pyrig.src.management.pre_committer import PreCommitter
 from pyrig.src.management.project_tester import ProjectTester
@@ -1166,7 +1167,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_documentation,
-            run=str(PackageManager.get_run_args("mkdocs", "build")),
+            run=str(PackageManager.get_run_args(*DocsBuilder.get_build_args())),
             step=step,
         )
 
