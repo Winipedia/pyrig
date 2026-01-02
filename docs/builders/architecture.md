@@ -83,17 +83,20 @@ All builders must:
 - Implement the `create_artifacts` method
 - Be placed in a `dev/builders/` module
 
-When instantiated, the builder triggers the build process via `dump()`.
+When instantiated (via the `__init__` method inherited from ConfigFile), the
+builder triggers the build process through the following call chain:
+`__init__()` → `dump()` → `_dump()` → `build()`.
 
 ### Key Methods
 
-| Method             | Purpose                                                    |
-| ------------------ | ---------------------------------------------------------- |
-| `create_artifacts` | **Abstract** - Implement to define build logic             |
-| `build`            | Orchestrates temp directory, artifact creation, and moving |
-| `get_parent_path`  | Returns final output directory (default: `dist/`)          |
-| `rename_artifacts` | Adds platform suffix to artifacts                          |
-| `get_all_subclasses` | Discovers all builders across packages (inherited)       |
+| Method                  | Purpose                                                    |
+| ----------------------- | ---------------------------------------------------------- |
+| `create_artifacts`      | **Abstract** - Implement to define build logic             |
+| `build`                 | Orchestrates temp directory, artifact creation, and moving |
+| `get_parent_path`       | Returns final output directory (default: `dist/`)          |
+| `rename_artifacts`      | Adds platform suffix to artifacts                          |
+| `get_all_subclasses`    | Discovers all builders across packages (inherited)         |
+| `init_all_subclasses`   | Discovers and instantiates all builders (inherited)        |
 
 ## Build Process
 

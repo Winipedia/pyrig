@@ -132,12 +132,13 @@ PyInstaller requires platform-specific icon formats:
 
 - **Windows**: `.ico`
 - **macOS**: `.icns`
-- **Linux**: Not supported (PyInstaller ignores the `--icon` parameter on Linux)
+- **Linux**: `.png` (PyInstaller ignores the `--icon` parameter on Linux,
+but the icon is still processed for consistency)
 
 `PyInstallerBuilder` automatically converts your `icon.png` to the appropriate
-format for Windows and macOS. On Linux, the icon is still converted to PNG
-format for consistency, but PyInstaller will ignore it as Linux executables do
-not support embedded icons.
+format for Windows and macOS. On Linux, the PNG icon is passed through without
+conversion, but PyInstaller will not embed it in the executable as Linux
+executables do not support embedded icons.
 
 ### Custom Icon Location
 
@@ -161,6 +162,7 @@ The builder generates these PyInstaller options:
 
 | Option        | Value                            | Purpose                                       |
 | ------------- | -------------------------------- | --------------------------------------------- |
+| (positional)  | `cls.get_main_path()`            | Entry point script (main.py)                  |
 | `--name`      | Project name from pyproject.toml | Executable name                               |
 | `--onefile`   | Enabled                          | Single executable file                        |
 | `--noconsole` | Enabled                          | No console window (GUI mode)                  |
@@ -195,6 +197,36 @@ class MyAppBuilder(PyInstallerBuilder):
 
         return options
 ```
+
+## Advanced Methods Reference
+
+The following methods are available for advanced customization:
+
+### Resource Management
+
+- **`get_default_additional_resource_pkgs()`**:
+    Returns resource packages from all pyrig-dependent packages (automatic)
+- **`get_all_resource_pkgs()`**:
+    Combines default and additional resource packages
+- **`get_add_datas()`**: Builds the `--add-data` arguments for PyInstaller
+
+### Path Management
+
+- **`get_temp_workpath(temp_dir: Path)`**:
+    Returns the temporary work directory for PyInstaller
+- **`get_temp_specpath(temp_dir: Path)`**:
+    Returns the temporary spec file directory
+- **`get_temp_distpath(temp_dir: Path)`**:
+    Returns the temporary distribution output path
+
+### Icon Management
+
+- **`get_app_icon_path(temp_dir: Path)`**:
+    Returns the platform-appropriate icon path
+- **`convert_png_to_format(file_format: str, temp_dir_path: Path)`**:
+    Converts the icon to the specified format
+
+Override these methods for fine-grained control over the build process.
 
 ## Advanced Customization
 
