@@ -41,8 +41,7 @@ def get_all_methods_from_cls(
         include_annotate: If False, excludes `__annotate__` (Python 3.14+).
 
     Returns:
-        List of method objects sorted by line number.
-        ['method_a', 'method_b']
+        List of method objects (Callable) sorted by line number.
     """
     methods = [
         (method, name)
