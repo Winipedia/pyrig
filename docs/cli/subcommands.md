@@ -18,12 +18,32 @@ def mkroot(
         help="Only create priority config files.",
     ),
 ) -> None:
-    """Creates the root of the project.
+    """Create or update project configuration files and directory structure.
 
-    This inits all ConfigFiles.
+    Discovers all ConfigFile subclasses across the project and its dependencies,
+    then initializes each one to create or update configuration files. Generates
+    the complete project structure including pyproject.toml, .gitignore, GitHub
+    workflows, pre-commit hooks, and other configuration files.
+
+    The command is idempotent and non-destructive: safe to run multiple times,
+    only adds missing configs or updates incomplete files, never removes
+    existing configuration.
+
+    Args:
+        priority: If True, only creates high-priority config files (e.g.,
+            pyproject.toml, .gitignore, LICENSE). Used during `init` to create
+            essential files before installing dependencies. Default: False.
+
+    Example:
+        $ uv run pyrig mkroot
+        $ uv run pyrig mkroot --priority
+
+    Note:
+        Config files are created in parallel within each priority group for
+        performance. The command is automatically called twice by `pyrig init`.
     """
-    # local imports in pyrig to avoid cli failure 
-    # when installing without dev deps, as some pyrig commands are 
+    # local imports in pyrig to avoid cli failure
+    # when installing without dev deps, as some pyrig commands are
     # dependend on dev deps and can only be used in a dev env
     from pyrig.dev.cli.commands.create_root import make_project_root
 
@@ -103,15 +123,17 @@ def build() -> None:
 
 ## Automatic Registration
 
+The CLI system automatically discovers and registers two types of commands:
+
+1. **Main entry point** - The `main()` function from `<package>/main.py`
+2. **Subcommands** - All functions from `<package>/dev/cli/subcommands.py`
+
 Functions are discovered and registered automatically:
 
 - **No manual registration** required
 - **Functions only** - classes and variables are ignored
 - **Defined in module** - imported functions are excluded
 - **Sorted by definition order** - commands appear in the order they're defined
-
-Note: The main function from your main.py at myapp/main.py is automatically
-registered as a command as well in addition to all functions in subcommands.py.
 
 ### Discovery Process
 

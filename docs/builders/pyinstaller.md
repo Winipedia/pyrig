@@ -145,6 +145,11 @@ executables do not support embedded icons.
 Override `get_app_icon_png_path` to use a different icon:
 
 ```python
+from pathlib import Path
+from types import ModuleType
+from pyrig.dev.builders.pyinstaller import PyInstallerBuilder
+import myapp.another_resources_pkg
+
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
     def get_additional_resource_pkgs(cls) -> list[ModuleType]:

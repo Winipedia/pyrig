@@ -27,14 +27,13 @@ The `mkroot` command:
 
 1. **Discovers all ConfigFile subclasses** across the project and its
    dependencies
-2. **Initializes config files** in two phases by calling
-   `ConfigFile.init_all_subclasses()`:
-   - **Priority files** (priority > 0) - Essential files required by other
-     configs, initialized sequentially in order of priority (highest first)
-   - **Non-priority files** (priority <= 0) - Independent files, initialized in
-     parallel using ThreadPoolExecutor for performance
+2. **Initializes config files** by calling `ConfigFile.init_all_subclasses()`:
+   - Files are **grouped by priority** (highest first)
+   - Priority groups are processed **sequentially** (one group at a time)
+   - Files **within each priority group** are initialized **in parallel** using
+     ThreadPoolExecutor
 
-When using `--priority`, only the priority files are created.
+When using `--priority`, only files with `get_priority() > 0` are created.
 
 ### Priority Config Files
 
