@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.type_checker import TypeChecker
+from pyrig.dev.management.type_checker import TypeChecker
 
 
 class TestTypeChecker:

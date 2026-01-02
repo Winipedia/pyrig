@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.linter import Linter
+from pyrig.dev.management.linter import Linter
 
 
 class TestLinter:

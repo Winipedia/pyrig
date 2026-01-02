@@ -15,10 +15,10 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.dev.configs.base.yaml import YamlConfigFile
-from pyrig.src.management.linter import Linter
-from pyrig.src.management.mdlinter import MDLinter
-from pyrig.src.management.security_checker import SecurityChecker
-from pyrig.src.management.type_checker import TypeChecker
+from pyrig.dev.management.linter import Linter
+from pyrig.dev.management.mdlinter import MDLinter
+from pyrig.dev.management.security_checker import SecurityChecker
+from pyrig.dev.management.type_checker import TypeChecker
 from pyrig.src.processes import (
     Args,
 )

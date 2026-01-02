@@ -9,7 +9,7 @@ Example:
     >>> PackageManager.get_add_dependencies_args("requests").run()
 """
 
-from pyrig.src.management.base.base import Tool
+from pyrig.dev.management.base.base import Tool
 from pyrig.src.processes import Args
 
 

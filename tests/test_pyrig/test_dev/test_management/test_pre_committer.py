@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.pre_committer import PreCommitter
+from pyrig.dev.management.pre_committer import PreCommitter
 
 
 class TestPreCommitter:

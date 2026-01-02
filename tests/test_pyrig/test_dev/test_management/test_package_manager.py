@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.package_manager import PackageManager
+from pyrig.dev.management.package_manager import PackageManager
 
 
 class TestPackageManager:

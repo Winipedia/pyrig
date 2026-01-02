@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.version_controller import VersionController
+from pyrig.dev.management.version_controller import VersionController
 
 
 class TestVersionController:

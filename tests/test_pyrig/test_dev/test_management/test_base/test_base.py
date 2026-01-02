@@ -1,7 +1,7 @@
 """Tests module."""
 
-from pyrig.src.management.base.base import Tool
-from pyrig.src.management.package_manager import PackageManager
+from pyrig.dev.management.base.base import Tool
+from pyrig.dev.management.package_manager import PackageManager
 
 
 class TestTool:

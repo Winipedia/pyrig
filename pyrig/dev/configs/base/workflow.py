@@ -38,16 +38,16 @@ from pyrig.dev.builders.base.base import BuilderConfigFile
 from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.yaml import YamlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.utils.packages import get_src_package, src_pkg_is_pyrig
-from pyrig.src.management.container_engine import (
+from pyrig.dev.management.container_engine import (
     ContainerEngine,
 )
-from pyrig.src.management.docs_builder import DocsBuilder
-from pyrig.src.management.package_manager import PackageManager
-from pyrig.src.management.pre_committer import PreCommitter
-from pyrig.src.management.project_tester import ProjectTester
-from pyrig.src.management.pyrigger import Pyrigger
-from pyrig.src.management.version_controller import VersionController
+from pyrig.dev.management.docs_builder import DocsBuilder
+from pyrig.dev.management.package_manager import PackageManager
+from pyrig.dev.management.pre_committer import PreCommitter
+from pyrig.dev.management.project_tester import ProjectTester
+from pyrig.dev.management.pyrigger import Pyrigger
+from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.utils.packages import get_src_package, src_pkg_is_pyrig
 from pyrig.src.string import (
     make_name_from_obj,
     split_on_uppercase,

@@ -43,6 +43,8 @@ from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
+from pyrig.dev.management.package_manager import PackageManager
+from pyrig.dev.management.pre_committer import PreCommitter
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils.packages import (
     find_packages,
@@ -54,8 +56,6 @@ from pyrig.src.git import (
     get_git_unstaged_changes,
     running_in_github_actions,
 )
-from pyrig.src.management.package_manager import PackageManager
-from pyrig.src.management.pre_committer import PreCommitter
 from pyrig.src.modules.imports import (
     get_modules_and_packages_from_package,
     walk_package,

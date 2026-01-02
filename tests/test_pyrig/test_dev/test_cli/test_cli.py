@@ -4,7 +4,7 @@ import logging
 
 from pyrig.dev.cli.cli import configure_logging
 from pyrig.dev.cli.shared_subcommands import version
-from pyrig.src.management.pyrigger import Pyrigger
+from pyrig.dev.management.pyrigger import Pyrigger
 
 
 def test_add_subcommands() -> None:

@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.security_checker import SecurityChecker
+from pyrig.dev.management.security_checker import SecurityChecker
 
 
 class TestSecurityChecker:

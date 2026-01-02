@@ -13,8 +13,8 @@ from pathlib import Path
 
 from pyrig.dev.configs.base.text import TextConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.dev.management.package_manager import PackageManager
 from pyrig.main import main
-from pyrig.src.management.package_manager import PackageManager
 
 
 class ContainerfileConfigFile(TextConfigFile):

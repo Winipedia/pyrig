@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.docs_builder import DocsBuilder
+from pyrig.dev.management.docs_builder import DocsBuilder
 
 
 class TestDocsBuilder:

@@ -2,8 +2,8 @@
 
 from pytest_mock import MockFixture
 
-from pyrig.src.management import pyrigger
-from pyrig.src.management.pyrigger import Pyrigger
+from pyrig.dev.management import pyrigger
+from pyrig.dev.management.pyrigger import Pyrigger
 
 
 class TestPyrigger:

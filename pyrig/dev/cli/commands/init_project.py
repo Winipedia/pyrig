@@ -32,14 +32,14 @@ from typing import Any
 
 import pyrig
 from pyrig.dev.cli.subcommands import mkroot, mktests
-from pyrig.src.consts import STANDARD_DEV_DEPS
-from pyrig.src.management.package_manager import PackageManager
-from pyrig.src.management.pre_committer import (
+from pyrig.dev.management.package_manager import PackageManager
+from pyrig.dev.management.pre_committer import (
     PreCommitter,
 )
-from pyrig.src.management.project_tester import ProjectTester
-from pyrig.src.management.pyrigger import Pyrigger
-from pyrig.src.management.version_controller import VersionController
+from pyrig.dev.management.project_tester import ProjectTester
+from pyrig.dev.management.pyrigger import Pyrigger
+from pyrig.dev.management.version_controller import VersionController
+from pyrig.src.consts import STANDARD_DEV_DEPS
 from pyrig.src.string import make_name_from_obj
 
 logger = logging.getLogger(__name__)

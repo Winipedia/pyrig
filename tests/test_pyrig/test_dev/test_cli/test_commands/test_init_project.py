@@ -23,10 +23,10 @@ from pyrig.dev.cli.commands.init_project import (
 )
 from pyrig.dev.cli.subcommands import init
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.dev.management.package_manager import PackageManager
+from pyrig.dev.management.pyrigger import Pyrigger
+from pyrig.dev.management.version_controller import VersionController
 from pyrig.main import main
-from pyrig.src.management.package_manager import PackageManager
-from pyrig.src.management.pyrigger import Pyrigger
-from pyrig.src.management.version_controller import VersionController
 from pyrig.src.modules.path import ModulePath
 
 logger = logging.getLogger(__name__)

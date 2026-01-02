@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.project_tester import ProjectTester
+from pyrig.dev.management.project_tester import ProjectTester
 
 
 class TestProjectTester:

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.src.management.container_engine import ContainerEngine
+from pyrig.dev.management.container_engine import ContainerEngine
 
 
 class TestContainerEngine:

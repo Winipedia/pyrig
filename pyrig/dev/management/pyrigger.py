@@ -13,8 +13,8 @@ Example:
 from collections.abc import Callable
 from typing import Any
 
-from pyrig.src.management.base.base import Tool
-from pyrig.src.management.package_manager import PackageManager
+from pyrig.dev.management.base.base import Tool
+from pyrig.dev.management.package_manager import PackageManager
 from pyrig.src.modules.package import get_project_name_from_pkg_name
 from pyrig.src.processes import Args
 

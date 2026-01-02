@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.src.management.mdlinter import MDLinter
+from pyrig.dev.management.mdlinter import MDLinter
 
 
 class TestMDLinter:

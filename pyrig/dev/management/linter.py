@@ -9,7 +9,7 @@ Example:
     >>> Linter.get_format_args().run()
 """
 
-from pyrig.src.management.base.base import Tool
+from pyrig.dev.management.base.base import Tool
 from pyrig.src.processes import Args
 
 

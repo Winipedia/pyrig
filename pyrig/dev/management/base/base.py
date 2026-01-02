@@ -28,7 +28,7 @@ from abc import ABC, abstractmethod
 from typing import Self
 
 import pyrig
-from pyrig.src import management
+from pyrig.dev import management
 from pyrig.src.modules.package import discover_leaf_subclass_across_dependents
 from pyrig.src.processes import Args
 

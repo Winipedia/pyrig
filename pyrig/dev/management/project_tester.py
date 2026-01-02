@@ -9,8 +9,8 @@ Example:
     >>> ProjectTester.get_run_tests_in_ci_args().run()
 """
 
-from pyrig.src.management.base.base import Tool
-from pyrig.src.management.package_manager import PackageManager
+from pyrig.dev.management.base.base import Tool
+from pyrig.dev.management.package_manager import PackageManager
 from pyrig.src.processes import Args
 
 
