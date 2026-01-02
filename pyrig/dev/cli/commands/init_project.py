@@ -129,7 +129,7 @@ def committing_initial_changes() -> None:
     """
     # changes were added by the run pre-commit hooks step
     args = VersionController.get_commit_no_verify_args(
-        f"{pyrig.__name__}: Initial commit"
+        msg=f"{pyrig.__name__}: Initial commit"
     )
     args.run()
 

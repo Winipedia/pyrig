@@ -114,7 +114,7 @@ class VersionController(Tool):
         return cls.get_args("commit", *args)
 
     @classmethod
-    def get_commit_no_verify_args(cls, msg: str, *args: str) -> Args:
+    def get_commit_no_verify_args(cls, *args: str, msg: str) -> Args:
         """Construct git commit arguments with no verification.
 
         Args:
@@ -137,6 +137,31 @@ class VersionController(Tool):
             Args for 'git push'.
         """
         return cls.get_args("push", *args)
+
+    @classmethod
+    def get_push_origin_args(cls, *args: str) -> Args:
+        """Construct git push arguments for origin.
+
+        Args:
+            *args: Push command arguments.
+
+        Returns:
+            Args for 'git push origin'.
+        """
+        return cls.get_push_args("origin", *args)
+
+    @classmethod
+    def get_push_origin_tag_args(cls, *args: str, tag: str) -> Args:
+        """Construct git push arguments for origin and tag.
+
+        Args:
+            *args: Push command arguments.
+            tag: Tag name.
+
+        Returns:
+            Args for 'git push origin <tag>'.
+        """
+        return cls.get_push_origin_args(tag, *args)
 
     @classmethod
     def get_config_args(cls, *args: str) -> Args:
@@ -225,3 +250,16 @@ class VersionController(Tool):
             Args for 'git config --global user.name <name>'.
         """
         return cls.get_config_global_args("user.name", name, *args)
+
+    @classmethod
+    def get_tag_args(cls, *args: str, tag: str) -> Args:
+        """Construct git tag arguments.
+
+        Args:
+            *args: Tag command arguments.
+            tag: Tag name.
+
+        Returns:
+            Args for 'git tag'.
+        """
+        return cls.get_args("tag", tag, *args)

@@ -6,6 +6,23 @@ from pyrig.src.management.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_get_push_origin_args(self) -> None:
+        """Test method."""
+        result = VersionController.get_push_origin_args()
+        assert result == ("git", "push", "origin")
+
+    def test_get_push_origin_tag_args(self) -> None:
+        """Test method."""
+        tag = "v1.2.3"
+        result = VersionController.get_push_origin_tag_args(tag=tag)
+        assert result == ("git", "push", "origin", tag)
+
+    def test_get_tag_args(self) -> None:
+        """Test method."""
+        tag = "v1.2.3"
+        result = VersionController.get_tag_args(tag=tag)
+        assert result == ("git", "tag", tag)
+
     def test_name(self) -> None:
         """Test method."""
         result = VersionController.name()
@@ -43,7 +60,7 @@ class TestVersionController:
 
     def test_get_commit_no_verify_args(self) -> None:
         """Test method."""
-        result = VersionController.get_commit_no_verify_args("Fix bug")
+        result = VersionController.get_commit_no_verify_args(msg="Fix bug")
         assert result == ("git", "commit", "--no-verify", "-m", "Fix bug")
 
     def test_get_push_args(self) -> None:

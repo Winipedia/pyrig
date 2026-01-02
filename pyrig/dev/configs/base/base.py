@@ -476,6 +476,7 @@ class ConfigFile(ABC):
         cls.init_subclasses(*cls.get_priority_subclasses())
 
     @classmethod
+    @cache
     def leaf(cls) -> type[Self]:
         """Get the final leaf subclass (deepest in the inheritance tree).
 

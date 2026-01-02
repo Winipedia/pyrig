@@ -58,7 +58,7 @@ class TestPackageManager:
 
     def test_get_publish_args(self) -> None:
         """Test method."""
-        result = PackageManager.get_publish_args("my-token")
+        result = PackageManager.get_publish_args(token="my-token")  # noqa: S106  # nosec B106
         assert result == ("uv", "publish", "--token", "my-token")
 
     def test_get_version_args(self) -> None:

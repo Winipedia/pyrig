@@ -16,7 +16,7 @@ class TestContainerEngine:
     def test_get_build_args(self) -> None:
         """Test method."""
         result = ContainerEngine.get_build_args(project_name="myimage")
-        assert result == ("podman", "build", "-t", "myimage")
+        assert result == ("podman", "build", "-t", "myimage", ".")
 
     def test_get_save_args(self) -> None:
         """Test method."""

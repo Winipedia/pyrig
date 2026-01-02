@@ -1142,7 +1142,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that runs uv publish with PYPI_TOKEN.
         """
-        run = str(PackageManager.get_publish_args(cls.insert_pypi_token()))
+        run = str(PackageManager.get_publish_args(token=cls.insert_pypi_token()))
         run_if = cls.run_if_condition(run, cls.insert_pypi_token())
         return cls.get_step(
             step_func=cls.step_publish_to_pypi,
@@ -1323,7 +1323,7 @@ class Workflow(YamlConfigFile):
         msg = '"[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)"'
         return cls.get_step(
             step_func=cls.step_commit_added_changes,
-            run=str(VersionController.get_commit_no_verify_args(msg)),
+            run=str(VersionController.get_commit_no_verify_args(msg=msg)),
             step=step,
         )
 
@@ -1363,9 +1363,9 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_create_and_push_tag,
-            run=str(VersionController.get_args("tag", cls.insert_version()))
+            run=str(VersionController.get_tag_args(tag=cls.insert_version()))
             + " && "
-            + str(VersionController.get_push_args("origin", cls.insert_version())),
+            + str(VersionController.get_push_origin_tag_args(tag=cls.insert_version())),
             step=step,
         )
 

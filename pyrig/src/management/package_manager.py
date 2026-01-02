@@ -148,7 +148,7 @@ class PackageManager(Tool):
         return cls.get_args("build", *args)
 
     @classmethod
-    def get_publish_args(cls, token: str, *args: str) -> Args:
+    def get_publish_args(cls, *args: str, token: str) -> Args:
         """Construct uv publish arguments with token.
 
         Args:
