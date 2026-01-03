@@ -3,39 +3,12 @@
 Type-safe wrapper for [ty](https://github.com/astral-sh/ty), Astral's fast
 Python type checker.
 
-## Overview
-
-`TypeChecker` wraps ty commands for:
-
-- Type checking (`ty check`)
-
 ty is a Rust-based type checker from the creators of Ruff and uv, designed for
 speed and accuracy.
 
-## Methods
+## Subclassing Examples
 
-| Method | Command | Description |
-|--------|---------|-------------|
-| `get_check_args(*args)` | `ty check` | Run type checking |
-
-## Usage
-
-```python
-from pyrig.dev.management.type_checker import TypeChecker
-
-# Check entire project
-TypeChecker.L.get_check_args().run()
-
-# Check specific directory
-TypeChecker.L.get_check_args("src/").run()
-
-# Check specific file
-TypeChecker.L.get_check_args("myapp/core.py").run()
-```
-
-## Subclassing Example
-
-To add custom flags:
+### Extending Behavior
 
 ```python
 # myapp/dev/management/type_checker.py
@@ -45,13 +18,10 @@ from pyrig.src.processes import Args
 class TypeChecker(BaseTC):
     @classmethod
     def get_check_args(cls, *args: str) -> Args:
-        # Add verbose output
         return super().get_check_args("--verbose", *args)
 ```
 
-## Replacing ty with mypy
-
-To use mypy instead of ty:
+### Replacing with mypy
 
 ```python
 # myapp/dev/management/type_checker.py
@@ -63,12 +33,11 @@ class TypeChecker(BaseTC):
         return "mypy"
 ```
 
-**Note**: You'll also need to update pre-commit hooks and pyproject.toml
-configuration. See [Replacing Tools](architecture.md#replacing-tools).
+Because pyrig uses `TypeChecker.L` internally (including in pre-commit config
+generation), this single override automatically applies everywhere - no need to
+modify pre-commit config or other components.
 
 ## Related
 
-- [Architecture](architecture.md) - How the Tool system works
+- [Architecture](architecture.md) - Design philosophy and extension mechanisms
 - [Tooling - ty](../more/tooling.md#ty) - Why pyrig uses ty
-- [pyproject.toml - ty](../configs/pyproject.md#ty-type-checker) - ty
-  configuration

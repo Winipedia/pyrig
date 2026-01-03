@@ -295,5 +295,5 @@ subclassing the Tool wrapper classes in `dev/management/`. pyrig uses the `.L`
 (leaf) property internally, so your subclasses automatically apply. However,
 tools are interconnected with configs, workflows, and CI/CD - replacing one
 often requires changes to others. See
-[Tool Architecture - Replacing Tools](../management/architecture.md#replacing-tools)
+[Tool Architecture - Replacing Tools](../management/architecture.md#tool-replacement-complexity)
 for details on how to do this and what additional work is required.

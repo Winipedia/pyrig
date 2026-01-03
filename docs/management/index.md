@@ -3,12 +3,16 @@
 pyrig wraps external tools in type-safe Python classes. Each Tool class
 constructs command arguments that can be inspected, modified, and executed.
 
-## Architecture
+## Start Here
 
-- [Architecture](architecture.md) - How the Tool system works, the `.L`
-  property, and replacing tools
+**[Architecture](architecture.md)** - Understand the design philosophy, the
+`.L` pattern, `get_all_subclasses()`, and when customizations propagate
+automatically vs when they require explicit overrides.
 
 ## Tools
+
+Each tool page shows subclassing examples. For method details, see the source
+docstrings.
 
 | Tool | Wraps | Purpose |
 |------|-------|---------|
@@ -31,7 +35,7 @@ from pyrig.dev.management.linter import Linter
 
 # Get command arguments
 args = Linter.L.get_check_args()
-print(args)  # Args(['ruff', 'check'])
+print(args)  # ruff check
 
 # Execute
 args.run()
