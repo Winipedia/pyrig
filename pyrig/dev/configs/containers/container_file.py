@@ -119,7 +119,7 @@ class ContainerfileConfigFile(TextConfigFile):
         project_name = PyprojectConfigFile.get_project_name()
         package_name = PyprojectConfigFile.get_package_name()
         app_user_name = "appuser"
-        entrypoint_args = list(PackageManager.get_run_args(project_name))
+        entrypoint_args = list(PackageManager.L.get_run_args(project_name))
         default_cmd_args = [main.__name__]
         return [
             f"FROM python:{latest_python_version}-slim",

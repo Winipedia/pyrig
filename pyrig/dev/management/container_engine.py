@@ -5,7 +5,7 @@ Used for creating containerized builds, particularly PyInstaller executables.
 
 Example:
     >>> from pyrig.src.management.container_engine import ContainerEngine
-    >>> build_args = ContainerEngine.get_build_args("-t", "myapp:latest", ".")
+    >>> build_args = ContainerEngine.L.get_build_args("-t", "myapp:latest", ".")
     >>> build_args.run()
 """
 
@@ -21,8 +21,8 @@ class ContainerEngine(Tool):
     Constructs podman command arguments for building and saving container images.
 
     Example:
-        >>> ContainerEngine.get_build_args("-t", "app:v1", ".").run()
-        >>> ContainerEngine.get_save_args("-o", "app.tar", "app:v1").run()
+        >>> ContainerEngine.L.get_build_args("-t", "app:v1", ".").run()
+        >>> ContainerEngine.L.get_save_args("-o", "app.tar", "app:v1").run()
     """
 
     @classmethod

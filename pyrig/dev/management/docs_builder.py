@@ -5,8 +5,8 @@ MkDocs is a static site generator for project documentation.
 
 Example:
     >>> from pyrig.src.management.docs_builder import DocsBuilder
-    >>> DocsBuilder.get_build_args().run()
-    >>> DocsBuilder.get_serve_args().run()
+    >>> DocsBuilder.L.get_build_args().run()
+    >>> DocsBuilder.L.get_serve_args().run()
 """
 
 from pyrig.dev.management.base.base import Tool
@@ -24,9 +24,9 @@ class DocsBuilder(Tool):
         - Deploying: Deploy to GitHub Pages
 
     Example:
-        >>> DocsBuilder.get_build_args().run()
-        >>> DocsBuilder.get_serve_args().run()
-        >>> DocsBuilder.get_gh_deploy_args().run()
+        >>> DocsBuilder.L.get_build_args().run()
+        >>> DocsBuilder.L.get_serve_args().run()
+        >>> DocsBuilder.L.get_gh_deploy_args().run()
     """
 
     @classmethod

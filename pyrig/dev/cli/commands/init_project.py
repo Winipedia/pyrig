@@ -51,7 +51,7 @@ def adding_dev_dependencies() -> None:
     Adds pyrig's standard dev dependencies to pyproject.toml via
     `uv add --dev`.
     """
-    args = PackageManager.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
+    args = PackageManager.L.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
     args.run()
 
 
@@ -62,7 +62,7 @@ def creating_priority_config_files() -> None:
     that other initialization steps depend on via `uv run pyrig mkroot --priority`.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
-    args = PackageManager.get_run_args(*Pyrigger.get_cmd_args(mkroot, "--priority"))
+    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mkroot, "--priority"))
     args.run()
 
 
@@ -73,7 +73,7 @@ def syncing_venv() -> None:
     during initialization: after adding dev dependencies and after creating
     priority config files.
     """
-    args = PackageManager.get_install_dependencies_args()
+    args = PackageManager.L.get_install_dependencies_args()
     args.run()
 
 
@@ -83,7 +83,7 @@ def creating_project_root() -> None:
     Generates all remaining configuration files and directory structure via
     `uv run pyrig mkroot`.
     """
-    args = PackageManager.get_run_args(*Pyrigger.get_cmd_args(mkroot))
+    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mkroot))
     args.run()
 
 
@@ -93,7 +93,7 @@ def creating_test_files() -> None:
     Creates test files mirroring the source package structure with
     NotImplementedError placeholders via `uv run pyrig mktests`.
     """
-    args = PackageManager.get_run_args(*Pyrigger.get_cmd_args(mktests))
+    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mktests))
     args.run()
 
 
@@ -104,11 +104,11 @@ def running_pre_commit_hooks() -> None:
     to ensure the codebase follows style guidelines.
     """
     # install pre-commit hooks
-    PackageManager.get_run_args(*PreCommitter.get_install_args()).run()
+    PackageManager.L.get_run_args(*PreCommitter.L.get_install_args()).run()
     # add all files to git
-    VersionController.get_add_all_args().run()
+    VersionController.L.get_add_all_args().run()
     # run pre-commit hooks
-    PackageManager.get_run_args(*PreCommitter.get_run_all_files_args()).run()
+    PackageManager.L.get_run_args(*PreCommitter.L.get_run_all_files_args()).run()
 
 
 def running_tests() -> None:
@@ -117,7 +117,7 @@ def running_tests() -> None:
     Validates that all generated code is syntactically correct and the project
     is properly configured via `pytest`.
     """
-    args = PackageManager.get_run_args(*ProjectTester.get_args())
+    args = PackageManager.L.get_run_args(*ProjectTester.L.get_args())
     args.run()
 
 
@@ -128,7 +128,7 @@ def committing_initial_changes() -> None:
     with the message "pyrig: Initial commit".
     """
     # changes were added by the run pre-commit hooks step
-    args = VersionController.get_commit_no_verify_args(
+    args = VersionController.L.get_commit_no_verify_args(
         msg=f"{pyrig.__name__}: Initial commit"
     )
     args.run()

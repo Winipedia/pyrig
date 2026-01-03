@@ -8,12 +8,12 @@ class TestProjectTester:
 
     def test_name(self) -> None:
         """Test method."""
-        result = ProjectTester.name()
+        result = ProjectTester.L.name()
         assert result == "pytest"
 
     def test_get_run_tests_in_ci_args(self) -> None:
         """Test method."""
-        result = ProjectTester.get_run_tests_in_ci_args()
+        result = ProjectTester.L.get_run_tests_in_ci_args()
         assert result == (
             "pytest",
             "--log-cli-level=INFO",

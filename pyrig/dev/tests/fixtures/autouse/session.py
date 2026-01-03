@@ -301,7 +301,7 @@ def assert_dependencies_are_up_to_date() -> None:
         AssertionError: If dependencies were updated or installed.
     """
     # update the dependencies
-    args = PackageManager.get_update_dependencies_args()
+    args = PackageManager.L.get_update_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
@@ -313,7 +313,7 @@ def assert_dependencies_are_up_to_date() -> None:
     deps_were_upgraded = update_occurred
 
     # sync the dependencies
-    args = PackageManager.get_install_dependencies_args()
+    args = PackageManager.L.get_install_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
@@ -344,7 +344,7 @@ def assert_pre_commit_is_installed() -> None:
     Raises:
         AssertionError: If pre-commit installation fails.
     """
-    args = PreCommitter.get_install_args()
+    args = PreCommitter.L.get_install_args()
     completed_process = args.run()
     stdout = completed_process.stdout.decode("utf-8")
     expected = "pre-commit installed at"
@@ -428,7 +428,7 @@ def assert_src_runs_without_dev_deps(
 
         # assert pytest is not installed
         dev_dep = "pytest"
-        args = PackageManager.get_run_args("pip", "show", dev_dep)
+        args = PackageManager.L.get_run_args("pip", "show", dev_dep)
         installed = args.run(
             check=False,
             env=env,
@@ -437,7 +437,7 @@ def assert_src_runs_without_dev_deps(
         dev_dep_not_installed = f"not found: {dev_dep}" in stderr
         assert dev_dep_not_installed, f"Expected {dev_dep} not to be installed"
         # check pytest is not importable
-        args = PackageManager.get_run_args("python", "-c", "import pytest")
+        args = PackageManager.L.get_run_args("python", "-c", "import pytest")
         installed = args.run(
             check=False,
             env=env,

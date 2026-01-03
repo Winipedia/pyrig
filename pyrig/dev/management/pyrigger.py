@@ -6,8 +6,8 @@ Used for programmatic execution of pyrig commands.
 Example:
     >>> from pyrig.src.management.pyrigger import Pyrigger
     >>> from pyrig.dev.cli.subcommands import build
-    >>> Pyrigger.get_cmd_args(build)  # pyrig build
-    >>> Pyrigger.get_venv_run_cmd_args(build)  # uv run pyrig build
+    >>> Pyrigger.L.get_cmd_args(build)  # pyrig build
+    >>> Pyrigger.L.get_venv_run_cmd_args(build)  # uv run pyrig build
 """
 
 from collections.abc import Callable
@@ -31,8 +31,8 @@ class Pyrigger(Tool):
 
     Example:
         >>> from pyrig.dev.cli.subcommands import build
-        >>> Pyrigger.get_cmd_args(build).run()
-        >>> Pyrigger.get_venv_run_cmd_args(build).run()
+        >>> Pyrigger.L.get_cmd_args(build).run()
+        >>> Pyrigger.L.get_venv_run_cmd_args(build).run()
     """
 
     @classmethod

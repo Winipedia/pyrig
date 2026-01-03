@@ -8,15 +8,15 @@ class TestSecurityChecker:
 
     def test_name(self) -> None:
         """Test method."""
-        result = SecurityChecker.name()
+        result = SecurityChecker.L.name()
         assert result == "bandit"
 
     def test_get_run_args(self) -> None:
         """Test method."""
-        result = SecurityChecker.get_run_args()
+        result = SecurityChecker.L.get_run_args()
         assert result == ("bandit",)
 
     def test_get_run_with_config_args(self) -> None:
         """Test method."""
-        result = SecurityChecker.get_run_with_config_args()
+        result = SecurityChecker.L.get_run_with_config_args()
         assert result == ("bandit", "-c", "pyproject.toml", "-r", ".")

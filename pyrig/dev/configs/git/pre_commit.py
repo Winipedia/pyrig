@@ -121,23 +121,23 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         hooks: list[dict[str, Any]] = [
             cls.get_hook(
                 "lint-code",
-                Linter.get_check_fix_args(),
+                Linter.L.get_check_fix_args(),
             ),
             cls.get_hook(
                 "format-code",
-                Linter.get_format_args(),
+                Linter.L.get_format_args(),
             ),
             cls.get_hook(
                 "check-types",
-                TypeChecker.get_check_args(),
+                TypeChecker.L.get_check_args(),
             ),
             cls.get_hook(
                 "check-security",
-                SecurityChecker.get_run_with_config_args(),
+                SecurityChecker.L.get_run_with_config_args(),
             ),
             cls.get_hook(
                 "check-markdown",
-                MDLinter.get_check_fix_args(),
+                MDLinter.L.get_check_fix_args(),
             ),
         ]
         return {

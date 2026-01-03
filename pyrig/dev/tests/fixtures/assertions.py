@@ -45,8 +45,8 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     src_package_name = PyprojectConfigFile.get_package_name()
 
     cmds = [
-        PackageManager.get_run_args(project_name, "--help"),
-        PackageManager.get_run_args(project_name, main.main.__name__, "--help"),
+        PackageManager.L.get_run_args(project_name, "--help"),
+        PackageManager.L.get_run_args(project_name, main.main.__name__, "--help"),
     ]
     success = False
     for cmd in cmds:

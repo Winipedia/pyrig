@@ -834,7 +834,7 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_build_container_image,
             run=str(
-                ContainerEngine.get_build_args(
+                ContainerEngine.L.get_build_args(
                     project_name=PyprojectConfigFile.get_project_name()
                 )
             ),
@@ -860,7 +860,7 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_save_container_image,
             run=str(
-                ContainerEngine.get_save_args(
+                ContainerEngine.L.get_save_args(
                     image_file=image_file,
                     image_path=image_path,
                 )
@@ -909,7 +909,7 @@ class Workflow(YamlConfigFile):
         if src_pkg_is_pyrig():
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
         run = str(
-            PackageManager.get_run_args(*ProjectTester.get_run_tests_in_ci_args())
+            PackageManager.L.get_run_args(*ProjectTester.L.get_run_tests_in_ci_args())
         )
         return cls.get_step(
             step_func=cls.step_run_tests,
@@ -970,9 +970,9 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_patch_version,
-            run=str(PackageManager.get_patch_version_args())
+            run=str(PackageManager.L.get_patch_version_args())
             + " && "
-            + str(VersionController.get_add_pyproject_toml_args()),
+            + str(VersionController.L.get_add_pyproject_toml_args()),
             step=step,
         )
 
@@ -992,7 +992,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_add_dependency_updates_to_git,
-            run=str(VersionController.get_add_pyproject_toml_and_uv_lock_args()),
+            run=str(VersionController.L.get_add_pyproject_toml_and_uv_lock_args()),
             step=step,
         )
 
@@ -1043,13 +1043,13 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_setup_git,
             run=str(
-                VersionController.get_config_global_user_email_args(
+                VersionController.L.get_config_global_user_email_args(
                     '"github-actions[bot]@users.noreply.github.com"',
                 ),
             )
             + " && "
             + str(
-                VersionController.get_config_global_user_name_args(
+                VersionController.L.get_config_global_user_name_args(
                     '"github-actions[bot]"'
                 )
             ),
@@ -1125,7 +1125,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_wheel,
-            run=str(PackageManager.get_build_args()),
+            run=str(PackageManager.L.get_build_args()),
             step=step,
         )
 
@@ -1145,7 +1145,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that runs uv publish with PYPI_TOKEN.
         """
-        run = str(PackageManager.get_publish_args(token=cls.insert_pypi_token()))
+        run = str(PackageManager.L.get_publish_args(token=cls.insert_pypi_token()))
         run_if = cls.run_if_condition(run, cls.insert_pypi_token())
         return cls.get_step(
             step_func=cls.step_publish_to_pypi,
@@ -1169,7 +1169,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_documentation,
-            run=str(PackageManager.get_run_args(*DocsBuilder.get_build_args())),
+            run=str(PackageManager.L.get_run_args(*DocsBuilder.L.get_build_args())),
             step=step,
         )
 
@@ -1251,8 +1251,8 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that runs uv sync.
         """
-        upgrade = str(PackageManager.get_update_dependencies_args())
-        install = str(PackageManager.get_install_dependencies_args())
+        upgrade = str(PackageManager.L.get_update_dependencies_args())
+        install = str(PackageManager.L.get_install_dependencies_args())
         if no_dev:
             install += " --no-group dev"
         run = f"{upgrade} && {install}"
@@ -1279,7 +1279,9 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_protect_repository,
-            run=str(PackageManager.get_run_args(*Pyrigger.get_cmd_args(protect_repo))),
+            run=str(
+                PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(protect_repo))
+            ),
             env={"REPO_TOKEN": cls.insert_repo_token()},
             step=step,
         )
@@ -1304,7 +1306,7 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_run_pre_commit_hooks,
             run=str(
-                PackageManager.get_run_args(*PreCommitter.get_run_all_files_args())
+                PackageManager.L.get_run_args(*PreCommitter.L.get_run_all_files_args())
             ),
             step=step,
         )
@@ -1326,7 +1328,7 @@ class Workflow(YamlConfigFile):
         msg = '"[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)"'
         return cls.get_step(
             step_func=cls.step_commit_added_changes,
-            run=str(VersionController.get_commit_no_verify_args(msg=msg)),
+            run=str(VersionController.L.get_commit_no_verify_args(msg=msg)),
             step=step,
         )
 
@@ -1346,7 +1348,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_push_commits,
-            run=str(VersionController.get_push_args()),
+            run=str(VersionController.L.get_push_args()),
             step=step,
         )
 
@@ -1366,9 +1368,11 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_create_and_push_tag,
-            run=str(VersionController.get_tag_args(tag=cls.insert_version()))
+            run=str(VersionController.L.get_tag_args(tag=cls.insert_version()))
             + " && "
-            + str(VersionController.get_push_origin_tag_args(tag=cls.insert_version())),
+            + str(
+                VersionController.L.get_push_origin_tag_args(tag=cls.insert_version())
+            ),
             step=step,
         )
 
@@ -1456,7 +1460,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_artifacts,
-            run=str(PackageManager.get_run_args(*Pyrigger.get_cmd_args(build))),
+            run=str(PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(build))),
             step=step,
         )
 
@@ -1637,7 +1641,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Shell command that outputs the version with v prefix.
         """
-        script = str(PackageManager.get_version_short_args())
+        script = str(PackageManager.L.get_version_short_args())
         return f"v$({script})"
 
     @classmethod

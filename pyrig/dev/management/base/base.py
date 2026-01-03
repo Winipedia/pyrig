@@ -16,7 +16,7 @@ Benefits:
 
 Example:
     >>> from pyrig.src.management.package_manager import PackageManager
-    >>> args = PackageManager.get_install_dependencies_args()
+    >>> args = PackageManager.L.get_install_dependencies_args()
     >>> print(args)
     uv sync
     >>> args.run()

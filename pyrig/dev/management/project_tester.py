@@ -5,8 +5,8 @@ Ensures tests run in correct virtual environment.
 
 Example:
     >>> from pyrig.src.management.project_tester import ProjectTester
-    >>> ProjectTester.get_run_tests_args().run()
-    >>> ProjectTester.get_run_tests_in_ci_args().run()
+    >>> ProjectTester.L.get_run_tests_args().run()
+    >>> ProjectTester.L.get_run_tests_in_ci_args().run()
 """
 
 from pyrig.dev.management.base.base import Tool
@@ -23,8 +23,8 @@ class ProjectTester(Tool):
         - CI testing: Run with CI flags (logging, coverage XML)
 
     Example:
-        >>> ProjectTester.get_run_tests_args("tests/test_module.py").run()
-        >>> ProjectTester.get_run_tests_args("--cov=mypackage").run()
+        >>> ProjectTester.L.get_run_tests_args("tests/test_module.py").run()
+        >>> ProjectTester.L.get_run_tests_args("--cov=mypackage").run()
     """
 
     @classmethod

@@ -11,7 +11,7 @@ class TestPyrigger:
 
     def test_name(self) -> None:
         """Test method."""
-        result = Pyrigger.name()
+        result = Pyrigger.L.name()
         assert result == "pyrig"
 
     def test_get_cmd_args(self, mocker: MockFixture) -> None:
@@ -25,5 +25,5 @@ class TestPyrigger:
         def my_command() -> None:
             """Sample command."""
 
-        result = Pyrigger.get_cmd_args(my_command, "--help")
+        result = Pyrigger.L.get_cmd_args(my_command, "--help")
         assert result == ("pyrig", "my-command", "--help")

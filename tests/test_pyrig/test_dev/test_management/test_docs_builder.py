@@ -8,10 +8,10 @@ class TestDocsBuilder:
 
     def test_name(self) -> None:
         """Test method."""
-        result = DocsBuilder.name()
+        result = DocsBuilder.L.name()
         assert result == "mkdocs"
 
     def test_get_build_args(self) -> None:
         """Test method."""
-        result = DocsBuilder.get_build_args()
+        result = DocsBuilder.L.get_build_args()
         assert result == ("mkdocs", "build")

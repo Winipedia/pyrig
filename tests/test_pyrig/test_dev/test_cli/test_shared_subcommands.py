@@ -6,7 +6,7 @@ from pyrig.dev.management.pyrigger import Pyrigger
 
 def test_version() -> None:
     """Test function."""
-    args = Pyrigger.get_cmd_args(version)
+    args = Pyrigger.L.get_cmd_args(version)
 
     result = args.run()
     stdout = result.stdout.decode("utf-8")
