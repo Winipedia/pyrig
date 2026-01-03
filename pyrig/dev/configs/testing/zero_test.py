@@ -51,18 +51,20 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
         return "_".join(reversed(filename.split("_")))
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Get the placeholder test content.
 
         Returns:
-            str: Python code with empty test function.
+            List of lines with empty test function.
         """
-        return '''"""Contains an empty test."""
-
-
-def test_zero() -> None:
-    """Empty test.
-
-    Exists so that when no tests are written yet the base fixtures are executed.
-    """
-'''
+        return [
+            '"""Contains an empty test."""',
+            "",
+            "",
+            "def test_zero() -> None:",
+            '    """Empty test.',
+            "",
+            "    Exists so that when no tests are written yet the base fixtures are executed.",  # noqa: E501
+            '    """',
+            "",
+        ]

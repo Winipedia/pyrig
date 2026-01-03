@@ -39,20 +39,22 @@ class ConftestConfigFile(PythonTestsConfigFile):
     '''
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Get the conftest.py file content.
 
         Returns:
-            str: Python code with docstring and pytest_plugins list.
+            List of lines with docstring and pytest_plugins list.
         """
-        return f'''"""Pytest configuration for tests.
-
-This defines the pyrig pytest plugin that provides access to pyrig's test
-infrastructure, including fixtures, hooks, and test utilities.
-"""
-
-pytest_plugins = ["{make_obj_importpath(conftest)}"]
-'''
+        return [
+            '"""Pytest configuration for tests.',
+            "",
+            "This defines the pyrig pytest plugin that provides access to pyrig's test",
+            "infrastructure, including fixtures, hooks, and test utilities.",
+            '"""',
+            "",
+            f'pytest_plugins = ["{make_obj_importpath(conftest)}"]',
+            "",
+        ]
 
     @classmethod
     def is_correct(cls) -> bool:

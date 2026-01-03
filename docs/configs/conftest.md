@@ -15,8 +15,8 @@ Creates a conftest.py file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DictConfigFile]
-    B --> C[TextConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
     C --> D[PythonConfigFile]
     D --> E[PythonTestsConfigFile]
     E --> F[ConftestConfigFile]
@@ -29,7 +29,7 @@ graph TD
     style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `PythonTestsConfigFile` (via `DictConfigFile`)
+**Inherits from**: `PythonTestsConfigFile` (via `ListConfigFile`)
 
 **What this means**:
 

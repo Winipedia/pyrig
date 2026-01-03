@@ -48,7 +48,7 @@ class BuilderConfigFile(ListConfigFile):
     """Abstract base class for artifact builders.
 
     BuilderConfigFile provides a framework for creating build artifacts with
-    platform-specific naming and organized output. It extends ConfigFile but
+    platform-specific naming and organized output. It extends ListConfigFile but
     adapts its interface for build operations rather than configuration management.
 
     The build lifecycle:
@@ -74,8 +74,8 @@ class BuilderConfigFile(ListConfigFile):
                     # ... compile and create executable ...
 
     See Also:
-        :class:`~pyrig.dev.configs.base.base.ConfigFile`: Parent class providing
-            the configuration file interface.
+        :class:`~pyrig.dev.configs.base.string.ListConfigFile`: Parent class providing
+            the list-based configuration file interface.
     """
 
     ARTIFACTS_DIR_NAME = "dist"

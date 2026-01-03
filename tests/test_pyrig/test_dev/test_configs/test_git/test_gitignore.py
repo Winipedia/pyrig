@@ -5,10 +5,8 @@ from contextlib import chdir
 from pathlib import Path
 
 import pytest
-from pytest_mock import MockFixture
 
 from pyrig.dev.configs.base.base import ConfigFile
-from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 
 
@@ -28,6 +26,17 @@ def my_test_gitignore_config_file(
 
 class TestGitIgnoreConfigFile:
     """Test class."""
+
+    def test_get_lines(
+        self,
+        my_test_gitignore_config_file: type[GitIgnoreConfigFile],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            my_test_gitignore_config_file.create_file()
+            lines = my_test_gitignore_config_file.get_lines()
+            assert "__pycache__/" in lines
 
     def test_get_github_python_gitignore_as_str(self) -> None:
         """Test method."""
@@ -62,44 +71,3 @@ class TestGitIgnoreConfigFile:
         """Test method for get_file_extension."""
         extension = my_test_gitignore_config_file.get_file_extension()
         assert extension == "gitignore", f"Expected 'gitignore', got {extension}"
-
-    def test__load(
-        self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
-    ) -> None:
-        """Test method for load."""
-        # Initialize the config file first
-        my_test_gitignore_config_file()
-        loaded = my_test_gitignore_config_file.load()
-        assert len(loaded) > 0, "Expected loaded config to be non-empty"
-        # assert .env is in loaded config
-        assert any(DotEnvConfigFile.get_path().as_posix() in item for item in loaded), (
-            "Expected .env pattern in loaded config"
-        )
-
-    def test__dump(
-        self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
-    ) -> None:
-        """Test method for dump."""
-        test_config = ["__pycache__/", ".idea/", ".pytest_cache/"]
-        my_test_gitignore_config_file.dump(test_config)
-        loaded = my_test_gitignore_config_file.load()
-        assert loaded == test_config, f"Expected {test_config}, got {loaded}"
-
-    def test_get_configs(
-        self,
-        my_test_gitignore_config_file: type[GitIgnoreConfigFile],
-        mocker: MockFixture,
-    ) -> None:
-        """Test method for get_configs."""
-        # Mock the load method to return a minimal list
-        mocker.patch.object(
-            my_test_gitignore_config_file,
-            "load",
-            return_value=["__pycache__/"],
-        )
-        configs = my_test_gitignore_config_file.get_configs()
-        assert len(configs) > 0, "Expected configs to be non-empty"
-        # Verify it contains expected patterns
-        assert any("__pycache__" in item for item in configs), (
-            "Expected __pycache__ pattern in configs"
-        )

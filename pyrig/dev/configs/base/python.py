@@ -12,24 +12,24 @@ Example:
     ...         return Path("src")
     ...
     ...     @classmethod
-    ...     def get_content_str(cls) -> str:
-    ...         return "from typing import Any\nimport sys"
+    ...     def get_lines(cls) -> list[str]:
+    ...         return ["from typing import Any", "import sys"]
 """
 
-from pyrig.dev.configs.base.text import TextConfigFile
+from pyrig.dev.configs.base.string import StringConfigFile
 
 
-class PythonConfigFile(TextConfigFile):
+class PythonConfigFile(StringConfigFile):
     """Base class for Python (.py) source files.
 
-    Extends TextConfigFile with "py" extension. Inherits content-based validation.
+    Extends StringConfigFile with "py" extension. Inherits content-based validation.
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the .py file
-        - `get_content_str`: Required Python code
+        - `get_lines`: Required Python code as list of lines
 
     See Also:
-        pyrig.dev.configs.base.text.TextConfigFile: Parent class
+        pyrig.dev.configs.base.string.StringConfigFile: Parent class
         pyrig.dev.configs.base.py_package.PythonPackageConfigFile: For package files
     """
 

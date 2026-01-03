@@ -14,14 +14,13 @@ from pathlib import Path
 import requests
 
 import pyrig
-from pyrig.dev.configs.base.list_cf import ListConfigFile
+from pyrig.dev.configs.base.string import StringConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
-from pyrig.dev.utils.git import load_gitignore
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 
 
-class GitIgnoreConfigFile(ListConfigFile):
+class GitIgnoreConfigFile(StringConfigFile):
     """Gitignore configuration manager.
 
     Combines GitHub's standard Python patterns with pyrig-specific patterns
@@ -73,34 +72,7 @@ class GitIgnoreConfigFile(ListConfigFile):
         return "gitignore"
 
     @classmethod
-    def _load(cls) -> list[str]:
-        """Load the .gitignore file as a list of patterns.
-
-        Returns:
-            list[str]: Gitignore patterns (one per line, preserves comments).
-
-        Raises:
-            FileNotFoundError: If file doesn't exist.
-        """
-        return load_gitignore(path=cls.get_path())
-
-    @classmethod
-    def _dump(cls, config: list[str]) -> None:
-        """Write patterns to the .gitignore file.
-
-        Args:
-            config (list[str]): Gitignore patterns (one per line).
-
-        Raises:
-            TypeError: If config is not a list.
-
-        Note:
-            Overwrites entire file. Use get_configs() to merge with existing.
-        """
-        cls.get_path().write_text("\n".join(config), encoding="utf-8")
-
-    @classmethod
-    def get_configs(cls) -> list[str]:
+    def get_lines(cls) -> list[str]:
         """Get complete .gitignore patterns with intelligent merging.
 
         Combines GitHub's Python patterns with pyrig-specific patterns

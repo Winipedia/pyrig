@@ -12,24 +12,24 @@ Example:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def get_content_str(cls) -> str:
-    ...         return "# My Project\n\nDescription here."
+    ...     def get_lines(cls) -> list[str]:
+    ...         return ["# My Project", "", "Description here."]
 """
 
-from pyrig.dev.configs.base.text import TextConfigFile
+from pyrig.dev.configs.base.string import StringConfigFile
 
 
-class MarkdownConfigFile(TextConfigFile):
+class MarkdownConfigFile(StringConfigFile):
     """Base class for Markdown (.md) files.
 
-    Extends TextConfigFile with "md" extension. Inherits content-based validation.
+    Extends StringConfigFile with "md" extension. Inherits content-based validation.
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the .md file
-        - `get_content_str`: Required Markdown content
+        - `get_lines`: Required Markdown content as list of lines
 
     See Also:
-        pyrig.dev.configs.base.text.TextConfigFile: Parent class
+        pyrig.dev.configs.base.string.StringConfigFile: Parent class
         pyrig.dev.configs.base.badges_md.BadgesMarkdownConfigFile: For badge files
     """
 

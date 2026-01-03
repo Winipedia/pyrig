@@ -14,12 +14,12 @@ from pathlib import Path
 
 import requests
 
-from pyrig.dev.configs.base.text import TextConfigFile
+from pyrig.dev.configs.base.string import StringConfigFile
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.src.git import get_repo_owner_and_name_from_git
 
 
-class LicenceConfigFile(TextConfigFile):
+class LicenceConfigFile(StringConfigFile):
     """Manages LICENSE files with MIT license (year + owner from git).
 
     Fetches from GitHub SPDX API with fallback. Priority 30 (created early
@@ -55,9 +55,9 @@ class LicenceConfigFile(TextConfigFile):
         return ""
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Get MIT license with year and owner."""
-        return cls.get_mit_license_with_year_and_owner()
+        return cls.get_mit_license_with_year_and_owner().splitlines()
 
     @classmethod
     def is_correct(cls) -> bool:

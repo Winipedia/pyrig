@@ -13,13 +13,11 @@ Example:
     ...         return Path("src/mypackage/subpackage")
     ...
     ...     @classmethod
-    ...     def get_content_str(cls) -> str:
-    ...         return '"""Subpackage docstring."""'
+    ...     def get_lines(cls) -> list[str]:
+    ...         return ['"""Subpackage docstring."""']
     >>>
     >>> MyPackageInit()  # Creates src/, src/mypackage/, src/mypackage/subpackage/
 '''
-
-from typing import Any
 
 from pyrig.dev.configs.base.python import PythonConfigFile
 from pyrig.src.modules.path import make_pkg_dir
@@ -33,7 +31,7 @@ class PythonPackageConfigFile(PythonConfigFile):
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the package file
-        - `get_content_str`: Required Python code
+        - `get_lines`: Required Python code as list of lines
 
     See Also:
         pyrig.dev.configs.base.python.PythonConfigFile: Parent class
@@ -42,14 +40,14 @@ class PythonPackageConfigFile(PythonConfigFile):
     """
 
     @classmethod
-    def _dump(cls, config: dict[str, Any]) -> None:
+    def _dump(cls, config: list[str]) -> None:
         """Write config file and create parent __init__.py files.
 
         Calls super()._dump() then make_pkg_dir() to ensure parent directories are
         valid packages.
 
         Args:
-            config: Configuration dict with CONTENT_KEY.
+            config: List of lines to write to the file.
         """
         super()._dump(config)
         make_pkg_dir(cls.get_path().parent)

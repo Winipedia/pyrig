@@ -16,8 +16,8 @@ Creates a shared_subcommands.py file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DictConfigFile]
-    B --> C[TextConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
     C --> D[PythonConfigFile]
     D --> E[PythonPackageConfigFile]
     E --> F[CopyModuleConfigFile]
@@ -34,7 +34,7 @@ graph TD
     style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `CopyModuleOnlyDocstringConfigFile` (via `DictConfigFile`)
+**Inherits from**: `CopyModuleOnlyDocstringConfigFile` (via `ListConfigFile`)
 
 **What this means**:
 

@@ -26,6 +26,10 @@ def my_test_dot_experiment_config_file(
 class TestDotExperimentConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert DotExperimentConfigFile().is_correct()
+
     def test_get_filename(
         self, my_test_dot_experiment_config_file: type[DotExperimentConfigFile]
     ) -> None:
@@ -45,9 +49,10 @@ class TestDotExperimentConfigFile:
             actual = my_test_dot_experiment_config_file.get_parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test_get_content_str(
+    def test_get_lines(
         self, my_test_dot_experiment_config_file: type[DotExperimentConfigFile]
     ) -> None:
         """Test method for get_content_str."""
-        content_str = my_test_dot_experiment_config_file.get_content_str()
+        lines = my_test_dot_experiment_config_file.get_lines()
+        content_str = "\n".join(lines)
         assert "experimentation" in content_str, "Expected 'experimentation' in content"

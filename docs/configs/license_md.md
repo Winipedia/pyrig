@@ -16,8 +16,8 @@ Creates a LICENSE file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DictConfigFile]
-    B --> C[TextConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
     C --> D[LicenceConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -26,7 +26,7 @@ graph TD
     style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `TextConfigFile` (via `DictConfigFile`)
+**Inherits from**: `StringConfigFile` (via `ListConfigFile`)
 
 **What this means**:
 

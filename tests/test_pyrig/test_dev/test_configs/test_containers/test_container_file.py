@@ -24,10 +24,11 @@ class TestContainerfileConfigFile:
         """Test method."""
         assert ContainerfileConfigFile.get_extension_sep() == ""
 
-    def test_get_content_str(self) -> None:
+    def test_get_lines(self) -> None:
         """Test method."""
         layers = ContainerfileConfigFile.get_layers()
-        content = ContainerfileConfigFile.get_content_str()
+        lines = ContainerfileConfigFile.get_lines()
+        content = "\n".join(lines)
         assert all(layer in content for layer in layers)
 
     def test_is_correct(self) -> None:

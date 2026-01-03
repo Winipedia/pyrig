@@ -15,8 +15,8 @@ Creates a fixtures package that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DictConfigFile]
-    B --> C[TextConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
     C --> D[PythonConfigFile]
     D --> E[PythonPackageConfigFile]
     E --> F[CopyModuleConfigFile]
@@ -35,7 +35,7 @@ graph TD
     style I fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `InitConfigFile` (via `DictConfigFile`)
+**Inherits from**: `InitConfigFile` (via `ListConfigFile`)
 
 **What this means**:
 

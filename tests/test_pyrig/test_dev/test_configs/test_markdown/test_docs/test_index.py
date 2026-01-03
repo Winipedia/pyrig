@@ -13,7 +13,8 @@ class TestIndexConfigFile:
         parent_path = IndexConfigFile.get_parent_path()
         assert parent_path == Path("docs")
 
-    def test_get_content_str(self) -> None:
+    def test_get_lines(self) -> None:
         """Test method."""
-        content_str = IndexConfigFile.get_content_str()
+        lines = IndexConfigFile.get_lines()
+        content_str = "\n".join(lines)
         assert isinstance(content_str, str)

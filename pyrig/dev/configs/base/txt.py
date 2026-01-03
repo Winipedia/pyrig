@@ -12,24 +12,24 @@ Example:
     ...         return Path("docs")
     ...
     ...     @classmethod
-    ...     def get_content_str(cls) -> str:
-    ...         return "# Project Notes\n"
+    ...     def get_lines(cls) -> list[str]:
+    ...         return ["# Project Notes"]
 """
 
-from pyrig.dev.configs.base.text import TextConfigFile
+from pyrig.dev.configs.base.string import StringConfigFile
 
 
-class TxtConfigFile(TextConfigFile):
+class TxtConfigFile(StringConfigFile):
     """Base class for .txt files.
 
-    Extends TextConfigFile with "txt" extension. Inherits content-based validation.
+    Extends StringConfigFile with "txt" extension. Inherits content-based validation.
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the .txt file
-        - `get_content_str`: Required content
+        - `get_lines`: Required content as list of lines
 
     See Also:
-        pyrig.dev.configs.base.text.TextConfigFile: Parent class
+        pyrig.dev.configs.base.string.StringConfigFile: Parent class
     """
 
     @classmethod

@@ -58,11 +58,19 @@ class DotExperimentConfigFile(PythonConfigFile):
         return Path()
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Get the .experiment.py file content.
 
         Returns:
-            str: Python file with docstring.
+            List of lines with Python docstring.
         """
-        return '''"""This file is for experimentation and is ignored by git."""
-'''
+        return ['"""This file is for experimentation and is ignored by git."""', ""]
+
+    @classmethod
+    def is_correct(cls) -> bool:
+        """Check if the .experiment.py file is valid.
+
+        Returns:
+            True if the file exists.
+        """
+        return super().is_correct() or (cls.get_path().exists())

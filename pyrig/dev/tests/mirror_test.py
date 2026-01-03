@@ -52,7 +52,7 @@ from abc import abstractmethod
 from collections import defaultdict
 from pathlib import Path
 from types import ModuleType
-from typing import Self, cast
+from typing import Any, Self, cast
 
 from pyrig.dev import tests
 from pyrig.dev.configs.base.py_package import PythonPackageConfigFile
@@ -151,25 +151,30 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return test_path.parent
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Generate complete test module content with skeletons for untested code.
 
         Returns:
             Full test module source code including existing tests and new skeletons.
         """
-        return cls.get_test_module_content_with_skeletons()
+        lines = cls.get_test_module_content_with_skeletons().splitlines()
+        # if last no empty new line, add one
+        last_line = lines[-1]
+        if last_line.strip():
+            lines.append("")
+        return lines
 
     @classmethod
     def override_content(cls) -> bool:
         """Enable content override mode for skeleton insertion.
 
         Returns:
-            True to enable override mode, allowing get_content_str() to provide
+            True to enable override mode, allowing get_lines() to provide
             the complete merged content (existing tests plus new skeletons).
 
         Note:
             The "override" refers to the parent class file-writing behavior.
-            The actual content returned by get_content_str() is additive -
+            The actual content returned by get_lines() is additive -
             new skeletons are appended/inserted while preserving existing tests.
         """
         return True
@@ -203,6 +208,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return super().is_correct() or not (
             untested_funcs or untested_classes or untested_methods
         )
+
+    @classmethod
+    def add_missing_configs(cls) -> list[Any]:
+        """We just return get_configs() get_configs already includes existing tests."""
+        return cls.get_configs()
 
     @classmethod
     def get_definition_pkg(cls) -> ModuleType:

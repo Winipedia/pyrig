@@ -80,19 +80,21 @@ class MainTestConfigFile(PythonPackageConfigFile):
         return "test_main"
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Get the test file content.
 
         Returns:
-            str: Python code with test_main() function.
+            List of lines with test_main() function.
         """
-        return '''"""test module."""
-
-
-def test_main(main_test_fixture: None) -> None:
-    """Test func for main."""
-    assert main_test_fixture is None
-'''
+        return [
+            '"""test module."""',
+            "",
+            "",
+            "def test_main(main_test_fixture: None) -> None:",
+            '    """Test func for main."""',
+            "    assert main_test_fixture is None",
+            "",
+        ]
 
     @classmethod
     def is_correct(cls) -> bool:

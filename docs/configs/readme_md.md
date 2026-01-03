@@ -19,8 +19,8 @@ Creates a README file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DictConfigFile]
-    B --> C[TextConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
     C --> D[MarkdownConfigFile]
     D --> E[BadgesMarkdownConfigFile]
     E --> F[ReadmeConfigFile]
@@ -33,7 +33,7 @@ graph TD
     style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `BadgesMarkdownConfigFile` (via `DictConfigFile`)
+**Inherits from**: `BadgesMarkdownConfigFile` (via `ListConfigFile`)
 
 **What this means**:
 

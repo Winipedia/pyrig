@@ -12,6 +12,8 @@ class TestApiConfigFile:
         """Test method."""
         assert ApiConfigFile.get_parent_path() == Path("docs")
 
-    def test_get_content_str(self) -> None:
+    def test_get_lines(self) -> None:
         """Test method."""
-        assert ":::" in ApiConfigFile.get_content_str()
+        lines = ApiConfigFile.get_lines()
+        content_str = "\n".join(lines)
+        assert ":::" in content_str

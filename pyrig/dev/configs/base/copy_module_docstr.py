@@ -37,15 +37,17 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
     """
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Extract only the docstring from source module.
 
         Returns:
             Module docstring wrapped in triple quotes with newline.
         """
-        content = super().get_content_str()
-        parts = content.split('"""', 2)
-        return '"""' + parts[1] + '"""\n'
+        docstring = cls.get_src_module().__doc__
+        if docstring is None:
+            msg = f"Source module {cls.get_src_module()} has no docstring"
+            raise ValueError(msg)
+        return [*f'"""{docstring}"""'.splitlines(), ""]
 
     @classmethod
     def is_correct(cls) -> bool:

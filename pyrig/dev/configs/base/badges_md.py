@@ -53,7 +53,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
     """
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Generate Markdown with project name, categorized badges, and description.
 
         Returns:
@@ -61,42 +61,23 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         """
         project_name = PyprojectConfigFile.get_project_name()
         badges = cls.get_badges()
-        badges_str = ""
+        badges_lines: list[str] = []
         for badge_category, badge_list in badges.items():
-            badges_str += f"<!-- {badge_category} -->\n"
-            badges_str += "\n".join(badge_list) + "\n"
-        badges_str = badges_str.removesuffix("\n")
+            badges_lines.append(f"<!-- {badge_category} -->")
+            badges_lines.extend(badge_list)
         description = PyprojectConfigFile.get_project_description()
-        return f"""# {project_name}
-
-{badges_str}
-
----
-
-> {description}
-
----
-"""
-
-    @classmethod
-    def is_correct(cls) -> bool:
-        """Check if file contains all required badges, description, and project name.
-
-        Returns:
-            True if empty (opted out), exact match, or contains all required elements.
-        """
-        file_content = cls.get_file_content()
-        badges = [
-            badge for _, badge_list in cls.get_badges().items() for badge in badge_list
+        return [
+            f"# {project_name}",
+            "",
+            *badges_lines,
+            "",
+            "---",
+            "",
+            f"> {description}",
+            "",
+            "---",
+            "",
         ]
-        all_badges_in_file = all(badge in file_content for badge in badges)
-        description_in_file = (
-            PyprojectConfigFile.get_project_description() in file_content
-        )
-        project_name_in_file = PyprojectConfigFile.get_project_name() in file_content
-        return super().is_correct() or (
-            all_badges_in_file and description_in_file and project_name_in_file
-        )
 
     @classmethod
     def get_badges(cls) -> dict[str, list[str]]:
