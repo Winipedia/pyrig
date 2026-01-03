@@ -90,23 +90,23 @@ class TestVersionController:
     def test_get_config_local_user_email_args(self) -> None:
         """Test method."""
         result = VersionController.L.get_config_local_user_email_args(
-            "test@example.com"
+            email="test@example.com"
         )
         assert result == ("git", "config", "--local", "user.email", "test@example.com")
 
     def test_get_config_local_user_name_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_local_user_name_args("Test User")
+        result = VersionController.L.get_config_local_user_name_args(name="Test User")
         assert result == ("git", "config", "--local", "user.name", "Test User")
 
     def test_get_config_global_user_email_args(self) -> None:
         """Test method."""
         result = VersionController.L.get_config_global_user_email_args(
-            "test@example.com"
+            email="test@example.com"
         )
         assert result == ("git", "config", "--global", "user.email", "test@example.com")
 
     def test_get_config_global_user_name_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_global_user_name_args("Test User")
+        result = VersionController.L.get_config_global_user_name_args(name="Test User")
         assert result == ("git", "config", "--global", "user.name", "Test User")

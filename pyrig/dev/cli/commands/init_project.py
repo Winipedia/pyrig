@@ -62,7 +62,9 @@ def creating_priority_config_files() -> None:
     that other initialization steps depend on via `uv run pyrig mkroot --priority`.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
-    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mkroot, "--priority"))
+    args = PackageManager.L.get_run_args(
+        *Pyrigger.L.get_cmd_args("--priority", cmd=mkroot)
+    )
     args.run()
 
 
@@ -83,7 +85,7 @@ def creating_project_root() -> None:
     Generates all remaining configuration files and directory structure via
     `uv run pyrig mkroot`.
     """
-    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mkroot))
+    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(cmd=mkroot))
     args.run()
 
 
@@ -93,7 +95,7 @@ def creating_test_files() -> None:
     Creates test files mirroring the source package structure with
     NotImplementedError placeholders via `uv run pyrig mktests`.
     """
-    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mktests))
+    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(cmd=mktests))
     args.run()
 
 

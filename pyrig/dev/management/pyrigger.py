@@ -45,7 +45,7 @@ class Pyrigger(Tool):
         return "pyrig"
 
     @classmethod
-    def get_cmd_args(cls, cmd: Callable[..., Any], *args: str) -> Args:
+    def get_cmd_args(cls, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments from callable.
 
         Args:

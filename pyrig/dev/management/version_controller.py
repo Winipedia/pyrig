@@ -200,7 +200,7 @@ class VersionController(Tool):
         return cls.get_config_args("--local", *args)
 
     @classmethod
-    def get_config_local_user_email_args(cls, email: str, *args: str) -> Args:
+    def get_config_local_user_email_args(cls, *args: str, email: str) -> Args:
         """Construct git config arguments for local user email.
 
         Args:
@@ -213,7 +213,7 @@ class VersionController(Tool):
         return cls.get_config_local_args("user.email", email, *args)
 
     @classmethod
-    def get_config_local_user_name_args(cls, name: str, *args: str) -> Args:
+    def get_config_local_user_name_args(cls, *args: str, name: str) -> Args:
         """Construct git config arguments for local user name.
 
         Args:
@@ -226,7 +226,7 @@ class VersionController(Tool):
         return cls.get_config_local_args("user.name", name, *args)
 
     @classmethod
-    def get_config_global_user_email_args(cls, email: str, *args: str) -> Args:
+    def get_config_global_user_email_args(cls, *args: str, email: str) -> Args:
         """Construct git config arguments for global user email.
 
         Args:
@@ -239,7 +239,7 @@ class VersionController(Tool):
         return cls.get_config_global_args("user.email", email, *args)
 
     @classmethod
-    def get_config_global_user_name_args(cls, name: str, *args: str) -> Args:
+    def get_config_global_user_name_args(cls, *args: str, name: str) -> Args:
         """Construct git config arguments for global user name.
 
         Args:
