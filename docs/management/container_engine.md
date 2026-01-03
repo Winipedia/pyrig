@@ -3,48 +3,15 @@
 Type-safe wrapper for [Podman](https://podman.io/), the daemonless container
 engine.
 
-## Overview
+Podman is used for creating containerized builds, particularly PyInstaller
+executables in a reproducible Linux environment.
 
-`ContainerEngine` wraps podman commands for:
+## Replacing with Docker
 
-- Building images (`podman build`)
-- Saving images (`podman save`)
+Switching to Docker requires **two changes** because workflow steps use
+hardcoded GitHub Actions (not the `.L` pattern):
 
-Podman is used primarily for creating containerized builds, particularly
-PyInstaller executables in a reproducible Linux environment.
-
-## Methods
-
-| Method | Command | Description |
-|--------|---------|-------------|
-| `get_build_args(*args, project_name)` | `podman build -t <name> .` | Build container image |
-| `get_save_args(*args, image_file, image_path)` | `podman save -o <path> <name>` | Save image to file |
-
-## Usage
-
-```python
-from pathlib import Path
-from pyrig.dev.management.container_engine import ContainerEngine
-
-# Build an image
-ContainerEngine.L.get_build_args(project_name="myapp").run()
-
-# Build with custom Dockerfile
-ContainerEngine.L.get_build_args(
-    "-f", "Dockerfile.prod",
-    project_name="myapp"
-).run()
-
-# Save image to file
-ContainerEngine.L.get_save_args(
-    image_file=Path("myapp"),
-    image_path=Path("dist/myapp.tar")
-).run()
-```
-
-## Subclassing Example
-
-To switch to Docker:
+### 1. Subclass the Tool
 
 ```python
 # myapp/dev/management/container_engine.py
@@ -56,15 +23,30 @@ class ContainerEngine(BaseCE):
         return "docker"
 ```
 
-Note: You also need to subclass any other methods that might do `podman`
--specific things, like `get_save_args()` which uses `image_file.stem` as the
-image name.
+### 2. Override Workflow Steps
 
-See [Replacing Tools](architecture.md#replacing-tools) for the full Docker
-migration example including workflow changes.
+The workflow uses a hardcoded GitHub Action to install Podman. You must also
+override this:
+
+```python
+# myapp/dev/configs/base/workflow.py
+from pyrig.dev.configs.base.workflow import Workflow as BaseWorkflow
+
+class Workflow(BaseWorkflow):
+    @classmethod
+    def step_install_container_engine(cls, *, step=None):
+        return cls.get_step(
+            step_func=cls.step_install_container_engine,
+            uses="docker/setup-buildx-action@v3",
+            step=step,
+        )
+```
+
+This is an example of **static vs dynamic** - see
+[Architecture](architecture.md#dynamic-vs-static-when-each-applies) for why some
+components require explicit overrides.
 
 ## Related
 
-- [Architecture](architecture.md) - How the Tool system works
+- [Architecture](architecture.md) - Design philosophy and extension mechanisms
 - [Tooling - Podman](../more/tooling.md#podman) - Why pyrig uses Podman
-- [Build Documentation](../configs/workflows/build.md) - Container build workflow

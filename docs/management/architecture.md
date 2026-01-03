@@ -1,16 +1,20 @@
 # Tool Architecture
 
 pyrig's management system provides type-safe wrappers around command-line tools
-(uv, git, ruff, pytest, etc.) through a composable `Tool` and `Args` pattern.
+through a composable `Tool` and `Args` pattern. This document explains the
+**design philosophy** and **extensibility mechanisms** - for API details, see
+the source docstrings.
 
-## Design Pattern
+## Design Philosophy
 
-The management system follows a consistent pattern:
+The management system is built on three core principles:
 
-1. Each tool (uv, git, pytest) is a `Tool` subclass
-2. Tool methods return `Args` objects (command argument tuples)
-3. `Args` objects execute directly or convert to strings
-4. All command construction is centralized and testable
+1. **Single Source of Truth**: Each tool has one wrapper class that defines all
+   its commands
+2. **Automatic Propagation**: Customizations in dependent packages automatically
+   apply everywhere
+3. **Explicit Over Implicit**: Commands are constructed as inspectable `Args`
+   objects before execution
 
 ```mermaid
 graph LR
@@ -24,117 +28,26 @@ graph LR
     style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-## The Tool Base Class
+## Two Extension Mechanisms
 
-`Tool` is the abstract base class for all tool wrappers:
+pyrig provides two complementary patterns for customization. Understanding when
+to use each is essential:
 
-```python
-from abc import ABC, abstractmethod
-from pyrig.src.processes import Args
+| Mechanism | Purpose | Used For |
+|-----------|---------|----------|
+| **`.L` (Leaf)** | Get the deepest subclass of a Tool or ConfigFile | Internal pyrig operations that should use your customizations |
+| **`get_all_subclasses()`** | Discover all ConfigFile implementations | Finding all configs to generate, including new ones you define |
 
-class Tool(ABC):
-    @classmethod
-    @abstractmethod
-    def name(cls) -> str:
-        """Return the tool command name (e.g., 'git', 'uv')."""
+### The `.L` Pattern: Dynamic Tool Resolution
 
-    @classmethod
-    def get_args(cls, *args: str) -> Args:
-        """Construct Args with tool name prepended."""
-        return Args((cls.name(), *args))
-```
-
-### Required Methods
-
-| Method | Purpose | Example Return |
-|--------|---------|----------------|
-| `name()` | Tool command name | `"uv"`, `"git"`, `"ruff"` |
-| `get_*_args()` | Construct specific commands | `Args(("uv", "sync"))` |
-
-### Creating a Tool Subclass
-
-```python
-from pyrig.dev.management.base.base import Tool
-from pyrig.src.processes import Args
-
-class MyTool(Tool):
-    @classmethod
-    def name(cls) -> str:
-        return "mytool"
-
-    @classmethod
-    def get_build_args(cls, *args: str) -> Args:
-        return cls.get_args("build", *args)
-
-# Usage
-args = MyTool.get_build_args("--verbose")
-print(args)  # mytool build --verbose
-args.run()   # Executes: mytool build --verbose
-```
-
-## The Args Class
-
-`Args` is an immutable tuple subclass that represents command-line arguments:
-
-```python
-class Args(tuple[str, ...]):
-    def __str__(self) -> str:
-        """Convert to space-separated string."""
-        return " ".join(self)
-
-    def run(self, *args: str, **kwargs) -> subprocess.CompletedProcess:
-        """Execute command via subprocess."""
-        return run_subprocess(self, *args, **kwargs)
-```
-
-### Key Features
-
-- **Immutable**: Cannot be modified after creation
-- **Composable**: Can be extended with additional arguments
-- **Printable**: Converts to readable command string
-- **Executable**: Run directly via `.run()`
-
-### Usage Examples
-
-```python
-from pyrig.dev.management.package_manager import PackageManager
-
-# Get Args object
-args = PackageManager.L.get_install_dependencies_args()
-print(args)  # uv sync
-
-# Execute the command
-result = args.run()
-print(result.returncode)  # 0
-
-# Add extra arguments
-args = PackageManager.L.get_args("run", "pytest", "-v")
-print(args)  # uv run pytest -v
-```
-
-## The `.L` Property
-
-Every Tool subclass has an `.L` (Leaf) class property that returns the deepest
-subclass in the inheritance hierarchy:
-
-```python
-# Instead of:
-PackageManager.get_install_dependencies_args()
-
-# Always use:
-PackageManager.L.get_install_dependencies_args()
-```
-
-### Why Use `.L`?
-
-The `.L` property enables **subclass discovery across dependencies**. When a
-package depends on pyrig, it can subclass any Tool to customize behavior:
+The `.L` property resolves to the **deepest subclass** in the inheritance chain.
+pyrig uses `.L` internally so your customizations propagate automatically.
 
 ```mermaid
 graph TD
-    A[pyrig.PackageManager] --> B[mylib.PackageManager]
-    B --> C[myapp.PackageManager]
-    D["PackageManager.L"] --> C
+    A["pyrig.TypeChecker"] --> B["mylib.TypeChecker"]
+    B --> C["myapp.TypeChecker"]
+    D["TypeChecker.L"] -.->|resolves to| C
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -142,117 +55,104 @@ graph TD
     style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-When you call `PackageManager.L`, pyrig:
+**Example: How pre-commit uses `.L`**
 
-1. Discovers all packages depending on pyrig
-2. Looks for equivalent `management` modules in each package
-3. Finds all subclasses of `PackageManager`
-4. Returns the deepest leaf class (most derived)
-
-This means your customizations automatically apply everywhere the Tool is used.
-
-### How It Works
+The pre-commit config file uses `.L` to reference tools:
 
 ```python
-from propert.classproperty import cached_classproperty
-from pyrig.src.modules.package import discover_leaf_subclass_across_dependents
-
-class Tool(ABC):
-    @cached_classproperty
-    def L(cls) -> type[Self]:
-        return discover_leaf_subclass_across_dependents(
-            cls=cls,
-            dep=pyrig,
-            load_pkg_before=management,
-        )
+# pyrig/dev/configs/git/pre_commit.py
+hooks = [
+    cls.get_hook("check-types", TypeChecker.L.get_check_args()),
+    cls.get_hook("lint-code", Linter.L.get_check_fix_args()),
+    # ...
+]
 ```
 
-The result is cached, so subsequent calls are instant.
-
-## Composition Pattern
-
-Tools can compose other tools. For example, `ProjectTester` wraps pytest through
-uv:
+Because it uses `TypeChecker.L` (not `TypeChecker` directly), if you subclass
+`TypeChecker` to use mypy:
 
 ```python
-class ProjectTester(Tool):
+# myapp/dev/management/type_checker.py
+from pyrig.dev.management.type_checker import TypeChecker as BaseTypeChecker
+
+class TypeChecker(BaseTypeChecker):
     @classmethod
     def name(cls) -> str:
-        return "uv"  # Runs through uv
-
-    @classmethod
-    def get_test_args(cls, *args: str) -> Args:
-        return cls.get_args("run", "pytest", *args)
+        return "mypy"
 ```
 
-This produces `uv run pytest ...` commands.
+The pre-commit config **automatically** uses mypy. No need to override the
+config file itself.
 
-## Replacing Tools
+### The `get_all_subclasses()` Pattern: ConfigFile Discovery
 
-While pyrig is [opinionated about tooling](../more/drawbacks.md#opinionated-tooling),
-the `.L` property mechanism means you can technically replace any tool with your
-own implementation.
+For `ConfigFile` classes, pyrig uses `get_all_subclasses()` to discover **all
+non-abstract implementations** across all dependent packages. This enables:
 
-### How It Works
+- Adding entirely new config files by creating new `ConfigFile` subclasses
+- Overriding existing configs by subclassing them (the parent is discarded)
 
-Since pyrig uses `.L` everywhere internally, subclassing a Tool and overriding
-`name()` will affect all pyrig operations that use that tool:
+```mermaid
+graph TD
+    subgraph pyrig
+        A[PyprojectConfigFile]
+        B[PreCommitConfigFile]
+    end
+    subgraph myapp
+        C[MyAppConfigFile]
+        D[PyprojectConfigFile]
+    end
+
+    E["get_all_subclasses()"] -.->|returns| F["[myapp.Pyproject,
+    PreCommit, MyApp]"]
+
+    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+```
+
+Note: `pyrig.PyprojectConfigFile` is **not** in the result because
+`myapp.PyprojectConfigFile` subclasses it - only leaf classes are returned.
+
+## Dynamic vs Static: When Each Applies
+
+Not everything in pyrig uses dynamic resolution. Understanding the difference
+prevents confusion:
+
+### Dynamic (Uses `.L` - Your Subclass Applies Automatically)
+
+| Component | Why Dynamic |
+|-----------|-------------|
+| Pre-commit hooks | Uses `Tool.L.get_*_args()` to build commands |
+| CLI commands | Uses `Tool.L` for all operations |
+| Most config file content | Generated from `Tool.L` or `ConfigFile.L` |
+
+**If you subclass a Tool, these automatically use your version.**
+
+### Static (Hardcoded - Requires Override)
+
+| Component | Why Static | What To Override |
+|-----------|------------|------------------|
+| GitHub Actions workflow steps | External action references can't be dynamic | Subclass the `Workflow` and override `step_*` methods |
+| External tool versions | Pinned for reproducibility | Subclass and override version constants |
+
+#### Example: Container Engine in Workflows
+
+The workflow uses a hardcoded GitHub Action for Podman:
 
 ```python
-# myapp/dev/management/container_engine.py
-from pyrig.dev.management.container_engine import (
-    ContainerEngine as BaseContainerEngine
-)
-
-class ContainerEngine(BaseContainerEngine):
-    @classmethod
-    def name(cls) -> str:
-        return "docker"  # Instead of "podman"
+# pyrig/dev/configs/base/workflow.py
+def step_install_container_engine(cls, ...):
+    return cls.get_step(
+        uses="redhat-actions/podman-install@main",  # Hardcoded!
+        ...
+    )
 ```
 
-Now all pyrig code that calls `ContainerEngine.L.get_*_args()` will use Docker
-instead of Podman.
-
-### Additional Work Required
-
-**We do not recommend replacing tools** because it requires significant
-additional work beyond subclassing. pyrig's components are interconnected,
-although we try to keep that absolutely minimal. Some tools are easier to
-replace than others. For example, replacing Podman with Docker is much easier
-than replacing uv with pip/poetry as uv is used everywhere. However everythngis
-handled via the Tool classes, we do not hardcode tool use anywhere else:
-
-| Tool Replacement | Additional Changes Needed |
-|------------------|---------------------------|
-| Podman → Docker | Subclass workflows to setup Docker instead of Podman in GitHub Actions |
-| uv → pip/poetry | Subclass nearly everything - package installation, execution, building |
-| ruff → black/flake8 | Subclass pre-commit config, workflow steps |
-| pytest → unittest | Subclass test runner, coverage config, workflow steps |
-| ty → mypy | Subclass pre-commit config, pyproject settings |
-
-### Example: Docker Instead of Podman
-
-To switch from Podman to Docker, you need to:
-
-1. **Subclass ContainerEngine** (changes the CLI tool):
-
-```python
-# myapp/dev/management/container_engine.py
-from pyrig.dev.management.container_engine import (
-    ContainerEngine as BaseContainerEngine
-)
-
-class ContainerEngine(BaseContainerEngine):
-    @classmethod
-    def name(cls) -> str:
-        return "docker"
-```
-
-Note: You also need to subclass any other methods that might do `podman`
--specific things, like `get_save_args()` which uses `image_file.stem` as the
-image name.
-
-2. **Subclass affected workflows** (changes CI/CD setup):
+Even if you subclass `ContainerEngine` to use Docker, the workflow still
+installs Podman. You must **also** subclass the workflow:
 
 ```python
 # myapp/dev/configs/workflows/build.py
@@ -260,47 +160,100 @@ from pyrig.dev.configs.workflows.build import BuildWorkflow as BaseBuildWorkflow
 
 class BuildWorkflow(BaseBuildWorkflow):
     @classmethod
-    def get_jobs(cls) -> dict:
-        jobs = super().get_jobs()
-        # Replace podman setup with docker setup
-        for job in jobs.values():
-            steps = job.get("steps", [])
-            # Remove podman setup, add docker setup
-            job["steps"] = [
-                s for s in steps
-                if "podman" not in str(s).lower()
-            ]
-            # Add docker setup step
-            job["steps"].insert(1, {
-                "name": "Set up Docker",
-                "uses": "docker/setup-buildx-action@v3"
-            })
-        return jobs
+    def step_install_container_engine(cls, *, step=None):
+        return cls.get_step(
+            step_func=cls.step_install_container_engine,
+            uses="docker/setup-buildx-action@v3",
+            step=step,
+        )
 ```
 
-### Why We Don't Recommend This
+## Subclassing Guide
 
-1. **Interconnected components**: Tools affect configs, workflows, pre-commit
-   hooks, and CI/CD pipelines
-2. **Maintenance burden**: You must keep your overrides in sync with pyrig
-   updates
-3. **Testing complexity**: Your customizations may break with new pyrig versions
-4. **Lost benefits**: You lose pyrig's tested, integrated toolchain
+### Extending a Tool (Add Behavior)
 
-### When It Makes Sense
+```python
+# myapp/dev/management/linter.py
+from pyrig.dev.management.linter import Linter as BaseLinter
+from pyrig.src.processes import Args
 
-Tool replacement might be justified if:
+class Linter(BaseLinter):
+    @classmethod
+    def get_check_args(cls, *args: str) -> Args:
+        # Always include --show-source
+        return super().get_check_args("--show-source", *args)
+```
 
-- Your organization mandates specific tools (e.g., Docker over Podman)
-- You're migrating an existing project with established tooling
-- You have specific requirements pyrig's tools don't meet
+### Replacing a Tool (Change the CLI)
 
-For most users, pyrig's default tooling provides the best experience with zero
-configuration.
+```python
+# myapp/dev/management/type_checker.py
+from pyrig.dev.management.type_checker import TypeChecker as BaseTypeChecker
 
-### See Also
+class TypeChecker(BaseTypeChecker):
+    @classmethod
+    def name(cls) -> str:
+        return "mypy"  # Use mypy instead of ty
+```
+
+### Adding a New ConfigFile
+
+```python
+# myapp/dev/configs/my_config.py
+from pathlib import Path
+from pyrig.dev.configs.base.toml import TomlConfigFile
+
+class MyAppConfigFile(TomlConfigFile):
+    @classmethod
+    def get_parent_path(cls) -> Path:
+        return Path()
+
+    @classmethod
+    def get_configs(cls) -> dict:
+        return {"app": {"name": "myapp"}}
+```
+
+This config is **automatically discovered** and generated when `pyrig init`
+runs.
+
+### Overriding an Existing ConfigFile
+
+```python
+# myapp/dev/configs/pyproject.py
+from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyproject
+
+class PyprojectConfigFile(BasePyproject):
+    @classmethod
+    def get_configs(cls) -> dict:
+        config = super().get_configs()
+        config["tool"]["myapp"] = {"custom": "setting"}
+        return config
+```
+
+The parent class is automatically excluded from discovery.
+
+## Tool Replacement Complexity
+
+| Replacement | Complexity | What's Needed |
+|-------------|------------|---------------|
+| ty → mypy | **Low** | Just subclass `TypeChecker.name()` |
+| ruff → black | **Low** | Subclass `Linter.name()` and adjust methods |
+| Podman → Docker | **Medium** | Subclass Tool + override workflow steps |
+| uv → pip | **High** | Affects nearly everything |
+
+**Note**: We have not exhaustively tested all replacement scenarios. You may
+need additional adjustments beyond what is documented. We recommend using
+pyrig's default tools - they were chosen for their quality and integration.
+
+### Why Some Replacements Need More Work
+
+- **ty → mypy**: Pre-commit uses `TypeChecker.L`, so it's automatic
+- **Podman → Docker**: Workflow steps use hardcoded GitHub Actions, not `.L`
+
+The rule: **If pyrig uses `.L`, your subclass applies automatically. If it's
+hardcoded (like external action references), you must override.**
+
+## See Also
 
 - [Trade-offs](../more/drawbacks.md) - What you sacrifice and gain with pyrig
 - [Tooling](../more/tooling.md) - Why pyrig chose each tool
-- [Partial Opt-Out](../more/drawbacks.md#partial-opt-out-use-pyrig-without-the-automation) -
-  Use pyrig for setup only
