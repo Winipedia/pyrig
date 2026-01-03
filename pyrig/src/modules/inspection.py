@@ -75,12 +75,10 @@ def get_unwrapped_obj(obj: Any) -> Any:
     Returns:
         Underlying unwrapped function.
     """
-    if isinstance(obj, (staticmethod, classmethod)):
+    if hasattr(obj, "__func__"):
         obj = obj.__func__
-    if isinstance(obj, property):
+    if hasattr(obj, "fget"):
         obj = obj.fget
-    if hasattr(obj, "_getter"):
-        obj = obj._getter  # noqa: SLF001
     return inspect.unwrap(obj)
 
 

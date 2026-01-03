@@ -211,3 +211,44 @@ def get_cached_instance[T](cls: type[T]) -> T:
         Cached instance.
     """
     return cls()
+
+
+class classproperty[T]:  # noqa: N801
+    """Decorator that creates a property accessible on the class itself.
+
+    Unlike @property which only works on instances, @classproperty allows
+    accessing the property directly on the class. Can be combined with
+    caching by using @cache on the underlying method.
+
+    Example:
+        >>> class MyClass:
+        ...     @classproperty
+        ...     def name(cls) -> str:
+        ...         return cls.__name__.lower()
+        ...
+        >>> MyClass.name
+        'myclass'
+
+    Args:
+        fget: The method to wrap as a class property.
+    """
+
+    def __init__(self, fget: Callable[..., T]) -> None:
+        """Initialize the decorator.
+
+        Args:
+            fget: The method to wrap as a class property.
+        """
+        self.fget = fget
+
+    def __get__(self, obj: object, owner: type) -> T:
+        """Get the property value.
+
+        Args:
+            obj: The instance (ignored).
+            owner: The class owning the property.
+
+        Returns:
+            The property value.
+        """
+        return self.fget(owner)

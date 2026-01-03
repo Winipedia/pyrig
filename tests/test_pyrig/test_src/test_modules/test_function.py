@@ -2,10 +2,9 @@
 
 import functools
 
-from propert.classproperty import cached_classproperty, classproperty
-
 from pyrig.src.modules import function
 from pyrig.src.modules import function as func_module
+from pyrig.src.modules.class_ import classproperty
 from pyrig.src.modules.function import (
     get_all_functions_from_module,
     is_func,
@@ -102,11 +101,6 @@ def test_is_func() -> None:
             """Test cached class property with setter."""
             return "test"
 
-        @cached_classproperty
-        def cached_class_property(cls) -> str:  # noqa: N805
-            """Test cached class property with setter."""
-            return "test"
-
     # Test staticmethod descriptor
     assert is_func(TestClass.__dict__["static_method"]), (
         "Expected staticmethod descriptor to be identified as func"
@@ -130,11 +124,6 @@ def test_is_func() -> None:
     # Test classproperty descriptor
     assert is_func(TestClass.__dict__["class_property"]), (
         "Expected classproperty descriptor to be identified as func"
-    )
-
-    # Test cached_classproperty descriptor
-    assert is_func(TestClass.__dict__["cached_class_property"]), (
-        "Expected cached_classproperty descriptor to be identified as func"
     )
 
     # Test decorated function with __wrapped__

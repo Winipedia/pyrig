@@ -9,6 +9,7 @@ from functools import wraps
 from typing import Any, ClassVar
 
 from pyrig.src.modules.class_ import (
+    classproperty,
     discard_parent_classes,
     get_all_cls_from_module,
     get_all_methods_from_cls,
@@ -185,6 +186,7 @@ def test_get_all_cls_from_module() -> None:
         AbstractParent,
         ConcreteChild,
         AnotherAbstractChild,
+        Testclassproperty,
     ]
     expected_classes_names: list[str] = [c.__name__ for c in expected_classes]
     classes_names = [c.__name__ for c in classes]
@@ -234,3 +236,29 @@ def test_get_cached_instance() -> None:
     instance1 = get_cached_instance(TestClass)
     instance2 = get_cached_instance(TestClass)
     assert instance1 is instance2
+
+
+class Testclassproperty:
+    """Test class."""
+
+    def test___init__(self) -> None:
+        """Test that classproperty stores the function."""
+
+        def func(cls: type) -> str:
+            return cls.__name__
+
+        prop = classproperty(func)
+        assert prop.fget is func
+
+    def test___get__(self) -> None:
+        """Test that classproperty returns value from class."""
+
+        class MyClass:
+            @classproperty
+            def name(cls: type) -> str:  # noqa: N805
+                return cls.__name__.lower()
+
+        # Access via class
+        assert MyClass.name == "myclass"
+        # Access via instance
+        assert MyClass().name == "myclass"

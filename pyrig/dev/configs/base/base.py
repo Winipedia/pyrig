@@ -69,11 +69,10 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Self, TypeVar
 
-from propert.classproperty import cached_classproperty
-
 import pyrig
 from pyrig.dev import configs
 from pyrig.src.iterate import nested_structure_is_subset
+from pyrig.src.modules.class_ import classproperty
 from pyrig.src.modules.package import (
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
@@ -477,7 +476,7 @@ class ConfigFile(ABC):
         logger.info("Creating priority config files")
         cls.init_subclasses(*cls.get_priority_subclasses())
 
-    @cached_classproperty
+    @classproperty
     def L(cls) -> type[Self]:  # noqa: N802, N805
         """Get the final leaf subclass (deepest in the inheritance tree).
 
