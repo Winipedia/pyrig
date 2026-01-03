@@ -42,7 +42,7 @@ class PythonPackageConfigFile(PythonConfigFile):
     """
 
     @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any]) -> None:
         """Write config file and create parent __init__.py files.
 
         Calls super()._dump() then make_pkg_dir() to ensure parent directories are

@@ -33,19 +33,18 @@ from abc import abstractmethod
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
-from typing import Any
 
 import pyrig
 from pyrig import main, resources
 from pyrig.dev import builders
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.list_cf import ListConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.path import ModulePath
 
 logger = logging.getLogger(__name__)
 
 
-class BuilderConfigFile(ConfigFile):
+class BuilderConfigFile(ListConfigFile):
     """Abstract base class for artifact builders.
 
     BuilderConfigFile provides a framework for creating build artifacts with
@@ -127,7 +126,7 @@ class BuilderConfigFile(ConfigFile):
         return list(cls.get_parent_path().glob("*"))
 
     @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:  # noqa: ARG003
+    def _dump(cls, config: list[Path]) -> None:  # noqa: ARG003
         """Build artifacts.
 
         Args:

@@ -67,7 +67,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Self, TypeVar
+from typing import Any, Self
 
 import pyrig
 from pyrig.dev import configs
@@ -82,14 +82,14 @@ from pyrig.src.string import split_on_uppercase
 logger = logging.getLogger(__name__)
 
 
-ConfigType = TypeVar("ConfigType", dict[str, Any], list[Any])
-
-
-class ConfigFile(ABC):
+class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
     """Abstract base class for declarative configuration file management.
 
     Declarative, idempotent system for managing config files. Preserves user
     customizations while ensuring required configuration is present.
+
+    Type Parameters:
+        ConfigT: The configuration type (dict[str, Any] or list[Any]).
 
     Subclass Requirements:
         Must implement:
@@ -121,7 +121,7 @@ class ConfigFile(ABC):
 
     @classmethod
     @abstractmethod
-    def _load(cls) -> ConfigType:
+    def _load(cls) -> ConfigT:
         """Load and parse configuration file.
 
         Returns:
@@ -130,7 +130,7 @@ class ConfigFile(ABC):
 
     @classmethod
     @abstractmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: ConfigT) -> None:
         """Write configuration to file.
 
         Args:
@@ -148,7 +148,7 @@ class ConfigFile(ABC):
 
     @classmethod
     @abstractmethod
-    def get_configs(cls) -> ConfigType:
+    def get_configs(cls) -> ConfigT:
         """Return expected configuration structure.
 
         Returns:
@@ -193,7 +193,7 @@ class ConfigFile(ABC):
 
     @classmethod
     @cache
-    def load(cls) -> ConfigType:
+    def load(cls) -> ConfigT:
         """Load and parse configuration file.
 
         Cached to avoid multiple reads of same file.
@@ -204,7 +204,7 @@ class ConfigFile(ABC):
         return cls._load()
 
     @classmethod
-    def dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def dump(cls, config: ConfigT) -> None:
         """Write configuration to file.
 
         Clears the cache before writing to ensure the dump operation reads
@@ -263,7 +263,7 @@ class ConfigFile(ABC):
         return "_".join(split_on_uppercase(name)).lower()
 
     @classmethod
-    def add_missing_configs(cls) -> ConfigType:
+    def add_missing_configs(cls) -> ConfigT:
         """Merge expected config into current, preserving user customizations.
 
         Returns:
@@ -344,8 +344,8 @@ class ConfigFile(ABC):
 
     @staticmethod
     def is_correct_recursively(
-        expected_config: ConfigType,
-        actual_config: ConfigType,
+        expected_config: ConfigT,
+        actual_config: ConfigT,
     ) -> bool:
         """Recursively check if expected config is subset of actual.
 
@@ -437,7 +437,9 @@ class ConfigFile(ABC):
             init_all_subclasses: Initialize all discovered subclasses
             init_priority_subclasses: Initialize only priority subclasses
         """
-        subclasses_by_priority: dict[float, list[type[ConfigFile]]] = defaultdict(list)
+        subclasses_by_priority: dict[float, list[type[ConfigFile[Any]]]] = defaultdict(
+            list
+        )
         for cf in subclasses:
             subclasses_by_priority[cf.get_priority()].append(cf)
 

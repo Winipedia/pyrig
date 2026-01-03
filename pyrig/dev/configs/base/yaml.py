@@ -25,7 +25,7 @@ import yaml
 from pyrig.dev.configs.base.base import ConfigFile
 
 
-class YamlConfigFile(ConfigFile):
+class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
     """Base class for YAML configuration files.
 
     Uses PyYAML's safe methods to prevent code execution. Preserves key order

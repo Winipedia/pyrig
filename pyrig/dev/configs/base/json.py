@@ -24,11 +24,10 @@ from typing import Any
 from pyrig.dev.configs.base.base import ConfigFile
 
 
-class JsonConfigFile(ConfigFile):
+class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
     """Base class for JSON configuration files.
 
-    Uses Python's json module with 4-space indentation. Supports both dict and list
-    as top-level structures.
+    Uses Python's json module with 4-space indentation.
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the JSON file
@@ -46,11 +45,11 @@ class JsonConfigFile(ConfigFile):
     """
 
     @classmethod
-    def _load(cls) -> dict[str, Any]:
+    def _load(cls) -> dict[str, Any] | list[Any]:
         """Load and parse the JSON file.
 
         Returns:
-            Parsed JSON content as dict or list.
+            Parsed JSON content as dict.
         """
         path = cls.get_path()
         data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
@@ -61,7 +60,7 @@ class JsonConfigFile(ConfigFile):
         """Write configuration to JSON file with 4-space indentation.
 
         Args:
-            config: Configuration dict or list to write.
+            config: Configuration dict to write.
         """
         with cls.get_path().open("w") as f:
             json.dump(config, f, indent=4)

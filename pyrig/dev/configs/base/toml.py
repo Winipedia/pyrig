@@ -22,10 +22,10 @@ from typing import Any
 
 import tomlkit
 
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.dict_cf import DictConfigFile
 
 
-class TomlConfigFile(ConfigFile):
+class TomlConfigFile(DictConfigFile):
     """Base class for TOML configuration files.
 
     Uses tomlkit for parsing/writing with formatting preservation. Arrays formatted
@@ -56,18 +56,12 @@ class TomlConfigFile(ConfigFile):
         return tomlkit.parse(cls.get_path().read_text(encoding="utf-8"))
 
     @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any]) -> None:
         """Write configuration to TOML with pretty formatting.
 
         Args:
             config: Configuration dict to write.
-
-        Raises:
-            TypeError: If config is not a dict (TOML requires top-level table).
         """
-        if not isinstance(config, dict):
-            msg = f"Cannot dump {config} to toml file."
-            raise TypeError(msg)
         cls.pretty_dump(config)
 
     @classmethod
