@@ -26,12 +26,11 @@ Example:
 """
 
 from abc import abstractmethod
-from typing import Any
 
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.dict_cf import DictConfigFile
 
 
-class TextConfigFile(ConfigFile):
+class TextConfigFile(DictConfigFile):
     r"""Abstract base class for text files with required content validation.
 
     Validates via substring matching, preserves user additions when updating.
@@ -70,18 +69,12 @@ class TextConfigFile(ConfigFile):
         return {cls.CONTENT_KEY: cls.get_path().read_text(encoding="utf-8")}
 
     @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, str]) -> None:
         r"""Write content to file, preserving user additions by appending.
 
         Args:
             config: Dict with content under CONTENT_KEY.
-
-        Raises:
-            TypeError: If config is not a dict.
         """
-        if not isinstance(config, dict):
-            msg = f"Cannot dump {config} to text file."
-            raise TypeError(msg)
         if not cls.override_content() and cls.get_file_content().strip():
             config[cls.CONTENT_KEY] = (
                 config[cls.CONTENT_KEY] + "\n" + cls.get_file_content()
@@ -102,7 +95,7 @@ class TextConfigFile(ConfigFile):
         return False
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def get_configs(cls) -> dict[str, str]:
         r"""Return dict with required content under CONTENT_KEY.
 
         Returns:

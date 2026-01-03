@@ -28,6 +28,15 @@ def my_test_dot_python_version_config_file(
 class TestDotPythonVersionConfigFile:
     """Test class."""
 
+    def test_override_content(self) -> None:
+        """Test method."""
+        assert DotPythonVersionConfigFile.override_content(), "Expected True"
+
+    def test_get_content_str(self) -> None:
+        """Test method."""
+        content_str = DotPythonVersionConfigFile.get_content_str()
+        assert len(content_str) > 0, "Expected non-empty string"
+
     def test_get_filename(
         self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
     ) -> None:
@@ -61,10 +70,10 @@ class TestDotPythonVersionConfigFile:
         """Test method for load."""
         my_test_dot_python_version_config_file()
         loaded = my_test_dot_python_version_config_file.load()
-        assert DotPythonVersionConfigFile.VERSION_KEY in loaded, (
+        assert DotPythonVersionConfigFile.CONTENT_KEY in loaded, (
             "Expected 'version' key in loaded config"
         )
-        assert len(loaded[DotPythonVersionConfigFile.VERSION_KEY]) > 0, (
+        assert len(loaded[DotPythonVersionConfigFile.CONTENT_KEY]) > 0, (
             "Expected version to be non-empty"
         )
 
@@ -73,27 +82,9 @@ class TestDotPythonVersionConfigFile:
     ) -> None:
         """Test method for dump."""
         my_test_dot_python_version_config_file()
-        config = {DotPythonVersionConfigFile.VERSION_KEY: "3.11"}
+        config = {DotPythonVersionConfigFile.CONTENT_KEY: "3.11"}
         my_test_dot_python_version_config_file.dump(config)
         loaded = my_test_dot_python_version_config_file.load()
-        assert loaded[DotPythonVersionConfigFile.VERSION_KEY] == "3.11", (
+        assert loaded[DotPythonVersionConfigFile.CONTENT_KEY] == "3.11", (
             "Expected version to be 3.11"
-        )
-
-    def test_dump_raises_type_error(
-        self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
-    ) -> None:
-        """Test method for dump with invalid type."""
-        my_test_dot_python_version_config_file()
-        with pytest.raises(TypeError, match=r"Cannot dump .* to \.python-version file"):
-            my_test_dot_python_version_config_file.dump(["invalid"])
-
-    def test_get_configs(
-        self, my_test_dot_python_version_config_file: type[DotPythonVersionConfigFile]
-    ) -> None:
-        """Test method for get_configs."""
-        my_test_dot_python_version_config_file()
-        configs = my_test_dot_python_version_config_file.get_configs()
-        assert DotPythonVersionConfigFile.VERSION_KEY in configs, (
-            "Expected 'version' key in configs"
         )

@@ -84,9 +84,6 @@ class TestGitIgnoreConfigFile:
         my_test_gitignore_config_file.dump(test_config)
         loaded = my_test_gitignore_config_file.load()
         assert loaded == test_config, f"Expected {test_config}, got {loaded}"
-        # Test error handling for non-list
-        with pytest.raises(TypeError, match="Cannot dump"):
-            my_test_gitignore_config_file.dump({"key": "value"})
 
     def test_get_configs(
         self,

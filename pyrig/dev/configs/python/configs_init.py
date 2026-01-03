@@ -16,7 +16,7 @@ from pyrig.dev.configs.base.init import InitConfigFile
 
 
 class ConfigsInitConfigFile(InitConfigFile):
-    '''Manages {package_name}/dev/configs/__init__.py.
+    """Manages {package_name}/dev/configs/__init__.py.
 
     Generates __init__.py with pyrig.dev.configs docstring for custom ConfigFile
     subclasses. Has priority 10 to be created before other config files.
@@ -26,19 +26,10 @@ class ConfigsInitConfigFile(InitConfigFile):
 
             ConfigsInitConfigFile()
 
-        Add custom config files::
-
-            # In {package_name}/dev/configs/my_config.py
-            from pyrig.dev.configs.base.base import ConfigFile
-
-            class MyConfigFile(ConfigFile):
-                """Custom configuration file manager."""
-                pass
-
     See Also:
         pyrig.dev.configs
         pyrig.dev.configs.base.base.ConfigFile
-    '''
+    """
 
     @classmethod
     def get_priority(cls) -> float:

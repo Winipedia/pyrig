@@ -10,19 +10,18 @@ See Also:
 """
 
 from pathlib import Path
-from typing import Any
 
 import requests
 
 import pyrig
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.list_cf import ListConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.utils.git import load_gitignore
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 
 
-class GitIgnoreConfigFile(ConfigFile):
+class GitIgnoreConfigFile(ListConfigFile):
     """Gitignore configuration manager.
 
     Combines GitHub's standard Python patterns with pyrig-specific patterns
@@ -86,7 +85,7 @@ class GitIgnoreConfigFile(ConfigFile):
         return load_gitignore(path=cls.get_path())
 
     @classmethod
-    def _dump(cls, config: list[str] | dict[str, Any]) -> None:
+    def _dump(cls, config: list[str]) -> None:
         """Write patterns to the .gitignore file.
 
         Args:
@@ -98,9 +97,6 @@ class GitIgnoreConfigFile(ConfigFile):
         Note:
             Overwrites entire file. Use get_configs() to merge with existing.
         """
-        if not isinstance(config, list):
-            msg = f"Cannot dump {config} to .gitignore file."
-            raise TypeError(msg)
         cls.get_path().write_text("\n".join(config), encoding="utf-8")
 
     @classmethod

@@ -9,13 +9,12 @@ See Also:
 """
 
 from pathlib import Path
-from typing import Any
 
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.text import TextConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 
 
-class DotPythonVersionConfigFile(ConfigFile):
+class DotPythonVersionConfigFile(TextConfigFile):
     """Manages .python-version files for pyenv/asdf.
 
     Creates .python-version with minimum supported Python version from pyproject.toml.
@@ -26,8 +25,6 @@ class DotPythonVersionConfigFile(ConfigFile):
     See Also:
         pyrig.dev.configs.pyproject.PyprojectConfigFile.get_first_supported_python_version
     """
-
-    VERSION_KEY = "version"
 
     @classmethod
     def get_filename(cls) -> str:
@@ -45,23 +42,11 @@ class DotPythonVersionConfigFile(ConfigFile):
         return Path()
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def get_content_str(cls) -> str:
         """Get minimum supported Python version from pyproject.toml."""
-        return {
-            cls.VERSION_KEY: str(
-                PyprojectConfigFile.get_first_supported_python_version()
-            )
-        }
+        return str(PyprojectConfigFile.get_first_supported_python_version())
 
     @classmethod
-    def _load(cls) -> dict[str, Any]:
-        """Load Python version from .python-version file."""
-        return {cls.VERSION_KEY: cls.get_path().read_text(encoding="utf-8")}
-
-    @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
-        """Write Python version to .python-version file."""
-        if not isinstance(config, dict):
-            msg = f"Cannot dump {config} to .python-version file."
-            raise TypeError(msg)
-        cls.get_path().write_text(config[cls.VERSION_KEY], encoding="utf-8")
+    def override_content(cls) -> bool:
+        """Overriding content bc only one .python-version needed."""
+        return True

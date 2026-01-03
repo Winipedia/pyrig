@@ -18,10 +18,10 @@ See Also:
 
 from typing import Any
 
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.dict_cf import DictConfigFile
 
 
-class TypedConfigFile(ConfigFile):
+class TypedConfigFile(DictConfigFile):
     """Base class for py.typed marker files (PEP 561).
 
     Creates empty py.typed files. Enforces PEP 561 requirement that files be empty.
@@ -39,7 +39,7 @@ class TypedConfigFile(ConfigFile):
         return "typed"
 
     @classmethod
-    def _load(cls) -> dict[str, Any] | list[Any]:
+    def _load(cls) -> dict[str, Any]:
         """Return empty dict (PEP 561 requires empty files).
 
         Returns:
@@ -48,7 +48,7 @@ class TypedConfigFile(ConfigFile):
         return {}
 
     @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any]) -> None:
         """Validate config is empty (PEP 561 requirement).
 
         Args:
@@ -62,7 +62,7 @@ class TypedConfigFile(ConfigFile):
             raise ValueError(msg)
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any] | list[Any]:
+    def get_configs(cls) -> dict[str, Any]:
         """Return empty dict (PEP 561 requires empty files).
 
         Returns:

@@ -41,7 +41,7 @@ class BranchProtectionConfigFile(JsonConfigFile):
         return get_project_name_from_pkg_name(name)  # replaces _ with -
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any] | list[Any]:
+    def get_configs(cls) -> dict[str, Any]:
         """Get GitHub ruleset config.
 
         Returns:

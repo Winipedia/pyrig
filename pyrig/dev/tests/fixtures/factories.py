@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from pyrig.dev.configs.base.base import ConfigFile, ConfigType
+from pyrig.dev.configs.base.base import ConfigFile
 
 
 @pytest.fixture
@@ -71,7 +71,7 @@ def config_file_factory[T: ConfigFile](
                     super()._dump(config)
 
             @classmethod
-            def _load(cls) -> ConfigType:
+            def _load(cls) -> dict[str, Any] | list[Any]:
                 """Load the config file."""
                 with chdir(tmp_path):
                     return super()._load()

@@ -12,10 +12,10 @@ from typing import Any
 
 from dotenv import dotenv_values
 
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.dev.configs.base.dict_cf import DictConfigFile
 
 
-class DotEnvConfigFile(ConfigFile):
+class DotEnvConfigFile(DictConfigFile):
     """Manages .env files (read-only from pyrig's perspective).
 
     Creates empty .env if missing. Users edit manually. Included in .gitignore.
@@ -31,7 +31,7 @@ class DotEnvConfigFile(ConfigFile):
         return dotenv_values(cls.get_path())
 
     @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(cls, config: dict[str, Any]) -> None:
         """Prevent writing to .env (raises ValueError if config is non-empty)."""
         if config:
             msg = f"Cannot dump {config} to .env file."
