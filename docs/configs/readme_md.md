@@ -19,19 +19,21 @@ Creates a README file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[TextConfigFile]
-    B --> C[MarkdownConfigFile]
-    C --> D[BadgesMarkdownConfigFile]
-    D --> E[ReadmeConfigFile]
+    A[ConfigFile] --> B[DictConfigFile]
+    B --> C[TextConfigFile]
+    C --> D[MarkdownConfigFile]
+    D --> E[BadgesMarkdownConfigFile]
+    E --> F[ReadmeConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `BadgesMarkdownConfigFile`
+**Inherits from**: `BadgesMarkdownConfigFile` (via `DictConfigFile`)
 
 **What this means**:
 
