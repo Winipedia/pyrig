@@ -25,5 +25,5 @@ class TestPyrigger:
         def my_command() -> None:
             """Sample command."""
 
-        result = Pyrigger.L.get_cmd_args(my_command, "--help")
+        result = Pyrigger.L.get_cmd_args("--help", cmd=my_command)
         assert result == ("pyrig", "my-command", "--help")

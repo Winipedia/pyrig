@@ -1044,13 +1044,13 @@ class Workflow(YamlConfigFile):
             step_func=cls.step_setup_git,
             run=str(
                 VersionController.L.get_config_global_user_email_args(
-                    '"github-actions[bot]@users.noreply.github.com"',
+                    email='"github-actions[bot]@users.noreply.github.com"',
                 ),
             )
             + " && "
             + str(
                 VersionController.L.get_config_global_user_name_args(
-                    '"github-actions[bot]"'
+                    name='"github-actions[bot]"'
                 )
             ),
             step=step,
@@ -1280,7 +1280,9 @@ class Workflow(YamlConfigFile):
         return cls.get_step(
             step_func=cls.step_protect_repository,
             run=str(
-                PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(protect_repo))
+                PackageManager.L.get_run_args(
+                    *Pyrigger.L.get_cmd_args(cmd=protect_repo)
+                )
             ),
             env={"REPO_TOKEN": cls.insert_repo_token()},
             step=step,
@@ -1460,7 +1462,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_build_artifacts,
-            run=str(PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(build))),
+            run=str(PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(cmd=build))),
             step=step,
         )
 
