@@ -87,6 +87,43 @@ The `load()` method uses `@functools.cache` to avoid redundant file reads:
 This provides significant performance improvements when config files
 are accessed multiple times, while ensuring data consistency after writes.
 
+### Caching Pitfall: Never Mutate Loaded Config
+
+Due to caching, mutating the object returned by `load()` creates subtle bugs:
+
+```python
+# ❌ WRONG - mutates cached object
+loaded = MyConfigFile.load()
+loaded["key"] = "new_value"  # This corrupts the cache!
+
+# ❌ WRONG - in-place list modification
+deps = MyConfigFile.load()["dependencies"]
+deps.append("new-dep")  # Mutates cached list
+```
+
+```python
+# ✓ CORRECT - create a new structure
+loaded = MyConfigFile.load()
+new_config = {**loaded, "key": "new_value"}
+
+# ✓ CORRECT - copy before modifying
+import copy
+loaded = copy.deepcopy(MyConfigFile.load())
+loaded["key"] = "new_value"
+
+# ✓ CORRECT - create new list
+deps = [*MyConfigFile.load()["dependencies"], "new-dep"]
+```
+
+This is especially important for ConfigFiles that call `load()` inside
+`get_configs()`. For example, `PyprojectConfigFile.get_configs()` reads
+the existing `pyproject.toml` to preserve user-defined values. If
+`get_configs()` mutates the loaded data, the cache becomes corrupted and
+subsequent calls return incorrect values.
+
+**Rule**: Always treat `load()` results as read-only. Return new structures
+instead of modifying in place.
+
 ## Initialization Process
 
 When a ConfigFile is instantiated, it follows this process:
