@@ -24,8 +24,9 @@ graph TD
     A --> G[BuilderConfigFile]
 
     H --> C[TomlConfigFile]
-    H --> D[TextConfigFile]
     H --> E[TypedConfigFile]
+
+    I --> D[StringConfigFile]
 
     B --> B1[YmlConfigFile]
     B --> B2[Workflow]
@@ -455,25 +456,25 @@ class MyConfigFile(TomlConfigFile):
 
 Creates `my_config.toml` with pretty formatting.
 
-### TextConfigFile
+### StringConfigFile
 
-For plain text files with required content. "Text" here means files that cannot
-be represented as structured data (dicts/lists). This includes `.py`, `.txt`,
-`.md` files, etc. Files like `.yaml`, `.json`, `.toml` that can be represented
-as dicts/lists should use their specific subclasses instead.
+For plain text files with required content. "String" here means files that
+cannot be represented as structured data (dicts/lists). This includes `.py`,
+`.txt`, `.md` files, etc. Files like `.yaml`, `.json`, `.toml` that can be
+represented as dicts/lists should use their specific subclasses instead.
 
 ```python
 from pathlib import Path
-from pyrig.dev.configs.base.text import TextConfigFile
+from pyrig.dev.configs.base.string import StringConfigFile
 
-class MyConfigFile(TextConfigFile):
+class MyConfigFile(StringConfigFile):
     @classmethod
     def get_parent_path(cls) -> Path:
         return Path(".")
 
     @classmethod
-    def get_content_str(cls) -> str:
-        return "# Required header\n"
+    def get_lines(cls) -> list[str]:
+        return ["# Required header"]
 
     @classmethod
     def get_file_extension(cls) -> str:
@@ -498,8 +499,8 @@ class MyConfigFile(PythonConfigFile):
         return Path("myapp/src")
 
     @classmethod
-    def get_content_str(cls) -> str:
-        return '"""Module docstring."""\n\ndef main():\n    pass\n'
+    def get_lines(cls) -> list[str]:
+        return ['"""Module docstring."""', '', 'def main():', '    pass']
 ```
 
 Creates `myapp/src/my_config.py`.

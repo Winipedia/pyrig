@@ -17,8 +17,8 @@ Creates a production-ready Containerfile in the project root that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DictConfigFile]
-    B --> C[TextConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
     C --> D[ContainerfileConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -27,7 +27,7 @@ graph TD
     style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `TextConfigFile` (via `DictConfigFile`)
+**Inherits from**: `StringConfigFile` (via `ListConfigFile`)
 
 **What this means**:
 

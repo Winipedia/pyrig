@@ -18,8 +18,8 @@ Creates a .experiment.py file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DictConfigFile]
-    B --> C[TextConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
     C --> D[PythonConfigFile]
     D --> E[DotExperimentConfigFile]
 
@@ -30,7 +30,7 @@ graph TD
     style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `PythonConfigFile` (via `DictConfigFile`)
+**Inherits from**: `PythonConfigFile` (via `ListConfigFile`)
 
 **What this means**:
 
@@ -170,7 +170,7 @@ print(response.json())
 
 ## Validation Logic
 
-The validation is inherited from `TextConfigFile` and checks if the required
+The validation is inherited from `StringConfigFile` and checks if the required
 docstring exists somewhere in the file.
 
 **Required element**: The docstring must exist somewhere in the file.

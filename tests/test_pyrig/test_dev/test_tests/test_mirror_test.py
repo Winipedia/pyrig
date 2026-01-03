@@ -49,6 +49,19 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
+    def test_add_missing_configs(
+        self,
+        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            my_test_mirror_test_config_file.create_file()
+            assert (
+                my_test_mirror_test_config_file.add_missing_configs()
+                == my_test_mirror_test_config_file.get_configs()
+            )
+
     def test_get_definition_pkg(self) -> None:
         """Test method."""
         assert MirrorTestConfigFile.get_definition_pkg() is tests
@@ -83,7 +96,7 @@ class TestMirrorTestConfigFile:
             parent_path = my_test_mirror_test_config_file.get_parent_path()
             assert parent_path == Path(TESTS_PACKAGE_NAME)
 
-    def test_get_content_str(
+    def test_get_lines(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
@@ -92,7 +105,8 @@ class TestMirrorTestConfigFile:
         with chdir(tmp_path):
             # create the file first to not trigger dump in get_content_str
             my_test_mirror_test_config_file.create_file()
-            content = my_test_mirror_test_config_file.get_content_str()
+            lines = my_test_mirror_test_config_file.get_lines()
+            content = "\n".join(lines)
             assert "def test_mirror_method" in content
             assert "def test_mirror_function" in content
             assert "class TestMirrorClass" in content

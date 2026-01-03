@@ -32,11 +32,12 @@ def my_test_badges_markdown_config_file(
 class TestBadgesMarkdownConfigFile:
     """Test class."""
 
-    def test_get_content_str(
+    def test_get_lines(
         self, my_test_badges_markdown_config_file: type[BadgesMarkdownConfigFile]
     ) -> None:
         """Test method."""
-        content_str = my_test_badges_markdown_config_file.get_content_str()
+        lines = my_test_badges_markdown_config_file.get_lines()
+        content_str = "\n".join(lines)
         assert isinstance(content_str, str)
 
     def test_is_correct(

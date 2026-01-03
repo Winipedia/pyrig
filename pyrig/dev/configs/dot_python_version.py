@@ -10,17 +10,14 @@ See Also:
 
 from pathlib import Path
 
-from pyrig.dev.configs.base.text import TextConfigFile
+from pyrig.dev.configs.base.string import StringConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 
 
-class DotPythonVersionConfigFile(TextConfigFile):
+class DotPythonVersionConfigFile(StringConfigFile):
     """Manages .python-version files for pyenv/asdf.
 
     Creates .python-version with minimum supported Python version from pyproject.toml.
-
-    Attributes:
-        VERSION_KEY: Dictionary key for version string ("version").
 
     See Also:
         pyrig.dev.configs.pyproject.PyprojectConfigFile.get_first_supported_python_version
@@ -42,9 +39,9 @@ class DotPythonVersionConfigFile(TextConfigFile):
         return Path()
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Get minimum supported Python version from pyproject.toml."""
-        return str(PyprojectConfigFile.get_first_supported_python_version())
+        return [str(PyprojectConfigFile.get_first_supported_python_version())]
 
     @classmethod
     def override_content(cls) -> bool:

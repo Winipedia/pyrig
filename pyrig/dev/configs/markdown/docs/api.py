@@ -48,17 +48,14 @@ class ApiConfigFile(MarkdownConfigFile):
         return Path(DOCS_DIR_NAME)
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Get the api.md file content.
 
         Returns:
-            str: Markdown with "# API Reference" and `::: project_name` directive.
+            List of lines with "# API Reference" and `::: project_name` directive.
 
         Note:
             Reads project name from pyproject.toml.
         """
         project_name = PyprojectConfigFile.get_project_name()
-        return f"""# API Reference
-
-::: {project_name}
-"""
+        return ["# API Reference", "", f"::: {project_name}", ""]

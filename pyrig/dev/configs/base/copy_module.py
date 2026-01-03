@@ -71,14 +71,14 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         return new_module_path.parent
 
     @classmethod
-    def get_content_str(cls) -> str:
-        """Return source module's content as string.
+    def get_lines(cls) -> list[str]:
+        """Return source module's content as list of lines.
 
         Returns:
-            Full source code of the module.
+            Full source code of the module as list of lines.
         """
         src_module = cls.get_src_module()
-        return get_module_content_as_str(src_module)
+        return [*get_module_content_as_str(src_module).splitlines(), ""]
 
     @classmethod
     def get_filename(cls) -> str:

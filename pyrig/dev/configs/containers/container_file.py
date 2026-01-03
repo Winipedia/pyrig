@@ -11,13 +11,13 @@ See Also:
 import json
 from pathlib import Path
 
-from pyrig.dev.configs.base.text import TextConfigFile
+from pyrig.dev.configs.base.string import StringConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.management.package_manager import PackageManager
 from pyrig.main import main
 
 
-class ContainerfileConfigFile(TextConfigFile):
+class ContainerfileConfigFile(StringConfigFile):
     """Containerfile configuration manager.
 
     Generates production-ready Containerfile with Python slim base, uv package
@@ -36,7 +36,7 @@ class ContainerfileConfigFile(TextConfigFile):
 
     See Also:
         pyrig.dev.configs.pyproject.PyprojectConfigFile
-        pyrig.src.management.package_manager.PackageManager
+        pyrig.dev.management.package_manager.PackageManager
     """
 
     @classmethod
@@ -76,30 +76,20 @@ class ContainerfileConfigFile(TextConfigFile):
         return ""
 
     @classmethod
-    def get_content_str(cls) -> str:
-        """Get the complete Containerfile content.
+    def get_lines(cls) -> list[str]:
+        """Get Containerfile build instructions.
+
+        Generates optimized layer sequence: base image, workdir, uv install,
+        dependency copy (for caching), user creation, source copy, dependency
+        install, cleanup, entrypoint/command.
 
         Returns:
-            str: Complete Containerfile with all build instructions.
+            list[str]: Containerfile instructions (FROM, WORKDIR, COPY, RUN, etc.).
 
         Note:
             Reads from pyproject.toml and may make API calls for Python version.
         """
-        return "\n\n".join(cls.get_layers())
-
-    @classmethod
-    def is_correct(cls) -> bool:
-        """Check if the Containerfile is valid and complete.
-
-        Validates all expected layers are present.
-
-        Returns:
-            bool: True if all layers present, False otherwise.
-        """
-        all_layers_in_file = all(
-            layer in cls.get_file_content() for layer in cls.get_layers()
-        )
-        return super().is_correct() or all_layers_in_file
+        return cls.get_layers()
 
     @classmethod
     def get_layers(cls) -> list[str]:

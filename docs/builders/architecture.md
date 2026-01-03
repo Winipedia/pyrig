@@ -71,8 +71,8 @@ applies to ConfigFiles.
 ## BuilderConfigFile Base Class
 
 The `BuilderConfigFile` abstract base class provides the framework for creating
-custom builders. It inherits from `ConfigFile` but repurposes the interface for
-artifact generation rather than configuration file management.
+custom builders. It inherits from `ListConfigFile` but repurposes the interface
+for artifact generation rather than configuration file management.
 
 See [ConfigFile Architecture](../configs/architecture.md) for details on the
 parent class.

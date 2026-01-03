@@ -26,11 +26,12 @@ class TestConftestConfigFile:
         """Test method."""
         assert ConftestConfigFile().is_correct()
 
-    def test_get_content_str(
+    def test_get_lines(
         self, my_test_conftest_config_file: type[ConftestConfigFile]
     ) -> None:
         """Test method for get_content_str."""
-        content_str = my_test_conftest_config_file.get_content_str()
+        lines = my_test_conftest_config_file.get_lines()
+        content_str = "\n".join(lines)
         assert "pytest_plugins" in content_str, (
             "Expected 'pytest_plugins' in conftest content"
         )

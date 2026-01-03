@@ -1,9 +1,7 @@
 """module."""
 
 from collections.abc import Callable
-from contextlib import chdir
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -15,7 +13,6 @@ def my_test_python_package_config_file(
     config_file_factory: Callable[
         [type[PythonPackageConfigFile]], type[PythonPackageConfigFile]
     ],
-    tmp_path: Path,
 ) -> type[PythonPackageConfigFile]:
     """Create a test python package config file class with tmp_path."""
 
@@ -28,15 +25,9 @@ def my_test_python_package_config_file(
             return Path()
 
         @classmethod
-        def get_content_str(cls) -> str:
+        def get_lines(cls) -> list[str]:
             """Get the content string."""
-            return '"""Test content."""\n'
-
-        @classmethod
-        def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
-            """Dump the config file."""
-            with chdir(tmp_path):
-                super()._dump(config)
+            return ['"""Test content."""', ""]
 
     return MyTestPythonPackageConfigFile
 

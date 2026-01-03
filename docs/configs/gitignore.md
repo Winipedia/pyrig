@@ -17,14 +17,16 @@ Creates a comprehensive `.gitignore` file that:
 ```mermaid
 graph TD
     A[ConfigFile] --> B[ListConfigFile]
-    B --> C[GitIgnoreConfigFile]
+    B --> C[StringConfigFile]
+    C --> D[GitIgnoreConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
-    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `ListConfigFile`
+**Inherits from**: `StringConfigFile` (via `ListConfigFile`)
 
 **What this means**:
 
