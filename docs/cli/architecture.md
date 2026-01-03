@@ -66,10 +66,12 @@ graph LR
 The `add_subcommands()` function discovers commands for the current package:
 
 1. **Extract package name** from `sys.argv[0]`
-2. **Replace module names** to find the package's equivalent modules
-3. **Import the subcommands module** for the package
-4. **Extract all functions** from the module
-5. **Register each function** as a Typer command
+2. **Register main entry point**
+Imports and registers `main()` from `<package>.main`
+3. **Replace module names** to find the package's `subcommands` module
+4. **Import the subcommands module** for the package
+5. **Extract all functions** from the module
+6. **Register each function** as a Typer command
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 
@@ -97,6 +99,7 @@ sequenceDiagram
 Example: When running `uv run myapp deploy`, the system:
 
 - Detects package name: `myapp`
+- Imports and registers `main()` from `myapp/main.py`
 - Replaces `pyrig.dev.cli.subcommands` → `myapp.dev.cli.subcommands`
 - Imports `myapp/dev/cli/subcommands.py`
 - Registers all functions as commands (e.g., `deploy`, `status`, etc.)

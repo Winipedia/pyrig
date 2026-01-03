@@ -5,11 +5,11 @@ UV is pyrig's primary package manager (Rust-based, replaces pip/virtualenv).
 
 Example:
     >>> from pyrig.src.management.package_manager import PackageManager
-    >>> PackageManager.get_install_dependencies_args().run()
-    >>> PackageManager.get_add_dependencies_args("requests").run()
+    >>> PackageManager.L.get_install_dependencies_args().run()
+    >>> PackageManager.L.get_add_dependencies_args("requests").run()
 """
 
-from pyrig.src.management.base.base import Tool
+from pyrig.dev.management.base.base import Tool
 from pyrig.src.processes import Args
 
 
@@ -26,8 +26,8 @@ class PackageManager(Tool):
         - Execution: run commands
 
     Example:
-        >>> PackageManager.get_install_dependencies_args().run()
-        >>> PackageManager.get_add_dev_dependencies_args("pytest").run()
+        >>> PackageManager.L.get_install_dependencies_args().run()
+        >>> PackageManager.L.get_add_dev_dependencies_args("pytest").run()
     """
 
     @classmethod
@@ -148,7 +148,7 @@ class PackageManager(Tool):
         return cls.get_args("build", *args)
 
     @classmethod
-    def get_publish_args(cls, token: str, *args: str) -> Args:
+    def get_publish_args(cls, *args: str, token: str) -> Args:
         """Construct uv publish arguments with token.
 
         Args:

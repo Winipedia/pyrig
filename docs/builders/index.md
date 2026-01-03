@@ -29,7 +29,7 @@ Use the built-in PyInstaller builder for creating standalone executables:
 
 The builder system provides:
 
-- **Automatic discovery** of all BuilderConfigFile subclasses across packages
+- **Automatic discovery** of all `BuilderConfigFile` subclasses across packages
 - **Multi-package support** through dependency graph traversal
 - **Platform-specific artifacts** with automatic naming
 - **Temporary build isolation** for clean builds
@@ -74,7 +74,7 @@ Build all artifacts:
 uv run pyrig build
 ```
 
-This discovers and executes all non-abstract BuilderConfigFile subclasses in
+This discovers and executes all non-abstract `BuilderConfigFile` subclasses in
 your project and its dependencies that also depend on pyrig.
 
 ## Creating a Custom Builder

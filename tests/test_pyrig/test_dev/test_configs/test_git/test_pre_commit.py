@@ -8,6 +8,7 @@ import pytest
 
 from pyrig.dev.configs.base.yaml import YamlConfigFile
 from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
+from pyrig.src.processes import Args
 
 
 @pytest.fixture
@@ -29,7 +30,7 @@ class TestPreCommitConfigConfigFile:
 
     def test_get_hook(self) -> None:
         """Test method for get_hook."""
-        hook = PreCommitConfigConfigFile.get_hook("test", ["test"])
+        hook = PreCommitConfigConfigFile.get_hook("test", Args(("test",)))
         assert hook["id"] == "test", f"Expected id to be 'test', got {hook['id']}"
 
     def test_get_filename(

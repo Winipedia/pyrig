@@ -32,14 +32,14 @@ from typing import Any
 
 import pyrig
 from pyrig.dev.cli.subcommands import mkroot, mktests
-from pyrig.src.consts import STANDARD_DEV_DEPS
-from pyrig.src.management.package_manager import PackageManager
-from pyrig.src.management.pre_committer import (
+from pyrig.dev.management.package_manager import PackageManager
+from pyrig.dev.management.pre_committer import (
     PreCommitter,
 )
-from pyrig.src.management.project_tester import ProjectTester
-from pyrig.src.management.pyrigger import Pyrigger
-from pyrig.src.management.version_controller import VersionController
+from pyrig.dev.management.project_tester import ProjectTester
+from pyrig.dev.management.pyrigger import Pyrigger
+from pyrig.dev.management.version_controller import VersionController
+from pyrig.src.consts import STANDARD_DEV_DEPS
 from pyrig.src.string import make_name_from_obj
 
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ def adding_dev_dependencies() -> None:
     Adds pyrig's standard dev dependencies to pyproject.toml via
     `uv add --dev`.
     """
-    args = PackageManager.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
+    args = PackageManager.L.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
     args.run()
 
 
@@ -62,7 +62,7 @@ def creating_priority_config_files() -> None:
     that other initialization steps depend on via `uv run pyrig mkroot --priority`.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
-    args = Pyrigger.get_cmd_args(mkroot, "--priority")
+    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mkroot, "--priority"))
     args.run()
 
 
@@ -73,7 +73,7 @@ def syncing_venv() -> None:
     during initialization: after adding dev dependencies and after creating
     priority config files.
     """
-    args = PackageManager.get_install_dependencies_args()
+    args = PackageManager.L.get_install_dependencies_args()
     args.run()
 
 
@@ -83,7 +83,7 @@ def creating_project_root() -> None:
     Generates all remaining configuration files and directory structure via
     `uv run pyrig mkroot`.
     """
-    args = Pyrigger.get_cmd_args(mkroot)
+    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mkroot))
     args.run()
 
 
@@ -93,7 +93,7 @@ def creating_test_files() -> None:
     Creates test files mirroring the source package structure with
     NotImplementedError placeholders via `uv run pyrig mktests`.
     """
-    args = Pyrigger.get_cmd_args(mktests)
+    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(mktests))
     args.run()
 
 
@@ -104,11 +104,11 @@ def running_pre_commit_hooks() -> None:
     to ensure the codebase follows style guidelines.
     """
     # install pre-commit hooks
-    PreCommitter.get_install_args().run()
+    PackageManager.L.get_run_args(*PreCommitter.L.get_install_args()).run()
     # add all files to git
-    VersionController.get_add_all_args().run()
+    VersionController.L.get_add_all_args().run()
     # run pre-commit hooks
-    PreCommitter.get_run_all_files_args().run()
+    PackageManager.L.get_run_args(*PreCommitter.L.get_run_all_files_args()).run()
 
 
 def running_tests() -> None:
@@ -117,7 +117,7 @@ def running_tests() -> None:
     Validates that all generated code is syntactically correct and the project
     is properly configured via `pytest`.
     """
-    args = ProjectTester.get_run_tests_args()
+    args = PackageManager.L.get_run_args(*ProjectTester.L.get_args())
     args.run()
 
 
@@ -128,8 +128,8 @@ def committing_initial_changes() -> None:
     with the message "pyrig: Initial commit".
     """
     # changes were added by the run pre-commit hooks step
-    args = VersionController.get_commit_no_verify_args(
-        f"{pyrig.__name__}: Initial commit"
+    args = VersionController.L.get_commit_no_verify_args(
+        msg=f"{pyrig.__name__}: Initial commit"
     )
     args.run()
 

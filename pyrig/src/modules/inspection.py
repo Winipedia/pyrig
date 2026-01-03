@@ -23,7 +23,7 @@ def get_obj_members(
     Returns:
         List of (name, value) tuples.
     """
-    members = [(member, value) for member, value in inspect.getmembers(obj)]
+    members = [(member, value) for member, value in inspect.getmembers_static(obj)]
     if not include_annotate:
         members = [
             (member, value)
@@ -55,7 +55,7 @@ def get_def_line(obj: Any) -> int:
     """
     if isinstance(obj, property):
         obj = obj.fget
-    unwrapped = inspect.unwrap(obj)
+    unwrapped = get_unwrapped_obj(obj)
     if hasattr(unwrapped, "__code__"):
         return int(unwrapped.__code__.co_firstlineno)
     # getsourcelines does not work if in a pyinstaller bundle or something
@@ -75,8 +75,10 @@ def get_unwrapped_obj(obj: Any) -> Any:
     Returns:
         Underlying unwrapped function.
     """
-    if isinstance(obj, property):
-        obj = obj.fget  # get the getter function of the property
+    if hasattr(obj, "__func__"):
+        obj = obj.__func__
+    if hasattr(obj, "fget"):
+        obj = obj.fget
     return inspect.unwrap(obj)
 
 

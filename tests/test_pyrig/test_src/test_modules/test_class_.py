@@ -9,12 +9,14 @@ from functools import wraps
 from typing import Any, ClassVar
 
 from pyrig.src.modules.class_ import (
+    classproperty,
     discard_parent_classes,
     get_all_cls_from_module,
     get_all_methods_from_cls,
     get_all_subclasses,
     get_cached_instance,
 )
+from pyrig.src.modules.inspection import get_unwrapped_obj
 
 
 def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -144,9 +146,9 @@ def test_get_all_methods_from_cls() -> None:
         TestClass._private_method,  # noqa: SLF001
         TestClass.decorated_method,
     ]
-    assert methods == expected_methods, (
-        f"Expected methods {expected_methods}, got {methods}"
-    )
+    expected_method_names = [get_unwrapped_obj(m).__name__ for m in expected_methods]  # ty:ignore[possibly-missing-attribute]
+    method_names = [get_unwrapped_obj(m).__name__ for m in methods]  # ty:ignore[unresolved-attribute]
+    assert method_names == expected_method_names
 
     # Test case 2: Get all methods including inherited methods
     methods = get_all_methods_from_cls(TestClass, exclude_parent_methods=False)
@@ -164,9 +166,9 @@ def test_get_all_methods_from_cls() -> None:
         TestClass._private_method,  # noqa: SLF001
         TestClass.decorated_method,
     ]
-    assert methods == expected_methods, (
-        f"Expected methods {expected_methods}, got {methods}"
-    )
+    expected_method_names = [get_unwrapped_obj(m).__name__ for m in expected_methods]  # ty:ignore[possibly-missing-attribute]
+    method_names = [get_unwrapped_obj(m).__name__ for m in methods]  # ty:ignore[unresolved-attribute]
+    assert method_names == expected_method_names
 
 
 def test_get_all_cls_from_module() -> None:
@@ -184,6 +186,7 @@ def test_get_all_cls_from_module() -> None:
         AbstractParent,
         ConcreteChild,
         AnotherAbstractChild,
+        Testclassproperty,
     ]
     expected_classes_names: list[str] = [c.__name__ for c in expected_classes]
     classes_names = [c.__name__ for c in classes]
@@ -233,3 +236,29 @@ def test_get_cached_instance() -> None:
     instance1 = get_cached_instance(TestClass)
     instance2 = get_cached_instance(TestClass)
     assert instance1 is instance2
+
+
+class Testclassproperty:
+    """Test class."""
+
+    def test___init__(self) -> None:
+        """Test that classproperty stores the function."""
+
+        def func(cls: type) -> str:
+            return cls.__name__
+
+        prop = classproperty(func)
+        assert prop.fget is func
+
+    def test___get__(self) -> None:
+        """Test that classproperty returns value from class."""
+
+        class MyClass:
+            @classproperty
+            def name(cls: type) -> str:  # noqa: N805
+                return cls.__name__.lower()
+
+        # Access via class
+        assert MyClass.name == "myclass"
+        # Access via instance
+        assert MyClass().name == "myclass"

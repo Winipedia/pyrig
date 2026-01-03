@@ -6,15 +6,14 @@ Used for programmatic execution of pyrig commands.
 Example:
     >>> from pyrig.src.management.pyrigger import Pyrigger
     >>> from pyrig.dev.cli.subcommands import build
-    >>> Pyrigger.get_cmd_args(build)  # pyrig build
-    >>> Pyrigger.get_venv_run_cmd_args(build)  # uv run pyrig build
+    >>> Pyrigger.L.get_cmd_args(build)  # pyrig build
+    >>> Pyrigger.L.get_venv_run_cmd_args(build)  # uv run pyrig build
 """
 
 from collections.abc import Callable
 from typing import Any
 
-from pyrig.src.management.base.base import Tool
-from pyrig.src.management.package_manager import PackageManager
+from pyrig.dev.management.base.base import Tool
 from pyrig.src.modules.package import get_project_name_from_pkg_name
 from pyrig.src.processes import Args
 
@@ -32,8 +31,8 @@ class Pyrigger(Tool):
 
     Example:
         >>> from pyrig.dev.cli.subcommands import build
-        >>> Pyrigger.get_cmd_args(build).run()
-        >>> Pyrigger.get_venv_run_cmd_args(build).run()
+        >>> Pyrigger.L.get_cmd_args(build).run()
+        >>> Pyrigger.L.get_venv_run_cmd_args(build).run()
     """
 
     @classmethod
@@ -58,28 +57,3 @@ class Pyrigger(Tool):
         """
         cmd_name = get_project_name_from_pkg_name(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return cls.get_args(cmd_name, *args)
-
-    @classmethod
-    def get_venv_run_args(cls, *args: str) -> Args:
-        """Construct uv run pyrig arguments.
-
-        Args:
-            *args: Pyrig command arguments.
-
-        Returns:
-            Args for 'uv run pyrig'.
-        """
-        return PackageManager.get_run_args(*cls.get_args(*args))
-
-    @classmethod
-    def get_venv_run_cmd_args(cls, cmd: Callable[..., Any], *args: str) -> Args:
-        """Construct uv run pyrig arguments from callable.
-
-        Args:
-            cmd: Callable whose name converts to command name.
-            *args: Command arguments.
-
-        Returns:
-            Args for 'uv run pyrig <cmd_name>'.
-        """
-        return PackageManager.get_run_args(*cls.get_cmd_args(cmd, *args))

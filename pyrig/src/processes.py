@@ -4,13 +4,13 @@ Subprocess execution with enhanced error logging and command path discovery.
 Used throughout pyrig for running external tools (git, uv, pytest, pre-commit).
 
 Utilities:
-    - which_with_raise: Find executable paths with optional error raising
     - run_subprocess: Execute commands with detailed error logging
+    - Args: Command builder for fluent subprocess execution
 
 Example:
-    >>> from pyrig.src.os.os import run_subprocess, which_with_raise
-    >>> which_with_raise("uv")  # '/usr/bin/uv'
+    >>> from pyrig.src.processes import run_subprocess, Args
     >>> run_subprocess(["uv", "sync"])
+    >>> Args("git", "status").run()
 """
 
 import logging

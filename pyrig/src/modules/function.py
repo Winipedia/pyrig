@@ -14,6 +14,7 @@ from pyrig.src.modules.inspection import (
     get_def_line,
     get_module_of_obj,
     get_obj_members,
+    get_unwrapped_obj,
 )
 
 
@@ -36,6 +37,7 @@ def is_func(obj: Any) -> bool:
     """Check if an object is any kind of callable method-like attribute.
 
     Detects plain functions, staticmethod, classmethod, property, and decorators.
+    Also detects propert library descriptors (classproperty, cached_classproperty).
 
     Args:
         obj: Object to check.
@@ -46,10 +48,7 @@ def is_func(obj: Any) -> bool:
     if is_func_or_method(obj):
         return True
 
-    if isinstance(obj, (staticmethod, classmethod, property)):
-        return True
-
-    unwrapped = inspect.unwrap(obj)
+    unwrapped = get_unwrapped_obj(obj)
 
     return is_func_or_method(unwrapped)
 
@@ -78,34 +77,3 @@ def get_all_functions_from_module(
     ]
     # sort by definition order
     return sorted(funcs, key=get_def_line)
-
-
-def unwrap_method(method: Any) -> Callable[..., Any] | Any:
-    """Unwrap a method to its underlying function object.
-
-    Handles staticmethod/classmethod, property, and decorators.
-
-    Args:
-        method: Method-like object to unwrap.
-
-    Returns:
-        Underlying unwrapped function.
-    """
-    if isinstance(method, (staticmethod, classmethod)):
-        method = method.__func__
-    if isinstance(method, property):
-        method = method.fget
-    return inspect.unwrap(method)
-
-
-def is_abstractmethod(method: Any) -> bool:
-    """Check if a method is marked as abstract.
-
-    Args:
-        method: Method to check (can be wrapped).
-
-    Returns:
-        True if method has `__isabstractmethod__` set to True.
-    """
-    method = unwrap_method(method)
-    return getattr(method, "__isabstractmethod__", False)

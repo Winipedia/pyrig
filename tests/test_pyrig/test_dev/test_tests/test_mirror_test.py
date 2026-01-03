@@ -55,7 +55,7 @@ class TestMirrorTestConfigFile:
 
     def test_leaf(self) -> None:
         """Test method."""
-        leaf = MirrorTestConfigFile.leaf()
+        leaf = MirrorTestConfigFile.L
         assert leaf is MirrorTestConfigFile
 
     def test_get_src_module(

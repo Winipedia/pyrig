@@ -1,16 +1,14 @@
 """Tests for pyrig.modules.function module."""
 
 import functools
-from abc import ABC, abstractmethod
 
 from pyrig.src.modules import function
 from pyrig.src.modules import function as func_module
+from pyrig.src.modules.class_ import classproperty
 from pyrig.src.modules.function import (
     get_all_functions_from_module,
-    is_abstractmethod,
     is_func,
     is_func_or_method,
-    unwrap_method,
 )
 from pyrig.src.modules.module import make_obj_importpath
 
@@ -98,6 +96,11 @@ def test_is_func() -> None:
             """Test property."""
             return "test"
 
+        @classproperty
+        def class_property(cls) -> str:  # noqa: N805
+            """Test cached class property with setter."""
+            return "test"
+
     # Test staticmethod descriptor
     assert is_func(TestClass.__dict__["static_method"]), (
         "Expected staticmethod descriptor to be identified as func"
@@ -116,6 +119,11 @@ def test_is_func() -> None:
     # Test instance method (unbound function)
     assert is_func(TestClass.__dict__["instance_method"]), (
         "Expected instance method to be identified as func"
+    )
+
+    # Test classproperty descriptor
+    assert is_func(TestClass.__dict__["class_property"]), (
+        "Expected classproperty descriptor to be identified as func"
     )
 
     # Test decorated function with __wrapped__
@@ -161,8 +169,6 @@ def test_get_all_functions_from_module() -> None:
         "is_func_or_method",
         "is_func",
         "get_all_functions_from_module",
-        "unwrap_method",
-        "is_abstractmethod",
     ]
 
     expected_count = len(expected_functions)
@@ -187,81 +193,3 @@ def test_get_all_functions_from_module() -> None:
     # Verify all functions are callable
     for func in functions:
         assert callable(func), f"Expected function {func} to be callable"
-
-
-def test_unwrap_method() -> None:
-    """Test func for unwrap_method."""
-
-    # Test with regular function
-    def regular_function() -> None:
-        """Regular function."""
-
-    assert unwrap_method(regular_function) == regular_function, (
-        "Expected regular function to be unwrapped to itself"
-    )
-
-    # Test with class method
-    class TestClass:
-        def instance_method(self) -> None:
-            """Instance method."""
-
-        @classmethod
-        def class_method(cls) -> None:
-            """Class method."""
-
-        @staticmethod
-        def static_method() -> None:
-            """Static method."""
-
-        @property
-        def test_property(self) -> str:
-            """Test property."""
-            return "test"
-
-    assert unwrap_method(TestClass.instance_method) == TestClass.instance_method, (
-        "Expected instance method to be unwrapped to itself"
-    )
-
-    raw_class_method = TestClass.__dict__["class_method"]
-    assert unwrap_method(raw_class_method) == TestClass.class_method.__func__, (
-        "Expected class method to be unwrapped to its function"
-    )  # type: ignore[attr-defined]
-
-    raw_static_method = TestClass.__dict__["static_method"]
-    assert unwrap_method(raw_static_method) == raw_static_method.__func__, (
-        "Expected static method to be unwrapped to its function"
-    )
-
-    assert unwrap_method(TestClass.test_property) == TestClass.test_property.fget, (
-        "Expected property to be unwrapped to its getter function"
-    )  # type: ignore[attr-defined]
-
-
-def test_is_abstractmethod() -> None:
-    """Test func for is_abstract_method."""
-
-    class TestClass(ABC):
-        @abstractmethod
-        def abstract_method(self) -> None:
-            """Abstract method."""
-
-        def concrete_method(self) -> None:
-            """Concrete method."""
-            raise NotImplementedError
-
-        @classmethod
-        @abstractmethod
-        def abstract_classmethod(cls) -> None:
-            """Abstract class method."""
-
-    assert is_abstractmethod(TestClass.abstract_method), (
-        "Expected abstract method to be identified as abstract"
-    )
-
-    assert not is_abstractmethod(TestClass.concrete_method), (
-        "Expected concrete method to not be identified as abstract"
-    )
-
-    assert is_abstractmethod(TestClass.abstract_classmethod), (
-        "Expected abstract class method to be identified as abstract"
-    )
