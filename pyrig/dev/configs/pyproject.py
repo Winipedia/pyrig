@@ -246,9 +246,8 @@ class PyprojectConfigFile(TomlConfigFile):
             for dep in additional
             if cls.remove_version_from_dep(dep) not in stripped_dependencies
         ]
-        # due to caching in load, updating in place is tricky and can lead to
-        # bugs and comlicated issues, in conffig files it is very recomemnded to
-        # not mutate the loaded config but rather return a new one
+        # Due to caching in load(), mutating in place causes bugs.
+        # Always return a new structure instead of modifying.
         dependencies = [*dependencies, *additional]
         return sorted(set(dependencies))
 
@@ -279,12 +278,8 @@ class PyprojectConfigFile(TomlConfigFile):
     def get_all_dependencies(cls) -> list[str]:
         """Get all dependencies (runtime + dev)."""
         all_deps = cls.get_dependencies()
-        # due to caching in load, updating in place is tricky and can lead to
-        # bugs and comlicated issues, in conffig files it is very recomemnded to
-        # not mutate the loaded config but rather return a new one
-        # this mainly significant for ConfigFiles that call
-        # load inside their get_configs like PyprojectConfigFile asthey require the file
-        # to exist before calling get_configs
+        # Due to caching in load(), mutating in place causes bugs.
+        # Always return a new structure instead of modifying.
         return [*all_deps, *cls.get_dev_dependencies()]
 
     @classmethod
