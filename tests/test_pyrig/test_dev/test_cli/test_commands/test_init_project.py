@@ -162,7 +162,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         args.run(env=clean_env)
 
         # Verify pyrig was installed correctly by running init also assert init passes
-        args = Pyrigger.L.get_cmd_args(init)
+        args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(init))
         res = args.run(env=clean_env)
 
         assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
