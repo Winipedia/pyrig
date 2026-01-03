@@ -67,7 +67,8 @@ def get_def_line(obj: Any) -> int:
 def get_unwrapped_obj(obj: Any) -> Any:
     """Unwrap a method-like object to its underlying function.
 
-    Handles properties, staticmethod/classmethod descriptors, and decorators.
+    Recursively handles properties, staticmethod/classmethod descriptors,
+    and decorators.
 
     Args:
         obj: Callable that may be wrapped.
@@ -75,11 +76,15 @@ def get_unwrapped_obj(obj: Any) -> Any:
     Returns:
         Underlying unwrapped function.
     """
-    if hasattr(obj, "__func__"):
-        obj = obj.__func__
-    if hasattr(obj, "fget"):
-        obj = obj.fget
-    return inspect.unwrap(obj)
+    prev = None
+    while prev is not obj:
+        prev = obj
+        if hasattr(obj, "__func__"):
+            obj = obj.__func__
+        if hasattr(obj, "fget"):
+            obj = obj.fget
+        obj = inspect.unwrap(obj)
+    return obj
 
 
 def get_qualname_of_obj(obj: Callable[..., Any] | type) -> str:

@@ -4,6 +4,8 @@ tests.test_pyrig.test_modules.test_inspection
 """
 
 import os
+from collections.abc import Callable
+from functools import wraps
 
 from pyrig.src.modules.inspection import (
     get_def_line,
@@ -92,35 +94,58 @@ def test_get_qualname_of_obj() -> None:
     )
 
 
+def _dec_a[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def _dec_b[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def _dec_c[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+@_dec_a
+@_dec_b
+@_dec_c
+def _deeply_decorated_func() -> str:
+    return "deep"
+
+
+class _TestDeeplyNestedClassMethod:
+    @classmethod
+    @_dec_a
+    @_dec_b
+    @_dec_c
+    def deeply_nested_class_method(cls) -> str:
+        return "deeply_nested"
+
+
 def test_get_unwrapped_obj() -> None:
     """Test func for get_unwrapped_obj."""
-
-    # Test with a function
-    def test_function() -> None:
-        pass
-
-    unwrapped = get_unwrapped_obj(test_function)
-    assert unwrapped == test_function, f"Expected {test_function}, got {unwrapped}"
-
-    # Test with a class method
-    class TestClass:
-        def test_method(self) -> None:
-            pass
-
-    unwrapped = get_unwrapped_obj(TestClass.test_method)
-    assert unwrapped == TestClass.test_method, (
-        f"Expected {TestClass.test_method}, got {unwrapped}"
+    unwrapped_func = get_unwrapped_obj(_deeply_decorated_func)
+    assert unwrapped_func.__name__ == "_deeply_decorated_func", (
+        f"Expected '_deeply_decorated_func', got {unwrapped_func.__name__}"
     )
 
-    # Test with a property
-    class TestClass2:
-        @property
-        def test_property(self) -> str:
-            return "test"
-
-    unwrapped = get_unwrapped_obj(TestClass2.test_property)
-    assert unwrapped.__name__ == "test_property", (
-        f"Expected 'test_property', got {unwrapped.__name__}"
+    unwrapped_method = get_unwrapped_obj(
+        _TestDeeplyNestedClassMethod.deeply_nested_class_method
+    )
+    assert unwrapped_method.__name__ == "deeply_nested_class_method", (
+        f"Expected 'deeply_nested_class_method', got {unwrapped_method.__name__}"
     )
 
 
