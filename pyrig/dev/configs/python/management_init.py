@@ -43,6 +43,15 @@ class ManagementInitConfigFile(InitConfigFile):
     """
 
     @classmethod
+    def get_priority(cls) -> float:
+        """Get the priority for this config file.
+
+        Returns:
+            float: 10.0 (ensures management directory exists before other files use it).
+        """
+        return 10
+
+    @classmethod
     def get_src_module(cls) -> ModuleType:
         """Get the source module to copy docstring from.
 
