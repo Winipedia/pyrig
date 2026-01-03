@@ -17,15 +17,17 @@ Creates a production-ready Containerfile in the project root that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[TextConfigFile]
-    B --> C[ContainerfileConfigFile]
+    A[ConfigFile] --> B[DictConfigFile]
+    B --> C[TextConfigFile]
+    C --> D[ContainerfileConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `TextConfigFile`
+**Inherits from**: `TextConfigFile` (via `DictConfigFile`)
 
 **What this means**:
 

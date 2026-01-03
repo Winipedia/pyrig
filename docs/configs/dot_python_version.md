@@ -17,18 +17,21 @@ Creates a .python-version file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DotPythonVersionConfigFile]
+    A[ConfigFile] --> B[DictConfigFile]
+    B --> C[TextConfigFile]
+    C --> D[DotPythonVersionConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `ConfigFile`
+**Inherits from**: `TextConfigFile` (via `DictConfigFile`)
 
 **What this means**:
 
-- Direct inheritance from ConfigFile
-- Custom `load()` and `dump()` implementations
+- Text-based configuration file
 - Reads Python version from pyproject.toml
 - Simple text file format
 

@@ -17,12 +17,15 @@ configuration.
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[YamlConfigFile]
-    A --> C[TomlConfigFile]
-    A --> D[TextConfigFile]
-    A --> E[TypedConfigFile]
+    A["ConfigFile[ConfigT]"] --> H[DictConfigFile]
+    A --> I[ListConfigFile]
+    A --> B[YamlConfigFile]
     A --> F[JsonConfigFile]
     A --> G[BuilderConfigFile]
+
+    H --> C[TomlConfigFile]
+    H --> D[TextConfigFile]
+    H --> E[TypedConfigFile]
 
     B --> B1[YmlConfigFile]
     B --> B2[Workflow]
@@ -44,6 +47,8 @@ graph TD
     G --> G1[PyInstallerBuilder]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style H fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style I fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -65,16 +70,22 @@ separately from `pyrig.dev.builders` and invoked via `pyrig build`. See
 
 Every ConfigFile subclass must implement:
 
-| Method                 | Purpose                                    | Returns          |
-| ---------------------- | ------------------------------------------ | ---------------- |
-| `get_parent_path()`    | Directory containing the file              | `Path`           |
-| `get_file_extension()` | File extension without dot                 | `str`            |
-| `get_configs()`        | Expected configuration structure           | `dict` or `list` |
-| `_load()`              | Parse file content (internal)              | `dict` or `list` |
-| `_dump(config)`        | Write configuration to file (internal)     | `None`           |
+| Method                 | Purpose                                    | Returns            |
+| ---------------------- | ------------------------------------------ | ------------------ |
+| `get_parent_path()`    | Directory containing the file              | `Path`             |
+| `get_file_extension()` | File extension without dot                 | `str`              |
+| `get_configs()`        | Expected configuration structure           | `ConfigT`          |
+| `_load()`              | Parse file content (internal)              | `ConfigT`          |
+| `_dump(config)`        | Write configuration to file (internal)     | `None`             |
 
-**Note**: Subclasses implement `_load()` and `_dump()` (internal methods).
-Users call `load()` and `dump()` (public API with caching).
+**Note**: `ConfigT` is the type parameter - `dict[str, Any]` for
+`DictConfigFile`, `list[Any]` for `ListConfigFile`, or
+`dict[str, Any] | list[Any]` for base classes like `YamlConfigFile` and
+`JsonConfigFile`. Format-specific subclasses provide implementations for
+`_load()`, `_dump()`, and `get_file_extension()`.
+
+Subclasses implement `_load()` and `_dump()` (internal methods). Users call
+`load()` and `dump()` (public API with caching).
 
 ### Caching System
 
@@ -303,6 +314,83 @@ These subclasses implement common methods for specific file formats, simplifying
 ConfigFile creation. They provide implementations for `_load()`, `_dump()`, and
 `get_file_extension()` so you only need to define the file location and expected
 content.
+
+### DictConfigFile
+
+Intermediate base class for dict-based configuration files. Most config files
+use this as their base (directly or indirectly via format-specific subclasses).
+
+```python
+from pathlib import Path
+from typing import Any
+from pyrig.dev.configs.base.dict_cf import DictConfigFile
+
+class MyConfigFile(DictConfigFile):
+    @classmethod
+    def get_parent_path(cls) -> Path:
+        return Path("config")
+
+    @classmethod
+    def get_file_extension(cls) -> str:
+        return "conf"
+
+    @classmethod
+    def _load(cls) -> dict[str, Any]:
+        # Custom loading logic
+        return {}
+
+    @classmethod
+    def _dump(cls, config: dict[str, Any]) -> None:
+        # Custom dumping logic
+        pass
+
+    @classmethod
+    def get_configs(cls) -> dict[str, Any]:
+        return {"key": "value"}
+```
+
+**Inherits from**: `ConfigFile[dict[str, Any]]`
+
+**Use when**: Creating custom dict-based formats not covered by existing
+subclasses like `TomlConfigFile`, `JsonConfigFile`, etc.
+
+### ListConfigFile
+
+Intermediate base class for list-based configuration files (e.g., `.gitignore`).
+
+```python
+from pathlib import Path
+from typing import Any
+from pyrig.dev.configs.base.list_cf import ListConfigFile
+
+class MyListConfigFile(ListConfigFile):
+    @classmethod
+    def get_parent_path(cls) -> Path:
+        return Path(".")
+
+    @classmethod
+    def get_file_extension(cls) -> str:
+        return "list"
+
+    @classmethod
+    def _load(cls) -> list[Any]:
+        # Custom loading logic
+        return []
+
+    @classmethod
+    def _dump(cls, config: list[Any]) -> None:
+        # Custom dumping logic
+        pass
+
+    @classmethod
+    def get_configs(cls) -> list[Any]:
+        return ["item1", "item2"]
+```
+
+**Inherits from**: `ConfigFile[list[Any]]`
+
+**Use when**: Creating config files where the top-level structure is a list
+rather than a dict (e.g., ignore files, line-based configs).
 
 ### JsonConfigFile
 

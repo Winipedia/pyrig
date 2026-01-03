@@ -16,18 +16,19 @@ Creates a comprehensive `.gitignore` file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[GitIgnoreConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[GitIgnoreConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `ConfigFile` (directly)
+**Inherits from**: `ListConfigFile`
 
 **What this means**:
 
-- Custom implementation of `load()` and `dump()` methods
-- Works with list of patterns instead of dict
+- Works with list of patterns (list-based config type)
 - Validation checks if all required patterns exist
 - Users can add custom patterns
 - File is considered correct if it's a superset of required patterns

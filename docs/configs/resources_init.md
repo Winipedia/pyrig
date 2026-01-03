@@ -16,25 +16,27 @@ Creates a resources package that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[TextConfigFile]
-    B --> C[PythonConfigFile]
-    C --> D[PythonPackageConfigFile]
-    D --> E[CopyModuleConfigFile]
-    E --> F[CopyModuleOnlyDocstringConfigFile]
-    F --> G[InitConfigFile]
-    G --> H[ResourcesInitConfigFile]
+    A[ConfigFile] --> B[DictConfigFile]
+    B --> C[TextConfigFile]
+    C --> D[PythonConfigFile]
+    D --> E[PythonPackageConfigFile]
+    E --> F[CopyModuleConfigFile]
+    F --> G[CopyModuleOnlyDocstringConfigFile]
+    G --> H[InitConfigFile]
+    H --> I[ResourcesInitConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style F fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style H fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style G fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style I fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `InitConfigFile`
+**Inherits from**: `InitConfigFile` (via `DictConfigFile`)
 
 **What this means**:
 
