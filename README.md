@@ -122,4 +122,6 @@ New to pyrig? Start here:
 
 **[Full Documentation](https://winipedia.github.io/pyrig/)** - Comprehensive documentation on GitHub Pages
 
+**[CodeWiki Documentation](https://codewiki.google/github.com/winipedia/pyrig)** - AI-generated documentation
+
 ---

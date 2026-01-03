@@ -15,6 +15,10 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.dev.configs.base.yaml import YamlConfigFile
+from pyrig.dev.management.linter import Linter
+from pyrig.dev.management.mdlinter import MDLinter
+from pyrig.dev.management.security_checker import SecurityChecker
+from pyrig.dev.management.type_checker import TypeChecker
 from pyrig.src.processes import (
     Args,
 )
@@ -69,7 +73,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
     def get_hook(
         cls,
         name: str,
-        args: list[str],
+        args: Args,
         *,
         language: str = "system",
         pass_filenames: bool = False,
@@ -92,7 +96,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         hook: dict[str, Any] = {
             "id": name,
             "name": name,
-            "entry": str(Args(args)),
+            "entry": str(args),
             "language": language,
             "always_run": always_run,
             "pass_filenames": pass_filenames,
@@ -117,23 +121,23 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         hooks: list[dict[str, Any]] = [
             cls.get_hook(
                 "lint-code",
-                ["ruff", "check", "--fix"],
+                Linter.L.get_check_fix_args(),
             ),
             cls.get_hook(
                 "format-code",
-                ["ruff", "format"],
+                Linter.L.get_format_args(),
             ),
             cls.get_hook(
                 "check-types",
-                ["ty", "check"],
+                TypeChecker.L.get_check_args(),
             ),
             cls.get_hook(
                 "check-security",
-                ["bandit", "-c", "pyproject.toml", "-r", "."],
+                SecurityChecker.L.get_run_with_config_args(),
             ),
             cls.get_hook(
                 "check-markdown",
-                ["rumdl", "check"],
+                MDLinter.L.get_check_fix_args(),
             ),
         ]
         return {

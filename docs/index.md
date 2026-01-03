@@ -115,7 +115,17 @@ validation, and creating custom config files. This is the main feature of pyrig
 that generates a complete project structure for you, ready to use and start
 developing your project.
 
+### [Tool Wrappers Documentation](management/index.md)
+
+pyrig wraps external tools (uv, git, ruff, pytest, etc.) in type-safe Python
+classes. Learn how the Tool system works, what each wrapper does, and how to
+customize tool behavior through subclassing.
+
 ### [Additional Information](more/index.md)
 
 See more documentation about pyrig's drawbacks, how to get started, tooling
 choices and a detailed example usage.
+
+### [CodeWiki Documentation](https://codewiki.google/github.com/winipedia/pyrig)
+
+AI-generated documentation for pyrig.

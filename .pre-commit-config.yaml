@@ -27,7 +27,7 @@ repos:
     pass_filenames: false
   - id: check-markdown
     name: check-markdown
-    entry: rumdl check
+    entry: rumdl check --fix
     language: system
     always_run: true
     pass_filenames: false

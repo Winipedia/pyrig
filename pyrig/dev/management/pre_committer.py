@@ -5,11 +5,11 @@ Enforces code quality standards via linters, formatters, and checks.
 
 Example:
     >>> from pyrig.src.management.pre_committer import PreCommitter
-    >>> PreCommitter.get_install_args().run()
-    >>> PreCommitter.get_run_all_files_args().run()
+    >>> PreCommitter.L.get_install_args().run()
+    >>> PreCommitter.L.get_run_all_files_args().run()
 """
 
-from pyrig.src.management.base.base import Tool
+from pyrig.dev.management.base.base import Tool
 from pyrig.src.processes import Args
 
 
@@ -24,8 +24,8 @@ class PreCommitter(Tool):
         - Verbosity: Control output detail
 
     Example:
-        >>> PreCommitter.get_install_args().run()
-        >>> PreCommitter.get_run_all_files_verbose_args().run()
+        >>> PreCommitter.L.get_install_args().run()
+        >>> PreCommitter.L.get_run_all_files_verbose_args().run()
     """
 
     @classmethod

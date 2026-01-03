@@ -1,12 +1,12 @@
 """module."""
 
 from pyrig.dev.cli.shared_subcommands import version
-from pyrig.src.management.pyrigger import Pyrigger
+from pyrig.dev.management.pyrigger import Pyrigger
 
 
 def test_version() -> None:
     """Test function."""
-    args = Pyrigger.get_venv_run_cmd_args(version)
+    args = Pyrigger.L.get_cmd_args(version)
 
     result = args.run()
     stdout = result.stdout.decode("utf-8")

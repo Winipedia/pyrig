@@ -3,6 +3,7 @@
 import copy
 from collections.abc import Callable
 from pathlib import Path
+from types import ModuleType
 from typing import Any, ClassVar
 
 import pytest
@@ -12,8 +13,8 @@ from pyrig.dev import configs
 from pyrig.dev.configs.base.base import (
     ConfigFile,
 )
-from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.modules.package import discover_subclasses_across_dependents
+from tests.test_pyrig.test_dev import test_configs
 
 
 @pytest.fixture
@@ -71,13 +72,22 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
+    def test_L(self) -> None:  # noqa: N802
+        """Test method."""
+
+        class MyTestConfigFile(ConfigFile):
+            """Test config file."""
+
+            @classmethod
+            def get_definition_pkg(cls) -> ModuleType:
+                """Get the package where the ConfigFile subclasses are defined."""
+                return test_configs
+
+        assert MyTestConfigFile.L is MyTestConfigFile
+
     def test_get_definition_pkg(self) -> None:
         """Test method."""
         assert ConfigFile.get_definition_pkg() is configs
-
-    def test_leaf(self) -> None:
-        """Test method."""
-        assert MirrorTestConfigFile.leaf() is MirrorTestConfigFile
 
     def test_create_file(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method."""
@@ -333,7 +343,7 @@ class TestConfigFile:
         mocker.patch(
             ConfigFile.__module__
             + "."
-            + discover_subclasses_across_dependents.__name__,
+            + discover_subclasses_across_dependents.__name__,  # ty:ignore[unresolved-attribute]
             return_value={my_test_config_file},
         )
         actual = my_test_config_file.get_all_subclasses()

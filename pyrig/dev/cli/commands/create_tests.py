@@ -56,7 +56,7 @@ def create_tests_for_package(package: ModuleType) -> None:
         executor.map(create_test_package, pkgs_without_modules)
 
     # create test modules for all modules
-    mirror_test_cls = MirrorTestConfigFile.leaf()
+    mirror_test_cls = MirrorTestConfigFile.L
     mirror_test_cls.create_test_modules(all_modules)
 
 

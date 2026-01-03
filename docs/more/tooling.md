@@ -289,3 +289,11 @@ Python projects.
 example, we migrated from poetry to uv when uv proved to be significantly faster
 and more capable, and from mypy to ty for faster, runtime type checking. We
 continuously evaluate the ecosystem and adopt superior tools as they mature.
+
+**Replacing Tools**: While not recommended, you can replace any tool by
+subclassing the Tool wrapper classes in `dev/management/`. pyrig uses the `.L`
+(leaf) property internally, so your subclasses automatically apply. However,
+tools are interconnected with configs, workflows, and CI/CD - replacing one
+often requires changes to others. See
+[Tool Architecture - Replacing Tools](../management/architecture.md#replacing-tools)
+for details on how to do this and what additional work is required.

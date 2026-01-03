@@ -41,8 +41,7 @@ def get_all_methods_from_cls(
         include_annotate: If False, excludes `__annotate__` (Python 3.14+).
 
     Returns:
-        List of method objects sorted by line number.
-        ['method_a', 'method_b']
+        List of method objects (Callable) sorted by line number.
     """
     methods = [
         (method, name)
@@ -89,6 +88,7 @@ def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
     return sorted(classes, key=get_def_line)
 
 
+@cache
 def get_all_subclasses[T: type](
     cls: T,
     load_package_before: ModuleType | None = None,
@@ -211,3 +211,44 @@ def get_cached_instance[T](cls: type[T]) -> T:
         Cached instance.
     """
     return cls()
+
+
+class classproperty[T]:  # noqa: N801
+    """Decorator that creates a property accessible on the class itself.
+
+    Unlike @property which only works on instances, @classproperty allows
+    accessing the property directly on the class. Can be combined with
+    caching by using @cache on the underlying method.
+
+    Example:
+        >>> class MyClass:
+        ...     @classproperty
+        ...     def name(cls) -> str:
+        ...         return cls.__name__.lower()
+        ...
+        >>> MyClass.name
+        'myclass'
+
+    Args:
+        fget: The method to wrap as a class property.
+    """
+
+    def __init__(self, fget: Callable[..., T]) -> None:
+        """Initialize the decorator.
+
+        Args:
+            fget: The method to wrap as a class property.
+        """
+        self.fget = fget
+
+    def __get__(self, obj: object, owner: type) -> T:
+        """Get the property value.
+
+        Args:
+            obj: The instance (ignored).
+            owner: The class owning the property.
+
+        Returns:
+            The property value.
+        """
+        return self.fget(owner)

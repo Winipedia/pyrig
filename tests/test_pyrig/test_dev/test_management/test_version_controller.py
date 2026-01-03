@@ -1,91 +1,112 @@
 """module."""
 
-from pyrig.src.management.version_controller import VersionController
+from pyrig.dev.management.version_controller import VersionController
 
 
 class TestVersionController:
     """Test class."""
 
+    def test_get_push_origin_args(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_push_origin_args()
+        assert result == ("git", "push", "origin")
+
+    def test_get_push_origin_tag_args(self) -> None:
+        """Test method."""
+        tag = "v1.2.3"
+        result = VersionController.L.get_push_origin_tag_args(tag=tag)
+        assert result == ("git", "push", "origin", tag)
+
+    def test_get_tag_args(self) -> None:
+        """Test method."""
+        tag = "v1.2.3"
+        result = VersionController.L.get_tag_args(tag=tag)
+        assert result == ("git", "tag", tag)
+
     def test_name(self) -> None:
         """Test method."""
-        result = VersionController.name()
+        result = VersionController.L.name()
         assert result == "git"
 
     def test_get_init_args(self) -> None:
         """Test method."""
-        result = VersionController.get_init_args()
+        result = VersionController.L.get_init_args()
         assert result == ("git", "init")
 
     def test_get_add_args(self) -> None:
         """Test method."""
-        result = VersionController.get_add_args("file.py")
+        result = VersionController.L.get_add_args("file.py")
         assert result == ("git", "add", "file.py")
 
     def test_get_add_all_args(self) -> None:
         """Test method."""
-        result = VersionController.get_add_all_args()
+        result = VersionController.L.get_add_all_args()
         assert result == ("git", "add", ".")
 
     def test_get_add_pyproject_toml_args(self) -> None:
         """Test method."""
-        result = VersionController.get_add_pyproject_toml_args()
+        result = VersionController.L.get_add_pyproject_toml_args()
         assert result == ("git", "add", "pyproject.toml")
 
     def test_get_add_pyproject_toml_and_uv_lock_args(self) -> None:
         """Test method."""
-        result = VersionController.get_add_pyproject_toml_and_uv_lock_args()
+        result = VersionController.L.get_add_pyproject_toml_and_uv_lock_args()
         assert result == ("git", "add", "pyproject.toml", "uv.lock")
 
     def test_get_commit_args(self) -> None:
         """Test method."""
-        result = VersionController.get_commit_args("-m", "Initial commit")
+        result = VersionController.L.get_commit_args("-m", "Initial commit")
         assert result == ("git", "commit", "-m", "Initial commit")
 
     def test_get_commit_no_verify_args(self) -> None:
         """Test method."""
-        result = VersionController.get_commit_no_verify_args("Fix bug")
+        result = VersionController.L.get_commit_no_verify_args(msg="Fix bug")
         assert result == ("git", "commit", "--no-verify", "-m", "Fix bug")
 
     def test_get_push_args(self) -> None:
         """Test method."""
-        result = VersionController.get_push_args()
+        result = VersionController.L.get_push_args()
         assert result == ("git", "push")
 
     def test_get_config_args(self) -> None:
         """Test method."""
-        result = VersionController.get_config_args("user.email", "test@example.com")
+        result = VersionController.L.get_config_args("user.email", "test@example.com")
         assert result == ("git", "config", "user.email", "test@example.com")
 
     def test_get_config_global_args(self) -> None:
         """Test method."""
-        result = VersionController.get_config_global_args(
+        result = VersionController.L.get_config_global_args(
             "user.email", "test@example.com"
         )
         assert result == ("git", "config", "--global", "user.email", "test@example.com")
 
     def test_get_config_local_args(self) -> None:
         """Test method."""
-        result = VersionController.get_config_local_args(
+        result = VersionController.L.get_config_local_args(
             "user.email", "test@example.com"
         )
         assert result == ("git", "config", "--local", "user.email", "test@example.com")
 
     def test_get_config_local_user_email_args(self) -> None:
         """Test method."""
-        result = VersionController.get_config_local_user_email_args("test@example.com")
+        result = VersionController.L.get_config_local_user_email_args(
+            "test@example.com"
+        )
         assert result == ("git", "config", "--local", "user.email", "test@example.com")
 
     def test_get_config_local_user_name_args(self) -> None:
         """Test method."""
-        result = VersionController.get_config_local_user_name_args("Test User")
+        result = VersionController.L.get_config_local_user_name_args("Test User")
         assert result == ("git", "config", "--local", "user.name", "Test User")
 
     def test_get_config_global_user_email_args(self) -> None:
         """Test method."""
-        result = VersionController.get_config_global_user_email_args("test@example.com")
+        result = VersionController.L.get_config_global_user_email_args(
+            "test@example.com"
+        )
         assert result == ("git", "config", "--global", "user.email", "test@example.com")
 
     def test_get_config_global_user_name_args(self) -> None:
         """Test method."""
-        result = VersionController.get_config_global_user_name_args("Test User")
+        result = VersionController.L.get_config_global_user_name_args("Test User")
         assert result == ("git", "config", "--global", "user.name", "Test User")
