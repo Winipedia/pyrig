@@ -88,7 +88,6 @@ def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
     return sorted(classes, key=get_def_line)
 
 
-@cache
 def get_all_subclasses[T: type](
     cls: T,
     load_package_before: ModuleType | None = None,
