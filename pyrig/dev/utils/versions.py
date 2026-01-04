@@ -48,10 +48,12 @@ def adjust_version_to_level(
         level: Precision level:
             - "major": Keep only major (e.g., "3.11.5" -> "3")
             - "minor": Keep major and minor (e.g., "3.11.5" -> "3.11")
-            - "micro": Keep all (e.g., "3.11.5" -> "3.11.5", no change)
+            - "micro": Return version unchanged (e.g., "3.11.5" -> "3.11.5")
 
     Returns:
-        New Version object with components beyond level removed.
+        New Version object with components beyond level removed. For "micro" level,
+        returns the original Version object unchanged (including any pre-release,
+        post-release, dev, or local identifiers).
 
     Examples:
         >>> adjust_version_to_level(Version("3.11.5"), "major")
@@ -60,7 +62,8 @@ def adjust_version_to_level(
         <Version('3.11')>
 
     Note:
-        Pre-release, post-release, dev, and local identifiers always removed.
+        For "major" and "minor" levels, pre-release, post-release, dev, and local
+        identifiers are removed. For "micro" level, the version is returned unchanged.
     """
     if level == "major":
         return Version(f"{version.major}")

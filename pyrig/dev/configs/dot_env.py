@@ -2,6 +2,8 @@
 
 Creates empty .env file for local environment variables and secrets.
 Users manage content manually. Automatically added to .gitignore.
+This file is read-only from pyrig's perspective: dump() raises ValueError
+if config is non-empty to prevent overwriting user secrets.
 
 See Also:
     https://github.com/theskumar/python-dotenv

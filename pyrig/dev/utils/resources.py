@@ -120,6 +120,8 @@ def return_resource_file_content_on_exceptions(
 
 def return_resource_content_on_fetch_error(
     resource_name: str,
+    *,
+    overwrite_resource: bool = True,
 ) -> Callable[[Callable[P, str]], Callable[P, str]]:
     """Create a decorator that falls back to resource file on HTTP request errors.
 
@@ -130,6 +132,8 @@ def return_resource_content_on_fetch_error(
         resource_name: Resource file name (without path) for fallback content.
             E.g., "LATEST_PYTHON_VERSION" refers to
             `pyrig/resources/LATEST_PYTHON_VERSION`.
+        overwrite_resource: If True and in pyrig dev mode, write successful results
+            back to resource file and stage in git. Defaults to True.
 
     Returns:
         Decorator function for HTTP request functions returning strings.
@@ -154,4 +158,5 @@ def return_resource_content_on_fetch_error(
     return return_resource_file_content_on_exceptions(
         resource_name,
         exceptions,
+        overwrite_resource=overwrite_resource,
     )

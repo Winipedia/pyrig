@@ -255,7 +255,7 @@ def get_objs_from_obj(
 
     Behavior depends on type:
     - Modules: all functions and classes
-    - Packages: all submodules
+    - Packages: all direct module files (excludes subpackages)
     - Classes: all methods (excluding inherited)
 
     Args:

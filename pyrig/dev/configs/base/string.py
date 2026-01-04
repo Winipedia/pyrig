@@ -81,8 +81,8 @@ class StringConfigFile(ListConfigFile):
     def add_missing_configs(cls) -> list[Any]:
         """Merge expected config lines with existing file content.
 
-        Prepends expected lines to existing content. If override_content() is True,
-        existing content is discarded.
+        Places expected lines first, followed by existing content. If
+        override_content() is True, existing content is discarded.
 
         Returns:
             Merged list of lines (expected lines first, then existing lines).

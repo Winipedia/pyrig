@@ -225,7 +225,7 @@ def make_init_module(path: Path) -> None:
 
 
 def make_pkg_dir(path: Path) -> None:
-    """Create __init__.py files in all parent directories of a path.
+    """Create __init__.py files in a directory and all its parent directories.
 
     Does not include the CWD.
 

@@ -44,7 +44,7 @@ class ContainerfileConfigFile(StringConfigFile):
         """Get the Containerfile filename.
 
         Returns:
-            str: "Containerfile".
+            "Containerfile".
         """
         return "Containerfile"
 
@@ -53,7 +53,7 @@ class ContainerfileConfigFile(StringConfigFile):
         """Get the parent directory for Containerfile.
 
         Returns:
-            Path: Project root.
+            Project root.
         """
         return Path()
 
@@ -62,7 +62,7 @@ class ContainerfileConfigFile(StringConfigFile):
         """Get the file extension for Containerfile.
 
         Returns:
-            str: Empty string (no extension).
+            Empty string (no extension).
         """
         return ""
 
@@ -71,7 +71,7 @@ class ContainerfileConfigFile(StringConfigFile):
         """Get the extension separator for Containerfile.
 
         Returns:
-            str: Empty string (no separator).
+            Empty string (no separator).
         """
         return ""
 

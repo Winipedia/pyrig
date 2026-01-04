@@ -35,7 +35,7 @@ def run_subprocess(  # noqa: PLR0913
     """Execute subprocess with enhanced error logging.
 
     Wrapper around subprocess.run() that logs command, exit code, stdout, and stderr
-    on failure before re-raising exception.
+    when CalledProcessError is raised, before re-raising the exception.
 
     Args:
         args: Command and arguments as sequence (e.g., ["git", "status"]).
@@ -51,7 +51,9 @@ def run_subprocess(  # noqa: PLR0913
 
     Raises:
         subprocess.CalledProcessError: If process returns non-zero exit and check=True.
+            Logged with command details before re-raising.
         subprocess.TimeoutExpired: If process exceeds timeout.
+            Re-raised without logging.
 
     Example:
         >>> run_subprocess(["git", "status"])
@@ -93,7 +95,7 @@ class Args(tuple[str, ...]):
         run: Execute via subprocess
 
     Example:
-        >>> args = Args(("uv", "sync"))
+        >>> args = Args(["uv", "sync"])
         >>> print(args)
         uv sync
         >>> args.run()

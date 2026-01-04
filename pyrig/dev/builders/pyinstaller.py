@@ -227,6 +227,9 @@ class PyInstallerBuilder(BuilderConfigFile):
     def get_temp_distpath(cls, temp_dir: Path) -> Path:
         """Get the temporary distribution output path.
 
+        Args:
+            temp_dir: Parent temporary directory.
+
         Returns:
             Path where PyInstaller will write the executable.
         """
@@ -284,7 +287,8 @@ class PyInstallerBuilder(BuilderConfigFile):
         """Convert the application icon PNG to another format.
 
         Uses PIL/Pillow to convert the source PNG icon to the specified format
-        (ico, icns, or png).
+        (ico, icns, or png). Note that ICNS conversion may require specific icon
+        sizes (e.g., 16x16, 32x32, 128x128, 256x256, 512x512) for best results.
 
         Args:
             file_format: Target format extension ("ico", "icns", or "png").
@@ -307,6 +311,6 @@ class PyInstallerBuilder(BuilderConfigFile):
         use a custom icon location.
 
         Returns:
-            Path to the PNG icon file (default: `resources/icon.png`).
+            Absolute path to the PNG icon file (`<src_pkg>/resources/icon.png`).
         """
         return cls.get_resources_path() / "icon.png"

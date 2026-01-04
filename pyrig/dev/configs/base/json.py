@@ -27,21 +27,35 @@ from pyrig.dev.configs.base.base import ConfigFile
 class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
     """Base class for JSON configuration files.
 
-    Uses Python's json module with 4-space indentation.
+    Uses Python's json module with 4-space indentation. Supports both dict and
+    list as top-level structures.
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the JSON file
         - `get_configs`: Expected JSON configuration structure
 
     Example:
-        >>> class MyConfigFile(JsonConfigFile):
-        ...     @classmethod
-        ...     def get_parent_path(cls) -> Path:
-        ...         return Path()
-        ...
-        ...     @classmethod
-        ...     def get_configs(cls) -> dict[str, Any]:
-        ...         return {"setting": "value", "nested": {"key": "value"}}
+        Dict configuration::
+
+            >>> class MyConfigFile(JsonConfigFile):
+            ...     @classmethod
+            ...     def get_parent_path(cls) -> Path:
+            ...         return Path()
+            ...
+            ...     @classmethod
+            ...     def get_configs(cls) -> dict[str, Any]:
+            ...         return {"setting": "value", "nested": {"key": "value"}}
+
+        List configuration::
+
+            >>> class MyListConfigFile(JsonConfigFile):
+            ...     @classmethod
+            ...     def get_parent_path(cls) -> Path:
+            ...         return Path()
+            ...
+            ...     @classmethod
+            ...     def get_configs(cls) -> list[Any]:
+            ...         return ["item1", "item2", {"key": "value"}]
     """
 
     @classmethod

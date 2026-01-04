@@ -125,7 +125,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         """Load and parse configuration file.
 
         Returns:
-            Parsed configuration as dict or list. Empty if file is empty (opt-out).
+            Parsed configuration as dict or list. Implementations should return
+            empty dict/list for empty files to support opt-out behavior.
         """
 
     @classmethod
@@ -158,7 +159,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
     def __init__(self) -> None:
         """Initialize config file, creating or updating as needed.
 
-        Creates parent dirs, creates file if missing, validates, adds missing configs.
+        Calls create_file() if file doesn't exist (which creates parent dirs and file),
+        validates content, and adds missing configs if needed.
         Idempotent and preserves user customizations.
 
         Raises:
@@ -199,7 +201,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         Cached to avoid multiple reads of same file.
 
         Returns:
-            Parsed configuration as dict or list. Empty if file is empty (opt-out).
+            Parsed configuration as dict or list. Format-specific implementations
+            typically return empty dict/list for empty files (opt-out behavior).
         """
         return cls._load()
 
@@ -288,8 +291,10 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
     ) -> None:
         """Merge dict value during config merging (modifies actual_dict in place).
 
-        For dict values, merges expected into actual (actual values preserved,
-        expected values added). For non-dict values, expected value takes precedence.
+        First calls setdefault to add key if missing. Then:
+        - For dict values: merges expected into actual (preserves actual values,
+          adds expected values)
+        - For non-dict values: replaces actual value with expected value
 
         Args:
             expected_dict: Expected configuration dict.

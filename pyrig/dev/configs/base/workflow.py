@@ -718,9 +718,10 @@ class Workflow(YamlConfigFile):
         """Get core setup steps for matrix jobs.
 
         Args:
-            python_version: Python version to use. Defaults to matrix value.
+            no_dev: Whether to skip dev dependencies.
+            python_version: Python version to use. If None (default),
+                steps_core_installed_setup will use latest supported version.
             repo_token: Whether to use REPO_TOKEN for checkout.
-            no_dev: Whether to install dev dependencies.
 
         Returns:
             List with full setup steps for matrix execution.
@@ -931,7 +932,8 @@ class Workflow(YamlConfigFile):
         For public repos: CODECOV_TOKEN is recommended, or enable tokenless
         upload in Codecov settings (Settings → General).
 
-        If CODECOV_TOKEN is not defined, the step will not fail CI.
+        If CODECOV_TOKEN is not defined, fail_ci_if_error is set to false,
+        preventing the step from failing CI on upload errors.
 
         Args:
             step: Existing step dict to update.
@@ -1245,8 +1247,8 @@ class Workflow(YamlConfigFile):
         """Create a step that installs Python dependencies.
 
         Args:
+            no_dev: Whether to skip dev dependencies.
             step: Existing step dict to update.
-            no_dev: Whether to install dev dependencies.
 
         Returns:
             Step that runs uv sync.

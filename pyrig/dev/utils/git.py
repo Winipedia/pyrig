@@ -457,6 +457,9 @@ def path_is_in_gitignore_lines(
     Returns:
         True if path matches any pattern and would be ignored by Git.
 
+    Raises:
+        pathspec.PatternError: If gitignore_lines contains malformed patterns.
+
     See Also:
         load_gitignore: Load patterns from .gitignore file.
     """
@@ -499,9 +502,9 @@ def load_gitignore(path: Path = GITIGNORE_PATH) -> list[str]:
     Examples:
         Load the default .gitignore::
 
-            >>> patterns = load_gitignore()
-            >>> print(patterns[:3])
-            ['# Byte-compiled / optimized / DLL files', '__pycache__/', '*.py[cod]']
+            >>> patterns = load_gitignore()  # doctest: +SKIP
+            >>> "__pycache__/" in patterns
+            True
 
     See Also:
         path_is_in_gitignore_lines: Check if path matches patterns

@@ -84,7 +84,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
 
         Args:
             name (str): Hook identifier and display name.
-            args (list[str]): Command and arguments (formatted via Args).
+            args (Args): Command and arguments (converted to string via str()).
             language (str, optional): Hook language. Defaults to "system".
             pass_filenames (bool, optional): Pass staged filenames. Defaults to False.
             always_run (bool, optional): Run on every commit. Defaults to True.
