@@ -34,11 +34,11 @@ graph LR
 
     B -.->|uv add --group dev| B1[pyrig-dev]
     C -.->|uv sync| C1[Install deps]
-    D -.->|pyrig mkroot --priority| D1[Priority configs]
+    D -.->|uv run pyrig mkroot --priority| D1[Priority configs]
     E -.->|uv sync| E1[Install project]
     F -.->|uv run pyrig mkroot| F1[All configs]
     G -.->|uv run pyrig mktests| G1[Test skeletons]
-    H -.->|pre-commit run| H1[Format & lint]
+    H -.->|uv run pre-commit| H1[Format & lint]
     I -.->|uv run pytest| I1[Run tests]
     J -.->|git commit| J1[Initial commit]
 
@@ -57,7 +57,7 @@ graph LR
 
 ### 1. Adding Dev Dependencies
 
-Installs the `pyrig-dev` package group to the project.
+Adds the `pyrig-dev` package to the dev dependency group.
 
 ### 2. Syncing Venv
 
@@ -99,7 +99,8 @@ Generates test skeletons for all code by calling `mktests` internally. See
 
 ### 7. Running Pre-commit Hooks
 
-Runs all pre-commit hooks to format and lint the code:
+Installs pre-commit hooks, stages all files with git, and runs
+formatters/linters to ensure the codebase follows style guidelines:
 
 - Ruff formatting and linting
 - Type checking with ty
