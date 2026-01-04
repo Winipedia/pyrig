@@ -24,7 +24,7 @@ The `mktests` command:
 
 For each source module, creates a corresponding test module:
 
-- `src/myapp/foo.py` → `tests/test_myapp/test_foo.py`
+- `myapp/foo.py` → `tests/test_myapp/test_foo.py`
 
 For each function/class, creates a test function:
 

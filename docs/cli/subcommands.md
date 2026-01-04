@@ -25,14 +25,13 @@ def mkroot(
     the complete project structure including pyproject.toml, .gitignore, GitHub
     workflows, pre-commit hooks, and other configuration files.
 
-    The command is idempotent and non-destructive: safe to run multiple times,
-    only adds missing configs or updates incomplete files, never removes
-    existing configuration.
+    The command is idempotent: safe to run multiple times, overwrites incorrect
+    files but respects opt-out markers.
 
     Args:
         priority: If True, only creates high-priority config files (e.g.,
-            pyproject.toml, .gitignore, LICENSE). Used during `init` to create
-            essential files before installing dependencies. Default: False.
+            LICENSE, pyproject.toml). Used during `init` to create essential
+            files before installing dependencies. Default: False.
 
     Example:
         $ uv run pyrig mkroot

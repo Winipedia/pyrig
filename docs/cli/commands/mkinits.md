@@ -15,8 +15,11 @@ uv run pyrig -v mkinits
 
 The `mkinits` command:
 
-1. **Scans all directories** in the project (src and tests packages)
-2. **Identifies packages** (directories containing Python files)
+1. **Scans the project** for namespace packages
+(excluding `docs/` and `.gitignore`
+   patterns)
+2. **Identifies packages** (directories containing Python files
+but no `__init__.py`)
 3. **Creates `__init__.py` files** for packages that don't have them
 
 ### Why `__init__.py` Files Matter
