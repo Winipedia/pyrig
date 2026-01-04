@@ -134,8 +134,7 @@ The CLI system automatically discovers and registers three types of commands:
 Functions are discovered and registered automatically:
 
 - **No manual registration** required
-- **Public functions only** - classes, variables,
-    and private functions (starting with `_`) are ignored
+- **Functions only** - classes and variables are ignored
 - **Defined in module** - imported functions are excluded
 - **Sorted by definition order** - commands appear in the order they're defined
 
@@ -147,8 +146,8 @@ graph TD
     B --> C[Replace pyrig module paths with package name]
     C --> D[Import package.dev.cli.subcommands]
 
-    D --> E[Get all public functions from module]
-    E --> F[Filter: only functions defined in module]
+    D --> E[Get all functions defined in module]
+    E --> F[Exclude imported functions]
     F --> G[Sort by definition order]
     G --> H[For each function...]
 
@@ -216,3 +215,8 @@ pyrig includes these built-in subcommands:
 - **`mkinits`** - Create `__init__.py` files
 - **`build`** - Build all artifacts
 - **`protect-repo`** - Configure repository protection
+
+pyrig also includes this shared subcommand (available in all dependent
+projects):
+
+- **`version`** - Display the current project's version
