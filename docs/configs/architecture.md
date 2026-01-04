@@ -529,7 +529,7 @@ class MyWorkflow(Workflow):
             "my-job": {
                 "runs-on": cls.UBUNTU_LATEST,
                 "steps": [
-                    cls.step_checkout(),
+                    cls.step_checkout_repository(),
                     cls.step_setup_python(),
                     {"name": "Run tests", "run": "pytest"}
                 ]

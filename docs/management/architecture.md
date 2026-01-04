@@ -62,8 +62,8 @@ The pre-commit config file uses `.L` to reference tools:
 ```python
 # pyrig/dev/configs/git/pre_commit.py
 hooks = [
-    cls.get_hook("check-types", TypeChecker.L.get_check_args()),
     cls.get_hook("lint-code", Linter.L.get_check_fix_args()),
+    cls.get_hook("check-types", TypeChecker.L.get_check_args()),
     # ...
 ]
 ```
