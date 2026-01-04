@@ -2,11 +2,12 @@
 
 from types import ModuleType
 
+import pytest
+
 from pyrig.src.string import (
     make_name_from_obj,
     re_search_excluding_docstrings,
     split_on_uppercase,
-    starts_with_docstring,
 )
 
 
@@ -59,6 +60,23 @@ def test_make_name_from_obj() -> None:
     assert result == expected, f"Expected '{expected}', got '{result}'"
 
 
+def test_make_name_from_obj_empty_input() -> None:
+    """Test that empty or separator-only inputs raise ValueError."""
+    # Empty string should raise ValueError
+    with pytest.raises(ValueError, match="no valid parts"):
+        make_name_from_obj("")
+
+    # String with only separators should raise ValueError
+    with pytest.raises(ValueError, match="no valid parts"):
+        make_name_from_obj("_")
+
+    with pytest.raises(ValueError, match="no valid parts"):
+        make_name_from_obj("__")
+
+    with pytest.raises(ValueError, match="no valid parts"):
+        make_name_from_obj("___")
+
+
 def test_re_search_excluding_docstrings() -> None:
     """Test func for re_search_excluding_docstrings."""
     content = '''"""Test module."""
@@ -85,23 +103,12 @@ def test_function() -> str:
     # should find it
     assert result is not None, f"Expected match for '{pattern}', got {result}"
 
-
-def test_starts_with_docstring() -> None:
-    """Test function."""
-    content = '''"""Test module."""
-
-def test_function() -> str:
-    """Test function."""
-    return "test"
+    # Unclosed docstring - content inside will NOT be excluded
+    unclosed_content = '''"""This docstring is never closed
+some_code = True
 '''
-    assert starts_with_docstring(content)
-
-    content = """'''Test module.'''
-    """
-    assert starts_with_docstring(content)
-
-    content = '''def test_function() -> str:
-    """Test function."""
-    return "test"
-'''
-    assert not starts_with_docstring(content), "Expected False"
+    pattern = r"some_code"
+    result = re_search_excluding_docstrings(pattern, unclosed_content)
+    # This WILL match because the unclosed docstring is not stripped
+    # This is documented behavior, not a bug
+    assert result is not None, "Expected match in unclosed docstring (known limitation)"

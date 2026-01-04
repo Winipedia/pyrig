@@ -64,9 +64,10 @@ from pyrig.src.modules.module import (
     get_isolated_obj_name,
     get_module_content_as_str,
     import_module_with_file_fallback,
+    module_has_docstring,
 )
 from pyrig.src.modules.path import ModulePath
-from pyrig.src.string import make_name_from_obj, starts_with_docstring
+from pyrig.src.string import make_name_from_obj
 from pyrig.src.testing.convention import (
     make_test_obj_importpath_from_obj,
     make_test_obj_name,
@@ -301,7 +302,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         test_module_content = get_module_content_as_str(cls.get_test_module())
         # if module content has no docstring, add the default one
-        if not starts_with_docstring(test_module_content):
+        if not module_has_docstring(cls.get_test_module()):
             test_module_content = get_default_module_content() + test_module_content
         test_module_content = cls.get_test_module_content_with_func_skeletons(
             test_module_content

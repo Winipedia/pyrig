@@ -19,7 +19,7 @@ Example:
 """
 
 from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
-from pyrig.src.string import starts_with_docstring
+from pyrig.src.modules.module import module_has_docstring
 
 
 class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
@@ -59,5 +59,4 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         Returns:
             True if parent validation passes or content starts with triple quotes.
         """
-        docstring = cls.get_file_content().strip()
-        return super().is_correct() or starts_with_docstring(docstring)
+        return super().is_correct() or module_has_docstring(cls.get_src_module())
