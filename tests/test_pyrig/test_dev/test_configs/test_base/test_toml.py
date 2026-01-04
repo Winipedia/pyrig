@@ -24,7 +24,7 @@ def my_test_toml_config_file(
             return Path()
 
         @classmethod
-        def get_configs(cls) -> dict[str, Any]:
+        def _get_configs(cls) -> dict[str, Any]:
             """Get the config."""
             return {"key": "value"}
 

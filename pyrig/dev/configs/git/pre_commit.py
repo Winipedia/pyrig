@@ -105,7 +105,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         return hook
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Get the complete pre-commit configuration.
 
         Generates .pre-commit-config.yaml with local hooks: lint-code (ruff check

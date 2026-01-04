@@ -56,7 +56,7 @@ class TestPreCommitConfigConfigFile:
             parent_path = my_test_pre_commit_config_file.get_parent_path()
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
-    def test_get_configs(
+    def test__get_configs(
         self, my_test_pre_commit_config_file: type[PreCommitConfigConfigFile]
     ) -> None:
         """Test method for get_configs."""

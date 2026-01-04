@@ -141,7 +141,7 @@ class BuilderConfigFile(ListConfigFile):
         return ""
 
     @classmethod
-    def get_configs(cls) -> list[Path]:
+    def _get_configs(cls) -> list[Path]:
         """Return empty list (builders don't use config lists)."""
         return []
 

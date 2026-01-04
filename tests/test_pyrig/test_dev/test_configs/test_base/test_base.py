@@ -57,7 +57,7 @@ def my_test_config_file(
             return Path("parent_dir")
 
         @classmethod
-        def get_configs(cls) -> dict[str, Any]:
+        def _get_configs(cls) -> dict[str, Any]:
             """Get the config."""
             return {
                 "key1": "value1",
@@ -71,6 +71,14 @@ def my_test_config_file(
 
 class TestConfigFile:
     """Test class."""
+
+    def test_get_configs(self, my_test_config_file: type[ConfigFile]) -> None:
+        """Test method."""
+        configs = my_test_config_file._get_configs()  # noqa: SLF001
+        cached_configs = my_test_config_file.get_configs()
+        assert configs == cached_configs
+        assert configs is not cached_configs
+        assert my_test_config_file.get_configs() is cached_configs
 
     def test_L(self) -> None:  # noqa: N802
         """Test method."""
@@ -194,7 +202,7 @@ class TestConfigFile:
         """Test method for get_file_extension."""
         assert my_test_config_file.get_file_extension() == "txt", "Expected txt"
 
-    def test_get_configs(self, my_test_config_file: type[ConfigFile]) -> None:
+    def test__get_configs(self, my_test_config_file: type[ConfigFile]) -> None:
         """Test method for get_configs."""
         assert isinstance(my_test_config_file.get_configs(), dict), "Expected dict"
 

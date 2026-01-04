@@ -74,7 +74,7 @@ class PyprojectConfigFile(TomlConfigFile):
         return Path()
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
         repo_owner, _ = get_repo_owner_and_name_from_git(check_repo_url=False)
 

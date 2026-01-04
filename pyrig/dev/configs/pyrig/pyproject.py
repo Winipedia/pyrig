@@ -70,7 +70,7 @@ if src_pkg_is_pyrig():
             return [*dev_statuses, *intended_audiences, *topics, *classifiers]
 
         @classmethod
-        def get_configs(cls) -> dict[str, Any]:
+        def _get_configs(cls) -> dict[str, Any]:
             """Generate complete pyproject.toml config with pyrig-specific keywords.
 
             Extends base configuration by adding keywords relevant to pyrig's
@@ -79,7 +79,7 @@ if src_pkg_is_pyrig():
             Returns:
                 Complete pyproject.toml configuration dict with pyrig keywords.
             """
-            configs = super().get_configs()
+            configs = super()._get_configs()
             keywords = [
                 "project-setup",
                 "automation",

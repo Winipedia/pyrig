@@ -53,7 +53,7 @@ def create_tests_for_package(package: ModuleType) -> None:
         all_modules.extend(modules)
 
     with ThreadPoolExecutor() as executor:
-        executor.map(create_test_package, pkgs_without_modules)
+        list(executor.map(create_test_package, pkgs_without_modules))
 
     # create test modules for all modules
     mirror_test_cls = MirrorTestConfigFile.L

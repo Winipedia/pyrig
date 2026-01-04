@@ -10,6 +10,7 @@ See Also:
 """
 
 from datetime import UTC, datetime
+from functools import cache
 from pathlib import Path
 
 import requests
@@ -69,6 +70,7 @@ class LicenceConfigFile(StringConfigFile):
 
     @classmethod
     @return_resource_content_on_fetch_error(resource_name="MIT_LICENSE_TEMPLATE")
+    @cache
     def get_mit_license(cls) -> str:
         """Fetch MIT license from GitHub SPDX API (with fallback)."""
         url = "https://api.github.com/licenses/mit"

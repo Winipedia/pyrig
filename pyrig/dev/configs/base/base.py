@@ -32,7 +32,7 @@ Example:
                 return Path()
 
             @classmethod
-            def get_configs(cls) -> dict[str, Any]:
+            def _get_configs(cls) -> dict[str, Any]:
                 '''Define expected configuration.'''
                 return {
                     "app": {
@@ -149,7 +149,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
 
     @classmethod
     @abstractmethod
-    def get_configs(cls) -> ConfigT:
+    def _get_configs(cls) -> ConfigT:
         """Return expected configuration structure.
 
         Returns:
@@ -192,6 +192,18 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         logger.info("Creating config file %s at: %s", cls.__name__, path)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
+
+    @classmethod
+    @cache
+    def get_configs(cls) -> ConfigT:
+        """Return expected configuration structure.
+
+        Cached to avoid multiple calls to _get_configs().
+
+        Returns:
+            Minimum required configuration as dict or list.
+        """
+        return cls._get_configs()
 
     @classmethod
     @cache
@@ -436,7 +448,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         """Initialize specific ConfigFile subclasses with priority-based ordering.
 
         Groups by priority, initializes in the order given, parallel within groups.
-        Order by priority is defined in get_all_subclasses and not reordered here.
+        Order by priority is defined in get_subclasses_ordered_by_priority.
 
         Args:
             subclasses: ConfigFile subclasses to initialize.
@@ -445,6 +457,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
             init_all_subclasses: Initialize all discovered subclasses
             init_priority_subclasses: Initialize only priority subclasses
         """
+        # order by priority
         subclasses_by_priority: dict[float, list[type[ConfigFile[Any]]]] = defaultdict(
             list
         )
@@ -458,8 +471,13 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         )
         max_workers = len(biggest_group) or 1
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            for priority, cf_group in subclasses_by_priority.items():
-                logger.debug("Initializing config files with priority: %s", priority)
+            for priority in sorted(subclasses_by_priority.keys(), reverse=True):
+                cf_group = subclasses_by_priority[priority]
+                logger.debug(
+                    "Initializing %d config files with priority: %s",
+                    len(cf_group),
+                    priority,
+                )
                 list(executor.map(lambda cf: cf(), cf_group))
 
     @classmethod

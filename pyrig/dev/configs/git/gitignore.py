@@ -9,6 +9,7 @@ See Also:
     Git documentation: https://git-scm.com/docs/gitignore
 """
 
+from functools import cache
 from pathlib import Path
 
 import requests
@@ -112,6 +113,7 @@ class GitIgnoreConfigFile(StringConfigFile):
 
     @classmethod
     @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
+    @cache
     def get_github_python_gitignore_as_str(cls) -> str:
         """Fetch GitHub's standard Python gitignore patterns.
 

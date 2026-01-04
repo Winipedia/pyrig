@@ -107,7 +107,7 @@ class StringConfigFile(ListConfigFile):
         return False
 
     @classmethod
-    def get_configs(cls) -> list[str]:
+    def _get_configs(cls) -> list[str]:
         r"""Return required content as list of lines.
 
         Returns:

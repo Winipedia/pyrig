@@ -46,7 +46,7 @@ class TestTypedConfigFile:
         with pytest.raises(ValueError, match=r"Cannot dump to py\.typed file"):
             my_test_typed_config_file.dump({"key": "value"})
 
-    def test_get_configs(
+    def test__get_configs(
         self, my_test_typed_config_file: type[TypedConfigFile]
     ) -> None:
         """Test method for get_configs."""

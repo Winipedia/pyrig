@@ -26,7 +26,7 @@ Example:
     ...         pass
     ...
     ...     @classmethod
-    ...     def get_configs(cls) -> dict[str, Any]:
+    ...     def _get_configs(cls) -> dict[str, Any]:
     ...         return {"key": "value"}
 """
 

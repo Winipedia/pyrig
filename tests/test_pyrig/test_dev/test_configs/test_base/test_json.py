@@ -24,7 +24,7 @@ def my_test_json_config_file(
             return Path()
 
         @classmethod
-        def get_configs(cls) -> dict[str, Any] | list[Any]:
+        def _get_configs(cls) -> dict[str, Any] | list[Any]:
             """Get the configs."""
             return {"key": "value"}
 

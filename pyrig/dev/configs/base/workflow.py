@@ -115,7 +115,7 @@ class Workflow(YamlConfigFile):
     ARTIFACTS_PATTERN = f"{ARTIFACTS_DIR_NAME}/*"
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Build the complete workflow configuration.
 
         Returns:

@@ -53,6 +53,7 @@ def get_git_username() -> str:
     return stdout.strip()
 
 
+@cache
 def get_repo_owner_and_name_from_git(
     *, check_repo_url: bool = True, url_encode: bool = False
 ) -> tuple[str, str]:

@@ -55,7 +55,7 @@ class DotEnvConfigFile(DictConfigFile):
         return Path()
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Return empty dict (pyrig doesn't manage .env content)."""
         return {}
 

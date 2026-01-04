@@ -347,7 +347,7 @@ class MyConfigFile(DictConfigFile):
         pass
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -385,7 +385,7 @@ class MyListConfigFile(ListConfigFile):
         pass
 
     @classmethod
-    def get_configs(cls) -> list[Any]:
+    def _get_configs(cls) -> list[Any]:
         return ["item1", "item2"]
 ```
 
@@ -409,7 +409,7 @@ class MyConfigFile(JsonConfigFile):
         return Path("config")
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -430,7 +430,7 @@ class MyConfigFile(YamlConfigFile):
         return Path("config")
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -451,7 +451,7 @@ class MyConfigFile(TomlConfigFile):
         return Path(".")
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         return {"tool": {"myapp": {"setting": "value"}}}
 ```
 
@@ -715,7 +715,7 @@ class DatabaseConfigFile(YamlConfigFile):
         return Path("config")
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Required database configuration."""
         return {
             "database": {

@@ -14,7 +14,7 @@ Example:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def get_configs(cls) -> dict[str, Any]:
+    ...     def _get_configs(cls) -> dict[str, Any]:
     ...         return {"tool": {"myapp": {"dependencies": ["dep1", "dep2"]}}}
 """
 
@@ -42,7 +42,7 @@ class TomlConfigFile(DictConfigFile):
         ...         return Path()
         ...
         ...     @classmethod
-        ...     def get_configs(cls) -> dict[str, Any]:
+        ...     def _get_configs(cls) -> dict[str, Any]:
         ...         return {"tool": {"myapp": {"version": "1.0.0"}}}
     """
 

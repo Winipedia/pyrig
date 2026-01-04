@@ -152,7 +152,7 @@ class TestWorkflow:
         result = my_test_workflow.insert_workflow_run_id()
         assert isinstance(result, str)
 
-    def test_get_configs(self, my_test_workflow: type[Workflow]) -> None:
+    def test__get_configs(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for get_configs."""
         result = my_test_workflow.get_configs()
         assert "name" in result, "Expected 'name' in configs"
