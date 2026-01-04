@@ -33,7 +33,7 @@ class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the YAML file
-        - `get_configs`: Expected YAML configuration structure
+        - `_get_configs`: Expected YAML configuration structure
 
     Example:
         >>> class MyConfigFile(YamlConfigFile):

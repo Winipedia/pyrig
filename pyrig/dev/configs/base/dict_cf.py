@@ -44,7 +44,7 @@ class DictConfigFile(ConfigFile[dict[str, Any]]):
     Subclasses must implement:
         - `get_parent_path`: Directory containing the config file
         - `get_file_extension`: File extension without leading dot
-        - `get_configs`: Expected configuration as dict
+        - `_get_configs`: Expected configuration as dict
         - `_load`: Load and parse the file
         - `_dump`: Write configuration to file
     """

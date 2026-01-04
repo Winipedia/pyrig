@@ -11,8 +11,10 @@ from pyrig.dev.configs.git.branch_protection import BranchProtectionConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.utils.git import (
     DEFAULT_BRANCH,
-    create_or_update_ruleset,
     get_github_repo_token,
+)
+from pyrig.dev.utils.github import (
+    create_or_update_ruleset,
     get_repo,
 )
 from pyrig.src.git import (
