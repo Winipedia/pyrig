@@ -17,15 +17,17 @@ Creates a py.typed file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[TypedConfigFile]
-    B --> C[PyTypedConfigFile]
+    A[ConfigFile] --> B[DictConfigFile]
+    B --> C[TypedConfigFile]
+    C --> D[PyTypedConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `TypedConfigFile`
+**Inherits from**: `TypedConfigFile` (which inherits from `DictConfigFile`)
 
 **What this means**:
 

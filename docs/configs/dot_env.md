@@ -16,18 +16,20 @@ Creates a .env file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DotEnvConfigFile]
+    A[ConfigFile] --> B[DictConfigFile]
+    B --> C[DotEnvConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `ConfigFile`
+**Inherits from**: `DictConfigFile`
 
 **What this means**:
 
-- Direct inheritance from ConfigFile
-- Custom `load()` and `dump()` implementations
+- Inherits from DictConfigFile (dict-based configuration)
+- Custom `_load()` and `_dump()` implementations
 - Read-only from pyrig's perspective
 - Users manage content manually
 
