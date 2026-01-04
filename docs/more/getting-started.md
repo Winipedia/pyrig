@@ -326,6 +326,12 @@ my-project/
 └── uv.lock                          # Dependency lock file
 ```
 
+### 9. Start coding
+
+Start coding in `my_project/src/` and write tests in `tests/`.
+
+Execute your code with `uv run my-project main`.
+
 **Documentation**:
 
 - `docs/index.md` - Documentation homepage with badges and project description
