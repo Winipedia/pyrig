@@ -11,8 +11,8 @@ discovered and integrated.
 Command Discovery:
     Discovers and registers commands from three sources:
     1. Main entry point: `main()` from `<package>.main`
-    2. Project-specific commands: Public functions from `<package>.dev.cli.subcommands`
-    3. Shared commands: Public functions from `<package>.dev.cli.shared_subcommands`
+    2. Project-specific commands: Functions from `<package>.dev.cli.subcommands`
+    3. Shared commands: Functions from `<package>.dev.cli.shared_subcommands`
        across all packages in the dependency chain
 
 Logging Configuration:
@@ -121,17 +121,17 @@ def add_subcommands() -> None:
 
     Dynamically discovers and registers two types of commands:
     1. Main entry point: `main()` from `<package>.main`
-    2. Subcommands: All public functions from `<package>.dev.cli.subcommands`
+    2. Subcommands: All functions from `<package>.dev.cli.subcommands`
 
     Discovery Process:
         1. Extracts package name from `sys.argv[0]`
         2. Replaces root module name in pyrig's paths with current package
         3. Converts module names to file paths and imports with fallback
-        4. Extracts all public functions from subcommands module
+        4. Extracts all functions from subcommands module
         5. Registers each function as a Typer command
 
     This enables dependent projects to define their own commands by creating
-    `<package>.dev.cli.subcommands` with public functions.
+    `<package>.dev.cli.subcommands` with functions.
 
     Example:
         # myproject/dev/cli/subcommands.py
@@ -143,7 +143,8 @@ def add_subcommands() -> None:
 
     Note:
         Package name is extracted from `sys.argv[0]`, not working directory.
-        Only public functions (not starting with `_`) are registered.
+        Only functions defined in the module are registered (imported functions
+        are excluded).
     """
     # extract project name from sys.argv[0]
     pkg_name = get_pkg_name_from_argv()
