@@ -4,7 +4,7 @@ Provides type-safe wrapper for pytest commands executed through UV (uv run pytes
 Ensures tests run in correct virtual environment.
 
 Example:
-    >>> from pyrig.src.management.project_tester import ProjectTester
+    >>> from pyrig.dev.management.project_tester import ProjectTester
     >>> ProjectTester.L.get_run_tests_args().run()
     >>> ProjectTester.L.get_run_tests_in_ci_args().run()
 """

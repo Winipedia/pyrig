@@ -46,7 +46,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         Must run `pre-commit install` after generating config.
 
     See Also:
-        pyrig.src.management.base.base.Args
+        pyrig.dev.management.base.base.Args
         pre-commit documentation: https://pre-commit.com/
     """
 

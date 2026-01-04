@@ -4,7 +4,7 @@ Provides type-safe wrapper for Ruff commands: check, format.
 Ruff is a fast Python linter and formatter written in Rust.
 
 Example:
-    >>> from pyrig.src.management.linter import Linter
+    >>> from pyrig.dev.management.linter import Linter
     >>> Linter.L.get_check_args().run()
     >>> Linter.L.get_format_args().run()
 """

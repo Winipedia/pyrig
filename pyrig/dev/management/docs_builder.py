@@ -4,7 +4,7 @@ Provides type-safe wrapper for MkDocs commands: build, serve, deploy.
 MkDocs is a static site generator for project documentation.
 
 Example:
-    >>> from pyrig.src.management.docs_builder import DocsBuilder
+    >>> from pyrig.dev.management.docs_builder import DocsBuilder
     >>> DocsBuilder.L.get_build_args().run()
     >>> DocsBuilder.L.get_serve_args().run()
 """

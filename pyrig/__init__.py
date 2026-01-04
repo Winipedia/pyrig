@@ -7,13 +7,13 @@ Subpackages:
     src: Runtime utilities available in production environments.
         Includes project name extraction (cli), constants (consts), Git utilities
         (git), directed graph (graph), nested structure validation (iterate),
-        resource access (resource), string manipulation (string), tool wrappers
-        (management), module introspection (modules), subprocess execution (os),
+        resource access (resource), string manipulation (string),
+        module introspection (modules), subprocess execution (processes),
         and testing conventions (testing).
     dev: Development-time tools requiring dev dependencies.
         Includes artifact builders (builders), CLI framework and commands (cli),
-        configuration file system (configs), test infrastructure (tests),
-        and development utilities (utils).
+        configuration file system (configs), tool wrappers (management),
+        test infrastructure (tests), and development utilities (utils).
     resources: Static resource files (templates, licenses, data files).
         Accessible via get_resource_path(name, package) from pyrig.src.resource.
 """

@@ -4,7 +4,7 @@ Provides type-safe wrapper for pre-commit commands (install, run).
 Enforces code quality standards via linters, formatters, and checks.
 
 Example:
-    >>> from pyrig.src.management.pre_committer import PreCommitter
+    >>> from pyrig.dev.management.pre_committer import PreCommitter
     >>> PreCommitter.L.get_install_args().run()
     >>> PreCommitter.L.get_run_all_files_args().run()
 """

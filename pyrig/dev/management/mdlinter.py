@@ -4,7 +4,7 @@ Provides type-safe wrapper for rumdl commands: check, fix.
 Rumdl is a fast markdown linter written in Rust.
 
 Example:
-    >>> from pyrig.src.management.mdlinter import MDLinter
+    >>> from pyrig.dev.management.mdlinter import MDLinter
     >>> MDLinter.L.get_check_args().run()
     >>> MDLinter.L.get_fix_args().run()
 """

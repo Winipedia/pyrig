@@ -4,7 +4,7 @@ Provides type-safe wrapper for pyrig commands executed directly or through UV.
 Used for programmatic execution of pyrig commands.
 
 Example:
-    >>> from pyrig.src.management.pyrigger import Pyrigger
+    >>> from pyrig.dev.management.pyrigger import Pyrigger
     >>> from pyrig.dev.cli.subcommands import build
     >>> Pyrigger.L.get_cmd_args(build)  # pyrig build
     >>> Pyrigger.L.get_venv_run_cmd_args(build)  # uv run pyrig build

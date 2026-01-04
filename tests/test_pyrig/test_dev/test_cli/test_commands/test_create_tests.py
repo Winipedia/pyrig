@@ -1,4 +1,4 @@
-"""Tests for pyrig.src.testing.create_tests module."""
+"""Tests module."""
 
 from contextlib import chdir
 from pathlib import Path
