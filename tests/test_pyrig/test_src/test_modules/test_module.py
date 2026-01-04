@@ -26,6 +26,7 @@ from pyrig.src.modules.module import (
     import_module_with_file_fallback_with_default,
     import_obj_from_importpath,
     make_obj_importpath,
+    module_has_docstring,
 )
 
 
@@ -304,3 +305,16 @@ def test_import_module_from_file(tmp_path: Path) -> None:
         module_pkg_path.write_text('"""Test module."""\n')
         module = import_module_from_file(module_pkg_path)
         assert module.__name__ == "test_pkg.test_module"
+
+
+def test_module_has_docstring(tmp_path: Path) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        module_path = tmp_path / "test_module.py"
+        module = create_module(module_path)
+        assert module_has_docstring(module)
+
+        module_path_no_docstring = tmp_path / "test_module_no_docstring.py"
+        module_path_no_docstring.write_text("def test_function() -> str:\n    pass\n")
+        module_no_docstring = create_module(module_path_no_docstring)
+        assert not module_has_docstring(module_no_docstring)

@@ -256,3 +256,15 @@ def get_module_name_replacing_start_module(
     """
     module_current_start = module.__name__.split(".")[0]
     return module.__name__.replace(module_current_start, new_start_module_name, 1)
+
+
+def module_has_docstring(module: ModuleType) -> bool:
+    """Check if a module has a docstring.
+
+    Args:
+        module: Module to check.
+
+    Returns:
+        True if module has a docstring, False otherwise.
+    """
+    return module.__doc__ is not None

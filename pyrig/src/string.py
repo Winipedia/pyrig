@@ -48,7 +48,8 @@ def make_name_from_obj(
         Formatted string.
 
     Raises:
-        ValueError: If object has no `__name__` and is not string.
+        ValueError: If object has no `__name__` and is not string, or if the
+            resulting name would be empty or contain only separators.
 
     Note:
         For non-string objects, only last component of `__name__` used.
@@ -63,6 +64,11 @@ def make_name_from_obj(
     else:
         obj_name = obj
     parts = obj_name.split(split_on)
+    # Filter out empty parts to avoid names consisting only of separators
+    parts = [part for part in parts if part]
+    if not parts:
+        msg = f"Cannot create name from '{obj_name}': no valid parts after splitting"
+        raise ValueError(msg)
     if capitalize:
         parts = [part.capitalize() for part in parts]
     return join_on.join(parts)
@@ -91,19 +97,3 @@ def re_search_excluding_docstrings(
     content = re.sub(r'"""[\s\S]*?"""', "", content)
     content = re.sub(r"'''[\s\S]*?'''", "", content)
     return re.search(pattern, content)
-
-
-def starts_with_docstring(content: str) -> bool:
-    """Check if content starts with a docstring.
-
-    Args:
-        content: Text content.
-
-    Returns:
-        True if content starts with a docstring, False otherwise.
-
-    Note:
-        Checks if the first non-whitespace characters are triple quotes.
-    """
-    first_line = content.strip().split("\n", maxsplit=1)[0].strip()
-    return any(first_line.startswith(quote) for quote in ('"""', "'''"))
