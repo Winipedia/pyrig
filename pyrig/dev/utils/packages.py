@@ -16,7 +16,7 @@ Examples:
         >>> from pyrig.dev.utils.packages import get_src_package
         >>> pkg = get_src_package()
         >>> print(pkg.__name__)
-        'myproject'
+        myproject
 
     Find packages with depth limit::
 
@@ -140,7 +140,7 @@ def get_src_package() -> ModuleType:
 
             >>> pkg = get_src_package()
             >>> print(pkg.__name__)
-            'myproject'
+            myproject
 
         Access package contents::
 

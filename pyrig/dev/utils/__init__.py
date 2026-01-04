@@ -17,7 +17,7 @@ Examples:
         >>> from pyrig.dev.utils.packages import get_src_package
         >>> pkg = get_src_package()
         >>> print(pkg.__name__)
-        'myproject'
+        myproject
 
     Parse version constraints::
 

@@ -207,6 +207,7 @@ When creating `.gitignore`, pyrig tries to fetch from GitHub:
 ```python
 @classmethod
 @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
+@cache
 def get_github_python_gitignore_as_str(cls) -> str:
     url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
     res = requests.get(url, timeout=10)
