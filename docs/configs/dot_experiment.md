@@ -17,11 +17,11 @@ Creates a .experiment.py file that:
 ## Inheritance
 
 ```mermaid
-graph TD
-    A[ConfigFile] --> B[ListConfigFile]
-    B --> C[StringConfigFile]
-    C --> D[PythonConfigFile]
-    D --> E[DotExperimentConfigFile]
+graph BT
+    E[DotExperimentConfigFile] --> D[PythonConfigFile]
+    D --> C[StringConfigFile]
+    C --> B[ListConfigFile]
+    B --> A[ConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
@@ -30,15 +30,15 @@ graph TD
     style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `PythonConfigFile` (via `ListConfigFile`)
+**Inherits from**: `PythonConfigFile`
 
 **What this means**:
 
 - Python file format (`.py` extension)
-- Text-based validation (checks if required content exists)
-- Users can add any content after the docstring
-- File is considered correct if it contains the required docstring
-- Simple structure without complex validation
+- Overrides `is_correct()` to only check file existence
+- Users can freely modify the file content
+- File is considered correct if it exists
+- Simple structure without content validation
 
 ## File Location
 
@@ -170,12 +170,14 @@ print(response.json())
 
 ## Validation Logic
 
-The validation is inherited from `StringConfigFile` and checks if the required
-docstring exists somewhere in the file.
+The `DotExperimentConfigFile` overrides the `is_correct()` method to simply
+check if the file exists. This is more permissive than the standard
+`StringConfigFile` validation.
 
-**Required element**: The docstring must exist somewhere in the file.
+**Required**: The file must exist.
 
-**Flexible content**: You can add anything before or after the docstring.
+**Flexible content**: You can modify the file content freely; validation only
+checks for file existence.
 
 ## Common Use Cases
 

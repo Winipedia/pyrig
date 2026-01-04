@@ -29,7 +29,7 @@ graph TD
     style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `PythonTestsConfigFile` (via `ListConfigFile`)
+**Inherits from**: `PythonTestsConfigFile`
 
 **What this means**:
 

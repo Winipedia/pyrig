@@ -26,7 +26,7 @@ graph TD
     style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `StringConfigFile` (via `ListConfigFile`)
+**Inherits from**: `StringConfigFile`
 
 **What this means**:
 

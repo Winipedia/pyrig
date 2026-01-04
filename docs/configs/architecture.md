@@ -21,12 +21,12 @@ graph TD
     A --> I[ListConfigFile]
     A --> B[YamlConfigFile]
     A --> F[JsonConfigFile]
-    A --> G[BuilderConfigFile]
 
     H --> C[TomlConfigFile]
     H --> E[TypedConfigFile]
 
     I --> D[StringConfigFile]
+    I --> G[BuilderConfigFile]
 
     B --> B1[YmlConfigFile]
     B --> B2[Workflow]
@@ -549,7 +549,7 @@ Copies entire module content from pyrig to your project:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.py_package import CopyModuleConfigFile
+from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
 from pyrig.dev.cli import subcommands
 
 class SubcommandsConfigFile(CopyModuleConfigFile):
@@ -567,7 +567,9 @@ Copies only the docstring, allowing custom implementation:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.py_package import CopyModuleOnlyDocstringConfigFile
+from pyrig.dev.configs.base.copy_module_docstr import (
+    CopyModuleOnlyDocstringConfigFile,
+)
 from pyrig.dev.cli import shared_subcommands
 
 class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):

@@ -85,10 +85,6 @@ graph TD
     style A4 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
 ```
 
-Note: uploaded names are -Linux, -Windows, -macOS,
-but downloaded names are -Linux, -Windows, -Darwin
-because of platform.system() in the build workflow.
-
 ## Jobs
 
 ### release

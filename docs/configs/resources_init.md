@@ -36,7 +36,7 @@ graph TD
     style I fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `InitConfigFile` (via `ListConfigFile`)
+**Inherits from**: `InitConfigFile`
 
 **What this means**:
 
@@ -68,7 +68,10 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 ### Generated Content
 
 ```python
-"""Resources package for managing project resource files."""
+"""Static resource files for the project.
+
+Place static resource files here (templates, data files, etc.). Resources can be
+accessed at runtime using `pyrig.src.resource.get_resource_path()`. """
 ```
 
 The file contains only the docstring, allowing you to add resource files to this
