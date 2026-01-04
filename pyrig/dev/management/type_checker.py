@@ -4,7 +4,7 @@ Provides type-safe wrapper for ty commands: check.
 Ty is Astral's extremely fast Python type checker.
 
 Example:
-    >>> from pyrig.src.management.type_checker import TypeChecker
+    >>> from pyrig.dev.management.type_checker import TypeChecker
     >>> TypeChecker.L.get_check_args().run()
 """
 

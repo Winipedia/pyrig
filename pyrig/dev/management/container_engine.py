@@ -4,7 +4,7 @@ Provides type-safe wrapper for Podman commands (build, save).
 Used for creating containerized builds, particularly PyInstaller executables.
 
 Example:
-    >>> from pyrig.src.management.container_engine import ContainerEngine
+    >>> from pyrig.dev.management.container_engine import ContainerEngine
     >>> build_args = ContainerEngine.L.get_build_args("-t", "myapp:latest", ".")
     >>> build_args.run()
 """

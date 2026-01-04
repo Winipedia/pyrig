@@ -1,4 +1,4 @@
-"""Tests for pyrig.src.projects.project module."""
+"""Tests module."""
 
 from pytest_mock import MockFixture
 

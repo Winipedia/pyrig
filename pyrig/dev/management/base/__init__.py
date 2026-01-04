@@ -5,5 +5,5 @@ management package. The `Tool` and `Args` classes enable type-safe, composable
 command-line argument construction.
 
 See Also:
-    pyrig.src.management.base.base: Implementation of Tool and Args classes
+    pyrig.dev.management.base.base: Implementation of Tool and Args classes
 """

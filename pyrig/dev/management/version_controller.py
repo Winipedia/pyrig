@@ -3,7 +3,7 @@
 Provides type-safe wrapper for Git commands: init, add, commit, push, tag, config.
 
 Example:
-    >>> from pyrig.src.management.version_controller import VersionController
+    >>> from pyrig.dev.management.version_controller import VersionController
     >>> VersionController.L.get_add_all_args().run()
     >>> VersionController.L.get_commit_no_verify_args("Update docs").run()
     >>> VersionController.L.get_push_args().run()

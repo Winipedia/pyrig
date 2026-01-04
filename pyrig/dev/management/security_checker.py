@@ -4,7 +4,7 @@ Provides type-safe wrapper for Bandit commands.
 Bandit is a tool designed to find common security issues in Python code.
 
 Example:
-    >>> from pyrig.src.management.security_checker import SecurityChecker
+    >>> from pyrig.dev.management.security_checker import SecurityChecker
     >>> SecurityChecker.L.get_run_args().run()
     >>> SecurityChecker.L.get_run_recursive_args(".").run()
 """

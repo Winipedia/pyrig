@@ -74,7 +74,7 @@ class BuilderConfigFile(ListConfigFile):
                     # ... compile and create executable ...
 
     See Also:
-        :class:`~pyrig.dev.configs.base.string.ListConfigFile`: Parent class providing
+        :class:`~pyrig.dev.configs.base.list_cf.ListConfigFile`: Parent class providing
             the list-based configuration file interface.
     """
 
