@@ -188,10 +188,11 @@ def discard_parent_classes[T: type](
     Enables clean override behavior.
 
     Args:
-        classes: List or set of class types to filter (modified in place).
+        classes: List or set of class types to filter. Modified in place.
 
     Returns:
-        Same collection with parent classes removed.
+        The same collection instance with parent classes removed.
+        Returns the input collection for method chaining convenience.
     """
     for cls in classes.copy():
         if any(child in classes for child in cls.__subclasses__()):
