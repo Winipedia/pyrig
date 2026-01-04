@@ -64,7 +64,7 @@ class TypedConfigFile(DictConfigFile):
             raise ValueError(msg)
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Return empty dict (PEP 561 requires empty files).
 
         Returns:

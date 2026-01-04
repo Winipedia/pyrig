@@ -75,7 +75,7 @@ class TestBuilderConfigFile:
         """Test method."""
         assert BuilderConfigFile.get_file_extension() == ""
 
-    def test_get_configs(self) -> None:
+    def test__get_configs(self) -> None:
         """Test method."""
         assert BuilderConfigFile.get_configs() == []
 

@@ -50,7 +50,7 @@ class MkdocsConfigFile(YmlConfigFile):
         return Path()
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any] | list[Any]:
+    def _get_configs(cls) -> dict[str, Any] | list[Any]:
         """Get the complete mkdocs.yml configuration.
 
         Generates MkDocs configuration with Material theme, navigation (Home, API),

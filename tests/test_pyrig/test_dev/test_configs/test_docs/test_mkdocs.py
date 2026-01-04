@@ -13,7 +13,7 @@ class TestMkdocsConfigFile:
         parent_path = MkdocsConfigFile.get_parent_path()
         assert parent_path == Path()
 
-    def test_get_configs(self) -> None:
+    def test__get_configs(self) -> None:
         """Test method."""
         configs = MkdocsConfigFile.get_configs()
         assert isinstance(configs, dict)

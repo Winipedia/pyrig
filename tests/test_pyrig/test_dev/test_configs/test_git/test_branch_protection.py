@@ -16,7 +16,7 @@ class TestBranchProtectionConfigFile:
         """Test method."""
         assert BranchProtectionConfigFile.get_filename() == "branch-protection"
 
-    def test_get_configs(self) -> None:
+    def test__get_configs(self) -> None:
         """Test method."""
         configs = BranchProtectionConfigFile.get_configs()
         assert isinstance(configs, dict)

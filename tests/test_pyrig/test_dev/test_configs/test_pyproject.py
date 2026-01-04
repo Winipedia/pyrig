@@ -114,7 +114,7 @@ class TestPyprojectConfigFile:
             actual = my_test_pyproject_config_file.get_parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test_get_configs(self) -> None:
+    def test__get_configs(self) -> None:
         """Test method for get_configs."""
         # pyproject get configs internally uses load which makes it a special case
         # where the file must exist before calling get_configs

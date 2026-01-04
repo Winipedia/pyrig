@@ -251,7 +251,7 @@ from pyrig.dev.configs.git.branch_protection import BranchProtectionConfigFile
 
 class MyBranchProtectionConfigFile(BranchProtectionConfigFile):
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Custom branch protection configuration."""
         config = super().get_configs()
         # Require 2 approvals instead of 1

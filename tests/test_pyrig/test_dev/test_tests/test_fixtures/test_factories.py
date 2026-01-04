@@ -38,7 +38,7 @@ def sample_config_file(
             return "test"
 
         @classmethod
-        def get_configs(cls) -> dict[str, Any]:
+        def _get_configs(cls) -> dict[str, Any]:
             """Get the configs."""
             return {"key": "value"}
 

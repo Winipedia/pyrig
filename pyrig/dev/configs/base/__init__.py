@@ -67,7 +67,7 @@ Using format-specific base classes::
             return Path()
 
         @classmethod
-        def get_configs(cls) -> dict[str, Any]:
+        def _get_configs(cls) -> dict[str, Any]:
             return {"setting": "value"}
 
 Using specialized base classes::

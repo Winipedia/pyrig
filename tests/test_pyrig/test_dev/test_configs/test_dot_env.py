@@ -76,7 +76,7 @@ class TestDotEnvConfigFile:
             actual = my_test_dotenv_config_file.get_parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test_get_configs(
+    def test__get_configs(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
     ) -> None:
         """Test method for get_configs."""

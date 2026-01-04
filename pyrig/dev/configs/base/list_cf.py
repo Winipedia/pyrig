@@ -26,7 +26,7 @@ Example:
     ...         pass
     ...
     ...     @classmethod
-    ...     def get_configs(cls) -> list[Any]:
+    ...     def _get_configs(cls) -> list[Any]:
     ...         return ["item1", "item2"]
 """
 

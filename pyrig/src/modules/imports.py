@@ -148,6 +148,7 @@ def walk_package(
     Yields:
         Tuples of (package, list of modules in package).
     """
+    logger.debug("Walking package: %s", package.__name__)
     subpackages, submodules = get_modules_and_packages_from_package(package)
     yield package, submodules
     for subpackage in subpackages:

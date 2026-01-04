@@ -49,7 +49,7 @@ See Also:
 
 import logging
 from abc import abstractmethod
-from collections import defaultdict
+from functools import cache
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Self, cast
@@ -271,11 +271,15 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return make_test_obj_importpath_from_obj(src_module)
 
     @classmethod
+    @cache
     def get_test_module(cls) -> ModuleType:
         """Import and return the test module, creating it if necessary.
 
         Uses file-based fallback to handle cases where the test module doesn't
         exist yet - creates an empty module from the expected file path.
+
+        Cached for performance - avoids repeated imports of the same module
+        during test skeleton generation.
 
         Returns:
             The test module object, either imported or newly created.
@@ -326,16 +330,19 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return test_module_content
 
     @classmethod
-    def get_untested_func_names(cls) -> list[str]:
+    @cache
+    def get_untested_func_names(cls) -> tuple[str, ...]:
         """Identify source functions that lack corresponding test functions.
 
         Compares functions in the source module against functions in the test
         module. For each source function, checks if a test function with the
         expected name (test_<function_name>) exists.
 
+        Cached for performance - called multiple times during initialization.
+
         Returns:
-            List of test function names that need to be created, using the
-            test naming convention (e.g., ["test_foo", "test_bar"]).
+            Tuple of test function names that need to be created, using the
+            test naming convention (e.g., ("test_foo", "test_bar")).
 
         Note:
             Logs debug information about the number and names of untested functions.
@@ -346,9 +353,9 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         supposed_test_func_names = [make_test_obj_name(f) for f in funcs]
         actual_test_func_names = [get_qualname_of_obj(f) for f in test_funcs]
 
-        untested_func_names = [
+        untested_func_names = tuple(
             f for f in supposed_test_func_names if f not in actual_test_func_names
-        ]
+        )
 
         logger.debug(
             "Found %d untested functions: %s",
@@ -438,7 +445,8 @@ def {test_func_name}() -> None:
         return test_module_content
 
     @classmethod
-    def get_untested_class_and_method_names(cls) -> defaultdict[str, list[str]]:
+    @cache
+    def get_untested_class_and_method_names(cls) -> dict[str, tuple[str, ...]]:
         """Identify source classes and methods lacking corresponding tests.
 
         Performs a comprehensive comparison between source and test modules:
@@ -448,17 +456,19 @@ def {test_func_name}() -> None:
         4. Identifies missing test classes and missing test methods within
            existing test classes
 
+        Cached for performance - called multiple times during initialization.
+
         Returns:
-            Dictionary mapping test class names to lists of missing test method
-            names. If a test class is entirely missing, it maps to an empty list.
+            Dictionary mapping test class names to tuples of missing test method
+            names. If a test class is entirely missing, it maps to an empty tuple.
             Returns empty dict if all classes and methods have tests.
 
         Example:
             Return value structure::
 
                 {
-                    "TestMyClass": ["test_method_one", "test_method_two"],
-                    "TestAnotherClass": [],  # class itself is missing
+                    "TestMyClass": ("test_method_one", "test_method_two"),
+                    "TestAnotherClass": (),  # class itself is missing
                 }
 
         Note:
@@ -485,9 +495,7 @@ def {test_func_name}() -> None:
             for tc, tms in test_class_to_test_methods.items()
         }
 
-        untested_test_class_to_test_methods_names: defaultdict[str, list[str]] = (
-            defaultdict(list)
-        )
+        untested_test_class_to_test_methods_names: dict[str, tuple[str, ...]] = {}
         for (
             supposed_test_class_name,
             supposed_test_methods_names,
@@ -495,11 +503,11 @@ def {test_func_name}() -> None:
             actual_test_methods_names = actual_test_class_to_test_methods_names.get(
                 supposed_test_class_name, []
             )
-            untested_test_methods_names = [
+            untested_test_methods_names = tuple(
                 tmn
                 for tmn in supposed_test_methods_names
                 if tmn not in actual_test_methods_names
-            ]
+            )
             # add the test class name to the dict if there are untested methods
             # or if the test class is not in the test module at all
             if untested_test_methods_names or (
@@ -583,9 +591,7 @@ class {test_class_name}:
             make_subclass_for_module: Creates individual subclasses
             get_subclasses_ordered_by_priority: Inherited ordering method
         """
-        return cls.get_subclasses_ordered_by_priority(
-            *[cls.make_subclass_for_module(module) for module in modules]
-        )
+        return list(map(cls.make_subclass_for_module, modules))
 
     @classmethod
     def make_subclass_for_module(cls, module: ModuleType) -> type[Self]:

@@ -14,7 +14,7 @@ Example:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def get_configs(cls) -> dict[str, Any]:
+    ...     def _get_configs(cls) -> dict[str, Any]:
     ...         return {"name": "my-package", "version": "1.0.0"}
 """
 
@@ -43,7 +43,7 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
             ...         return Path()
             ...
             ...     @classmethod
-            ...     def get_configs(cls) -> dict[str, Any]:
+            ...     def _get_configs(cls) -> dict[str, Any]:
             ...         return {"setting": "value", "nested": {"key": "value"}}
 
         List configuration::
@@ -54,7 +54,7 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
             ...         return Path()
             ...
             ...     @classmethod
-            ...     def get_configs(cls) -> list[Any]:
+            ...     def _get_configs(cls) -> list[Any]:
             ...         return ["item1", "item2", {"key": "value"}]
     """
 

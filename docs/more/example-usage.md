@@ -72,7 +72,7 @@ class LoggingConfigFile(YamlConfigFile):
         return Path("config")
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Required logging configuration."""
         return {
             "logging": {
@@ -123,7 +123,7 @@ class MkdocsConfigFile(BaseMkdocsCF):
     """Company-branded documentation theme."""
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Override theme with company colors."""
         config = super().get_configs()
 
@@ -192,7 +192,7 @@ class PyprojectConfigFile(BasePyprojectCF):
         ]
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Add company-specific tool configs."""
         config = super().get_configs()
 
@@ -356,7 +356,7 @@ class AuthConfigFile(YamlConfigFile):
         return Path("config")
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         return {
             "auth": {
                 "jwt_algorithm": "RS256",

@@ -21,7 +21,7 @@ class TestPyprojectConfigFile:
             assert classifier in pyrig_classifiers
             assert classifier not in base_classifiers
 
-    def test_get_configs(self) -> None:
+    def test__get_configs(self) -> None:
         """Test method."""
         base_keywords = BasePyprojectConfigFile.get_configs()["project"]["keywords"]
         pyrig_keywords = PyprojectConfigFile.get_configs()["project"]["keywords"]

@@ -84,7 +84,7 @@ class TestStringConfigFile:
         loaded = my_test_string_config_file.load()
         assert loaded == ["New content."]
 
-    def test_get_configs(
+    def test__get_configs(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
         """Test method for get_configs."""

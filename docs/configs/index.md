@@ -169,7 +169,7 @@ class MyConfigFile(YamlConfigFile):
         return Path("config")
 
     @classmethod
-    def get_configs(cls) -> dict[str, Any]:
+    def _get_configs(cls) -> dict[str, Any]:
         """Expected configuration structure."""
         return {
             "app": {
