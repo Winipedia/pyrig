@@ -1,12 +1,11 @@
 """MkDocs documentation builder wrapper.
 
-Provides type-safe wrapper for MkDocs commands: build, serve, deploy.
+Provides type-safe wrapper for MkDocs commands: build.
 MkDocs is a static site generator for project documentation.
 
 Example:
     >>> from pyrig.dev.management.docs_builder import DocsBuilder
     >>> DocsBuilder.L.get_build_args().run()
-    >>> DocsBuilder.L.get_serve_args().run()
 """
 
 from pyrig.dev.management.base.base import Tool
@@ -20,13 +19,9 @@ class DocsBuilder(Tool):
 
     Operations:
         - Building: Build static documentation site
-        - Serving: Local development server
-        - Deploying: Deploy to GitHub Pages
 
     Example:
         >>> DocsBuilder.L.get_build_args().run()
-        >>> DocsBuilder.L.get_serve_args().run()
-        >>> DocsBuilder.L.get_gh_deploy_args().run()
     """
 
     @classmethod

@@ -620,7 +620,7 @@ fixtures for automatic test generation.
 #### Customizing Test Generation
 
 Subclass `MirrorTestConfigFile` in your project's `dev/tests/` directory to
-customize skeleton generation. The `leaf()` method ensures your subclass is
+customize skeleton generation. The `L` class property ensures your subclass is
 used. For example, to change the skeleton for test functions:
 
 ```python
