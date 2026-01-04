@@ -90,18 +90,22 @@ Subclasses implement `_load()` and `_dump()` (internal methods). Users call
 
 ### Caching System
 
-The `load()` method uses `@functools.cache` to avoid redundant file reads:
+Both `load()` and `get_configs()` use `@functools.cache` to avoid redundant
+operations:
 
-- **First call**: Reads file via `_load()` and caches the result
-- **Subsequent calls**: Returns cached data without disk I/O
-- **Cache invalidation**: `dump()` clears the cache before and after writing
+- **First call**: Executes `_load()` or `_get_configs()` and caches the result
+- **Subsequent calls**: Returns cached data without re-execution
+- **Cache invalidation**: `dump()` clears the `load()` cache before and after
+  writing (the `get_configs()` cache is never cleared since config structure
+  shouldn't change at runtime)
 
 This provides significant performance improvements when config files
 are accessed multiple times, while ensuring data consistency after writes.
 
-### Caching Pitfall: Never Mutate Loaded Config
+### Caching Pitfall: Never Mutate Cached Results
 
-Due to caching, mutating the object returned by `load()` creates subtle bugs:
+Due to caching, mutating the object returned by `load()` or `get_configs()`
+creates subtle bugs:
 
 ```python
 # ❌ WRONG - mutates cached object
@@ -133,8 +137,8 @@ the existing `pyproject.toml` (via calling `load()`) to preserve user-defined
 values. If `_get_configs()` mutates the loaded data, the cache becomes corrupted
 and subsequent calls return incorrect values.
 
-**Rule**: Always treat `load()` results as read-only. Return new structures
-instead of modifying in place.
+**Rule**: Always treat `load()` and `get_configs()` results as read-only. Return
+new structures instead of modifying in place.
 
 ## Initialization Process
 

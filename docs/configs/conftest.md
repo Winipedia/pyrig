@@ -33,10 +33,11 @@ graph TD
 
 **What this means**:
 
-- Python file in the tests directory
-- Located at `tests/conftest.py`
-- Text-based validation (checks for required content)
-- Allows modifications as long as required import exists
+- Python file in the tests directory (`PythonTestsConfigFile`
+sets parent path to `tests/`)
+- Uses line-based content via `get_lines()` (inherited from `StringConfigFile`)
+- Validates by checking if required content exists anywhere in the file
+- Allows user additions as long as required `pytest_plugins` import exists
 
 ## File Location
 
@@ -52,9 +53,8 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Plugin import**: Imports `pyrig.dev.tests.conftest` as a pytest plugin
-2. **Docstring**: Explains the file's purpose and warns against manual
-   modification
+1. **Docstring**: Explains the file's purpose as the pyrig pytest plugin
+2. **Plugin import**: Imports `pyrig.dev.tests.conftest` as a pytest plugin
 3. **Pytest integration**: Automatically loads pyrig's fixtures and hooks
 
 ### Generated Content
@@ -62,10 +62,9 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 ```python
 """Pytest configuration for tests.
 
-This module configures pytest plugins for the test suite, setting up the
-necessary fixtures and hooks for the different test scopes (function, class,
-module, package, session). It also import custom plugins from tests/base/scopes.
-This file should not be modified manually. """
+This defines the pyrig pytest plugin that provides access to pyrig's test
+infrastructure, including fixtures, hooks, and test utilities.
+"""
 
 pytest_plugins = ["pyrig.dev.tests.conftest"]
 ```
@@ -75,17 +74,9 @@ all pyrig fixtures available.
 
 ## Validation Logic
 
-The `is_correct()` method checks for the required plugin import:
-
-```python
-@classmethod
-def is_correct(cls) -> bool:
-    """Check if the conftest.py file is valid."""
-    return super().is_correct() or (
-        f'pytest_plugins = ["{make_obj_importpath(conftest)}"]'
-        in cls.get_file_content()
-    )
-```
+The `is_correct()` method checks for the required plugin import. The file is
+considered valid if it contains the `pytest_plugins` line with the pyrig
+conftest import path.
 
 **Required element**: The `pytest_plugins` list with pyrig's conftest import.
 
