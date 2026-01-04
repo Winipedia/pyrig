@@ -286,7 +286,10 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
     def add_missing_dict_val(
         expected_dict: dict[str, Any], actual_dict: dict[str, Any], key: str
     ) -> None:
-        """Add missing dict value during config merging (modifies actual_dict in place).
+        """Merge dict value during config merging (modifies actual_dict in place).
+
+        For dict values, merges expected into actual (actual values preserved,
+        expected values added). For non-dict values, expected value takes precedence.
 
         Args:
             expected_dict: Expected configuration dict.

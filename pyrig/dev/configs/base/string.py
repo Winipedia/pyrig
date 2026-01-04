@@ -66,17 +66,27 @@ class StringConfigFile(ListConfigFile):
 
     @classmethod
     def _dump(cls, config: list[str]) -> None:
-        r"""Write content to file, preserving user additions by appending.
+        r"""Write content to file.
 
         Args:
             config: List of lines to write to the file.
+
+        Note:
+            User additions are preserved via add_missing_configs(), not here.
         """
         string = cls.make_string_from_lines(config)
         cls.get_path().write_text(string, encoding="utf-8")
 
     @classmethod
     def add_missing_configs(cls) -> list[Any]:
-        """For string config files we just insert at the beginning."""
+        """Merge expected config lines with existing file content.
+
+        Prepends expected lines to existing content. If override_content() is True,
+        existing content is discarded.
+
+        Returns:
+            Merged list of lines (expected lines first, then existing lines).
+        """
         actual_lines = cls.load()
         expected_lines = cls.get_configs()
         if not cls.override_content() and actual_lines:

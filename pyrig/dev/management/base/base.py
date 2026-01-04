@@ -90,9 +90,6 @@ class Tool(ABC):
 
         Returns:
             Final leaf subclass type. Can be abstract.
-
-        See Also:
-            get_all_subclasses: Get all subclasses regardless of priority
         """
         return discover_leaf_subclass_across_dependents(
             cls=cls,

@@ -5,7 +5,7 @@ Used for creating containerized builds, particularly PyInstaller executables.
 
 Example:
     >>> from pyrig.dev.management.container_engine import ContainerEngine
-    >>> build_args = ContainerEngine.L.get_build_args("-t", "myapp:latest", ".")
+    >>> build_args = ContainerEngine.L.get_build_args(project_name="myapp")
     >>> build_args.run()
 """
 
@@ -21,8 +21,11 @@ class ContainerEngine(Tool):
     Constructs podman command arguments for building and saving container images.
 
     Example:
-        >>> ContainerEngine.L.get_build_args("-t", "app:v1", ".").run()
-        >>> ContainerEngine.L.get_save_args("-o", "app.tar", "app:v1").run()
+        >>> from pathlib import Path
+        >>> ContainerEngine.L.get_build_args(project_name="app:v1").run()
+        >>> ContainerEngine.L.get_save_args(
+        ...     image_file=Path("app.tar"), image_path=Path("./dist")
+        ... ).run()
     """
 
     @classmethod
@@ -39,8 +42,8 @@ class ContainerEngine(Tool):
         """Construct podman build arguments.
 
         Args:
-            *args: Build command arguments.
-            project_name: Name of the project to build.
+            *args: Additional build command arguments.
+            project_name: Name of the project to build (keyword-only).
 
         Returns:
             Args for 'podman build'.
@@ -52,9 +55,9 @@ class ContainerEngine(Tool):
         """Construct podman save arguments.
 
         Args:
-            *args: Save command arguments.
-            image_file: Name of the image file to save.
-            image_path: Path to the image file to save.
+            *args: Additional save command arguments.
+            image_file: Name of the image file to save (keyword-only).
+            image_path: Path to the image file to save (keyword-only).
 
         Returns:
             Args for 'podman save'.

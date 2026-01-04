@@ -23,10 +23,12 @@ def get_resource_path(name: str, package: ModuleType) -> Path:
         the actual file. In PyInstaller bundles, this points to a temporary
         extraction that may be cleaned up when the process exits.
 
-    Note:
-        In PyInstaller bundles, files are extracted to a temporary directory.
-        The returned path should be used immediately or copied if persistence
-        is needed beyond the current operation.
+    Warning:
+        This function returns a path from within a context manager that exits
+        immediately after return. For regular file-based packages, this works
+        correctly. However, for zip-imported packages or certain PyInstaller
+        configurations, the temporary file may be cleaned up. Use the returned
+        path immediately or copy the file contents if persistence is needed.
     """
     # Use Traversable.joinpath and resolve to Path
     # Note: as_file context manager is used but we return immediately,

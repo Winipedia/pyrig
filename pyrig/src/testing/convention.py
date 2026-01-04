@@ -18,7 +18,8 @@ Utilities:
 Example:
     >>> from pyrig.src.testing.convention import make_test_obj_name
     >>> def my_function(): pass
-    >>> make_test_obj_name(my_function)  # 'test_my_function'
+    >>> make_test_obj_name(my_function)
+    'test_my_function'
 
 Attributes:
     COVERAGE_THRESHOLD: Minimum test coverage percentage (90%)
@@ -69,7 +70,8 @@ def get_right_test_prefix(obj: Callable[..., Any] | type | ModuleType) -> str:
 
     Example:
         >>> class MyClass: pass
-        >>> get_right_test_prefix(MyClass)  # 'Test'
+        >>> get_right_test_prefix(MyClass)
+        'Test'
     """
     if isinstance(obj, ModuleType):
         return TEST_MODULE_PREFIX
@@ -89,7 +91,8 @@ def make_test_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
 
     Example:
         >>> def calculate_sum(a, b): return a + b
-        >>> make_test_obj_name(calculate_sum)  # 'test_calculate_sum'
+        >>> make_test_obj_name(calculate_sum)
+        'test_calculate_sum'
     """
     prefix = get_right_test_prefix(obj)
     name = get_isolated_obj_name(obj)
@@ -109,8 +112,10 @@ def reverse_make_test_obj_name(test_name: str) -> str:
         ValueError: If test name doesn't start with expected prefix.
 
     Example:
-        >>> reverse_make_test_obj_name("test_calculate_sum")  # 'calculate_sum'
-        >>> reverse_make_test_obj_name("TestUserManager")  # 'UserManager'
+        >>> reverse_make_test_obj_name("test_calculate_sum")
+        'calculate_sum'
+        >>> reverse_make_test_obj_name("TestUserManager")
+        'UserManager'
     """
     for prefix in TEST_PREFIXES:
         if test_name.startswith(prefix):
@@ -206,7 +211,8 @@ def get_test_obj_from_obj(
     Example:
         >>> from myapp.utils import calculate_sum
         >>> test_func = get_test_obj_from_obj(calculate_sum)
-        >>> test_func.__name__  # 'test_calculate_sum'
+        >>> test_func.__name__
+        'test_calculate_sum'
     """
     test_obj_path = make_test_obj_importpath_from_obj(obj)
     return import_obj_from_importpath(test_obj_path)
@@ -232,7 +238,8 @@ def get_obj_from_test_obj(
     Example:
         >>> from tests.test_myapp.test_utils import test_calculate_sum
         >>> source_func = get_obj_from_test_obj(test_calculate_sum)
-        >>> source_func.__name__  # 'calculate_sum'
+        >>> source_func.__name__
+        'calculate_sum'
     """
     obj_importpath = make_obj_importpath_from_test_obj(test_obj)
     return import_obj_from_importpath(obj_importpath)

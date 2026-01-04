@@ -49,10 +49,10 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         """Load and parse the JSON file.
 
         Returns:
-            Parsed JSON content as dict.
+            Parsed JSON content as dict or list.
         """
         path = cls.get_path()
-        data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+        data: dict[str, Any] | list[Any] = json.loads(path.read_text(encoding="utf-8"))
         return data
 
     @classmethod
@@ -60,7 +60,7 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         """Write configuration to JSON file with 4-space indentation.
 
         Args:
-            config: Configuration dict to write.
+            config: Configuration dict or list to write.
         """
         with cls.get_path().open("w") as f:
             json.dump(config, f, indent=4)
