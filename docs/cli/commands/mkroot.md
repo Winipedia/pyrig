@@ -33,12 +33,9 @@ The `mkroot` command:
    - Files **within each priority group** are initialized **in parallel** using
      ThreadPoolExecutor
 
-When using `--priority`, only files with `get_priority() > 0` are created.
-
 ### Priority Config Files
 
-When using `--priority`, only files with `get_priority() > 0` are created, in
-sequential order by priority:
+When using `--priority`, only files with `get_priority() > 0` are created:
 
 **Current priority files in pyrig**:
 
@@ -76,30 +73,8 @@ config files.
 
 ## Behavior
 
-### Without `--priority` flag
-
-All config files are initialized using a hybrid approach:
-
-1. **Group by priority** - Files are grouped by their `get_priority()` value
-2. **Sequential group processing** - Priority groups processed in order (highest
-   first)
-3. **Parallel within groups** - Files in the same priority group initialize
-   concurrently
-
-This ensures:
-
-- **Correct ordering** - Dependencies respected through priority values
-- **Fast initialization** - Independent files (same priority) run in parallel
-
-### With `--priority` flag
-
-Only files with `get_priority() > 0` are initialized, using the same grouped
-approach (groups processed sequentially, files within each group in parallel).
-
-### General Behavior
-
 - **Creates files that do not exist yet**
-- **Does overwrite existing files if they are not correct**
+- **Updates existing files** if they do not match expected configuration
 - **Idempotent** - Safe to run multiple times
 - **Respects opt-out** - Files with opt-out markers are skipped
 
@@ -135,16 +110,6 @@ The command delegates to:
 
 See [Configuration Architecture](../../configs/architecture.md) for details on
 the priority system and parallel initialization.
-
-## Examples
-
-```bash
-# Create all config files
-uv run pyrig mkroot
-
-# Create only priority files (during initial setup)
-uv run pyrig mkroot --priority
-```
 
 ## Related
 

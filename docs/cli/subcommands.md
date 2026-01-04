@@ -1,7 +1,7 @@
 # Subcommands
 
 Project-specific CLI commands are defined in the `dev/cli/subcommands.py`
-module. All functions in this module are automatically registered as CLI
+module. All public functions in this module are automatically registered as CLI
 commands.
 
 ## Defining Commands
@@ -123,15 +123,19 @@ def build() -> None:
 
 ## Automatic Registration
 
-The CLI system automatically discovers and registers two types of commands:
+The CLI system automatically discovers and registers three types of commands:
 
 1. **Main entry point** - The `main()` function from `<package>.main`
-2. **Subcommands** - All functions from `<package>.dev.cli.subcommands`
+2. **Subcommands** - All public functions from `<package>.dev.cli.subcommands`
+3. **Shared subcommands** - All public functions
+    from `<package>.dev.cli.shared_subcommands` across all packages
+    in the dependency chain (see [Shared Subcommands](shared-subcommands.md))
 
 Functions are discovered and registered automatically:
 
 - **No manual registration** required
-- **Functions only** - classes and variables are ignored
+- **Public functions only** - classes, variables,
+    and private functions (starting with `_`) are ignored
 - **Defined in module** - imported functions are excluded
 - **Sorted by definition order** - commands appear in the order they're defined
 
@@ -140,25 +144,19 @@ Functions are discovered and registered automatically:
 ```mermaid
 graph TD
     A[CLI Entry Point] --> B[Extract package name from sys.argv]
-    B --> C{Package is pyrig?}
+    B --> C[Replace pyrig module paths with package name]
+    C --> D[Import package.dev.cli.subcommands]
 
-    C -->|Yes| D[Import pyrig.dev.cli.subcommands]
-    C -->|No| E[Replace module path with package name]
-    E --> F[Import package.dev.cli.subcommands]
+    D --> E[Get all public functions from module]
+    E --> F[Filter: only functions defined in module]
+    F --> G[Sort by definition order]
+    G --> H[For each function...]
 
-    D --> G[Get all functions from module]
-    F --> G
+    H --> I[Register with Typer app]
+    I --> H
 
-    G --> H[Filter: only functions defined in module]
-    H --> I[Sort by definition order]
-    I --> J[For each function...]
-
-    J --> K[Convert name to command name]
-    K --> L[Register with Typer app]
-    L --> J
-
-    J --> M[All commands registered]
-    M --> N[CLI ready to execute]
+    H --> J[Discover shared subcommands from dependency chain]
+    J --> K[CLI ready to execute]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -167,11 +165,9 @@ graph TD
     style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style I fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style K fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style L fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style N fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style I fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style J fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
+    style K fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
 ## Command Naming

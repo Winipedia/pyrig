@@ -105,7 +105,7 @@ formatters/linters to ensure the codebase follows style guidelines:
 - Ruff formatting and linting
 - Type checking with ty
 - Security scanning with bandit
-- Documentation updates
+- Markdown linting with rumdl
 
 ### 8. Running Tests
 

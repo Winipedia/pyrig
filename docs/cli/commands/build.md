@@ -24,11 +24,13 @@ The `build` command:
 2. **Invokes each builder** to create its artifacts
 3. **Outputs artifacts** to the `dist/` directory
 
-### Built-in Builders
+### Built-in Builder Base Classes
 
-pyrig includes a PyInstaller builder that creates standalone executables:
+pyrig provides abstract base classes for building artifacts:
 
-- **PyInstallerBuilder** - Creates platform-specific executables from `main.py`
+- **BuilderConfigFile** - Base class for all builders
+- **PyInstallerBuilder** - Abstract base for creating PyInstaller executables
+  (subclass this and implement `get_additional_resource_pkgs()` to use)
 
 ### Artifact Naming
 
