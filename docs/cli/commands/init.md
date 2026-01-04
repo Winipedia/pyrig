@@ -72,9 +72,9 @@ Creates essential config files with `get_priority() > 0`, grouped by priority:
 - **Priority 30**: `LICENSE` - Must exist before pyproject.toml for license
   detection
 - **Priority 20**: `pyproject.toml` - Project metadata and dependencies
-- **Priority 10**: `myapp/dev/configs/__init__.py` and
-  `myapp/dev/tests/fixtures/__init__.py` - Package structure files (initialized
-  in parallel)
+- **Priority 10**: `myapp/dev/configs/__init__.py`,
+  `myapp/dev/tests/fixtures/__init__.py`, and `myapp/dev/management/__init__.py`
+  \- Package structure files (initialized in parallel)
 
 Priority groups are processed sequentially (highest first), with files in the
 same group initialized in parallel. These files are required before other setup

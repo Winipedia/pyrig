@@ -226,6 +226,9 @@ The following methods are available for advanced customization:
 
 ### Icon Management
 
+- **`get_app_icon_png_path()`**:
+    Returns the path to the source PNG
+    icon file (default: `<src_pkg>/resources/icon.png`)
 - **`get_app_icon_path(temp_dir: Path)`**:
     Returns the platform-appropriate icon path
 - **`convert_png_to_format(file_format: str, temp_dir_path: Path)`**:

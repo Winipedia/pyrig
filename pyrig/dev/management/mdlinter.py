@@ -1,12 +1,12 @@
 """Rumdl markdown linter wrapper.
 
-Provides type-safe wrapper for rumdl commands: check, fix.
+Provides type-safe wrapper for rumdl commands: check.
 Rumdl is a fast markdown linter written in Rust.
 
 Example:
     >>> from pyrig.dev.management.mdlinter import MDLinter
     >>> MDLinter.L.get_check_args().run()
-    >>> MDLinter.L.get_fix_args().run()
+    >>> MDLinter.L.get_check_fix_args().run()
 """
 
 from pyrig.dev.management.base.base import Tool
@@ -24,7 +24,7 @@ class MDLinter(Tool):
 
     Example:
         >>> MDLinter.L.get_check_args().run()
-        >>> MDLinter.L.get_fix_args().run()
+        >>> MDLinter.L.get_check_fix_args().run()
     """
 
     @classmethod
@@ -50,12 +50,12 @@ class MDLinter(Tool):
 
     @classmethod
     def get_check_fix_args(cls, *args: str) -> Args:
-        """Construct rumdl fix arguments.
+        """Construct rumdl check arguments with auto-fix.
 
         Args:
-            *args: Fix command arguments.
+            *args: Check command arguments.
 
         Returns:
-            Args for 'rumdl fix'.
+            Args for 'rumdl check --fix'.
         """
         return cls.get_check_args("--fix", *args)
