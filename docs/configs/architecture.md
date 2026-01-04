@@ -550,16 +550,15 @@ Copies entire module content from pyrig to your project:
 ```python
 from types import ModuleType
 from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
-from pyrig.dev.cli import subcommands
+from pyrig import main
 
-class SubcommandsConfigFile(CopyModuleConfigFile):
+class MainConfigFile(CopyModuleConfigFile):
     @classmethod
     def get_src_module(cls) -> ModuleType:
-        return subcommands
+        return main
 ```
 
-Creates `myapp/dev/cli/subcommands.py` with full content from
-`pyrig.dev.cli.subcommands`.
+Creates `myapp/main.py` with full content from `pyrig.main`.
 
 ### CopyModuleOnlyDocstringConfigFile
 
