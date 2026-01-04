@@ -124,4 +124,4 @@ class Args(tuple[str, ...]):
         Raises:
             subprocess.CalledProcessError: If check=True and command fails.
         """
-        return run_subprocess(self, *args, **kwargs)
+        return run_subprocess((*self, *args), **kwargs)

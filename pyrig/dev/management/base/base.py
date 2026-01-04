@@ -15,7 +15,7 @@ Benefits:
     - Discoverability: IDE autocomplete shows available commands
 
 Example:
-    >>> from pyrig.src.management.package_manager import PackageManager
+    >>> from pyrig.dev.management.package_manager import PackageManager
     >>> args = PackageManager.L.get_install_dependencies_args()
     >>> print(args)
     uv sync

@@ -4,7 +4,7 @@ Provides type-safe wrapper for UV commands: init, sync, add, build, publish, ver
 UV is pyrig's primary package manager (Rust-based, replaces pip/virtualenv).
 
 Example:
-    >>> from pyrig.src.management.package_manager import PackageManager
+    >>> from pyrig.dev.management.package_manager import PackageManager
     >>> PackageManager.L.get_install_dependencies_args().run()
     >>> PackageManager.L.get_add_dependencies_args("requests").run()
 """

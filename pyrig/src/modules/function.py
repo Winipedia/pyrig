@@ -37,7 +37,6 @@ def is_func(obj: Any) -> bool:
     """Check if an object is any kind of callable method-like attribute.
 
     Detects plain functions, staticmethod, classmethod, property, and decorators.
-    Also detects propert library descriptors (classproperty, cached_classproperty).
 
     Args:
         obj: Object to check.
