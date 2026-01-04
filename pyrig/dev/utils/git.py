@@ -1,18 +1,9 @@
-"""GitHub repository API utilities and ruleset management.
+"""Git utilities for repository configuration and gitignore management.
 
-Utilities for interacting with the GitHub API, specifically for repository rulesets
-and gitignore file handling. Uses PyGithub for authentication and API calls.
-
-GitHub rulesets are the modern mechanism for branch protection, offering more
-flexibility than legacy branch protection rules.
+Utilities for GitHub token retrieval, gitignore file handling, and repository
+configuration constants.
 
 Functions:
-    get_rules_payload: Build a rules array for GitHub rulesets
-    create_or_update_ruleset: Create or update a repository ruleset
-    get_all_rulesets: Retrieve all rulesets for a repository
-    get_repo: Get a PyGithub Repository object
-    ruleset_exists: Check if a ruleset with a given name exists
-    github_api_request: Make a generic GitHub API request
     get_github_repo_token: Retrieve GitHub token from environment or .env
     path_is_in_gitignore_lines: Check if a path matches gitignore patterns
     load_gitignore: Load gitignore file as a list of patterns
@@ -22,21 +13,8 @@ Module Attributes:
     DEFAULT_RULESET_NAME (str): Default protection ruleset name
     GITIGNORE_PATH (Path): Path to .gitignore file
 
-Examples:
-    Create a ruleset with pull request requirements::
-
-        >>> from pyrig.dev.utils.git import create_or_update_ruleset, get_rules_payload
-        >>> rules = get_rules_payload(
-        ...     pull_request={"required_approving_review_count": 1},
-        ...     deletion={}
-        ... )
-        >>> create_or_update_ruleset(
-        ...     token="ghp_...", owner="myorg", repo_name="myrepo",
-        ...     name="main-protection", target="branch",
-        ...     enforcement="active", rules=rules
-        ... )
-
 See Also:
+    pyrig.dev.utils.github: GitHub API utilities for rulesets and repository operations
     pyrig.dev.cli.commands.protect_repo: High-level repository protection
 """
 
