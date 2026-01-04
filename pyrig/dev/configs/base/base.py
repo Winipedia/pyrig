@@ -8,13 +8,18 @@ Subclass Requirements:
     Must implement:
     - `get_parent_path()`: Directory containing the file
     - `get_file_extension()`: File extension without leading dot
-    - `_get_configs()`: Expected configuration structure
+    - `_get_configs()`: Expected configuration structure (internal implementation)
     - `_load()`: Load and parse the file (internal implementation)
     - `_dump(config)`: Write configuration to file (internal implementation)
 
     Optionally override:
     - `get_priority()`: Float priority (default 0, higher = first)
     - `get_filename()`: Filename without extension (auto-derived from class name)
+
+    Public API (already implemented, do not override):
+    - `get_configs()`: Cached wrapper around `_get_configs()`
+    - `load()`: Cached wrapper around `_load()`
+    - `dump(config)`: Cache-invalidating wrapper around `_dump(config)`
 
 Example:
     Create a custom TOML config file::
@@ -92,16 +97,21 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         ConfigT: The configuration type (dict[str, Any] or list[Any]).
 
     Subclass Requirements:
-        Must implement:
+        Must implement (internal methods with underscore prefix):
         - `get_parent_path()`: Directory containing the file
         - `get_file_extension()`: File extension (e.g., "toml", "yaml")
-        - `_get_configs()`: Expected configuration (dict or list)
-        - `_load()`: Load and parse the file (internal implementation)
-        - `_dump(config)`: Write configuration to file (internal implementation)
+        - `_get_configs()`: Expected configuration (dict or list) - internal
+        - `_load()`: Load and parse the file - internal implementation
+        - `_dump(config)`: Write configuration to file - internal implementation
 
         Optionally override:
         - `get_priority()`: Initialization priority (default 0)
         - `get_filename()`: Filename without extension (auto-derived)
+
+        Public API (already implemented with caching, do not override):
+        - `get_configs()`: Returns cached result of `_get_configs()`
+        - `load()`: Returns cached result of `_load()`
+        - `dump(config)`: Invalidates cache and calls `_dump(config)`
 
     See Also:
         pyrig.dev.configs: Package-level documentation

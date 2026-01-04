@@ -153,7 +153,7 @@ def test_get_obj_from_test_obj() -> None:
 
 
 def test_make_summary_error_msg() -> None:
-    """Test func for make_untested_summary_error_msg."""
+    """Test func."""
     # Test with empty list
     empty_msg = make_summary_error_msg([])
     assert isinstance(empty_msg, str)

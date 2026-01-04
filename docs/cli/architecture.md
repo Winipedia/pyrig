@@ -164,14 +164,14 @@ corresponding command modules.
 The `get_all_functions_from_module()` utility extracts all functions defined in
 a module:
 
-- Uses `inspect.getmembers()` to find all module members
+- Uses `inspect.getmembers_static()` to find all module members
 - Filters to only callable functions
 - Excludes imported functions (only functions defined in the module)
 - Sorts by definition order (line number)
 
 ```mermaid
 flowchart LR
-    A[Module] --> B[inspect.getmembers]
+    A[Module] --> B[inspect.getmembers_static]
     B --> C{Is callable?}
     C -->|No| D[Skip]
     C -->|Yes| E{Defined in module?}

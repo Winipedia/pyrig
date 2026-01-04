@@ -10,7 +10,7 @@ Utilities:
 Example:
     >>> from pyrig.src.processes import run_subprocess, Args
     >>> run_subprocess(["uv", "sync"])
-    >>> Args("git", "status").run()
+    >>> Args(("git", "status")).run()
 """
 
 import logging
