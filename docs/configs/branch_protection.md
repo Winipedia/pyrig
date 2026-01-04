@@ -253,7 +253,7 @@ class MyBranchProtectionConfigFile(BranchProtectionConfigFile):
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
         """Custom branch protection configuration."""
-        config = super().get_configs()
+        config = super()._get_configs()
         # Require 2 approvals instead of 1
         for rule in config["rules"]:
             if rule.get("type") == "pull_request":

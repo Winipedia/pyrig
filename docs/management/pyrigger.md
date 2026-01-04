@@ -14,8 +14,8 @@ from pyrig.src.processes import Args
 
 class Pyrigger(BasePyrigger):
     @classmethod
-    def get_cmd_args(cls, cmd: Callable[..., Any], *args: str) -> Args:
-        return super().get_cmd_args(cmd, "--verbose", *args)
+    def get_cmd_args(cls, *args: str, cmd: Callable[..., Any]) -> Args:
+        return super().get_cmd_args("--verbose", *args, cmd=cmd)
 ```
 
 ## Related

@@ -125,7 +125,7 @@ class MkdocsConfigFile(BaseMkdocsCF):
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
         """Override theme with company colors."""
-        config = super().get_configs()
+        config = super()._get_configs()
 
         # Add company branding
         config["theme"]["palette"] = [
@@ -194,7 +194,7 @@ class PyprojectConfigFile(BasePyprojectCF):
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
         """Add company-specific tool configs."""
-        config = super().get_configs()
+        config = super()._get_configs()
 
         # Add custom ruff rules for company standards
         config["tool"]["ruff"]["lint"]["ignore"].extend([

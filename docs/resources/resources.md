@@ -198,7 +198,7 @@ decorator, which:
 
 - Catches network errors when fetching latest versions
 - Returns the bundled resource content as fallback
-- Updates the bundled file when pyrig runs its own tests (if content changed)
+- Updates only in the pyrig project itself not when other projects call it
 
 ### Example: GitIgnore Fallback
 

@@ -225,7 +225,7 @@ from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyproject
 class PyprojectConfigFile(BasePyproject):
     @classmethod
     def _get_configs(cls) -> dict:
-        config = super().get_configs()
+        config = super()._get_configs()
         config["tool"]["myapp"] = {"custom": "setting"}
         return config
 ```

@@ -128,10 +128,10 @@ deps = [*MyConfigFile.load()["dependencies"], "new-dep"]
 ```
 
 This is especially important for ConfigFiles that call `load()` inside
-`get_configs()`. For example, `PyprojectConfigFile.get_configs()` reads
-the existing `pyproject.toml` to preserve user-defined values. If
-`get_configs()` mutates the loaded data, the cache becomes corrupted and
-subsequent calls return incorrect values.
+`_get_configs()`. For example, `PyprojectConfigFile._get_configs()` reads
+the existing `pyproject.toml` (via calling `load()`) to preserve user-defined
+values. If `_get_configs()` mutates the loaded data, the cache becomes corrupted
+and subsequent calls return incorrect values.
 
 **Rule**: Always treat `load()` results as read-only. Return new structures
 instead of modifying in place.
@@ -184,14 +184,14 @@ structure.
 When configs are missing or incorrect, the system intelligently merges them:
 
 - **Dict values** - Missing keys are added. **Important**: Keys with incorrect
-  values are overwritten with the expected values from `get_configs()`. This
+  values are overwritten with the expected values from `_get_configs()`. This
   ensures required configuration is always correct.
 - **List values** - Missing items are inserted at the correct index
 - **User additions** - Preserved during merge (extra keys in dicts, extra items
   in lists)
 
 **Customizing default values**: To change default values, subclass the specific
-config file and override the `get_configs()` method. Keep the class name the
+config file and override the `_get_configs()` method. Keep the class name the
 same (filename is derived from it) unless you also override `get_filename()`.
 Import the base class using:
 `from pyrig.dev.configs.some.config_file import MainConfigFile as BaseMainCF`

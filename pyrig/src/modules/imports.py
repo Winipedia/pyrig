@@ -49,6 +49,7 @@ def import_pkg_from_dir(package_dir: Path) -> ModuleType:
         Imported package module.
 
     Raises:
+        FileNotFoundError: If package directory or __init__.py doesn't exist.
         ValueError: If spec cannot be created.
     """
     init_path = package_dir / "__init__.py"
