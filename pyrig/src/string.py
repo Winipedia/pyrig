@@ -22,6 +22,7 @@ def split_on_uppercase(string: str) -> list[str]:
     Note:
         Consecutive uppercase split individually:
             "XMLParser" → ['X', 'M', 'L', 'Parser'].
+        Only splits on ASCII uppercase letters (A-Z), not Unicode.
     """
     return [s for s in re.split(r"(?=[A-Z])", string) if s]
 
@@ -78,6 +79,14 @@ def re_search_excluding_docstrings(
 
     Returns:
         Match object if found outside docstrings, None otherwise.
+
+    Warning:
+        Match positions (span, start, end) reference the stripped content,
+        not the original. Do not use for slicing or indexing original content.
+
+    Note:
+        Uses regex heuristics - cannot distinguish docstrings from triple-quoted
+        string literals. May produce false negatives for code containing such strings.
     """
     content = re.sub(r'"""[\s\S]*?"""', "", content)
     content = re.sub(r"'''[\s\S]*?'''", "", content)
@@ -96,5 +105,5 @@ def starts_with_docstring(content: str) -> bool:
     Note:
         Checks if the first non-whitespace characters are triple quotes.
     """
-    first_line = content.split("\n")[0].strip()
+    first_line = content.strip().split("\n", maxsplit=1)[0].strip()
     return any(first_line.startswith(quote) for quote in ('"""', "'''"))

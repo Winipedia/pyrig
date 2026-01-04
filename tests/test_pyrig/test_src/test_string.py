@@ -94,11 +94,11 @@ def test_function() -> str:
     """Test function."""
     return "test"
 '''
-    assert starts_with_docstring(content), "Expected True"
+    assert starts_with_docstring(content)
 
     content = """'''Test module.'''
     """
-    assert starts_with_docstring(content), "Expected False"
+    assert starts_with_docstring(content)
 
     content = '''def test_function() -> str:
     """Test function."""
