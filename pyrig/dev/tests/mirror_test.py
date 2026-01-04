@@ -211,7 +211,14 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
     @classmethod
     def add_missing_configs(cls) -> list[Any]:
-        """We just return get_configs() get_configs already includes existing tests."""
+        """Return test configurations without merging.
+
+        For mirror tests, get_configs() already includes existing tests,
+        so no additional merging is needed.
+
+        Returns:
+            List of test configurations from get_configs().
+        """
         return cls.get_configs()
 
     @classmethod

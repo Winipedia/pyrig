@@ -66,19 +66,19 @@ def config_file_factory[T: ConfigFile](
 
             @classmethod
             def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
-                """Dump the config file."""
+                """Write config to tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
                     super()._dump(config)
 
             @classmethod
             def _load(cls) -> dict[str, Any] | list[Any]:
-                """Load the config file."""
+                """Load config from tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
                     return super()._load()
 
             @classmethod
             def get_parent_path(cls) -> Path:
-                """Get the parent path."""
+                """Get parent path redirected to tmp_path for test isolation."""
                 # append tmp_path to path if not already in tmp_path
                 path = super().get_parent_path()
                 if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
@@ -87,7 +87,7 @@ def config_file_factory[T: ConfigFile](
 
             @classmethod
             def create_file(cls) -> None:
-                """Create the config file."""
+                """Create file in tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
                     super().create_file()
 

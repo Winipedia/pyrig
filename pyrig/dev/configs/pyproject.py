@@ -167,17 +167,17 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def detect_project_licence(cls) -> str:
-        """Detect the project's license from the LICENSE file.
+        """Detect the project's licence from the LICENSE file.
 
-        Reads the LICENSE file and uses spdx_matcher to identify the license
+        Reads the LICENSE file and uses spdx_matcher to identify the licence
         type and return its SPDX identifier.
 
         Returns:
-            str: SPDX license identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
+            str: SPDX licence identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
 
         Raises:
             FileNotFoundError: If LICENSE file doesn't exist.
-            StopIteration: If no license is detected in the file.
+            StopIteration: If no licence is detected in the file.
 
         Note:
             This method reads from the LICENSE file in the project root.

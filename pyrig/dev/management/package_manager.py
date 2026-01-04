@@ -152,8 +152,8 @@ class PackageManager(Tool):
         """Construct uv publish arguments with token.
 
         Args:
-            token: Authentication token.
-            *args: Publish command arguments.
+            *args: Additional publish command arguments.
+            token: Authentication token (keyword-only).
 
         Returns:
             Args for 'uv publish --token <token>'.

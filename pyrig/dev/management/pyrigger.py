@@ -6,8 +6,7 @@ Used for programmatic execution of pyrig commands.
 Example:
     >>> from pyrig.dev.management.pyrigger import Pyrigger
     >>> from pyrig.dev.cli.subcommands import build
-    >>> Pyrigger.L.get_cmd_args(build)  # pyrig build
-    >>> Pyrigger.L.get_venv_run_cmd_args(build)  # uv run pyrig build
+    >>> Pyrigger.L.get_cmd_args(cmd=build)  # pyrig build
 """
 
 from collections.abc import Callable
@@ -26,13 +25,11 @@ class Pyrigger(Tool):
 
     Operations:
         - Direct execution: Construct pyrig commands
-        - UV execution: Construct uv run pyrig commands
         - Function-based: Convert function names to command names
 
     Example:
         >>> from pyrig.dev.cli.subcommands import build
-        >>> Pyrigger.L.get_cmd_args(build).run()
-        >>> Pyrigger.L.get_venv_run_cmd_args(build).run()
+        >>> Pyrigger.L.get_cmd_args(cmd=build).run()
     """
 
     @classmethod
@@ -49,8 +46,8 @@ class Pyrigger(Tool):
         """Construct pyrig command arguments from callable.
 
         Args:
-            cmd: Callable whose name converts to command name.
-            *args: Command arguments.
+            *args: Command arguments passed after the command name.
+            cmd: Callable whose name converts to command name (keyword-only).
 
         Returns:
             Args for 'pyrig <cmd_name>'.
