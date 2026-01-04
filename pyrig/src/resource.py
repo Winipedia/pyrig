@@ -19,21 +19,19 @@ def get_resource_path(name: str, package: ModuleType) -> Path:
         package: Package module containing resource.
 
     Returns:
-        Path to resource file. In development environments, this points to
-        the actual file. In PyInstaller bundles, this points to a temporary
-        extraction that may be cleaned up when the process exits.
+        Path to resource file.
 
-    Warning:
-        This function returns a path from within a context manager that exits
-        immediately after return. For regular file-based packages, this works
-        correctly. However, for zip-imported packages or certain PyInstaller
-        configurations, the temporary file may be cleaned up. Use the returned
-        path immediately or copy the file contents if persistence is needed.
+        **Important:** For regular file-based packages, this points to the actual
+        file. For zip-imported packages or certain PyInstaller configurations,
+        this points to a temporary extraction that may be cleaned up when the
+        context manager exits. Use the returned path immediately or copy the
+        file contents if persistence is needed.
+
+    Note:
+        This function uses `as_file` context manager but returns immediately,
+        which works correctly for regular files but may cause issues with
+        zip-imported packages.
     """
-    # Use Traversable.joinpath and resolve to Path
-    # Note: as_file context manager is used but we return immediately,
-    # which is safe for regular files but may cause issues with zip-imported
-    # packages. For pyrig's use case (regular file resources), this is fine.
     resource_path = files(package) / name
     with as_file(resource_path) as path:
         return path

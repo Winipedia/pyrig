@@ -177,10 +177,12 @@ class PyprojectConfigFile(TomlConfigFile):
 
         Raises:
             FileNotFoundError: If LICENSE file doesn't exist.
-            StopIteration: If no licence is detected in the file.
+            StopIteration: If no licence is detected (empty licenses dict).
 
         Note:
             This method reads from the LICENSE file in the project root.
+            May raise additional exceptions from spdx_matcher if license
+            analysis fails.
         """
         content = Path("LICENSE").read_text(encoding="utf-8")
         licenses: dict[str, dict[str, Any]]

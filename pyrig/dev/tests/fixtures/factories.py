@@ -25,8 +25,9 @@ def config_file_factory[T: ConfigFile](
 ) -> Callable[[type[T]], type[T]]:
     """Provide a factory for creating test-safe ConfigFile subclasses.
 
-    Creates dynamic subclasses that redirect ``get_path()`` to pytest's
-    tmp_path for isolated testing.
+    Creates dynamic subclasses that redirect all file operations to pytest's
+    tmp_path for isolated testing. Overrides ``get_path()``, ``get_parent_path()``,
+    ``_dump()``, ``_load()``, and ``create_file()`` to ensure complete isolation.
 
     Args:
         tmp_path: Pytest's temporary directory, auto-provided per test.

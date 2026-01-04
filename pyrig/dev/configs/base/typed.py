@@ -11,6 +11,8 @@ Example:
     ...     @classmethod
     ...     def get_parent_path(cls) -> Path:
     ...         return Path("src/mypackage")
+    >>>
+    >>> MyPackageTypedFile()  # Creates src/mypackage/py.typed (empty file)
 
 See Also:
     PEP 561: https://peps.python.org/pep-0561/
@@ -52,7 +54,7 @@ class TypedConfigFile(DictConfigFile):
         """Validate config is empty (PEP 561 requirement).
 
         Args:
-            config: Must be empty dict or list.
+            config: Must be empty dict.
 
         Raises:
             ValueError: If config is not empty.

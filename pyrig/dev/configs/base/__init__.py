@@ -14,7 +14,7 @@ Three layers:
    - ``TomlConfigFile``: TOML files (pyproject.toml)
    - ``YamlConfigFile`` / ``YmlConfigFile``: YAML files (.pre-commit-config.yaml)
    - ``JsonConfigFile``: JSON files (package.json)
-   - ``TextConfigFile``: Plain text with required content
+   - ``StringConfigFile``: Plain text with required content
    - ``PythonConfigFile``: Python source (.py)
    - ``MarkdownConfigFile``: Markdown (.md)
    - ``TxtConfigFile``: Text files (.txt)

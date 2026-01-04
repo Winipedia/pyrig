@@ -50,19 +50,21 @@ skip_fixture_test: pytest.MarkDecorator = functools.partial(
     pytest.mark.skip,
     reason="Fixtures are not testable bc they cannot be called directly.",
 )()
-"""Skip marker for fixture tests that cannot be called directly.
+"""Skip marker for tests of fixture functions themselves.
 
-Fixtures can't be called as regular functions. Use this marker for tests that
-would attempt to test fixture behavior directly.
+Pytest fixtures cannot be invoked as regular functions; they are called by pytest's
+dependency injection system. Use this marker to skip placeholder tests that exist
+to satisfy test coverage requirements for fixture definitions.
 
 Type:
     pytest.MarkDecorator
 
 Examples:
-    Skip a fixture test::
+    Skip a test for a fixture function::
 
         >>> @skip_fixture_test
-        ... def test_my_fixture(my_fixture):
+        ... def test_my_fixture_function():
+        ...     # This test exists for coverage but cannot actually test the fixture
         ...     pass
 """
 
@@ -93,7 +95,7 @@ function_fixture = functools.partial(pytest.fixture, scope="function")
 Set up and torn down for each test function. Default pytest scope.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="function")
 
 Examples:
     >>> @function_fixture
@@ -109,7 +111,7 @@ class_fixture = functools.partial(pytest.fixture, scope="class")
 Set up once per test class, shared among all test methods in that class.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="class")
 
 Examples:
     >>> @class_fixture
@@ -125,7 +127,7 @@ module_fixture = functools.partial(pytest.fixture, scope="module")
 Set up once per test module, shared among all tests in that module.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="module")
 
 Examples:
     >>> @module_fixture
@@ -141,7 +143,7 @@ package_fixture = functools.partial(pytest.fixture, scope="package")
 Set up once per test package, shared among all tests in that package.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="package")
 
 Examples:
     >>> @package_fixture
@@ -157,7 +159,7 @@ session_fixture = functools.partial(pytest.fixture, scope="session")
 Set up once per test session, shared among all tests in the entire test run.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="session")
 
 Examples:
     >>> @session_fixture
@@ -175,7 +177,7 @@ autouse_function_fixture = functools.partial(
 Automatically runs for each test function without explicit request.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="function", autouse=True)
 
 Examples:
     >>> @autouse_function_fixture
@@ -191,7 +193,7 @@ autouse_class_fixture = functools.partial(pytest.fixture, scope="class", autouse
 Automatically runs once per test class without explicit request.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="class", autouse=True)
 
 Examples:
     >>> @autouse_class_fixture
@@ -207,7 +209,7 @@ autouse_module_fixture = functools.partial(pytest.fixture, scope="module", autou
 Automatically runs once per test module without explicit request.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="module", autouse=True)
 
 Examples:
     >>> @autouse_module_fixture
@@ -225,7 +227,7 @@ autouse_package_fixture = functools.partial(
 Automatically runs once per test package without explicit request.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="package", autouse=True)
 
 Examples:
     >>> @autouse_package_fixture
@@ -243,7 +245,7 @@ autouse_session_fixture = functools.partial(
 Automatically runs once per test session without explicit request.
 
 Type:
-    functools.partial[pytest.fixture]
+    functools.partial (wraps pytest.fixture with scope="session", autouse=True)
 
 Examples:
     >>> @autouse_session_fixture

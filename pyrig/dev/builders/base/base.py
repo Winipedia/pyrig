@@ -23,6 +23,7 @@ Example:
             def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
                 output = temp_artifacts_dir / "my_app.exe"
                 # ... build logic ...
+                output.write_bytes(b"executable content")
 """
 
 import logging
@@ -130,18 +131,18 @@ class BuilderConfigFile(ListConfigFile):
         """Build artifacts.
 
         Args:
-            config: Not used.
+            config: Ignored. Required by parent class interface.
         """
         cls.build()
 
     @classmethod
     def get_file_extension(cls) -> str:
-        """Not used for builders."""
+        """Return empty string (builders don't use file extensions)."""
         return ""
 
     @classmethod
     def get_configs(cls) -> list[Path]:
-        """Not used for builders."""
+        """Return empty list (builders don't use config lists)."""
         return []
 
     @classmethod
@@ -253,10 +254,8 @@ class BuilderConfigFile(ListConfigFile):
             temp_artifacts_dir: Path to the temporary artifacts directory.
 
         Returns:
-            List of artifact paths (non-recursive).
-
-        Raises:
-            FileNotFoundError: If no artifacts were created.
+            List of artifact paths (non-recursive). May be empty if no
+            artifacts were created.
         """
         return list(temp_artifacts_dir.glob("*"))
 

@@ -94,7 +94,7 @@ def starts_with_docstring(content: str) -> bool:
         True if content starts with a docstring, False otherwise.
 
     Note:
-        Checks for triple quotes (\"\"\" or ''') on the first line of the content.
+        Checks if the first non-whitespace characters are triple quotes.
     """
-    first_line = content.split("\n")[0]
-    return any(quote in first_line for quote in ('"""', "'''"))
+    first_line = content.split("\n")[0].strip()
+    return any(first_line.startswith(quote) for quote in ('"""', "'''"))
