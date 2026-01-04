@@ -18,14 +18,12 @@ Manages pyproject.toml with:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DictConfigFile]
-    B --> C[TomlConfigFile]
-    C --> D[PyprojectConfigFile]
+    A[ConfigFile] --> B[TomlConfigFile]
+    B --> C[PyprojectConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
-    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
 **Inherits from**: `TomlConfigFile`
@@ -87,8 +85,8 @@ classifiers = [                   # PyPI classifiers
 ]
 keywords = []                   # PyPI search keywords (user-defined, see below)
 dependencies = [                # Runtime dependencies
-    "pyrig>=3.0.1",
-    # User dependencies (sorted)
+    "pyrig",
+    # User dependencies (sorted, normalized)
 ]
 
 [project.urls]
@@ -159,9 +157,9 @@ or just `my-app <command>` after installation.
 
 ```toml
 [project]
-dependencies = [                  # Runtime dependencies
-    "pyrig>=3.0.1",
-    # User dependencies (sorted)
+dependencies = [   # Runtime dependencies (preserved from existing config)
+    "pyrig",
+    # User dependencies (sorted, normalized)
 ]
 
 [dependency-groups]
@@ -173,7 +171,8 @@ dev = [                           # Development dependencies
 
 **Why**:
 
-- `dependencies`: Required for package to run (includes pyrig runtime)
+- `dependencies`: Required for package to run
+(read from existing pyproject.toml, normalized and sorted)
 - `dev`: Only needed for development (testing, linting, etc.)
 - `pyrig-dev` auto-added to dev dependencies to ensure development tools are
   available
@@ -262,6 +261,15 @@ skips = ["*/tests/*.py"]          # Allow assert in tests
 - Security scanning for common vulnerabilities
 - Allow assert in tests (required by pytest)
 - Ignore dotfiles (e.g., .experiment.py)
+
+### rumdl (Markdown Linter)
+
+```toml
+[tool.rumdl]
+respect_gitignore = true          # Skip gitignored files
+```
+
+**Why**: Markdown linting that respects your gitignore patterns.
 
 ## Dynamic Configuration
 
