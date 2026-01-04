@@ -51,7 +51,7 @@ Controls branch creation patterns.
 
 #### Update Protection
 
-Requires pull requests for updates.
+Restricts direct updates to the branch (works with pull request requirements).
 
 #### Pull Request Requirements
 
@@ -133,7 +133,7 @@ But in case you want to run it manually you can use `protect-repo` when:
 - Updating protection rules after changes
 - Ensuring repository follows security best practices
 
-## Autouse Fixture
+## Automatic Execution
 
 This command **runs automatically** in the Health Check workflow during CI/CD.
 See [Health Check Workflow](../../configs/workflows/health_check.md) for

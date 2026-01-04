@@ -42,14 +42,19 @@ complete details on logging levels and usage.
 
 ## Command Discovery
 
-All commands are automatically discovered from `dev/cli/subcommands.py`. Each
-function in this module becomes a CLI command.
+Commands are automatically discovered from three sources:
+
+1. **Main entry point**: `main()` from `<package>.main`
+2. **Project-specific commands**: Public functions from
+   `<package>.dev.cli.subcommands`
+3. **Shared commands**: Public functions from
+   `<package>.dev.cli.shared_subcommands` across the dependency chain
 
 For packages depending on pyrig, you can define your own commands in
-`myapp/dev/cli/subcommands.py`:
+`myapp/dev/cli/subcommands.py` (project-specific) or
+`myapp/dev/cli/shared_subcommands.py` (shared across dependents):
 
 ```bash
-uv run myapp deploy    # Custom command defined in myapp
-uv run myapp status    # Custom command defined in myapp
-uv run myapp version   # Shared command available in all packages
+uv run myapp deploy    # Project-specific command
+uv run myapp version   # Shared command from dependency chain
 ```

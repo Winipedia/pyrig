@@ -37,7 +37,8 @@ For each function/class, creates a test function:
 - **Does not overwrite existing tests** - Only creates missing test files and
   functions
 - **Idempotent** - Safe to run multiple times
-- **Automatic** - Also runs automatically when pytest detects missing tests
+- **Automatic** - Also runs automatically via an autouse session fixture before
+  tests run
 
 ## When to Use
 

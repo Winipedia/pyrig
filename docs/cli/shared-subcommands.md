@@ -14,38 +14,14 @@ Shared subcommands enable cross-package functionality:
 
 ## Defining Shared Commands
 
-Add a function to `shared_subcommands.py`:
+Add a public function to `dev/cli/shared_subcommands.py`. Each public function
+is automatically discovered and registered as a Typer CLI command.
 
-Pyrig already has a version command that is available in all packages.
+Pyrig includes a built-in `version` command that demonstrates the pattern:
 
-```python
-from importlib.metadata import version as get_version
-import typer
-from pyrig.src.cli import get_project_name_from_argv
-
-def version() -> None:
-    """Display the current project's version.
-
-    Retrieves and displays the version of the project being run (not pyrig's
-    version) from installed package metadata.
-
-    The project name is automatically determined from `sys.argv[0]`, enabling
-    this command to work in any pyrig-based project without modification.
-
-    Example:
-        $ uv run pyrig version
-        pyrig version 3.1.5
-
-        $ uv run myproject version
-        myproject version 1.2.3
-
-    Note:
-        The package must be installed (even in editable mode) for version
-        retrieval to work.
-    """
-    project_name = get_project_name_from_argv()
-    typer.echo(f"{project_name} version {get_version(project_name)}")
-```
+- Uses `get_project_name_from_argv()` to detect which project invoked the CLI
+- Retrieves and displays that project's version (not pyrig's version)
+- Works in any package without modification
 
 This command works in any package:
 
@@ -65,6 +41,9 @@ Shared commands are discovered through dependency graph traversal:
 2. **Find all packages** depending on pyrig
 3. **Import each package's** `shared_subcommands` module
 4. **Register all functions** from each module
+
+Commands are registered in dependency order (pyrig first). If multiple packages
+define a command with the same name, the last one registered takes precedence.
 
 ```mermaid
 graph TD
@@ -104,36 +83,28 @@ Running `uv run myplugin version` discovers shared commands from:
 
 ## Context-Aware Commands
 
-Shared commands can adapt to the calling package:
-
-```python
-def version() -> None:
-    """Display the version information."""
-    project_name = get_project_name_from_argv()  # Detects calling package
-    typer.echo(f"{project_name} version {get_version(project_name)}")
-```
-
-The `get_project_name_from_argv()` utility extracts the package name from
-`sys.argv[0]`, enabling context-aware behavior.
+Shared commands can adapt to the calling package using
+`get_project_name_from_argv()` from `pyrig.src.cli`. This utility extracts the
+package name from `sys.argv[0]`, enabling commands to behave differently based
+on which project invoked them.
 
 ## Adding Shared Commands
 
 To add a shared command to your package:
 
-1. **Create the module** at `dev/cli/shared_subcommands.py`
-2. **Define functions** for your shared commands
-3. **Use context utilities** to adapt to the calling package
-
-Example:
+1. **Create the module** at `dev/cli/shared_subcommands.py` (created
+   automatically by `uv run pyrig mkroot`)
+2. **Define public functions** — each becomes a CLI command
+3. **Use `get_project_name_from_argv()`** to adapt behavior to the calling
+   package
 
 ```python
-from pyrig.src.cli import get_project_name_from_argv
 import typer
+from pyrig.src.cli import get_project_name_from_argv
 
 def status() -> None:
     """Display project status."""
-    project_name = get_project_name_from_argv()
-    typer.echo(f"Status for {project_name}: OK")
+    typer.echo(f"Status for {get_project_name_from_argv()}: OK")
 ```
 
 ## Inheritance

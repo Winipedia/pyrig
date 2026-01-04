@@ -109,13 +109,17 @@ Example: When running `uv run myapp deploy`, the system:
 The `add_shared_subcommands()` function discovers commands across the package
 ecosystem:
 
-1. **Build a dependency graph** of all installed packages
-2. **Find all packages** that depend on pyrig
-3. **For each package**, import its `shared_subcommands` module
-4. **Register all functions** from each module
+1. **Extract current package name** from `sys.argv[0]`
+2. **Find equivalent `shared_subcommands` modules** across the dependency chain
+   from pyrig to the current package
+3. **For each module**, extract all public functions
+4. **Register each function** as a Typer command
+
+Commands are registered in dependency order (pyrig first). If multiple packages
+define the same command name, the last one registered takes precedence.
 
 This enables commands like `version` to work in any package that depends on
-pyrig.
+pyrig, while adapting to each project's context.
 
 ## Module Name Replacement
 
@@ -165,7 +169,8 @@ The `get_all_functions_from_module()` utility extracts all functions defined in
 a module:
 
 - Uses `inspect.getmembers_static()` to find all module members
-- Filters to only callable functions
+- Filters to function-like callables (including wrapped functions like
+  staticmethod, classmethod, property, and decorated functions)
 - Excludes imported functions (only functions defined in the module)
 - Sorts by definition order (line number)
 
@@ -226,10 +231,7 @@ The function's docstring becomes the command's help text, and Typer
 automatically generates argument parsing from the function signature.
 
 The pyrig CLI system is designed for project automation and development
-workflows, not for building complex CLI applications. It provides a convenient
-way to execute project commands without the verbosity of
-`python -m myapp.subpkg.subpkg2.module` or the boilerplate of
+workflows. It provides a convenient way to execute project commands without the
+verbosity of `python -m myapp.subpkg.subpkg2.module` or the boilerplate of
 `if __name__ == "__main__":` guards. Simply define functions in your
 `subcommands.py` module and they become accessible as `uv run myapp <command>`.
-I suppose if done right you can also use it to build some more complex CLI apps
-on top of it but that is not the intended primary use case.
