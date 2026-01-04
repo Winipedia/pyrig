@@ -54,7 +54,7 @@ sequenceDiagram
 ```mermaid
 graph TD
     A[Start: tests/conftest.py] --> B[Import pyrig.dev.tests.conftest]
-    B --> C[Build DependencyGraph]
+    B --> C[Use cached DependencyGraph]
     C --> D[Find all packages depending on pyrig]
     D --> E[For each package...]
 

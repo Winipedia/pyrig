@@ -5,8 +5,8 @@ Bandit is a tool designed to find common security issues in Python code.
 
 Example:
     >>> from pyrig.dev.management.security_checker import SecurityChecker
-    >>> SecurityChecker.L.get_run_args().run()
-    >>> SecurityChecker.L.get_run_recursive_args(".").run()
+    >>> SecurityChecker.L.get_run_args("-r", ".").run()
+    >>> SecurityChecker.L.get_run_with_config_args().run()
 """
 
 from pyrig.dev.management.base.base import Tool
