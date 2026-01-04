@@ -50,6 +50,8 @@ sequential order by priority:
   package initialization)
 - **FixturesInitConfigFile** (`dev/tests/fixtures/__init__.py`) - Priority 10
   (must exist before conftest.py)
+- **ManagementInitConfigFile** (`dev/management/__init__.py`) - Priority 10
+  (management package initialization)
 
 These files are required before installing dependencies or running other
 initialization steps.

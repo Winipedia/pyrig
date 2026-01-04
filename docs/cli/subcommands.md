@@ -112,9 +112,10 @@ Example:
 
 ```python
 def build() -> None:
-    """Build all artifacts.
+    """Build all distributable artifacts for the project.
 
-    Invokes every subclass of BuilderConfigFile in the builder package.
+    Discovers and invokes all BuilderConfigFile subclasses across the project
+    and its dependencies.
     """
     from pyrig.dev.cli.commands.build_artifacts import build_artifacts
 
@@ -125,8 +126,8 @@ def build() -> None:
 
 The CLI system automatically discovers and registers two types of commands:
 
-1. **Main entry point** - The `main()` function from `<package>/main.py`
-2. **Subcommands** - All functions from `<package>/dev/cli/subcommands.py`
+1. **Main entry point** - The `main()` function from `<package>.main`
+2. **Subcommands** - All functions from `<package>.dev.cli.subcommands`
 
 Functions are discovered and registered automatically:
 

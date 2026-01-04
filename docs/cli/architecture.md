@@ -136,7 +136,8 @@ The `DependencyGraph` class builds a directed graph of package dependencies:
 ```python
 graph = DependencyGraph.cached()
 packages = graph.get_all_depending_on("pyrig", include_self=True)
-# Returns: [pyrig, myapp, myplugin] in topological order
+# Returns: [<module 'pyrig'>, <module 'myapp'>, ...] in topological order
+# (list of imported ModuleType objects, not strings)
 ```
 
 ```mermaid

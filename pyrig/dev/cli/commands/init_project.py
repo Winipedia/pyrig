@@ -9,9 +9,9 @@ implemented as a separate function and executed sequentially. If any step
 fails, the process stops immediately.
 
 Initialization Steps:
-    1. Adding dev dependencies (uv add --dev)
+    1. Adding dev dependencies (uv add --group dev)
     2. Syncing venv (uv sync)
-    3. Creating priority config files (pyproject.toml, .gitignore, LICENSE)
+    3. Creating priority config files (LICENSE, pyproject.toml, etc.)
     4. Syncing venv again (apply new configs)
     5. Creating project root (all remaining config files)
     6. Creating test files (test skeletons for all source code)
@@ -49,7 +49,7 @@ def adding_dev_dependencies() -> None:
     """Install development dependencies (Step 1).
 
     Adds pyrig's standard dev dependencies to pyproject.toml via
-    `uv add --dev`.
+    `uv add --group dev`.
     """
     args = PackageManager.L.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
     args.run()

@@ -34,7 +34,8 @@ consistency and reliability.
 
 - **Does not overwrite existing files** - Only creates missing `__init__.py`
   files
-- **Creates empty files** - `__init__.py` files are created with no content
+- **Creates minimal files** - `__init__.py` files are created with a minimal
+  docstring (`"""__init__ module."""`)
 - **Idempotent** - Safe to run multiple times
 
 ## When to Use

@@ -158,9 +158,10 @@ class MkdocsConfigFile(BaseMkdocsCF):
 
 **Key mechanism**:
 
-- **Subclass** pyrig's `MkdocsConfigFile` with same name
-- **`discard_parents=True`** ensures only your subclass is initialized because
-  it is the last leaf in that class inheritance chain.
+- **Subclass** pyrig's `MkdocsConfigFile` with the same name
+- **Leaf class override**: pyrig's discovery system automatically keeps only the
+  most-derived (leaf) class when multiple classes are found in the
+  inheritance chain
 - **All microservices** automatically get company branding
 
 ## Step 4: Adjust Pyproject Settings
@@ -409,7 +410,7 @@ configurations across package dependencies. For complete technical details, see:
 1. Build dependency graph: `pyrig → company-base → auth-service`
 2. Find all `<package>.dev.configs` modules
 3. Discover all ConfigFile subclasses
-4. Keep only leaf classes (discard parents with `discard_parents=True`)
+4. Keep only leaf classes (classes with no subclasses sharing the same name)
 5. Initialize all leaf classes
 
 **Autouse Fixture Healing**:
@@ -501,9 +502,10 @@ uv init && uv add company-base && uv run pyrig init
    updates
 3. **Self-healing**: Autouse fixtures ensure compliance on every test run
 4. **Override flexibility**: Services can customize while keeping standards by
-   overriding subclasses
-5. **Leaf class pattern**: Subclassing with same name overrides parent configs
-6. **Discovery mechanism**: Dependency graph + module replacement enables
+   subclassing with the same class name
+5. **Leaf class pattern**: Subclassing with the same name automatically
+   overrides parent configs (pyrig keeps only the most-derived class)
+6. **Discovery mechanism**: Dependency graph + module discovery enables
    multi-package architecture
 7. **Zero manual sync**: No need to manually update 50+ services
 
@@ -563,7 +565,8 @@ pyrig's multi-package architecture enables:
 
 1. **Centralized standards** in base packages
 2. **Automatic discovery** via dependency graph traversal
-3. **Override mechanism** via subclassing with `discard_parents=True`
+3. **Override mechanism** via subclassing with the same class name (leaf classes
+   automatically override parents)
 4. **Self-healing** via autouse fixtures on every test run
 5. **Zero manual sync** across unlimited services
 

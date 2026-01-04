@@ -19,7 +19,7 @@ def make_project_root(*, priority: bool = False) -> None:
 
     Args:
         priority: If True, only creates high-priority config files (e.g.,
-            pyproject.toml, .gitignore). If False, creates all config files.
+            LICENSE, pyproject.toml). If False, creates all config files.
     """
     logger.info("Creating project root")
     if priority:

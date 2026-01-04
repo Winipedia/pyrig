@@ -43,10 +43,12 @@ print(config_path)  # Development: /path/to/myapp/resources/config.json
                     # PyInstaller: /tmp/_MEIxxxxxx/myapp/resources/config.json
 ```
 
-**Important**: The returned `Path` object is valid for the lifetime of the
-process. In PyInstaller bundles, resources are extracted to a temporary
-directory (`_MEIPASS`) that persists until the application exits. You can store
-and reuse the path throughout your application's runtime.
+**Important**: For regular file-based packages, the returned `Path` points to
+the actual file on disk and remains valid. However, for zip-imported packages
+or certain PyInstaller configurations, the path points to a temporary
+extraction that may be cleaned up when the internal context manager exits. For
+maximum compatibility, use the returned path immediately or copy the file
+contents if persistence is needed.
 
 ### How It Works
 
@@ -203,6 +205,7 @@ decorator, which:
 When creating `.gitignore`, pyrig tries to fetch from GitHub:
 
 ```python
+@classmethod
 @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
 def get_github_python_gitignore_as_str(cls) -> str:
     url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
