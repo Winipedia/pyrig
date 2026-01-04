@@ -35,7 +35,6 @@ import pytest
 
 import pyrig
 from pyrig import dev, main, resources, src
-from pyrig.dev.cli.commands.create_root import make_project_root
 from pyrig.dev.cli.commands.make_inits import make_init_files
 from pyrig.dev.configs.base.base import ConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
@@ -126,7 +125,7 @@ def assert_root_is_correct() -> None:
 
     if incorrect_cfs:
         # init all per test run
-        make_project_root()
+        ConfigFile.init_subclasses(*incorrect_cfs)
 
     msg = f"""Found {len(incorrect_cfs)} incorrect ConfigFiles.
     Attempted correcting them automatically.
