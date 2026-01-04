@@ -8,7 +8,7 @@ Subclass Requirements:
     Must implement:
     - `get_parent_path()`: Directory containing the file
     - `get_file_extension()`: File extension without leading dot
-    - `get_configs()`: Expected configuration structure
+    - `_get_configs()`: Expected configuration structure
     - `_load()`: Load and parse the file (internal implementation)
     - `_dump(config)`: Write configuration to file (internal implementation)
 
@@ -95,7 +95,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         Must implement:
         - `get_parent_path()`: Directory containing the file
         - `get_file_extension()`: File extension (e.g., "toml", "yaml")
-        - `get_configs()`: Expected configuration (dict or list)
+        - `_get_configs()`: Expected configuration (dict or list)
         - `_load()`: Load and parse the file (internal implementation)
         - `_dump(config)`: Write configuration to file (internal implementation)
 

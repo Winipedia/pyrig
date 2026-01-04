@@ -75,7 +75,7 @@ Every ConfigFile subclass must implement:
 | ---------------------- | ------------------------------------------ | ------------------ |
 | `get_parent_path()`    | Directory containing the file              | `Path`             |
 | `get_file_extension()` | File extension without dot                 | `str`              |
-| `get_configs()`        | Expected configuration structure           | `ConfigT`          |
+| `_get_configs()`       | Expected configuration structure           | `ConfigT`          |
 | `_load()`              | Parse file content (internal)              | `ConfigT`          |
 | `_dump(config)`        | Write configuration to file (internal)     | `None`             |
 

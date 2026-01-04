@@ -28,7 +28,7 @@ class YmlConfigFile(YamlConfigFile):
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the .yml file
-        - `get_configs`: Expected YAML configuration structure
+        - `_get_configs`: Expected YAML configuration structure
 
     See Also:
         pyrig.dev.configs.base.yaml.YamlConfigFile: Parent class

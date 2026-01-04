@@ -33,7 +33,7 @@ class TomlConfigFile(DictConfigFile):
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the TOML file
-        - `get_configs`: Expected TOML configuration structure
+        - `_get_configs`: Expected TOML configuration structure
 
     Example:
         >>> class MyConfigFile(TomlConfigFile):

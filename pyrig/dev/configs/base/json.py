@@ -32,7 +32,7 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
 
     Subclasses must implement:
         - `get_parent_path`: Directory containing the JSON file
-        - `get_configs`: Expected JSON configuration structure
+        - `_get_configs`: Expected JSON configuration structure
 
     Example:
         Dict configuration::
