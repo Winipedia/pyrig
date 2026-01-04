@@ -35,7 +35,7 @@ graph TD
     style I fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `InitConfigFile` (via `ListConfigFile`)
+**Inherits from**: `InitConfigFile`
 
 **What this means**:
 

@@ -8,7 +8,7 @@ file.
 Creates a test_main.py file that:
 
 - Tests the CLI entry point (main.py)
-- Uses the `main_test_fixture` autouse fixture
+- Uses the `main_test_fixture` fixture
 - Ensures the CLI responds correctly
 - Validates the main function exists and works
 
@@ -30,7 +30,7 @@ graph TD
     style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `PythonPackageConfigFile` (via `ListConfigFile`)
+**Inherits from**: `PythonPackageConfigFile`
 
 **What this means**:
 
@@ -62,7 +62,7 @@ graph TD
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Test function**: A `test_main` function that uses the `main_test_fixture`
-2. **Fixture usage**: The autouse fixture validates the CLI works
+2. **Fixture usage**: The fixture validates the CLI works
 3. **Simple assertion**: Just checks the fixture returns None
 
 ### Generated Content
@@ -76,7 +76,7 @@ def test_main(main_test_fixture: None) -> None:
     assert main_test_fixture is None
 ```
 
-The test relies on the `main_test_fixture` autouse fixture to do the actual
+The test relies on the `main_test_fixture` fixture to do the actual
 validation.
 
 ### Validation Logic

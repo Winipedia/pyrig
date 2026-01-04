@@ -14,15 +14,15 @@ Creates a configs package that:
 ## Inheritance
 
 ```mermaid
-graph TD
-    A[ConfigFile] --> B[ListConfigFile]
-    B --> C[StringConfigFile]
-    C --> D[PythonConfigFile]
-    D --> E[PythonPackageConfigFile]
-    E --> F[CopyModuleConfigFile]
-    F --> G[CopyModuleOnlyDocstringConfigFile]
-    G --> H[InitConfigFile]
-    H --> I[ConfigsInitConfigFile]
+graph BT
+    I[ConfigsInitConfigFile] --> H[InitConfigFile]
+    H --> G[CopyModuleOnlyDocstringConfigFile]
+    G --> F[CopyModuleConfigFile]
+    F --> E[PythonPackageConfigFile]
+    E --> D[PythonConfigFile]
+    D --> C[StringConfigFile]
+    C --> B[ListConfigFile]
+    B --> A[ConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
@@ -35,7 +35,7 @@ graph TD
     style I fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `InitConfigFile` (via `ListConfigFile`)
+**Inherits from**: `InitConfigFile`
 
 **What this means**:
 
@@ -67,11 +67,15 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 ### Generated Content
 
 ```python
-"""Configuration files package for managing project configuration."""
+"""Custom configuration file definitions.
+
+Add custom ConfigFile subclasses here to manage project-specific configuration
+files. ConfigFile subclasses are automatically discovered and initialized when
+running `pyrig mkroot`. """
 ```
 
-The file contains only the docstring, allowing you to add custom config file
-implementations.
+The file contains only the docstring from `pyrig.dev.configs`, allowing you to
+add custom config file implementations.
 
 ## Usage
 

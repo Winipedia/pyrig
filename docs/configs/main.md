@@ -37,7 +37,7 @@ graph TD
     style G fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `CopyModuleConfigFile` (via `ListConfigFile`)
+**Inherits from**: `CopyModuleConfigFile`
 
 **What this means**:
 

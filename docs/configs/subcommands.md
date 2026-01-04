@@ -33,7 +33,7 @@ graph TD
     style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `CopyModuleOnlyDocstringConfigFile` (via `ListConfigFile`)
+**Inherits from**: `CopyModuleOnlyDocstringConfigFile`
 
 **What this means**:
 

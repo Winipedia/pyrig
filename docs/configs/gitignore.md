@@ -26,11 +26,12 @@ graph TD
     style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `StringConfigFile` (via `ListConfigFile`)
+**Inherits from**: `StringConfigFile`
 
 **What this means**:
 
-- Works with list of patterns (list-based config type)
+- Works with list of patterns (list-based config type via StringConfigFile →
+  ListConfigFile)
 - Validation checks if all required patterns exist
 - Users can add custom patterns
 - File is considered correct if it's a superset of required patterns
@@ -200,10 +201,14 @@ The `path_is_in_gitignore_lines()` function handles:
 - Git wildcard matching semantics
 
 ```python
+from pyrig.dev.utils.git import load_gitignore, path_is_in_gitignore_lines
+
+gitignore_lines = load_gitignore()
+
 # Handles directories correctly
-GitIgnoreConfigFile.path_is_in_gitignore(".venv")  # True
-GitIgnoreConfigFile.path_is_in_gitignore(".venv/")  # True
+path_is_in_gitignore_lines(gitignore_lines, ".venv")  # True
+path_is_in_gitignore_lines(gitignore_lines, ".venv/")  # True
 
 # Handles files
-GitIgnoreConfigFile.path_is_in_gitignore("test.pyc")  # True (matches *.pyc)
+path_is_in_gitignore_lines(gitignore_lines, "test.pyc")  # True (matches *.pyc)
 ```

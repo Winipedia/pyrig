@@ -91,30 +91,33 @@ Create `myapp/dev/configs/markdown/docs/api.py`:
 
 ```python
 from pyrig.dev.configs.markdown.docs.api import ApiConfigFile as BaseApiCF
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
 
 
 class ApiConfigFile(BaseApiCF):
     """Custom API reference for public API only."""
 
     @classmethod
-    def get_content_str(cls) -> str:
+    def get_lines(cls) -> list[str]:
         """Document only the public API from src/."""
-        project_name = cls.get_project_name()
-        return f"""# API Reference
-
-## Public API
-
-::: {project_name}.src
-    options:
-      members:
-        - MyPublicClass
-        - my_public_function
-      show_submodules: false
-
-## Utilities
-
-::: {project_name}.src.utils
-"""
+        project_name = PyprojectConfigFile.get_project_name()
+        return [
+            "# API Reference",
+            "",
+            "## Public API",
+            "",
+            f"::: {project_name}.src",
+            "    options:",
+            "      members:",
+            "        - MyPublicClass",
+            "        - my_public_function",
+            "      show_submodules: false",
+            "",
+            "## Utilities",
+            "",
+            f"::: {project_name}.src.utils",
+            "",
+        ]
 ```
 
 ### Common Customizations
@@ -122,44 +125,50 @@ class ApiConfigFile(BaseApiCF):
 **Document only src/ folder**:
 
 ```python
-return f"::: {project_name}.src"
+return [f"::: {project_name}.src", ""]
 ```
 
 **Document specific modules**:
 
 ```python
-return f"""# API Reference
-
-## Core Module
-
-::: {project_name}.src.core
-
-## Utils Module
-
-::: {project_name}.src.utils
-"""
+return [
+    "# API Reference",
+    "",
+    "## Core Module",
+    "",
+    f"::: {project_name}.src.core",
+    "",
+    "## Utils Module",
+    "",
+    f"::: {project_name}.src.utils",
+    "",
+]
 ```
 
 **Exclude private members**:
 
 ```python
-return f"""::: {project_name}
-    options:
-      filters:
-        - "!^_"
-"""
+return [
+    f"::: {project_name}",
+    "    options:",
+    "      filters:",
+    '        - "!^_"',
+    "",
+]
 ```
 
 **Document only specific classes**:
 
 ```python
-return f"""::: {project_name}.src.api
-    options:
-      members:
-        - Client
-        - Response
-        - Error
-"""
+return [
+    f"::: {project_name}.src.api",
+    "    options:",
+    "      members:",
+    "        - Client",
+    "        - Response",
+    "        - Error",
+    "",
+]
 ```
 
 ## Docstring Style

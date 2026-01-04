@@ -92,7 +92,7 @@ repos:
         pass_filenames: false
       - id: check-markdown
         name: check-markdown
-        entry: rumdl check
+        entry: rumdl check --fix
         language: system
         always_run: true
         pass_filenames: false
@@ -150,7 +150,7 @@ type annotations.
 
 - Type annotation correctness
 - Type consistency
-- Runtime type validation
+- Missing or incorrect type annotations
 
 ### 4. check-security (Bandit Security Scanning)
 
@@ -168,9 +168,10 @@ type annotations.
 
 ### 5. check-markdown (rumdl Markdown Linting)
 
-**Command**: `rumdl check`
+**Command**: `rumdl check --fix`
 
-**Purpose**: Lints markdown files for consistency and best practices.
+**Purpose**: Lints markdown files for consistency and best practices,
+auto-fixing issues when possible.
 
 **What it checks**:
 

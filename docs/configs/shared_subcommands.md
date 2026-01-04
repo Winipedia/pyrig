@@ -34,7 +34,7 @@ graph TD
     style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `CopyModuleOnlyDocstringConfigFile` (via `ListConfigFile`)
+**Inherits from**: `CopyModuleOnlyDocstringConfigFile`
 
 **What this means**:
 
@@ -67,7 +67,11 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 ### Generated Content
 
 ```python
-"""Shared CLI subcommands available in all pyrig projects."""
+"""Shared CLI commands available across all dependent projects.
+
+All public functions are automatically discovered and registered as shared CLI
+commands. This means that any function defined in this module becomes a CLI
+command that is available in all dependent projects as a shared command. """
 ```
 
 The file contains only the docstring, allowing you to add shared CLI commands.
