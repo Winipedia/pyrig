@@ -36,8 +36,9 @@ class MyAppBuilder(PyInstallerBuilder):
 ```
 
 A use case we had was that we needed to add the migrations folder for a database
-once as we had it not located in the resources directory, which is autoincluded
-by PyInstallerBuilder.
+once as we had it not located in the resources directory. Resource modules from
+packages depending on pyrig are discovered automatically via
+`get_default_additional_resource_pkgs()`.
 
 ### 2. Add an Icon
 
@@ -115,14 +116,9 @@ myapp/
 ```
 
 All files in resource packages are bundled into the executable as additional
-data files via the same relative path using the pyinstaller method from its
-utils hooks:
-
-```python
-from PyInstaller.utils.hooks import collect_data_files
-
-datas = collect_data_files('myapp.resources')
-```
+data files using PyInstaller's `collect_data_files` utility. This preserves the
+package structure and makes resources accessible at runtime via
+`importlib.resources` or `pyrig.src.resource`.
 
 ## Icon Management
 

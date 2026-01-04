@@ -176,12 +176,14 @@ When you run `uv run pyrig build`, pyrig:
 pyrig (no concrete builders)
 │
 Package A (depends on pyrig)
-├── builders/
-│   └── executable.py  # PyInstallerBuilder subclass
+├── dev/
+│   └── builders/
+│       └── executable.py  # PyInstallerBuilder subclass
 │
 Package B (depends on Package A)
-├── builders/
-    └── documentation.py  # Custom builder
+├── dev/
+    └── builders/
+        └── documentation.py  # Custom builder
 
 Running `uv run pyrig build`:
 ✓ Discovers ExecutableBuilder from Package A
