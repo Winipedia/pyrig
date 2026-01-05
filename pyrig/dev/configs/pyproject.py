@@ -20,11 +20,8 @@ from packaging.version import Version
 
 from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
+from pyrig.dev.management.remote_version_controller import RemoteVersionController
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
-from pyrig.dev.utils.urls import (
-    get_github_pages_url,
-    get_github_repo_url,
-)
 from pyrig.dev.utils.version_control import get_repo_owner_and_name_from_version_control
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.consts import STANDARD_DEV_DEPS
@@ -99,11 +96,11 @@ class PyprojectConfigFile(TomlConfigFile):
                     *cls.make_python_version_classifiers(),
                 ],
                 "urls": {
-                    "Homepage": get_github_repo_url(),
-                    "Documentation": get_github_pages_url(),
-                    "Source": get_github_repo_url(),
-                    "Issues": f"{get_github_repo_url()}/issues",
-                    "Changelog": f"{get_github_repo_url()}/releases",
+                    "Homepage": RemoteVersionController.L.get_repo_url(),
+                    "Documentation": RemoteVersionController.L.get_documentation_url(),
+                    "Source": RemoteVersionController.L.get_repo_url(),
+                    "Issues": RemoteVersionController.L.get_issues_url(),
+                    "Changelog": RemoteVersionController.L.get_releases_url(),
                 },
                 "keywords": [],
                 "scripts": {
