@@ -11,10 +11,6 @@ class TestRemoteVersionController:
         result = RemoteVersionController.L.name()
         assert result == "github"
 
-    def test_protect_repo(self) -> None:
-        """Test method."""
-        raise NotImplementedError
-
     def test_get_repo_owner_and_name(self) -> None:
         """Test method."""
         result = RemoteVersionController.L.get_repo_owner_and_name()
