@@ -204,7 +204,7 @@ setup instructions
 **Why**:
 
 - Industry standard
-- Required by pyrig (enforced in autouse fixtures)
+- Required by pyrig
 - Enables collaboration and history tracking
 
 ### pre-commit

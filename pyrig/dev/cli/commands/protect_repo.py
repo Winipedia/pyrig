@@ -9,16 +9,14 @@ from typing import Any
 
 from pyrig.dev.configs.git.branch_protection import BranchProtectionConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.utils.git import (
-    DEFAULT_BRANCH,
-    get_github_repo_token,
-)
-from pyrig.dev.utils.github import (
+from pyrig.dev.utils.github_api import (
     create_or_update_ruleset,
     get_repo,
 )
-from pyrig.src.git import (
-    get_repo_owner_and_name_from_git,
+from pyrig.dev.utils.version_control import (
+    DEFAULT_BRANCH,
+    get_github_repo_token,
+    get_repo_owner_and_name_from_version_control,
 )
 
 logger = logging.getLogger(__name__)
@@ -42,7 +40,7 @@ def set_secure_repo_settings() -> None:
     settings based on pyproject.toml and pyrig defaults.
     """
     logger.info("Configuring secure repository settings")
-    owner, repo_name = get_repo_owner_and_name_from_git()
+    owner, repo_name = get_repo_owner_and_name_from_version_control()
     token = get_github_repo_token()
     repo = get_repo(token, owner, repo_name)
 
@@ -69,7 +67,7 @@ def create_or_update_default_branch_ruleset() -> None:
     existing ruleset if present.
     """
     token = get_github_repo_token()
-    owner, repo_name = get_repo_owner_and_name_from_git()
+    owner, repo_name = get_repo_owner_and_name_from_version_control()
     create_or_update_ruleset(
         token=token,
         owner=owner,

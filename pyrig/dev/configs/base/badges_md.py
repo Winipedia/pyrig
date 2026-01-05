@@ -24,17 +24,17 @@ from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.dev.configs.workflows.release import ReleaseWorkflow
-from pyrig.dev.utils.git import DEFAULT_BRANCH
-from pyrig.src.git import (
-    get_codecov_url_from_git,
-    get_github_pages_url_from_git,
-    get_licence_badge_url_from_git,
-    get_pypi_badge_url_from_git,
-    get_pypi_url_from_git,
-    get_repo_url_from_git,
-    get_workflow_badge_url_from_git,
-    get_workflow_run_url_from_git,
+from pyrig.dev.utils.urls import (
+    get_codecov_url,
+    get_github_pages_url,
+    get_github_repo_url,
+    get_github_workflow_badge_url,
+    get_github_workflow_run_url,
+    get_licence_badge_url,
+    get_pypi_badge_url,
+    get_pypi_url,
 )
+from pyrig.dev.utils.version_control import DEFAULT_BRANCH
 
 
 class BadgesMarkdownConfigFile(MarkdownConfigFile):
@@ -104,19 +104,19 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
                 r"[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)",
                 r"[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)",
                 r"[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)",
-                rf"[![codecov]({get_codecov_url_from_git()}/branch/{DEFAULT_BRANCH}/graph/badge.svg)]({get_codecov_url_from_git()})",
+                rf"[![codecov]({get_codecov_url()}/branch/{DEFAULT_BRANCH}/graph/badge.svg)]({get_codecov_url()})",
                 r"[![rumdl](https://img.shields.io/badge/markdown-rumdl-darkgreen)](https://github.com/rvben/rumdl)",
             ],
             "package-info": [
-                rf"[![PyPI]({get_pypi_badge_url_from_git()})]({get_pypi_url_from_git()})",
+                rf"[![PyPI]({get_pypi_badge_url()})]({get_pypi_url()})",
                 rf"[![Python](https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white)](https://www.python.org/)",
-                rf"[![License]({get_licence_badge_url_from_git()})]({get_repo_url_from_git()}/blob/main/LICENSE)",
+                rf"[![License]({get_licence_badge_url()})]({get_github_repo_url()}/blob/main/LICENSE)",
             ],
             "ci/cd": [
-                rf"[![CI]({get_workflow_badge_url_from_git(health_check_wf_name, 'CI', 'github')})]({get_workflow_run_url_from_git(health_check_wf_name)})",  # noqa: E501
-                rf"[![CD]({get_workflow_badge_url_from_git(release_wf_name, 'CD', 'github')})]({get_workflow_run_url_from_git(release_wf_name)})",  # noqa: E501
+                rf"[![CI]({get_github_workflow_badge_url(health_check_wf_name, 'CI', 'github')})]({get_github_workflow_run_url(health_check_wf_name)})",  # noqa: E501
+                rf"[![CD]({get_github_workflow_badge_url(release_wf_name, 'CD', 'github')})]({get_github_workflow_run_url(release_wf_name)})",  # noqa: E501
             ],
             "documentation": [
-                rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({get_github_pages_url_from_git()})",
+                rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({get_github_pages_url()})",
             ],
         }

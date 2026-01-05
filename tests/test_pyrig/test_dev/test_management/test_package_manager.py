@@ -6,6 +6,11 @@ from pyrig.dev.management.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_get_install_dependencies_no_dev_args(self) -> None:
+        """Test method."""
+        result = PackageManager.L.get_install_dependencies_args("--no-group", "dev")
+        assert result == ("uv", "sync", "--no-group", "dev")
+
     def test_name(self) -> None:
         """Test method."""
         result = PackageManager.L.name()

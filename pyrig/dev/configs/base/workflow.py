@@ -994,7 +994,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_add_dependency_updates_to_git,
-            run=str(VersionController.L.get_add_pyproject_toml_and_uv_lock_args()),
+            run=str(VersionController.L.get_add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
 

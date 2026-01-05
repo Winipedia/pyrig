@@ -21,13 +21,13 @@ from packaging.version import Version
 from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
+from pyrig.dev.utils.urls import (
+    get_github_pages_url,
+    get_github_repo_url,
+)
+from pyrig.dev.utils.version_control import get_repo_owner_and_name_from_version_control
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.consts import STANDARD_DEV_DEPS
-from pyrig.src.git import (
-    get_github_pages_url_from_git,
-    get_repo_owner_and_name_from_git,
-    get_repo_url_from_git,
-)
 from pyrig.src.modules.package import (
     PACKAGE_REQ_NAME_SPLIT_PATTERN,
     get_pkg_name_from_cwd,
@@ -76,7 +76,9 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
-        repo_owner, _ = get_repo_owner_and_name_from_git(check_repo_url=False)
+        repo_owner, _ = get_repo_owner_and_name_from_version_control(
+            check_repo_url=False
+        )
 
         return {
             "project": {
@@ -97,11 +99,11 @@ class PyprojectConfigFile(TomlConfigFile):
                     *cls.make_python_version_classifiers(),
                 ],
                 "urls": {
-                    "Homepage": get_repo_url_from_git(),
-                    "Documentation": get_github_pages_url_from_git(),
-                    "Source": get_repo_url_from_git(),
-                    "Issues": f"{get_repo_url_from_git()}/issues",
-                    "Changelog": f"{get_repo_url_from_git()}/releases",
+                    "Homepage": get_github_repo_url(),
+                    "Documentation": get_github_pages_url(),
+                    "Source": get_github_repo_url(),
+                    "Issues": f"{get_github_repo_url()}/issues",
+                    "Changelog": f"{get_github_repo_url()}/releases",
                 },
                 "keywords": [],
                 "scripts": {

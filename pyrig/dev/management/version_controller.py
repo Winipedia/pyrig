@@ -90,7 +90,7 @@ class VersionController(Tool):
         return cls.get_add_args("pyproject.toml", *args)
 
     @classmethod
-    def get_add_pyproject_toml_and_uv_lock_args(cls, *args: str) -> Args:
+    def get_add_pyproject_toml_and_lock_file_args(cls, *args: str) -> Args:
         """Construct git add arguments for pyproject.toml and uv.lock.
 
         Args:
@@ -263,3 +263,51 @@ class VersionController(Tool):
             Args for 'git tag'.
         """
         return cls.get_args("tag", tag, *args)
+
+    @classmethod
+    def get_config_get_args(cls, *args: str) -> Args:
+        """Construct git config get arguments.
+
+        Args:
+            *args: Config get command arguments.
+
+        Returns:
+            Args for 'git config --get'.
+        """
+        return cls.get_config_args("--get", *args)
+
+    @classmethod
+    def get_config_get_remote_origin_url_args(cls, *args: str) -> Args:
+        """Construct git config get remote origin URL arguments.
+
+        Args:
+            *args: Config get command arguments.
+
+        Returns:
+            Args for 'git config --get remote.origin.url'.
+        """
+        return cls.get_config_get_args("remote.origin.url", *args)
+
+    @classmethod
+    def get_config_get_user_name_args(cls, *args: str) -> Args:
+        """Construct git config get user name arguments.
+
+        Args:
+            *args: Config get command arguments.
+
+        Returns:
+            Args for 'git config --get user.name'.
+        """
+        return cls.get_config_get_args("user.name", *args)
+
+    @classmethod
+    def get_diff_args(cls, *args: str) -> Args:
+        """Construct git diff arguments.
+
+        Args:
+            *args: Diff command arguments.
+
+        Returns:
+            Args for 'git diff'.
+        """
+        return cls.get_args("diff", *args)

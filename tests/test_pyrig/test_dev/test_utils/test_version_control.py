@@ -3,9 +3,14 @@
 from contextlib import chdir
 from pathlib import Path
 
-from pyrig.dev.utils.git import (
+import pyrig
+from pyrig.dev.utils.version_control import (
     GITIGNORE_PATH,
+    get_diff_from_version_control,
     get_github_repo_token,
+    get_repo_owner_and_name_from_version_control,
+    get_repo_remote_from_version_control,
+    get_username_from_version_control,
     load_gitignore,
     path_is_in_gitignore_lines,
 )
@@ -60,3 +65,36 @@ dist/
 """
         GITIGNORE_PATH.write_text(content)
         assert load_gitignore() == content.splitlines()
+
+
+def test_get_repo_remote_from_version_control() -> None:
+    """Test func."""
+    url = get_repo_remote_from_version_control()
+    assert isinstance(url, str), f"Expected url to be str, got {type(url)}"
+
+    assert "github.com" in url, f"Expected 'github.com' in url, got {url}"
+
+
+def test_get_repo_owner_and_name_from_version_control() -> None:
+    """Test func for get_repo_owner_and_name_from_git."""
+    owner, repo = get_repo_owner_and_name_from_version_control()
+    assert isinstance(owner, str), f"Expected owner to be str, got {type(owner)}"
+
+    assert owner == "Winipedia", f"Expected owner to be 'Winipedia', got {owner}"
+    assert repo == pyrig.__name__, f"Expected repo to be 'pyrig', got {repo}"
+
+
+def test_get_username_from_version_control() -> None:
+    """Test function."""
+    username = get_username_from_version_control()
+    assert isinstance(username, str), (
+        f"Expected username to be str, got {type(username)}"
+    )
+    assert len(username) > 0, "Expected username to be non-empty"
+
+
+def test_get_diff_from_version_control() -> None:
+    """Test function."""
+    assert isinstance(get_diff_from_version_control(), str), (
+        "Expected get_git_unstaged_changes to return str"
+    )

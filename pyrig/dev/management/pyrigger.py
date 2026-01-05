@@ -12,6 +12,7 @@ Example:
 from collections.abc import Callable
 from typing import Any
 
+import pyrig
 from pyrig.dev.management.base.base import Tool
 from pyrig.src.modules.package import get_project_name_from_pkg_name
 from pyrig.src.processes import Args
@@ -39,7 +40,7 @@ class Pyrigger(Tool):
         Returns:
             'pyrig'
         """
-        return "pyrig"
+        return pyrig.__name__
 
     @classmethod
     def get_cmd_args(cls, *args: str, cmd: Callable[..., Any]) -> Args:
