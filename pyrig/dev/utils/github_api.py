@@ -217,15 +217,9 @@ def github_api_request(  # noqa: PLR0913
     repo = get_repo(token, owner, repo_name)
     url = f"{repo.url}/{endpoint}"
 
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-    }
-
     _headers, res = repo._requester.requestJsonAndCheck(  # noqa: SLF001
         method,
         url,
-        headers=headers,
         input=payload,
     )
     logger.debug("GitHub API request successful: %s %s", method, endpoint)

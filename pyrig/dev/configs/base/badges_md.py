@@ -24,13 +24,9 @@ from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.dev.configs.workflows.release import ReleaseWorkflow
+from pyrig.dev.management.remote_version_controller import RemoteVersionController
 from pyrig.dev.utils.urls import (
     get_codecov_url,
-    get_github_pages_url,
-    get_github_repo_url,
-    get_github_workflow_badge_url,
-    get_github_workflow_run_url,
-    get_licence_badge_url,
     get_pypi_badge_url,
     get_pypi_url,
 )
@@ -110,13 +106,13 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             "package-info": [
                 rf"[![PyPI]({get_pypi_badge_url()})]({get_pypi_url()})",
                 rf"[![Python](https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white)](https://www.python.org/)",
-                rf"[![License]({get_licence_badge_url()})]({get_github_repo_url()}/blob/main/LICENSE)",
+                rf"[![License]({RemoteVersionController.L.get_license_badge_url()})]({RemoteVersionController.L.get_repo_url()}/blob/main/LICENSE)",
             ],
             "ci/cd": [
-                rf"[![CI]({get_github_workflow_badge_url(health_check_wf_name, 'CI', 'github')})]({get_github_workflow_run_url(health_check_wf_name)})",  # noqa: E501
-                rf"[![CD]({get_github_workflow_badge_url(release_wf_name, 'CD', 'github')})]({get_github_workflow_run_url(release_wf_name)})",  # noqa: E501
+                rf"[![CI]({RemoteVersionController.L.get_cicd_badge_url(health_check_wf_name, 'CI', 'github')})]({RemoteVersionController.L.get_cicd_url(health_check_wf_name)})",  # noqa: E501
+                rf"[![CD]({RemoteVersionController.L.get_cicd_badge_url(release_wf_name, 'CD', 'github')})]({RemoteVersionController.L.get_cicd_url(release_wf_name)})",  # noqa: E501
             ],
             "documentation": [
-                rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({get_github_pages_url()})",
+                rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({RemoteVersionController.L.get_documentation_url()})",
             ],
         }

@@ -18,6 +18,7 @@ docstrings.
 |------|-------|---------|
 | [PackageManager](package_manager.md) | uv | Dependencies, building, publishing |
 | [VersionController](version_controller.md) | git | Version control |
+| [RemoteVersionController](remote_version_controller.md) | GitHub | Repository URLs and badges |
 | [Linter](linter.md) | ruff | Linting and formatting |
 | [TypeChecker](type_checker.md) | ty | Type checking |
 | [ProjectTester](project_tester.md) | pytest | Running tests |
