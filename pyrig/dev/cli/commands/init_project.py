@@ -30,7 +30,6 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
-import pyrig
 from pyrig.dev.cli.subcommands import mkroot, mktests
 from pyrig.dev.management.package_manager import PackageManager
 from pyrig.dev.management.pre_committer import (
@@ -131,7 +130,7 @@ def committing_initial_changes() -> None:
     """
     # changes were added by the run pre-commit hooks step
     args = VersionController.L.get_commit_no_verify_args(
-        msg=f"{pyrig.__name__}: Initial commit"
+        msg=f"{Pyrigger.name()}: Initial commit"
     )
     args.run()
 

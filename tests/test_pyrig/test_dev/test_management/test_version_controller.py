@@ -6,6 +6,26 @@ from pyrig.dev.management.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_get_config_get_args(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_config_get_args()
+        assert result == ("git", "config", "--get")
+
+    def test_get_config_get_remote_origin_url_args(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_config_get_remote_origin_url_args()
+        assert result == ("git", "config", "--get", "remote.origin.url")
+
+    def test_get_config_get_user_name_args(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_config_get_user_name_args()
+        assert result == ("git", "config", "--get", "user.name")
+
+    def test_get_diff_args(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_diff_args()
+        assert result == ("git", "diff")
+
     def test_get_push_origin_args(self) -> None:
         """Test method."""
         result = VersionController.L.get_push_origin_args()
@@ -48,9 +68,9 @@ class TestVersionController:
         result = VersionController.L.get_add_pyproject_toml_args()
         assert result == ("git", "add", "pyproject.toml")
 
-    def test_get_add_pyproject_toml_and_uv_lock_args(self) -> None:
+    def test_get_add_pyproject_toml_and_lock_file_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_add_pyproject_toml_and_uv_lock_args()
+        result = VersionController.L.get_add_pyproject_toml_and_lock_file_args()
         assert result == ("git", "add", "pyproject.toml", "uv.lock")
 
     def test_get_commit_args(self) -> None:

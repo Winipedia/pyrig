@@ -82,8 +82,7 @@ changes.
 
 **Assertion**:
 
-- Verifies only one source package exists at the root (besides `tests` and
-  `docs`)
+- Verifies only one source package exists at the root (besides `tests`)
 - Ensures the source package contains only: `src/`, `dev/`, `resources/`
   subdirectories and `main.py`
 - Prevents code from being scattered across multiple top-level packages
@@ -174,18 +173,6 @@ specified with `>=` constraints.
 
 ---
 
-### `assert_pre_commit_is_installed`
-
-**Purpose**: Ensure pre-commit hooks are active.
-
-**Assertion**: Runs `pre-commit install` and verifies success message.
-
-**Scope**: Session
-
-**Why**: Activates code quality checks before commits.
-
----
-
 ### `assert_src_runs_without_dev_deps`
 
 **Purpose**: Verify source code has no dev dependencies.
@@ -235,30 +222,6 @@ dependency updates, this actively updates `uv` if a new version is available.
 
 ---
 
-### `assert_version_control_is_installed`
-
-**Purpose**: Ensure git is installed and available.
-
-**Assertion**: Runs `git --version` and verifies success.
-
-**Scope**: Session
-
-**Why**: Ensures version control tooling is available for development.
-
----
-
-### `assert_container_engine_is_installed`
-
-**Purpose**: Ensure Podman is installed and available.
-
-**Assertion**: Runs `podman --version` and verifies success.
-
-**Scope**: Session (local only, skipped in CI)
-
-**Why**: Ensures containerization tooling is available for development.
-
----
-
 ## Fixture Execution Order
 
 **Note**: The execution order of session-level autouse fixtures is not
@@ -290,12 +253,9 @@ graph TD
 - `assert_all_modules_tested`
 - `assert_no_unit_test_package_usage`
 - `assert_dependencies_are_up_to_date`
-- `assert_pre_commit_is_installed`
 - `assert_src_runs_without_dev_deps`
 - `assert_src_does_not_use_dev`
 - `assert_project_mgt_is_up_to_date` (local only)
-- `assert_version_control_is_installed`
-- `assert_container_engine_is_installed` (local only)
 
 ## Creating Custom Autouse Fixtures
 

@@ -8,13 +8,13 @@ from pytest_mock import MockFixture
 import pyrig
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.utils import packages
-from pyrig.dev.utils.git import path_is_in_gitignore_lines
 from pyrig.dev.utils.packages import (
     find_packages,
     get_namespace_packages,
     get_src_package,
     src_pkg_is_pyrig,
 )
+from pyrig.dev.utils.version_control import path_is_in_gitignore_lines
 from pyrig.src.modules.module import make_obj_importpath
 
 

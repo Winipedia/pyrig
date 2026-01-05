@@ -27,7 +27,7 @@ class PackageManager(Tool):
 
     Example:
         >>> PackageManager.L.get_install_dependencies_args().run()
-        >>> PackageManager.L.get_add_dev_dependencies_args("pytest").run()
+        >>> PackageManager.L.get_add_dev_dependencies_args("pyrig-dev").run()
     """
 
     @classmethod
@@ -98,6 +98,18 @@ class PackageManager(Tool):
             Args for 'uv sync'.
         """
         return cls.get_args("sync", *args)
+
+    @classmethod
+    def get_install_dependencies_no_dev_args(cls, *args: str) -> Args:
+        """Construct uv sync arguments without dev dependencies.
+
+        Args:
+            *args: Sync command arguments.
+
+        Returns:
+            Args for 'uv sync --no-group dev'.
+        """
+        return cls.get_install_dependencies_args("--no-group", "dev", *args)
 
     @classmethod
     def get_update_dependencies_args(cls, *args: str) -> Args:

@@ -31,14 +31,15 @@ Note:
 
 from collections.abc import Callable
 from functools import wraps
+from pathlib import Path
 from typing import Any, ParamSpec
 
 from requests import RequestException
 from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
 from pyrig import resources
+from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.packages import src_pkg_is_pyrig
-from pyrig.src.git import git_add_file
 from pyrig.src.resource import get_resource_path
 
 P = ParamSpec("P")
@@ -110,7 +111,11 @@ def return_resource_file_content_on_exceptions(
             result = decorated_func(*args, **kwargs).strip()
             if src_pkg_is_pyrig() and overwrite_resource and result != content:
                 resource_path.write_text(result, encoding="utf-8")
-                git_add_file(resource_path)
+                if resource_path.is_absolute():
+                    relative_resource_path = resource_path.relative_to(Path.cwd())
+                else:
+                    relative_resource_path = resource_path
+                VersionController.L.get_add_args(str(relative_resource_path)).run()
             return result
 
         return wrapper

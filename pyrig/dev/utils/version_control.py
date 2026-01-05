@@ -18,14 +18,17 @@ See Also:
     pyrig.dev.cli.commands.protect_repo: High-level repository protection
 """
 
-import logging
 import os
+from functools import cache
 from pathlib import Path
+from urllib.parse import quote
 
 import pathspec
 from dotenv import dotenv_values
 
-logger = logging.getLogger(__name__)
+from pyrig.dev.management.version_controller import VersionController
+from pyrig.src.git import logger
+from pyrig.src.modules.package import get_project_name_from_cwd
 
 DEFAULT_BRANCH = "main"
 
@@ -150,3 +153,94 @@ def load_gitignore(path: Path = GITIGNORE_PATH) -> list[str]:
         pathspec library.
     """
     return path.read_text(encoding="utf-8").splitlines()
+
+
+@cache
+def get_repo_remote_from_version_control(*, check: bool = True) -> str:
+    """Get the remote origin URL from git config.
+
+    Args:
+        check: Whether to raise exception if command fails.
+
+    Returns:
+        Remote origin URL (HTTPS or SSH format).
+        Empty string if check=False and no remote.
+
+    Raises:
+        subprocess.CalledProcessError: If check=True and command fails.
+    """
+    stdout: str = (
+        VersionController.L.get_config_get_remote_origin_url_args()
+        .run(check=check)
+        .stdout.decode("utf-8")
+    )
+    return stdout.strip()
+
+
+@cache
+def get_username_from_version_control() -> str:
+    """Get git username from local config.
+
+    Returns:
+        Configured git username (cached).
+
+    Raises:
+        subprocess.CalledProcessError: If user.name not configured.
+    """
+    stdout: str = (
+        VersionController.L.get_config_get_user_name_args().run().stdout.decode("utf-8")
+    )
+    return stdout.strip()
+
+
+@cache
+def get_repo_owner_and_name_from_version_control(
+    *, check_repo_url: bool = True, url_encode: bool = False
+) -> tuple[str, str]:
+    """Extract GitHub owner and repository name from git remote URL.
+
+    Parses remote origin URL (HTTPS or SSH format). Falls back to git username
+    and current directory name if no remote configured.
+
+    Args:
+        check_repo_url: Whether to raise exception if remote cannot be read.
+        url_encode: Whether to URL-encode owner and repo names.
+
+    Returns:
+        Tuple of (owner, repository_name).
+
+    Raises:
+        subprocess.CalledProcessError: If check_repo_url=True and remote unreadable.
+    """
+    url = get_repo_remote_from_version_control(check=check_repo_url)
+    if not url:
+        # we default to git username and repo name from cwd
+        logger.debug("No git remote found, using git username and CWD for repo info")
+        owner = get_username_from_version_control()
+        repo = get_project_name_from_cwd()
+        logger.debug("Derived repository: %s/%s", owner, repo)
+    else:
+        parts = url.removesuffix(".git").split("/")
+        # keep last two parts
+        owner, repo = parts[-2:]
+        if ":" in owner:
+            owner = owner.split(":")[-1]
+    if url_encode:
+        logger.debug("Url encoding owner and repo")
+        owner = quote(owner)
+        repo = quote(repo)
+    return owner, repo
+
+
+def get_diff_from_version_control() -> str:
+    """Get diff of unstaged changes.
+
+    Returns:
+        Output of `git diff` (empty string if no changes).
+
+    Note:
+        Only shows tracked files, not untracked files.
+    """
+    completed_process = VersionController.L.get_diff_args().run()
+    unstaged_changes: str = completed_process.stdout.decode("utf-8")
+    return unstaged_changes

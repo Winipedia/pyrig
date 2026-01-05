@@ -43,7 +43,6 @@ from pyrig.dev.configs.pyproject import (
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.management.package_manager import PackageManager
-from pyrig.dev.management.pre_committer import PreCommitter
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils.packages import (
     find_packages,
@@ -51,8 +50,8 @@ from pyrig.dev.utils.packages import (
     get_src_package,
 )
 from pyrig.dev.utils.testing import autouse_session_fixture
+from pyrig.dev.utils.version_control import get_diff_from_version_control
 from pyrig.src.git import (
-    get_git_unstaged_changes,
     running_in_github_actions,
 )
 from pyrig.src.modules.imports import (
@@ -64,13 +63,11 @@ from pyrig.src.modules.module import (
     get_module_name_replacing_start_module,
 )
 from pyrig.src.modules.package import (
-    DOCS_DIR_NAME,
     DependencyGraph,
     get_pkg_name_from_project_name,
     get_project_name_from_pkg_name,
 )
 from pyrig.src.modules.path import ModulePath
-from pyrig.src.processes import run_subprocess
 from pyrig.src.string import re_search_excluding_docstrings
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
@@ -92,17 +89,18 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
     """
     in_github_actions = running_in_github_actions()
 
-    msg = (
-        "Found unstaged changes. Please commit or stash them. "
-        "Unstaged changes: {unstaged_changes}"
-    )
+    msg = """Pyrig enforces that no changes are made during tests when running in CI.
+    This is to ensure that the tests do not modify any files.
+    Found the following unstaged changes:
+    {unstaged_changes}
+    """
 
     if in_github_actions:
-        unstaged_changes = get_git_unstaged_changes()
+        unstaged_changes = get_diff_from_version_control()
         assert not unstaged_changes, msg.format(unstaged_changes=unstaged_changes)
     yield
     if in_github_actions:
-        unstaged_changes = get_git_unstaged_changes()
+        unstaged_changes = get_diff_from_version_control()
         assert not unstaged_changes, msg.format(unstaged_changes=unstaged_changes)
 
 
@@ -149,7 +147,8 @@ def assert_no_namespace_packages() -> None:
     if any_namespace_packages:
         make_init_files()
 
-    msg = f"""Found {len(any_namespace_packages)} namespace packages.
+    msg = f"""Pyrig enforces that all packages have __init__.py files.
+    Found {len(any_namespace_packages)} namespace packages.
     Created __init__.py files for them.
     Please verify the changes at the following paths:
 """
@@ -173,12 +172,17 @@ def assert_all_src_code_in_one_package() -> None:
     packages = find_packages(depth=0)
     src_package = get_src_package()
     src_package_name = src_package.__name__
-    expected_packages = {TESTS_PACKAGE_NAME, src_package_name, DOCS_DIR_NAME}
+    expected_packages = {TESTS_PACKAGE_NAME, src_package_name}
 
-    # pkgs must be subset of expected_packages
-    assert set(packages).issubset(expected_packages), (
-        f"Expected only packages {expected_packages}, but found {packages}"
-    )
+    # pkgs must be exactly the expected packages
+    assert (
+        set(packages) == expected_packages
+    ), f"""Pyrig enforces a single source package with a specific structure.
+    Found unexpected packages: {set(packages) - expected_packages}
+    Expected packages: {expected_packages}
+    Only folders with __init__.py files are considered packages.
+    Please move all code and login into the designated src package.
+"""
 
     # assert the src package's only submodules are main, src and dev
     subpackages, submodules = get_modules_and_packages_from_package(src_package)
@@ -194,12 +198,21 @@ def assert_all_src_code_in_one_package() -> None:
         ]
     }
     expected_submodules = {get_isolated_obj_name(main)}
-    assert subpackage_names == expected_subpackages, (
-        f"Expected subpackages {expected_subpackages}, but found {subpackage_names}"
-    )
-    assert submodule_names == expected_submodules, (
-        f"Expected submodules {expected_submodules}, but found {submodule_names}"
-    )
+    assert (
+        subpackage_names == expected_subpackages
+    ), f"""Pyrig enforces a single source package with a specific structure.
+        Found unexpected subpackages: {subpackage_names - expected_subpackages}
+        Expected subpackages: {expected_subpackages}
+        Please move all code and login into the designated src package.
+    """
+
+    assert (
+        submodule_names == expected_submodules
+    ), f"""Pyrig enforces a single source package with a specific structure.
+        Found unexpected submodules: {submodule_names - expected_submodules}
+        Expected submodules: {expected_submodules}
+        Please move all code and login into the designated src package.
+        """
 
 
 @autouse_session_fixture
@@ -286,7 +299,7 @@ def assert_no_unit_test_package_usage() -> None:
             if is_unit_test_used:
                 usages.append(f"{path}: {is_unit_test_used.group()}")
 
-    msg = f"""Found {"UnitTest".lower()} package usage in:
+    msg = f"""Found {unit_test_str} package usage in:
     {make_summary_error_msg(usages)}
 """
     assert not usages, msg
@@ -305,11 +318,16 @@ def assert_dependencies_are_up_to_date() -> None:
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
     std_msg_updated = stderr + stdout
-
-    not_expected = ["Updated"]
-    # if there were updates raise an error
-    update_occurred = any(exp in std_msg_updated for exp in not_expected)
-    deps_were_upgraded = update_occurred
+    deps_updated_successfully = completed_process.returncode == 0
+    msg_updated = (
+        f"Dependencies were updated successfully by `{args}`."
+        if deps_updated_successfully
+        else f"""Failed to update dependencies.
+    This fixture ran `{args}` but it failed.
+    Output:
+    {std_msg_updated}
+    """
+    )
 
     # sync the dependencies
     args = PackageManager.L.get_install_dependencies_args()
@@ -317,48 +335,29 @@ def assert_dependencies_are_up_to_date() -> None:
     stderr = completed_process.stderr.decode("utf-8")
     stdout = completed_process.stdout.decode("utf-8")
     std_msg_installed = stderr + stdout
-    expected = ["Resolved", "Audited"]
-    expected_in_err_or_out = any(exp in std_msg_installed for exp in expected)
-    not_expected = ["=="]
-    install_occurred = any(exp in std_msg_installed for exp in not_expected)
-    deps_were_installed = install_occurred and not expected_in_err_or_out
+    deps_installed_successfully = completed_process.returncode == 0
+    msg_installed = (
+        "Dependencies were installed successfully by `{args}`."
+        if deps_installed_successfully
+        else f"""Failed to install dependencies.
+    This fixture ran `{args}` but it failed.
+    Output:
+    {std_msg_installed}
+    """
+    )
 
-    is_up_to_date = not deps_were_upgraded and not deps_were_installed
+    successful = deps_updated_successfully and deps_installed_successfully
 
-    msg = f"""Dependencies were not up to date.
-This fixture ran `uv lock --upgrade` and `uv sync`.
-upgrade output:
-{std_msg_updated}
--------------------------------------------------------------------------------
-install output:
-{std_msg_installed}
-"""
-    assert is_up_to_date, msg
+    msg = f"""Dependencies are not up to date.
+    {msg_updated}
+    --------------------------------------------------------------------------------
+    {msg_installed}
+    """
+    assert successful, msg
 
 
 @autouse_session_fixture
-def assert_pre_commit_is_installed() -> None:
-    """Verify pre-commit hooks are installed via ``pre-commit install``.
-
-    Raises:
-        AssertionError: If pre-commit installation fails.
-    """
-    args = PreCommitter.L.get_install_args()
-    completed_process = args.run()
-    stdout = completed_process.stdout.decode("utf-8")
-    expected = "pre-commit installed at"
-
-    pre_commits_are_installed = expected in stdout
-
-    msg = f"""Pre-commits are not installed.
-    This fixture ran `pre-commit install` but it failed.
-    Output: {stdout}
-    """
-    assert pre_commits_are_installed, msg
-
-
-@autouse_session_fixture
-def assert_src_runs_without_dev_deps(
+def assert_src_runs_without_dev_deps(  # noqa: PLR0915
     tmp_path_factory: pytest.TempPathFactory,
 ) -> None:
     """Verify source code runs in isolated environment without dev dependencies.
@@ -371,6 +370,10 @@ def assert_src_runs_without_dev_deps(
 
     Raises:
         AssertionError: If source code cannot run without dev dependencies.
+    """
+    base_msg = """Source code cannot run without dev dependencies.
+    This fixture created a temp environment and installed the project without
+    the dev group. However, it failed with the following error:
     """
     project_name = PyprojectConfigFile.get_project_name()
     func_name = assert_src_runs_without_dev_deps.__name__  # ty:ignore[possibly-missing-attribute]
@@ -406,8 +409,9 @@ def assert_src_runs_without_dev_deps(
 
     with chdir(tmp_path):
         # install deps
-        completed_process = run_subprocess(
-            ["uv", "sync", "--no-group", "dev"], env=env, check=False
+        completed_process = PackageManager.L.get_install_dependencies_no_dev_args().run(
+            check=False,
+            env=env,
         )
         stdout = completed_process.stdout.decode("utf-8")
         stderr = completed_process.stderr.decode("utf-8")
@@ -426,7 +430,7 @@ def assert_src_runs_without_dev_deps(
         # python -m video_vault.main
 
         # assert pytest is not installed
-        dev_dep = "pytest"
+        dev_dep = PyprojectConfigFile.get_standard_dev_dependencies()[0]
         args = PackageManager.L.get_run_args("pip", "show", dev_dep)
         installed = args.run(
             check=False,
@@ -434,7 +438,7 @@ def assert_src_runs_without_dev_deps(
         )
         stderr = installed.stderr.decode("utf-8")
         dev_dep_not_installed = f"not found: {dev_dep}" in stderr
-        assert dev_dep_not_installed, f"Expected {dev_dep} not to be installed"
+        assert dev_dep_not_installed, base_msg + f"{stderr}"
         # check pytest is not importable
         args = PackageManager.L.get_run_args("python", "-c", "import pytest")
         installed = args.run(
@@ -442,17 +446,11 @@ def assert_src_runs_without_dev_deps(
             env=env,
         )
         stderr = installed.stderr.decode("utf-8")
-        assert "ModuleNotFoundError" in stderr, (
-            f"Expected ModuleNotFoundError, got {stderr}"
-        )
+        assert "ModuleNotFoundError" in stderr, base_msg + f"{stderr}"
         src_pkg_name = get_src_package().__name__
 
         # run walk_package with src and import all modules to catch dev dep imports
-        cmd = [
-            "uv",
-            "run",
-            "--no-group",
-            "dev",
+        script_args = [
             "python",
             "-c",
             (
@@ -472,23 +470,30 @@ def assert_src_runs_without_dev_deps(
                 "print('Success')"
             ),
         ]
+        args = PackageManager.L.get_run_args(*script_args)
 
-        completed_process = run_subprocess(cmd, env=env, check=False)
+        completed_process = args.run(
+            check=False,
+            env=env,
+        )
         stdout = completed_process.stdout.decode("utf-8")
         stderr = completed_process.stderr.decode("utf-8")
         msg = f"""Expected Success in stdout, got {stdout} and {stderr}
 If this fails then there is likely an import in src that depends on dev dependencies.
 """
-        assert "Success" in stdout, msg
+        assert "Success" in stdout, base_msg + msg
 
         # run cli without dev deps
-        cmd = ["uv", "run", "--no-group", "dev", project_name, "--help"]
-        completed_process = run_subprocess(cmd, env=env, check=False)
+        args = PackageManager.L.get_run_args(project_name, "--help")
+        completed_process = args.run(
+            check=False,
+            env=env,
+        )
         stdout = completed_process.stdout.decode("utf-8")
         stderr = completed_process.stderr.decode("utf-8")
-        assert "Usage:" in stdout, (
-            f"Expected Usage: in stdout, got {stdout} and {stderr}"
-        )
+        std_msg = stderr + stdout
+        successful = completed_process.returncode == 0
+        assert successful, base_msg + f"Expected {args} to succeed, got {std_msg}"
 
 
 @autouse_session_fixture
@@ -545,54 +550,24 @@ def assert_project_mgt_is_up_to_date() -> None:
     """
     if not running_in_github_actions():
         # update project mgt
-        completed_process = run_subprocess(["uv", "self", "update"], check=False)
+        completed_process = PackageManager.L.get_update_self_args().run(check=False)
+        returncode = completed_process.returncode
+
         stderr = completed_process.stderr.decode("utf-8")
         stdout = completed_process.stdout.decode("utf-8")
         std_msg = stderr + stdout
 
-        expected = [
-            "success: You're on the latest version of uv",
+        allowed_errors = [
             "GitHub API rate limit exceeded",
             "Temporary failure in name resolution",
         ]
-        expected_in_err_or_out = any(exp in std_msg for exp in expected)
-        msg = f"""Expected one of {expected} in stderr or stdout, got: {std_msg}
 
-        This fixture ran `uv self update` but determined that you were not up to date.
+        allowed_error_in_err_or_out = any(exp in std_msg for exp in allowed_errors)
+
+        is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
+
+        msg = f"""The tool {PackageManager.L.name()} is not up to date.
+        This fixture ran `{PackageManager.L.get_update_self_args()}` but it failed.
+        Output: {std_msg}
         """
-        assert expected_in_err_or_out, msg
-
-
-@autouse_session_fixture
-def assert_version_control_is_installed() -> None:
-    """Verify git is installed via ``git --version``.
-
-    Raises:
-        AssertionError: If git is not installed or not accessible.
-    """
-    completed_process = run_subprocess(["git", "--version"], check=False)
-    stderr = completed_process.stderr.decode("utf-8")
-    stdout = completed_process.stdout.decode("utf-8")
-    std_msg = stderr + stdout
-    # use re expression to check if git version is in the output
-    git_is_installed = re.search(r"git version \d+\.\d+\.\d+", std_msg)
-
-    assert git_is_installed, f"Expected git to be installed, got: {std_msg}"
-
-
-@autouse_session_fixture
-def assert_container_engine_is_installed() -> None:
-    """Verify podman is installed via ``podman --version`` (skipped in CI).
-
-    Raises:
-        AssertionError: If podman is not installed or not accessible.
-    """
-    if not running_in_github_actions():
-        completed_process = run_subprocess(["podman", "--version"], check=False)
-        stderr = completed_process.stderr.decode("utf-8")
-        stdout = completed_process.stdout.decode("utf-8")
-        std_msg = stderr + stdout
-        # use re expression to check if podman version is in the output
-        podman_is_installed = re.search(r"podman version \d+\.\d+\.\d+", std_msg)
-
-        assert podman_is_installed, f"Expected podman to be installed, got: {std_msg}"
+        assert is_up_to_date, msg
