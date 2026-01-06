@@ -6,12 +6,12 @@ Provides CopyModuleConfigFile for replicating module content with path transform
 Example:
     >>> from types import ModuleType
     >>> from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
-    >>> import pyrig.src.string
+    >>> import pyrig.src.string_
     >>>
     >>> class StringModuleCopy(CopyModuleConfigFile):
     ...     @classmethod
     ...     def get_src_module(cls) -> ModuleType:
-    ...         return pyrig.src.string
+    ...         return pyrig.src.string_
     >>>
     >>> StringModuleCopy()  # Copies pyrig/src/string.py -> myproject/src/string.py
 """

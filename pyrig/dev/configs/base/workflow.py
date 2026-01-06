@@ -48,7 +48,7 @@ from pyrig.dev.management.project_tester import ProjectTester
 from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.packages import get_src_package, src_pkg_is_pyrig
-from pyrig.src.string import (
+from pyrig.src.string_ import (
     make_name_from_obj,
     split_on_uppercase,
 )

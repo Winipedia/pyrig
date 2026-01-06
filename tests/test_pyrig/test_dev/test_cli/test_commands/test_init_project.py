@@ -172,7 +172,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         # assert the pkgs own cli is available
         args = PackageManager.L.get_run_args(project_name, "--help")
         res = args.run(env=clean_env)
-        stdout = res.stdout.decode("utf-8")
+        stdout = res.stdout
         expected = project_name
         assert expected in stdout.lower(), (
             f"Expected {expected} in stdout, got {stdout}"
@@ -185,7 +185,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         # asert calling version works
         args = PackageManager.L.get_run_args(project_name, "version")
         res = args.run(env=clean_env)
-        stdout = res.stdout.decode("utf-8")
+        stdout = res.stdout
         expected = f"{project_name} version 0.1.0"
         assert expected in stdout, f"Expected {expected} in stdout, got {stdout}"
 

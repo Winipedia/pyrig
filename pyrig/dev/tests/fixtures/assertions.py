@@ -21,7 +21,6 @@ from pyrig.src.modules.module import (
     get_module_content_as_str,
     get_module_name_replacing_start_module,
 )
-from pyrig.src.processes import run_subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +49,7 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     ]
     success = False
     for cmd in cmds:
-        completed_process = run_subprocess(cmd, check=False)
+        completed_process = cmd.run(check=False)
         if completed_process.returncode == 0:
             success = True
             break

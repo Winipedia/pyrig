@@ -82,7 +82,7 @@ from pyrig.src.modules.package import (
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
 )
-from pyrig.src.string import split_on_uppercase
+from pyrig.src.string_ import split_on_uppercase
 
 logger = logging.getLogger(__name__)
 

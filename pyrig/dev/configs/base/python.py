@@ -16,7 +16,7 @@ Example:
     ...         return ["from typing import Any", "import sys"]
 """
 
-from pyrig.dev.configs.base.string import StringConfigFile
+from pyrig.dev.configs.base.string_ import StringConfigFile
 
 
 class PythonConfigFile(StringConfigFile):
@@ -29,7 +29,7 @@ class PythonConfigFile(StringConfigFile):
         - `get_lines`: Required Python code as list of lines
 
     See Also:
-        pyrig.dev.configs.base.string.StringConfigFile: Parent class
+        pyrig.dev.configs.base.string_.StringConfigFile: Parent class
         pyrig.dev.configs.base.py_package.PythonPackageConfigFile: For package files
     """
 

@@ -11,7 +11,7 @@ def test_add_subcommands() -> None:
     # run --help comd to see if its available
     args = Pyrigger.L.get_args("--help")
     result = args.run()
-    stdout = result.stdout.decode("utf-8")
+    stdout = result.stdout
     assert "pyrig" in stdout, f"Expected pyrig in stdout, got {stdout}"
 
 
@@ -19,7 +19,7 @@ def test_add_shared_subcommands() -> None:
     """Test function."""
     args = Pyrigger.L.get_args("--help")
     result = args.run()
-    stdout = result.stdout.decode("utf-8")
+    stdout = result.stdout
     assert "version" in stdout, f"Expected version in stdout, got {stdout}"
 
 

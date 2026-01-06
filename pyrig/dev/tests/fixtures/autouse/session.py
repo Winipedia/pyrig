@@ -69,7 +69,7 @@ from pyrig.src.modules.package import (
 )
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.requests import internet_is_available
-from pyrig.src.string import re_search_excluding_docstrings
+from pyrig.src.string_ import re_search_excluding_docstrings
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
     make_summary_error_msg,
@@ -325,8 +325,8 @@ def assert_dependencies_are_up_to_date() -> None:
     # update the dependencies
     args = PackageManager.L.get_update_dependencies_args()
     completed_process = args.run(check=False)
-    stderr = completed_process.stderr.decode("utf-8")
-    stdout = completed_process.stdout.decode("utf-8")
+    stderr = completed_process.stderr
+    stdout = completed_process.stdout
     std_msg_updated = stderr + stdout
     deps_updated_successfully = completed_process.returncode == 0
     msg_updated = (
@@ -342,8 +342,8 @@ def assert_dependencies_are_up_to_date() -> None:
     # sync the dependencies
     args = PackageManager.L.get_install_dependencies_args()
     completed_process = args.run(check=False)
-    stderr = completed_process.stderr.decode("utf-8")
-    stdout = completed_process.stdout.decode("utf-8")
+    stderr = completed_process.stderr
+    stdout = completed_process.stdout
     std_msg_installed = stderr + stdout
     deps_installed_successfully = completed_process.returncode == 0
     msg_installed = (
@@ -427,8 +427,8 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             check=False,
             env=env,
         )
-        stdout = completed_process.stdout.decode("utf-8")
-        stderr = completed_process.stderr.decode("utf-8")
+        stdout = completed_process.stdout
+        stderr = completed_process.stderr
         std_msg = stderr + stdout
 
         # delete pyproject.toml and uv.lock and readme.md
@@ -443,7 +443,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             check=False,
             env=env,
         )
-        stderr = installed.stderr.decode("utf-8")
+        stderr = installed.stderr
         dev_dep_not_installed = f"not found: {dev_dep}" in stderr
         assert dev_dep_not_installed, base_msg + f"{stderr}"
         # check pytest is not importable
@@ -452,7 +452,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             check=False,
             env=env,
         )
-        stderr = installed.stderr.decode("utf-8")
+        stderr = installed.stderr
         assert "ModuleNotFoundError" in stderr, base_msg + f"{stderr}"
         src_pkg_name = get_src_package().__name__
 
@@ -483,8 +483,8 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             check=False,
             env=env,
         )
-        stdout = completed_process.stdout.decode("utf-8")
-        stderr = completed_process.stderr.decode("utf-8")
+        stdout = completed_process.stdout
+        stderr = completed_process.stderr
         msg = f"""Expected Success in stdout, got {stdout} and {stderr}
 If this fails then there is likely an import in src that depends on dev dependencies.
 """
@@ -496,8 +496,8 @@ If this fails then there is likely an import in src that depends on dev dependen
             check=False,
             env=env,
         )
-        stdout = completed_process.stdout.decode("utf-8")
-        stderr = completed_process.stderr.decode("utf-8")
+        stdout = completed_process.stdout
+        stderr = completed_process.stderr
         std_msg = stderr + stdout
         successful = completed_process.returncode == 0
         assert successful, base_msg + f"Expected {args} to succeed, got {std_msg}"
@@ -566,8 +566,8 @@ def assert_project_mgt_is_up_to_date() -> None:
         completed_process = PackageManager.L.get_update_self_args().run(check=False)
         returncode = completed_process.returncode
 
-        stderr = completed_process.stderr.decode("utf-8")
-        stdout = completed_process.stdout.decode("utf-8")
+        stderr = completed_process.stderr
+        stdout = completed_process.stdout
         std_msg = stderr + stdout
 
         allowed_errors = [

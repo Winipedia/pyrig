@@ -8,12 +8,12 @@ Example:
     >>> from pyrig.dev.configs.base.copy_module_docstr import (
     ...     CopyModuleOnlyDocstringConfigFile
     ... )
-    >>> import pyrig.src.string
+    >>> import pyrig.src.string_
     >>>
     >>> class StringDocstringCopy(CopyModuleOnlyDocstringConfigFile):
     ...     @classmethod
     ...     def get_src_module(cls) -> ModuleType:
-    ...         return pyrig.src.string
+    ...         return pyrig.src.string_
     >>>
     >>> StringDocstringCopy()  # Creates file with only docstring
 """

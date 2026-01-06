@@ -16,7 +16,7 @@ Example:
     ...         return ["# My Project", "", "Description here."]
 """
 
-from pyrig.dev.configs.base.string import StringConfigFile
+from pyrig.dev.configs.base.string_ import StringConfigFile
 
 
 class MarkdownConfigFile(StringConfigFile):
@@ -29,7 +29,7 @@ class MarkdownConfigFile(StringConfigFile):
         - `get_lines`: Required Markdown content as list of lines
 
     See Also:
-        pyrig.dev.configs.base.string.StringConfigFile: Parent class
+        pyrig.dev.configs.base.string_.StringConfigFile: Parent class
         pyrig.dev.configs.base.badges_md.BadgesMarkdownConfigFile: For badge files
     """
 

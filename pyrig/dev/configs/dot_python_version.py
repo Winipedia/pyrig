@@ -10,7 +10,7 @@ See Also:
 
 from pathlib import Path
 
-from pyrig.dev.configs.base.string import StringConfigFile
+from pyrig.dev.configs.base.string_ import StringConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 
 
