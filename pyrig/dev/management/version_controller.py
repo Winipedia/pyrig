@@ -400,6 +400,17 @@ class VersionController(Tool):
         return completed_process.returncode != 0
 
     @classmethod
+    def get_diff(cls) -> str:
+        """Get the diff output.
+
+        Returns:
+            Diff output.
+        """
+        args = cls.get_diff_args()
+        completed_process = args.run(check=False)
+        return completed_process.stdout.decode("utf-8")
+
+    @classmethod
     def get_ignore_path(cls) -> Path:
         """Get the path to the .gitignore file.
 
