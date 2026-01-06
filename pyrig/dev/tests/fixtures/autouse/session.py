@@ -43,6 +43,7 @@ from pyrig.dev.configs.pyproject import (
 )
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.management.package_manager import PackageManager
+from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils.packages import (
     find_packages,
@@ -50,7 +51,6 @@ from pyrig.dev.utils.packages import (
     get_src_package,
 )
 from pyrig.dev.utils.testing import autouse_session_fixture
-from pyrig.dev.utils.version_control import get_diff_from_version_control
 from pyrig.src.git import (
     running_in_github_actions,
 )
@@ -68,6 +68,7 @@ from pyrig.src.modules.package import (
     get_project_name_from_pkg_name,
 )
 from pyrig.src.modules.path import ModulePath
+from pyrig.src.requests import internet_is_available
 from pyrig.src.string import re_search_excluding_docstrings
 from pyrig.src.testing.convention import (
     TESTS_PACKAGE_NAME,
@@ -96,11 +97,11 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
     """
 
     if in_github_actions:
-        unstaged_changes = get_diff_from_version_control()
+        unstaged_changes = VersionController.L.get_diff()
         assert not unstaged_changes, msg.format(unstaged_changes=unstaged_changes)
     yield
     if in_github_actions:
-        unstaged_changes = get_diff_from_version_control()
+        unstaged_changes = VersionController.L.get_diff()
         assert not unstaged_changes, msg.format(unstaged_changes=unstaged_changes)
 
 
@@ -305,13 +306,18 @@ def assert_no_unit_test_package_usage() -> None:
     assert not usages, msg
 
 
-@autouse_session_fixture
 def assert_dependencies_are_up_to_date() -> None:
     """Verify dependencies are up to date via ``uv lock --upgrade`` and ``uv sync``.
 
     Raises:
         AssertionError: If dependencies were updated or installed.
     """
+    if not internet_is_available():
+        logger.warning(
+            "No internet, skipping %s",
+            assert_dependencies_are_up_to_date.__name__,  # ty:ignore[possibly-missing-attribute]
+        )
+        return
     # update the dependencies
     args = PackageManager.L.get_update_dependencies_args()
     completed_process = args.run(check=False)
@@ -357,9 +363,7 @@ def assert_dependencies_are_up_to_date() -> None:
 
 
 @autouse_session_fixture
-def assert_src_runs_without_dev_deps(  # noqa: PLR0915
-    tmp_path_factory: pytest.TempPathFactory,
-) -> None:
+def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -> None:  # noqa: PLR0915
     """Verify source code runs in isolated environment without dev dependencies.
 
     Creates temp environment, installs without dev group, imports all src modules,
@@ -375,6 +379,12 @@ def assert_src_runs_without_dev_deps(  # noqa: PLR0915
     This fixture created a temp environment and installed the project without
     the dev group. However, it failed with the following error:
     """
+    if not internet_is_available():
+        logger.warning(
+            "No internet, skipping %s",
+            assert_src_runs_without_dev_deps.__name__,  # ty:ignore[possibly-missing-attribute]
+        )
+        return
     project_name = PyprojectConfigFile.get_project_name()
     func_name = assert_src_runs_without_dev_deps.__name__  # ty:ignore[possibly-missing-attribute]
     tmp_path = tmp_path_factory.mktemp(func_name) / project_name
@@ -416,13 +426,6 @@ def assert_src_runs_without_dev_deps(  # noqa: PLR0915
         stdout = completed_process.stdout.decode("utf-8")
         stderr = completed_process.stderr.decode("utf-8")
         std_msg = stderr + stdout
-        no_internet = "Temporary failure in name resolution" in std_msg
-        if no_internet:
-            logger.info(
-                "No internet, skipping %s",
-                func_name,
-            )
-            return
 
         # delete pyproject.toml and uv.lock and readme.md
         for config in configs:
@@ -548,6 +551,12 @@ def assert_project_mgt_is_up_to_date() -> None:
     Raises:
         AssertionError: If ``uv self update`` fails unexpectedly.
     """
+    if not internet_is_available():
+        logger.warning(
+            "No internet, skipping %s",
+            assert_project_mgt_is_up_to_date.__name__,  # ty:ignore[possibly-missing-attribute]
+        )
+        return
     if not running_in_github_actions():
         # update project mgt
         completed_process = PackageManager.L.get_update_self_args().run(check=False)
@@ -559,7 +568,6 @@ def assert_project_mgt_is_up_to_date() -> None:
 
         allowed_errors = [
             "GitHub API rate limit exceeded",
-            "Temporary failure in name resolution",
         ]
 
         allowed_error_in_err_or_out = any(exp in std_msg for exp in allowed_errors)

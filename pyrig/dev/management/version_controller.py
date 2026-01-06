@@ -9,8 +9,16 @@ Example:
     >>> VersionController.L.get_push_args().run()
 """
 
+import logging
+from functools import cache
+from pathlib import Path
+from urllib.parse import quote
+
 from pyrig.dev.management.base.base import Tool
+from pyrig.src.modules.package import get_project_name_from_cwd
 from pyrig.src.processes import Args
+
+logger = logging.getLogger(__name__)
 
 
 class VersionController(Tool):
@@ -311,3 +319,104 @@ class VersionController(Tool):
             Args for 'git diff'.
         """
         return cls.get_args("diff", *args)
+
+    @classmethod
+    @cache
+    def get_repo_owner_and_name(
+        cls,
+        *,
+        check_repo_url: bool = True,
+        url_encode: bool = False,
+    ) -> tuple[str, str]:
+        """Get the repository owner and name.
+
+        Returns:
+            Tuple of (owner, repository_name).
+        """
+        url = cls.get_repo_remote(check=check_repo_url)
+        if not url:
+            # we default to git username and repo name from cwd
+            logger.debug(
+                "No git remote found, using git username and CWD for repo info"
+            )
+            owner = cls.get_username()
+            repo = get_project_name_from_cwd()
+            logger.debug("Derived repository: %s/%s", owner, repo)
+        else:
+            parts = url.removesuffix(".git").split("/")
+            # keep last two parts
+            owner, repo = parts[-2:]
+            if ":" in owner:
+                owner = owner.split(":")[-1]
+        if url_encode:
+            logger.debug("Url encoding owner and repo")
+            owner = quote(owner)
+            repo = quote(repo)
+        return owner, repo
+
+    @classmethod
+    @cache
+    def get_repo_remote(cls, *, check: bool = True) -> str:
+        """Get the remote origin URL from git config.
+
+        Args:
+            check: Whether to raise exception if command fails.
+
+        Returns:
+            Remote origin URL (HTTPS or SSH format).
+            Empty string if check=False and no remote.
+
+        Raises:
+            subprocess.CalledProcessError: If check=True and command fails.
+        """
+        args = cls.get_config_get_remote_origin_url_args()
+        stdout = args.run(check=check).stdout.decode("utf-8")
+        return stdout.strip()
+
+    @classmethod
+    @cache
+    def get_username(cls) -> str:
+        """Get git username from local config.
+
+        Returns:
+            Configured git username (cached).
+
+        Raises:
+            subprocess.CalledProcessError: If user.name not configured.
+        """
+        args = cls.get_config_get_user_name_args()
+        stdout = args.run().stdout.decode("utf-8")
+        return stdout.strip()
+
+    @classmethod
+    def get_diff(cls) -> str:
+        """Get diff of unstaged changes.
+
+        Returns:
+            Output of `git diff` (empty string if no changes).
+
+        Note:
+            Only shows tracked files, not untracked files.
+        """
+        args = cls.get_diff_args()
+        completed_process = args.run()
+        diff: str = completed_process.stdout.decode("utf-8")
+        return diff
+
+    @classmethod
+    def get_ignore_path(cls) -> Path:
+        """Get the path to the .gitignore file.
+
+        Returns:
+            Path to .gitignore.
+        """
+        return Path(".gitignore")
+
+    @classmethod
+    def get_loaded_ignore(cls) -> list[str]:
+        """Get the loaded gitignore patterns.
+
+        Returns:
+            List of gitignore patterns.
+        """
+        return cls.get_ignore_path().read_text(encoding="utf-8").splitlines()

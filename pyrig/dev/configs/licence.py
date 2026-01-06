@@ -16,8 +16,8 @@ from pathlib import Path
 import requests
 
 from pyrig.dev.configs.base.string import StringConfigFile
+from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
-from pyrig.dev.utils.version_control import get_repo_owner_and_name_from_version_control
 
 
 class LicenceConfigFile(StringConfigFile):
@@ -85,6 +85,6 @@ class LicenceConfigFile(StringConfigFile):
         """Get MIT license with year and owner from git."""
         mit_license = cls.get_mit_license()
         year = datetime.now(tz=UTC).year
-        owner, _ = get_repo_owner_and_name_from_version_control(check_repo_url=False)
+        owner, _ = VersionController.L.get_repo_owner_and_name(check_repo_url=False)
         mit_license = mit_license.replace("[year]", str(year))
         return mit_license.replace("[fullname]", owner)

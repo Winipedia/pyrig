@@ -14,12 +14,13 @@ links in README files.
 from pyrig.dev.management.remote_version_controller import (
     RemoteVersionController as BaseRVC,
 )
+from pyrig.dev.management.version_controller import VersionController
 
 class RemoteVersionController(BaseRVC):
     @classmethod
     def get_documentation_url(cls) -> str:
         # Use custom documentation domain instead of GitHub Pages
-        _, repo = cls.get_repo_owner_and_name()
+        _, repo = VersionController.L.get_repo_owner_and_name()
         return f"https://docs.example.com/{repo}"
 ```
 

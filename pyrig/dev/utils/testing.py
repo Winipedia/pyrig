@@ -45,6 +45,7 @@ import functools
 import pytest
 
 from pyrig.src.git import running_in_github_actions
+from pyrig.src.requests import internet_is_available
 
 skip_fixture_test: pytest.MarkDecorator = functools.partial(
     pytest.mark.skip,
@@ -88,6 +89,12 @@ Examples:
         ... def test_local_database():
         ...     assert local_db.connect()
 """
+
+skip_if_no_internet: pytest.MarkDecorator = functools.partial(
+    pytest.mark.skipif,
+    not internet_is_available(),
+    reason="Test requires internet connection.",
+)()
 
 function_fixture = functools.partial(pytest.fixture, scope="function")
 """Decorator for function-scoped pytest fixtures.
