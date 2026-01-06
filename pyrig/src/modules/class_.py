@@ -233,6 +233,8 @@ class classproperty[T]:  # noqa: N801
         fget: The method to wrap as a class property.
     """
 
+    __slots__ = ("fget",)
+
     def __init__(self, fget: Callable[..., T]) -> None:
         """Initialize the decorator.
 

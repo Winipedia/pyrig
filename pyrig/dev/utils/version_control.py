@@ -89,13 +89,10 @@ def path_is_in_ignore(path: str | Path) -> bool:
     See Also:
         VersionController.L.get_loaded_ignore: Load patterns from .gitignore file.
     """
-    ignore_lines = VersionController.L.get_loaded_ignore()
     as_path = Path(path)
     if as_path.is_absolute():
         as_path = as_path.relative_to(Path.cwd())
-    is_dir = (
-        bool(as_path.suffix == "") or as_path.is_dir() or str(as_path).endswith(os.sep)
-    )
+    is_dir = as_path.suffix == "" or as_path.is_dir() or str(as_path).endswith(os.sep)
     is_dir = is_dir and not as_path.is_file()
 
     as_posix = as_path.as_posix()
@@ -104,7 +101,7 @@ def path_is_in_ignore(path: str | Path) -> bool:
 
     spec = pathspec.PathSpec.from_lines(
         "gitignore",
-        ignore_lines,
+        VersionController.L.get_loaded_ignore(),
     )
 
     return spec.match_file(as_posix)
