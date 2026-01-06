@@ -126,8 +126,8 @@ class VersionController(Tool):
         """Construct git commit arguments with no verification.
 
         Args:
-            msg: Commit message.
             *args: Commit command arguments.
+            msg: Commit message.
 
         Returns:
             Args for 'git commit --no-verify -m <msg>'.
@@ -212,8 +212,8 @@ class VersionController(Tool):
         """Construct git config arguments for local user email.
 
         Args:
-            email: Email address.
             *args: Config command arguments.
+            email: Email address.
 
         Returns:
             Args for 'git config --local user.email <email>'.
@@ -225,8 +225,8 @@ class VersionController(Tool):
         """Construct git config arguments for local user name.
 
         Args:
-            name: Name.
             *args: Config command arguments.
+            name: Name.
 
         Returns:
             Args for 'git config --local user.name <name>'.
@@ -238,8 +238,8 @@ class VersionController(Tool):
         """Construct git config arguments for global user email.
 
         Args:
-            email: Email address.
             *args: Config command arguments.
+            email: Email address.
 
         Returns:
             Args for 'git config --global user.email <email>'.
@@ -251,8 +251,8 @@ class VersionController(Tool):
         """Construct git config arguments for global user name.
 
         Args:
-            name: Name.
             *args: Config command arguments.
+            name: Name.
 
         Returns:
             Args for 'git config --global user.name <name>'.
