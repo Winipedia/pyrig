@@ -11,7 +11,7 @@ Module Attributes:
     DEFAULT_RULESET_NAME (str): Default protection ruleset name
 
 See Also:
-    pyrig.dev.utils.github: GitHub API utilities for rulesets and repository operations
+    pyrig.dev.utils.github_api: GitHub API utilities for rulesets and repos
     pyrig.dev.cli.commands.protect_repo: High-level repository protection
 """
 
@@ -91,7 +91,7 @@ def path_is_in_ignore(path: str | Path) -> bool:
         pathspec.PatternError: If gitignore_lines contains malformed patterns.
 
     See Also:
-        load_gitignore: Load patterns from .gitignore file.
+        VersionController.L.get_loaded_ignore: Load patterns from .gitignore file.
     """
     ignore_lines = VersionController.L.get_loaded_ignore()
     as_path = Path(path)
