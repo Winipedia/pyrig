@@ -30,6 +30,7 @@ def run_subprocess(  # noqa: PLR0913
     timeout: int | None = None,
     check: bool = True,
     cwd: str | Path | None = None,
+    shell: bool = False,
     **kwargs: Any,
 ) -> subprocess.CompletedProcess[Any]:
     """Execute subprocess with enhanced error logging.
@@ -44,6 +45,8 @@ def run_subprocess(  # noqa: PLR0913
         timeout: Maximum seconds to wait. None (default) means no timeout.
         check: If True (default), raises CalledProcessError on non-zero exit.
         cwd: Working directory. Defaults to current directory.
+        shell: If given as True, this will raise an exception
+            as shell mode is forbidden in pyrig.
         **kwargs: Additional arguments passed to subprocess.run().
 
     Returns:
@@ -59,6 +62,9 @@ def run_subprocess(  # noqa: PLR0913
         >>> run_subprocess(["git", "status"])
         >>> run_subprocess(["false"], check=False).returncode  # 1
     """
+    if shell:
+        msg = "For security reasons shell mode is forbidden."
+        raise ValueError(msg)
     if cwd is None:
         cwd = Path.cwd()
     try:
@@ -69,6 +75,7 @@ def run_subprocess(  # noqa: PLR0913
             capture_output=capture_output,
             timeout=timeout,
             cwd=cwd,
+            shell=False,
             **kwargs,
         )
     except subprocess.CalledProcessError as e:
