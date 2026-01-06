@@ -36,7 +36,11 @@ class DotEnvConfigFile(DictConfigFile):
     def _dump(cls, config: dict[str, Any]) -> None:
         """Prevent writing to .env (raises ValueError if config is non-empty)."""
         if config:
-            msg = f"Cannot dump {config} to .env file."
+            msg = f"""
+Dumping to {cls.get_path()} is not allowed due to security reasons.
+This file is managed manually. Please edit it directly.
+We highly discourage managing this ConfigFile via subclassing.
+"""
             raise ValueError(msg)
 
     @classmethod
