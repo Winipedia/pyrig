@@ -97,11 +97,11 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
     """
 
     if in_github_actions:
-        unstaged_changes = VersionController.L.get_diff()
+        unstaged_changes = VersionController.L.has_unstaged_diff()
         assert not unstaged_changes, msg.format(unstaged_changes=unstaged_changes)
     yield
     if in_github_actions:
-        unstaged_changes = VersionController.L.get_diff()
+        unstaged_changes = VersionController.L.has_unstaged_diff()
         assert not unstaged_changes, msg.format(unstaged_changes=unstaged_changes)
 
 

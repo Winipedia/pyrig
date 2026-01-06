@@ -160,7 +160,7 @@ class TestVersionController:
         result = VersionController.L.get_username()
         assert isinstance(result, str)
 
-    def test_get_diff(self) -> None:
+    def test_has_unstaged_diff(self) -> None:
         """Test method."""
-        result = VersionController.L.get_diff()
-        assert isinstance(result, str)
+        result = VersionController.L.has_unstaged_diff()
+        assert isinstance(result, bool)

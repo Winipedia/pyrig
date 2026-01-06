@@ -389,19 +389,15 @@ class VersionController(Tool):
         return stdout.strip()
 
     @classmethod
-    def get_diff(cls) -> str:
-        """Get diff of unstaged changes.
+    def has_unstaged_diff(cls) -> bool:
+        """Check if there are any unstaged changes.
 
         Returns:
-            Output of `git diff` (empty string if no changes).
-
-        Note:
-            Only shows tracked files, not untracked files.
+            True if there are unstaged changes.
         """
-        args = cls.get_diff_args()
-        completed_process = args.run()
-        diff: str = completed_process.stdout.decode("utf-8")
-        return diff
+        args = cls.get_diff_args("--quiet")
+        completed_process = args.run(check=False)
+        return completed_process.returncode != 0
 
     @classmethod
     def get_ignore_path(cls) -> Path:
