@@ -191,6 +191,8 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             True if all functions and methods are covered by tests, or if the
             parent class validation passes.
         """
+        if not cls.get_path().exists():
+            return False
         test_module_content = get_module_content_as_str(cls.get_test_module())
         untested_funcs = [
             f for f in cls.get_untested_func_names() if f not in test_module_content

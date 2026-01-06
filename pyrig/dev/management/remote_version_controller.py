@@ -11,7 +11,7 @@ Example:
 """
 
 from pyrig.dev.management.base.base import Tool
-from pyrig.dev.utils.version_control import get_repo_owner_and_name_from_version_control
+from pyrig.dev.management.version_controller import VersionController
 
 
 class RemoteVersionController(Tool):
@@ -34,15 +34,6 @@ class RemoteVersionController(Tool):
         return "github"
 
     @classmethod
-    def get_repo_owner_and_name(cls) -> tuple[str, str]:
-        """Get the repository owner and name.
-
-        Returns:
-            Tuple of (owner, repository_name).
-        """
-        return get_repo_owner_and_name_from_version_control()
-
-    @classmethod
     def get_url_base(cls) -> str:
         """Get the base URL for GitHub.
 
@@ -58,7 +49,10 @@ class RemoteVersionController(Tool):
         Returns:
             URL in format: `https://github.com/{owner}/{repo}`
         """
-        owner, repo = cls.get_repo_owner_and_name()
+        owner, repo = VersionController.L.get_repo_owner_and_name(
+            check_repo_url=False,
+            url_encode=True,
+        )
         return f"{cls.get_url_base()}/{owner}/{repo}"
 
     @classmethod
@@ -89,7 +83,10 @@ class RemoteVersionController(Tool):
         Note:
             Site may not exist if GitHub Pages not enabled.
         """
-        owner, repo = cls.get_repo_owner_and_name()
+        owner, repo = VersionController.L.get_repo_owner_and_name(
+            check_repo_url=False,
+            url_encode=True,
+        )
         return f"https://{owner}.github.io/{repo}"
 
     @classmethod
@@ -116,7 +113,10 @@ class RemoteVersionController(Tool):
         Returns:
             shields.io badge URL showing workflow status.
         """
-        owner, repo = cls.get_repo_owner_and_name()
+        owner, repo = VersionController.L.get_repo_owner_and_name(
+            check_repo_url=False,
+            url_encode=True,
+        )
         return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yaml?label={label}&logo={logo}"
 
     @classmethod
@@ -126,5 +126,8 @@ class RemoteVersionController(Tool):
         Returns:
             shields.io badge URL showing repository license.
         """
-        owner, repo = cls.get_repo_owner_and_name()
+        owner, repo = VersionController.L.get_repo_owner_and_name(
+            check_repo_url=False,
+            url_encode=True,
+        )
         return f"https://img.shields.io/github/license/{owner}/{repo}"

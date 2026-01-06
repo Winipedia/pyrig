@@ -4,7 +4,7 @@ Provides functions for constructing URLs related to GitHub repositories, Pages,
 PyPI, Codecov, and GitHub Actions.
 """
 
-from pyrig.dev.utils.version_control import get_repo_owner_and_name_from_version_control
+from pyrig.dev.management.version_controller import VersionController
 
 
 def get_codecov_url() -> str:
@@ -13,7 +13,7 @@ def get_codecov_url() -> str:
     Returns:
         URL in format: `https://codecov.io/gh/{owner}/{repo}`
     """
-    owner, repo = get_repo_owner_and_name_from_version_control(
+    owner, repo = VersionController.L.get_repo_owner_and_name(
         check_repo_url=False, url_encode=True
     )
     return f"https://codecov.io/gh/{owner}/{repo}"
@@ -27,7 +27,7 @@ def get_pypi_url() -> str:
     Returns:
         URL in format: `https://pypi.org/project/{repo}`
     """
-    _, repo = get_repo_owner_and_name_from_version_control(
+    _, repo = VersionController.L.get_repo_owner_and_name(
         check_repo_url=False, url_encode=True
     )
     return f"https://pypi.org/project/{repo}"
@@ -39,7 +39,7 @@ def get_pypi_badge_url() -> str:
     Returns:
         shields.io badge URL for PyPI version.
     """
-    _, repo = get_repo_owner_and_name_from_version_control(
+    _, repo = VersionController.L.get_repo_owner_and_name(
         check_repo_url=False, url_encode=True
     )
     return f"https://img.shields.io/pypi/v/{repo}?logo=pypi&logoColor=white"

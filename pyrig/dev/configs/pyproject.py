@@ -21,8 +21,8 @@ from packaging.version import Version
 from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
 from pyrig.dev.management.remote_version_controller import RemoteVersionController
+from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
-from pyrig.dev.utils.version_control import get_repo_owner_and_name_from_version_control
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.consts import STANDARD_DEV_DEPS
 from pyrig.src.modules.package import (
@@ -73,7 +73,7 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
-        repo_owner, _ = get_repo_owner_and_name_from_version_control(
+        repo_owner, _ = VersionController.L.get_repo_owner_and_name(
             check_repo_url=False
         )
 

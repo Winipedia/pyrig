@@ -6,18 +6,22 @@ from pyrig.dev.cli.commands.protect_repo import (
     protect_repository,
     set_secure_repo_settings,
 )
+from pyrig.dev.utils.testing import skip_if_no_internet
 
 
+@skip_if_no_internet
 def test_protect_repository() -> None:
     """Test func for protect_repository."""
     protect_repository()
 
 
+@skip_if_no_internet
 def test_set_secure_repo_settings() -> None:
     """Test func for set_secure_repo_settings."""
     set_secure_repo_settings()
 
 
+@skip_if_no_internet
 def test_create_or_update_default_branch_ruleset() -> None:
     """Test func for create_or_update_default_branch_ruleset."""
     create_or_update_default_branch_ruleset()

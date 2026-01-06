@@ -1,5 +1,7 @@
 """module."""
 
+from pathlib import Path
+
 from pyrig.dev.management.version_controller import VersionController
 
 
@@ -130,3 +132,35 @@ class TestVersionController:
         """Test method."""
         result = VersionController.L.get_config_global_user_name_args(name="Test User")
         assert result == ("git", "config", "--global", "user.name", "Test User")
+
+    def test_get_ignore_path(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_ignore_path()
+        assert result == Path(".gitignore")
+
+    def test_get_loaded_ignore(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_loaded_ignore()
+        assert isinstance(result, list)
+        assert all(isinstance(item, str) for item in result)
+
+    def test_get_repo_owner_and_name(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_repo_owner_and_name()
+        assert isinstance(result, tuple)
+        assert all(isinstance(item, str) for item in result)
+
+    def test_get_repo_remote(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_repo_remote()
+        assert isinstance(result, str)
+
+    def test_get_username(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_username()
+        assert isinstance(result, str)
+
+    def test_get_diff(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_diff()
+        assert isinstance(result, str)

@@ -11,13 +11,6 @@ class TestRemoteVersionController:
         result = RemoteVersionController.L.name()
         assert result == "github"
 
-    def test_get_repo_owner_and_name(self) -> None:
-        """Test method."""
-        result = RemoteVersionController.L.get_repo_owner_and_name()
-        assert isinstance(result, tuple), f"Expected tuple, got {type(result)}"
-        for item in result:
-            assert isinstance(item, str), f"Expected str, got {type(item)}"
-
     def test_get_url_base(self) -> None:
         """Test method."""
         result = RemoteVersionController.L.get_url_base()

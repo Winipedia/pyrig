@@ -39,7 +39,7 @@ from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
 import pyrig
-from pyrig.dev.utils.version_control import load_gitignore, path_is_in_gitignore_lines
+from pyrig.dev.utils.version_control import path_is_in_ignore
 from pyrig.src.modules.package import DOCS_DIR_NAME
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
@@ -215,12 +215,7 @@ def get_namespace_packages() -> list[str]:
         p for p in namespace_packages if not p.startswith(DOCS_DIR_NAME)
     ]
     # exclude all that are in .gitignore
-    gitignore_lines = load_gitignore()
-    namespace_packages = [
-        p
-        for p in namespace_packages
-        if not path_is_in_gitignore_lines(gitignore_lines, p)
-    ]
+    namespace_packages = [p for p in namespace_packages if not path_is_in_ignore(p)]
     result = list(set(namespace_packages) - set(packages))
     logger.debug("Found %d namespace packages: %s", len(result), result)
     return result

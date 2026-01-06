@@ -14,7 +14,7 @@ from pyrig.dev.utils.packages import (
     get_src_package,
     src_pkg_is_pyrig,
 )
-from pyrig.dev.utils.version_control import path_is_in_gitignore_lines
+from pyrig.dev.utils.version_control import path_is_in_ignore
 from pyrig.src.modules.module import make_obj_importpath
 
 
@@ -123,7 +123,7 @@ def test_get_namespace_packages(tmp_path: Path) -> None:
 
         # assert exists
         assert (Path.cwd() / ".gitignore").exists()
-        assert path_is_in_gitignore_lines(GitIgnoreConfigFile.load(), "dist")
+        assert path_is_in_ignore("dist")
 
         (Path.cwd() / "dist").mkdir()
         assert get_namespace_packages() == []
