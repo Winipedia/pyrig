@@ -124,26 +124,6 @@ temp_data/
 
 These will be preserved when pyrig adds new required patterns.
 
-### Checking if Path is Ignored
-
-Use `load_gitignore()` and `path_is_in_gitignore_lines()`
-to check if paths match patterns:
-
-```python
-from pyrig.dev.utils.git import load_gitignore, path_is_in_gitignore_lines
-
-# Load gitignore patterns once
-gitignore_lines = load_gitignore()
-
-# Check multiple paths efficiently
-is_ignored = path_is_in_gitignore_lines(gitignore_lines, "my_file.py")
-is_ignored = path_is_in_gitignore_lines(gitignore_lines, ".venv/")
-```
-
-This pattern is efficient when checking multiple paths, as the gitignore file
-is only read once. Uses the `pathspec` library with `gitwildmatch` for accurate
-pattern matching.
-
 ## Included Patterns
 
 ### From GitHub's Python.gitignore
@@ -176,11 +156,9 @@ pattern matching.
 ## Best Practices
 
 1. **Don't remove required patterns**: Keep pyrig's patterns in the file
-2. **Add project-specific patterns**: Append your own patterns as needed
+2. **Add project-specific patterns**: Append your own patterns as needed,
+best via subclassing
 3. **Use comments**: Organize patterns with comments for clarity
-4. **Test pattern matching**: Use `path_is_in_gitignore_lines()` to verify
-   patterns work
-5. **Commit .gitignore**: Always version control your `.gitignore` file
 
 ## Advanced Features
 
@@ -190,25 +168,3 @@ If GitHub is unreachable, pyrig uses a bundled fallback resource file at
 `pyrig/resources/GITIGNORE` which contains a recent copy of GitHub's
 Python.gitignore. This ensures the `.gitignore` file is always created
 successfully, even without internet access.
-
-### Pattern Matching
-
-The `path_is_in_gitignore_lines()` function handles:
-
-- Relative and absolute paths
-- Directory vs file detection
-- Proper trailing slash handling for directories
-- Git wildcard matching semantics
-
-```python
-from pyrig.dev.utils.git import load_gitignore, path_is_in_gitignore_lines
-
-gitignore_lines = load_gitignore()
-
-# Handles directories correctly
-path_is_in_gitignore_lines(gitignore_lines, ".venv")  # True
-path_is_in_gitignore_lines(gitignore_lines, ".venv/")  # True
-
-# Handles files
-path_is_in_gitignore_lines(gitignore_lines, "test.pyc")  # True (matches *.pyc)
-```
