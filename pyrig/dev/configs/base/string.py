@@ -90,7 +90,7 @@ class StringConfigFile(ListConfigFile):
         actual_lines = cls.load()
         expected_lines = cls.get_configs()
         if not cls.override_content() and actual_lines:
-            expected_lines.extend(actual_lines)
+            expected_lines = [*expected_lines, *actual_lines]
         return expected_lines
 
     @classmethod

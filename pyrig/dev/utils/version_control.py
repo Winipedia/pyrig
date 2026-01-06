@@ -20,8 +20,8 @@ import os
 from pathlib import Path
 
 import pathspec
-from dotenv import dotenv_values
 
+from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.management.version_controller import VersionController
 
 logger = logging.getLogger(__name__)
@@ -62,18 +62,13 @@ def get_github_repo_token() -> str:
         logger.debug("Using REPO_TOKEN from environment variable")
         return token
 
-    # try .env next
-    dotenv_path = Path(".env")
-    if not dotenv_path.exists():
-        msg = f"Expected {dotenv_path} to exist"
-        raise ValueError(msg)
-    dotenv = dotenv_values(dotenv_path)
+    dotenv = DotEnvConfigFile.load()
     token = dotenv.get("REPO_TOKEN")
     if token:
-        logger.debug("Using REPO_TOKEN from .env file")
+        logger.debug("Using REPO_TOKEN from %s file", DotEnvConfigFile.get_path())
         return token
 
-    msg = f"Expected REPO_TOKEN in {dotenv_path}"
+    msg = f"Expected REPO_TOKEN in {DotEnvConfigFile.get_path()}"
     raise ValueError(msg)
 
 
