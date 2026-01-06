@@ -15,7 +15,7 @@ from pathlib import Path
 import requests
 
 import pyrig
-from pyrig.dev.configs.base.string import StringConfigFile
+from pyrig.dev.configs.base.string_ import StringConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error

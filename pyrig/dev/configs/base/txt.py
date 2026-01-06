@@ -16,7 +16,7 @@ Example:
     ...         return ["# Project Notes"]
 """
 
-from pyrig.dev.configs.base.string import StringConfigFile
+from pyrig.dev.configs.base.string_ import StringConfigFile
 
 
 class TxtConfigFile(StringConfigFile):
@@ -29,7 +29,7 @@ class TxtConfigFile(StringConfigFile):
         - `get_lines`: Required content as list of lines
 
     See Also:
-        pyrig.dev.configs.base.string.StringConfigFile: Parent class
+        pyrig.dev.configs.base.string_.StringConfigFile: Parent class
     """
 
     @classmethod

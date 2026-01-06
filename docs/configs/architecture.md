@@ -470,7 +470,7 @@ represented as dicts/lists should use their specific subclasses instead.
 
 ```python
 from pathlib import Path
-from pyrig.dev.configs.base.string import StringConfigFile
+from pyrig.dev.configs.base.string_ import StringConfigFile
 
 class MyConfigFile(StringConfigFile):
     @classmethod

@@ -10,6 +10,8 @@ def test_run_subprocess() -> None:
     cmd = ["echo", "hello"]
     res = run_subprocess(cmd)
     assert res.returncode == 0, "Expected returncode 0"
+    assert res.stdout == "hello\n", f"Expected stdout 'hello\n', got {res.stdout}"
+    assert res.stderr == "", f"Expected stderr '', got {res.stderr}"
 
 
 class TestArgs:

@@ -370,7 +370,7 @@ class VersionController(Tool):
             subprocess.CalledProcessError: If check=True and command fails.
         """
         args = cls.get_config_get_remote_origin_url_args()
-        stdout = args.run(check=check).stdout.decode("utf-8")
+        stdout = args.run(check=check).stdout
         return stdout.strip()
 
     @classmethod
@@ -385,7 +385,7 @@ class VersionController(Tool):
             subprocess.CalledProcessError: If user.name not configured.
         """
         args = cls.get_config_get_user_name_args()
-        stdout = args.run().stdout.decode("utf-8")
+        stdout = args.run().stdout
         return stdout.strip()
 
     @classmethod
@@ -408,7 +408,7 @@ class VersionController(Tool):
         """
         args = cls.get_diff_args()
         completed_process = args.run(check=False)
-        return completed_process.stdout.decode("utf-8")
+        return completed_process.stdout
 
     @classmethod
     def get_ignore_path(cls) -> Path:

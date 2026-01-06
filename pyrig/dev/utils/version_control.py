@@ -103,7 +103,7 @@ def path_is_in_ignore(path: str | Path) -> bool:
         as_posix += "/"
 
     spec = pathspec.PathSpec.from_lines(
-        "gitwildmatch",
+        "gitignore",
         ignore_lines,
     )
 

@@ -31,6 +31,7 @@ def run_subprocess(  # noqa: PLR0913
     check: bool = True,
     cwd: str | Path | None = None,
     shell: bool = False,
+    text: bool = True,
     **kwargs: Any,
 ) -> subprocess.CompletedProcess[Any]:
     """Execute subprocess with enhanced error logging.
@@ -47,6 +48,7 @@ def run_subprocess(  # noqa: PLR0913
         cwd: Working directory. Defaults to current directory.
         shell: If given as True, this will raise an exception
             as shell mode is forbidden in pyrig.
+        text: If True (default), stdout and stderr are decoded as text.
         **kwargs: Additional arguments passed to subprocess.run().
 
     Returns:
@@ -76,6 +78,7 @@ def run_subprocess(  # noqa: PLR0913
             timeout=timeout,
             cwd=cwd,
             shell=False,
+            text=text,
             **kwargs,
         )
     except subprocess.CalledProcessError as e:
@@ -83,8 +86,8 @@ def run_subprocess(  # noqa: PLR0913
             "Command failed: %s (exit code %d)\nstdout: %s\nstderr: %s",
             args,
             e.returncode,
-            e.stdout.decode("utf-8"),
-            e.stderr.decode("utf-8"),
+            e.stdout,
+            e.stderr,
         )
         raise
     else:

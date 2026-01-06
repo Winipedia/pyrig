@@ -67,7 +67,7 @@ from pyrig.src.modules.module import (
     module_has_docstring,
 )
 from pyrig.src.modules.path import ModulePath
-from pyrig.src.string import make_name_from_obj
+from pyrig.src.string_ import make_name_from_obj
 from pyrig.src.testing.convention import (
     make_test_obj_importpath_from_obj,
     make_test_obj_name,

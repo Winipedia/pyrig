@@ -11,7 +11,7 @@ See Also:
 import json
 from pathlib import Path
 
-from pyrig.dev.configs.base.string import StringConfigFile
+from pyrig.dev.configs.base.string_ import StringConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.management.package_manager import PackageManager
 from pyrig.main import main

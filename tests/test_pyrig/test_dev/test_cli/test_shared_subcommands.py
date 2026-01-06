@@ -9,7 +9,7 @@ def test_version() -> None:
     args = Pyrigger.L.get_cmd_args(cmd=version)
 
     result = args.run()
-    stdout = result.stdout.decode("utf-8")
+    stdout = result.stdout
     assert "version" in stdout, f"Expected 'version' in stdout, got {stdout}"
 
     # is callable
