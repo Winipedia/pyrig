@@ -187,6 +187,9 @@ class PyprojectConfigFile(TomlConfigFile):
         licenses: dict[str, dict[str, Any]]
         licenses, _ = spdx_matcher.analyse_license_text(content)
         licenses = licenses["licenses"]
+        if not licenses:
+            msg = "No license detected in LICENSE file."
+            raise ValueError(msg)
         return next(iter(licenses))
 
     @classmethod
