@@ -347,7 +347,7 @@ def assert_dependencies_are_up_to_date() -> None:
     std_msg_installed = stderr + stdout
     deps_installed_successfully = completed_process.returncode == 0
     msg_installed = (
-        "Dependencies were installed successfully by `{args}`."
+        f"Dependencies were installed successfully by `{args}`."
         if deps_installed_successfully
         else f"""Failed to install dependencies.
     This fixture ran `{args}` but it failed.
