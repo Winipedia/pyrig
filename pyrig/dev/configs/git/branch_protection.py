@@ -26,7 +26,7 @@ class BranchProtectionConfigFile(JsonConfigFile):
 
     See Also:
         pyrig.dev.configs.workflows.health_check.HealthCheckWorkflow
-        pyrig.dev.utils.git.DEFAULT_RULESET_NAME
+        pyrig.dev.utils.version_control.DEFAULT_RULESET_NAME
     """
 
     @classmethod

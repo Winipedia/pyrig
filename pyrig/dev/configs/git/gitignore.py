@@ -41,7 +41,7 @@ class GitIgnoreConfigFile(StringConfigFile):
         Makes HTTP request to GitHub for Python.gitignore. Uses fallback on failure.
 
     See Also:
-        pyrig.dev.utils.git.load_gitignore
+        pyrig.dev.management.version_controller.VersionController.get_loaded_ignore
         pyrig.dev.configs.dot_env.DotEnvConfigFile
     """
 
