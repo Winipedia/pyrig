@@ -2,6 +2,11 @@
 
 Provides functions for constructing URLs related to GitHub repositories, Pages,
 PyPI, Codecov, and GitHub Actions.
+
+Functions:
+    get_codecov_url: Construct Codecov dashboard URL
+    get_pypi_url: Construct PyPI package URL
+    get_pypi_badge_url: Construct PyPI version badge URL
 """
 
 from pyrig.dev.management.version_controller import VersionController

@@ -2,6 +2,13 @@
 
 Utilities for interacting with the GitHub API, specifically for repository rulesets
 and gitignore file handling. Uses PyGithub for authentication and API calls.
+
+Functions:
+    create_or_update_ruleset: Create or update a GitHub repository ruleset
+    get_all_rulesets: Retrieve all rulesets defined for a repository
+    get_repo: Get a PyGithub Repository object for API operations
+    ruleset_exists: Check if a ruleset with the given name exists
+    github_api_request: Make a generic GitHub API request for a repository
 """
 
 import logging

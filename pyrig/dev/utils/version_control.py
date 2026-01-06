@@ -5,6 +5,7 @@ configuration constants.
 
 Functions:
     get_github_repo_token: Retrieve GitHub token from environment or .env
+    path_is_in_ignore: Check if a path matches any pattern in .gitignore
 
 Module Attributes:
     DEFAULT_BRANCH (str): Default branch name ("main")

@@ -5,10 +5,12 @@ These are only available when pyrig is installed with dev dependencies, ensuring
 production packages don't carry unnecessary dependencies.
 
 Modules:
-    git: GitHub API utilities and repository ruleset management
+    github_api: GitHub API utilities and repository ruleset management
     packages: Package discovery and source package identification
     resources: Resource fallback decorators for network operations
     testing: Pytest fixture decorators and test utilities
+    urls: URL construction utilities for GitHub, PyPI, Codecov
+    version_control: Git utilities for repository configuration
     versions: Version constraint parsing and range generation
 
 Examples:
