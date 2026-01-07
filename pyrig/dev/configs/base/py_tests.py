@@ -21,7 +21,7 @@ Example:
 from pathlib import Path
 
 from pyrig.dev.configs.base.python import PythonConfigFile
-from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 
 
 class PythonTestsConfigFile(PythonConfigFile):
@@ -35,10 +35,10 @@ class PythonTestsConfigFile(PythonConfigFile):
 
     See Also:
         pyrig.dev.configs.base.python.PythonConfigFile: Parent class
-        pyrig.src.testing.convention.TESTS_PACKAGE_NAME: Tests directory name
+        pyrig.dev.tests.mirror_test.MirrorTestConfigFile: Test naming conventions
     """
 
     @classmethod
     def get_parent_path(cls) -> Path:
         """Return Path(TESTS_PACKAGE_NAME), typically "tests"."""
-        return Path(TESTS_PACKAGE_NAME)
+        return Path(MirrorTestConfigFile.get_tests_package_name())

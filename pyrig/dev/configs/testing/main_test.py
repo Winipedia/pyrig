@@ -14,11 +14,8 @@ import pyrig
 from pyrig import main
 from pyrig.dev.configs.base.py_package import PythonPackageConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.modules.path import ModulePath
-from pyrig.src.testing.convention import (
-    TEST_MODULE_PREFIX,
-    make_test_obj_importpath_from_obj,
-)
 
 
 class MainTestConfigFile(PythonPackageConfigFile):
@@ -43,7 +40,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
     See Also:
         pyrig.dev.tests.fixtures
         pyrig.main
-        pyrig.src.testing.convention
+        pyrig.dev.tests.mirror_test.MirrorTestConfigFile
     '''
 
     @classmethod
@@ -56,10 +53,13 @@ class MainTestConfigFile(PythonPackageConfigFile):
         Note:
             Converts pyrig.main test path to project-specific test path.
         """
-        test_obj_importpath = make_test_obj_importpath_from_obj(main)
+        test_obj_importpath = MirrorTestConfigFile.get_test_obj_importpath_from_obj(
+            main
+        )
         # this is now tests.test_pyrig.test_main
-        test_package_name = TEST_MODULE_PREFIX + PyprojectConfigFile.get_package_name()
-        test_pyrig_name = TEST_MODULE_PREFIX + pyrig.__name__
+        test_module_prefix = MirrorTestConfigFile.get_test_module_prefix()
+        test_package_name = test_module_prefix + PyprojectConfigFile.get_package_name()
+        test_pyrig_name = test_module_prefix + pyrig.__name__
 
         test_obj_importpath = test_obj_importpath.replace(
             test_pyrig_name, test_package_name

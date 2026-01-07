@@ -48,7 +48,6 @@ from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils.packages import (
     find_packages,
     get_namespace_packages,
-    get_src_package,
 )
 from pyrig.dev.utils.testing import autouse_session_fixture
 from pyrig.src.git import (
@@ -69,11 +68,7 @@ from pyrig.src.modules.package import (
 )
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.requests import internet_is_available
-from pyrig.src.string_ import re_search_excluding_docstrings
-from pyrig.src.testing.convention import (
-    TESTS_PACKAGE_NAME,
-    make_summary_error_msg,
-)
+from pyrig.src.string_ import make_summary_error_msg, re_search_excluding_docstrings
 
 logger = logging.getLogger(__name__)
 
@@ -175,9 +170,12 @@ def assert_all_src_code_in_one_package() -> None:
         AssertionError: If unexpected packages/subpackages/submodules found.
     """
     packages = find_packages(depth=0)
-    src_package = get_src_package()
+    src_package = import_module(PyprojectConfigFile.get_package_name())
     src_package_name = src_package.__name__
-    expected_packages = {TESTS_PACKAGE_NAME, src_package_name}
+    expected_packages = {
+        MirrorTestConfigFile.get_tests_package_name(),
+        src_package_name,
+    }
 
     # pkgs must be exactly the expected packages
     assert (
@@ -235,7 +233,9 @@ def assert_src_package_correctly_named() -> None:
         f"Expected cwd name to be {project_name}, but it is {cwd_name}"
     )
 
-    src_package_name = get_src_package().__name__
+    src_package = import_module(PyprojectConfigFile.get_package_name())
+
+    src_package_name = src_package.__name__
     src_package_name_from_cwd = get_pkg_name_from_project_name(cwd_name)
     msg = (
         f"Expected source package to be named {src_package_name_from_cwd}, "
@@ -243,7 +243,7 @@ def assert_src_package_correctly_named() -> None:
     )
     assert src_package_name == src_package_name_from_cwd, msg
 
-    src_package = get_src_package().__name__
+    src_package = src_package.__name__
     expected_package = PyprojectConfigFile.get_package_name()
     msg = (
         f"Expected source package to be named {expected_package}, "
@@ -261,7 +261,7 @@ def assert_all_modules_tested() -> None:
     Raises:
         AssertionError: If any source modules lack corresponding tests.
     """
-    src_package = get_src_package()
+    src_package = import_module(PyprojectConfigFile.get_package_name())
 
     # we will now go through all the modules in the src package and check
     # that there is a corresponding test module
@@ -394,7 +394,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
     tmp_path = tmp_path_factory.mktemp(func_name) / project_name
     # copy the project folder to a temp directory
     # run main.py from that directory
-    src_package = get_src_package()
+    src_package = import_module(PyprojectConfigFile.get_package_name())
     src_package_file_str = src_package.__file__
     if src_package_file_str is None:
         msg = f"src_package.__file__ is None for {src_package}"
@@ -454,7 +454,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
         )
         stderr = installed.stderr
         assert "ModuleNotFoundError" in stderr, base_msg + f"{stderr}"
-        src_pkg_name = get_src_package().__name__
+        src_pkg_name = PyprojectConfigFile.get_package_name()
 
         # run walk_package with src and import all modules to catch dev dep imports
         script_args = [
@@ -513,7 +513,7 @@ def assert_src_does_not_use_dev() -> None:
     Raises:
         AssertionError: If any dev imports found in src code.
     """
-    src_package = get_src_package()
+    src_package = import_module(PyprojectConfigFile.get_package_name())
 
     src_src_pkg_name = get_module_name_replacing_start_module(src, src_package.__name__)
 

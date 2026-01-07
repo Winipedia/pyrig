@@ -20,9 +20,11 @@ from packaging.version import Version
 
 from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
+from pyrig.dev.management.project_tester import ProjectTester
 from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.remote_version_controller import RemoteVersionController
 from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.modules.package import (
@@ -30,10 +32,6 @@ from pyrig.src.modules.package import (
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
     get_project_name_from_cwd,
-)
-from pyrig.src.testing.convention import (
-    COVERAGE_THRESHOLD,
-    TESTS_PACKAGE_NAME,
 )
 
 
@@ -76,6 +74,7 @@ class PyprojectConfigFile(TomlConfigFile):
         repo_owner, _ = VersionController.L.get_repo_owner_and_name(
             check_repo_url=False
         )
+        tests_pkg_name = MirrorTestConfigFile.get_tests_package_name()
 
         return {
             "project": {
@@ -132,7 +131,7 @@ class PyprojectConfigFile(TomlConfigFile):
                         "ignore": ["D203", "D213", "COM812", "ANN401"],
                         "fixable": ["ALL"],
                         "per-file-ignores": {
-                            f"**/{TESTS_PACKAGE_NAME}/**/*.py": ["S101"],
+                            f"**/{tests_pkg_name}/**/*.py": ["S101"],
                         },
                         "pydocstyle": {"convention": "google"},
                     },
@@ -147,8 +146,8 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 "pytest": {
                     "ini_options": {
-                        "testpaths": [TESTS_PACKAGE_NAME],
-                        "addopts": f"--cov={cls.get_package_name()} --cov-report=term-missing --cov-fail-under={COVERAGE_THRESHOLD}",  # noqa: E501
+                        "testpaths": [tests_pkg_name],
+                        "addopts": f"--cov={cls.get_package_name()} --cov-report=term-missing --cov-fail-under={ProjectTester.L.get_coverage_threshold()}",  # noqa: E501
                     }
                 },
                 "bandit": {
@@ -157,7 +156,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     ],
                     "assert_used": {
                         "skips": [
-                            f"*/{TESTS_PACKAGE_NAME}/*.py",
+                            f"*/{tests_pkg_name}/*.py",
                         ],
                     },
                 },

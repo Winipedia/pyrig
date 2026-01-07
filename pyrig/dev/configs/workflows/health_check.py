@@ -28,11 +28,12 @@ See Also:
 """
 
 from datetime import UTC, datetime, timedelta
+from importlib import import_module
 from typing import Any
 
 import pyrig
 from pyrig.dev.configs.base.workflow import Workflow
-from pyrig.dev.utils.packages import get_src_package
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.package import DependencyGraph
 
 
@@ -112,7 +113,7 @@ class HealthCheckWorkflow(Workflow):
             Number of hours to offset from base cron hour.
         """
         graph = DependencyGraph.cached()
-        src_pkg = get_src_package()
+        src_pkg = import_module(PyprojectConfigFile.get_package_name())
         return graph.shortest_path_length(src_pkg.__name__, pyrig.__name__)
 
     @classmethod

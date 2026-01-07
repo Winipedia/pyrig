@@ -7,16 +7,14 @@ untested code.
 
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from importlib import import_module
 from types import ModuleType
 
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
-from pyrig.dev.utils.packages import get_src_package
 from pyrig.src.modules.imports import walk_package
 from pyrig.src.modules.package import create_package
 from pyrig.src.modules.path import ModulePath
-from pyrig.src.testing.convention import (
-    make_test_obj_importpath_from_obj,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +26,7 @@ def make_test_skeletons() -> None:
     modules, classes, and functions for all untested code.
     """
     logger.info("Creating test skeletons")
-    src_package = get_src_package()
+    src_package = import_module(PyprojectConfigFile.get_package_name())
     logger.debug("Source package: %s", src_package.__name__)
     create_tests_for_package(src_package)
     logger.info("Test skeleton creation complete")
@@ -66,7 +64,7 @@ def create_test_package(package: ModuleType) -> None:
     Args:
         package: The source package to create a test package for.
     """
-    test_package_name = make_test_obj_importpath_from_obj(package)
+    test_package_name = MirrorTestConfigFile.get_test_obj_importpath_from_obj(package)
     test_package_path = ModulePath.pkg_name_to_relative_dir_path(test_package_name)
     # create package if it doesn't exist
     create_package(test_package_path)

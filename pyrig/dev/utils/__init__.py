@@ -6,7 +6,7 @@ production packages don't carry unnecessary dependencies.
 
 Modules:
     github_api: GitHub API utilities and repository ruleset management
-    packages: Package discovery and source package identification
+    packages: Package discovery utilities
     resources: Resource fallback decorators for network operations
     testing: Pytest fixture decorators and test utilities
     urls: URL construction utilities for GitHub, PyPI, Codecov
@@ -14,12 +14,11 @@ Modules:
     versions: Version constraint parsing and range generation
 
 Examples:
-    Discover the main source package::
+    Discover packages with depth limit::
 
-        >>> from pyrig.dev.utils.packages import get_src_package
-        >>> pkg = get_src_package()
-        >>> print(pkg.__name__)
-        myproject
+        >>> from pyrig.dev.utils.packages import find_packages
+        >>> find_packages(depth=0)
+        ['myproject', 'tests']
 
     Parse version constraints::
 

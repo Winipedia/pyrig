@@ -5,7 +5,7 @@ Provides utilities for transforming Python identifiers between different case st
 """
 
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from types import ModuleType
 from typing import Any
 
@@ -97,3 +97,33 @@ def re_search_excluding_docstrings(
     content = re.sub(r'"""[\s\S]*?"""', "", content)
     content = re.sub(r"'''[\s\S]*?'''", "", content)
     return re.search(pattern, content)
+
+
+def make_summary_error_msg(
+    errors_locations: Iterable[str],
+) -> str:
+    """Create error message summarizing multiple error locations.
+
+    Formats error locations into bulleted list for reporting validation errors.
+
+    Args:
+        errors_locations: Collection of error location strings.
+
+    Returns:
+        Formatted error message with "Found errors at:" header and bulleted list.
+
+    Example:
+        >>> errors = ["tests/test_utils.py::test_sum", "tests/test_models.py::TestUser"]
+        >>> print(make_summary_error_msg(errors))
+        # Found errors at:
+        #     - tests/test_utils.py::test_sum
+        #     - tests/test_models.py::TestUser
+    """
+    msg = """
+    Found errors at:
+    """
+    for error_location in errors_locations:
+        msg += f"""
+        - {error_location}
+        """
+    return msg

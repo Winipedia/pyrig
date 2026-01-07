@@ -47,7 +47,7 @@ from pyrig.dev.management.pre_committer import PreCommitter
 from pyrig.dev.management.project_tester import ProjectTester
 from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.version_controller import VersionController
-from pyrig.dev.utils.packages import get_src_package, src_pkg_is_pyrig
+from pyrig.dev.utils.packages import src_pkg_is_pyrig
 from pyrig.src.string_ import (
     make_name_from_obj,
     split_on_uppercase,
@@ -1786,7 +1786,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Artifact name in format: package-os.
         """
-        return f"{get_src_package().__name__}-{cls.insert_os()}"
+        return f"{PyprojectConfigFile.get_project_name()}-{cls.insert_os()}"
 
     # ifs
     # ----------------------------------------------------------------------------
