@@ -260,6 +260,7 @@ class Workflow(YamlConfigFile):
         permissions: dict[str, Any] | None = None,
         runs_on: str = UBUNTU_LATEST,
         if_condition: str | None = None,
+        outputs: dict[str, str] | None = None,
         steps: list[dict[str, Any]] | None = None,
         job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -272,6 +273,7 @@ class Workflow(YamlConfigFile):
             permissions: Job-level permissions.
             runs_on: Runner label. Defaults to ubuntu-latest.
             if_condition: Conditional expression for job execution.
+            outputs: Job outputs mapping output names to step output references.
             steps: List of step configurations.
             job: Existing job dict to update.
 
@@ -291,6 +293,8 @@ class Workflow(YamlConfigFile):
         job_config["runs-on"] = runs_on
         if if_condition is not None:
             job_config["if"] = if_condition
+        if outputs is not None:
+            job_config["outputs"] = outputs
         if steps is not None:
             job_config["steps"] = steps
         job_config.update(job)
@@ -1259,6 +1263,40 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
+    def step_check_for_unstaged_changes(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that checks if dependencies changed.
+
+        Checks if there are any uncommitted changes (typically from dependency
+        updates) and sets a GITHUB_OUTPUT variable 'has_changes' to 'true' or
+        'false'.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that checks for dependency changes and sets output.
+        """
+        check_script = f"""
+if {VersionController.L.get_diff_quiet_args()}; then
+  echo "has_changes=false" >> $GITHUB_OUTPUT
+  echo "No dependency changes detected"
+else
+  echo "has_changes=true" >> $GITHUB_OUTPUT
+  echo "Dependency changes detected"
+fi
+        """.strip()
+
+        return cls.get_step(
+            step_func=cls.step_check_for_unstaged_changes,
+            run=check_script,
+            step=step,
+        )
+
+    @classmethod
     def step_install_dependencies(
         cls,
         *,
@@ -1787,11 +1825,12 @@ class Workflow(YamlConfigFile):
     # ifs
     # ----------------------------------------------------------------------------
     @classmethod
-    def combined_if(cls, *conditions: str) -> str:
+    def combined_if(cls, *conditions: str, operator: str) -> str:
         """Combine multiple conditions with logical AND.
 
         Args:
             *conditions: Individual condition expressions.
+            operator: Logical operator to combine conditions.
 
         Returns:
             Combined condition expression.
@@ -1800,7 +1839,7 @@ class Workflow(YamlConfigFile):
             condition.strip().removeprefix("${{").removesuffix("}}").strip()
             for condition in conditions
         ]
-        return cls.insert_var(" && ".join(bare_conditions))
+        return cls.insert_var(f" {operator} ".join(bare_conditions))
 
     @classmethod
     def if_matrix_is_not_os(cls, os: str) -> str:
@@ -1815,6 +1854,15 @@ class Workflow(YamlConfigFile):
         return cls.insert_var(f"matrix.os != '{os}'")
 
     @classmethod
+    def if_not_triggered_by_cron(cls) -> str:
+        """Create a condition for not being triggered by cron.
+
+        Returns:
+            GitHub Actions expression checking event name.
+        """
+        return cls.insert_var("github.event_name != 'schedule'")
+
+    @classmethod
     def if_workflow_run_is_success(cls) -> str:
         """Create a condition for successful workflow run.
 
@@ -1822,15 +1870,6 @@ class Workflow(YamlConfigFile):
             GitHub Actions expression checking workflow_run conclusion.
         """
         return cls.insert_var("github.event.workflow_run.conclusion == 'success'")
-
-    @classmethod
-    def if_triggered_by_cron(cls) -> str:
-        """Create a condition for event being schedule.
-
-        Returns:
-            GitHub Actions expression checking event_name.
-        """
-        return cls.insert_var("github.event_name == 'schedule'")
 
     @classmethod
     def if_pypi_token_configured(cls) -> str:

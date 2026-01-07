@@ -17,6 +17,13 @@ def test_run_subprocess() -> None:
 class TestArgs:
     """Test class."""
 
+    def test___repr__(self) -> None:
+        """Test method."""
+        args = Args(("uv", "run", "pytest"))
+        result = repr(args)
+        assert result == "uv run pytest"
+        assert repr(args) == str(args)
+
     def test___str__(self) -> None:
         """Test method."""
         args = Args(("uv", "run", "pytest"))

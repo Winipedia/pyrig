@@ -8,6 +8,11 @@ from pyrig.dev.management.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_get_diff_quiet_args(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_diff_quiet_args()
+        assert result == ("git", "diff", "--quiet")
+
     def test_get_config_get_args(self) -> None:
         """Test method."""
         result = VersionController.L.get_config_get_args()

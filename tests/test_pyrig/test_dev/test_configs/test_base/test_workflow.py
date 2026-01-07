@@ -45,15 +45,20 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_if_not_triggered_by_cron(self) -> None:
+        """Test method."""
+        result = Workflow.if_not_triggered_by_cron()
+        assert "schedule" in result, "Expected 'schedule' in result"
+
+    def test_step_check_for_unstaged_changes(self) -> None:
+        """Test method."""
+        result = Workflow.step_check_for_unstaged_changes()
+        assert "run" in result, "Expected 'run' in step"
+
     def test_step_update_dependencies(self) -> None:
         """Test method."""
         result = Workflow.step_update_dependencies()
         assert "run" in result, f"Expected 'run' in step, got {result}"
-
-    def test_if_triggered_by_cron(self) -> None:
-        """Test method."""
-        result = Workflow.if_triggered_by_cron()
-        assert result == "${{ github.event_name == 'schedule' }}"
 
     def test_step_enable_pages(self) -> None:
         """Test method."""
@@ -113,7 +118,7 @@ class TestWorkflow:
         """Test method."""
         conditions = ["condition1", "condition2"]
         conditions = [Workflow.insert_var(condition) for condition in conditions]
-        result = Workflow.combined_if(*conditions)
+        result = Workflow.combined_if(*conditions, operator="&&")
         expected = "${{ condition1 && condition2 }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
