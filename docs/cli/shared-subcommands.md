@@ -1,8 +1,8 @@
 # Shared Subcommands
 
 Shared subcommands are CLI commands available across all packages in the pyrig
-ecosystem. They are defined in `dev/cli/shared_subcommands.py` and automatically
-discovered in all dependent packages.
+ecosystem. They are defined in `<package>/dev/cli/shared_subcommands.py` and
+automatically discovered in all dependent packages.
 
 ## Purpose
 
@@ -14,8 +14,9 @@ Shared subcommands enable cross-package functionality:
 
 ## Defining Shared Commands
 
-Add a public function to `dev/cli/shared_subcommands.py`. Each public function
-is automatically discovered and registered as a Typer CLI command.
+Add a public function to your package's `dev/cli/shared_subcommands.py` module.
+Each public function is automatically discovered and registered as a Typer CLI
+command.
 
 Pyrig includes a built-in `version` command that demonstrates the pattern:
 
@@ -26,8 +27,8 @@ Pyrig includes a built-in `version` command that demonstrates the pattern:
 This command works in any package:
 
 ```bash
-uv run pyrig version        # Output: pyrig version 2.2.29
-uv run myapp version        # Output: myapp version 1.0.0
+uv run pyrig version        # Output: pyrig version X.Y.Z
+uv run myapp version        # Output: myapp version X.Y.Z
 
 # With verbose output (global options work with shared commands too)
 uv run pyrig -v version     # Shows debug information
@@ -37,10 +38,10 @@ uv run pyrig -v version     # Shows debug information
 
 Shared commands are discovered through dependency graph traversal:
 
-1. **Build dependency graph** of all installed packages
-2. **Find all packages** depending on pyrig
-3. **Import each package's** `shared_subcommands` module
-4. **Register all functions** from each module
+1. **Extract current package name** from `sys.argv[0]`
+2. **Traverse the dependency chain** from pyrig to the current package
+3. **Import each package's** `dev.cli.shared_subcommands` module
+4. **Register all public functions** from each module
 
 Commands are registered in dependency order (pyrig first). If multiple packages
 define a command with the same name, the last one registered takes precedence.

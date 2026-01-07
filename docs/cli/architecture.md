@@ -63,57 +63,25 @@ graph LR
 
 ### Project-Specific Commands
 
-The `add_subcommands()` function discovers commands for the current package:
+Each package can define its own CLI commands by creating a `subcommands` module
+at `<package>.dev.cli.subcommands`. When the CLI runs, it:
 
-1. **Extract package name** from `sys.argv[0]`
-2. **Register main entry point**
-Imports and registers `main()` from `<package>.main`
-3. **Replace module names** to find the package's `subcommands` module
-4. **Import the subcommands module** for the package
-5. **Extract all functions** from the module
-6. **Register each function** as a Typer command
+1. Determines the current package from the invocation
+2. Registers the package's `main()` entry point
+3. Discovers and registers all functions from the package's `subcommands` module
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 
-    'primaryColor':'#a8dadc','primaryTextColor':'#000',
-    'primaryBorderColor':'#333','lineColor':'#333','secondaryColor':'#90be6d',
-    'tertiaryColor':'#f4a261','actorBkg':'#a8dadc','actorBorder':'#333',
-    'actorTextColor':'#000','signalColor':'#333','signalTextColor':'#000'}}
-    }%%
-sequenceDiagram
-    participant CLI as add_subcommands()
-    participant Argv as sys.argv[0]
-    participant Replace as Module Replacement
-    participant Import as Import System
-    participant Typer as Typer App
+Example: When running `uv run myapp deploy`:
 
-    CLI->>Argv: Extract package name
-    Argv-->>CLI: "myapp"
-    CLI->>Replace: Replace pyrig → myapp
-    Replace-->>CLI: myapp.dev.cli.subcommands
-    CLI->>Import: Import module
-    Import-->>CLI: [deploy, status, ...]
-    CLI->>Typer: Register each function
-```
-
-Example: When running `uv run myapp deploy`, the system:
-
-- Detects package name: `myapp`
-- Imports and registers `main()` from `myapp/main.py`
-- Replaces `pyrig.dev.cli.subcommands` → `myapp.dev.cli.subcommands`
-- Imports `myapp/dev/cli/subcommands.py`
-- Registers all functions as commands (e.g., `deploy`, `status`, etc.)
+- The CLI detects package name: `myapp`
+- Imports and registers `main()` from `myapp.main`
+- Imports `myapp.dev.cli.subcommands`
+- Registers all functions as commands (e.g., `deploy`, `status`)
 
 ### Shared Commands
 
-The `add_shared_subcommands()` function discovers commands across the package
-ecosystem:
-
-1. **Extract current package name** from `sys.argv[0]`
-2. **Find equivalent `shared_subcommands` modules** across the dependency chain
-   from pyrig to the current package
-3. **For each module**, extract all public functions
-4. **Register each function** as a Typer command
+Shared commands are available across all pyrig-based projects. They are defined
+in `<package>.dev.cli.shared_subcommands` modules and automatically discovered
+across the entire dependency chain from pyrig to the current package.
 
 Commands are registered in dependency order (pyrig first). If multiple packages
 define the same command name, the last one registered takes precedence.
@@ -123,26 +91,19 @@ pyrig, while adapting to each project's context.
 
 ## Module Name Replacement
 
-The system uses module name replacement to support multi-package architectures:
-
-```python
-get_module_name_replacing_start_module(pyrig.dev.cli.subcommands, "myapp")
-# Returns: "myapp.dev.cli.subcommands"
-```
+The system uses module name replacement to support multi-package architectures.
+Given a module path within pyrig (e.g., `pyrig.dev.cli.subcommands`), the CLI
+can derive the equivalent path in any dependent package (e.g.,
+`myapp.dev.cli.subcommands`).
 
 This allows any package depending on pyrig to define its own commands by
 following the same module structure.
 
 ## Dependency Graph
 
-The `DependencyGraph` class builds a directed graph of package dependencies:
-
-```python
-graph = DependencyGraph.cached()
-packages = graph.get_all_depending_on("pyrig", include_self=True)
-# Returns: [<module 'pyrig'>, <module 'myapp'>, ...] in topological order
-# (list of imported ModuleType objects, not strings)
-```
+The CLI uses a `DependencyGraph` to discover all packages that depend on pyrig.
+This graph is built from installed Python distributions and sorted in
+topological order (dependencies before dependents).
 
 ```mermaid
 graph TD
@@ -165,38 +126,12 @@ corresponding command modules.
 
 ## Function Discovery
 
-The `get_all_functions_from_module()` utility extracts all functions defined in
-a module:
+Functions are automatically discovered from subcommand modules. The system
+extracts only functions defined directly in the module (excluding imports) and
+registers them as CLI commands in their source definition order.
 
-- Uses `inspect.getmembers_static()` to find all module members
-- Filters to function-like callables (including wrapped functions like
-  staticmethod, classmethod, property, and decorated functions)
-- Excludes imported functions (only functions defined in the module)
-- Sorts by definition order (line number)
-
-```mermaid
-flowchart LR
-    A[Module] --> B[inspect.getmembers_static]
-    B --> C{Is callable?}
-    C -->|No| D[Skip]
-    C -->|Yes| E{Defined in module?}
-    E -->|No| D
-    E -->|Yes| F[Add to list]
-    F --> G[Sort by line number]
-    G --> H[Return functions]
-
-    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#ccc,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style G fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style H fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-```
-
-This automatic discovery means adding a new command requires only defining a
-function in the appropriate module.
+This means adding a new command requires only defining a function in the
+appropriate module—no registration boilerplate is needed.
 
 ## Import Strategy
 
