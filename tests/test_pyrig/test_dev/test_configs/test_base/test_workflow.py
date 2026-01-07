@@ -45,6 +45,16 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_step_update_dependencies(self) -> None:
+        """Test method."""
+        result = Workflow.step_update_dependencies()
+        assert "run" in result, f"Expected 'run' in step, got {result}"
+
+    def test_if_triggered_by_cron(self) -> None:
+        """Test method."""
+        result = Workflow.if_triggered_by_cron()
+        assert result == "${{ github.event_name == 'schedule' }}"
+
     def test_step_enable_pages(self) -> None:
         """Test method."""
         result = Workflow.step_enable_pages()
