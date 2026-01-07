@@ -38,9 +38,12 @@ jobs:
     - name: Patch Version
       id: patch_version
       run: uv version --bump patch && git add pyproject.toml
-    - name: Install Python Dependencies
-      id: install_python_dependencies
-      run: uv lock --upgrade && uv sync
+    - name: Update Dependencies
+      id: update_dependencies
+      run: uv lock --upgrade
+    - name: Install Dependencies
+      id: install_dependencies
+      run: uv sync
     - name: Add Dependency Updates To Git
       id: add_dependency_updates_to_git
       run: git add pyproject.toml uv.lock

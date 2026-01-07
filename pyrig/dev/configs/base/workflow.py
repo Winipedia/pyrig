@@ -703,7 +703,8 @@ class Workflow(YamlConfigFile):
         return [
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
             cls.step_patch_version(),
-            cls.step_install_python_dependencies(no_dev=no_dev),
+            cls.step_update_dependencies(),
+            cls.step_install_dependencies(no_dev=no_dev),
             cls.step_add_dependency_updates_to_git(),
         ]
 
@@ -1238,7 +1239,27 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
-    def step_install_python_dependencies(
+    def step_update_dependencies(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that updates the dependencies.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs uv lock --upgrade.
+        """
+        return cls.get_step(
+            step_func=cls.step_update_dependencies,
+            run=str(PackageManager.L.get_update_dependencies_args()),
+            step=step,
+        )
+
+    @classmethod
+    def step_install_dependencies(
         cls,
         *,
         no_dev: bool = False,
@@ -1253,14 +1274,13 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that runs uv sync.
         """
-        upgrade = str(PackageManager.L.get_update_dependencies_args())
         install = str(PackageManager.L.get_install_dependencies_args())
         if no_dev:
             install += " --no-group dev"
-        run = f"{upgrade} && {install}"
+        run = install
 
         return cls.get_step(
-            step_func=cls.step_install_python_dependencies,
+            step_func=cls.step_install_dependencies,
             run=run,
             step=step,
         )
@@ -1802,6 +1822,15 @@ class Workflow(YamlConfigFile):
             GitHub Actions expression checking workflow_run conclusion.
         """
         return cls.insert_var("github.event.workflow_run.conclusion == 'success'")
+
+    @classmethod
+    def if_triggered_by_cron(cls) -> str:
+        """Create a condition for event being schedule.
+
+        Returns:
+            GitHub Actions expression checking event_name.
+        """
+        return cls.insert_var("github.event_name == 'schedule'")
 
     @classmethod
     def if_pypi_token_configured(cls) -> str:
