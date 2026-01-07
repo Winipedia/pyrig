@@ -149,7 +149,7 @@ class HealthCheckWorkflow(Workflow):
             if_condition=cls.combined_if(
                 cls.if_not_triggered_by_cron(),
                 f"needs.{check_changes_job_id}.outputs.has_changes == 'false'",
-                operator="||",
+                operator="&&",
             ),
             steps=cls.steps_aggregate_matrix_results(),
         )

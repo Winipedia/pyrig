@@ -136,7 +136,7 @@ jobs:
     - health_check_matrix
     - protect_repository
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'schedule' || needs.check_for_changes.outputs.has_changes
+    if: ${{ github.event_name != 'schedule' && needs.check_for_changes.outputs.has_changes
       == 'false' }}
     steps:
     - name: Aggregate Matrix Results
