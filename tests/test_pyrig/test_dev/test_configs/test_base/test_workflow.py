@@ -45,27 +45,10 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
-    def test_step_exit_workflow_successfully_if_not_cron_triggered(self) -> None:
-        """Test method."""
-        result = Workflow.step_exit_workflow_successfully_if_not_cron_triggered()
-        assert "run" in result, "Expected 'run' in step"
-        assert "if" in result, "Expected 'if' in step"
-
-    def test_step_exit_workflow_neutral_if_no_changes(self) -> None:
-        """Test method."""
-        result = Workflow.step_exit_workflow_neutral_if_no_changes()
-        assert "run" in result, "Expected 'run' in step"
-        assert "if" in result, "Expected 'if' in step"
-
     def test_if_not_triggered_by_cron(self) -> None:
         """Test method."""
         result = Workflow.if_not_triggered_by_cron()
         assert "schedule" in result, "Expected 'schedule' in result"
-
-    def test_step_check_for_unstaged_changes(self) -> None:
-        """Test method."""
-        result = Workflow.step_check_for_unstaged_changes()
-        assert "run" in result, "Expected 'run' in step"
 
     def test_step_update_dependencies(self) -> None:
         """Test method."""

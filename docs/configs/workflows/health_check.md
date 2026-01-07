@@ -246,85 +246,14 @@ complete)
 rules, you will see the purpose of this once you make a Pull Request and wait
 for the checks to complete.
 
-**Step Flow**:
-
-```mermaid
-graph TD
-    H1[1. Aggregate Matrix Results] --> H2{2. Exit if NOT cron?}
-    H2 -->|Yes - exit 0| H2A[Success ✓]
-    H2 -->|No - continue| H3[3. Checkout Repository]
-    H3 --> H4[4. Setup Git]
-    H4 --> H5[5. Setup Project Mgt]
-    H5 --> H6[6. Update Dependencies]
-    H6 --> H7[7. Check For Unstaged Changes]
-    H7 --> H8{8. Exit if no changes?}
-    H8 -->|Yes - exit 78| H8A[Neutral ○]
-    H8 -->|No - continue| H8B[Success ✓]
-
-    style H1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style H2 fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style H2A fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style H3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style H4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style H5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style H6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style H7 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
-    style H8 fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style H8A fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style H8B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-```
-
-**Conditional Logic Using Exit Codes**:
-
-- **On PR/Push**: Exits early with success (exit 0) after aggregating results
-- **On Schedule with changes**: Completes successfully, triggering downstream
-  workflows
-- **On Schedule without changes**: Exits with neutral status (exit 78), which
-  doesn't trigger downstream workflows
-
 **Steps**:
 
 1. **Aggregate Matrix Results**
    - Echoes aggregation message
    - Provides single job status for GitHub branch protection
 
-2. **Exit Workflow Successfully If Not Cron Triggered**
-   - Runs only if `github.event_name != 'schedule'`
-   - Exits with code 0 (success)
-   - Prevents unnecessary dependency checks on PR/push
-
-3. **Checkout Repository** (`actions/checkout@main`)
-   - Only runs on scheduled triggers
-   - Clones the repository code
-
-4. **Setup Git**
-   - Configures git user as `github-actions[bot]`
-
-5. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
-   - Installs uv package manager
-   - Sets up Python 3.14
-
-6. **Update Dependencies**
-   - Runs `uv lock --upgrade`
-   - Updates lock file with latest compatible versions
-
-7. **Check For Unstaged Changes**
-   - Runs `git diff --quiet` to check for uncommitted changes
-   - Sets `UNSTAGED_CHANGES=true` if changes detected, `false` otherwise
-
-8. **Exit Workflow Neutral If No Changes**
-   - Runs only if `UNSTAGED_CHANGES == 'true'`
-   - Exits with code 78 (neutral)
-   - Prevents downstream workflows from triggering
-
 **Why aggregate?** GitHub branch protection can require this single job instead
 of tracking all matrix combinations and the protection job individually.
-
-**Why early exits?** On scheduled runs, if no dependency updates are available,
-we exit with a neutral status to prevent triggering downstream workflows (build,
-release, publish) unnecessarily. The matrix tests still run to catch any issues,
-but we don't proceed with releases when there are no changes. This saves CI
-minutes and prevents unnecessary releases.
 
 ## Environment Variables
 

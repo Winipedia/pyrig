@@ -164,12 +164,8 @@ graph LR
   - Coverage upload (codecov)
 - **health_check**: Aggregates matrix and protection results (required status
   check for PRs)
-  - On PR/push: Exits early with success after aggregation
-  - On schedule: Checks for dependency updates, exits neutral if none found
 
-**Purpose**: Continuous integration - ensures code quality on every change. On
-scheduled runs, only triggers downstream workflows if dependency updates are
-available (using exit code 78 for neutral status when no changes).
+**Purpose**: Continuous integration - ensures code quality on every change.
 
 ### 2. Build Workflow
 
