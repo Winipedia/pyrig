@@ -11,6 +11,7 @@ management.
 - **[mkinits](mkinits.md)** - Create `__init__.py` files
 - **[build](build.md)** - Build all artifacts
 - **[protect-repo](protect-repo.md)** - Configure repository protection
+- **version** - Display the current project's version (shared command)
 
 ## Quick Reference
 
@@ -32,6 +33,9 @@ uv run pyrig build
 
 # Protect repository
 uv run pyrig protect-repo
+
+# Show version
+uv run pyrig version
 ```
 
 ## Global Options

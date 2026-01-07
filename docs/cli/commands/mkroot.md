@@ -23,96 +23,53 @@ uv run pyrig -v mkroot
 
 ## What It Does
 
-The `mkroot` command:
-
-1. **Discovers all ConfigFile subclasses** across the project and its
-   dependencies
-2. **Initializes config files** by calling `ConfigFile.init_all_subclasses()`:
-   - Files are **grouped by priority** (highest first)
-   - Priority groups are processed **sequentially** (one group at a time)
-   - Files **within each priority group** are initialized **in parallel** using
-     ThreadPoolExecutor
+The `mkroot` command discovers and initializes all `ConfigFile` subclasses
+across the project and its dependencies. Config files are processed in priority
+order to ensure dependencies between files are respected.
 
 ### Priority Config Files
 
-When using `--priority`, only files with `get_priority() > 0` are created:
+When using `--priority`, only essential config files are created—those required
+before installing dependencies or running other initialization steps (e.g.,
+`LICENSE`, `pyproject.toml`, package `__init__.py` files).
 
-**Current priority files in pyrig**:
+### All Config Files
 
-- **LicenceConfigFile** (`LICENSE`) - Priority 30 (highest - must exist before
-  pyproject.toml for license auto-detection)
-- **PyprojectConfigFile** (`pyproject.toml`) - Priority 20 (project metadata and
-  dependencies)
-- **ConfigsInitConfigFile** (`dev/configs/__init__.py`) - Priority 10 (configs
-  package initialization)
-- **FixturesInitConfigFile** (`dev/tests/fixtures/__init__.py`) - Priority 10
-  (must exist before conftest.py)
-- **ManagementInitConfigFile** (`dev/management/__init__.py`) - Priority 10
-  (management package initialization)
+Without `--priority`, all config files are created or updated, including project
+metadata, workflows, git configuration, documentation structure, and test setup.
 
-These files are required before installing dependencies or running other
-initialization steps.
-
-### All Config Files Created
-
-Without `--priority`, all config files defined in the project are created or
-updated. This includes:
-
-- **Python configs**: `pyproject.toml`, `__init__.py` files, `main.py`,
-  `.experiment.py`
-- **Container configs**: `Containerfile`
-- **Documentation configs**: `mkdocs.yaml`, `README.md`, documentation structure
-- **Environment configs**: `.env`, `.python-version`, `LICENSE`, `py.typed`
-- **Git configs**: `.gitignore`, `.pre-commit-config.yaml`
-- **Workflow configs**: GitHub Actions workflows (health check, build, release,
-  publish)
-- **Test configs**: `conftest.py`, test fixtures, test skeletons
-
-See [Configs Documentation](../../configs/index.md) for complete details on all
-config files.
+See [Configs Documentation](../../configs/index.md) for the complete list.
 
 ## Behavior
 
-- **Creates files that do not exist yet**
-- **Updates existing files** if they do not match expected configuration
 - **Idempotent** - Safe to run multiple times
-- **Respects opt-out** - Files with opt-out markers are skipped
+- Creates files that do not exist
+- Updates existing files if they do not match expected configuration
+- Respects opt-out markers in files
 
 ## When to Use
 
 Use `mkroot` when:
 
-- Adding new config files subclassing `ConfigFile` to an existing project
 - Regenerating config files after updates
+- Adding new `ConfigFile` subclasses to a project
 - Ensuring project structure is up to date
 
 Use `mkroot --priority` when:
 
 - During initial project setup (before installing dependencies)
-- You only need essential config files to proceed with setup
-- It is already running as part of the `pyrig init` process
+- As part of `pyrig init` (runs automatically)
 
 ## Autouse Fixture
 
-This command **runs automatically** in the `assert_root_is_correct` autouse
-fixture at session scope. See
+This command runs automatically via the `assert_root_is_correct` autouse fixture
+before tests run. See
 [Autouse Fixtures](../../tests/autouse.md#assert_root_is_correct) for details.
-
-The fixture checks if any config files are incorrect and automatically runs
-`mkroot` to fix them before tests run.
-
-## Implementation
-
-The command delegates to:
-
-- `ConfigFile.init_all_subclasses()` when called without `--priority`
-- `ConfigFile.init_priority_subclasses()` when called with `--priority`
-
-See [Configuration Architecture](../../configs/architecture.md) for details on
-the priority system and parallel initialization.
 
 ## Related
 
-- [Configs Documentation](../../configs/index.md) - Details on all config files
+- [Configuration Architecture](../../configs/architecture.md) - Priority system
+  and initialization details
+- [Configs Documentation](../../configs/index.md) - All config files
 - [mkinits](mkinits.md) - Creates only `__init__.py` files
-- [init](init.md) - Calls `pyrig mkroot` as part of full project setup
+- [init](init.md) - Calls `mkroot` as part of full project setup
