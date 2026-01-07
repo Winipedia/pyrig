@@ -1,7 +1,7 @@
 """GitHub API utilities and repository ruleset management.
 
-Utilities for interacting with the GitHub API, specifically for repository rulesets
-and gitignore file handling. Uses PyGithub for authentication and API calls.
+Utilities for interacting with the GitHub API, specifically for repository rulesets.
+Uses PyGithub for authentication and API calls.
 
 Functions:
     create_or_update_ruleset: Create or update a GitHub repository ruleset
@@ -9,6 +9,10 @@ Functions:
     get_repo: Get a PyGithub Repository object for API operations
     ruleset_exists: Check if a ruleset with the given name exists
     github_api_request: Make a generic GitHub API request for a repository
+
+See Also:
+    pyrig.dev.cli.commands.protect_repo: CLI command using these utilities
+    pyrig.dev.utils.version_control: GitHub token retrieval and related constants
 """
 
 import logging

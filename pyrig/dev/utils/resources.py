@@ -73,6 +73,9 @@ def return_resource_file_content_on_exceptions(
     Returns:
         Decorator function for functions with signature `(*args, **kwargs) -> str`.
 
+    Raises:
+        FileNotFoundError: If resource file doesn't exist at decorator creation time.
+
     Examples:
         Fallback to resource file on network errors::
 
