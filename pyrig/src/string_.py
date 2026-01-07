@@ -2,6 +2,12 @@
 
 Provides utilities for transforming Python identifiers between different case styles
 (snake_case, PascalCase, kebab-case) and creating human-readable names from objects.
+
+These utilities are used throughout pyrig for:
+    - Deriving filenames from class names (via `split_on_uppercase`)
+    - Generating workflow and CLI command names from Python identifiers
+    - Searching code while ignoring documentation strings
+    - Formatting multi-location error messages for test fixtures
 """
 
 import re
@@ -13,16 +19,25 @@ from typing import Any
 def split_on_uppercase(string: str) -> list[str]:
     """Split string at uppercase letter boundaries.
 
+    Used internally by pyrig to convert PascalCase class names to snake_case
+    filenames and to generate human-readable workflow names from class names.
+
     Args:
         string: String to split (e.g., "MyClassName").
 
     Returns:
-        List of substrings split before each uppercase letter (empty strings filtered).
+        List of substrings split before each uppercase letter, with empty strings
+        filtered out.
+
+    Example:
+        >>> split_on_uppercase("HelloWorld")
+        ['Hello', 'World']
+        >>> split_on_uppercase("XMLParser")
+        ['X', 'M', 'L', 'Parser']
 
     Note:
-        Consecutive uppercase split individually:
-            "XMLParser" → ['X', 'M', 'L', 'Parser'].
-        Only splits on ASCII uppercase letters (A-Z), not Unicode.
+        Consecutive uppercase letters split individually. Only splits on ASCII
+        uppercase letters (A-Z), not Unicode uppercase characters.
     """
     return [s for s in re.split(r"(?=[A-Z])", string) if s]
 
@@ -36,24 +51,38 @@ def make_name_from_obj(
 ) -> str:
     """Create human-readable name from Python object or string.
 
-    Transforms Python identifiers into formatted display names.
+    Transforms Python identifiers (typically snake_case) into formatted display
+    names. Used by pyrig for generating CLI command names, workflow step names,
+    and test class names from Python objects.
 
     Args:
         obj: Object to extract name from (module, function, class, or string).
-        split_on: Character(s) to split on.
-        join_on: Character(s) to join with.
-        capitalize: Whether to capitalize each word.
+            For non-string objects, the ``__name__`` attribute is used.
+        split_on: Character(s) to split the name on. Defaults to "_" for
+            snake_case identifiers.
+        join_on: Character(s) to join the parts with. Defaults to "-" for
+            kebab-case output.
+        capitalize: Whether to capitalize each word in the result.
 
     Returns:
-        Formatted string.
+        Formatted string with parts joined by ``join_on``. For example,
+        "some_function" becomes "Some-Function" with default parameters.
 
     Raises:
-        ValueError: If object has no `__name__` and is not string, or if the
-            resulting name would be empty or contain only separators.
+        ValueError: If object has no ``__name__`` attribute and is not a string,
+            or if the resulting name would be empty or contain only separators.
+
+    Example:
+        >>> import my_module
+        >>> make_name_from_obj(my_module)  # __name__ is "my_module"
+        'My-Module'
+        >>> make_name_from_obj("init_project", join_on=" ")
+        'Init Project'
 
     Note:
-        For non-string objects, only last component of `__name__` used.
-        Does not handle PascalCase; use `split_on_uppercase` first if needed.
+        For non-string objects, only the last component of ``__name__`` is used
+        (e.g., "package.submodule" → "submodule"). Does not handle PascalCase
+        identifiers; use `split_on_uppercase` first if needed.
     """
     if not isinstance(obj, str):
         name = getattr(obj, "__name__", "")
@@ -77,22 +106,29 @@ def make_name_from_obj(
 def re_search_excluding_docstrings(
     pattern: str | re.Pattern[str], content: str
 ) -> re.Match[str] | None:
-    """Search for pattern in content, excluding triple-quoted docstrings.
+    """Search for regex pattern in Python source code, excluding docstrings.
+
+    Used by pyrig's test fixtures to detect forbidden patterns (e.g., unittest
+    usage) in source code without false positives from documentation strings.
 
     Args:
-        pattern: Regex pattern.
-        content: Text content.
+        pattern: Regex pattern (string or compiled Pattern object) to search for.
+        content: Python source code as a string.
 
     Returns:
-        Match object if found outside docstrings, None otherwise.
+        Match object if pattern is found outside of triple-quoted strings,
+        None if not found or only found within docstrings.
 
     Warning:
-        Match positions (span, start, end) reference the stripped content,
-        not the original. Do not use for slicing or indexing original content.
+        Match positions (``span()``, ``start()``, ``end()``) reference the
+        stripped content where docstrings have been removed, not the original.
+        Do not use these positions for slicing or indexing the original content.
 
     Note:
-        Uses regex heuristics - cannot distinguish docstrings from triple-quoted
-        string literals. May produce false negatives for code containing such strings.
+        Removes all triple-quoted strings (both ``\"\"\"`` and ``'''``) using
+        regex heuristics. Cannot distinguish docstrings from triple-quoted
+        string literals used for other purposes. Unclosed triple-quoted strings
+        are not removed, so their content will be searched.
     """
     content = re.sub(r'"""[\s\S]*?"""', "", content)
     content = re.sub(r"'''[\s\S]*?'''", "", content)
@@ -102,22 +138,24 @@ def re_search_excluding_docstrings(
 def make_summary_error_msg(
     errors_locations: Iterable[str],
 ) -> str:
-    """Create error message summarizing multiple error locations.
+    """Create indented error message summarizing multiple error locations.
 
-    Formats error locations into bulleted list for reporting validation errors.
+    Used by pyrig's test fixtures to format assertion error messages when
+    multiple validation failures are detected across the codebase.
 
     Args:
-        errors_locations: Collection of error location strings.
+        errors_locations: Collection of error location strings (e.g., file paths,
+            test identifiers, or descriptive location strings).
 
     Returns:
-        Formatted error message with "Found errors at:" header and bulleted list.
+        Multiline string with "Found errors at:" header and indented bulleted
+        list. The output includes leading and trailing whitespace for embedding
+        in larger error messages.
 
-    Example:
-        >>> errors = ["tests/test_utils.py::test_sum", "tests/test_models.py::TestUser"]
-        >>> print(make_summary_error_msg(errors))
-        # Found errors at:
-        #     - tests/test_utils.py::test_sum
-        #     - tests/test_models.py::TestUser
+    Note:
+        The output format is designed for use in assertion messages and includes
+        indentation suitable for multiline f-strings. Each location appears on
+        its own line with a "- " prefix.
     """
     msg = """
     Found errors at:

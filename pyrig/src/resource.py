@@ -1,7 +1,8 @@
 """Resource file access utilities for development and PyInstaller builds.
 
 Provides unified access to static resource files using `importlib.resources`, working
-in both development and PyInstaller-bundled environments.
+in both development and PyInstaller-bundled environments. The primary function
+`get_resource_path` abstracts away environment-specific path resolution.
 """
 
 from importlib.resources import as_file, files
@@ -10,27 +11,41 @@ from types import ModuleType
 
 
 def get_resource_path(name: str, package: ModuleType) -> Path:
-    """Get filesystem path to resource file.
+    """Get filesystem path to a resource file within a package.
 
-    Works in development and PyInstaller environments.
+    Provides cross-platform, environment-agnostic access to static resources bundled
+    with Python packages. Works seamlessly in development (file-based packages) and
+    PyInstaller executables (extracted to temporary directories).
 
     Args:
-        name: Resource filename.
-        package: Package module containing resource.
+        name: Resource filename (e.g., "config.json", "icon.png"). Can include
+            subdirectory paths relative to the package (e.g., "templates/email.html").
+        package: Package module object containing the resource. Import the package's
+            `__init__.py` module and pass it directly.
 
     Returns:
-        Path to resource file.
+        Absolute path to the resource file.
 
-        **Important:** For regular file-based packages, this points to the actual
-        file. For zip-imported packages or certain PyInstaller configurations,
-        this points to a temporary extraction that may be cleaned up when the
-        context manager exits. Use the returned path immediately or copy the
-        file contents if persistence is needed.
+    Raises:
+        TypeError: If package is not a valid module object.
+        FileNotFoundError: If the resource file does not exist in the package.
+
+    Example:
+        >>> from myapp import resources
+        >>> config_path = get_resource_path("config.json", resources)
+        >>> config_data = config_path.read_text()
+
+    Warning:
+        For file-based packages (typical development and PyInstaller builds), the
+        returned path points to the actual file. For zip-imported packages, the path
+        may point to a temporary extraction. Use the path immediately or copy contents
+        if persistence beyond the current call is needed.
 
     Note:
-        This function uses `as_file` context manager but returns immediately,
-        which works correctly for regular files but may cause issues with
-        zip-imported packages.
+        This function exits the `as_file` context manager before returning, which
+        works reliably for file-based packages but may cause path invalidation for
+        zip-imported packages. This is acceptable for pyrig's use cases where
+        packages are always file-based.
     """
     resource_path = files(package) / name
     with as_file(resource_path) as path:
