@@ -20,11 +20,11 @@ from packaging.version import Version
 
 from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
+from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.remote_version_controller import RemoteVersionController
 from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
-from pyrig.src.consts import STANDARD_DEV_DEPS
 from pyrig.src.modules.package import (
     PACKAGE_REQ_NAME_SPLIT_PATTERN,
     get_pkg_name_from_cwd,
@@ -289,7 +289,7 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def get_standard_dev_dependencies(cls) -> list[str]:
         """Get pyrig's standard dev dependencies (ruff, ty, pytest, etc.)."""
-        return sorted(STANDARD_DEV_DEPS)
+        return sorted(Pyrigger.L.get_dev_dependencies())
 
     @classmethod
     def get_dev_dependencies(cls) -> list[str]:

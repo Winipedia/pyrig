@@ -38,7 +38,6 @@ from pyrig.dev.management.pre_committer import (
 from pyrig.dev.management.project_tester import ProjectTester
 from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.version_controller import VersionController
-from pyrig.src.consts import STANDARD_DEV_DEPS
 from pyrig.src.string_ import make_name_from_obj
 
 logger = logging.getLogger(__name__)
@@ -50,7 +49,9 @@ def adding_dev_dependencies() -> None:
     Adds pyrig's standard dev dependencies to pyproject.toml via
     `uv add --group dev`.
     """
-    args = PackageManager.L.get_add_dev_dependencies_args(*STANDARD_DEV_DEPS)
+    args = PackageManager.L.get_add_dev_dependencies_args(
+        *Pyrigger.L.get_dev_dependencies()
+    )
     args.run()
 
 

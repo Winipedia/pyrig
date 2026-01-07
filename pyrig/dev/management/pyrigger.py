@@ -43,6 +43,15 @@ class Pyrigger(Tool):
         return pyrig.__name__
 
     @classmethod
+    def get_dev_dependencies(cls) -> list[str]:
+        """Standard development dependencies for pyrig-based projects.
+
+        The `pyrig-dev` meta-package includes testing, type checking, linting,
+        documentation, build tools and some other dev dependencies.
+        """
+        return ["pyrig-dev"]
+
+    @classmethod
     def get_cmd_args(cls, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments from callable.
 
