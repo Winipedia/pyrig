@@ -1,8 +1,12 @@
 """Utilities for deep comparison and validation of nested data structures.
 
-Provides subset checking for nested dictionaries and lists,
-with optional auto-correction callbacks.
-Used primarily for configuration file validation.
+Provides subset checking for nested dictionaries and lists, with optional
+auto-correction callbacks that modify the superset in-place when mismatches
+are detected. Used primarily by ConfigFile to validate and merge configuration
+files.
+
+See Also:
+    pyrig.dev.configs.base.base.ConfigFile: Primary consumer of this module.
 """
 
 import logging
@@ -19,30 +23,53 @@ def nested_structure_is_subset(  # noqa: C901
     | None = None,
     on_false_list_action: Callable[[list[Any], list[Any], int], Any] | None = None,
 ) -> bool:
-    """Check if nested structure is subset of another.
+    """Check if a nested structure is a subset of another with optional auto-correction.
 
-    Recursively compares nested dicts/lists. Superset may contain additional elements.
+    Recursively compares nested dicts and lists. The superset may contain additional
+    elements not present in the subset.
 
     Comparison rules:
         - Dicts: All subset keys must exist in superset with matching values.
         - Lists: All subset items must exist in superset (order-independent).
         - Primitives: Must be exactly equal.
 
-    Optional callbacks enable auto-correction when mismatches detected.
+    When callbacks are provided and a mismatch is detected, the appropriate callback
+    is invoked. Callbacks should modify the superset in-place to correct the mismatch.
+    After each callback invocation, the function re-checks the entire structure; if
+    the mismatch is corrected, ``True`` is returned.
 
     Args:
-        subset: Structure to check.
-        superset: Structure to check against.
-        on_false_dict_action:
-            Callback for dict mismatches (subset_dict, superset_dict, key).
-        on_false_list_action:
-            Callback for list mismatches (subset_list, superset_list, index).
+        subset: The expected structure to check (treated as the "required" values).
+        superset: The actual structure to check against (may contain additional values).
+        on_false_dict_action: Callback invoked on dict mismatches. Receives
+            ``(subset_dict, superset_dict, key)`` where ``key`` is the mismatched key.
+            Should modify ``superset_dict`` in-place to add/fix the missing value.
+        on_false_list_action: Callback invoked on list mismatches. Receives
+            ``(subset_list, superset_list, index)`` where ``index`` is the position
+            of the missing item in subset. Should modify ``superset_list`` in-place.
 
     Returns:
-        True if subset contained in superset.
+        True if subset is contained in superset (or if callbacks successfully
+        corrected all mismatches), False otherwise.
 
-    Note:
-        List comparison is order-independent.
+    Example:
+        Basic subset check::
+
+            >>> nested_structure_is_subset({"a": 1}, {"a": 1, "b": 2})
+            True
+            >>> nested_structure_is_subset({"a": 1}, {"a": 2})
+            False
+
+        With auto-correction callback (as used by ConfigFile)::
+
+            >>> actual = {"a": 1}
+            >>> expected = {"a": 1, "b": 2}
+            >>> def add_missing(exp, act, key):
+            ...     act[key] = exp[key]
+            >>> nested_structure_is_subset(expected, actual, add_missing)
+            True
+            >>> actual
+            {'a': 1, 'b': 2}
     """
     if isinstance(subset, dict) and isinstance(superset, dict):
         iterable: Iterable[tuple[Any, Any]] = subset.items()
@@ -57,7 +84,12 @@ def nested_structure_is_subset(  # noqa: C901
         on_false_action = on_false_list_action
 
         def get_actual(key_or_index: Any) -> Any:
-            """Get actual value from superset."""
+            """Find matching element in superset list (order-independent).
+
+            Searches superset for an element that contains subset_val as a subset.
+            Falls back to index-based lookup if no match found, or None if out of
+            bounds.
+            """
             subset_val = subset[key_or_index]
             for superset_val in superset:
                 if nested_structure_is_subset(subset_val, superset_val):
