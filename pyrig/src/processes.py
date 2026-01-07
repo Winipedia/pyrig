@@ -1,11 +1,12 @@
-"""Operating system utilities.
+"""Subprocess execution utilities with enhanced error handling.
 
-Subprocess execution with enhanced error logging and command path discovery.
-Used throughout pyrig for running external tools (git, uv, pytest, pre-commit).
+Core module for running external tools (git, uv, pytest, pre-commit) throughout pyrig.
+Provides consistent subprocess execution with automatic error logging and a fluent
+command-building interface.
 
 Utilities:
-    - run_subprocess: Execute commands with detailed error logging
-    - Args: Command builder for fluent subprocess execution
+    run_subprocess: Execute commands with detailed error logging on failure.
+    Args: Immutable command container returned by all Tool.get_*_args methods.
 
 Example:
     >>> from pyrig.src.processes import run_subprocess, Args
@@ -37,17 +38,19 @@ def run_subprocess(  # noqa: PLR0913
     """Execute subprocess with enhanced error logging.
 
     Wrapper around subprocess.run() that logs command, exit code, stdout, and stderr
-    when CalledProcessError is raised, before re-raising the exception.
+    when CalledProcessError is raised, before re-raising the exception. Used as the
+    underlying execution mechanism for all Tool command wrappers (PackageManager,
+    Linter, ContainerEngine, etc.).
 
     Args:
         args: Command and arguments as sequence (e.g., ["git", "status"]).
-        input_: Optional data to send to stdin (string or bytes).
+        input_: Data to send to stdin (string or bytes). Defaults to None.
         capture_output: If True (default), captures stdout/stderr.
         timeout: Maximum seconds to wait. None (default) means no timeout.
         check: If True (default), raises CalledProcessError on non-zero exit.
         cwd: Working directory. Defaults to current directory.
-        shell: If given as True, this will raise an exception
-            as shell mode is forbidden in pyrig.
+        shell: Must be False. Raises ValueError if True (shell mode is
+            forbidden in pyrig for security reasons).
         text: If True (default), stdout and stderr are decoded as text.
         **kwargs: Additional arguments passed to subprocess.run().
 
@@ -55,10 +58,10 @@ def run_subprocess(  # noqa: PLR0913
         CompletedProcess with args, returncode, stdout, stderr.
 
     Raises:
+        ValueError: If shell=True is passed.
         subprocess.CalledProcessError: If process returns non-zero exit and check=True.
-            Logged with command details before re-raising.
+            Error details are logged before re-raising.
         subprocess.TimeoutExpired: If process exceeds timeout.
-            Re-raised without logging.
 
     Example:
         >>> run_subprocess(["git", "status"])
@@ -95,21 +98,21 @@ def run_subprocess(  # noqa: PLR0913
 
 
 class Args(tuple[str, ...]):
-    """Command-line arguments container with execution capabilities.
+    """Immutable command-line arguments container with execution capabilities.
 
-    Immutable tuple subclass representing command arguments.
-    Return type for all Tool methods.
+    Tuple subclass representing a complete command ready for execution.
+    Returned by all Tool.get_*_args methods (e.g., PackageManager.get_sync_args,
+    Linter.get_check_args) to provide a consistent interface for building, inspecting,
+    and executing subprocess commands.
 
-    Methods:
-        __str__: Convert to space-separated string
-        run: Execute via subprocess
+    The class enables a fluent API pattern where commands can be built incrementally
+    and then either inspected as strings or executed via subprocess.
 
     Example:
         >>> args = Args(["uv", "sync"])
-        >>> print(args)
-        uv sync
-        >>> args.run()
-        CompletedProcess(...)
+        >>> print(args)  # uv sync
+        >>> args.run()   # Executes the command
+        CompletedProcess(args=['uv', 'sync'], returncode=0, ...)
     """
 
     __slots__ = ()
@@ -123,10 +126,12 @@ class Args(tuple[str, ...]):
         return " ".join(self)
 
     def __repr__(self) -> str:
-        """Convert to space-separated string.
+        """Return space-separated string representation.
+
+        Delegates to __str__ for consistent display in REPL and debugging.
 
         Returns:
-            Space-separated command string.
+            Space-separated command string (same as __str__).
         """
         return str(self)
 
