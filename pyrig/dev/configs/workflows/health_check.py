@@ -132,11 +132,6 @@ class HealthCheckWorkflow(Workflow):
     def job_health_check(cls) -> dict[str, Any]:
         """Get the aggregation job that depends on matrix completion.
 
-        Uses early exit strategy:
-        - On PR/push: Exits with success (0) after aggregating results
-        - On schedule with changes: Completes successfully, triggering downstream
-        - On schedule without changes: Exits with neutral (78), preventing downstream
-
         Returns:
             Job configuration for result aggregation.
         """
@@ -194,22 +189,11 @@ class HealthCheckWorkflow(Workflow):
     def steps_aggregate_matrix_results(cls) -> list[dict[str, Any]]:
         """Get the steps for aggregating matrix results.
 
-        Includes early exit logic for scheduled runs:
-        - Aggregates results
-        - Exits successfully early on non-cron triggers
-        - Checks for dependency updates on cron triggers
-        - Exits neutral if no updates found
-
         Returns:
-            List with aggregation and conditional dependency check steps.
+            List with the aggregation step.
         """
         return [
             cls.step_aggregate_matrix_results(),
-            cls.step_exit_workflow_successfully_if_not_cron_triggered(),
-            *cls.steps_core_setup(),
-            cls.step_update_dependencies(),
-            cls.step_check_for_unstaged_changes(),
-            cls.step_exit_workflow_neutral_if_no_changes(),
         ]
 
     @classmethod
