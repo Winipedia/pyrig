@@ -25,12 +25,12 @@ from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.dev.configs.workflows.release import ReleaseWorkflow
 from pyrig.dev.management.remote_version_controller import RemoteVersionController
+from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.urls import (
     get_codecov_url,
     get_pypi_badge_url,
     get_pypi_url,
 )
-from pyrig.dev.utils.version_control import DEFAULT_BRANCH
 
 
 class BadgesMarkdownConfigFile(MarkdownConfigFile):
@@ -100,7 +100,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
                 r"[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)",
                 r"[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)",
                 r"[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)",
-                rf"[![codecov]({get_codecov_url()}/branch/{DEFAULT_BRANCH}/graph/badge.svg)]({get_codecov_url()})",
+                rf"[![codecov]({get_codecov_url()}/branch/{VersionController.L.get_default_branch()}/graph/badge.svg)]({get_codecov_url()})",
                 r"[![rumdl](https://img.shields.io/badge/markdown-rumdl-darkgreen)](https://github.com/rvben/rumdl)",
             ],
             "package-info": [
