@@ -185,14 +185,14 @@ def discard_parent_classes[T: type](
     """Remove parent classes when their children are also present.
 
     Keeps only "leaf" classes - those with no subclasses in the collection.
-    Enables clean override behavior.
+    Enables clean override behavior where derived classes override base implementations.
 
     Args:
-        classes: List or set of class types to filter. Modified in place.
+        classes: List or set of class types to filter. The collection is modified
+            in place (elements are removed from the original collection).
 
     Returns:
         The same collection instance with parent classes removed.
-        Returns the input collection for method chaining convenience.
     """
     for cls in classes.copy():
         if any(child in classes for child in cls.__subclasses__()):
@@ -202,13 +202,25 @@ def discard_parent_classes[T: type](
 
 @cache
 def get_cached_instance[T](cls: type[T]) -> T:
-    """Get a cached instance of a class.
+    """Get or create a cached singleton instance of a class.
+
+    Uses ``functools.cache`` to memoize class instantiation. The first call
+    creates the instance, subsequent calls return the same cached instance.
+    Enables singleton-like patterns without explicit singleton implementation.
 
     Args:
-        cls: Class to instantiate.
+        cls: Class to instantiate. Must be callable with no arguments.
 
     Returns:
-        Cached instance.
+        Cached instance of the class. Same instance is returned on repeated calls.
+
+    Example:
+        >>> class ExpensiveResource:
+        ...     def __init__(self):
+        ...         print("Creating resource...")
+        ...
+        >>> get_cached_instance(ExpensiveResource)  # prints "Creating resource..."
+        >>> get_cached_instance(ExpensiveResource)  # returns cached, no print
     """
     return cls()
 
@@ -236,21 +248,9 @@ class classproperty[T]:  # noqa: N801
     __slots__ = ("fget",)
 
     def __init__(self, fget: Callable[..., T]) -> None:
-        """Initialize the decorator.
-
-        Args:
-            fget: The method to wrap as a class property.
-        """
+        """Initialize with the getter method."""
         self.fget = fget
 
     def __get__(self, obj: object, owner: type) -> T:
-        """Get the property value.
-
-        Args:
-            obj: The instance (ignored).
-            owner: The class owning the property.
-
-        Returns:
-            The property value.
-        """
+        """Return the property value by invoking the getter with the owner class."""
         return self.fget(owner)
