@@ -310,6 +310,7 @@ def assert_no_unit_test_package_usage() -> None:
     assert not usages, msg
 
 
+@autouse_session_fixture
 def assert_dependencies_are_up_to_date() -> None:
     """Verify dependencies are up to date via ``uv lock --upgrade`` and ``uv sync``.
 
