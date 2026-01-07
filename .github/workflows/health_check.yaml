@@ -135,10 +135,11 @@ jobs:
       run: uv lock --upgrade
     - name: Check For Unstaged Changes
       id: check_for_unstaged_changes
-      run: "if git diff --quiet; then\n  echo \"UNSTAGED_CHANGES=false\" >> $GITHUB_ENV\n\
-        \  echo \"No dependency changes detected\"\nelse\n  echo \"UNSTAGED_CHANGES=true\"\
-        \ >> $GITHUB_ENV\n  echo \"Dependency changes detected\"\nfi"
+      run: "if git diff --quiet; then\n  echo \"unstaged_changes=true\" >> $GITHUB_OUTPUT\n\
+        \  echo \"No dependency changes detected\"\nelse\n  echo \"unstaged_changes=false\"\
+        \ >> $GITHUB_OUTPUT\n  echo \"Dependency changes detected\"\nfi"
     - name: Exit Workflow Neutral If No Changes
       id: exit_workflow_neutral_if_no_changes
       run: exit 78
-      if: ${{ UNSTAGED_CHANGES != 'true' }}
+      if: ${{ steps.check_for_unstaged_changes.outputs.unstaged_changes == 'false'
+        }}

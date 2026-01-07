@@ -1283,10 +1283,10 @@ class Workflow(YamlConfigFile):
         """
         check_script = f"""
 if {VersionController.L.get_diff_quiet_args()}; then
-  echo "UNSTAGED_CHANGES=false" >> $GITHUB_ENV
+  echo "unstaged_changes=true" >> $GITHUB_OUTPUT
   echo "No dependency changes detected"
 else
-  echo "UNSTAGED_CHANGES=true" >> $GITHUB_ENV
+  echo "unstaged_changes=false" >> $GITHUB_OUTPUT
   echo "Dependency changes detected"
 fi
         """.strip()
@@ -1343,7 +1343,10 @@ fi
             Step that exits the workflow with neutral status.
         """
         run = "exit 78"
-        run_if = cls.insert_var("UNSTAGED_CHANGES != 'true'")
+        step_check_id = cls.make_id_from_func(cls.step_check_for_unstaged_changes)
+        run_if = cls.insert_var(
+            f"steps.{step_check_id}.outputs.unstaged_changes == 'false'"
+        )
         return cls.get_step(
             step_func=cls.step_exit_workflow_neutral_if_no_changes,
             run=run,
