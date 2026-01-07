@@ -1269,24 +1269,24 @@ class Workflow(YamlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that checks if dependencies changed.
+        """Create a step that checks if there are unstaged changes.
 
         Checks if there are any uncommitted changes (typically from dependency
-        updates) and sets a GITHUB_OUTPUT variable 'has_changes' to 'true' or
+        updates) and sets a GITHUB_ENV variable 'UNSTAGED_CHANGES' to 'true' or
         'false'.
 
         Args:
             step: Existing step dict to update.
 
         Returns:
-            Step that checks for dependency changes and sets output.
+            Step that checks for unstaged changes and sets environment variable.
         """
         check_script = f"""
 if {VersionController.L.get_diff_quiet_args()}; then
-  echo "has_changes=false" >> $GITHUB_OUTPUT
+  echo "UNSTAGED_CHANGES=false" >> $GITHUB_ENV
   echo "No dependency changes detected"
 else
-  echo "has_changes=true" >> $GITHUB_OUTPUT
+  echo "UNSTAGED_CHANGES=true" >> $GITHUB_ENV
   echo "Dependency changes detected"
 fi
         """.strip()
@@ -1294,6 +1294,60 @@ fi
         return cls.get_step(
             step_func=cls.step_check_for_unstaged_changes,
             run=check_script,
+            step=step,
+        )
+
+    @classmethod
+    def step_exit_workflow_successfully_if_not_cron_triggered(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that exits the workflow with success status (exit 0).
+
+        Only runs if workflow was NOT triggered by cron (schedule event).
+        Prevents unnecessary dependency checks on PR/push triggers.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that exits the workflow with success status.
+        """
+        run = "exit 0"
+        run_if = cls.if_not_triggered_by_cron()
+        return cls.get_step(
+            step_func=cls.step_exit_workflow_successfully_if_not_cron_triggered,
+            run=run,
+            if_condition=run_if,
+            step=step,
+        )
+
+    @classmethod
+    def step_exit_workflow_neutral_if_no_changes(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that exits the workflow with neutral status (exit 78).
+
+        Only runs if there are NO unstaged changes in version control.
+        Prevents downstream workflows from triggering when no updates available.
+
+        Exit code 78 is a neutral status that doesn't trigger workflow_run events.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that exits the workflow with neutral status.
+        """
+        run = "exit 78"
+        run_if = cls.insert_var("UNSTAGED_CHANGES != 'true'")
+        return cls.get_step(
+            step_func=cls.step_exit_workflow_neutral_if_no_changes,
+            run=run,
+            if_condition=run_if,
             step=step,
         )
 

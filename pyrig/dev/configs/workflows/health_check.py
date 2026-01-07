@@ -120,10 +120,9 @@ class HealthCheckWorkflow(Workflow):
         """Get the workflow jobs.
 
         Returns:
-            Dict with check, protect, matrix, and aggregation jobs.
+            Dict with protect, matrix, and aggregation jobs.
         """
         jobs: dict[str, Any] = {}
-        jobs.update(cls.job_check_for_changes())
         jobs.update(cls.job_protect_repository())
         jobs.update(cls.job_health_check_matrix())
         jobs.update(cls.job_health_check())
@@ -133,24 +132,19 @@ class HealthCheckWorkflow(Workflow):
     def job_health_check(cls) -> dict[str, Any]:
         """Get the aggregation job that depends on matrix completion.
 
-        Runs only if:
-        - Workflow was NOT triggered by cron, OR
-        - Workflow was triggered by cron AND dependency changes were detected
+        Uses early exit strategy:
+        - On PR/push: Exits with success (0) after aggregating results
+        - On schedule with changes: Completes successfully, triggering downstream
+        - On schedule without changes: Exits with neutral (78), preventing downstream
 
         Returns:
             Job configuration for result aggregation.
         """
-        check_changes_job_id = cls.make_id_from_func(cls.job_check_for_changes)
         matrix_job_id = cls.make_id_from_func(cls.job_health_check_matrix)
         protect_job_id = cls.make_id_from_func(cls.job_protect_repository)
         return cls.get_job(
             job_func=cls.job_health_check,
-            needs=[check_changes_job_id, matrix_job_id, protect_job_id],
-            if_condition=cls.combined_if(
-                cls.if_not_triggered_by_cron(),
-                f"needs.{check_changes_job_id}.outputs.has_changes == 'true'",
-                operator="&&",
-            ),
+            needs=[matrix_job_id, protect_job_id],
             steps=cls.steps_aggregate_matrix_results(),
         )
 
@@ -181,39 +175,6 @@ class HealthCheckWorkflow(Workflow):
         )
 
     @classmethod
-    def job_check_for_changes(cls) -> dict[str, Any]:
-        """Get the job that checks for dependency changes.
-
-        This job runs dependency updates and checks if any files were modified.
-        It sets an output 'has_changes' that other jobs can use to conditionally
-        execute.
-
-        Returns:
-            Job configuration for checking changes with outputs.
-        """
-        step_id = cls.make_id_from_func(cls.step_check_for_unstaged_changes)
-        return cls.get_job(
-            job_func=cls.job_check_for_changes,
-            outputs={
-                "has_changes": cls.insert_var(f"steps.{step_id}.outputs.has_changes")
-            },
-            steps=cls.steps_check_for_changes(),
-        )
-
-    @classmethod
-    def steps_check_for_changes(cls) -> list[dict[str, Any]]:
-        """Get the steps for checking if dependencies changed.
-
-        Returns:
-            List of steps for setup, update, and change detection.
-        """
-        return [
-            *cls.steps_core_setup(),
-            cls.step_update_dependencies(),
-            cls.step_check_for_unstaged_changes(),
-        ]
-
-    @classmethod
     def steps_health_check_matrix(cls) -> list[dict[str, Any]]:
         """Get the steps for the matrix health check job.
 
@@ -233,11 +194,22 @@ class HealthCheckWorkflow(Workflow):
     def steps_aggregate_matrix_results(cls) -> list[dict[str, Any]]:
         """Get the steps for aggregating matrix results.
 
+        Includes early exit logic for scheduled runs:
+        - Aggregates results
+        - Exits early on non-cron triggers
+        - Checks for dependency updates on cron triggers
+        - Exits neutral if no updates found
+
         Returns:
-            List with the aggregation step.
+            List with aggregation and conditional dependency check steps.
         """
         return [
             cls.step_aggregate_matrix_results(),
+            cls.step_exit_workflow_successfully_if_not_cron_triggered(),
+            *cls.steps_core_setup(),
+            cls.step_update_dependencies(),
+            cls.step_check_for_unstaged_changes(),
+            cls.step_exit_workflow_neutral_if_no_changes(),
         ]
 
     @classmethod
