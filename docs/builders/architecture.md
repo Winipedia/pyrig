@@ -12,11 +12,10 @@ graph TD
     B --> C[BuilderConfigFile.init_all_subclasses]
     C --> D[Discover all BuilderConfigFile subclasses]
     D --> E[Instantiate each builder]
-    E --> F[dump triggers build]
+    E --> F[build method triggered]
     F --> G[Create temp directory]
     G --> H[create_artifacts in temp dir]
-    H --> I[Move artifacts to dist/]
-    I --> J[Add platform suffix]
+    H --> I[Move artifacts to dist/ with platform suffix]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -26,8 +25,7 @@ graph TD
     style F fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style G fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style H fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style I fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style J fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style I fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
 ## Builder Discovery
@@ -83,46 +81,12 @@ All builders must:
 - Implement the `create_artifacts` method
 - Be placed in a `dev/builders/` module
 
-When instantiated (via the `__init__` method inherited from `ConfigFile`), the
-builder triggers the build process through the following call chain:
-`__init__()` → `dump()` → `_dump()` → `build()`.
+When instantiated, the builder automatically triggers the build process. Builds
+happen in isolated temporary directories to avoid polluting the workspace.
+Artifacts are moved to `dist/` with platform suffixes (e.g., `my-app-Linux`,
+`my-app-Darwin`, `my-app-Windows`).
 
-### Key Methods
-
-| Method                  | Purpose                                                    |
-| ----------------------- | ---------------------------------------------------------- |
-| `create_artifacts`      | **Abstract** - Implement to define build logic             |
-| `build`                 | Orchestrates temp directory, artifact creation, and moving |
-| `get_parent_path`       | Returns final output directory (default: `dist/`)          |
-| `rename_artifacts`      | Adds platform suffix to artifacts                          |
-| `get_all_subclasses`    | Discovers all builders across packages (inherited from `ConfigFile`) |
-| `init_all_subclasses`   | Discovers and instantiates all builders (inherited from `ConfigFile`) |
-
-## Build Process
-
-The build process follows these steps:
-
-### 1. Temporary Directory Creation
-
-Builds happen in isolated temporary directories to avoid polluting the
-workspace.
-
-### 2. Artifact Creation
-
-Your `create_artifacts` implementation writes artifacts to the temporary
-directory.
-
-### 3. Artifact Collection
-
-All files in the temp directory are collected as artifacts.
-
-### 4. Platform-Specific Naming
-
-Artifacts are moved to `dist/` with platform suffixes:
-
-- `my-app-Linux` on Linux
-- `my-app-Darwin` on macOS
-- `my-app-Windows` on Windows
+See the `BuilderConfigFile` docstrings for method details.
 
 ## Creating a Custom Builder
 
@@ -194,18 +158,10 @@ Running `uv run pyrig build`:
 
 ## Helper Methods
 
-The `BuilderConfigFile` class provides utilities for accessing project paths:
-
-| Method                 | Returns                          |
-| ---------------------- | -------------------------------- |
-| `get_app_name()`       | Project name from pyproject.toml |
-| `get_root_path()`      | Project root directory           |
-| `get_main_path()`      | Path to main.py entry point      |
-| `get_resources_path()` | Path to resources directory      |
-| `get_src_pkg_path()`   | Path to source package           |
-
+The `BuilderConfigFile` class provides utilities for accessing project paths
+such as the project root, source package, resources directory, and entry point.
 These are particularly useful for PyInstaller builders and custom build
-processes.
+processes. See the class docstrings for the full list.
 
 Note: If you set up your project correctly, you should never need to manually
 execute `uv run pyrig build` because the CI/CD pipeline will automatically build

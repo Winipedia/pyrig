@@ -48,7 +48,7 @@ graph LR
     A --> E[Tests &<br/>Fixtures]
     A --> F[CI/CD<br/>Workflows]
 
-    B -.-> B1[init, mkroot,<br/>mktests, build,<br/>protect-repo]
+    B -.-> B1[init, mkroot,<br/>mktests, mkinits,<br/>build, protect-repo]
     C -.-> C1[auto-generated<br/>configuration files]
     D -.-> D1[PyInstaller &<br/>custom builders]
     E -.-> E1[Shared fixtures<br/>auto-discovery]
