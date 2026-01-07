@@ -1,7 +1,9 @@
 """Low-level inspection utilities for Python object introspection.
 
-Utilities for inspecting Python objects, unwrapping decorated methods, and accessing
-object metadata. Handles properties, staticmethods, classmethods, and decorator chains.
+Provides foundational utilities for inspecting Python objects, unwrapping decorated
+methods, and accessing object metadata. Handles properties, staticmethods, classmethods,
+and decorator chains. Used by higher-level modules (`class_`, `function`, `module`)
+for method extraction, subclass discovery, and test generation throughout pyrig.
 """
 
 import inspect
@@ -14,14 +16,18 @@ from typing import Any, cast
 def get_obj_members(
     obj: Any, *, include_annotate: bool = False
 ) -> list[tuple[str, Any]]:
-    """Get all members of an object as name-value pairs.
+    """Get all members of an object as name-value pairs using static introspection.
+
+    Uses `inspect.getmembers_static` to retrieve members without invoking descriptors,
+    making it safe for introspecting classes with properties that have side effects.
 
     Args:
-        obj: Object to inspect (class or module).
-        include_annotate: If False, excludes `__annotate__` (Python 3.14+).
+        obj: Object to inspect (class, module, or any Python object).
+        include_annotate: If False, excludes `__annotate__` and `__annotate_func__`
+            attributes added in Python 3.14+ for deferred annotation evaluation.
 
     Returns:
-        List of (name, value) tuples.
+        List of (name, value) tuples for all object members.
     """
     members = [(member, value) for member, value in inspect.getmembers_static(obj)]
     if not include_annotate:
@@ -45,13 +51,17 @@ def inside_frozen_bundle() -> bool:
 def get_def_line(obj: Any) -> int:
     """Get the source line number where an object is defined.
 
-    Handles functions, methods, properties, staticmethods, classmethods, and decorators.
+    Handles functions, methods, properties, staticmethods, classmethods, and decorators
+    by first unwrapping to the underlying function. Used for sorting functions and
+    methods by their definition order in source code.
 
     Args:
-        obj: Callable object.
+        obj: Callable object (function, method, property, staticmethod, classmethod,
+            or decorated callable).
 
     Returns:
-        1-based line number (0 if in frozen bundle).
+        1-based source line number. Returns 0 if running inside a PyInstaller frozen
+        bundle where source introspection is unavailable.
     """
     if isinstance(obj, property):
         obj = obj.fget
@@ -67,14 +77,19 @@ def get_def_line(obj: Any) -> int:
 def get_unwrapped_obj(obj: Any) -> Any:
     """Unwrap a method-like object to its underlying function.
 
-    Recursively handles properties, staticmethod/classmethod descriptors,
-    and decorators.
+    Iteratively unwraps layers of wrapping until reaching the original function:
+        1. Extracts `__func__` from bound methods and classmethod/staticmethod
+        2. Extracts `fget` from property objects
+        3. Uses `inspect.unwrap` to traverse `functools.wraps` decorator chains
+
+    Continues until no further unwrapping is possible.
 
     Args:
-        obj: Callable that may be wrapped.
+        obj: Callable that may be wrapped (method, property, staticmethod, classmethod,
+            or decorated function).
 
     Returns:
-        Underlying unwrapped function.
+        The underlying unwrapped function object.
     """
     prev = None
     while prev is not obj:
@@ -105,15 +120,20 @@ def get_qualname_of_obj(obj: Callable[..., Any] | type) -> str:
 def get_module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
     """Return the module where a method-like object is defined.
 
+    Unwraps the object first to handle decorated functions, then uses
+    `inspect.getmodule` to determine the defining module. Essential for filtering
+    functions/classes to only those defined directly in a module (excluding imports).
+
     Args:
-        obj: Method-like object (function, method, property, staticmethod, classmethod).
-        default: Default module if module cannot be determined.
+        obj: Method-like object (function, method, property, staticmethod, classmethod,
+            or decorated callable).
+        default: Fallback module to return if the module cannot be determined.
 
     Returns:
-        Module object.
+        The module object where the callable is defined.
 
     Raises:
-        ValueError: If module cannot be determined and no default provided.
+        ValueError: If module cannot be determined and no default is provided.
     """
     unwrapped = get_unwrapped_obj(obj)
     module = inspect.getmodule(unwrapped)

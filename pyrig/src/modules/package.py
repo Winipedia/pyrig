@@ -45,16 +45,21 @@ PACKAGE_REQ_NAME_SPLIT_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
 
 
 def create_package(path: Path) -> ModuleType:
-    """Create a package at the given path.
+    """Create a Python package directory and import it.
+
+    Creates the directory structure (including __init__.py) and imports the
+    resulting package. Used for dynamically creating package structures at runtime.
 
     Args:
-        path: Directory path (must not end with __init__.py).
+        path: Directory path where the package should be created.
+            Must not end with __init__.py (provide the directory path only).
 
     Returns:
-        Created package module.
+        The imported package module object.
 
     Raises:
-        ValueError: If path is the CWD.
+        ValueError: If path is the current working directory (CWD).
+            Creating a package at CWD would interfere with the project structure.
     """
     if path == Path.cwd():
         msg = f"Cannot create package {path=} because it is the CWD"
