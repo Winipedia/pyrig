@@ -1,5 +1,7 @@
 """module."""
 
+from pathlib import Path
+
 from pyrig.dev.management.docs_builder import DocsBuilder
 
 
@@ -9,7 +11,7 @@ class TestDocsBuilder:
     def test_get_docs_dir(self) -> None:
         """Test method."""
         result = DocsBuilder.L.get_docs_dir()
-        assert result == "docs"
+        assert result == Path("docs")
 
     def test_name(self) -> None:
         """Test method."""
