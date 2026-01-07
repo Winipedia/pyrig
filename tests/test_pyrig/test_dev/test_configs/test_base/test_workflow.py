@@ -395,11 +395,9 @@ class TestWorkflow:
         result = my_test_workflow.step_publish_to_pypi()
         assert "run" in result, "Expected 'run' in step"
 
-    def test_step_install_python_dependencies(
-        self, my_test_workflow: type[Workflow]
-    ) -> None:
+    def test_step_install_dependencies(self, my_test_workflow: type[Workflow]) -> None:
         """Test method for step_install_python_dependencies."""
-        result = my_test_workflow.step_install_python_dependencies(no_dev=True)
+        result = my_test_workflow.step_install_dependencies(no_dev=True)
         assert "run" in result, "Expected 'run' in step"
 
     def test_step_protect_repository(self, my_test_workflow: type[Workflow]) -> None:
