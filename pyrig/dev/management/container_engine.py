@@ -43,7 +43,7 @@ class ContainerEngine(Tool):
 
         Args:
             *args: Additional build command arguments.
-            project_name: Name of the project to build (keyword-only).
+            project_name: Image tag for the build (e.g., "myapp" or "myapp:v1").
 
         Returns:
             Args for 'podman build'.
@@ -56,8 +56,9 @@ class ContainerEngine(Tool):
 
         Args:
             *args: Additional save command arguments.
-            image_file: Name of the image file to save (keyword-only).
-            image_path: Path to the image file to save (keyword-only).
+            image_file: Path representing the archive filename; `.stem` is used
+                as the image name (e.g., Path("myapp.tar") yields image "myapp").
+            image_path: Full output path for the saved archive (e.g., "dist/myapp.tar").
 
         Returns:
             Args for 'podman save'.
