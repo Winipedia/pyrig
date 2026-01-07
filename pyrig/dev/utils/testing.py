@@ -10,6 +10,7 @@ scope and autouse parameters.
 Module Attributes:
     skip_fixture_test: Skip marker for fixture tests
     skip_in_github_actions: Skip marker for tests that can't run in CI
+    skip_if_no_internet: Skip marker for tests that require internet connection
 
 Fixture Decorators (by scope):
     function_fixture, class_fixture, module_fixture, package_fixture,
@@ -95,11 +96,30 @@ skip_if_no_internet: pytest.MarkDecorator = functools.partial(
     not internet_is_available(),
     reason="Test requires internet connection.",
 )()
+"""Skip marker for tests that require an internet connection.
+
+Automatically skips tests when no internet connectivity is detected. Uses a quick
+socket connection check to Cloudflare DNS (1.1.1.1) to determine availability.
+
+Type:
+    pytest.MarkDecorator
+
+Examples:
+    Skip a test requiring network access::
+
+        >>> @skip_if_no_internet
+        ... def test_api_integration():
+        ...     response = api_client.fetch_data()
+        ...     assert response.status_code == 200
+
+See Also:
+    pyrig.src.requests.internet_is_available: Underlying connectivity check
+"""
 
 function_fixture = functools.partial(pytest.fixture, scope="function")
 """Decorator for function-scoped pytest fixtures.
 
-Set up and torn down for each test function. Default pytest scope.
+Sets up and tears down for each test function. Default pytest scope.
 
 Type:
     functools.partial (wraps pytest.fixture with scope="function")
