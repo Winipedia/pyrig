@@ -1286,7 +1286,7 @@ if {VersionController.L.get_diff_quiet_args()}; then
   echo "has_changes=false" >> $GITHUB_OUTPUT
   echo "No dependency changes detected"
 else
-  echo "has_changes=true" >> $GITHUB_OUTPUT
+  echo "has_changes=false" >> $GITHUB_OUTPUT
   echo "Dependency changes detected"
 fi
         """.strip()
