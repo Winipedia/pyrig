@@ -23,11 +23,11 @@ The `mkinits` command:
 
 ### Why `__init__.py` Files Matter
 
-Python packages require `__init__.py` files to be importable. Without them:
+Without `__init__.py` files, directories become PEP 420 namespace packages.
+While valid Python, this can cause:
 
-- Directories become namespace packages (not recommended)
-- Imports may fail or behave unexpectedly
-- Package discovery tools may not work correctly
+- Unexpected import behavior
+- Package discovery issues with some tools
 
 pyrig enforces regular packages (with `__init__.py`) over namespace packages for
 consistency and reliability.
@@ -36,8 +36,7 @@ consistency and reliability.
 
 - **Does not overwrite existing files** - Only creates missing `__init__.py`
   files
-- **Creates minimal files** - `__init__.py` files are created with a minimal
-  docstring (`"""__init__ module."""`)
+- **Creates minimal files** - Generated files contain a minimal docstring
 - **Idempotent** - Safe to run multiple times
 
 ## When to Use

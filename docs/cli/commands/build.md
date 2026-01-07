@@ -1,7 +1,7 @@
 # build
 
-Builds all project artifacts by invoking all registered BuilderConfigFile
-subclasses.
+Builds all project artifacts by discovering and invoking all registered
+`BuilderConfigFile` subclasses.
 
 ## Usage
 
@@ -19,18 +19,15 @@ uv run pyrig -vv build
 
 The `build` command:
 
-1. **Discovers all BuilderConfigFile subclasses** across the project and its
+1. **Discovers all `BuilderConfigFile` subclasses** across the project and its
    dependencies
-2. **Invokes each builder** to create its artifacts
-3. **Outputs artifacts** to the `dist/` directory
+2. **Invokes each BuilderConfigFile** to create its artifacts
+3. **Outputs artifacts** to the `dist/` directory with platform-specific naming
 
-### Built-in Builder Base Classes
-
-pyrig provides abstract base classes for building artifacts:
+### Built-in Builders
 
 - **BuilderConfigFile** - Base class for all builders
-- **PyInstallerBuilder** - Abstract base for creating PyInstaller executables
-  (subclass this and implement `get_additional_resource_pkgs()` to use)
+- **PyInstallerBuilder** - Abstract base for creating standalone executables
 
 ### Artifact Naming
 
@@ -39,18 +36,6 @@ Artifacts are automatically named with platform suffixes:
 - Linux: `myapp-Linux`
 - Windows: `myapp-Windows.exe`
 - macOS: `myapp-Darwin`
-
-**Note**: The suffix uses Python's `platform.system()` which returns "Darwin" on
-macOS.
-
-## How It Works
-
-The build process:
-
-1. **Creates temporary directory** for isolated builds
-2. **Calls `create_artifacts()`** on each builder
-3. **Renames artifacts** with platform-specific suffixes
-4. **Moves artifacts** to `dist/` directory
 
 ## Creating Custom Builders
 
@@ -75,16 +60,9 @@ See [Builders Documentation](../../builders/index.md) for complete details.
 
 ## When to Use
 
-Use `build` when:
-
 - Creating release artifacts
 - Testing the build process locally
 - Generating executables for distribution
-
-## Autouse Fixture
-
-This command does **not** run in an autouse fixture. It's a manual build
-command.
 
 ## CI/CD Integration
 
