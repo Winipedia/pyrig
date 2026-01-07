@@ -137,7 +137,7 @@ jobs:
     - protect_repository
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'schedule' || needs.check_for_changes.outputs.has_changes
-      == 'true' }}
+      == 'false' }}
     steps:
     - name: Aggregate Matrix Results
       id: aggregate_matrix_results
