@@ -22,6 +22,7 @@ from typing import Any
 
 from pyrig.dev.configs.base.workflow import Workflow
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
+from pyrig.dev.utils.version_control import DEFAULT_BRANCH
 
 
 class BuildWorkflow(Workflow):
@@ -68,7 +69,7 @@ class BuildWorkflow(Workflow):
         triggers.update(
             cls.on_workflow_run(
                 workflows=[HealthCheckWorkflow.get_workflow_name()],
-                branches=["main"],
+                branches=[DEFAULT_BRANCH],
             )
         )
         return triggers

@@ -48,6 +48,7 @@ from pyrig.dev.management.project_tester import ProjectTester
 from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.packages import get_src_package, src_pkg_is_pyrig
+from pyrig.dev.utils.version_control import DEFAULT_BRANCH
 from pyrig.src.string_ import (
     make_name_from_obj,
     split_on_uppercase,
@@ -352,7 +353,7 @@ class Workflow(YamlConfigFile):
             Trigger configuration for push events.
         """
         if branches is None:
-            branches = ["main"]
+            branches = [DEFAULT_BRANCH]
         return {"push": {"branches": branches}}
 
     @classmethod
