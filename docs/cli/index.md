@@ -33,16 +33,14 @@ Define project-specific CLI commands:
 - How to create new commands
 - Command patterns and best practices
 - Multi-package support
-- Built-in commands reference
 
 ### [Shared Subcommands](shared-subcommands.md)
 
 Create commands available across all packages in the pyrig ecosystem:
 
 - Cross-package functionality
-- Discovery through dependency graph
+- Discovery through the dependency chain
 - Context-aware command implementation
-- Command inheritance
 
 ## Quick Start
 
