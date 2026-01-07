@@ -36,6 +36,11 @@ class ProjectTester(Tool):
         return "pytest"
 
     @classmethod
+    def get_coverage_threshold(cls) -> int:
+        """Minimum test coverage percentage threshold."""
+        return 90
+
+    @classmethod
     def get_run_tests_in_ci_args(cls, *args: str) -> Args:
         """Construct uv run pytest arguments for CI.
 

@@ -11,7 +11,6 @@ from pyrig.dev import tests
 from pyrig.dev.tests import mirror_test
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.modules.module import create_module
-from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
 
 @pytest.fixture
@@ -48,6 +47,76 @@ def mirror_function():
 
 class TestMirrorTestConfigFile:
     """Test class."""
+
+    def test_get_obj_from_test_obj(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_obj_from_test_obj(TestMirrorTestConfigFile)
+        assert result.__name__ == MirrorTestConfigFile.__name__
+
+    def test_get_test_obj_from_obj(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_test_obj_from_obj(MirrorTestConfigFile)
+        assert result.__name__ == TestMirrorTestConfigFile.__name__
+
+    def test_get_test_obj_importpath_from_obj(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_test_obj_importpath_from_obj(
+            MirrorTestConfigFile
+        )
+        expected = "tests.test_pyrig.test_dev.test_tests.test_mirror_test.TestMirrorTestConfigFile"  # noqa: E501
+        assert result == expected
+
+    def test_get_obj_importpath_from_test_obj(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_obj_importpath_from_test_obj(
+            TestMirrorTestConfigFile
+        )
+        assert result == "pyrig.dev.tests.mirror_test.MirrorTestConfigFile"
+
+    def test_get_test_name_for_obj(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_test_name_for_obj(MirrorTestConfigFile)
+        assert result == "TestMirrorTestConfigFile"
+
+    def test_remove_test_prefix_from_test_name(self) -> None:
+        """Test method."""
+        test_name = "test_mirror_method"
+        obj_name = MirrorTestConfigFile.remove_test_prefix_from_test_name(test_name)
+        assert obj_name == "mirror_method"
+
+    def test_get_test_prefix_for_obj(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_test_prefix_for_obj(
+            MirrorTestConfigFile.L.get_test_prefix_for_obj
+        )
+        assert result == "test_"
+        result = MirrorTestConfigFile.get_test_prefix_for_obj(MirrorTestConfigFile)
+        assert result == "Test"
+
+    def test_get_test_prefixes(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_test_prefixes()
+        assert result == ("test_", "Test", "test_")
+
+    def test_get_test_func_prefix(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_test_func_prefix()
+        assert result == "test_"
+
+    def test_get_test_class_prefix(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_test_class_prefix()
+        assert result == "Test"
+
+    def test_get_test_module_prefix(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_test_module_prefix()
+        assert result == "test_"
+
+    def test_get_tests_package_name(self) -> None:
+        """Test method."""
+        result = MirrorTestConfigFile.get_tests_package_name()
+        assert result == "tests"
 
     def test_add_missing_configs(
         self,
@@ -94,7 +163,7 @@ class TestMirrorTestConfigFile:
         # tmp path bc factory of pattern in config_file_factory
         with chdir(tmp_path):
             parent_path = my_test_mirror_test_config_file.get_parent_path()
-            assert parent_path == Path(TESTS_PACKAGE_NAME)
+            assert parent_path == Path(MirrorTestConfigFile.get_tests_package_name())
 
     def test_get_lines(
         self,

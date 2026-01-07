@@ -1,28 +1,25 @@
-"""Package discovery and source package identification utilities.
+"""Package discovery utilities.
 
-Utilities for discovering Python packages and identifying the main source package.
-Wraps setuptools' package discovery with additional filtering and automatic
+Utilities for discovering Python packages with additional filtering and automatic
 .gitignore integration to exclude virtual environments and build directories.
 
 Functions:
     find_packages: Discover Python packages with depth and pattern filtering
-    get_src_package: Identify and import the main source package
     src_pkg_is_pyrig: Check if the current project is pyrig itself
     get_namespace_packages: Find all PEP 420 namespace packages
 
 Examples:
-    Discover the main source package::
-
-        >>> from pyrig.dev.utils.packages import get_src_package
-        >>> pkg = get_src_package()
-        >>> print(pkg.__name__)
-        myproject
-
     Find packages with depth limit::
 
         >>> from pyrig.dev.utils.packages import find_packages
         >>> find_packages(depth=0)
         ['myproject', 'tests']
+
+    Check if current project is pyrig::
+
+        >>> from pyrig.dev.utils.packages import src_pkg_is_pyrig
+        >>> src_pkg_is_pyrig()
+        False
 
 See Also:
     setuptools.find_packages: Underlying package discovery function
@@ -31,9 +28,7 @@ See Also:
 
 import logging
 from collections.abc import Iterable
-from importlib import import_module
 from pathlib import Path
-from types import ModuleType
 
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
@@ -41,8 +36,6 @@ from setuptools import find_packages as _find_packages
 import pyrig
 from pyrig.dev.management.docs_builder import DocsBuilder
 from pyrig.dev.utils.version_control import path_is_in_ignore
-from pyrig.src.modules.path import ModulePath
-from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -118,51 +111,6 @@ def find_packages(
         package_names_list = [p for p in package_names_list if p.count(".") <= depth]
 
     return package_names_list
-
-
-def get_src_package() -> ModuleType:
-    """Identify and import the main source package of the project.
-
-    Discovers the main source package by finding all top-level packages and
-    filtering out the tests package. Assumes a standard Python project structure
-    with exactly one non-test top-level package.
-
-    Returns:
-        The main source package as an imported module object with access to all
-        module attributes (__name__, __file__, __version__, etc.).
-
-    Raises:
-        ModuleNotFoundError: If the source package cannot be reliably determined
-            (zero or multiple non-test top-level packages, or import failure).
-
-    Examples:
-        Get the source package::
-
-            >>> pkg = get_src_package()
-            >>> print(pkg.__name__)
-            myproject
-
-        Access package contents::
-
-            >>> pkg = get_src_package()
-            >>> from importlib import import_module
-            >>> core = import_module(f"{pkg.__name__}.core")
-
-    Note:
-        Only considers regular packages (with __init__.py), not namespace packages.
-    """
-    logger.debug("Discovering top-level source package")
-    package_names = find_packages(depth=0, include_namespace_packages=False)
-    package_paths = [ModulePath.pkg_name_to_relative_dir_path(p) for p in package_names]
-    pkgs = [p for p in package_paths if p.name not in {TESTS_PACKAGE_NAME}]
-    if len(pkgs) != 1:
-        msg = "Could not reliably determine source package."
-        raise ModuleNotFoundError(msg)
-    pkg = pkgs[0]
-    pkg_name = pkg.name
-    logger.debug("Identified source package: %s", pkg_name)
-
-    return import_module(pkg_name)
 
 
 def src_pkg_is_pyrig() -> bool:

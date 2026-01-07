@@ -5,23 +5,15 @@ from pathlib import Path
 
 from pytest_mock import MockFixture
 
-import pyrig
 from pyrig.dev.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.dev.utils import packages
 from pyrig.dev.utils.packages import (
     find_packages,
     get_namespace_packages,
-    get_src_package,
     src_pkg_is_pyrig,
 )
 from pyrig.dev.utils.version_control import path_is_in_ignore
 from pyrig.src.modules.module import make_obj_importpath
-
-
-def test_get_src_package() -> None:
-    """Test func for get_src_package."""
-    src_pkg = get_src_package()
-    assert src_pkg.__name__ == pyrig.__name__, f"Expected pyrig, got {src_pkg}"
 
 
 def test_find_packages(mocker: MockFixture) -> None:

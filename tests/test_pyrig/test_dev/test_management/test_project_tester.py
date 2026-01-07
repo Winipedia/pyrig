@@ -6,6 +6,12 @@ from pyrig.dev.management.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
+    def test_get_coverage_threshold(self) -> None:
+        """Test method."""
+        result = ProjectTester.L.get_coverage_threshold()
+        expected = 90
+        assert result == expected
+
     def test_name(self) -> None:
         """Test method."""
         result = ProjectTester.L.name()

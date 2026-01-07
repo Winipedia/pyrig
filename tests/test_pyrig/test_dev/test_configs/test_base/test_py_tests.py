@@ -4,7 +4,7 @@ from contextlib import chdir
 from pathlib import Path
 
 from pyrig.dev.configs.base.py_tests import PythonTestsConfigFile
-from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
+from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
 
 
 class TestPythonTestsConfigFile:
@@ -16,6 +16,6 @@ class TestPythonTestsConfigFile:
     ) -> None:
         """Test method for get_parent_path."""
         with chdir(tmp_path):
-            expected = Path(TESTS_PACKAGE_NAME)
+            expected = Path(MirrorTestConfigFile.get_tests_package_name())
             actual = PythonTestsConfigFile.get_parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"

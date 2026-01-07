@@ -6,6 +6,7 @@ import pytest
 
 from pyrig.src.string_ import (
     make_name_from_obj,
+    make_summary_error_msg,
     re_search_excluding_docstrings,
     split_on_uppercase,
 )
@@ -112,3 +113,22 @@ some_code = True
     # This WILL match because the unclosed docstring is not stripped
     # This is documented behavior, not a bug
     assert result is not None, "Expected match in unclosed docstring (known limitation)"
+
+
+def test_make_summary_error_msg() -> None:
+    """Test func."""
+    # Test with empty list
+    empty_msg = make_summary_error_msg([])
+    assert isinstance(empty_msg, str)
+
+    # Test with one item
+    one_item_msg = make_summary_error_msg(["module.function"])
+    assert isinstance(one_item_msg, str)
+
+    # Test with multiple items
+    items = ["module.function1", "module.class.method", "another_module"]
+    multi_item_msg = make_summary_error_msg(items)
+    assert isinstance(multi_item_msg, str)
+
+    for item in items:
+        assert item in multi_item_msg
