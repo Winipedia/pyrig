@@ -199,40 +199,11 @@ class MyAppBuilder(PyInstallerBuilder):
         return options
 ```
 
-## Advanced Methods Reference
-
-The following methods are available for advanced customization:
-
-### Resource Management
-
-- **`get_default_additional_resource_pkgs()`**:
-    Returns resource packages from all pyrig-dependent packages (automatic)
-- **`get_all_resource_pkgs()`**:
-    Combines default and additional resource packages
-- **`get_add_datas()`**: Builds the `--add-data` arguments for PyInstaller
-
-### Path Management
-
-- **`get_temp_workpath(temp_dir: Path)`**:
-    Returns the temporary work directory for PyInstaller
-- **`get_temp_specpath(temp_dir: Path)`**:
-    Returns the temporary spec file directory
-- **`get_temp_distpath(temp_dir: Path)`**:
-    Returns the temporary distribution output path
-
-### Icon Management
-
-- **`get_app_icon_png_path()`**:
-    Returns the path to the source PNG
-    icon file (default: `<src_pkg>/resources/icon.png`)
-- **`get_app_icon_path(temp_dir: Path)`**:
-    Returns the platform-appropriate icon path
-- **`convert_png_to_format(file_format: str, temp_dir_path: Path)`**:
-    Converts the icon to the specified format
-
-Override these methods for fine-grained control over the build process.
-
 ## Advanced Customization
+
+For details on additional overridable methods (resource management, path
+management, icon conversion), see the docstrings in the `PyInstallerBuilder`
+class.
 
 ### Multiple Resource Packages
 
@@ -249,21 +220,6 @@ class MyAppBuilder(PyInstallerBuilder):
             myapp.templates,
             myapp.data,
         ]
-```
-
-### Console Application
-
-```python
-class MyConsoleAppBuilder(PyInstallerBuilder):
-    @classmethod
-    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
-        return [myapp.resources]
-
-    @classmethod
-    def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
-        options = super().get_pyinstaller_options(temp_artifacts_dir)
-        options.remove("--noconsole")  # Show console window
-        return options
 ```
 
 ### Custom Output Directory
