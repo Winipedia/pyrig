@@ -36,8 +36,6 @@ from pyrig.src.modules.path import ModulePath, make_dir_with_init_file
 
 logger = logging.getLogger(__name__)
 
-DOCS_DIR_NAME = "docs"
-
 # Pre-compiled regex for parsing package names from requirement strings.
 # Matches everything before the first version specifier (>, <, =, [, ;, etc.)
 # Allows alphanumeric, underscore, hyphen, and period (for namespace packages).

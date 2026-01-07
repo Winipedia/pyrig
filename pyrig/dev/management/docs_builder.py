@@ -8,6 +8,8 @@ Example:
     >>> DocsBuilder.L.get_build_args().run()
 """
 
+from pathlib import Path
+
 from pyrig.dev.management.base.base import Tool
 from pyrig.src.processes import Args
 
@@ -32,6 +34,15 @@ class DocsBuilder(Tool):
             'mkdocs'
         """
         return "mkdocs"
+
+    @classmethod
+    def get_docs_dir(cls) -> Path:
+        """Get the documentation directory.
+
+        Returns:
+            Path to the documentation directory.
+        """
+        return Path("docs")
 
     @classmethod
     def get_build_args(cls, *args: str) -> Args:

@@ -9,6 +9,11 @@ from pyrig.dev.management.pyrigger import Pyrigger
 class TestPyrigger:
     """Test class."""
 
+    def test_get_dev_dependencies(self) -> None:
+        """Test method."""
+        result = Pyrigger.L.get_dev_dependencies()
+        assert isinstance(result, list), f"Expected list, got {type(result)}"
+
     def test_name(self) -> None:
         """Test method."""
         result = Pyrigger.L.name()

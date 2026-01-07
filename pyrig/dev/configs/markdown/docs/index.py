@@ -12,7 +12,7 @@ from pathlib import Path
 
 from pyrig.dev.configs.base.badges_md import BadgesMarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.src.modules.package import DOCS_DIR_NAME
+from pyrig.dev.management.docs_builder import DocsBuilder
 
 
 class IndexConfigFile(BadgesMarkdownConfigFile):
@@ -42,7 +42,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         Returns:
             Path: docs directory.
         """
-        return Path(DOCS_DIR_NAME)
+        return DocsBuilder.L.get_docs_dir()
 
     @classmethod
     def get_lines(cls) -> list[str]:

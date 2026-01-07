@@ -39,8 +39,8 @@ from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
 import pyrig
+from pyrig.dev.management.docs_builder import DocsBuilder
 from pyrig.dev.utils.version_control import path_is_in_ignore
-from pyrig.src.modules.package import DOCS_DIR_NAME
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.testing.convention import TESTS_PACKAGE_NAME
 
@@ -212,7 +212,9 @@ def get_namespace_packages() -> list[str]:
     packages = find_packages(depth=None)
     namespace_packages = find_packages(depth=None, include_namespace_packages=True)
     namespace_packages = [
-        p for p in namespace_packages if not p.startswith(DOCS_DIR_NAME)
+        p
+        for p in namespace_packages
+        if not p.startswith(DocsBuilder.L.get_docs_dir().name)
     ]
     # exclude all that are in .gitignore
     namespace_packages = [p for p in namespace_packages if not path_is_in_ignore(p)]
