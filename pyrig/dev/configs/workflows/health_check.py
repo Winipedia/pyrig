@@ -196,7 +196,7 @@ class HealthCheckWorkflow(Workflow):
 
         Includes early exit logic for scheduled runs:
         - Aggregates results
-        - Exits early on non-cron triggers
+        - Exits successfully early on non-cron triggers
         - Checks for dependency updates on cron triggers
         - Exits neutral if no updates found
 
