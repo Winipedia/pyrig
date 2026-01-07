@@ -14,12 +14,9 @@ Fixtures:
     assert_all_modules_tested: All modules have test modules, auto-generates skeletons.
     assert_no_unit_test_package_usage: No unittest usage (pytest only).
     assert_dependencies_are_up_to_date: Dependencies current via uv lock/sync.
-    assert_pre_commit_is_installed: Pre-commit hooks installed.
     assert_src_runs_without_dev_deps: Source runs without dev dependencies.
     assert_src_does_not_use_dev: Source doesn't import dev code.
     assert_project_mgt_is_up_to_date: uv up to date (local only).
-    assert_version_control_is_installed: Git installed.
-    assert_container_engine_is_installed: Podman installed (local only).
 """
 
 import logging
@@ -163,7 +160,7 @@ def assert_no_namespace_packages() -> None:
 def assert_all_src_code_in_one_package() -> None:
     """Verify source code is in a single package with expected structure.
 
-    Checks that only expected top-level packages exist (source, tests, docs)
+    Checks that only expected top-level packages exist (source and tests)
     and source package has exactly dev, src, resources subpackages and main module.
 
     Raises:
@@ -314,8 +311,10 @@ def assert_no_unit_test_package_usage() -> None:
 def assert_dependencies_are_up_to_date() -> None:
     """Verify dependencies are up to date via ``uv lock --upgrade`` and ``uv sync``.
 
+    Skipped if no internet connection is available.
+
     Raises:
-        AssertionError: If dependencies were updated or installed.
+        AssertionError: If dependency update or sync commands fail.
     """
     if not internet_is_available():
         logger.warning(

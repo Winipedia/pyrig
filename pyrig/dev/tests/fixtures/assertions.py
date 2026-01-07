@@ -1,8 +1,11 @@
-"""Assertion fixtures for test coverage and code completeness verification.
+"""Assertion fixtures for verifying project entry point configuration.
 
-Provides fixtures that enforce test coverage by verifying all source code has
-corresponding tests. Missing tests are automatically detected and test skeletons
-are generated.
+Provides pytest fixtures that verify the main entry point is correctly configured
+and callable. Used by pyrig-based projects to validate their CLI setup in tests.
+
+See Also:
+    pyrig.dev.configs.python.main.MainConfigFile: Generates main.py template.
+    pyrig.dev.tests.conftest: Automatic fixture discovery and registration.
 """
 
 import logging
@@ -27,18 +30,28 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def main_test_fixture(mocker: MockerFixture) -> None:
-    """Verify that the main entry point is properly configured and callable.
+    """Fixture that verifies the project's main entry point configuration.
 
-    Tests that the main module is callable via CLI and that ``main()`` is
-    invoked exactly once. Also runs the main module as ``__main__`` to
-    ensure pytest-cov captures coverage.
+    Validates that:
+        1. The CLI entry point is callable via ``uv run <project>`` commands
+        2. The ``main()`` function is invoked exactly once when called
+        3. Coverage is captured when running as ``__main__`` (only if main.py
+           content matches pyrig's template)
+
+    Intended for use in test_main.py of pyrig-based projects::
+
+        def test_main(main_test_fixture: None) -> None:
+            pass
 
     Args:
-        mocker: pytest-mock fixture for mocking the main() function.
+        mocker: pytest-mock fixture for mocking ``main()``.
 
     Raises:
-        AssertionError: If main is not callable via CLI or main() is not
-            called exactly once.
+        AssertionError: If CLI is not callable or ``main()`` call count != 1.
+
+    See Also:
+        pyrig.dev.configs.testing.main_test.MainTestConfigFile: Generates test.
+        pyrig.dev.configs.python.main.MainConfigFile: Generates main.py.
     """
     project_name = PyprojectConfigFile.get_project_name()
     src_package_name = PyprojectConfigFile.get_package_name()

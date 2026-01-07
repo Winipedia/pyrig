@@ -54,7 +54,7 @@ def config_file_factory[T: ConfigFile](
 
             @classmethod
             def get_path(cls) -> Path:
-                """Get the parent path in tmp_path.
+                """Get the file path redirected to tmp_path.
 
                 Returns:
                     Path within tmp_path.

@@ -688,23 +688,24 @@ class {test_class_name}:
     ) -> Callable[..., Any] | type | ModuleType:
         """Get original object corresponding to test object.
 
-        Dynamically imports source object from generated source import path.
+        Dynamically imports the source object by reversing the test naming
+        conventions to reconstruct the original import path.
 
         Args:
-        test_obj: Test object (module, class, or function).
+            test_obj: Test object (module, class, or function).
 
         Returns:
-        Corresponding original object (same type as input).
+            Corresponding original object (same type as input).
 
         Raises:
-        ImportError: If source object doesn't exist or can't be imported.
-        AttributeError: If source object path is invalid.
+            ImportError: If source object doesn't exist or can't be imported.
+            AttributeError: If source object path is invalid.
 
         Example:
-        >>> from tests.test_myapp.test_utils import test_calculate_sum
-        >>> source_func = get_obj_from_test_obj(test_calculate_sum)
-        >>> source_func.__name__
-        'calculate_sum'
+            >>> from tests.test_myapp.test_utils import test_calculate_sum
+            >>> source_func = get_obj_from_test_obj(test_calculate_sum)
+            >>> source_func.__name__
+            'calculate_sum'
         """
         obj_importpath = cls.get_obj_importpath_from_test_obj(test_obj)
         return import_obj_from_importpath(obj_importpath)
@@ -725,23 +726,24 @@ class {test_class_name}:
     def get_test_obj_from_obj(cls, obj: Callable[..., Any] | type | ModuleType) -> Any:
         """Get test object corresponding to original object.
 
-        Dynamically imports test object from generated test import path.
+        Dynamically imports the test object by applying test naming conventions
+        to reconstruct the test import path.
 
         Args:
-        obj: Original object (module, class, or function).
+            obj: Original object (module, class, or function).
 
         Returns:
-        Corresponding test object (same type as input).
+            Corresponding test object (same type as input).
 
         Raises:
-        ImportError: If test object doesn't exist or can't be imported.
-        AttributeError: If test object path is invalid.
+            ImportError: If test object doesn't exist or can't be imported.
+            AttributeError: If test object path is invalid.
 
         Example:
-        >>> from myapp.utils import calculate_sum
-        >>> test_func = get_test_obj_from_obj(calculate_sum)
-        >>> test_func.__name__
-        'test_calculate_sum'
+            >>> from myapp.utils import calculate_sum
+            >>> test_func = get_test_obj_from_obj(calculate_sum)
+            >>> test_func.__name__
+            'test_calculate_sum'
         """
         test_obj_path = cls.get_test_obj_importpath_from_obj(obj)
         return import_obj_from_importpath(test_obj_path)
@@ -789,19 +791,19 @@ class {test_class_name}:
     ) -> str:
         """Create original import path from test object.
 
-        Reverses make_test_obj_importpath_from_obj by removing "tests" prefix
+        Reverses get_test_obj_importpath_from_obj by removing "tests" prefix
         and stripping test prefixes from all components.
 
         Args:
-        test_obj: Test object (module, class, or function).
+            test_obj: Test object (module, class, or function).
 
         Returns:
-        Original import path (e.g., "myapp.utils.calculate").
+            Original import path (e.g., "myapp.utils.calculate").
 
         Example:
-        >>> from tests.test_myapp.test_utils import test_calculate_sum
-        >>> make_obj_importpath_from_test_obj(test_calculate_sum)
-        'myapp.utils.calculate_sum'
+            >>> from tests.test_myapp.test_utils import test_calculate_sum
+            >>> get_obj_importpath_from_test_obj(test_calculate_sum)
+            'myapp.utils.calculate_sum'
         """
         test_importpath = make_obj_importpath(test_obj)
         # remove tests prefix
