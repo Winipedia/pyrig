@@ -321,6 +321,18 @@ class VersionController(Tool):
         return cls.get_args("diff", *args)
 
     @classmethod
+    def get_diff_quiet_args(cls, *args: str) -> Args:
+        """Construct git diff arguments with --quiet flag.
+
+        Args:
+            *args: Diff command arguments.
+
+        Returns:
+            Args for 'git diff --quiet'.
+        """
+        return cls.get_diff_args("--quiet", *args)
+
+    @classmethod
     @cache
     def get_repo_owner_and_name(
         cls,
@@ -395,7 +407,7 @@ class VersionController(Tool):
         Returns:
             True if there are unstaged changes.
         """
-        args = cls.get_diff_args("--quiet")
+        args = cls.get_diff_quiet_args()
         completed_process = args.run(check=False)
         return completed_process.returncode != 0
 

@@ -20,6 +20,16 @@ def my_test_health_check_workflow(
 class TestHealthCheckWorkflow:
     """Test class."""
 
+    def test_job_check_for_changes(self) -> None:
+        """Test method."""
+        result = HealthCheckWorkflow.job_check_for_changes()
+        assert isinstance(result, dict), "Expected dict"
+
+    def test_steps_check_for_changes(self) -> None:
+        """Test method."""
+        result = HealthCheckWorkflow.steps_check_for_changes()
+        assert isinstance(result, list), "Expected list"
+
     def test_job_protect_repository(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:

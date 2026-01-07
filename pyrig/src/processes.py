@@ -122,6 +122,14 @@ class Args(tuple[str, ...]):
         """
         return " ".join(self)
 
+    def __repr__(self) -> str:
+        """Convert to space-separated string.
+
+        Returns:
+            Space-separated command string.
+        """
+        return str(self)
+
     def run(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
         """Execute command via subprocess.
 

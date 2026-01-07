@@ -44,9 +44,11 @@ same time if you have lots of packages depending in a line.
 
 ```mermaid
 graph TD
-    A[Trigger: PR/Push/Schedule] --> B[health_check_matrix]
+    A[Trigger: PR/Push/Schedule] --> CH[check_for_changes]
+    A --> B[health_check_matrix]
     A --> P[protect_repository]
-    B --> C[health_check]
+    CH --> C[health_check]
+    B --> C
     P --> C
 
     B --> B1[Ubuntu × Python 3.12]
@@ -70,6 +72,7 @@ graph TD
     B9 --> C
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
+    style CH fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
     style P fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -86,10 +89,65 @@ graph TD
 
 ## Jobs
 
-### 1. protect_repository
+### 1. check_for_changes
 
-**Runs on**: Ubuntu latest **Purpose**: Applies branch protection rules to the
-repository
+**Runs on**: Ubuntu latest
+**Purpose**: Detects if dependency updates are available on scheduled runs
+
+This job runs `uv lock --upgrade` to check for dependency updates and sets an
+output `has_changes` that indicates whether any files were modified. This output
+is used by the `health_check` aggregation job to conditionally run on scheduled
+(cron) triggers.
+
+**Step Flow**:
+
+```mermaid
+graph TD
+    C1[1. Checkout Repository] --> C2[2. Setup Git]
+    C2 --> C3[3. Setup Project Mgt]
+    C3 --> C4[4. Update Dependencies]
+    C4 --> C5[5. Check For Dependency Changes]
+
+    C5 -.->|Runs| C5A[git diff --quiet]
+    C5 -.->|Sets Output| C5B[has_changes=true/false]
+
+    style C1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style C2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style C3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style C4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style C5 fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+```
+
+**Steps**:
+
+1. **Checkout Repository** (`actions/checkout@main`)
+   - Clones the repository code
+
+2. **Setup Git**
+   - Configures git user as `github-actions[bot]`
+
+3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
+   - Installs uv package manager
+   - Sets up Python 3.14
+
+4. **Update Dependencies**
+   - Runs `uv lock --upgrade`
+   - Updates lock file with latest compatible versions
+
+5. **Check For Dependency Changes**
+   - Runs `git diff --quiet` to check for uncommitted changes
+   - Sets `has_changes=true` if changes detected, `false` otherwise
+   - Output is used by `health_check` job conditional
+
+**Why check for changes?** On scheduled runs, we only want to trigger downstream
+workflows (build, release, publish) if there are actual dependency updates. This
+saves CI minutes and prevents unnecessary releases when dependencies haven't
+changed.
+
+### 2. protect_repository
+
+**Runs on**: Ubuntu latest
+**Purpose**: Applies branch protection rules to the repository
 
 This job runs independently from the test matrix to ensure branch protection is
 configured before any code quality checks. It sets up the environment, updates
@@ -156,10 +214,10 @@ protection is configured early in the workflow. The `health_check` aggregator
 job (which waits for both this job and the matrix) is the required status check
 for PRs. No need to call this in all matrix jobs.
 
-### 2. health_check_matrix
+### 3. health_check_matrix
 
-**Runs on**: Matrix of OS × Python versions  
-**Strategy**: `fail-fast: true` (stop all jobs if one fails)  
+**Runs on**: Matrix of OS × Python versions
+**Strategy**: `fail-fast: true` (stop all jobs if one fails)
 **Matrix**:
 
 - **OS**: Ubuntu, Windows, macOS (latest)
@@ -237,12 +295,22 @@ graph TD
 **Why matrix?** Testing across OS and Python versions catches platform-specific
 bugs and ensures compatibility.
 
-### 3. health_check
+### 4. health_check
 
-**Runs on**: Ubuntu latest **Needs**: `health_check_matrix`,
-`protect_repository` (waits for both to complete) **Purpose**: Aggregates matrix
-results into single job for branch protection rules, you will see the purpose of
-this once you make a Pull Request and wait for the checks to complete.
+**Runs on**: Ubuntu latest **Needs**: `check_for_changes`,
+`health_check_matrix`, `protect_repository` (waits for all to complete)
+**Condition**: Runs only if NOT a scheduled run OR if scheduled run
+detected dependency changes **Purpose**: Aggregates matrix results into
+single job for branch protection rules, you will
+see the purpose of this once you make a Pull Request and wait for the checks to
+complete.
+
+**Conditional Logic**:
+
+- **On PR/Push**: Always runs (aggregates test results)
+- **On Schedule with changes**: Runs (triggers downstream workflows)
+- **On Schedule without changes**: Skipped (saves CI minutes, prevents
+  unnecessary releases)
 
 **Steps**:
 
@@ -252,6 +320,12 @@ this once you make a Pull Request and wait for the checks to complete.
 
 **Why aggregate?** GitHub branch protection can require this single job instead
 of tracking all matrix combinations and the protection job individually.
+
+**Why conditional?** On scheduled runs, if no dependency updates are available,
+we skip this job to prevent triggering downstream workflows (build, release,
+publish) unnecessarily. The matrix tests still run to catch any issues, but we
+don't proceed with releases when there are no changes. It is mainly about
+avoiding unnecessary releases and saving CI minutes.
 
 ## Environment Variables
 

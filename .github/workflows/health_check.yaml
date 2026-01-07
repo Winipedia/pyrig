@@ -20,6 +20,31 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
   UV_NO_SYNC: 1
 jobs:
+  check_for_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check_for_unstaged_changes.outputs.has_changes }}
+    steps:
+    - name: Checkout Repository
+      id: checkout_repository
+      uses: actions/checkout@main
+    - name: Setup Git
+      id: setup_git
+      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        && git config --global user.name "github-actions[bot]"
+    - name: Setup Project Mgt
+      id: setup_project_mgt
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+    - name: Update Dependencies
+      id: update_dependencies
+      run: uv lock --upgrade
+    - name: Check For Unstaged Changes
+      id: check_for_unstaged_changes
+      run: "if git diff --quiet; then\n  echo \"has_changes=false\" >> $GITHUB_OUTPUT\n\
+        \  echo \"No dependency changes detected\"\nelse\n  echo \"has_changes=true\"\
+        \ >> $GITHUB_OUTPUT\n  echo \"Dependency changes detected\"\nfi"
   protect_repository:
     runs-on: ubuntu-latest
     steps:
@@ -107,9 +132,12 @@ jobs:
         fail_ci_if_error: ${{ secrets.CODECOV_TOKEN && 'true' || 'false' }}
   health_check:
     needs:
+    - check_for_changes
     - health_check_matrix
     - protect_repository
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'schedule' || needs.check_for_changes.outputs.has_changes
+      == 'true' }}
     steps:
     - name: Aggregate Matrix Results
       id: aggregate_matrix_results
