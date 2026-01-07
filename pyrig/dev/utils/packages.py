@@ -36,6 +36,7 @@ from setuptools import find_packages as _find_packages
 import pyrig
 from pyrig.dev.management.docs_builder import DocsBuilder
 from pyrig.dev.utils.version_control import path_is_in_ignore
+from pyrig.src.modules.path import ModulePath
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +166,11 @@ def get_namespace_packages() -> list[str]:
         if not p.startswith(DocsBuilder.L.get_docs_dir().name)
     ]
     # exclude all that are in .gitignore
-    namespace_packages = [p for p in namespace_packages if not path_is_in_ignore(p)]
+    namespace_packages = [
+        p
+        for p in namespace_packages
+        if not path_is_in_ignore(ModulePath.pkg_name_to_relative_dir_path(p))
+    ]
     result = list(set(namespace_packages) - set(packages))
     logger.debug("Found %d namespace packages: %s", len(result), result)
     return result
