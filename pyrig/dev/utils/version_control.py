@@ -27,10 +27,6 @@ from pyrig.dev.management.version_controller import VersionController
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_BRANCH = "main"
-
-DEFAULT_RULESET_NAME = f"{DEFAULT_BRANCH}-protection"
-
 
 def get_github_repo_token() -> str:
     """Retrieve the GitHub repository token for API authentication.

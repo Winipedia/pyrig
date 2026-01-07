@@ -50,6 +50,24 @@ class VersionController(Tool):
         return "git"
 
     @classmethod
+    def get_default_branch(cls) -> str:
+        """Get the default branch name.
+
+        Returns:
+            Default branch name.
+        """
+        return "main"
+
+    @classmethod
+    def get_default_ruleset_name(cls) -> str:
+        """Get the default branch protection ruleset name.
+
+        Returns:
+            Default ruleset name.
+        """
+        return f"{cls.get_default_branch()}-protection"
+
+    @classmethod
     def get_init_args(cls, *args: str) -> Args:
         """Construct git init arguments.
 

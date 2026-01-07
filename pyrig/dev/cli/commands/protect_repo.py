@@ -15,7 +15,6 @@ from pyrig.dev.utils.github_api import (
     get_repo,
 )
 from pyrig.dev.utils.version_control import (
-    DEFAULT_BRANCH,
     get_github_repo_token,
 )
 
@@ -50,7 +49,7 @@ def set_secure_repo_settings() -> None:
     repo.edit(
         name=repo_name,
         description=toml_description,
-        default_branch=DEFAULT_BRANCH,
+        default_branch=VersionController.L.get_default_branch(),
         delete_branch_on_merge=True,
         allow_update_branch=True,
         allow_merge_commit=False,

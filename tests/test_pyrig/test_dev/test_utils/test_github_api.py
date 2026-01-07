@@ -13,7 +13,6 @@ from pyrig.dev.utils.github_api import (
 )
 from pyrig.dev.utils.testing import skip_if_no_internet
 from pyrig.dev.utils.version_control import (
-    DEFAULT_RULESET_NAME,
     get_github_repo_token,
 )
 
@@ -49,7 +48,7 @@ def test_ruleset_exists() -> None:
         get_github_repo_token(),
         owner,
         repo_name,
-        DEFAULT_RULESET_NAME,
+        VersionController.L.get_default_ruleset_name(),
     )
     assert ruleset_id > 0, f"Expected ruleset id > 0, got {ruleset_id}"
 

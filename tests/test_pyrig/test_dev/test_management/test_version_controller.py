@@ -8,6 +8,16 @@ from pyrig.dev.management.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_get_default_branch(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_default_branch()
+        assert result == "main"
+
+    def test_get_default_ruleset_name(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_default_ruleset_name()
+        assert result == "main-protection"
+
     def test_get_diff_quiet_args(self) -> None:
         """Test method."""
         result = VersionController.L.get_diff_quiet_args()
