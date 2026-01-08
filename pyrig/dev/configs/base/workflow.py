@@ -1792,14 +1792,14 @@ class Workflow(YamlConfigFile):
     # ----------------------------------------------------------------------------
     @classmethod
     def combined_if(cls, *conditions: str, operator: str) -> str:
-        """Combine multiple conditions with logical AND.
+        """Combine multiple conditions with a logical operator.
 
         Args:
             *conditions: Individual condition expressions.
-            operator: Logical operator to combine conditions.
+            operator: Logical operator to combine conditions (e.g., "&&", "||").
 
         Returns:
-            Combined condition expression.
+            Combined condition expression wrapped in GitHub Actions syntax.
         """
         bare_conditions = [
             condition.strip().removeprefix("${{").removesuffix("}}").strip()

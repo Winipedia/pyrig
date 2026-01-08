@@ -26,7 +26,8 @@ from pyrig.dev.configs.base.dict_cf import DictConfigFile
 class TypedConfigFile(DictConfigFile):
     """Base class for py.typed marker files (PEP 561).
 
-    Creates empty py.typed files. Enforces PEP 561 requirement that files be empty.
+    Creates empty py.typed files that indicate a package supports type checking.
+    The marker file only needs to exist; content is ignored by type checkers.
 
     Subclasses must implement:
         - `get_parent_path`: Package directory containing the py.typed file
@@ -42,7 +43,7 @@ class TypedConfigFile(DictConfigFile):
 
     @classmethod
     def _load(cls) -> dict[str, Any]:
-        """Return empty dict (PEP 561 requires empty files).
+        """Return empty dict (marker file has no meaningful content).
 
         Returns:
             Empty dict.
@@ -51,7 +52,7 @@ class TypedConfigFile(DictConfigFile):
 
     @classmethod
     def _dump(cls, config: dict[str, Any]) -> None:
-        """Validate config is empty (PEP 561 requirement).
+        """Validate config is empty and do nothing (marker file has no content).
 
         Args:
             config: Must be empty dict.
@@ -65,7 +66,7 @@ class TypedConfigFile(DictConfigFile):
 
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
-        """Return empty dict (PEP 561 requires empty files).
+        """Return empty dict (marker file has no meaningful content).
 
         Returns:
             Empty dict.

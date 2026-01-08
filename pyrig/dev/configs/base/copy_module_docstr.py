@@ -53,10 +53,11 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
     def is_correct(cls) -> bool:
         """Check if file content is valid.
 
-        Validates that the file either passes parent class validation (empty or
-        exact match) or starts with a docstring (triple quotes).
+        Validates that the file passes parent class validation (empty or expected
+        content present) or that the source module has a docstring (allowing custom
+        implementation in the target file).
 
         Returns:
-            True if parent validation passes or content starts with triple quotes.
+            True if parent validation passes or source module has a docstring.
         """
         return super().is_correct() or module_has_docstring(cls.get_src_module())
