@@ -87,57 +87,16 @@ Each layer is joined with double newlines for readability.
 
 ### Validation Logic
 
-The `is_correct()` method checks that all required layers are present in the
-file:
-
-```python
-all_layers_in_file = all(
-    layer in cls.get_file_content() for layer in cls.get_layers()
-)
-return super().is_correct() or all_layers_in_file
-```
-
-This allows you to:
-
-- Add comments between layers
-- Add custom layers before or after required ones
-- Modify layer order (though not recommended)
-- Add build arguments or environment variables
-- Also simplifies subclassing for customization
-
-As long as all required layers exist somewhere in the file, validation passes.
+Validation checks that all required layers are present. You can add comments,
+custom layers, or build arguments as long as all required layers exist.
 
 ## Dynamic Configuration
 
-The Containerfile adapts to your project automatically:
+The Containerfile adapts automatically:
 
-### Python Version
-
-```python
-latest_python_version = PyprojectConfigFile.get_latest_possible_python_version()
-# Uses the highest Python version allowed by requires-python
-```
-
-If `requires-python = ">=3.10"`, it uses the latest 3.x version available at
-python.org.
-
-### Project Names
-
-```python
-project_name = PyprojectConfigFile.get_project_name()  # "my-project"
-package_name = PyprojectConfigFile.get_package_name()  # "my_project"
-```
-
-Automatically uses your project name from `pyproject.toml`.
-
-### Entrypoint
-
-```python
-entrypoint_args = list(PackageManager.L.get_run_args(project_name))
-# ["uv", "run", "my-project"]
-```
-
-Uses uv's run command to execute your project in the container environment.
+- **Python version**: Uses the highest version allowed by `requires-python`
+- **Project names**: Uses project/package names from `pyproject.toml`
+- **Entrypoint**: Configured to run your project via uv
 
 ## Usage
 
@@ -148,16 +107,13 @@ Uses uv's run command to execute your project in the container environment.
 podman build -t my-project .
 ```
 
-We suppose all this works with docker as well. However we strongly recommend
-podman for security and performance reasons. It is deamonless and rootless,
-which makes it simply better than docker.
+Docker should work as well, but Podman is recommended for its daemonless and
+rootless architecture.
 
 ### Running the Container
 
-because we define an entrypoint and a default command, you can run the container
-directly and are not stuck with the main command. The main command is just the
-default command that is run when you do not provide any arguments to the
-container.
+The entrypoint and default command allow running the container directly. The
+default command runs the main module, but you can pass custom arguments.
 
 ```bash
 # Run with default command (main module)

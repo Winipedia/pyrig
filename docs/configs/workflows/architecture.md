@@ -225,33 +225,6 @@ graph LR
 
 **Purpose**: Distributes package and documentation.
 
-## Workflow Pipeline
-
-```mermaid
-graph LR
-    A[PR/Push/Schedule] --> B[Health Check]
-    B -->|Success on main| C[Build]
-    C -->|Success| D[Release]
-    D -->|Success| E[Publish]
-
-    B -.->|Tests, Linting, Type Checking, Security Scan| B1[Matrix: OS × Python]
-    C -.->|Build Artifacts| C1[Artifacts + Container]
-    D -.->|Version Bump,<br/>Git Tag,<br/>Changelog| D1[GitHub Release]
-    E -.->|PyPI Package| E1[PyPI]
-    E -.->|Documentation| E2[GitHub Pages]
-
-    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
-    style B1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style C1 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style D1 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
-    style E1 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
-    style E2 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
-```
-
 ## Creating Custom Workflows
 
 To create your own workflow, subclass `Workflow` and implement `get_jobs()`:

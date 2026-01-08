@@ -30,7 +30,6 @@ The `get_resource_path` function provides cross-platform, environment-agnostic
 access to resources:
 
 ```python
-from pathlib import Path
 from pyrig.src.resource import get_resource_path
 import myapp.resources
 
@@ -193,30 +192,11 @@ When pyrig needs these files, it:
 3. **Automatically updates** the bundled resource file when running as pyrig
    itself (not in user projects)
 
-This is implemented using the `@return_resource_content_on_fetch_error`
-decorator, which:
+This fallback mechanism uses the `@return_resource_content_on_fetch_error`
+decorator, which catches network errors and returns bundled resource content
+instead. When running pyrig development itself (not in user projects),
+successful fetches automatically update the bundled resources to keep them
+fresh.
 
-- Catches network errors when fetching latest versions
-- Returns the bundled resource content as fallback
-- Updates only in the pyrig project itself not when other projects call it
-
-### Example: GitIgnore Fallback
-
-When creating `.gitignore`, pyrig tries to fetch from GitHub:
-
-```python
-@classmethod
-@return_resource_content_on_fetch_error(resource_name="GITIGNORE")
-@cache
-def get_github_python_gitignore_as_str(cls) -> str:
-    url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
-    res = requests.get(url, timeout=10)
-    res.raise_for_status()
-    return res.text
-```
-
-If the request fails (no internet, rate limit, etc.), it returns the content
-from `pyrig/resources/GITIGNORE` instead.
-
-This ensures your project can be initialized even without internet access, while
-still getting the latest templates when possible.
+This ensures your project can be initialized even without internet access,
+while still getting the latest templates when possible.

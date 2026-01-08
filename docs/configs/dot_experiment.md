@@ -86,79 +86,8 @@ This ensures your local experiments never get committed to version control.
 
 ## Usage
 
-### Quick Experiments
-
-Use `.experiment.py` for testing code snippets:
-
-```python
-"""This file is for experimentation and is ignored by git."""
-
-from myapp.src.utils import some_function
-
-# Test the function
-result = some_function(42)
-print(f"Result: {result}")
-```
-
-Run it directly:
-
-```bash
-python .experiment.py
-```
-
-### Debugging
-
-Test imports and module structure:
-
-```python
-"""This file is for experimentation and is ignored by git."""
-
-import sys
-from pathlib import Path
-
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent / "myapp" / "src"))
-
-from myapp.src.module import MyClass
-
-# Debug the class
-obj = MyClass()
-print(obj.some_method())
-```
-
-### Prototyping
-
-Try out new features before adding them to the codebase:
-
-```python
-"""This file is for experimentation and is ignored by git."""
-
-from myapp.src.api import API
-
-def new_feature():
-    """Prototype for a new feature."""
-    api = API()
-    data = api.fetch_data()
-    # Process data...
-    return processed_data
-
-if __name__ == "__main__":
-    result = new_feature()
-    print(result)
-```
-
-### Testing API Calls
-
-Experiment with external APIs without creating test files:
-
-```python
-"""This file is for experimentation and is ignored by git."""
-
-import requests
-
-response = requests.get("https://api.example.com/data")
-print(response.json())
-```
+Use `.experiment.py` for quick experiments, testing code snippets, debugging
+imports, or prototyping features. Run it directly with `python .experiment.py`.
 
 ## Best Practices
 
@@ -179,82 +108,9 @@ check if the file exists. This is more permissive than the standard
 **Flexible content**: You can modify the file content freely; validation only
 checks for file existence.
 
-## Common Use Cases
-
-### 1. Testing Imports
-
-```python
-"""This file is for experimentation and is ignored by git."""
-
-# Test if all imports work
-from myapp.src.module1 import Class1
-from myapp.src.module2 import Class2
-from myapp.src.module3 import function1
-
-print("All imports successful!")
-```
-
-### 2. Data Exploration
-
-```python
-"""This file is for experimentation and is ignored by git."""
-
-import pandas as pd
-
-# Load and explore data
-df = pd.read_csv("data.csv")
-print(df.head())
-print(df.describe())
-```
-
-### 3. Algorithm Testing
-
-```python
-"""This file is for experimentation and is ignored by git."""
-
-def algorithm_v1(data):
-    """First version."""
-    return sum(data) / len(data)
-
-def algorithm_v2(data):
-    """Improved version."""
-    return sum(x * 2 for x in data) / len(data)
-
-# Compare performance
-data = list(range(1000))
-print(f"V1: {algorithm_v1(data)}")
-print(f"V2: {algorithm_v2(data)}")
-```
-
-### 4. Configuration Testing
-
-```python
-"""This file is for experimentation and is ignored by git."""
-
-from myapp.src.config import Config
-
-# Test different configurations
-config1 = Config(debug=True, verbose=True)
-config2 = Config(debug=False, verbose=False)
-
-print(f"Config 1: {config1}")
-print(f"Config 2: {config2}")
-```
-
 ## Troubleshooting
 
 ### File gets committed to git
 
-Check your `.gitignore`:
-
-```bash
-cat .gitignore | grep experiment
-```
-
-Should show:
-
-```text
-.experiment.py
-```
-
-If missing, run `uv run pyrig mkroot` to regenerate `.gitignore`.
+Check your `.gitignore` contains `.experiment.py`. If missing, run
+`uv run pyrig mkroot` to regenerate it.

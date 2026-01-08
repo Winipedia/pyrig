@@ -110,76 +110,17 @@ This ensures comprehensive quality checks on every commit.
 
 ## Configured Hooks
 
-### 1. lint-code (Ruff Linting)
+| Hook             | Command                     | Purpose                                      |
+| ---------------- | --------------------------- | -------------------------------------------- |
+| `lint-code`      | `ruff check --fix`          | Linting with auto-fix                        |
+| `format-code`    | `ruff format`               | Code formatting                              |
+| `check-types`    | `ty check`                  | Type checking                                |
+| `check-security` | `bandit -c pyproject.toml -r .` | Security vulnerability scanning          |
+| `check-markdown` | `rumdl check --fix`         | Markdown linting with auto-fix               |
 
-**Command**: `ruff check --fix`
-
-**Purpose**: Checks code for style violations and common errors, automatically
-fixing issues when possible.
-
-**What it checks**:
-
-- PEP 8 style violations
-- Unused imports and variables
-- Code complexity
-- Common anti-patterns
-- And 700+ other rules
-
-### 2. format-code (Ruff Formatting)
-
-**Command**: `ruff format`
-
-**Purpose**: Automatically formats code to a consistent style (similar to
-Black).
-
-**What it does**:
-
-- Consistent indentation
-- Line length enforcement
-- Quote normalization
-- Trailing comma handling
-
-### 3. check-types (Ty Type Checking)
-
-**Command**: `ty check`
-
-**Purpose**: Modern type checker from Astral (creators of Ruff) that validates
-type annotations.
-
-**What it checks**:
-
-- Type annotation correctness
-- Type consistency
-- Missing or incorrect type annotations
-
-### 4. check-security (Bandit Security Scanning)
-
-**Command**: `bandit -c pyproject.toml -r .`
-
-**Purpose**: Scans code for common security vulnerabilities.
-
-**What it checks**:
-
-- Hardcoded passwords
-- SQL injection risks
-- Use of insecure functions
-- Weak cryptography
-- And many other security issues
-
-### 5. check-markdown (rumdl Markdown Linting)
-
-**Command**: `rumdl check --fix`
-
-**Purpose**: Lints markdown files for consistency and best practices,
-auto-fixing issues when possible.
-
-**What it checks**:
-
-- Markdown syntax errors
-- Heading structure
-- Line length
-- Trailing whitespace
-- Link validity
+Each hook uses `language: system` (runs tools from your environment),
+`always_run: true` (runs on every commit), and `pass_filenames: false`
+(checks entire codebase).
 
 ## Usage
 
@@ -326,45 +267,9 @@ This ensures the same quality checks run locally and in CI.
 
 ## Troubleshooting
 
-### Hook fails but code looks correct
-
-Try running the tool directly to see more details:
-
-```bash
-uv run ruff check --fix
-uv run ty check
-uv run rumdl check
-```
-
-### Hooks are slow
-
-The hooks run on the entire codebase (`always_run: true`). This is intentional
-to catch all issues, but you can modify specific hooks to only run on changed
-files:
-
-```yaml
-- id: lint-code
-  name: lint-code
-  entry: ruff check --fix
-  language: system
-  always_run: false # Changed from true
-  pass_filenames: true # Changed from false
-  types: [python]
-```
-
-### Pre-commit not installed
-
-If hooks don't run, reinstall:
-
-```bash
-uv run pre-commit install
-```
-
-### Hooks run but tools not found
-
-Make sure you're in a virtual environment with dependencies installed:
-
-```bash
-uv sync
-source .venv/bin/activate  # or activate.fish, activate.ps1
-```
+- **Hook fails**: Run the tool directly (e.g., `uv run ruff check --fix`) for
+  details
+- **Hooks slow**: Hooks check entire codebase; modify `always_run` and
+  `pass_filenames` to only check changed files
+- **Hooks not running**: Run `uv run pre-commit install` to reinstall
+- **Tools not found**: Run `uv sync` to install dependencies

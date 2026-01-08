@@ -10,12 +10,10 @@ by the `protect-repo` command to create or update GitHub branch protection
 rules.
 
 The `protect-repo` command loads this file and applies it to GitHub via the API.
-It passes the json as a dict as is to the API, so if you make adjustments to the
-json file make sure it is aligned with the API schema of GitHUbs REST API. I
-suggest manually changing the settings in GitHub and then exporting the json
-from GitHub to see the structure and just use that to overwrite the
-`branch-protection.json` file by subclassing the `BranchProtectionConfigFile`
-class.
+It passes the JSON as a dict to the API, so any adjustments must align with
+GitHub's REST API schema. To customize, manually configure settings in GitHub,
+export the ruleset, and use that structure when subclassing
+`BranchProtectionConfigFile`.
 
 ## Inheritance
 

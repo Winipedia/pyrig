@@ -120,56 +120,9 @@ class ApiConfigFile(BaseApiCF):
         ]
 ```
 
-### Common Customizations
-
-**Document only src/ folder**:
-
-```python
-return [f"::: {project_name}.src", ""]
-```
-
-**Document specific modules**:
-
-```python
-return [
-    "# API Reference",
-    "",
-    "## Core Module",
-    "",
-    f"::: {project_name}.src.core",
-    "",
-    "## Utils Module",
-    "",
-    f"::: {project_name}.src.utils",
-    "",
-]
-```
-
-**Exclude private members**:
-
-```python
-return [
-    f"::: {project_name}",
-    "    options:",
-    "      filters:",
-    '        - "!^_"',
-    "",
-]
-```
-
-**Document only specific classes**:
-
-```python
-return [
-    f"::: {project_name}.src.api",
-    "    options:",
-    "      members:",
-    "        - Client",
-    "        - Response",
-    "        - Error",
-    "",
-]
-```
+Common customizations include documenting only `src/`, specific modules, or
+specific classes, and excluding private members. Override `get_lines()` and
+return the appropriate mkdocstrings directives.
 
 ## Docstring Style
 

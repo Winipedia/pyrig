@@ -96,7 +96,7 @@ COM812, ANN401)
 - Identifies common security issues
 - Scans for hardcoded passwords, SQL injection, etc.
 - Runs automatically in pre-commit hooks
-- Skips assert checks in tests (S101)
+- Skips assert checks in test files
 
 ## Testing
 

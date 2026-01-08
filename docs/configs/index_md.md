@@ -267,80 +267,11 @@ This makes it the homepage of your documentation site.
 
 Both files share the same badges and description, but serve different purposes.
 
-## Troubleshooting
+## Customization
 
-### Badges not rendering
+You can add custom badges after the generated ones or add content after the
+horizontal rules. To permanently change badge categories or order, subclass
+`BadgesMarkdownConfigFile` and override the relevant methods.
 
-Make sure:
-
-- Repository is public or badges support private repos
-- GitHub Actions workflows exist
-- PyPI package is published (for PyPI badge)
-- Codecov is configured (for coverage badge)
-
-### Description not updating
-
-Update `pyproject.toml`:
-
-```toml
-[project]
-description = "Your new description"
-```
-
-Then run `uv run pyrig mkroot` to regenerate.
-
-### Project name incorrect
-
-The project name comes from `pyproject.toml`:
-
-```toml
-[project]
-name = "myapp"
-```
-
-## Advanced Customization
-
-### Custom Badges
-
-Add your own badges after the generated ones:
-
-```markdown
-# myapp Documentation
-
-<!-- tooling -->
-
-...
-
-<!-- documentation -->
-
-...
-
-<!-- custom badges -->
-
-[![Custom](https://img.shields.io/badge/custom-badge-blue)](https://example.com)
-
----
-
-> A sample application
-
----
-```
-
-### Removing Badge Categories
-
-You can remove entire badge categories by editing the file, but they'll be
-re-added if missing. To permanently remove, you'd need to override
-`get_badges()` in a custom subclass.
-
-### Changing Badge Order
-
-The badges are organized in this order:
-
-1. tooling
-2. code-quality
-3. package-info
-4. ci/cd
-5. documentation
-
-This order is defined in `BadgesMarkdownConfigFile.get_badges()` and can be
-customized by overriding the method.
+If badges aren't rendering or content isn't updating, ensure your
+`pyproject.toml` is correct and run `uv run pyrig mkroot` to regenerate.

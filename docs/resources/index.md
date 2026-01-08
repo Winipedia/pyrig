@@ -13,7 +13,7 @@ Learn how to manage and access static resources:
 - Resource package structure
 - Accessing resources with `get_resource_path`
 - PyInstaller compatibility
-- Multi-package resource inheritance
+- Accessing resources across packages
 - Common use cases
 
 ## Quick Overview
@@ -22,6 +22,6 @@ The resource system provides:
 
 - **Unified access** to static files in development and production
 - **Automatic PyInstaller support** via `importlib.resources`
-- **Multi-package inheritance** - resources from all dependencies available
+- **Cross-package access** - resources from any dependency are accessible
 - **Type-safe access** with Path objects
 - **Transparent MEIPASS handling** for frozen executables

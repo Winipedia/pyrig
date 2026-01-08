@@ -120,5 +120,5 @@ non-empty).
    cases
 5. **Add to README**: Reference the license in your README badges
 
-Note: I recommend choosing the right licence for you at repo creation time in
-github. This way pyrig will not overwrite it.
+**Tip**: Choose the license at repository creation time in GitHub to prevent
+pyrig from overwriting it.
