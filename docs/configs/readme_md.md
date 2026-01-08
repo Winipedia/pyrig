@@ -152,37 +152,9 @@ the Python badge (e.g., `3.10|3.11|3.12`).
 
 ## Badge Categories
 
-### 1. Tooling Badges
-
-- **pyrig**: Built with pyrig
-- **uv**: Package manager
-- **Container**: Podman containerization
-- **pre-commit**: Pre-commit hooks enabled
-- **MkDocs**: Documentation generator
-
-### 2. Code Quality Badges
-
-- **ruff**: Linting and formatting
-- **ty**: Strict type checking
-- **bandit**: Security scanning
-- **pytest**: Testing framework
-- **codecov**: Code coverage
-- **rumdl**: Markdown linting
-
-### 3. Package Info Badges
-
-- **PyPI**: Package version and link
-- **Python**: Supported Python versions
-- **License**: Project license
-
-### 4. CI/CD Badges
-
-- **CI**: Health check workflow status
-- **CD**: Release workflow status
-
-### 5. Documentation Badge
-
-- **Documentation**: Link to GitHub Pages docs
+Badges are organized into five categories: tooling, code quality, package info,
+CI/CD, and documentation. See [Index.md](index_md.md) for the complete badge
+list.
 
 ## Usage
 

@@ -150,11 +150,10 @@ graph TD
    - Creates or updates branch protection ruleset on GitHub
    - Requires `REPO_TOKEN` secret
 
-- \*Why separate?\*\* Running protection as a separate job ensures branch
-
-protection is configured early in the workflow. The `health_check` aggregator
-job (which waits for both this job and the matrix) is the required status check
-for PRs. No need to call this in all matrix jobs.
+**Why separate?** Running protection as a separate job ensures branch protection
+is configured early in the workflow. The `health_check` aggregator job (which
+waits for both this job and the matrix) is the required status check for PRs. No
+need to call this in all matrix jobs.
 
 ### 2. health_check_matrix
 

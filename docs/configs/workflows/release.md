@@ -206,10 +206,9 @@ Repository → Releases tab → See all published releases with artifacts
 3. **Review releases**: Check GitHub Releases page after workflow completes
 4. **Download artifacts**: Test artifacts before publishing to PyPI
 
-Note: A nice thing about this is, that health check will run once a day and
-trigger this pipeline automatically. This way your project stays up to date with
-the latest dependencies and you can release new versions regularly
-automatically. So if you do not work on a project for a while and come back your
-code will be up to date and has done a release every day you were away. Also
-this way a breaking change that interferes with your code will be caught by the
-health check and you can fix it before it becomes a problem.
+**Note**: The daily scheduled health check automatically triggers this pipeline,
+keeping your project up to date with the latest dependencies and releasing new
+versions regularly. If you step away from a project, your code stays current
+with daily releases. Additionally, breaking changes from dependencies are caught
+early by the health check, allowing you to address them before they become
+problems.

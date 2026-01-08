@@ -15,7 +15,6 @@ Complete guide to setting up a new pyrig project from scratch:
 - **What You Get**: Complete project structure, configs, CI/CD workflows, dev
   tools
 - **Next Steps**: Start coding, make changes, release
-- **Troubleshooting**: Common issues and solutions
 
 Step-by-step instructions from zero to fully configured project.
 

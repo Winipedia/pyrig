@@ -246,57 +246,11 @@ present with valid values, validation passes.
 
 ## Plugin Details
 
-### Search Plugin
-
-Enables full-text search across all documentation pages. No configuration
-needed - works out of the box.
-
-### Mermaid2 Plugin
-
-Enables Mermaid diagram rendering in markdown:
-
-````markdown
-```mermaid
-graph TD
-    A[Start] --> B[Process]
-    B --> C[End]
-```
-````
-
-This is why pyrig's documentation can include architecture diagrams directly in
-markdown files.
-
-### mkdocstrings Plugin
-
-Automatically generates API reference documentation from Python docstrings.
-Configured with:
-
-```yaml
-mkdocstrings:
-  handlers:
-    python:
-      options:
-        docstring_style: google
-        members: true
-        show_source: true
-        inherited_members: true
-        filters: []
-        show_submodules: true
-```
-
-**Options explained**:
-
-- **`docstring_style: google`**: Uses Google-style docstrings (Args, Returns,
-  Raises sections)
-- **`members: true`**: Shows all class/module members
-- **`show_source: true`**: Includes links to source code
-- **`inherited_members: true`**: Shows inherited methods from parent classes
-- **`filters: []`**: No filtering (shows all members including private)
-- **`show_submodules: true`**: Includes submodules in documentation
-
-The plugin processes special `::: module.name` syntax in markdown files to
-generate documentation. See [api.md](api_md.md) for details on how this is used
-in the API reference page.
+- **search**: Full-text search across documentation pages
+- **mermaid2**: Mermaid diagram rendering in markdown (enables architecture
+  diagrams)
+- **mkdocstrings**: Generates API documentation from Python docstrings using
+  Google-style format. See [api.md](api_md.md) for usage details.
 
 ## Best Practices
 
