@@ -25,7 +25,7 @@
 
 ---
 
-> A Python toolkit to rig up your project that standardizes and automates project setup, configuration, testing, building, and development.
+> A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development.
 
 ---
 
