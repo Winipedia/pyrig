@@ -269,6 +269,8 @@ my-project/
 │   │   │   └── shared_subcommands.py # Shared commands
 │   │   ├── configs/                 # Config file managers
 │   │   │   └── __init__.py
+│   │   ├── management/              # Tools wrappers
+│   │   │   └── __init__.py
 │   │   └── tests/                   # Test infrastructure
 │   │       ├── __init__.py
 │   │       └── fixtures/
