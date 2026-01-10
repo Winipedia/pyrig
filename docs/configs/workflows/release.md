@@ -41,44 +41,46 @@ graph TD
     B --> S1[1. Checkout Repository]
     S1 --> S2[2. Setup Git]
     S2 --> S3[3. Setup Project Mgt]
-    S3 --> S4[4. Patch Version]
+    S3 --> S4[4. Update Dependencies]
     S4 --> S5[5. Install Dependencies]
-    S5 --> S6[6. Add Updates to Git]
-    S6 --> S7[7. Run Pre-commit Hooks]
-    S7 --> S8[8. Commit Changes]
-    S8 --> S9[9. Push Commits]
-    S9 --> S10[10. Create & Push Tag]
-    S10 --> S11[11. Extract Version]
-    S11 --> S12[12. Download Artifacts]
-    S12 --> S13[13. Build Changelog]
-    S13 --> S14[14. Create Release]
+    S5 --> S6[6. Patch Version]
+    S6 --> S7[7. Add Updates to Git]
+    S7 --> S8[8. Run Pre-commit Hooks]
+    S8 --> S9[9. Commit Changes]
+    S9 --> S10[10. Push Commits]
+    S10 --> S11[11. Create & Push Tag]
+    S11 --> S12[12. Extract Version]
+    S12 --> S13[13. Download Artifacts]
+    S13 --> S14[14. Build Changelog]
+    S14 --> S15[15. Create Release]
 
-    S12 -.->|Download| A1[pyrig-Linux]
-    S12 -.->|Download| A2[pyrig-Windows]
-    S12 -.->|Download| A3[pyrig-macOS]
-    S12 -.->|Download| A4[container-image]
+    S13 -.->|Download| A1[pyrig-Linux]
+    S13 -.->|Download| A2[pyrig-Windows]
+    S13 -.->|Download| A3[pyrig-macOS]
+    S13 -.->|Download| A4[container-image]
 
-    A1 --> S14
-    A2 --> S14
-    A3 --> S14
-    A4 --> S14
+    A1 --> S15
+    A2 --> S15
+    A3 --> S15
+    A4 --> S15
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S7 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S8 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style S9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style S10 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style S11 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style S12 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
-    style S13 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
-    style S14 fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+	    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style S7 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style S8 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style S9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style S10 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style S11 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style S12 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style S13 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+	    style S14 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+	    style S15 fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style A1 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
     style A2 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
     style A3 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
@@ -103,65 +105,66 @@ graph TD
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
-   - Uses Python 3.14 (latest supported version)
+   - Uses the default Python version (latest supported)
 
-4. **Patch Version**
+4. **Update Python Dependencies**
+   - Updates lock file: `uv lock --upgrade`
+
+5. **Install Python Dependencies**
+   - Installs dependencies: `uv sync`
+
+6. **Patch Version**
    - Bumps patch version: `uv version --bump patch`
    - Updates `pyproject.toml` with new version
    - Stages change: `git add pyproject.toml`
 
-5. **Install Python Dependencies**
-   - Updates lock file: `uv lock --upgrade`
-   - Installs dependencies: `uv sync`
-   - Ensures lock file reflects latest dependencies
-
-6. **Add Dependency Updates To Git**
+7. **Add Dependency Updates To Git**
    - Stages `pyproject.toml` and `uv.lock`
 
-7. **Run Pre Commit Hooks**
+8. **Run Pre Commit Hooks**
    - Runs `uv run pre-commit run --all-files`
    - Formats code, updates docs, runs checks
    - Auto-fixes any issues before commit
 
-8. **Commit Added Changes**
+9. **Commit Added Changes**
    - Commits all staged changes
    - Message:
      `[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)`
    - `--no-verify`: Skips pre-commit hooks (already ran)
    - `[skip ci]`: Prevents triggering another workflow run
 
-9. **Push Commits**
-   - Pushes commit to main branch: `git push`
-   - Requires `REPO_TOKEN` with write access
+10. **Push Commits**
+    - Pushes commit to main branch: `git push`
+    - Requires `REPO_TOKEN` with write access
 
-10. **Create And Push Tag**
+11. **Create And Push Tag**
     - Creates version tag: `git tag v$(uv version --short)`
     - Pushes tag: `git push origin v$(uv version --short)`
     - Example: `v0.1.5`
 
-11. **Extract Version**
+12. **Extract Version**
     - Extracts version to output variable
     - Sets `version=v{version}` in `$GITHUB_OUTPUT`
     - Used by later steps
 
-12. **Download Artifacts From Workflow Run** (`actions/download-artifact@main`)
+13. **Download Artifacts From Workflow Run** (`actions/download-artifact@main`)
     - Downloads all artifacts from build workflow
     - Uses `run-id` from triggering workflow
     - `merge-multiple: true`: Combines all artifacts into `dist/`
     - Downloads: `pyrig-Linux`, `pyrig-Windows`, `pyrig-macOS`,
       `container-image`
 
-13. **Build Changelog** (`mikepenz/release-changelog-builder-action@develop`)
+14. **Build Changelog** (`mikepenz/release-changelog-builder-action@develop`)
     - Generates changelog from commits since last release
     - Groups by PR labels (features, fixes, etc.)
     - Uses `GITHUB_TOKEN` for API access
     - Outputs to `changelog` variable
 
-14. **Create Release** (`ncipollo/release-action@main`)
+15. **Create Release** (`ncipollo/release-action@main`)
     - Creates GitHub release
-    - **Tag**: Version from step 11 (e.g., `v0.1.5`)
+    - **Tag**: Version from step 12 (e.g., `v0.1.5`)
     - **Name**: `{repo-name} v{version}` (e.g., `pyrig v0.1.5`)
-    - **Body**: Changelog from step 13
+    - **Body**: Changelog from step 14
     - **Artifacts**: All files in `dist/*` (platform artifacts + container
       image)
 

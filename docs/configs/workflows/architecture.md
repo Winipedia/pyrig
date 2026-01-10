@@ -157,9 +157,8 @@ graph LR
 - **protect_repository**: Applies branch protection rules
 - **health_check_matrix**: Runs across OS (Ubuntu, Windows, macOS) and Python
   versions
-  - Linting (ruff)
-  - Type checking (ty)
-  - Security scanning (bandit)
+  - Pre-commit checks (ruff lint/format, ty, bandit, rumdl)
+  - Dependency security audit (pip-audit)
   - Tests with coverage (pytest)
   - Coverage upload (codecov)
 - **health_check**: Aggregates matrix and protection results (required status
@@ -261,7 +260,7 @@ class CustomWorkflow(Workflow):
                 cls.step_checkout_repository(),
                 cls.step_setup_git(),
                 cls.step_setup_project_mgt(python_version="3.12"),
-                cls.step_install_python_dependencies(),
+                cls.step_install_dependencies(),
                 {
                     "name": "Run custom script",
                     "run": "uv run python scripts/custom_task.py",
