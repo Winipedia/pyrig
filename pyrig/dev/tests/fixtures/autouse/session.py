@@ -432,7 +432,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
         stderr = completed_process.stderr
         std_msg = stderr + stdout
 
-        dev_dep = PyprojectConfigFile.get_dev_dependencies()[0]
+        dev_dep = PyprojectConfigFile.get_standard_dev_dependencies()[0]
         assert dev_dep not in std_msg, base_msg + f"{std_msg}"
 
         # delete pyproject.toml and uv.lock and readme.md
