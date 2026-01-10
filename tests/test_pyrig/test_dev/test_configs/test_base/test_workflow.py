@@ -383,9 +383,9 @@ class TestWorkflow:
         result = my_test_workflow.step_setup_python()
         assert "uses" in result, "Expected 'uses' in step"
 
-    def test_step_setup_project_mgt(self, my_test_workflow: type[Workflow]) -> None:
+    def test_step_setup_package_manager(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.step_setup_project_mgt()
+        result = my_test_workflow.step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
 
     def test_step_patch_version(self, my_test_workflow: type[Workflow]) -> None:
