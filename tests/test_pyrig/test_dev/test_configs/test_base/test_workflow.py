@@ -45,6 +45,11 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_step_run_dependency_audit(self) -> None:
+        """Test method."""
+        result = Workflow.step_run_dependency_audit()
+        assert "run" in result, f"Expected 'run' in step, got {result}"
+
     def test_if_not_triggered_by_cron(self) -> None:
         """Test method."""
         result = Workflow.if_not_triggered_by_cron()

@@ -98,6 +98,16 @@ COM812, ANN401)
 - Runs automatically in pre-commit hooks
 - Skips assert checks in test files
 
+### pip-audit
+
+**Purpose**: Dependency vulnerability auditing
+
+**Why**:
+
+- Checks installed dependencies for known vulnerabilities (advisories/CVEs)
+- Catches supply-chain risks that static code scanners (like Bandit) cannot
+- Runs in CI so issues are caught before merge/release
+
 ## Testing
 
 ### pytest
@@ -277,7 +287,8 @@ pyrig's tooling choices prioritize:
 1. **Speed**: Rust-based tools (ruff, uv) over Python equivalents
 2. **Strictness**: All linting rules, strict typing, high coverage
 3. **Simplicity**: Fewer tools that do more (ruff replaces 5+ tools)
-4. **Security**: Podman over Docker, bandit scanning, signed commits
+4. **Security**: Podman over Docker, bandit scanning,
+dependency auditing, signed commits
 5. **Automation**: Pre-commit hooks, autouse fixtures, CI/CD workflows
 6. **Modern**: Latest Python versions, modern build backends, current best
    practices

@@ -146,8 +146,8 @@ def test_get_all_methods_from_cls() -> None:
         TestClass._private_method,  # noqa: SLF001
         TestClass.decorated_method,
     ]
-    expected_method_names = [get_unwrapped_obj(m).__name__ for m in expected_methods]  # ty:ignore[possibly-missing-attribute]
-    method_names = [get_unwrapped_obj(m).__name__ for m in methods]  # ty:ignore[unresolved-attribute]
+    expected_method_names = [get_unwrapped_obj(m).__name__ for m in expected_methods]
+    method_names = [get_unwrapped_obj(m).__name__ for m in methods]
     assert method_names == expected_method_names
 
     # Test case 2: Get all methods including inherited methods
@@ -166,8 +166,8 @@ def test_get_all_methods_from_cls() -> None:
         TestClass._private_method,  # noqa: SLF001
         TestClass.decorated_method,
     ]
-    expected_method_names = [get_unwrapped_obj(m).__name__ for m in expected_methods]  # ty:ignore[possibly-missing-attribute]
-    method_names = [get_unwrapped_obj(m).__name__ for m in methods]  # ty:ignore[unresolved-attribute]
+    expected_method_names = [get_unwrapped_obj(m).__name__ for m in expected_methods]
+    method_names = [get_unwrapped_obj(m).__name__ for m in methods]
     assert method_names == expected_method_names
 
 

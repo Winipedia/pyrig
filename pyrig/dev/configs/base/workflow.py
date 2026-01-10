@@ -41,6 +41,7 @@ from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.management.container_engine import (
     ContainerEngine,
 )
+from pyrig.dev.management.dependency_auditor import DependencyAuditor
 from pyrig.dev.management.docs_builder import DocsBuilder
 from pyrig.dev.management.package_manager import PackageManager
 from pyrig.dev.management.pre_committer import PreCommitter
@@ -1335,6 +1336,31 @@ class Workflow(YamlConfigFile):
             step_func=cls.step_run_pre_commit_hooks,
             run=str(
                 PackageManager.L.get_run_args(*PreCommitter.L.get_run_all_files_args())
+            ),
+            step=step,
+        )
+
+    @classmethod
+    def step_run_dependency_audit(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that audits installed dependencies for known vulnerabilities.
+
+        Runs pip-audit via uv (``uv run pip-audit``) so the audit uses the
+        workflow's installed environment.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that runs pip-audit.
+        """
+        return cls.get_step(
+            step_func=cls.step_run_dependency_audit,
+            run=str(
+                PackageManager.L.get_run_args(*DependencyAuditor.L.get_audit_args())
             ),
             step=step,
         )

@@ -6,6 +6,11 @@ from pyrig.dev.management.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_get_run_no_dev_args(self) -> None:
+        """Test method."""
+        result = PackageManager.L.get_run_no_dev_args("pytest")
+        assert result == ("uv", "run", "--no-group", "dev", "pytest")
+
     def test_get_install_dependencies_no_dev_args(self) -> None:
         """Test method."""
         result = PackageManager.L.get_install_dependencies_args("--no-group", "dev")

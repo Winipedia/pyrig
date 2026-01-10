@@ -47,7 +47,7 @@ class DiGraph:
         Returns:
             The cached singleton instance, created on first call.
         """
-        return get_cached_instance(cls)  # type: ignore[no-any-return, arg-type]
+        return get_cached_instance(cls)
 
     def __init__(self) -> None:
         """Initialize an empty directed graph with no nodes or edges."""

@@ -64,6 +64,18 @@ class PackageManager(Tool):
         return cls.get_args("run", *args)
 
     @classmethod
+    def get_run_no_dev_args(cls, *args: str) -> Args:
+        """Construct uv run arguments without dev dependencies.
+
+        Args:
+            *args: Run command arguments.
+
+        Returns:
+            Args for 'uv run --no-group dev'.
+        """
+        return cls.get_run_args("--no-group", "dev", *args)
+
+    @classmethod
     def get_add_dependencies_args(cls, *args: str) -> Args:
         """Construct uv add arguments.
 

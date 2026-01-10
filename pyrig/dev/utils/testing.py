@@ -93,7 +93,7 @@ Examples:
 
 skip_if_no_internet: pytest.MarkDecorator = functools.partial(
     pytest.mark.skipif,
-    not internet_is_available(),
+    lambda: not internet_is_available(),
     reason="Test requires internet connection.",
 )()
 """Skip marker for tests that require an internet connection.
