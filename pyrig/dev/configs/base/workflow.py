@@ -684,7 +684,7 @@ class Workflow(YamlConfigFile):
         return [
             cls.step_checkout_repository(repo_token=repo_token),
             cls.step_setup_git(),
-            cls.step_setup_project_mgt(python_version=python_version),
+            cls.step_setup_package_manager(python_version=python_version),
         ]
 
     @classmethod
@@ -1091,10 +1091,10 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
-    def step_setup_project_mgt(
+    def step_setup_package_manager(
         cls,
         *,
-        python_version: str | None = None,
+        python_version: str,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a step that sets up the project management tool (uv).
@@ -1107,7 +1107,7 @@ class Workflow(YamlConfigFile):
             Step using astral-sh/setup-uv.
         """
         return cls.get_step(
-            step_func=cls.step_setup_project_mgt,
+            step_func=cls.step_setup_package_manager,
             uses="astral-sh/setup-uv@main",
             with_={"python-version": python_version},
             step=step,
