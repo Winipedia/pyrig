@@ -24,6 +24,7 @@ docstrings.
 | [ProjectTester](project_tester.md) | pytest | Running tests |
 | [PreCommitter](pre_committer.md) | pre-commit | Git hooks |
 | [SecurityChecker](security_checker.md) | bandit | Security scanning |
+| [DependencyAuditor](dependency_auditor.md) | pip-audit | Dependency vulnerability scanning |
 | [MDLinter](mdlinter.md) | rumdl | Markdown linting |
 | [DocsBuilder](docs_builder.md) | mkdocs | Documentation |
 | [ContainerEngine](container_engine.md) | podman | Container builds |

@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import requests
-import spdx_matcher  # type: ignore[import-untyped]
+import spdx_matcher
 from packaging.version import Version
 
 from pyrig.dev.cli import cli

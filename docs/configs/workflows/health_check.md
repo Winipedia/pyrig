@@ -10,8 +10,8 @@ Continuous integration workflow that validates code quality and runs tests.
 
 The health check workflow is the first step in the CI/CD pipeline. It runs on
 every pull request, push to main, and daily on a staggered schedule. It
-validates code quality through linting, type checking, security scanning, and
-comprehensive testing across multiple OS and Python versions.
+validates code quality through linting, type checking, security scanning (code +
+dependencies), and comprehensive testing across multiple OS and Python versions.
 
 ## Triggers
 
@@ -175,8 +175,9 @@ graph TD
     S4 --> S5[5. Install Dependencies]
     S5 --> S6[6. Add Updates to Git]
     S6 --> S7[7. Run Pre-commit Hooks]
-    S7 --> S8[8. Run Tests]
-    S8 --> S9[9. Upload Coverage]
+    S7 --> S8[8. Run Dependency Audit]
+    S8 --> S9[9. Run Tests]
+    S9 --> S10[10. Upload Coverage]
 
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
@@ -186,7 +187,8 @@ graph TD
     style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S7 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
     style S8 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
-    style S9 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+    style S9 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
+    style S10 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
 ```
 
 **Steps**:
@@ -222,13 +224,17 @@ graph TD
      (markdown linting)
    - Fails if any hook fails
 
-8. **Run Tests**
-   - Runs `uv run pytest --log-cli-level=INFO --cov-report=xml`
-   - Executes all tests with coverage measurement
-   - Generates `coverage.xml` report
-   - Requires 90% coverage (from `pyproject.toml`)
+    8. **Run Dependency Audit**
+       - Runs `uv run pip-audit`
+       - Scans installed dependencies for known vulnerabilities
 
-9. **Upload Coverage Report** (`codecov/codecov-action@main`)
+    9. **Run Tests**
+       - Runs `uv run pytest --log-cli-level=INFO --cov-report=xml`
+       - Executes all tests with coverage measurement
+       - Generates `coverage.xml` report
+       - Requires 90% coverage (from `pyproject.toml`)
+
+    10. **Upload Coverage Report** (`codecov/codecov-action@main`)
    - Uploads `coverage.xml` to Codecov
    - Uses `CODECOV_TOKEN` secret
    - Only fails CI if token is configured

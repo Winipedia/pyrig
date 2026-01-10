@@ -367,7 +367,7 @@ def assert_dependencies_are_up_to_date() -> None:
 
 
 @autouse_session_fixture
-def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -> None:  # noqa: PLR0915
+def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -> None:
     """Verify source code runs in isolated environment without dev dependencies.
 
     Creates temp environment, installs without dev group, imports all src modules,
@@ -418,6 +418,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
     for config in configs:
         shutil.copy(config, temp_project_path.parent)
 
+    # pop the venv from the environment
     env = os.environ.copy()
     env.pop("VIRTUAL_ENV", None)
 
@@ -431,32 +432,15 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
         stderr = completed_process.stderr
         std_msg = stderr + stdout
 
+        dev_dep = PyprojectConfigFile.get_dev_dependencies()[0]
+        assert dev_dep not in std_msg, base_msg + f"{std_msg}"
+
         # delete pyproject.toml and uv.lock and readme.md
         for config in configs:
             Path(config).unlink()
-        # python -m video_vault.main
-
-        # assert pytest is not installed
-        dev_dep = PyprojectConfigFile.get_standard_dev_dependencies()[0]
-        args = PackageManager.L.get_run_args("pip", "show", dev_dep)
-        installed = args.run(
-            check=False,
-            env=env,
-        )
-        stderr = installed.stderr
-        dev_dep_not_installed = f"not found: {dev_dep}" in stderr
-        assert dev_dep_not_installed, base_msg + f"{stderr}"
-        # check pytest is not importable
-        args = PackageManager.L.get_run_args("python", "-c", "import pytest")
-        installed = args.run(
-            check=False,
-            env=env,
-        )
-        stderr = installed.stderr
-        assert "ModuleNotFoundError" in stderr, base_msg + f"{stderr}"
-        src_pkg_name = PyprojectConfigFile.get_package_name()
 
         # run walk_package with src and import all modules to catch dev dep imports
+        src_pkg_name = PyprojectConfigFile.get_package_name()
         script_args = [
             "python",
             "-c",
@@ -477,7 +461,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
                 "print('Success')"
             ),
         ]
-        args = PackageManager.L.get_run_args(*script_args)
+        args = PackageManager.L.get_run_no_dev_args(*script_args)
 
         completed_process = args.run(
             check=False,
@@ -491,10 +475,9 @@ If this fails then there is likely an import in src that depends on dev dependen
         assert "Success" in stdout, base_msg + msg
 
         # run cli without dev deps
-        args = PackageManager.L.get_run_args(project_name, "--help")
+        args = PackageManager.L.get_run_no_dev_args(project_name, "--help")
         completed_process = args.run(
             check=False,
-            env=env,
         )
         stdout = completed_process.stdout
         stderr = completed_process.stderr
