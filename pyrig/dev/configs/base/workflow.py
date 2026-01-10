@@ -695,7 +695,7 @@ class Workflow(YamlConfigFile):
         python_version: str | None = None,
         repo_token: bool = False,
     ) -> list[dict[str, Any]]:
-        """Get core setup steps with dependency installation.
+        """Get core setup steps with dependency update and installation.
 
         Args:
             python_version: Python version to use. Defaults to latest supported.
@@ -703,7 +703,7 @@ class Workflow(YamlConfigFile):
             no_dev: Whether to install dev dependencies.
 
         Returns:
-            List with setup, install, and dependency update steps.
+            List with setup, dependency update, and dependency installation steps.
         """
         return [
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),

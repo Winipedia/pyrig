@@ -72,20 +72,18 @@ graph TD
 graph TD
     S1[1. Checkout Repository] --> S2[2. Setup Git]
     S2 --> S3[3. Setup Project Mgt]
-    S3 --> S4[4. Patch Version]
+    S3 --> S4[4. Update Dependencies]
     S4 --> S5[5. Install Dependencies]
-    S5 --> S6[6. Add Updates to Git]
-    S6 --> S7[7. Build Artifacts]
-    S7 --> S8[8. Upload Artifacts]
+    S5 --> S6[6. Build Artifacts]
+    S6 --> S7[7. Upload Artifacts]
 
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S7 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style S8 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+	    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style S6 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style S7 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
 ```
 
 **Steps**:
@@ -98,26 +96,22 @@ graph TD
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
-   - Uses Python 3.14 (latest supported version)
+   - Uses the default Python version (latest supported)
 
-4. **Patch Version**
-   - Bumps patch version in `pyproject.toml`
-   - Stages change with `git add`
+4. **Update Python Dependencies**
+   - Updates lock file: `uv lock --upgrade`
 
 5. **Install Python Dependencies**
-   - Updates lock file: `uv lock --upgrade`
    - Installs dependencies: `uv sync`
 
-6. **Add Dependency Updates To Git**
-   - Stages `pyproject.toml` and `uv.lock`
-
-7. **Build Artifacts**
+6. **Build Artifacts**
    - Runs `uv run pyrig build`
-   - Executes all builder classes in `myapp/dev/builders/`
+   - Executes configured builder classes
+(e.g., `myapp/dev/builders/` in a consumer repo)
    - Creates platform-specific executables, wheels, etc.
    - Outputs to `dist/` directory
 
-8. **Upload Artifacts** (`actions/upload-artifact@main`)
+7. **Upload Artifacts** (`actions/upload-artifact@main`)
    - Uploads `dist/` directory
    - Artifact name: `pyrig-{OS}` (e.g., `pyrig-Linux`, `pyrig-Windows`,
      `pyrig-macOS`)

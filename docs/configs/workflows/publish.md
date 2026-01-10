@@ -46,16 +46,15 @@ graph TD
     C --> C1[1. Checkout Repository]
     C1 --> C2[2. Setup Git]
     C2 --> C3[3. Setup Project Mgt]
-    C3 --> C4[4. Patch Version]
+    C3 --> C4[4. Update Dependencies]
     C4 --> C5[5. Install Dependencies]
-    C5 --> C6[6. Add Updates to Git]
-    C6 --> C7[7. Build Documentation]
-    C7 --> C8[8. Enable Pages]
-    C8 --> C9[9. Upload Documentation]
-    C9 --> C10[10. Publish Documentation]
+    C5 --> C6[6. Build Documentation]
+    C6 --> C7[7. Enable Pages]
+    C7 --> C8[8. Upload Documentation]
+    C8 --> C9[9. Publish Documentation]
 
-    B6 -.->|Upload| P1[PyPI Package]
-    C10 -.->|Deploy| P2[GitHub Pages]
+	    B6 -.->|Upload| P1[PyPI Package]
+	    C9 -.->|Deploy| P2[GitHub Pages]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
@@ -69,14 +68,13 @@ graph TD
     style B7 fill:#a8dadc,stroke:#333,stroke-width:1px,color:#000
     style C1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style C2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style C3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style C4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style C5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style C6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style C7 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style C8 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style C9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style C10 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style C3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style C4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style C5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style C6 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style C7 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style C8 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style C9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
     style P1 fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style P2 fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
@@ -98,7 +96,7 @@ graph TD
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
-   - Uses Python 3.14 (latest supported version)
+   - Uses the default Python version (latest supported)
 
 4. **Build Wheel**
    - Runs `uv build`
@@ -133,41 +131,36 @@ for private packages or testing).
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
-   - Uses Python 3.14 (latest supported version)
+   - Uses the default Python version (latest supported)
 
-4. **Patch Version**
-   - Bumps patch version: `uv version --bump patch`
-   - Stages change: `git add pyproject.toml`
-   - Ensures docs show latest version
+4. **Update Python Dependencies**
+   - Updates lock file: `uv lock --upgrade`
 
 5. **Install Python Dependencies**
-   - Updates lock file: `uv lock --upgrade`
    - Installs dependencies: `uv sync`
    - Required for MkDocs and plugins
 
-6. **Add Dependency Updates To Git**
-   - Stages `pyproject.toml` and `uv.lock`
-
-7. **Build Documentation**
+6. **Build Documentation**
    - Runs `uv run mkdocs build`
    - Generates static site from `docs/` directory
    - Uses `mkdocs.yaml` configuration
    - Outputs to `site/` directory
 
-8. **Enable Pages** (`actions/configure-pages@main`)
+7. **Enable Pages** (`actions/configure-pages@main`)
    - Enables GitHub Pages for the repository
    - Uses `REPO_TOKEN` for authentication
    - Sets `enablement: true`
    - Configures Pages to deploy from Actions
 
-9. **Upload Documentation** (`actions/upload-pages-artifact@main`)
+8. **Upload Documentation** (`actions/upload-pages-artifact@main`)
    - Uploads `site/` directory as Pages artifact
    - Prepares for deployment
 
-10. **Publish Documentation** (`actions/deploy-pages@main`)
-    - Deploys uploaded artifact to GitHub Pages
-    - Site becomes available at `https://{username}.github.io/{repo}/`
-    - Uses OIDC authentication (no token needed)
+9. **Publish Documentation** (`actions/deploy-pages@main`)
+   - Deploys uploaded artifact to GitHub Pages
+   - Site becomes available at `https://{username}.github.io/{repo}/`
+   - Uses GitHub-provided OIDC
+(requires `id-token: write`; no secret token needed)
 
 ## Environment Variables
 
@@ -222,5 +215,5 @@ uv add myapp
 3. **Test docs locally**: Run `uv run mkdocs serve` before pushing
 4. **Verify PyPI upload**: Check package page after publishing
 5. **Check Pages deployment**: Visit docs URL after workflow completes
-6. **Use trusted publishing**: Consider configuring PyPI trusted publishing
-   instead of tokens
+6. **Optional**: Consider switching to PyPI trusted publishing if you prefer
+OIDC-based publishing instead of long-lived tokens (requires workflow changes)

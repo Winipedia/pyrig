@@ -26,40 +26,39 @@ from pyrig.dev.configs.workflows.release import ReleaseWorkflow
 class PublishWorkflow(Workflow):
     """GitHub Actions workflow for publishing to PyPI and GitHub Pages.
 
-    Generates a .github/workflows/publish.yml file that publishes the package
+    Generates a .github/workflows/publish.yaml file that publishes the package
     to PyPI and documentation to GitHub Pages after successful releases.
 
     The workflow:
         - Triggers after ReleaseWorkflow completes successfully
-        - Downloads artifacts from release workflow
-        - Publishes Python wheel to PyPI using trusted publishing
+        - Builds a Python wheel and publishes it to PyPI when `PYPI_TOKEN` is configured
         - Builds MkDocs documentation site
         - Deploys documentation to GitHub Pages
 
     Publishing Process:
-        1. Download wheel artifact from release workflow
-        2. Publish to PyPI using OIDC trusted publishing (no API token needed)
+        1. Build Python wheel
+        2. Publish to PyPI using `PYPI_TOKEN` (skips publishing if token is not set)
         3. Build MkDocs documentation site
-        4. Deploy to GitHub Pages (gh-pages branch)
+        4. Deploy to GitHub Pages via GitHub Actions Pages deployment
 
     Examples:
-        Generate publish.yml workflow::
+        Generate publish.yaml workflow::
 
             from pyrig.dev.configs.workflows.publish import PublishWorkflow
 
-            # Creates .github/workflows/publish.yml
+            # Creates .github/workflows/publish.yaml
             PublishWorkflow()
 
     Note:
-        Requires PyPI trusted publishing to be configured for the repository.
-        See: https://docs.pypi.org/trusted-publishers/
+        Publishing to PyPI is token-based by default (via the `PYPI_TOKEN` secret).
+        If `PYPI_TOKEN` is not configured, the PyPI publish step is skipped.
 
     See Also:
         pyrig.dev.configs.workflows.release.ReleaseWorkflow
             Triggers this workflow on completion
         pyrig.dev.configs.docs.mkdocs.MkdocsConfigFile
             Configures the documentation site
-        PyPI Trusted Publishing: https://docs.pypi.org/trusted-publishers/
+        PyPI API tokens: https://pypi.org/help/#apitoken
     """
 
     @classmethod

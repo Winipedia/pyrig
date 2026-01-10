@@ -49,25 +49,13 @@ graph TD
     B --> C[health_check]
     P --> C
 
-    B --> B1[Ubuntu × Python 3.12]
-    B --> B2[Ubuntu × Python 3.13]
-    B --> B3[Ubuntu × Python 3.14]
-    B --> B4[Windows × Python 3.12]
-    B --> B5[Windows × Python 3.13]
-    B --> B6[Windows × Python 3.14]
-    B --> B7[macOS × Python 3.12]
-    B --> B8[macOS × Python 3.13]
-    B --> B9[macOS × Python 3.14]
+    B --> B1[Ubuntu × Python (matrix)]
+    B --> B2[Windows × Python (matrix)]
+    B --> B3[macOS × Python (matrix)]
 
     B1 --> C
     B2 --> C
     B3 --> C
-    B4 --> C
-    B5 --> C
-    B6 --> C
-    B7 --> C
-    B8 --> C
-    B9 --> C
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
@@ -76,12 +64,6 @@ graph TD
     style B1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style B2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style B3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style B4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style B5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style B6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style B7 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style B8 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style B9 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
 ```
 
 ## Jobs
@@ -102,22 +84,20 @@ dependencies, and applies the branch protection ruleset from
 graph TD
     P1[1. Checkout Repository] --> P2[2. Setup Git]
     P2 --> P3[3. Setup Project Mgt]
-    P3 --> P4[4. Patch Version]
+    P3 --> P4[4. Update Dependencies]
     P4 --> P5[5. Install Dependencies]
-    P5 --> P6[6. Add Updates to Git]
-    P6 --> P7[7. Protect Repository]
+    P5 --> P6[6. Protect Repository]
 
-    P7 -.->|Loads| P7A[branch-protection.json]
-    P7 -.->|Creates/Updates| P7B[GitHub Ruleset]
-    P7 -.->|Requires| P7C[REPO_TOKEN]
+	    P6 -.->|Loads| P6A[branch-protection.json]
+	    P6 -.->|Creates/Updates| P6B[GitHub Ruleset]
+	    P6 -.->|Requires| P6C[REPO_TOKEN]
 
     style P1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style P2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style P3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style P4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style P5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style P6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style P7 fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style P6 fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
 **Steps**:
@@ -127,24 +107,19 @@ graph TD
 
 2. **Setup Git**
    - Configures git user as `github-actions[bot]`
-   - Required for version patching
+   - Standardizes git identity for any future automated commits
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
-   - Sets up Python 3.14
+   - Sets up the default Python version (latest supported)
 
-4. **Patch Version**
-   - Bumps patch version in `pyproject.toml`
-   - Stages change with `git add`
+4. **Update Python Dependencies**
+   - Updates lock file: `uv lock --upgrade`
 
 5. **Install Python Dependencies**
-   - Updates lock file: `uv lock --upgrade`
    - Installs dependencies: `uv sync`
 
-6. **Add Dependency Updates To Git**
-   - Stages `pyproject.toml` and `uv.lock`
-
-7. **Protect Repository**
+6. **Protect Repository**
    - Runs `uv run pyrig protect-repo`
    - Loads configuration from `branch-protection.json`
    - Creates or updates branch protection ruleset on GitHub
@@ -171,7 +146,7 @@ need to call this in all matrix jobs.
 graph TD
     S1[1. Checkout Repository] --> S2[2. Setup Git]
     S2 --> S3[3. Setup Project Mgt]
-    S3 --> S4[4. Patch Version]
+    S3 --> S4[4. Update Dependencies]
     S4 --> S5[5. Install Dependencies]
     S5 --> S6[6. Add Updates to Git]
     S6 --> S7[7. Run Pre-commit Hooks]
@@ -204,15 +179,12 @@ graph TD
    - Installs uv package manager
    - Sets up Python from matrix version
 
-4. **Patch Version**
-   - Bumps patch version in `pyproject.toml`
-   - Stages change with `git add`
-   - Ensures version is always ahead for releases
+4. **Update Python Dependencies**
+   - Updates lock file: `uv lock --upgrade`
+   - Tests against the latest dependency versions resolved at workflow time
 
 5. **Install Python Dependencies**
-   - Updates lock file: `uv lock --upgrade`
    - Installs dependencies: `uv sync`
-   - Tests against latest dependency versions
 
 6. **Add Dependency Updates To Git**
    - Stages `pyproject.toml` and `uv.lock`
@@ -224,20 +196,20 @@ graph TD
      (markdown linting)
    - Fails if any hook fails
 
-    8. **Run Dependency Audit**
-       - Runs `uv run pip-audit`
-       - Scans installed dependencies for known vulnerabilities
+8. **Run Dependency Audit**
+   - Runs `uv run pip-audit`
+   - Scans installed dependencies for known vulnerabilities
 
-    9. **Run Tests**
-       - Runs `uv run pytest --log-cli-level=INFO --cov-report=xml`
-       - Executes all tests with coverage measurement
-       - Generates `coverage.xml` report
-       - Requires 90% coverage (from `pyproject.toml`)
+9. **Run Tests**
+   - Runs `uv run pytest --log-cli-level=INFO --cov-report=xml`
+   - Executes all tests with coverage measurement
+   - Generates `coverage.xml` report
+   - Requires 90% coverage (from `pyproject.toml`)
 
-    10. **Upload Coverage Report** (`codecov/codecov-action@main`)
-   - Uploads `coverage.xml` to Codecov
-   - Uses `CODECOV_TOKEN` secret
-   - Only fails CI if token is configured
+10. **Upload Coverage Report** (`codecov/codecov-action@main`)
+    - Uploads `coverage.xml` to Codecov
+    - Uses `CODECOV_TOKEN` secret
+    - Only fails CI if token is configured
 
 **Why matrix?** Testing across OS and Python versions catches platform-specific
 bugs and ensures compatibility.
