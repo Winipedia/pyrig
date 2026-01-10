@@ -707,7 +707,6 @@ class Workflow(YamlConfigFile):
         """
         return [
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
-            cls.step_patch_version(),
             cls.step_update_dependencies(),
             cls.step_install_dependencies(no_dev=no_dev),
             cls.step_add_dependency_updates_to_git(),
@@ -978,9 +977,7 @@ class Workflow(YamlConfigFile):
         """
         return cls.get_step(
             step_func=cls.step_patch_version,
-            run=str(PackageManager.L.get_patch_version_args())
-            + " && "
-            + str(VersionController.L.get_add_pyproject_toml_args()),
+            run=str(PackageManager.L.get_patch_version_args()),
             step=step,
         )
 
