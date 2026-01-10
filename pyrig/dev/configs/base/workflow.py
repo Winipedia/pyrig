@@ -709,7 +709,6 @@ class Workflow(YamlConfigFile):
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
             cls.step_update_dependencies(),
             cls.step_install_dependencies(no_dev=no_dev),
-            cls.step_add_dependency_updates_to_git(),
         ]
 
     @classmethod

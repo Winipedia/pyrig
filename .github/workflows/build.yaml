@@ -46,9 +46,6 @@ jobs:
     - name: Install Dependencies
       id: install_dependencies
       run: uv sync
-    - name: Add Dependency Updates To Git
-      id: add_dependency_updates_to_git
-      run: git add pyproject.toml uv.lock
     - name: Build Artifacts
       id: build_artifacts
       run: uv run pyrig build

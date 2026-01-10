@@ -182,6 +182,7 @@ class HealthCheckWorkflow(Workflow):
             *cls.steps_core_matrix_setup(
                 python_version=cls.insert_matrix_python_version(),
             ),
+            cls.step_add_dependency_updates_to_git(),
             cls.step_run_pre_commit_hooks(),
             cls.step_run_dependency_audit(),
             cls.step_run_tests(),
