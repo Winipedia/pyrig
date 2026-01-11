@@ -67,10 +67,6 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 ### Generated Content
 
-```python
-"""Test fixtures package for custom pytest fixtures."""
-```
-
 The file contains only the docstring, allowing you to add custom fixture
 modules.
 

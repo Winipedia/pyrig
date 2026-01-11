@@ -83,8 +83,6 @@ The Containerfile is built from discrete layers returned by `get_layers()`:
 ]
 ```
 
-Each layer is joined with double newlines for readability.
-
 ### Validation Logic
 
 Validation checks that all required layers are present. You can add comments,
