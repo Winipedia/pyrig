@@ -109,7 +109,7 @@ For a project named "myapp" with description "A sample application":
 ### Content Generation Logic
 
 The `ReadmeConfigFile` inherits the `get_lines()` method from
-`BadgesMarkdownConfigFile` without modification.
+`BadgesMarkdownConfigFile` via the `get_lines()` method without modification.
 
 **Key behavior**:
 
@@ -161,7 +161,7 @@ uv run pyrig mkroot
 
 Simply add your content after the generated header.
 
-The validation only checks that required elements exist, so you can add as much
+The validation only checks that generated lines exist, so you can add as much
 content as you want.
 
 ### Validation Logic
