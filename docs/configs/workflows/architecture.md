@@ -87,7 +87,7 @@ class MyWorkflow(Workflow):
             runs_on=cls.UBUNTU_LATEST,
             steps=[
                 cls.step_checkout_repository(),
-                cls.step_setup_project_mgt(python_version="3.12"),
+                cls.step_setup_package_manager(python_version="3.12"),
                 cls.step_run_tests(),
             ]
         )
@@ -258,8 +258,8 @@ class CustomWorkflow(Workflow):
             runs_on=cls.UBUNTU_LATEST,
             steps=[
                 cls.step_checkout_repository(),
-                cls.step_setup_git(),
-                cls.step_setup_project_mgt(python_version="3.12"),
+                cls.step_setup_version_control(),
+                cls.step_setup_package_manager(python_version="3.12"),
                 cls.step_install_dependencies(),
                 {
                     "name": "Run custom script",

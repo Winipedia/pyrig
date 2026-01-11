@@ -121,12 +121,7 @@ The `py.typed` file indicates your package follows
 
 ## Package Distribution
 
-Make sure `py.typed` is included in your package:
-
-```toml
-# pyproject.toml
-[tool.setuptools.package-data]
-myapp = ["py.typed"]
-```
-
-Pyrig handles this automatically in the build configuration.
+Pyrig uses `uv_build` as the build backend, which automatically includes all
+files in the module directory. Since `py.typed` is placed in the package
+directory, it is automatically included in distributions without any extra
+configuration.
