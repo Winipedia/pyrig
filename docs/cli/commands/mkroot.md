@@ -43,9 +43,9 @@ See [Configs Documentation](../../configs/index.md) for the complete list.
 ## Behavior
 
 - **Idempotent** - Safe to run multiple times
-- Creates files that do not exist
-- Updates existing files if they do not match expected configuration
-- Respects opt-out markers in files
+- **Creates files** that do not exist
+- **Adds missing configuration** to files without removing user customizations
+- **Respects opt-out** - Empty files are skipped (user opted out)
 
 ## When to Use
 
