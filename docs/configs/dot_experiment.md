@@ -35,10 +35,10 @@ graph BT
 **What this means**:
 
 - Python file format (`.py` extension)
-- Overrides `is_correct()` to only check file existence
+- Overrides `is_correct()` to also accept file existence
 - Users can freely modify the file content
-- File is considered correct if it exists
-- Simple structure without content validation
+- File is considered correct if it passes parent validation or exists
+- Simple structure without strict content validation
 
 ## File Location
 
@@ -61,17 +61,6 @@ with:
 1. **Minimal content**: Just a docstring explaining the file's purpose
 2. **Git exclusion**: Automatically added to `.gitignore`
 3. **Root location**: Placed at project root for easy access
-
-### Generated Content
-
-```python
-"""This file is for experimentation and is ignored by git."""
-```
-
-That's it! The file contains only a single-line docstring.
-
-The minimal content allows you to add whatever code you want without worrying
-about validation.
 
 ## Git Integration
 
@@ -99,14 +88,14 @@ imports, or prototyping features. Run it directly with `python .experiment.py`.
 
 ## Validation Logic
 
-The `DotExperimentConfigFile` overrides the `is_correct()` method to simply
-check if the file exists. This is more permissive than the standard
-`StringConfigFile` validation.
+The `DotExperimentConfigFile` overrides the `is_correct()` method to also
+accept file existence via `super().is_correct() or cls.get_path().exists()`.
+This is more permissive than the standard `StringConfigFile` validation.
 
-**Required**: The file must exist.
+**Required**: The file must pass parent validation or exist.
 
-**Flexible content**: You can modify the file content freely; validation only
-checks for file existence.
+**Flexible content**: You can modify the file content freely; validation
+accepts either parent validation success or file existence.
 
 ## Troubleshooting
 
