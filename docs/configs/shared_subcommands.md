@@ -64,16 +64,6 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 2. **Package structure**: The `dev/cli/` directory is created
 3. **Ready for customization**: You can add your own shared subcommand functions
 
-### Generated Content
-
-```python
-"""Shared CLI commands available across all dependent projects.
-
-All public functions are automatically discovered and registered as shared CLI
-commands. This means that any function defined in this module becomes a CLI
-command that is available in all dependent projects as a shared command. """
-```
-
 The file contains only the docstring, allowing you to add shared CLI commands.
 
 ## Usage
