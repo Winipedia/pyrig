@@ -125,8 +125,8 @@ class HealthCheckWorkflow(Workflow):
             Dict with protect, matrix, and aggregation jobs.
         """
         jobs: dict[str, Any] = {}
-        jobs.update(cls.job_protect_repository())
-        jobs.update(cls.job_health_check_matrix())
+        jobs.update(cls.job_health_checks())
+        jobs.update(cls.job_matrix_health_checks())
         jobs.update(cls.job_health_check())
         return jobs
 
@@ -137,77 +137,80 @@ class HealthCheckWorkflow(Workflow):
         Returns:
             Job configuration for result aggregation.
         """
-        matrix_job_id = cls.make_id_from_func(cls.job_health_check_matrix)
-        protect_job_id = cls.make_id_from_func(cls.job_protect_repository)
+        matrix_health_checks_job_id = cls.make_id_from_func(
+            cls.job_matrix_health_checks
+        )
+        health_checks_job_id = cls.make_id_from_func(cls.job_health_checks)
         return cls.get_job(
             job_func=cls.job_health_check,
-            needs=[matrix_job_id, protect_job_id],
-            steps=cls.steps_aggregate_matrix_results(),
+            needs=[matrix_health_checks_job_id, health_checks_job_id],
+            steps=cls.steps_aggregate_jobs(),
         )
 
     @classmethod
-    def job_health_check_matrix(cls) -> dict[str, Any]:
+    def job_matrix_health_checks(cls) -> dict[str, Any]:
         """Get the matrix job that runs across OS and Python versions.
 
         Returns:
             Job configuration for matrix testing.
         """
         return cls.get_job(
-            job_func=cls.job_health_check_matrix,
+            job_func=cls.job_matrix_health_checks,
             strategy=cls.strategy_matrix_os_and_python_version(),
             runs_on=cls.insert_matrix_os(),
-            steps=cls.steps_health_check_matrix(),
+            steps=cls.steps_matrix_health_checks(),
         )
 
     @classmethod
-    def job_protect_repository(cls) -> dict[str, Any]:
-        """Get the job that protects the repository.
+    def job_health_checks(cls) -> dict[str, Any]:
+        """Get the job that runs health checks.
+
+        This is for non matrix checks.
 
         Returns:
-            Job configuration for protecting the repository.
+            Job configuration for health checks.
         """
         return cls.get_job(
-            job_func=cls.job_protect_repository,
-            steps=cls.steps_protect_repository(),
+            job_func=cls.job_health_checks,
+            steps=cls.steps_health_checks(),
         )
 
     @classmethod
-    def steps_health_check_matrix(cls) -> list[dict[str, Any]]:
+    def steps_matrix_health_checks(cls) -> list[dict[str, Any]]:
         """Get the steps for the matrix health check job.
 
         Returns:
-            List of steps for setup, linting, and testing.
+            List of steps for setup and testing.
         """
         return [
             *cls.steps_core_matrix_setup(
                 python_version=cls.insert_matrix_python_version(),
             ),
-            cls.step_add_dependency_updates_to_git(),
-            cls.step_run_pre_commit_hooks(),
-            cls.step_run_dependency_audit(),
             cls.step_run_tests(),
             cls.step_upload_coverage_report(),
         ]
 
     @classmethod
-    def steps_aggregate_matrix_results(cls) -> list[dict[str, Any]]:
+    def steps_aggregate_jobs(cls) -> list[dict[str, Any]]:
         """Get the steps for aggregating matrix results.
 
         Returns:
             List with the aggregation step.
         """
         return [
-            cls.step_aggregate_matrix_results(),
+            cls.step_aggregate_jobs(),
         ]
 
     @classmethod
-    def steps_protect_repository(cls) -> list[dict[str, Any]]:
-        """Get the steps for protecting the repository.
+    def steps_health_checks(cls) -> list[dict[str, Any]]:
+        """Get the steps for the health check job.
 
         Returns:
-            List of steps for setup and protection.
+            List of steps for setup, linting, and testing.
         """
         return [
             *cls.steps_core_installed_setup(),
+            cls.step_run_pre_commit_hooks(),
+            cls.step_run_dependency_audit(),
             cls.step_protect_repository(),
         ]

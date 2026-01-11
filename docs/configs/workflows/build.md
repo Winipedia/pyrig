@@ -70,20 +70,22 @@ graph TD
 
 ```mermaid
 graph TD
-    S1[1. Checkout Repository] --> S2[2. Setup Git]
+    S1[1. Checkout Repository] --> S2[2. Setup Version Control]
     S2 --> S3[3. Setup Project Mgt]
     S3 --> S4[4. Update Dependencies]
     S4 --> S5[5. Install Dependencies]
-    S5 --> S6[6. Build Artifacts]
-    S6 --> S7[7. Upload Artifacts]
+    S5 --> S6[6. Add Dependency Updates To Version Control]
+    S6 --> S7[7. Build Artifacts]
+    S7 --> S8[8. Upload Artifacts]
 
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
 	    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
 	    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S6 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-	    style S7 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+	    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+	    style S7 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style S8 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
 ```
 
 **Steps**:
@@ -91,7 +93,7 @@ graph TD
 1. **Checkout Repository** (`actions/checkout@main`)
    - Clones the repository code
 
-2. **Setup Git**
+2. **Setup Version Control**
    - Configures git user as `github-actions[bot]`
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
@@ -104,14 +106,17 @@ graph TD
 5. **Install Python Dependencies**
    - Installs dependencies: `uv sync`
 
-6. **Build Artifacts**
+6. **Add Dependency Updates To Version Control**
+   - Stages `pyproject.toml` and `uv.lock`
+
+7. **Build Artifacts**
    - Runs `uv run pyrig build`
    - Executes configured builder classes
 (e.g., `myapp/dev/builders/` in a consumer repo)
    - Creates platform-specific executables, wheels, etc.
    - Outputs to `dist/` directory
 
-7. **Upload Artifacts** (`actions/upload-artifact@main`)
+8. **Upload Artifacts** (`actions/upload-artifact@main`)
    - Uploads `dist/` directory
    - Artifact name: `pyrig-{OS}` (e.g., `pyrig-Linux`, `pyrig-Windows`,
      `pyrig-macOS`)

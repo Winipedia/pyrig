@@ -39,13 +39,13 @@ graph TD
     A[Trigger: Build Success] --> B[release]
 
     B --> S1[1. Checkout Repository]
-    S1 --> S2[2. Setup Git]
+    S1 --> S2[2. Setup Version Control]
     S2 --> S3[3. Setup Project Mgt]
     S3 --> S4[4. Update Dependencies]
     S4 --> S5[5. Install Dependencies]
-    S5 --> S6[6. Patch Version]
-    S6 --> S7[7. Add Updates to Git]
-    S7 --> S8[8. Run Pre-commit Hooks]
+    S5 --> S6[6. Add Dependency Updates To Version Control]
+    S6 --> S7[7. Patch Version]
+    S7 --> S8[8. Add Version Bump To Version Control]
     S8 --> S9[9. Commit Changes]
     S9 --> S10[10. Push Commits]
     S10 --> S11[11. Create & Push Tag]
@@ -100,7 +100,7 @@ graph TD
    - Clones the repository code
    - Uses `REPO_TOKEN` for authentication (required for protected branches)
 
-2. **Setup Git**
+2. **Setup Version Control**
    - Configures git user as `github-actions[bot]`
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
@@ -113,24 +113,21 @@ graph TD
 5. **Install Python Dependencies**
    - Installs dependencies: `uv sync`
 
-6. **Patch Version**
-   - Bumps patch version: `uv version --bump patch`
-   - Updates `pyproject.toml` with new version
-   - Stages change: `git add pyproject.toml`
-
-7. **Add Dependency Updates To Git**
+6. **Add Dependency Updates To Version Control**
    - Stages `pyproject.toml` and `uv.lock`
 
-8. **Run Pre Commit Hooks**
-   - Runs `uv run pre-commit run --all-files`
-   - Formats code, updates docs, runs checks
-   - Auto-fixes any issues before commit
+7. **Patch Version**
+   - Bumps patch version: `uv version --bump patch`
+   - Updates `pyproject.toml` with new version
+
+8. **Add Version Bump To Version Control**
+   - Stages `pyproject.toml` and `uv.lock`
 
 9. **Commit Added Changes**
    - Commits all staged changes
    - Message:
      `[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)`
-   - `--no-verify`: Skips pre-commit hooks (already ran)
+   - `--no-verify`: Skips pre-commit hooks
    - `[skip ci]`: Prevents triggering another workflow run
 
 10. **Push Commits**

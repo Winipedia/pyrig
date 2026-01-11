@@ -36,7 +36,7 @@ graph TD
     A --> C[publish_documentation]
 
     B --> B1[1. Checkout Repository]
-    B1 --> B2[2. Setup Git]
+    B1 --> B2[2. Setup Version Control]
     B2 --> B3[3. Setup Project Mgt]
     B3 --> B4[4. Build Wheel]
     B4 --> B5{5. PYPI_TOKEN set?}
@@ -44,17 +44,18 @@ graph TD
     B5 -->|No| B7[Skip Publishing]
 
     C --> C1[1. Checkout Repository]
-    C1 --> C2[2. Setup Git]
+    C1 --> C2[2. Setup Version Control]
     C2 --> C3[3. Setup Project Mgt]
     C3 --> C4[4. Update Dependencies]
     C4 --> C5[5. Install Dependencies]
-    C5 --> C6[6. Build Documentation]
-    C6 --> C7[7. Enable Pages]
-    C7 --> C8[8. Upload Documentation]
-    C8 --> C9[9. Publish Documentation]
+    C5 --> C6[6. Add Dependency Updates To Version Control]
+    C6 --> C7[7. Build Documentation]
+    C7 --> C8[8. Enable Pages]
+    C8 --> C9[9. Upload Documentation]
+    C9 --> C10[10. Publish Documentation]
 
 	    B6 -.->|Upload| P1[PyPI Package]
-	    C9 -.->|Deploy| P2[GitHub Pages]
+	    C10 -.->|Deploy| P2[GitHub Pages]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
@@ -71,10 +72,11 @@ graph TD
 	    style C3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
 	    style C4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
 	    style C5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style C6 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style C6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
 	    style C7 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
 	    style C8 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
 	    style C9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+	    style C10 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
     style P1 fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
     style P2 fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
@@ -91,7 +93,7 @@ graph TD
 1. **Checkout Repository** (`actions/checkout@main`)
    - Clones the repository code
 
-2. **Setup Git**
+2. **Setup Version Control**
    - Configures git user as `github-actions[bot]`
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
@@ -126,7 +128,7 @@ for private packages or testing).
 1. **Checkout Repository** (`actions/checkout@main`)
    - Clones the repository code
 
-2. **Setup Git**
+2. **Setup Version Control**
    - Configures git user as `github-actions[bot]`
 
 3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
@@ -140,26 +142,29 @@ for private packages or testing).
    - Installs dependencies: `uv sync`
    - Required for MkDocs and plugins
 
-6. **Build Documentation**
+6. **Add Dependency Updates To Version Control**
+   - Stages `pyproject.toml` and `uv.lock`
+
+7. **Build Documentation**
    - Runs `uv run mkdocs build`
    - Generates static site from `docs/` directory
    - Uses `mkdocs.yaml` configuration
    - Outputs to `site/` directory
 
-7. **Enable Pages** (`actions/configure-pages@main`)
+8. **Enable Pages** (`actions/configure-pages@main`)
    - Enables GitHub Pages for the repository
    - Uses `REPO_TOKEN` for authentication
    - Sets `enablement: true`
    - Configures Pages to deploy from Actions
 
-8. **Upload Documentation** (`actions/upload-pages-artifact@main`)
+9. **Upload Documentation** (`actions/upload-pages-artifact@main`)
    - Uploads `site/` directory as Pages artifact
    - Prepares for deployment
 
-9. **Publish Documentation** (`actions/deploy-pages@main`)
-   - Deploys uploaded artifact to GitHub Pages
-   - Site becomes available at `https://{username}.github.io/{repo}/`
-   - Uses GitHub-provided OIDC
+10. **Publish Documentation** (`actions/deploy-pages@main`)
+    - Deploys uploaded artifact to GitHub Pages
+    - Site becomes available at `https://{username}.github.io/{repo}/`
+    - Uses GitHub-provided OIDC
 (requires `id-token: write`; no secret token needed)
 
 ## Environment Variables

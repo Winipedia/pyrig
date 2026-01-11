@@ -127,8 +127,7 @@ class ReleaseWorkflow(Workflow):
         return [
             *cls.steps_core_installed_setup(repo_token=True),
             cls.step_patch_version(),
-            cls.step_add_dependency_updates_to_git(),
-            cls.step_run_pre_commit_hooks(),
+            cls.step_add_version_bump_to_version_control(),
             cls.step_commit_added_changes(),
             cls.step_push_commits(),
             cls.step_create_and_push_tag(),

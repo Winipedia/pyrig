@@ -683,7 +683,7 @@ class Workflow(YamlConfigFile):
             )
         return [
             cls.step_checkout_repository(repo_token=repo_token),
-            cls.step_setup_git(),
+            cls.step_setup_version_control(),
             cls.step_setup_package_manager(python_version=python_version),
         ]
 
@@ -709,6 +709,7 @@ class Workflow(YamlConfigFile):
             *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
             cls.step_update_dependencies(),
             cls.step_install_dependencies(no_dev=no_dev),
+            cls.step_add_dependency_updates_to_version_control(),
         ]
 
     @classmethod
@@ -760,7 +761,7 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
-    def step_aggregate_matrix_results(
+    def step_aggregate_jobs(
         cls,
         *,
         step: dict[str, Any] | None = None,
@@ -774,8 +775,8 @@ class Workflow(YamlConfigFile):
             Step configuration for result aggregation.
         """
         return cls.get_step(
-            step_func=cls.step_aggregate_matrix_results,
-            run="echo 'Aggregating matrix results into one job.'",
+            step_func=cls.step_aggregate_jobs,
+            run="echo 'Aggregating jobs into one job.'",
             step=step,
         )
 
@@ -981,7 +982,27 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
-    def step_add_dependency_updates_to_git(
+    def step_add_version_bump_to_version_control(
+        cls,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Create a step that stages the version bump commit.
+
+        Args:
+            step: Existing step dict to update.
+
+        Returns:
+            Step that stages pyproject.toml.
+        """
+        return cls.get_step(
+            step_func=cls.step_add_version_bump_to_version_control,
+            run=str(VersionController.L.get_add_pyproject_toml_and_lock_file_args()),
+            step=step,
+        )
+
+    @classmethod
+    def step_add_dependency_updates_to_version_control(
         cls,
         *,
         step: dict[str, Any] | None = None,
@@ -995,7 +1016,7 @@ class Workflow(YamlConfigFile):
             Step that stages pyproject.toml and uv.lock.
         """
         return cls.get_step(
-            step_func=cls.step_add_dependency_updates_to_git,
+            step_func=cls.step_add_dependency_updates_to_version_control,
             run=str(VersionController.L.get_add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
@@ -1031,7 +1052,7 @@ class Workflow(YamlConfigFile):
         )
 
     @classmethod
-    def step_setup_git(
+    def step_setup_version_control(
         cls,
         *,
         step: dict[str, Any] | None = None,
@@ -1045,7 +1066,7 @@ class Workflow(YamlConfigFile):
             Step that sets git user.email and user.name.
         """
         return cls.get_step(
-            step_func=cls.step_setup_git,
+            step_func=cls.step_setup_version_control,
             run=str(
                 VersionController.L.get_config_global_user_email_args(
                     email='"github-actions[bot]@users.noreply.github.com"',

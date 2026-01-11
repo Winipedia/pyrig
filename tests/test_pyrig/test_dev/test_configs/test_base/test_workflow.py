@@ -45,6 +45,11 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_step_add_version_bump_to_version_control(self) -> None:
+        """Test method."""
+        result = Workflow.step_add_version_bump_to_version_control()
+        assert "run" in result, f"Expected 'run' in step, got {result}"
+
     def test_step_run_dependency_audit(self) -> None:
         """Test method."""
         result = Workflow.step_run_dependency_audit()
@@ -355,11 +360,9 @@ class TestWorkflow:
         result = my_test_workflow.step_opt_out_of_workflow()
         assert "run" in result, "Expected 'run' in step"
 
-    def test_step_aggregate_matrix_results(
-        self, my_test_workflow: type[Workflow]
-    ) -> None:
-        """Test method for step_aggregate_matrix_results."""
-        result = my_test_workflow.step_aggregate_matrix_results()
+    def test_step_aggregate_jobs(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for step_aggregate_jobs."""
+        result = my_test_workflow.step_aggregate_jobs()
         assert "name" in result, "Expected 'name' in step"
         assert "run" in result, "Expected 'run' in step"
 
@@ -373,9 +376,9 @@ class TestWorkflow:
         result = my_test_workflow.step_checkout_repository()
         assert "uses" in result, "Expected 'uses' in step"
 
-    def test_step_setup_git(self, my_test_workflow: type[Workflow]) -> None:
-        """Test method for step_setup_git."""
-        result = my_test_workflow.step_setup_git()
+    def test_step_setup_version_control(self, my_test_workflow: type[Workflow]) -> None:
+        """Test method for step_setup_version_control."""
+        result = my_test_workflow.step_setup_version_control()
         assert "run" in result, "Expected 'run' in step"
 
     def test_step_setup_python(self, my_test_workflow: type[Workflow]) -> None:
@@ -393,11 +396,11 @@ class TestWorkflow:
         result = my_test_workflow.step_patch_version()
         assert "run" in result, "Expected 'run' in step"
 
-    def test_step_add_dependency_updates_to_git(
+    def test_step_add_dependency_updates_to_version_control(
         self, my_test_workflow: type[Workflow]
     ) -> None:
-        """Test method for step_add_dependency_updates_to_git."""
-        result = my_test_workflow.step_add_dependency_updates_to_git()
+        """Test method for step_add_dependency_updates_to_version_control."""
+        result = my_test_workflow.step_add_dependency_updates_to_version_control()
         assert "run" in result, "Expected 'run' in step"
 
     def test_step_build_wheel(self, my_test_workflow: type[Workflow]) -> None:
