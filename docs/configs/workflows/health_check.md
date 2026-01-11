@@ -82,7 +82,7 @@ pre-commit hooks, dependency audit, and applies the branch protection ruleset.
 ```mermaid
 graph TD
     P1[1. Checkout Repository] --> P2[2. Setup Version Control]
-    P2 --> P3[3. Setup Project Mgt]
+    P2 --> P3[3. Setup Package Manager]
     P3 --> P4[4. Update Dependencies]
     P4 --> P5[5. Install Dependencies]
     P5 --> P6[6. Add Dependency Updates To Version Control]
@@ -90,9 +90,9 @@ graph TD
     P7 --> P8[8. Run Dependency Audit]
     P8 --> P9[9. Protect Repository]
 
-	    P9 -.->|Loads| P9A[branch-protection.json]
-	    P9 -.->|Creates/Updates| P9B[GitHub Ruleset]
-	    P9 -.->|Requires| P9C[REPO_TOKEN]
+    P9 -.->|Loads| P9A[branch-protection.json]
+    P9 -.->|Creates/Updates| P9B[GitHub Ruleset]
+    P9 -.->|Requires| P9C[REPO_TOKEN]
 
     style P1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style P2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
@@ -114,14 +114,14 @@ graph TD
    - Configures git user as `github-actions[bot]`
    - Standardizes git identity for any future automated commits
 
-3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
+3. **Setup Package Manager** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
    - Sets up the default Python version (latest supported)
 
-4. **Update Python Dependencies**
+4. **Update Dependencies**
    - Updates lock file: `uv lock --upgrade`
 
-5. **Install Python Dependencies**
+5. **Install Dependencies**
    - Installs dependencies: `uv sync`
 
 6. **Add Dependency Updates To Version Control**
@@ -162,12 +162,12 @@ waits for both this job and the matrix) is the required status check for PRs.
 ```mermaid
 graph TD
     S1[1. Checkout Repository] --> S2[2. Setup Version Control]
-    S2 --> S3[3. Setup Project Mgt]
+    S2 --> S3[3. Setup Package Manager]
     S3 --> S4[4. Update Dependencies]
     S4 --> S5[5. Install Dependencies]
     S5 --> S6[6. Add Dependency Updates To Version Control]
     S6 --> S7[7. Run Tests]
-    S7 --> S8[8. Upload Coverage]
+    S7 --> S8[8. Upload Coverage Report]
 
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
@@ -188,15 +188,15 @@ graph TD
    - Configures git user as `github-actions[bot]`
    - Required for commits in later workflows
 
-3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
+3. **Setup Package Manager** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
    - Sets up Python from matrix version
 
-4. **Update Python Dependencies**
+4. **Update Dependencies**
    - Updates lock file: `uv lock --upgrade`
    - Tests against the latest dependency versions resolved at workflow time
 
-5. **Install Python Dependencies**
+5. **Install Dependencies**
    - Installs dependencies: `uv sync`
 
 6. **Add Dependency Updates To Version Control**

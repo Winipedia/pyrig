@@ -71,7 +71,7 @@ graph TD
 ```mermaid
 graph TD
     S1[1. Checkout Repository] --> S2[2. Setup Version Control]
-    S2 --> S3[3. Setup Project Mgt]
+    S2 --> S3[3. Setup Package Manager]
     S3 --> S4[4. Update Dependencies]
     S4 --> S5[5. Install Dependencies]
     S5 --> S6[6. Add Dependency Updates To Version Control]
@@ -96,14 +96,14 @@ graph TD
 2. **Setup Version Control**
    - Configures git user as `github-actions[bot]`
 
-3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
+3. **Setup Package Manager** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
    - Uses the default Python version (latest supported)
 
-4. **Update Python Dependencies**
+4. **Update Dependencies**
    - Updates lock file: `uv lock --upgrade`
 
-5. **Install Python Dependencies**
+5. **Install Dependencies**
    - Installs dependencies: `uv sync`
 
 6. **Add Dependency Updates To Version Control**
