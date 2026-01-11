@@ -49,9 +49,9 @@ graph TD
     B --> C[health_check]
     P --> C
 
-    B --> B1[Ubuntu × Python (matrix)]
-    B --> B2[Windows × Python (matrix)]
-    B --> B3[macOS × Python (matrix)]
+    B --> B1[Ubuntu X Python matrix]
+    B --> B2[Windows X Python matrix]
+    B --> B3[macOS X Python matrix]
 
     B1 --> C
     B2 --> C
