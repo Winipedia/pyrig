@@ -105,7 +105,7 @@ graph TD
    - Creates wheel (`.whl`) and source distribution (`.tar.gz`)
    - Outputs to `dist/` directory
 
-5. **Publish To PyPI**
+5. **Publish To Pypi**
    - Runs `uv publish --token ${{ secrets.PYPI_TOKEN }}`
    - Uploads wheel and source distribution to PyPI
    - **Conditional**: Only runs if `PYPI_TOKEN` is configured
@@ -148,7 +148,7 @@ for private packages or testing).
 7. **Build Documentation**
    - Runs `uv run mkdocs build`
    - Generates static site from `docs/` directory
-   - Uses `mkdocs.yaml` configuration
+   - Uses `mkdocs.yml` configuration
    - Outputs to `site/` directory
 
 8. **Enable Pages** (`actions/configure-pages@main`)

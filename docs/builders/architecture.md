@@ -150,7 +150,7 @@ Package B (depends on Package A)
         └── documentation.py  # Custom builder
 
 Running `uv run pyrig build`:
-✓ Discovers ExecutableBuilder from Package A
+✓ Discovers PyInstallerBuilder subclass from Package A
 ✓ Discovers DocumentationBuilder from Package B
 ✓ Builds both artifacts
 ✓ Outputs to dist/ with platform suffixes

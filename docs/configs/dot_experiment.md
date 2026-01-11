@@ -78,7 +78,7 @@ about validation.
 The `.experiment.py` file is automatically added to `.gitignore`:
 
 ```gitignore
-# Pyrig-specific patterns
+# pyrig stuff
 .experiment.py
 ```
 

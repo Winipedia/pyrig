@@ -105,11 +105,11 @@ This template provides:
 
 ### Legacy Cleanup
 
-When running `uv run pyrig init`, any root-level `main.py` file is automatically
-deleted.
+When running `uv run pyrig mkroot` (or commands that invoke it, such as
+`uv run pyrig init`), any root-level `main.py` file is automatically deleted.
 
 **Why this is needed**: uv creates a `main.py` at the project root during
-initialization. This cleanup ensures the file is only in `myapp/`.
+initialization. This cleanup ensures the file is only in `{package_name}/`.
 
 ## Dynamic Configuration
 
@@ -195,14 +195,15 @@ As long as `def main` and `if __name__ == "__main__":` exist, validation passes.
 
 ## CLI Architecture
 
-The main.py file integrates with pyrig's CLI system:
+The main.py file integrates with pyrig's CLI system. The CLI class discovers and
+registers commands from multiple sources:
 
 ```text
-main.py
-  └─> CLI class (from pyrig.dev.cli.cli)
-       ├─> Built-in commands (mkroot, build, etc.)
-       ├─> Subcommands (from myapp/dev/cli/subcommands.py)
-       └─> Shared subcommands (from myapp/dev/cli/shared_subcommands.py)
+CLI class (pyrig.dev.cli.cli)
+  ├─> main() from {package_name}/main.py (registered as "main" command)
+  ├─> Built-in commands (mkroot, build, etc. from subcommands.py)
+  ├─> Subcommands (from {package_name}/dev/cli/subcommands.py)
+  └─> Shared subcommands (from {package_name}/dev/cli/shared_subcommands.py)
 ```
 
 See the [CLI documentation](../cli/architecture.md) for details on adding custom
