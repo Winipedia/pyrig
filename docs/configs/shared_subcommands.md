@@ -64,6 +64,8 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 2. **Package structure**: The `dev/cli/` directory is created
 3. **Ready for customization**: You can add your own shared subcommand functions
 
+### Generated Content
+
 The file contains only the docstring, allowing you to add shared CLI commands.
 
 ## Usage
