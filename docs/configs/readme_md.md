@@ -40,9 +40,9 @@ graph TD
 - Markdown file format (`.md` extension)
 - Automatically generates badges from project metadata
 - Includes project name and description
-- Validation checks for required elements (badges, description, project name)
+- Validation checks that all generated lines exist in the file
 - Users can add content after the generated header
-- File is considered correct if it contains all required elements
+- File is considered correct if it contains all generated lines
 
 ## File Location
 
@@ -109,7 +109,7 @@ For a project named "myapp" with description "A sample application":
 ### Content Generation Logic
 
 The `ReadmeConfigFile` inherits the `get_lines()` method from
-`BadgesMarkdownConfigFile` via the `get_lines()` method without modification.
+`BadgesMarkdownConfigFile` without modification.
 
 **Key behavior**:
 
