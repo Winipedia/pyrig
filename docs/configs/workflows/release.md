@@ -46,7 +46,7 @@ graph TD
     S5 --> S6[6. Add Dependency Updates To Version Control]
     S6 --> S7[7. Patch Version]
     S7 --> S8[8. Add Version Bump To Version Control]
-    S8 --> S9[9. Commit Changes]
+    S8 --> S9[9. Commit Added Changes]
     S9 --> S10[10. Push Commits]
     S10 --> S11[11. Create & Push Tag]
     S11 --> S12[12. Extract Version]
