@@ -37,7 +37,7 @@ graph TD
 
     B --> B1[1. Checkout Repository]
     B1 --> B2[2. Setup Version Control]
-    B2 --> B3[3. Setup Project Mgt]
+    B2 --> B3[3. Setup Package Manager]
     B3 --> B4[4. Build Wheel]
     B4 --> B5{5. PYPI_TOKEN set?}
     B5 -->|Yes| B6[Publish to PyPI]
@@ -45,7 +45,7 @@ graph TD
 
     C --> C1[1. Checkout Repository]
     C1 --> C2[2. Setup Version Control]
-    C2 --> C3[3. Setup Project Mgt]
+    C2 --> C3[3. Setup Package Manager]
     C3 --> C4[4. Update Dependencies]
     C4 --> C5[5. Install Dependencies]
     C5 --> C6[6. Add Dependency Updates To Version Control]
@@ -96,7 +96,7 @@ graph TD
 2. **Setup Version Control**
    - Configures git user as `github-actions[bot]`
 
-3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
+3. **Setup Package Manager** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
    - Uses the default Python version (latest supported)
 
@@ -131,14 +131,14 @@ for private packages or testing).
 2. **Setup Version Control**
    - Configures git user as `github-actions[bot]`
 
-3. **Setup Project Mgt** (`astral-sh/setup-uv@main`)
+3. **Setup Package Manager** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
    - Uses the default Python version (latest supported)
 
-4. **Update Python Dependencies**
+4. **Update Dependencies**
    - Updates lock file: `uv lock --upgrade`
 
-5. **Install Python Dependencies**
+5. **Install Dependencies**
    - Installs dependencies: `uv sync`
    - Required for MkDocs and plugins
 
