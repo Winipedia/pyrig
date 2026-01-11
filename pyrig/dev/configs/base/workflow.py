@@ -642,7 +642,7 @@ class Workflow(YamlConfigFile):
         """
         if python_version is None:
             python_version = [
-                str(v) for v in PyprojectConfigFile.get_supported_python_versions()
+                str(v) for v in PyprojectConfigFile.L.get_supported_python_versions()
             ]
         if matrix is None:
             matrix = {}
@@ -679,7 +679,7 @@ class Workflow(YamlConfigFile):
         """
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.get_latest_possible_python_version(level="minor")
+                PyprojectConfigFile.L.get_latest_possible_python_version(level="minor")
             )
         return [
             cls.step_checkout_repository(repo_token=repo_token),
@@ -840,7 +840,7 @@ class Workflow(YamlConfigFile):
             step_func=cls.step_build_container_image,
             run=str(
                 ContainerEngine.L.get_build_args(
-                    project_name=PyprojectConfigFile.get_project_name()
+                    project_name=PyprojectConfigFile.L.get_project_name()
                 )
             ),
             step=step,
@@ -860,7 +860,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Step that saves the container image.
         """
-        image_file = Path(f"{PyprojectConfigFile.get_project_name()}.tar")
+        image_file = Path(f"{PyprojectConfigFile.L.get_project_name()}.tar")
         image_path = Path(cls.ARTIFACTS_DIR_NAME) / image_file
         return cls.get_step(
             step_func=cls.step_save_container_image,
@@ -1080,7 +1080,7 @@ class Workflow(YamlConfigFile):
             step = {}
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.get_latest_possible_python_version(level="minor")
+                PyprojectConfigFile.L.get_latest_possible_python_version(level="minor")
             )
 
         step.setdefault("with", {})["python-version"] = python_version
@@ -1808,7 +1808,7 @@ class Workflow(YamlConfigFile):
         Returns:
             Artifact name in format: package-os.
         """
-        return f"{PyprojectConfigFile.get_project_name()}-{cls.insert_os()}"
+        return f"{PyprojectConfigFile.L.get_project_name()}-{cls.insert_os()}"
 
     # ifs
     # ----------------------------------------------------------------------------

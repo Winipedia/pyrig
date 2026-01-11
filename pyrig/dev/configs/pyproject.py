@@ -74,7 +74,7 @@ class PyprojectConfigFile(TomlConfigFile):
         repo_owner, _ = VersionController.L.get_repo_owner_and_name(
             check_repo_url=False
         )
-        tests_pkg_name = MirrorTestConfigFile.get_tests_package_name()
+        tests_pkg_name = MirrorTestConfigFile.L.get_tests_package_name()
 
         return {
             "project": {

@@ -280,7 +280,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Project name from pyproject.toml.
         """
-        return PyprojectConfigFile.get_project_name()
+        return PyprojectConfigFile.L.get_project_name()
 
     @classmethod
     def get_root_path(cls) -> Path:
@@ -289,7 +289,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Absolute path to the project root directory.
         """
-        src_pkg = import_module(PyprojectConfigFile.get_package_name())
+        src_pkg = import_module(PyprojectConfigFile.L.get_package_name())
         src_path = ModulePath.pkg_type_to_dir_path(src_pkg)
         return src_path.parent
 
@@ -318,7 +318,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Absolute path to the source package directory.
         """
-        return cls.get_root_path() / PyprojectConfigFile.get_package_name()
+        return cls.get_root_path() / PyprojectConfigFile.L.get_package_name()
 
     @classmethod
     def get_main_path_relative_to_src_pkg(cls) -> Path:

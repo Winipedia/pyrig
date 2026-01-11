@@ -9,8 +9,10 @@ class TestPyprojectConfigFile:
 
     def test_make_python_version_classifiers(self) -> None:
         """Test method."""
+        # no L for Base bc it would just use pyrigs Pyproject
+        # and we want to assert differences between them
         base_classifiers = BasePyprojectConfigFile.make_python_version_classifiers()
-        pyrig_classifiers = PyprojectConfigFile.make_python_version_classifiers()
+        pyrig_classifiers = PyprojectConfigFile.L.make_python_version_classifiers()
 
         assert pyrig_classifiers != base_classifiers
         expected_extras = [
@@ -24,7 +26,7 @@ class TestPyprojectConfigFile:
     def test__get_configs(self) -> None:
         """Test method."""
         base_keywords = BasePyprojectConfigFile.get_configs()["project"]["keywords"]
-        pyrig_keywords = PyprojectConfigFile.get_configs()["project"]["keywords"]
+        pyrig_keywords = PyprojectConfigFile.L.get_configs()["project"]["keywords"]
         assert base_keywords != pyrig_keywords
         expected_extras = [
             "project-setup",

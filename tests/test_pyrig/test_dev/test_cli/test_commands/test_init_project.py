@@ -103,7 +103,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     # copy the pyrig package to tmp_path/pyrig with shutil
     project_name = "src-project"
 
-    pyrig_temp_path = tmp_path / PyprojectConfigFile.get_project_name()
+    pyrig_temp_path = tmp_path / PyprojectConfigFile.L.get_project_name()
     pyrig_path = ModulePath.pkg_type_to_dir_path(pyrig)
     shutil.copytree(
         pyrig_path.parent,
@@ -122,7 +122,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     src_project_dir.mkdir()
 
     # Get the current Python version in major.minor format
-    python_version = str(PyprojectConfigFile.get_first_supported_python_version())
+    python_version = str(PyprojectConfigFile.L.get_first_supported_python_version())
 
     # Initialize git repo in the test project directory
     with chdir(src_project_dir):
@@ -190,7 +190,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         assert expected in stdout, f"Expected {expected} in stdout, got {stdout}"
 
         # assert pyproject.toml contains not pyrig specific overrides
-        pyproject_toml = tomlkit.parse((PyprojectConfigFile.get_path()).read_text())
+        pyproject_toml = tomlkit.parse((PyprojectConfigFile.L.get_path()).read_text())
         keywords = pyproject_toml.get("project", {}).get("keywords")
         assert keywords == []
 

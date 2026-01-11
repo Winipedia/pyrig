@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 # Matches everything before the first version specifier (>, <, =, [, ;, etc.)
 # Allows alphanumeric, underscore, hyphen, and period (for namespace packages).
 # Performance: compiled once at module load vs. per-call compilation.
-# Used by DependencyGraph and PyprojectConfigFile.
+# Used by DependencyGraph and PyprojectConfigFile.L.
 PACKAGE_REQ_NAME_SPLIT_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
 
 

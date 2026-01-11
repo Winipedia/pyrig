@@ -12,7 +12,7 @@ class TestLicenceConfigFile:
     def test_get_priority(self) -> None:
         """Test method."""
         # assert is bigger than PyprojectConfigFile
-        assert LicenceConfigFile.get_priority() > PyprojectConfigFile.get_priority()
+        assert LicenceConfigFile.get_priority() > PyprojectConfigFile.L.get_priority()
 
     def test_is_correct(self) -> None:
         """Test method."""

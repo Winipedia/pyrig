@@ -91,8 +91,8 @@ class GitIgnoreConfigFile(StringConfigFile):
             *cls.get_github_python_gitignore_as_list(),
             "",
             f"# {pyrig.__name__} stuff",
-            DotExperimentConfigFile.get_path().as_posix(),
-            DotEnvConfigFile.get_path().as_posix(),
+            DotExperimentConfigFile.L.get_path().as_posix(),
+            DotEnvConfigFile.L.get_path().as_posix(),
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov
             ".pytest_cache/",  # bc of pytest cache
@@ -102,10 +102,6 @@ class GitIgnoreConfigFile(StringConfigFile):
             "dist/",  # bc of uv publish
             "/site/",  # bc of mkdocs
         ]
-
-        dotenv_path = DotEnvConfigFile.get_path().as_posix()
-        if dotenv_path not in needed:
-            needed.extend(["# for secrets used locally", dotenv_path])
 
         existing = cls.load()
         needed = [p for p in needed if p not in set(existing)]
