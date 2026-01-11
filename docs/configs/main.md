@@ -165,7 +165,9 @@ uv run pytest
 Once created, you can run your CLI:
 
 ```bash
-# Development mode
+# will display help text
+uv run myapp
+# runs main
 uv run myapp main
 ```
 
