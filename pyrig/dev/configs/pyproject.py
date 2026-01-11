@@ -20,6 +20,7 @@ from packaging.version import Version
 
 from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
+from pyrig.dev.configs.licence import LicenceConfigFile
 from pyrig.dev.management.project_tester import ProjectTester
 from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.remote_version_controller import RemoteVersionController
@@ -89,7 +90,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     {"name": repo_owner},
                 ],
                 "license": cls.detect_project_licence(),
-                "license-files": ["LICENSE"],
+                "license-files": [LicenceConfigFile.L.get_path().name],
                 "requires-python": cls.get_project_requires_python(),
                 "classifiers": [
                     *cls.make_python_version_classifiers(),

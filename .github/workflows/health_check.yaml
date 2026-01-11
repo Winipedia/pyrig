@@ -20,14 +20,14 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
   UV_NO_SYNC: 1
 jobs:
-  protect_repository:
+  health_checks:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
-    - name: Setup Git
-      id: setup_git
+    - name: Setup Version Control
+      id: setup_version_control
       run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
         && git config --global user.name "github-actions[bot]"
     - name: Setup Package Manager
@@ -41,12 +41,21 @@ jobs:
     - name: Install Dependencies
       id: install_dependencies
       run: uv sync
+    - name: Add Dependency Updates To Version Control
+      id: add_dependency_updates_to_version_control
+      run: git add pyproject.toml uv.lock
+    - name: Run Pre Commit Hooks
+      id: run_pre_commit_hooks
+      run: uv run pre-commit run --all-files
+    - name: Run Dependency Audit
+      id: run_dependency_audit
+      run: uv run pip-audit
     - name: Protect Repository
       id: protect_repository
       run: uv run pyrig protect-repo
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
-  health_check_matrix:
+  matrix_health_checks:
     strategy:
       matrix:
         os:
@@ -63,8 +72,8 @@ jobs:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
-    - name: Setup Git
-      id: setup_git
+    - name: Setup Version Control
+      id: setup_version_control
       run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
         && git config --global user.name "github-actions[bot]"
     - name: Setup Package Manager
@@ -78,15 +87,9 @@ jobs:
     - name: Install Dependencies
       id: install_dependencies
       run: uv sync
-    - name: Add Dependency Updates To Git
-      id: add_dependency_updates_to_git
+    - name: Add Dependency Updates To Version Control
+      id: add_dependency_updates_to_version_control
       run: git add pyproject.toml uv.lock
-    - name: Run Pre Commit Hooks
-      id: run_pre_commit_hooks
-      run: uv run pre-commit run --all-files
-    - name: Run Dependency Audit
-      id: run_dependency_audit
-      run: uv run pip-audit
     - name: Run Tests
       id: run_tests
       run: uv run pytest --log-cli-level=INFO --cov-report=xml
@@ -101,10 +104,10 @@ jobs:
         fail_ci_if_error: ${{ secrets.CODECOV_TOKEN && 'true' || 'false' }}
   health_check:
     needs:
-    - health_check_matrix
-    - protect_repository
+    - matrix_health_checks
+    - health_checks
     runs-on: ubuntu-latest
     steps:
-    - name: Aggregate Matrix Results
-      id: aggregate_matrix_results
-      run: echo 'Aggregating matrix results into one job.'
+    - name: Aggregate Jobs
+      id: aggregate_jobs
+      run: echo 'Aggregating jobs into one job.'

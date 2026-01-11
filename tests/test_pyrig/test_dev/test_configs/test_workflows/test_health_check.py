@@ -20,19 +20,17 @@ def my_test_health_check_workflow(
 class TestHealthCheckWorkflow:
     """Test class."""
 
-    def test_job_protect_repository(
-        self, my_test_health_check_workflow: type[HealthCheckWorkflow]
-    ) -> None:
+    def test_job_health_checks(self) -> None:
         """Test method."""
-        result = my_test_health_check_workflow.job_protect_repository()
-        assert isinstance(result, dict), "Expected dict"
+        result = HealthCheckWorkflow.job_health_checks()
+        assert len(result) == 1, "Expected job to have one key"
+        job_name = next(iter(result.keys()))
+        assert "steps" in result[job_name], "Expected 'steps' in job"
 
-    def test_steps_protect_repository(
-        self, my_test_health_check_workflow: type[HealthCheckWorkflow]
-    ) -> None:
+    def test_steps_health_checks(self) -> None:
         """Test method."""
-        result = my_test_health_check_workflow.steps_protect_repository()
-        assert isinstance(result, list), "Expected list"
+        result = HealthCheckWorkflow.steps_health_checks()
+        assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_get_staggered_cron(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
@@ -64,11 +62,11 @@ class TestHealthCheckWorkflow:
         result = my_test_health_check_workflow.get_jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
-    def test_job_health_check_matrix(
+    def test_job_matrix_health_checks(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
         """Test method for job_health_check_matrix."""
-        result = my_test_health_check_workflow.job_health_check_matrix()
+        result = my_test_health_check_workflow.job_matrix_health_checks()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
@@ -85,18 +83,18 @@ class TestHealthCheckWorkflow:
         assert "steps" in result[job_name], "Expected 'steps' in job"
         assert "needs" in result[job_name], "Expected 'needs' in job"
 
-    def test_steps_health_check_matrix(
+    def test_steps_matrix_health_checks(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for steps_health_check_matrix."""
-        result = my_test_health_check_workflow.steps_health_check_matrix()
+        """Test method for steps_matrix_health_checks."""
+        result = my_test_health_check_workflow.steps_matrix_health_checks()
         assert len(result) > 0, "Expected steps to be non-empty"
 
-    def test_steps_aggregate_matrix_results(
+    def test_steps_aggregate_jobs(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for steps_aggregate_matrix_results."""
-        result = my_test_health_check_workflow.steps_aggregate_matrix_results()
+        """Test method for steps_aggregate_jobs."""
+        result = my_test_health_check_workflow.steps_aggregate_jobs()
         assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_is_correct(

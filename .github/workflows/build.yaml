@@ -31,8 +31,8 @@ jobs:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
-    - name: Setup Git
-      id: setup_git
+    - name: Setup Version Control
+      id: setup_version_control
       run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
         && git config --global user.name "github-actions[bot]"
     - name: Setup Package Manager
@@ -46,6 +46,9 @@ jobs:
     - name: Install Dependencies
       id: install_dependencies
       run: uv sync
+    - name: Add Dependency Updates To Version Control
+      id: add_dependency_updates_to_version_control
+      run: git add pyproject.toml uv.lock
     - name: Build Artifacts
       id: build_artifacts
       run: uv run pyrig build
