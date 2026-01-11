@@ -20,7 +20,7 @@ class DotPythonVersionConfigFile(StringConfigFile):
     Creates .python-version with minimum supported Python version from pyproject.toml.
 
     See Also:
-        pyrig.dev.configs.pyproject.PyprojectConfigFile.get_first_supported_python_version
+        pyrig.dev.configs.pyproject.PyprojectConfigFile.L.get_first_supported_python_version
     """
 
     @classmethod
@@ -41,7 +41,7 @@ class DotPythonVersionConfigFile(StringConfigFile):
     @classmethod
     def get_lines(cls) -> list[str]:
         """Get minimum supported Python version from pyproject.toml."""
-        return [str(PyprojectConfigFile.get_first_supported_python_version())]
+        return [str(PyprojectConfigFile.L.get_first_supported_python_version())]
 
     @classmethod
     def override_content(cls) -> bool:

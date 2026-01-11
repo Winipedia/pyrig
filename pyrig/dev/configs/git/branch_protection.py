@@ -8,16 +8,21 @@ See Also:
     https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets
 """
 
+import logging
 from pathlib import Path
 from typing import Any
 
 from pyrig.dev.configs.base.json import JsonConfigFile
+from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.dev.management.version_controller import VersionController
-from pyrig.src.modules.package import get_project_name_from_pkg_name
+from pyrig.dev.utils.github_api import create_or_update_ruleset, get_repo
+from pyrig.dev.utils.version_control import get_github_repo_token
+
+logger = logging.getLogger(__name__)
 
 
-class BranchProtectionConfigFile(JsonConfigFile):
+class RepoProtectionConfigFile(JsonConfigFile):
     """Manages branch-protection.json for GitHub rulesets.
 
     Creates JSON config with PR requirements (1 approval, code owner review),
@@ -37,8 +42,7 @@ class BranchProtectionConfigFile(JsonConfigFile):
     @classmethod
     def get_filename(cls) -> str:
         """Get filename with hyphens (branch-protection)."""
-        name = super().get_filename()
-        return get_project_name_from_pkg_name(name)  # replaces _ with -
+        return "branch-protection"
 
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
@@ -92,3 +96,55 @@ class BranchProtectionConfigFile(JsonConfigFile):
                 }
             ],
         }
+
+    @classmethod
+    def protect_repo(cls) -> None:
+        """Apply security protections to the GitHub repository.
+
+        Configures repository-level settings and branch protection rulesets.
+        """
+        cls.set_secure_repo_settings()
+        cls.create_or_update_default_branch_ruleset()
+
+    @classmethod
+    def create_or_update_default_branch_ruleset(cls) -> None:
+        """Create or update branch protection ruleset for the default branch.
+
+        Applies pyrig's standard protection rules to the main branch. Updates
+        existing ruleset if present.
+        """
+        token = get_github_repo_token()
+        owner, repo_name = VersionController.L.get_repo_owner_and_name()
+        create_or_update_ruleset(
+            token=token,
+            owner=owner,
+            repo_name=repo_name,
+            **cls.load(),
+        )
+
+    @classmethod
+    def set_secure_repo_settings(cls) -> None:
+        """Configure repository-level security and merge settings.
+
+        Sets description, default branch, merge options, and branch cleanup
+        settings based on pyproject.toml and pyrig defaults.
+        """
+        logger.info("Configuring secure repository settings")
+        owner, repo_name = VersionController.L.get_repo_owner_and_name()
+        token = get_github_repo_token()
+        repo = get_repo(token, owner, repo_name)
+
+        toml_description = PyprojectConfigFile.L.get_project_description()
+        logger.debug("Setting repository description: %s", toml_description)
+
+        repo.edit(
+            name=repo_name,
+            description=toml_description,
+            default_branch=VersionController.L.get_default_branch(),
+            delete_branch_on_merge=True,
+            allow_update_branch=True,
+            allow_merge_commit=False,
+            allow_rebase_merge=True,
+            allow_squash_merge=True,
+        )
+        logger.info("Repository settings configured successfully")

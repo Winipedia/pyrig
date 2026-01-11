@@ -2,7 +2,7 @@
 
 from github.Repository import Repository
 
-from pyrig.dev.cli.commands.protect_repo import get_default_ruleset_params
+from pyrig.dev.configs.git.branch_protection import RepoProtectionConfigFile
 from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.github_api import (
     create_or_update_ruleset,
@@ -62,7 +62,7 @@ def test_create_or_update_ruleset() -> None:
         token=token,
         owner=owner,
         repo_name=repo_name,
-        **get_default_ruleset_params(),
+        **RepoProtectionConfigFile.load(),
     )
 
 

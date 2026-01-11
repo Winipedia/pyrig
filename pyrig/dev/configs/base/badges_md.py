@@ -55,13 +55,13 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         Returns:
             Formatted Markdown with H1 header, badge categories, and description.
         """
-        project_name = PyprojectConfigFile.get_project_name()
+        project_name = PyprojectConfigFile.L.get_project_name()
         badges = cls.get_badges()
         badges_lines: list[str] = []
         for badge_category, badge_list in badges.items():
             badges_lines.append(f"<!-- {badge_category} -->")
             badges_lines.extend(badge_list)
-        description = PyprojectConfigFile.get_project_description()
+        description = PyprojectConfigFile.L.get_project_description()
         return [
             f"# {project_name}",
             "",
@@ -83,7 +83,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             Dict mapping category names (tooling, code-quality, package-info, ci/cd,
             documentation) to lists of badge Markdown strings.
         """
-        python_versions = PyprojectConfigFile.get_supported_python_versions()
+        python_versions = PyprojectConfigFile.L.get_supported_python_versions()
         joined_python_versions = "|".join(str(v) for v in python_versions)
         health_check_wf_name = HealthCheckWorkflow.get_filename()
         release_wf_name = ReleaseWorkflow.get_filename()

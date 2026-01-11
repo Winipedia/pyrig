@@ -33,35 +33,37 @@ class TestPyprojectConfigFile:
 
     def test_get_priority(self) -> None:
         """Test method."""
-        assert PyprojectConfigFile.get_priority() > ConfigsInitConfigFile.get_priority()
+        assert (
+            PyprojectConfigFile.L.get_priority() > ConfigsInitConfigFile.get_priority()
+        )
 
     def test_detect_project_licence(self) -> None:
         """Test method."""
-        license_id = PyprojectConfigFile.detect_project_licence()
+        license_id = PyprojectConfigFile.L.detect_project_licence()
         assert license_id == "MIT", f"Expected 'MIT', got '{license_id}'"
 
     def test_get_latest_python_version(self) -> None:
         """Test method."""
-        latest_version = PyprojectConfigFile.get_latest_python_version()
+        latest_version = PyprojectConfigFile.L.get_latest_python_version()
         assert isinstance(latest_version, Version), (
             f"Expected Version, got {type(latest_version)}"
         )
 
     def test_get_project_requires_python(self) -> None:
         """Test method."""
-        requires_python = PyprojectConfigFile.get_project_requires_python()
+        requires_python = PyprojectConfigFile.L.get_project_requires_python()
         assert isinstance(requires_python, str), (
             f"Expected str, got {type(requires_python)}"
         )
 
     def test_get_project_version(self) -> None:
         """Test method."""
-        version = PyprojectConfigFile.get_project_version()
+        version = PyprojectConfigFile.L.get_project_version()
         assert isinstance(version, str), f"Expected str, got {type(version)}"
 
     def test_make_python_version_classifiers(self) -> None:
         """Test method."""
-        classifiers = PyprojectConfigFile.make_python_version_classifiers()
+        classifiers = PyprojectConfigFile.L.make_python_version_classifiers()
         assert isinstance(classifiers, list), f"Expected list, got {type(classifiers)}"
         for classifier in classifiers:
             assert isinstance(classifier, str), f"Expected str, got {type(classifier)}"
@@ -76,7 +78,7 @@ class TestPyprojectConfigFile:
 
     def test_get_project_description(self) -> None:
         """Test method for get_project_description."""
-        description = PyprojectConfigFile.get_project_description()
+        description = PyprojectConfigFile.L.get_project_description()
         assert isinstance(description, str), "Expected description to be a string"
 
     def test_is_correct(
@@ -118,19 +120,19 @@ class TestPyprojectConfigFile:
         """Test method for get_configs."""
         # pyproject get configs internally uses load which makes it a special case
         # where the file must exist before calling get_configs
-        configs = PyprojectConfigFile.get_configs()
+        configs = PyprojectConfigFile.L.get_configs()
         assert "project" in configs, "Expected 'project' key in configs"
         assert "build-system" in configs, "Expected 'build-system' key in configs"
         assert "tool" in configs, "Expected 'tool' key in configs"
 
     def test_get_package_name(self) -> None:
         """Test method for get_package_name."""
-        package_name = PyprojectConfigFile.get_package_name()
+        package_name = PyprojectConfigFile.L.get_package_name()
         assert len(package_name) > 0, "Expected package name to be non-empty"
 
     def test_get_project_name(self) -> None:
         """Test method for get_project_name."""
-        project_name = PyprojectConfigFile.get_project_name()
+        project_name = PyprojectConfigFile.L.get_project_name()
         assert len(project_name) > 0, "Expected project name to be non-empty"
 
     def test_make_dependency_versions(
@@ -160,24 +162,24 @@ class TestPyprojectConfigFile:
     def test_get_all_dependencies(self) -> None:
         """Test method for get_all_dependencies."""
         # get_all_dependencies should return a set (union of deps and dev_deps)
-        all_deps = PyprojectConfigFile.get_all_dependencies()
+        all_deps = PyprojectConfigFile.L.get_all_dependencies()
         assert isinstance(all_deps, list), f"Expected list, got {type(all_deps)}"
 
     def test_get_dependencies(self) -> None:
         """Test method for get_dependencies."""
         # get_dependencies may raise if dependencies key doesn't exist
         # This is expected behavior for the test config
-        deps = PyprojectConfigFile.get_dependencies()
+        deps = PyprojectConfigFile.L.get_dependencies()
         assert isinstance(deps, list), f"Expected list, got {type(deps)}"
 
     def test_get_dev_dependencies(self) -> None:
         """Test method for get_dev_dependencies."""
-        dev_deps = PyprojectConfigFile.get_dev_dependencies()
+        dev_deps = PyprojectConfigFile.L.get_dev_dependencies()
         assert isinstance(dev_deps, list), f"Expected list, got {type(dev_deps)}"
 
     def test_get_standard_dev_dependencies(self) -> None:
         """Test method for get_standard_dev_dependencies."""
-        standard_dev_deps = PyprojectConfigFile.get_standard_dev_dependencies()
+        standard_dev_deps = PyprojectConfigFile.L.get_standard_dev_dependencies()
         assert isinstance(standard_dev_deps, list), (
             f"Expected list, got {type(standard_dev_deps)}"
         )

@@ -167,10 +167,10 @@ def assert_all_src_code_in_one_package() -> None:
         AssertionError: If unexpected packages/subpackages/submodules found.
     """
     packages = find_packages(depth=0)
-    src_package = import_module(PyprojectConfigFile.get_package_name())
+    src_package = import_module(PyprojectConfigFile.L.get_package_name())
     src_package_name = src_package.__name__
     expected_packages = {
-        MirrorTestConfigFile.get_tests_package_name(),
+        MirrorTestConfigFile.L.get_tests_package_name(),
         src_package_name,
     }
 
@@ -225,12 +225,12 @@ def assert_src_package_correctly_named() -> None:
         AssertionError: If any naming mismatch detected.
     """
     cwd_name = Path.cwd().name
-    project_name = PyprojectConfigFile.get_project_name()
+    project_name = PyprojectConfigFile.L.get_project_name()
     assert cwd_name == project_name, (
         f"Expected cwd name to be {project_name}, but it is {cwd_name}"
     )
 
-    src_package = import_module(PyprojectConfigFile.get_package_name())
+    src_package = import_module(PyprojectConfigFile.L.get_package_name())
 
     src_package_name = src_package.__name__
     src_package_name_from_cwd = get_pkg_name_from_project_name(cwd_name)
@@ -241,7 +241,7 @@ def assert_src_package_correctly_named() -> None:
     assert src_package_name == src_package_name_from_cwd, msg
 
     src_package = src_package.__name__
-    expected_package = PyprojectConfigFile.get_package_name()
+    expected_package = PyprojectConfigFile.L.get_package_name()
     msg = (
         f"Expected source package to be named {expected_package}, "
         f"but it is named {src_package}"
@@ -258,7 +258,7 @@ def assert_all_modules_tested() -> None:
     Raises:
         AssertionError: If any source modules lack corresponding tests.
     """
-    src_package = import_module(PyprojectConfigFile.get_package_name())
+    src_package = import_module(PyprojectConfigFile.L.get_package_name())
 
     # we will now go through all the modules in the src package and check
     # that there is a corresponding test module
@@ -389,12 +389,12 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             assert_src_runs_without_dev_deps.__name__,  # ty:ignore[possibly-missing-attribute]
         )
         return
-    project_name = PyprojectConfigFile.get_project_name()
+    project_name = PyprojectConfigFile.L.get_project_name()
     func_name = assert_src_runs_without_dev_deps.__name__  # ty:ignore[possibly-missing-attribute]
     tmp_path = tmp_path_factory.mktemp(func_name) / project_name
     # copy the project folder to a temp directory
     # run main.py from that directory
-    src_package = import_module(PyprojectConfigFile.get_package_name())
+    src_package = import_module(PyprojectConfigFile.L.get_package_name())
     src_package_file_str = src_package.__file__
     if src_package_file_str is None:
         msg = f"src_package.__file__ is None for {src_package}"
@@ -432,7 +432,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
         stderr = completed_process.stderr
         std_msg = stderr + stdout
 
-        dev_dep = PyprojectConfigFile.get_standard_dev_dependencies()[0]
+        dev_dep = PyprojectConfigFile.L.get_standard_dev_dependencies()[0]
         assert dev_dep not in std_msg, base_msg + f"{std_msg}"
 
         # delete pyproject.toml and uv.lock and readme.md
@@ -440,7 +440,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             Path(config).unlink()
 
         # run walk_package with src and import all modules to catch dev dep imports
-        src_pkg_name = PyprojectConfigFile.get_package_name()
+        src_pkg_name = PyprojectConfigFile.L.get_package_name()
         script_args = [
             "python",
             "-c",
@@ -496,7 +496,7 @@ def assert_src_does_not_use_dev() -> None:
     Raises:
         AssertionError: If any dev imports found in src code.
     """
-    src_package = import_module(PyprojectConfigFile.get_package_name())
+    src_package = import_module(PyprojectConfigFile.L.get_package_name())
 
     src_src_pkg_name = get_module_name_replacing_start_module(src, src_package.__name__)
 

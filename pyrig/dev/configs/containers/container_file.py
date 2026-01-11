@@ -105,9 +105,11 @@ class ContainerfileConfigFile(StringConfigFile):
         Note:
             Reads from pyproject.toml and may make API calls for Python version.
         """
-        latest_python_version = PyprojectConfigFile.get_latest_possible_python_version()
-        project_name = PyprojectConfigFile.get_project_name()
-        package_name = PyprojectConfigFile.get_package_name()
+        latest_python_version = (
+            PyprojectConfigFile.L.get_latest_possible_python_version()
+        )
+        project_name = PyprojectConfigFile.L.get_project_name()
+        package_name = PyprojectConfigFile.L.get_package_name()
         app_user_name = "appuser"
         entrypoint_args = list(PackageManager.L.get_run_args(project_name))
         default_cmd_args = [main.__name__]

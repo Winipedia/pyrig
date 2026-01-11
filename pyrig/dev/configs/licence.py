@@ -27,7 +27,7 @@ class LicenceConfigFile(StringConfigFile):
     for pyproject.toml license detection).
 
     See Also:
-        pyrig.dev.configs.pyproject.PyprojectConfigFile.detect_project_licence
+        pyrig.dev.configs.pyproject.PyprojectConfigFile.L.detect_project_licence
     """
 
     @classmethod

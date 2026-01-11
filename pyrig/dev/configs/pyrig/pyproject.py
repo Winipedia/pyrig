@@ -11,7 +11,7 @@ Example:
     When generating pyproject.toml for pyrig itself::
 
         >>> from pyrig.dev.configs.pyrig.pyproject import PyprojectConfigFile
-        >>> configs = PyprojectConfigFile.get_configs()
+        >>> configs = PyprojectConfigFile.L.get_configs()
         >>> "project-setup" in configs["project"]["keywords"]
         True
         >>> any("Build Tools" in c for c in configs["project"]["classifiers"])

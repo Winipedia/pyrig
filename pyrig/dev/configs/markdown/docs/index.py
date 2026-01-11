@@ -55,6 +55,6 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
             Reads project name from pyproject.toml.
         """
         lines = super().get_lines()
-        project_name = PyprojectConfigFile.get_project_name()
+        project_name = PyprojectConfigFile.L.get_project_name()
         lines[0] = lines[0].replace(project_name, f"{project_name} Documentation", 1)
         return lines

@@ -57,5 +57,5 @@ class ApiConfigFile(MarkdownConfigFile):
         Note:
             Reads project name from pyproject.toml.
         """
-        project_name = PyprojectConfigFile.get_project_name()
+        project_name = PyprojectConfigFile.L.get_project_name()
         return ["# API Reference", "", f"::: {project_name}", ""]
