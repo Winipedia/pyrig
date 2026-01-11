@@ -1,6 +1,6 @@
 # MDLinter (rumdl)
 
-Type-safe wrapper for [rumdl](https://github.com/pluveto/rumdl), the fast
+Type-safe wrapper for [rumdl](https://github.com/rvben/rumdl), the fast
 Markdown linter.
 
 rumdl is a Rust-based Markdown linter that enforces consistent formatting and
