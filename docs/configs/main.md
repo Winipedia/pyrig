@@ -203,7 +203,6 @@ registers commands from multiple sources:
 ```text
 CLI class (pyrig.dev.cli.cli)
   ├─> main() from {package_name}/main.py (registered as "main" command)
-  ├─> Built-in commands (mkroot, build, etc. from subcommands.py)
   ├─> Subcommands (from {package_name}/dev/cli/subcommands.py)
   └─> Shared subcommands (from {package_name}/dev/cli/shared_subcommands.py)
 ```
