@@ -37,7 +37,7 @@ graph TD
 
 **Path**: `.env` (project root)
 
-**Extension**: `.env` - Environment file.
+**Extension**: `env` - Environment file (dot added by separator).
 
 **Filename**: Empty string to produce `.env` (not `env.env`).
 
@@ -63,8 +63,10 @@ to their values.
 ### Dump Protection
 
 Pyrig prevents accidental writes to `.env` files. If you attempt to dump
-configuration to this file, it will raise a `ValueError`. This is intentional -
-the `.env` file is user-managed and should be edited manually.
+a non-empty configuration to this file, it will raise a `ValueError`. This is
+intentional - the `.env` file is user-managed and should be edited manually.
+Dumping an empty dict `{}` is allowed (which is what pyrig does during
+initialization).
 
 ## Usage
 
