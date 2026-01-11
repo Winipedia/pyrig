@@ -64,10 +64,6 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 ### Generated Content
 
-```python
-"""Custom CLI subcommands for this project."""
-```
-
 The file contains only the docstring, allowing you to add custom CLI commands.
 
 ## Usage
