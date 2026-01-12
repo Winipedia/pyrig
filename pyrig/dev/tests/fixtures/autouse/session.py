@@ -381,7 +381,8 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
     """
     base_msg = """Source code cannot run without dev dependencies.
     This fixture created a temp environment and installed the project without
-    the dev group. However, it failed with the following error:
+    the dev group and attempted to import all src modules.
+    However, it failed with the following error:
     """
     if not internet_is_available():
         logger.warning(
@@ -444,21 +445,21 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
         script_args = [
             "python",
             "-c",
-            (
-                "from importlib import import_module; "
-                "from pyrig import main; "
-                "from pyrig import src; "
-                "from pyrig.src.modules.module import get_module_name_replacing_start_module; "  # noqa: E501
-                "from pyrig.src.modules.imports import walk_package; "
-                f"import {src_pkg_name}; "
-                f"src_module=import_module(get_module_name_replacing_start_module(src, {src_pkg_name}.__name__)); "  # noqa: E501
-                "pks=list(walk_package(src_module)); "
-                "assert isinstance(pks, list), 'Expected pks to be a list'; "
-                "assert len(pks) > 0, 'Expected pks to not be empty'; "
-                # also test that main can be called
-                f"main_module=import_module(get_module_name_replacing_start_module(main, {src_pkg_name}.__name__)); "  # noqa: E501
-                # add a print statement to see the output
-                "print('Success')"
+            "; ".join(
+                (
+                    "from pyrig.src.modules.imports import walk_package",
+                    f"from {src_pkg_name} import main",
+                    f"from {src_pkg_name} import src",
+                    "packages=list(walk_package(src))",
+                    # verify packages is a list
+                    "assert isinstance(packages, list)",
+                    # verify packages is not empty
+                    "assert len(packages) > 0",
+                    # also test that main can be called
+                    "assert callable(main.main)",
+                    # add a print statement to see the output
+                    "print('Success')",
+                )
             ),
         ]
         args = PackageManager.L.get_run_no_dev_args(*script_args)
