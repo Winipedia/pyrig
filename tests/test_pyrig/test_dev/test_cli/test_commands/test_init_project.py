@@ -8,7 +8,6 @@ from contextlib import chdir
 from pathlib import Path
 
 import tomlkit
-from pytest_mock import MockFixture
 
 import pyrig
 from pyrig.dev.cli.commands.init_project import (
@@ -28,69 +27,70 @@ from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.version_controller import VersionController
 from pyrig.main import main
 from pyrig.src.modules.path import ModulePath
+from pyrig.src.processes import Args
 
 logger = logging.getLogger(__name__)
 
 
-def test_adding_dev_dependencies(mocker: MockFixture) -> None:
+def test_adding_dev_dependencies() -> None:
     """Test function."""
-    mock = mocker.patch("subprocess.run")
-    adding_dev_dependencies()
-    mock.assert_called_once()
+    res = adding_dev_dependencies()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_running_tests(mocker: MockFixture) -> None:
+def test_running_tests() -> None:
     """Test function."""
-    mock = mocker.patch("subprocess.run")
-    running_tests()
-    mock.assert_called_once()
+    res = running_tests()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_creating_priority_config_files(mocker: MockFixture) -> None:
+def test_creating_priority_config_files() -> None:
     """Test func."""
-    mock = mocker.patch("subprocess.run")
-    creating_priority_config_files()
-    mock.assert_called_once()
+    res = creating_priority_config_files()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_creating_project_root(mocker: MockFixture) -> None:
+def test_creating_project_root() -> None:
     """Test func for run_create_root."""
     # mock the real underlying subprocess.run from subprocess pkg
-    mock = mocker.patch("subprocess.run")
-    creating_project_root()
-    mock.assert_called_once()
+    res = creating_project_root()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_syncing_venv(mocker: MockFixture) -> None:
+def test_syncing_venv() -> None:
     """Test func for sync_venv."""
-    # mock the real underlying subprocess.run from subprocess pkg
-    mock_run = mocker.patch("subprocess.run")
-    syncing_venv()
-    mock_run.assert_called_once()
+    res = syncing_venv()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_creating_test_files(mocker: MockFixture) -> None:
+def test_creating_test_files() -> None:
     """Test func for run_create_tests."""
-    # mock the real underlying subprocess.run from subprocess pkg
-    mock_run = mocker.patch("subprocess.run")
-    creating_test_files()
-    mock_run.assert_called_once()
+    res = creating_test_files()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_committing_initial_changes(mocker: MockFixture) -> None:
+def test_committing_initial_changes() -> None:
     """Test func for commit_initial_changes."""
-    # mock the real underlying subprocess.run from subprocess pkg
-    mock_run = mocker.patch("subprocess.run")
-    committing_initial_changes()
-    mock_run.assert_called_once()
+    res = committing_initial_changes()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_running_pre_commit_hooks(mocker: MockFixture) -> None:
+def test_install_pre_commit_hooks() -> None:
+    """Test function."""
+    res = running_pre_commit_hooks()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
+
+
+def test_add_all_files_to_version_control() -> None:
+    """Test function."""
+    res = VersionController.L.get_add_all_args()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
+
+
+def test_running_pre_commit_hooks() -> None:
     """Test func for run_all_hooks."""
-    # mock the real underlying subprocess.run from subprocess pkg
-    mock_run = mocker.patch("subprocess.run")
-    running_pre_commit_hooks()
-    mock_run.assert_called()
+    res = running_pre_commit_hooks()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
 def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915

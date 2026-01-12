@@ -1,12 +1,13 @@
 """Complete project initialization orchestration.
 
 Transforms a basic Python project into a fully-configured, production-ready
-pyrig project through a comprehensive 9-step automated sequence.
+pyrig project through a comprehensive automated sequence.
 
 The initialization process executes steps in a specific order to ensure all
 dependencies and configurations are properly established. Each step is
-implemented as a separate function and executed sequentially. If any step
-fails, the process stops immediately.
+implemented as a separate function that returns Args objects, which are then
+executed sequentially via PackageManager. If any step fails, the process stops
+immediately.
 
 Initialization Steps:
     1. Adding dev dependencies (uv add --group dev)
@@ -15,9 +16,11 @@ Initialization Steps:
     4. Syncing venv again (apply new configs)
     5. Creating project root (all remaining config files)
     6. Creating test files (test skeletons for all source code)
-    7. Running pre-commit hooks (install, stage, format/lint)
-    8. Running tests (validate everything works)
-    9. Committing initial changes (create initial git commit)
+    7. Installing pre-commit hooks (pre-commit install)
+    8. Adding all files to version control (git add .)
+    9. Running pre-commit hooks (format/lint all files)
+    10. Running tests (validate everything works)
+    11. Committing initial changes (create initial git commit)
 
 Note:
     This process is designed for initial setup, not repeated execution.
@@ -38,102 +41,137 @@ from pyrig.dev.management.pre_committer import (
 from pyrig.dev.management.project_tester import ProjectTester
 from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.version_controller import VersionController
+from pyrig.src.processes import Args
 from pyrig.src.string_ import make_name_from_obj
 
 logger = logging.getLogger(__name__)
 
 
-def adding_dev_dependencies() -> None:
-    """Install development dependencies (Step 1).
+def adding_dev_dependencies() -> Args:
+    """Get args to install development dependencies (Step 1).
 
-    Adds pyrig's standard dev dependencies to pyproject.toml via
-    `uv add --group dev`.
+    Returns Args for adding pyrig's standard dev dependencies to pyproject.toml
+    via `uv add --group dev`.
+
+    Returns:
+        Args object for adding dev dependencies.
     """
-    args = PackageManager.L.get_add_dev_dependencies_args(
+    return PackageManager.L.get_add_dev_dependencies_args(
         *Pyrigger.L.get_dev_dependencies()
     )
-    args.run()
 
 
-def creating_priority_config_files() -> None:
-    """Create essential configuration files (Step 3).
+def creating_priority_config_files() -> Args:
+    """Get args to create essential configuration files (Step 3).
 
-    Creates high-priority config files (pyproject.toml, .gitignore, LICENSE)
-    that other initialization steps depend on via `uv run pyrig mkroot --priority`.
+    Returns Args for creating high-priority config files (pyproject.toml,
+    .gitignore, LICENSE) that other initialization steps depend on via
+    `pyrig mkroot --priority`.
+
+    Returns:
+        Args object for creating priority config files.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
-    args = PackageManager.L.get_run_args(
-        *Pyrigger.L.get_cmd_args("--priority", cmd=mkroot)
-    )
-    args.run()
+    return Pyrigger.L.get_cmd_args("--priority", cmd=mkroot)
 
 
-def syncing_venv() -> None:
-    """Sync virtual environment with dependencies (Steps 2 & 4).
+def syncing_venv() -> Args:
+    """Get args to sync virtual environment with dependencies (Steps 2 & 4).
 
-    Installs all dependencies from pyproject.toml via `uv sync`. Run twice
-    during initialization: after adding dev dependencies and after creating
-    priority config files.
+    Returns Args for installing all dependencies from pyproject.toml via
+    `uv sync`. Run twice during initialization: after adding dev dependencies
+    and after creating priority config files.
+
+    Returns:
+        Args object for syncing the virtual environment.
     """
-    args = PackageManager.L.get_install_dependencies_args()
-    args.run()
+    return PackageManager.L.get_install_dependencies_args()
 
 
-def creating_project_root() -> None:
-    """Create complete project structure and config files (Step 5).
+def creating_project_root() -> Args:
+    """Get args to create complete project structure and config files (Step 5).
 
-    Generates all remaining configuration files and directory structure via
-    `uv run pyrig mkroot`.
+    Returns Args for generating all remaining configuration files and directory
+    structure via `pyrig mkroot`.
+
+    Returns:
+        Args object for creating the project root.
     """
-    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(cmd=mkroot))
-    args.run()
+    return Pyrigger.L.get_cmd_args(cmd=mkroot)
 
 
-def creating_test_files() -> None:
-    """Generate test skeleton files for all source code (Step 6).
+def creating_test_files() -> Args:
+    """Get args to generate test skeleton files for all source code (Step 6).
 
-    Creates test files mirroring the source package structure with
-    NotImplementedError placeholders via `uv run pyrig mktests`.
+    Returns Args for creating test files mirroring the source package structure
+    with NotImplementedError placeholders via `pyrig mktests`.
+
+    Returns:
+        Args object for creating test files.
     """
-    args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(cmd=mktests))
-    args.run()
+    return Pyrigger.L.get_cmd_args(cmd=mktests)
 
 
-def running_pre_commit_hooks() -> None:
-    """Install and run pre-commit hooks on all files (Step 7).
+def install_pre_commit_hooks() -> Args:
+    """Get args to install pre-commit hooks (Step 7).
 
-    Installs pre-commit hooks, stages all files, and runs formatters/linters
-    to ensure the codebase follows style guidelines.
+    Returns Args for installing pre-commit hooks into the git repository via
+    `pre-commit install`.
+
+    Returns:
+        Args object for installing pre-commit hooks.
     """
-    # install pre-commit hooks
-    PackageManager.L.get_run_args(*PreCommitter.L.get_install_args()).run()
-    # add all files to git
-    VersionController.L.get_add_all_args().run()
-    # run pre-commit hooks
-    PackageManager.L.get_run_args(*PreCommitter.L.get_run_all_files_args()).run()
+    return PreCommitter.L.get_install_args()
 
 
-def running_tests() -> None:
-    """Run the complete test suite (Step 8).
+def add_all_files_to_version_control() -> Args:
+    """Get args to add all files to version control (Step 8).
 
-    Validates that all generated code is syntactically correct and the project
-    is properly configured via `pytest`.
+    Returns Args for staging all files for commit via `git add .`.
+
+    Returns:
+        Args object for adding all files to version control.
     """
-    args = PackageManager.L.get_run_args(*ProjectTester.L.get_args())
-    args.run()
+    return VersionController.L.get_add_all_args()
 
 
-def committing_initial_changes() -> None:
-    """Create initial git commit with all changes (Step 9).
+def running_pre_commit_hooks() -> Args:
+    """Get args to run pre-commit hooks on all files (Step 9).
 
-    Commits all configuration files, test skeletons, and formatting changes
-    with the message "pyrig: Initial commit".
+    Returns Args for running formatters/linters on all files to ensure the
+    codebase follows style guidelines via `pre-commit run --all-files`.
+
+    Returns:
+        Args object for running pre-commit hooks.
+    """
+    return PreCommitter.L.get_run_all_files_args()
+
+
+def running_tests() -> Args:
+    """Get args to run the complete test suite (Step 10).
+
+    Returns Args for validating that all generated code is syntactically correct
+    and the project is properly configured via `pytest`.
+
+    Returns:
+        Args object for running tests.
+    """
+    return ProjectTester.L.get_test_args()
+
+
+def committing_initial_changes() -> Args:
+    """Get args to create initial git commit with all changes (Step 11).
+
+    Returns Args for committing all configuration files, test skeletons, and
+    formatting changes with the message "pyrig: Initial commit".
+
+    Returns:
+        Args object for committing initial changes.
     """
     # changes were added by the run pre-commit hooks step
-    args = VersionController.L.get_commit_no_verify_args(
+    return VersionController.L.get_commit_no_verify_args(
         msg=f"{Pyrigger.name()}: Initial commit"
     )
-    args.run()
 
 
 SETUP_STEPS: list[Callable[..., Any]] = [
@@ -143,6 +181,8 @@ SETUP_STEPS: list[Callable[..., Any]] = [
     syncing_venv,
     creating_project_root,
     creating_test_files,
+    install_pre_commit_hooks,
+    add_all_files_to_version_control,
     running_pre_commit_hooks,
     running_tests,
     committing_initial_changes,
@@ -152,11 +192,12 @@ SETUP_STEPS: list[Callable[..., Any]] = [
 def init_project() -> None:
     """Initialize a pyrig project by running all setup steps sequentially.
 
-    Executes the complete 9-step initialization sequence to transform a basic
-    Python project into a fully-configured, production-ready pyrig project.
+    Executes the complete initialization sequence to transform a basic Python
+    project into a fully-configured, production-ready pyrig project.
 
-    Each step is executed in order with progress logging. If any step fails,
-    the process stops immediately.
+    Each step returns an Args object that is executed via PackageManager. Steps
+    are executed in order with progress logging. If any step fails, the process
+    stops immediately.
 
     Note:
         This function should be run once when setting up a new project.
@@ -166,5 +207,5 @@ def init_project() -> None:
     for step in SETUP_STEPS:
         step_name = make_name_from_obj(step, join_on=" ")
         logger.info(step_name)
-        step()
+        PackageManager.L.get_run_args(*step()).run()
     logger.info("Initialization complete!")

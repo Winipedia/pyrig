@@ -187,9 +187,9 @@ uv add pyrig
 uv run pyrig init
 ```
 
-This command runs 9 automated steps to set up your complete project. See the
-[init command documentation](../cli/commands/init.md) for detailed information
-about each step.
+This command runs several automated steps to set up your complete project. See
+the [init command documentation](../cli/commands/init.md) for detailed
+information about each step.
 
 **Summary of steps:**
 
@@ -199,9 +199,11 @@ about each step.
 4. Syncing venv (install project itself, activate CLI)
 5. Creating project root (all config files and directory structure)
 6. Creating test files (test skeletons for all code)
-7. Running pre-commit hooks (format and lint)
-8. Running tests (validate everything works)
-9. Committing initial changes (create initial git commit)
+7. Installing pre-commit hooks (install hooks into git repository)
+8. Adding all files to version control (stage all files)
+9. Running pre-commit hooks (format and lint)
+10. Running tests (validate everything works)
+11. Committing initial changes (create initial git commit)
 
 ### 6. Add Repository Secrets (for CI/CD)
 

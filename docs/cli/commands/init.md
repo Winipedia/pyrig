@@ -1,6 +1,6 @@
 # init
 
-Sets up a new pyrig project from scratch through an automated 9-step process.
+Sets up a new pyrig project from scratch through an automated process.
 
 ## Usage
 
@@ -26,9 +26,12 @@ pyrig project:
 5. **Creating Project Root** - Generates all remaining config files via
    [mkroot](mkroot.md)
 6. **Creating Test Files** - Generates test skeletons via [mktests](mktests.md)
-7. **Running Pre-commit Hooks** - Installs hooks and runs formatters/linters
-8. **Running Tests** - Validates setup by running pytest
-9. **Committing Initial Changes** - Creates the initial git commit
+7. **Installing Pre-commit Hooks** - Installs pre-commit hooks into the git
+   repository
+8. **Adding All Files to Version Control** - Stages all files for commit
+9. **Running Pre-commit Hooks** - Runs formatters/linters on all files
+10. **Running Tests** - Validates setup by running pytest
+11. **Committing Initial Changes** - Creates the initial git commit
 
 ## When to Use
 

@@ -41,6 +41,18 @@ class ProjectTester(Tool):
         return 90
 
     @classmethod
+    def get_test_args(cls, *args: str) -> Args:
+        """Construct uv run pytest arguments.
+
+        Args:
+            *args: Pytest command arguments.
+
+        Returns:
+            Args for 'uv run pytest'.
+        """
+        return cls.get_args(*args)
+
+    @classmethod
     def get_run_tests_in_ci_args(cls, *args: str) -> Args:
         """Construct uv run pytest arguments for CI.
 
@@ -50,4 +62,4 @@ class ProjectTester(Tool):
         Returns:
             Args for 'uv run pytest' with CI flags (log level INFO, XML coverage).
         """
-        return cls.get_args("--log-cli-level=INFO", "--cov-report=xml", *args)
+        return cls.get_test_args("--log-cli-level=INFO", "--cov-report=xml", *args)
