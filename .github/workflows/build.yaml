@@ -27,7 +27,7 @@ jobs:
       fail-fast: true
     runs-on: ${{ matrix.os }}
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event
-      != 'schedule' }}
+      == 'schedule' }}
     steps:
     - name: Checkout Repository
       id: checkout_repository
@@ -62,7 +62,7 @@ jobs:
   build_container_image:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event
-      != 'schedule' }}
+      == 'schedule' }}
     steps:
     - name: Checkout Repository
       id: checkout_repository
