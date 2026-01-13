@@ -36,6 +36,7 @@ class BuildWorkflow(Workflow):
 
     The workflow:
         - Triggers after HealthCheckWorkflow completes on main branch
+        - Skips cron-triggered health checks (only push/dispatch triggers build)
         - Builds Python wheels across OS matrix
         - Builds container images (Containerfile/Dockerfile)
         - Uploads artifacts for the release workflow
@@ -98,7 +99,11 @@ class BuildWorkflow(Workflow):
         """
         return cls.get_job(
             job_func=cls.job_build_artifacts,
-            if_condition=cls.if_workflow_run_is_success(),
+            if_condition=cls.combined_if(
+                cls.if_workflow_run_is_success(),
+                cls.if_workflow_run_is_not_cron_triggered(),
+                operator="&&",
+            ),
             strategy=cls.strategy_matrix_os(),
             runs_on=cls.insert_matrix_os(),
             steps=cls.steps_build_artifacts(),
@@ -113,7 +118,11 @@ class BuildWorkflow(Workflow):
         """
         return cls.get_job(
             job_func=cls.job_build_container_image,
-            if_condition=cls.if_workflow_run_is_success(),
+            if_condition=cls.combined_if(
+                cls.if_workflow_run_is_success(),
+                cls.if_workflow_run_is_not_cron_triggered(),
+                operator="&&",
+            ),
             runs_on=cls.UBUNTU_LATEST,
             steps=cls.steps_build_container_image(),
         )

@@ -117,7 +117,8 @@ Pyrig provides four workflows that form a complete CI/CD pipeline:
 ```mermaid
 graph LR
     A[Code Push/PR] --> B[Health Check]
-    B -->|Success on main| C[Build]
+    S[Schedule/Cron] --> B
+    B -->|Success on main<br/>not cron| C[Build]
     C -->|Success| D[Release]
     D -->|Success| E[Publish]
 
@@ -173,6 +174,7 @@ graph LR
 **Triggers**:
 
 - After health check completes successfully on main
+- Excludes cron-triggered health checks (only push/dispatch triggers build)
 
 **Jobs**:
 

@@ -45,6 +45,11 @@ def my_test_workflow(
 class TestWorkflow:
     """Test class."""
 
+    def test_if_workflow_run_is_not_cron_triggered(self) -> None:
+        """Test method."""
+        result = Workflow.if_workflow_run_is_not_cron_triggered()
+        assert "schedule" in result, "Expected 'schedule' in result"
+
     def test_step_add_version_bump_to_version_control(self) -> None:
         """Test method."""
         result = Workflow.step_add_version_bump_to_version_control()

@@ -69,7 +69,7 @@ class HealthCheckWorkflow(Workflow):
 
     See Also:
         pyrig.dev.configs.workflows.build.BuildWorkflow
-            Runs after this workflow completes on main branch
+            Runs after this workflow completes on main branch (excludes cron)
         pyrig.dev.configs.base.workflow.Workflow
             Base class with workflow generation utilities
     """
