@@ -1887,7 +1887,7 @@ class Workflow(YamlConfigFile):
         Returns:
             GitHub Actions expression checking event name.
         """
-        return cls.insert_var("github.event.workflow_run.event == 'schedule'")
+        return cls.insert_var("github.event.workflow_run.event != 'schedule'")
 
     @classmethod
     def if_pypi_token_configured(cls) -> str:
