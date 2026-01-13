@@ -1881,6 +1881,15 @@ class Workflow(YamlConfigFile):
         return cls.insert_var("github.event.workflow_run.conclusion == 'success'")
 
     @classmethod
+    def if_workflow_run_is_not_cron_triggered(cls) -> str:
+        """Create a condition for not being triggered by cron.
+
+        Returns:
+            GitHub Actions expression checking event name.
+        """
+        return cls.insert_var("github.event.workflow_run.event != 'schedule'")
+
+    @classmethod
     def if_pypi_token_configured(cls) -> str:
         """Create a condition for PYPI_TOKEN being configured.
 

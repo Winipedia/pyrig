@@ -21,10 +21,14 @@ to publish.
 - **Workflow**: `Health Check`
 - **Event**: `completed`
 - **Branches**: `main`
-- **Condition**: Only runs if health check succeeded
+- **Condition**: Only runs if health check succeeded and was not cron-triggered
 
 **Why workflow_run?** Ensures artifacts are only built after all tests pass on
 main branch.
+
+**Why exclude cron?** Scheduled health checks validate dependencies daily but
+shouldn't trigger releases. Only actual code changes (push) should create new
+releases.
 
 ### Workflow Dispatch
 
@@ -63,8 +67,7 @@ graph TD
 ### 1. build_artifacts
 
 **Runs on**: Matrix of OS (Ubuntu, Windows, macOS) **Strategy**:
-`fail-fast: true` **Condition**:
-`github.event.workflow_run.conclusion == 'success'`
+`fail-fast: true` **Condition**: Health check succeeded and not cron-triggered
 
 **Step Flow**:
 

@@ -206,9 +206,9 @@ Repository → Releases tab → See all published releases with artifacts
 3. **Review releases**: Check GitHub Releases page after workflow completes
 4. **Download artifacts**: Test artifacts before publishing to PyPI
 
-**Note**: The daily scheduled health check automatically triggers this pipeline,
-keeping your project up to date with the latest dependencies and releasing new
-versions regularly. If you step away from a project, your code stays current
-with daily releases. Additionally, breaking changes from dependencies are caught
-early by the health check, allowing you to address them before they become
-problems.
+**Note**: The daily scheduled health check validates your project against the
+latest dependencies but does not trigger releases. Only actual code changes
+(push to main) trigger the full build → release → publish pipeline. This means
+breaking changes from dependencies are caught early by the health check,
+allowing you to address them before they become problems, without creating
+unnecessary releases.

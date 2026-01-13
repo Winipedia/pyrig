@@ -79,12 +79,15 @@ Add these to your GitHub repository secrets:
 ```text
 1. Health Check (on PR/push/schedule)
    ↓
-2. Build (on health check success, main only)
+2. Build (on health check success, main only, excludes cron)
    ↓
 3. Release (on build success)
    ↓
 4. Publish (on release success)
 ```
+
+**Note**: Scheduled (cron) health checks validate dependencies but don't trigger
+releases. Only push/dispatch events trigger the full pipeline.
 
 ## Customization
 
