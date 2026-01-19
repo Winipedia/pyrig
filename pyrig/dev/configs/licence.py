@@ -63,9 +63,8 @@ class LicenceConfigFile(StringConfigFile):
     @classmethod
     def is_correct(cls) -> bool:
         """Check if LICENSE exists and is non-empty."""
-        return super().is_correct() or (
-            cls.get_path().exists()
-            and bool(cls.get_path().read_text(encoding="utf-8").strip())
+        return cls.get_path().exists() and bool(
+            cls.get_path().read_text(encoding="utf-8").strip()
         )
 
     @classmethod
