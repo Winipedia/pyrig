@@ -479,4 +479,4 @@ class VersionController(Tool):
         """
         args = cls.get_config_get_user_email_args()
         stdout = args.run().stdout
-        return f"<{stdout.strip()}>"
+        return stdout.strip()
