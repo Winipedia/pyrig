@@ -69,6 +69,11 @@ Package initialization file for the test fixtures directory structure.
 
 Git ignore patterns for excluding files from version control.
 
+### [Issue Templates](issue_templates/index.md)
+
+GitHub issue templates for bug reports and feature requests in
+`.github/ISSUE_TEMPLATE/`.
+
 ### [Index.md](index_md.md)
 
 Documentation homepage file for MkDocs sites with badges and project

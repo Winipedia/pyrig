@@ -1,10 +1,8 @@
 """Configuration management for feature request issue template.
 
-Manages .github/ISSUE_TEMPLATE/feature_request.yml
-with a minimal feature request template.
+Manages .github/ISSUE_TEMPLATE/feature_request.yml with a minimal template.
 
 See Also:
-    https://github.com/stevemao/github-issue-templates
     pyrig.dev.configs.base.yml.YmlConfigFile
 """
 
@@ -19,9 +17,9 @@ class FeatureRequestConfigFile(YmlConfigFile):
 
     Generates .github/ISSUE_TEMPLATE/feature_request.yml with fields for:
     - Summary (required)
-    - Use case (required)
-    - Proposed solution (optional)
-    - Alternatives considered (optional)
+    - Use Case (required)
+    - Proposed Solution (optional)
+    - Alternatives Considered (optional)
 
     Examples:
         Generate feature_request.yml::
@@ -29,7 +27,6 @@ class FeatureRequestConfigFile(YmlConfigFile):
             FeatureRequestConfigFile()
 
     See Also:
-        https://github.com/stevemao/github-issue-templates
         pyrig.dev.configs.base.yml.YmlConfigFile
     """
 
@@ -51,80 +48,43 @@ class FeatureRequestConfigFile(YmlConfigFile):
         """
         return {
             "name": "Feature Request",
-            "description": "Create a new ticket for a new feature request",
-            "title": "[REQUEST] - <title>",
-            "labels": ["question"],
+            "description": "Suggest a new feature",
+            "title": "[Feature]: ",
+            "labels": ["enhancement"],
             "body": [
-                {
-                    "type": "input",
-                    "id": "start_date",
-                    "attributes": {
-                        "label": "Start Date",
-                        "description": "Start of development",
-                        "placeholder": "month/day/year",
-                    },
-                    "validations": {"required": False},
-                },
-                {
-                    "type": "textarea",
-                    "id": "implementation_pr",
-                    "attributes": {
-                        "label": "Implementation PR",
-                        "description": "Pull request used",
-                        "placeholder": "#Pull Request ID",
-                    },
-                    "validations": {"required": False},
-                },
-                {
-                    "type": "textarea",
-                    "id": "reference_issues",
-                    "attributes": {
-                        "label": "Reference Issues",
-                        "description": "Common issues",
-                        "placeholder": "#Issues IDs",
-                    },
-                    "validations": {"required": False},
-                },
                 {
                     "type": "textarea",
                     "id": "summary",
                     "attributes": {
                         "label": "Summary",
-                        "description": "Provide a brief explanation of the feature",
-                        "placeholder": "Describe in a few lines your feature request",
+                        "description": "Brief explanation of the feature",
                     },
                     "validations": {"required": True},
                 },
                 {
                     "type": "textarea",
-                    "id": "basic_example",
+                    "id": "use_case",
                     "attributes": {
-                        "label": "Basic Example",
-                        "description": "Indicate here some basic examples of your feature.",  # noqa: E501
-                        "placeholder": "A few specific words about your feature request.",  # noqa: E501
+                        "label": "Use Case",
+                        "description": "Why do you need this feature?",
                     },
                     "validations": {"required": True},
                 },
                 {
                     "type": "textarea",
-                    "id": "drawbacks",
+                    "id": "proposed",
                     "attributes": {
-                        "label": "Drawbacks",
-                        "description": "What are the drawbacks/impacts of your feature request ?",  # noqa: E501
-                        "placeholder": (
-                            "Identify the drawbacks and impacts while being neutral on your "  # noqa: E501
-                            "feature request"
-                        ),
+                        "label": "Proposed Solution",
+                        "description": "How might this feature work?",
                     },
-                    "validations": {"required": True},
+                    "validations": {"required": False},
                 },
                 {
                     "type": "textarea",
-                    "id": "unresolved_question",
+                    "id": "alternatives",
                     "attributes": {
-                        "label": "Unresolved questions",
-                        "description": "What questions still remain unresolved ?",
-                        "placeholder": "Identify any unresolved issues.",
+                        "label": "Alternatives Considered",
+                        "description": "Other solutions you've considered",
                     },
                     "validations": {"required": False},
                 },
