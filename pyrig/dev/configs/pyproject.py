@@ -304,8 +304,8 @@ class PyprojectConfigFile(TomlConfigFile):
         return deps
 
     @classmethod
-    @return_resource_content_on_fetch_error(resource_name="LATEST_PYTHON_VERSION")
     @cache
+    @return_resource_content_on_fetch_error(resource_name="LATEST_PYTHON_VERSION")
     def fetch_latest_python_version(cls) -> str:
         """Fetch latest stable Python version.
 

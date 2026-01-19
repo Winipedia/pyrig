@@ -8,6 +8,17 @@ from pyrig.dev.management.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_get_config_get_user_email_args(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_config_get_user_email_args()
+        assert result == ("git", "config", "--get", "user.email")
+
+    def test_get_email(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_email()
+        assert isinstance(result, str)
+        assert len(result) > 0
+
     def test_get_default_branch(self) -> None:
         """Test method."""
         result = VersionController.L.get_default_branch()
