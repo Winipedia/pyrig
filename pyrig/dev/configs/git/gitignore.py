@@ -108,8 +108,8 @@ class GitIgnoreConfigFile(StringConfigFile):
         return existing + needed
 
     @classmethod
-    @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
     @cache
+    @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
     def get_github_python_gitignore_as_str(cls) -> str:
         """Fetch GitHub's standard Python gitignore patterns.
 

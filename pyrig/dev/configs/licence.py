@@ -69,8 +69,8 @@ class LicenceConfigFile(StringConfigFile):
         )
 
     @classmethod
-    @return_resource_content_on_fetch_error(resource_name="MIT_LICENSE_TEMPLATE")
     @cache
+    @return_resource_content_on_fetch_error(resource_name="MIT_LICENSE_TEMPLATE")
     def get_mit_license(cls) -> str:
         """Fetch MIT license from GitHub SPDX API (with fallback)."""
         url = "https://api.github.com/licenses/mit"

@@ -327,6 +327,18 @@ class VersionController(Tool):
         return cls.get_config_get_args("user.name", *args)
 
     @classmethod
+    def get_config_get_user_email_args(cls, *args: str) -> Args:
+        """Construct git config get user email arguments.
+
+        Args:
+            *args: Config get command arguments.
+
+        Returns:
+            Args for 'git config --get user.email'.
+        """
+        return cls.get_config_get_args("user.email", *args)
+
+    @classmethod
     def get_diff_args(cls, *args: str) -> Args:
         """Construct git diff arguments.
 
@@ -457,3 +469,14 @@ class VersionController(Tool):
             List of gitignore patterns.
         """
         return cls.get_ignore_path().read_text(encoding="utf-8").splitlines()
+
+    @classmethod
+    def get_email(cls) -> str:
+        """Get the email from git config.
+
+        Returns:
+            Email.
+        """
+        args = cls.get_config_get_user_email_args()
+        stdout = args.run().stdout
+        return f"<{stdout.strip()}>"

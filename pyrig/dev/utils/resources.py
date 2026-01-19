@@ -29,18 +29,19 @@ Note:
     files. Disable with overwrite_resource=False.
 """
 
+import logging
 from collections.abc import Callable
 from functools import wraps
-from pathlib import Path
 from typing import Any, ParamSpec
 
 from requests import RequestException
 from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
 from pyrig import resources
-from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.packages import src_pkg_is_pyrig
 from pyrig.src.resource import get_resource_path
+
+logger = logging.getLogger(__name__)
 
 P = ParamSpec("P")
 
@@ -89,11 +90,10 @@ def return_resource_file_content_on_exceptions(
             ...     return response.text
 
     Note:
-        Strips whitespace from both resource content and function result for
-        consistent formatting. Uses stop_after_attempt(1) - no actual retries.
+        Uses stop_after_attempt(1) - no actual retries.
     """
     resource_path = get_resource_path(resource_name, resources)
-    content = resource_path.read_text(encoding="utf-8").strip()
+    content = resource_path.read_text(encoding="utf-8")
 
     def decorator(func: Callable[P, str]) -> Callable[P, str]:
         tenacity_decorator = retry(
@@ -111,14 +111,13 @@ def return_resource_file_content_on_exceptions(
 
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
-            result = decorated_func(*args, **kwargs).strip()
+            result = decorated_func(*args, **kwargs)
             if src_pkg_is_pyrig() and overwrite_resource and result != content:
                 resource_path.write_text(result, encoding="utf-8")
-                if resource_path.is_absolute():
-                    relative_resource_path = resource_path.relative_to(Path.cwd())
-                else:
-                    relative_resource_path = resource_path
-                VersionController.L.get_add_args(str(relative_resource_path)).run()
+                logger.info(
+                    "Updated resource file: %s",
+                    resource_path,
+                )
             return result
 
         return wrapper

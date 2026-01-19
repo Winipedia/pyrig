@@ -24,6 +24,11 @@ Package initialization file for the builders directory structure.
 
 Package initialization file for the configs directory structure.
 
+### [CODE_OF_CONDUCT.md](code_of_conduct.md)
+
+Community standards file using the Contributor Covenant for welcoming
+collaboration.
+
 ### [conftest.py](conftest.md)
 
 Pytest configuration file that imports pyrig's test fixtures and plugins.
