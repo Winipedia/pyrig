@@ -108,6 +108,10 @@ Repository homepage file with badges and project description for GitHub.
 
 Package initialization file for the resources directory structure.
 
+### [SECURITY.md](security.md)
+
+Security policy file with vulnerability reporting guidelines.
+
 ### [shared_subcommands.py](shared_subcommands.md)
 
 CLI shared subcommands file for defining reusable commands across all pyrig
