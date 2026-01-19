@@ -29,6 +29,10 @@ Package initialization file for the configs directory structure.
 Community standards file using the Contributor Covenant for welcoming
 collaboration.
 
+### [CONTRIBUTING.md](contributing.md)
+
+Contribution guidelines file with best practices for issues and pull requests.
+
 ### [conftest.py](conftest.md)
 
 Pytest configuration file that imports pyrig's test fixtures and plugins.
