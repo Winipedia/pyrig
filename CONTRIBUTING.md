@@ -1,4 +1,3 @@
-
 # Contributing
 
 Contributions are welcome! This document explains how to contribute.

@@ -19,8 +19,7 @@ def test_get_github_repo_token() -> None:
 def test_path_is_in_ignore(tmp_path: Path) -> None:
     """Test method."""
     with chdir(tmp_path):
-        content = """
-# Comment line
+        content = """# Comment line
 *.pyc
 __pycache__/
 .venv/
