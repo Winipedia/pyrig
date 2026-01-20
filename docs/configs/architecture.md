@@ -29,7 +29,7 @@ graph TD
     I --> G[BuilderConfigFile]
 
     B --> B1[YmlConfigFile]
-    B --> B2[Workflow]
+    B1 --> B2[Workflow]
 
     D --> D1[TxtConfigFile]
     D --> D2[MarkdownConfigFile]
@@ -56,6 +56,7 @@ graph TD
     style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style B1 fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style B2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
     style D3A2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
     style G1 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
