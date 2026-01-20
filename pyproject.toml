@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "4.2.26"
+version = "4.2.27"
 description = "A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development."
 authors = [
     {name = "Winipedia"},
