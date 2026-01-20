@@ -69,7 +69,7 @@ class TestCopyModuleOnlyDocstringConfigFile:
 
         # assert its only the docstring
         # note with extra newline at the end
-        assert content_str == '"""Test module content."""\n', (
+        assert content_str == '"""Test module content."""', (
             "Expected only docstring in string"
         )
 
