@@ -70,7 +70,7 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         Returns:
             list[str]: Pull request template lines.
         """
-        return [*PULL_REQUEST_TEMPLATE.strip().splitlines(), ""]
+        return [*PULL_REQUEST_TEMPLATE.strip().splitlines()]
 
     @classmethod
     def is_correct(cls) -> bool:

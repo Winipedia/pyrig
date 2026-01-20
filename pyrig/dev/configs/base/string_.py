@@ -113,7 +113,11 @@ class StringConfigFile(ListConfigFile):
         Returns:
             List of lines from get_lines().
         """
-        return cls.get_lines()
+        lines = cls.get_lines()
+        # add empty line at end if not already empty
+        if lines and lines[-1].strip():
+            lines.append("")
+        return lines
 
     @classmethod
     def is_correct(cls) -> bool:

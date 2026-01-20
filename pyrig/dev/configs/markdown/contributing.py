@@ -97,7 +97,7 @@ class ContributingConfigFile(MarkdownConfigFile):
         Returns:
             list[str]: Contributing template lines.
         """
-        return [*CONTRIBUTING_TEMPLATE.splitlines(), ""]
+        return [*CONTRIBUTING_TEMPLATE.splitlines()]
 
     @classmethod
     def is_correct(cls) -> bool:

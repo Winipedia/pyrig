@@ -87,7 +87,7 @@ class SecurityConfigFile(MarkdownConfigFile):
         Returns:
             list[str]: Security template lines.
         """
-        return [*cls.get_security_template_with_contact_method().splitlines(), ""]
+        return [*cls.get_security_template_with_contact_method().splitlines()]
 
     @classmethod
     def is_correct(cls) -> bool:

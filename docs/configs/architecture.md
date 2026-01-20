@@ -468,6 +468,8 @@ For plain text files with required content. "String" here means files that
 cannot be represented as structured data (dicts/lists). This includes `.py`,
 `.txt`, `.md` files, etc. Files like `.yaml`, `.json`, `.toml` that can be
 represented as dicts/lists should use their specific subclasses instead.
+It adds by default an empty line at the end of the file if not already
+present.
 
 ```python
 from pathlib import Path
