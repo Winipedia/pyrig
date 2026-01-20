@@ -33,6 +33,10 @@ collaboration.
 
 Contribution guidelines file with best practices for issues and pull requests.
 
+### [pull_request_template.md](pull_request_template.md)
+
+Pull request template for GitHub with Summary and Test Plan sections.
+
 ### [conftest.py](conftest.md)
 
 Pytest configuration file that imports pyrig's test fixtures and plugins.
