@@ -1,11 +1,11 @@
-# publish.yaml
+# publish.yml
 
 Publishing workflow that distributes packages to PyPI and documentation to
 GitHub Pages.
 
 ## Overview
 
-**File**: `.github/workflows/publish.yaml`  
+**File**: `.github/workflows/publish.yml`
 **Class**: `PublishWorkflow` in `pyrig.dev.configs.workflows.publish`  
 **Inherits**: `Workflow`
 

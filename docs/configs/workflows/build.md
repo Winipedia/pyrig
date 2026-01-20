@@ -1,11 +1,11 @@
-# build.yaml
+# build.yml
 
 Artifact building workflow that creates distributable packages and container
 images.
 
 ## Overview
 
-**File**: `.github/workflows/build.yaml`  
+**File**: `.github/workflows/build.yml`
 **Class**: `BuildWorkflow` in `pyrig.dev.configs.workflows.build`  
 **Inherits**: `Workflow`
 

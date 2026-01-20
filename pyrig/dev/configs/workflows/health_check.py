@@ -41,7 +41,7 @@ from pyrig.src.modules.package import DependencyGraph
 class HealthCheckWorkflow(Workflow):
     """GitHub Actions workflow for continuous integration health checks.
 
-    Generates a .github/workflows/health_check.yaml file that runs comprehensive
+    Generates a .github/workflows/health_check.yml file that runs comprehensive
     code quality checks and tests on pull requests, pushes, and scheduled intervals.
 
     The workflow includes:
@@ -60,11 +60,11 @@ class HealthCheckWorkflow(Workflow):
         - Python: All supported versions from pyproject.toml
 
     Examples:
-        Generate health_check.yaml workflow::
+        Generate health_check.yml workflow::
 
             from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 
-            # Creates .github/workflows/health_check.yaml
+            # Creates .github/workflows/health_check.yml
             HealthCheckWorkflow()
 
     See Also:

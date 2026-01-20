@@ -26,22 +26,22 @@ See [Workflow Architecture](architecture.md) for details on:
 
 ## Workflow Files
 
-### [health_check.yaml](health_check.md)
+### [health_check.yml](health_check.md)
 
 Continuous integration workflow that validates code quality and runs tests
 across OS and Python versions.
 
-### [build.yaml](build.md)
+### [build.yml](build.md)
 
 Artifact building workflow that creates platform-specific executables and
 container images.
 
-### [release.yaml](release.md)
+### [release.yml](release.md)
 
 Release creation workflow that versions, tags, and publishes GitHub releases
 with artifacts.
 
-### [publish.yaml](publish.md)
+### [publish.yml](publish.md)
 
 Publishing workflow that distributes packages to PyPI and documentation to
 GitHub Pages.

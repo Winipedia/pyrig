@@ -333,7 +333,7 @@ still be left with a nice initial project structure and tooling.
 **2. Remove from workflows**:
 
 ```yaml
-# In .github/workflows/*.yaml, remove lines like:
+# In .github/workflows/*.yml, remove lines like:
 # - run: uv run pyrig protect-repo
 # - run: uv run pyrig build
 ```

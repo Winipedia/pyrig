@@ -31,7 +31,7 @@ from pyrig.dev.management.version_controller import VersionController
 class BuildWorkflow(Workflow):
     """GitHub Actions workflow for building project artifacts.
 
-    Generates a .github/workflows/build.yaml file that builds Python wheels and
+    Generates a .github/workflows/build.yml file that builds Python wheels and
     container images after health checks pass on the main branch.
 
     The workflow:
@@ -46,11 +46,11 @@ class BuildWorkflow(Workflow):
         - **Container Images**: Built with Docker/Podman, tagged with version
 
     Examples:
-        Generate build.yaml workflow::
+        Generate build.yml workflow::
 
             from pyrig.dev.configs.workflows.build import BuildWorkflow
 
-            # Creates .github/workflows/build.yaml
+            # Creates .github/workflows/build.yml
             BuildWorkflow()
 
     See Also:

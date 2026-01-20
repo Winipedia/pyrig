@@ -312,10 +312,10 @@ my-project/
 │
 ├── .github/                         # GitHub configuration
 │   └── workflows/                   # CI/CD workflows
-│       ├── health_check.yaml        # Tests, linting, type checking
-│       ├── build.yaml               # Build artifacts
-│       ├── release.yaml             # Version and release
-│       └── publish.yaml             # PyPI and docs publishing
+│       ├── health_check.yml         # Tests, linting, type checking
+│       ├── build.yml                # Build artifacts
+│       ├── release.yml              # Version and release
+│       └── publish.yml              # PyPI and docs publishing
 │
 ├── .env                             # Environment variables (not committed)
 ├── .experiment.py                   # file for experiments (not committed)

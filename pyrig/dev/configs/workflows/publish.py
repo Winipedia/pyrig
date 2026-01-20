@@ -26,7 +26,7 @@ from pyrig.dev.configs.workflows.release import ReleaseWorkflow
 class PublishWorkflow(Workflow):
     """GitHub Actions workflow for publishing to PyPI and GitHub Pages.
 
-    Generates a .github/workflows/publish.yaml file that publishes the package
+    Generates a .github/workflows/publish.yml file that publishes the package
     to PyPI and documentation to GitHub Pages after successful releases.
 
     The workflow:
@@ -42,11 +42,11 @@ class PublishWorkflow(Workflow):
         4. Deploy to GitHub Pages via GitHub Actions Pages deployment
 
     Examples:
-        Generate publish.yaml workflow::
+        Generate publish.yml workflow::
 
             from pyrig.dev.configs.workflows.publish import PublishWorkflow
 
-            # Creates .github/workflows/publish.yaml
+            # Creates .github/workflows/publish.yml
             PublishWorkflow()
 
     Note:

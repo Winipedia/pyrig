@@ -28,7 +28,7 @@ from pyrig.dev.configs.workflows.build import BuildWorkflow
 class ReleaseWorkflow(Workflow):
     """GitHub Actions workflow for creating GitHub releases.
 
-    Generates a .github/workflows/release.yaml file that creates GitHub releases
+    Generates a .github/workflows/release.yml file that creates GitHub releases
     with version tags and changelogs after successful builds.
 
     The workflow:
@@ -50,11 +50,11 @@ class ReleaseWorkflow(Workflow):
         7. Generate changelog and create the GitHub release
 
     Examples:
-        Generate release.yaml workflow::
+        Generate release.yml workflow::
 
             from pyrig.dev.configs.workflows.release import ReleaseWorkflow
 
-            # Creates .github/workflows/release.yaml
+            # Creates .github/workflows/release.yml
             ReleaseWorkflow()
 
     See Also:

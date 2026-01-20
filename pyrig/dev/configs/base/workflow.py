@@ -36,7 +36,7 @@ from typing import Any
 
 from pyrig.dev.builders.base.base import BuilderConfigFile
 from pyrig.dev.cli.subcommands import build, protect_repo
-from pyrig.dev.configs.base.yaml import YamlConfigFile
+from pyrig.dev.configs.base.yml import YmlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.management.container_engine import (
     ContainerEngine,
@@ -55,7 +55,7 @@ from pyrig.src.string_ import (
 )
 
 
-class Workflow(YamlConfigFile):
+class Workflow(YmlConfigFile):
     """Abstract base class for GitHub Actions workflow configuration.
 
     Provides a declarative API for building GitHub Actions workflow YAML files
