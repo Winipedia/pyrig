@@ -13,7 +13,8 @@ generate YAML files in `.github/workflows/`.
 ```mermaid
 graph TD
     A[ConfigFile] --> B[YamlConfigFile]
-    B --> C[Workflow]
+    B --> B1[YmlConfigFile]
+    B1 --> C[Workflow]
     C --> D[HealthCheckWorkflow]
     C --> E[BuildWorkflow]
     C --> F[ReleaseWorkflow]
@@ -21,6 +22,7 @@ graph TD
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style B1 fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
     style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
