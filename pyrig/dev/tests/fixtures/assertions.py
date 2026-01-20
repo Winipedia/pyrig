@@ -85,10 +85,10 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     del sys.modules[main_module_name]
     # run module as __main__, pytest-cov will see it
     # run only if file content is the same as pyrig.main
-    main_module_content = get_module_content_as_str(main_module)
+    main_module_content = get_module_content_as_str(main_module).strip()
 
     lines = MainConfigFile.L.get_lines()
-    config_main_module_content = MainConfigFile.L.make_string_from_lines(lines)
+    config_main_module_content = MainConfigFile.L.make_string_from_lines(lines).strip()
 
     if main_module_content == config_main_module_content:
         runpy.run_module(main_module_name, run_name="__main__")

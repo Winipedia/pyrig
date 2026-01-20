@@ -50,7 +50,7 @@ class TestStringConfigFile:
 
             my_test_string_config_file.dump(["New content."])
             added_configs = my_test_string_config_file.add_missing_configs()
-            assert added_configs == ["Test content.", "New content."]
+            assert added_configs == ["Test content.", "", "New content."]
 
     def test_make_string_from_lines(self) -> None:
         """Test method."""
@@ -89,7 +89,8 @@ class TestStringConfigFile:
     ) -> None:
         """Test method for get_configs."""
         configs = my_test_string_config_file.get_configs()
-        assert configs == ["Test content."]
+        # empty line is added to the end of the file
+        assert configs == ["Test content.", ""]
 
     def test_is_correct(
         self, my_test_string_config_file: type[StringConfigFile]
