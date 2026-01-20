@@ -65,7 +65,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         Returns:
             list[str]: Contributor Covenant 2.1 lines.
         """
-        return [*cls.get_contributor_covenant_with_contact_method().splitlines(), ""]
+        return [*cls.get_contributor_covenant_with_contact_method().splitlines()]
 
     @classmethod
     def is_correct(cls) -> bool:

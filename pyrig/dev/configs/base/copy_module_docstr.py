@@ -47,7 +47,7 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         if docstring is None:
             msg = f"Source module {cls.get_src_module()} has no docstring"
             raise ValueError(msg)
-        return [*f'"""{docstring}"""'.splitlines(), ""]
+        return [*f'"""{docstring}"""'.splitlines()]
 
     @classmethod
     def is_correct(cls) -> bool:

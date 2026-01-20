@@ -64,7 +64,7 @@ class DotExperimentConfigFile(PythonConfigFile):
         Returns:
             List of lines with Python docstring.
         """
-        return ['"""This file is for experimentation and is ignored by git."""', ""]
+        return ['"""This file is for experimentation and is ignored by git."""']
 
     @classmethod
     def is_correct(cls) -> bool:

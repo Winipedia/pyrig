@@ -78,7 +78,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             Full source code of the module as list of lines.
         """
         src_module = cls.get_src_module()
-        return [*get_module_content_as_str(src_module).splitlines(), ""]
+        return [*get_module_content_as_str(src_module).splitlines()]
 
     @classmethod
     def get_filename(cls) -> str:
