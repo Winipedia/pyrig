@@ -12,9 +12,7 @@ from pathlib import Path
 
 from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 
-PULL_REQUEST_TEMPLATE = """# Pull Request
-
-<!--
+PULL_REQUEST_TEMPLATE = """<!--
 Please consider the following:
 
 - Does this pull request include a summary of the change? (See below.)
@@ -22,11 +20,11 @@ Please consider the following:
 - Does this pull request include references to any relevant issues?
 -->
 
-## Summary
+# Summary
 
 <!-- What's the purpose of the change? What does it do, and why? -->
 
-## Test Plan
+# Testing
 
 <!-- How was it tested? -->
 """
