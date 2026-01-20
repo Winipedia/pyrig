@@ -12,8 +12,7 @@ from pathlib import Path
 
 from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 
-CONTRIBUTING_TEMPLATE = """
-# Contributing
+CONTRIBUTING_TEMPLATE = """# Contributing
 
 Contributions are welcome! This document explains how to contribute.
 
