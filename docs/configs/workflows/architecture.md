@@ -145,7 +145,7 @@ graph LR
 
 ### 1. Health Check Workflow
 
-**File**: `.github/workflows/health_check.yaml`
+**File**: `.github/workflows/health_check.yml`
 
 **Triggers**:
 
@@ -169,7 +169,7 @@ graph LR
 
 ### 2. Build Workflow
 
-**File**: `.github/workflows/build.yaml`
+**File**: `.github/workflows/build.yml`
 
 **Triggers**:
 
@@ -185,7 +185,7 @@ graph LR
 
 ### 3. Release Workflow
 
-**File**: `.github/workflows/release.yaml`
+**File**: `.github/workflows/release.yml`
 
 **Triggers**:
 
@@ -207,7 +207,7 @@ graph LR
 
 ### 4. Publish Workflow
 
-**File**: `.github/workflows/publish.yaml`
+**File**: `.github/workflows/publish.yml`
 
 **Triggers**:
 
@@ -272,7 +272,7 @@ class CustomWorkflow(Workflow):
 ```
 
 After creating the file, run `uv run pyrig mkroot` to generate
-`.github/workflows/custom.yaml`.
+`.github/workflows/custom.yml`.
 
 ## Best Practices
 

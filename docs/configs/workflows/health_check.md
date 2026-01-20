@@ -1,10 +1,10 @@
-# health_check.yaml
+# health_check.yml
 
 Continuous integration workflow that validates code quality and runs tests.
 
 ## Overview
 
-**File**: `.github/workflows/health_check.yaml`  
+**File**: `.github/workflows/health_check.yml`
 **Class**: `HealthCheckWorkflow` in `pyrig.dev.configs.workflows.health_check`  
 **Inherits**: `Workflow`
 

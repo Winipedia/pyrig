@@ -541,7 +541,7 @@ class MyWorkflow(Workflow):
         }
 ```
 
-Creates `.github/workflows/my_workflow.yaml`. The Workflow class provides many
+Creates `.github/workflows/my_workflow.yml`. The Workflow class provides many
 helper methods for building jobs, steps, triggers, and matrix strategies. See
 the workflow documentation for details.
 

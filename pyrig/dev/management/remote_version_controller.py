@@ -94,19 +94,19 @@ class RemoteVersionController(Tool):
         """Construct GitHub Actions workflow run URL.
 
         Args:
-            workflow_name: Workflow file name without `.yaml` extension.
+            workflow_name: Workflow file name without `.yml` extension.
 
         Returns:
             URL to workflow execution history.
         """
-        return f"{cls.get_repo_url()}/actions/workflows/{workflow_name}.yaml"
+        return f"{cls.get_repo_url()}/actions/workflows/{workflow_name}.yml"
 
     @classmethod
     def get_cicd_badge_url(cls, workflow_name: str, label: str, logo: str) -> str:
         """Construct GitHub Actions workflow status badge URL.
 
         Args:
-            workflow_name: Workflow file name without `.yaml` extension.
+            workflow_name: Workflow file name without `.yml` extension.
             label: Badge text label (e.g., "CI", "Build").
             logo: shields.io logo identifier (e.g., "github", "python").
 
@@ -117,7 +117,7 @@ class RemoteVersionController(Tool):
             check_repo_url=False,
             url_encode=True,
         )
-        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yaml?label={label}&logo={logo}"
+        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo={logo}"
 
     @classmethod
     def get_license_badge_url(cls) -> str:

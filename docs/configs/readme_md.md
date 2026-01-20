@@ -94,8 +94,8 @@ For a project named "myapp" with description "A sample application":
 [![Python](https://img.shields.io/badge/python-3.10|3.11|3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/github/license/owner/myapp)](https://github.com/owner/myapp/blob/main/LICENSE)
 <!-- ci/cd -->
-[![CI](https://img.shields.io/github/actions/workflow/status/owner/myapp/health_check.yaml?label=CI&logo=github)](https://github.com/owner/myapp/actions/workflows/health_check.yaml)
-[![CD](https://img.shields.io/github/actions/workflow/status/owner/myapp/release.yaml?label=CD&logo=github)](https://github.com/owner/myapp/actions/workflows/release.yaml)
+[![CI](https://img.shields.io/github/actions/workflow/status/owner/myapp/health_check.yml?label=CI&logo=github)](https://github.com/owner/myapp/actions/workflows/health_check.yml)
+[![CD](https://img.shields.io/github/actions/workflow/status/owner/myapp/release.yml?label=CD&logo=github)](https://github.com/owner/myapp/actions/workflows/release.yml)
 <!-- documentation -->
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://owner.github.io/myapp)
 

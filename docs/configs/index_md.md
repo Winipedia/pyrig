@@ -97,8 +97,8 @@ For a project named "myapp" with description "A sample application":
 
 <!-- ci/cd -->
 
-[![CI](https://img.shields.io/github/actions/workflow/status/owner/myapp/health_check.yaml?label=CI&logo=github)](https://github.com/owner/myapp/actions/workflows/health_check.yaml)
-[![CD](https://img.shields.io/github/actions/workflow/status/owner/myapp/release.yaml?label=CD&logo=github)](https://github.com/owner/myapp/actions/workflows/release.yaml)
+[![CI](https://img.shields.io/github/actions/workflow/status/owner/myapp/health_check.yml?label=CI&logo=github)](https://github.com/owner/myapp/actions/workflows/health_check.yml)
+[![CD](https://img.shields.io/github/actions/workflow/status/owner/myapp/release.yml?label=CD&logo=github)](https://github.com/owner/myapp/actions/workflows/release.yml)
 
 <!-- documentation -->
 
