@@ -1,12 +1,12 @@
-"""GitHub Actions workflow for publishing to PyPI.
+"""GitHub Actions workflow for deploying to PyPI and GitHub Pages.
 
-This module provides the PublishWorkflow class for creating a GitHub Actions
-workflow that publishes packages to PyPI and documentation to GitHub Pages
+This module provides the DeployWorkflow class for creating a GitHub Actions
+workflow that publishes packages to PyPI and deploys documentation to GitHub Pages
 after successful releases.
 
-The workflow publishes:
-    - **Python Package**: Uploads wheel to PyPI for public distribution
-    - **Documentation**: Builds and deploys MkDocs site to GitHub Pages
+The workflow:
+    - **Publishes Package**: Uploads wheel to PyPI for public distribution
+    - **Deploys Documentation**: Builds and deploys MkDocs site to GitHub Pages
 
 This is the final step in the automated release pipeline.
 
@@ -23,11 +23,11 @@ from pyrig.dev.configs.base.workflow import Workflow
 from pyrig.dev.configs.workflows.release import ReleaseWorkflow
 
 
-class PublishWorkflow(Workflow):
-    """GitHub Actions workflow for publishing to PyPI and GitHub Pages.
+class DeployWorkflow(Workflow):
+    """GitHub Actions workflow for deploying to PyPI and GitHub Pages.
 
-    Generates a .github/workflows/publish.yml file that publishes the package
-    to PyPI and documentation to GitHub Pages after successful releases.
+    Generates a .github/workflows/deploy.yml file that publishes the package
+    to PyPI and deploys documentation to GitHub Pages after successful releases.
 
     The workflow:
         - Triggers after ReleaseWorkflow completes successfully
@@ -35,19 +35,19 @@ class PublishWorkflow(Workflow):
         - Builds MkDocs documentation site
         - Deploys documentation to GitHub Pages
 
-    Publishing Process:
+    Deployment Process:
         1. Build Python wheel
         2. Publish to PyPI using `PYPI_TOKEN` (skips publishing if token is not set)
         3. Build MkDocs documentation site
         4. Deploy to GitHub Pages via GitHub Actions Pages deployment
 
     Examples:
-        Generate publish.yml workflow::
+        Generate deploy.yml workflow::
 
-            from pyrig.dev.configs.workflows.publish import PublishWorkflow
+            from pyrig.dev.configs.workflows.deploy import DeployWorkflow
 
-            # Creates .github/workflows/publish.yml
-            PublishWorkflow()
+            # Creates .github/workflows/deploy.yml
+            DeployWorkflow()
 
     Note:
         Publishing to PyPI is token-based by default (via the `PYPI_TOKEN` secret).
@@ -79,11 +79,11 @@ class PublishWorkflow(Workflow):
         """Get the workflow jobs.
 
         Returns:
-            Dict with the publish job.
+            Dict with the publish and deploy jobs.
         """
         jobs: dict[str, Any] = {}
         jobs.update(cls.job_publish_package())
-        jobs.update(cls.job_publish_documentation())
+        jobs.update(cls.job_deploy_documentation())
         return jobs
 
     @classmethod
@@ -97,20 +97,22 @@ class PublishWorkflow(Workflow):
             job_func=cls.job_publish_package,
             steps=cls.steps_publish_package(),
             if_condition=cls.if_workflow_run_is_success(),
+            environment="pypi",
         )
 
     @classmethod
-    def job_publish_documentation(cls) -> dict[str, Any]:
-        """Get the publish documentation job configuration.
+    def job_deploy_documentation(cls) -> dict[str, Any]:
+        """Get the deploy documentation job configuration.
 
         Returns:
-            Job that publishes documentation to GitHub Pages.
+            Job that deploys documentation to GitHub Pages.
         """
         return cls.get_job(
-            job_func=cls.job_publish_documentation,
+            job_func=cls.job_deploy_documentation,
             permissions={"pages": "write", "id-token": "write"},
-            steps=cls.steps_publish_documentation(),
+            steps=cls.steps_deploy_documentation(),
             if_condition=cls.if_workflow_run_is_success(),
+            environment="github-pages",
         )
 
     @classmethod
@@ -127,16 +129,16 @@ class PublishWorkflow(Workflow):
         ]
 
     @classmethod
-    def steps_publish_documentation(cls) -> list[dict[str, Any]]:
-        """Get the steps for publishing documentation.
+    def steps_deploy_documentation(cls) -> list[dict[str, Any]]:
+        """Get the steps for deploying documentation.
 
         Returns:
-            List of steps for setup and publish.
+            List of steps for setup and deploy.
         """
         return [
             *cls.steps_core_installed_setup(),
             cls.step_build_documentation(),
             cls.step_enable_pages(),
             cls.step_upload_documentation(),
-            cls.step_publish_documentation(),
+            cls.step_deploy_documentation(),
         ]

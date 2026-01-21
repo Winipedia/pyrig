@@ -170,7 +170,7 @@ predictability.
 
 **What You Gain**:
 
-- **Complete CI/CD** - Health check, build, release, publish workflows ready
+- **Complete CI/CD** - Health check, build, release, deploy workflows ready
 - **Repository protection** - Automated branch protection and rulesets
 - **Matrix builds** - Test across OS (Ubuntu, Windows, macOS) and Python
   versions (3.12, 3.13, 3.14)

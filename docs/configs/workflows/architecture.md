@@ -18,7 +18,7 @@ graph TD
     C --> D[HealthCheckWorkflow]
     C --> E[BuildWorkflow]
     C --> F[ReleaseWorkflow]
-    C --> G[PublishWorkflow]
+    C --> G[DeployWorkflow]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -122,12 +122,12 @@ graph LR
     S[Schedule/Cron] --> B
     B -->|Success on main<br/>not cron| C[Build]
     C -->|Success| D[Release]
-    D -->|Success| E[Publish]
+    D -->|Success| E[Deploy]
 
     B -.->|Jobs| B1[health_checks<br/>matrix_health_checks<br/>health_check]
     C -.->|Jobs| C1[build_artifacts<br/>build_container_image]
     D -.->|Jobs| D1[release]
-    E -.->|Jobs| E1[publish_package<br/>publish_documentation]
+    E -.->|Jobs| E1[publish_package<br/>deploy_documentation]
 
     B1 -.->|Outputs| B2[Code quality validated<br/>Branch protection applied]
     C1 -.->|Outputs| C2[Executables<br/>Container image]
@@ -207,9 +207,9 @@ graph LR
 
 **Purpose**: Automates versioning and GitHub releases.
 
-### 4. Publish Workflow
+### 4. Deploy Workflow
 
-**File**: `.github/workflows/publish.yml`
+**File**: `.github/workflows/deploy.yml`
 
 **Triggers**:
 
@@ -220,7 +220,7 @@ graph LR
 - **publish_package**: Publishes to PyPI
   - Builds wheel
   - Publishes with PYPI_TOKEN (if configured)
-- **publish_documentation**: Publishes to GitHub Pages
+- **deploy_documentation**: Deploys to GitHub Pages
   - Builds MkDocs site
   - Uploads and deploys to Pages
 

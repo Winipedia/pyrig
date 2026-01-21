@@ -208,7 +208,7 @@ Repository → Releases tab → See all published releases with artifacts
 
 **Note**: The daily scheduled health check validates your project against the
 latest dependencies but does not trigger releases. Only actual code changes
-(push to main) trigger the full build → release → publish pipeline. This means
+(push to main) trigger the full build → release → deploy pipeline. This means
 breaking changes from dependencies are caught early by the health check,
 allowing you to address them before they become problems, without creating
 unnecessary releases.

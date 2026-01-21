@@ -315,7 +315,7 @@ my-project/
 │       ├── health_check.yml         # Tests, linting, type checking
 │       ├── build.yml                # Build artifacts
 │       ├── release.yml              # Version and release
-│       └── publish.yml              # PyPI and docs publishing
+│       └── deploy.yml               # PyPI and docs deployment
 │
 ├── .env                             # Environment variables (not committed)
 ├── .scratch.py                      # file for scratch work (not committed)
@@ -361,7 +361,7 @@ Execute your code with `uv run my-project main`.
 
 **CI/CD Workflows**: See
 [Workflows Documentation](../configs/workflows/index.md) for details on health
-check, build, release, and publish workflows.
+check, build, release, and deploy workflows.
 
 **Development Tools**: See [Tooling Documentation](tooling.md) for complete tool
 choices and rationale.

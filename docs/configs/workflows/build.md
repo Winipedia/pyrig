@@ -12,7 +12,7 @@ images.
 The build workflow runs after successful health checks on the main branch. It
 builds platform-specific artifacts (executables, wheels) across OS matrix and
 creates a container image. These artifacts are uploaded for the release workflow
-to publish.
+to create releases.
 
 ## Triggers
 

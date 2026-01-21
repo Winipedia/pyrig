@@ -15,8 +15,8 @@ This enables automated semantic versioning and release management.
 See Also:
     pyrig.dev.configs.workflows.build.BuildWorkflow
         Must complete successfully before this workflow runs
-    pyrig.dev.configs.workflows.publish.PublishWorkflow
-        Runs after this workflow to publish to PyPI
+    pyrig.dev.configs.workflows.deploy.DeployWorkflow
+        Runs after this workflow to deploy to PyPI and GitHub Pages
 """
 
 from typing import Any
@@ -60,7 +60,7 @@ class ReleaseWorkflow(Workflow):
     See Also:
         pyrig.dev.configs.workflows.build.BuildWorkflow
             Triggers this workflow on completion
-        pyrig.dev.configs.workflows.publish.PublishWorkflow
+        pyrig.dev.configs.workflows.deploy.DeployWorkflow
             Runs after this workflow completes
         pyrig.dev.configs.pyproject.PyprojectConfigFile
             Provides version information for tagging

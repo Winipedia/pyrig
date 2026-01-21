@@ -160,8 +160,8 @@ uv run mkdocs serve
 uv run mkdocs build
 ```
 
-Note: pyrig auto publishes the documentation to github pages via the
-`publish.yml` github workflow. So you don't even need to deploy it manually and
+Note: pyrig auto deploys the documentation to github pages via the
+`deploy.yml` github workflow. So you don't even need to deploy it manually and
 can just visit the github pages website to view your documentation.
 
 ### Customization
@@ -259,4 +259,4 @@ present with valid values, validation passes.
 2. **Extend navigation**: Add your pages to the `nav` list
 3. **Organize docs**: Use subdirectories in `docs/` for structure
 4. **Preview locally**: Always run `uv run mkdocs serve` before deploying via
-   the `publish.yml` github workflow by pushing to main
+   the `deploy.yml` github workflow by pushing to main
