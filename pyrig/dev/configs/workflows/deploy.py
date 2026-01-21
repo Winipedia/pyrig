@@ -97,7 +97,6 @@ class DeployWorkflow(Workflow):
             job_func=cls.job_publish_package,
             steps=cls.steps_publish_package(),
             if_condition=cls.if_workflow_run_is_success(),
-            environment="pypi",
         )
 
     @classmethod
@@ -112,7 +111,6 @@ class DeployWorkflow(Workflow):
             permissions={"pages": "write", "id-token": "write"},
             steps=cls.steps_deploy_documentation(),
             if_condition=cls.if_workflow_run_is_success(),
-            environment="github-pages",
         )
 
     @classmethod
