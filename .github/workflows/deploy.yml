@@ -44,6 +44,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
+      deployments: write
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: github-pages
