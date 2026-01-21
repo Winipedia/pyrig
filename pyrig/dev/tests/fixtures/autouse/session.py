@@ -38,7 +38,7 @@ from pyrig.dev.configs.dot_env import DotEnvConfigFile
 from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
-from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
+from pyrig.dev.configs.python.dot_scratch import DotScratchConfigFile
 from pyrig.dev.management.package_manager import PackageManager
 from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
@@ -112,7 +112,7 @@ def assert_root_is_correct() -> None:
     # as they are not pushed to the repository
     running_in_ci = running_in_github_actions()
     if running_in_ci:
-        DotExperimentConfigFile()
+        DotScratchConfigFile()
         DotEnvConfigFile()
 
     subclasses = ConfigFile.get_all_subclasses()
