@@ -1,6 +1,6 @@
-"""Configuration for .experiment.py scratch file.
+"""Configuration for .scratch.py scratch file.
 
-Generates .experiment.py at project root for local experimentation. Automatically
+Generates .scratch.py at project root for local experimentation. Automatically
 added to .gitignore (never committed).
 
 See Also:
@@ -13,19 +13,19 @@ from pyrig.dev.configs.base.python import PythonConfigFile
 
 
 class DotScratchConfigFile(PythonConfigFile):
-    """Manages .experiment.py scratch file.
+    """Manages .scratch.py scratch file.
 
-    Generates .experiment.py at project root for local experimentation. Automatically
+    Generates .scratch.py at project root for local experimentation. Automatically
     excluded from version control via .gitignore.
 
     Examples:
-        Generate .experiment.py::
+        Generate .scratch.py::
 
-            DotExperimentConfigFile()
+            DotScratchConfigFile()
 
         Use for experimentation::
 
-            # In .experiment.py
+            # In .scratch.py
             from myproject import some_module
 
             # Test code here - won't be committed
@@ -41,16 +41,16 @@ class DotScratchConfigFile(PythonConfigFile):
 
     @classmethod
     def get_filename(cls) -> str:
-        """Get the experiment filename.
+        """Get the scratch filename.
 
         Returns:
-            str: ".experiment" (extension .py added by parent class).
+            str: ".scratch" (extension .py added by parent class).
         """
         return ".scratch"
 
     @classmethod
     def get_parent_path(cls) -> Path:
-        """Get the parent directory for .experiment.py.
+        """Get the parent directory for .scratch.py.
 
         Returns:
             Path: Empty Path() (project root).
@@ -59,7 +59,7 @@ class DotScratchConfigFile(PythonConfigFile):
 
     @classmethod
     def get_lines(cls) -> list[str]:
-        """Get the .experiment.py file content.
+        """Get the .scratch.py file content.
 
         Returns:
             List of lines with Python docstring.
@@ -68,7 +68,7 @@ class DotScratchConfigFile(PythonConfigFile):
 
     @classmethod
     def is_correct(cls) -> bool:
-        """Check if the .experiment.py file is valid.
+        """Check if the .scratch.py file is valid.
 
         Returns:
             True if the file exists.

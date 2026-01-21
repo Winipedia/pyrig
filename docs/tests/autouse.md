@@ -51,7 +51,7 @@ changes.
 
 - Checks all `ConfigFile` subclasses with `is_correct()`
 - Runs `make_project_root()` if any incorrect
-- Creates `.experiment.py` in CI (needed so the `ConfigFile` system does not
+- Creates `.scratch.py` in CI (needed so the `ConfigFile` system does not
   complain that is_correct() is False)
 
 **Scope**: Session
