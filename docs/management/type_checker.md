@@ -26,16 +26,28 @@ class TypeChecker(BaseTC):
 ```python
 # myapp/dev/management/type_checker.py
 from pyrig.dev.management.type_checker import TypeChecker as BaseTC
+from pyrig.src.processes import Args
 
 class TypeChecker(BaseTC):
     @classmethod
     def name(cls) -> str:
         return "mypy"
+
+    @classmethod
+    def get_check_args(cls, *args: str) -> Args:
+        # mypy uses different command syntax than ty
+        return cls.get_args(*args)  # mypy doesn't need 'check' subcommand
 ```
 
 Because pyrig uses `TypeChecker.L` internally (including in pre-commit config
-generation), this single override automatically applies everywhere - no need to
-modify pre-commit config or other components.
+generation), this override automatically applies everywhere - no need to modify
+pre-commit config or other components.
+
+**Note**: When replacing type checkers, you may need to override
+`get_check_args()` since different tools use different command patterns. The
+example above shows how mypy differs from ty (which uses `ty check`).
+You might have to adjust other files as well. E.g. pyproject.toml to add mypy
+as a dev dependency or to add mypy configuration.
 
 ## Related
 
