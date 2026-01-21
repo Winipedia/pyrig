@@ -73,4 +73,4 @@ class DotExperimentConfigFile(PythonConfigFile):
         Returns:
             True if the file exists.
         """
-        return super().is_correct() or (cls.get_path().exists())
+        return cls.get_path().exists()
