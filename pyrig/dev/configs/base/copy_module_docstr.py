@@ -60,4 +60,4 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         Returns:
             True if parent validation passes or source module has a docstring.
         """
-        return super().is_correct() or module_has_docstring(cls.get_src_module())
+        return module_has_docstring(cls.get_src_module())

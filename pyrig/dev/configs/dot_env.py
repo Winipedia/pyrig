@@ -66,4 +66,4 @@ We highly discourage managing this ConfigFile via subclassing.
     @classmethod
     def is_correct(cls) -> bool:
         """Check if .env file exists."""
-        return super().is_correct() or cls.get_path().exists()
+        return super().is_correct()
