@@ -4,65 +4,65 @@ from collections.abc import Callable
 
 import pytest
 
-from pyrig.dev.configs.workflows.publish import PublishWorkflow
+from pyrig.dev.configs.workflows.deploy import DeployWorkflow
 
 
 @pytest.fixture
-def my_test_publish_workflow(
-    config_file_factory: Callable[[type[PublishWorkflow]], type[PublishWorkflow]],
-) -> type[PublishWorkflow]:
-    """Create a test publish workflow class with tmp_path."""
-    return config_file_factory(PublishWorkflow)
+def my_test_deploy_workflow(
+    config_file_factory: Callable[[type[DeployWorkflow]], type[DeployWorkflow]],
+) -> type[DeployWorkflow]:
+    """Create a test deploy workflow class with tmp_path."""
+    return config_file_factory(DeployWorkflow)
 
 
-class TestPublishWorkflow:
+class TestDeployWorkflow:
     """Test class."""
 
-    def test_job_publish_documentation(self) -> None:
+    def test_job_deploy_documentation(self) -> None:
         """Test method."""
-        result = PublishWorkflow.job_publish_documentation()
+        result = DeployWorkflow.job_deploy_documentation()
         assert len(result) == 1, f"Expected job to have one key, got {result}"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
 
-    def test_steps_publish_documentation(self) -> None:
+    def test_steps_deploy_documentation(self) -> None:
         """Test method."""
-        result = PublishWorkflow.steps_publish_documentation()
+        result = DeployWorkflow.steps_deploy_documentation()
         assert len(result) > 0, f"Expected steps to be non-empty, got {result}"
 
     def test_get_workflow_triggers(
-        self, my_test_publish_workflow: type[PublishWorkflow]
+        self, my_test_deploy_workflow: type[DeployWorkflow]
     ) -> None:
         """Test method for get_workflow_triggers."""
-        result = my_test_publish_workflow.get_workflow_triggers()
+        result = my_test_deploy_workflow.get_workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
 
-    def test_get_jobs(self, my_test_publish_workflow: type[PublishWorkflow]) -> None:
+    def test_get_jobs(self, my_test_deploy_workflow: type[DeployWorkflow]) -> None:
         """Test method for get_jobs."""
-        result = my_test_publish_workflow.get_jobs()
+        result = my_test_deploy_workflow.get_jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_publish_package(
-        self, my_test_publish_workflow: type[PublishWorkflow]
+        self, my_test_deploy_workflow: type[DeployWorkflow]
     ) -> None:
         """Test method for job_publish."""
-        result = my_test_publish_workflow.job_publish_package()
+        result = my_test_deploy_workflow.job_publish_package()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
         assert "if" in result[job_name], "Expected 'if' condition in job"
 
     def test_steps_publish_package(
-        self, my_test_publish_workflow: type[PublishWorkflow]
+        self, my_test_deploy_workflow: type[DeployWorkflow]
     ) -> None:
         """Test method for steps_publish."""
-        result = my_test_publish_workflow.steps_publish_package()
+        result = my_test_deploy_workflow.steps_publish_package()
         assert len(result) > 0, "Expected steps to be non-empty"
 
-    def test_is_correct(self, my_test_publish_workflow: type[PublishWorkflow]) -> None:
+    def test_is_correct(self, my_test_deploy_workflow: type[DeployWorkflow]) -> None:
         """Test method for is_correct."""
-        test_workflow = my_test_publish_workflow()
+        test_workflow = my_test_deploy_workflow()
         workflow_path = test_workflow.get_path()
         workflow_path.write_text("")
         assert test_workflow.is_correct(), "Expected workflow to be correct when empty"

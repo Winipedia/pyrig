@@ -9,7 +9,7 @@ Pyrig generates GitHub Actions workflows that automate:
 - Continuous integration (linting, type checking, testing)
 - Building artifacts (wheels, container images)
 - Creating releases (versioning, changelogs, GitHub releases)
-- Publishing (PyPI, GitHub Pages documentation)
+- Deploying (PyPI, GitHub Pages documentation)
 
 All workflows are defined in Python using the `Workflow` base class and
 automatically generated as YAML files in `.github/workflows/`.
@@ -41,9 +41,9 @@ container images.
 Release creation workflow that versions, tags, and publishes GitHub releases
 with artifacts.
 
-### [publish.yml](publish.md)
+### [deploy.yml](deploy.md)
 
-Publishing workflow that distributes packages to PyPI and documentation to
+Deployment workflow that publishes packages to PyPI and deploys documentation to
 GitHub Pages.
 
 ## Quick Start
@@ -65,8 +65,8 @@ Add these to your GitHub repository secrets:
     pyrig protect-repo in the health_check workflow)
   - contents: read, write (needed to create and push commits and tags in the
     release workflow)
-  - pages: read, write (needed to activate and publish documentation to GitHub
-    Pages in the publish workflow)
+  - pages: read, write (needed to activate and deploy documentation to GitHub
+    Pages in the deploy workflow)
 - **PYPI_TOKEN**: PyPI API token (for publishing packages)
 - **CODECOV_TOKEN**: Codecov token (recommended for all repos, required for
   private repos)
@@ -83,7 +83,7 @@ Add these to your GitHub repository secrets:
    ↓
 3. Release (on build success)
    ↓
-4. Publish (on release success)
+4. Deploy (on release success)
 ```
 
 **Note**: Scheduled (cron) health checks validate dependencies but don't trigger

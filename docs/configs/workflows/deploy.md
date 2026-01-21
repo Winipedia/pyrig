@@ -1,17 +1,17 @@
-# publish.yml
+# deploy.yml
 
-Publishing workflow that distributes packages to PyPI and documentation to
+Deployment workflow that publishes packages to PyPI and deploys documentation to
 GitHub Pages.
 
 ## Overview
 
-**File**: `.github/workflows/publish.yml`
-**Class**: `PublishWorkflow` in `pyrig.dev.configs.workflows.publish`  
+**File**: `.github/workflows/deploy.yml`
+**Class**: `DeployWorkflow` in `pyrig.dev.configs.workflows.deploy`
 **Inherits**: `Workflow`
 
-The publish workflow is the final step in the CI/CD pipeline. It runs after
-successful releases and publishes the package to PyPI and documentation to
-GitHub Pages. These jobs run in parallel.
+The deploy workflow is the final step in the CI/CD pipeline. It runs after
+successful releases and publishes the package to PyPI and deploys documentation
+to GitHub Pages. These jobs run in parallel.
 
 ## Triggers
 
@@ -21,7 +21,7 @@ GitHub Pages. These jobs run in parallel.
 - **Event**: `completed`
 - **Condition**: Only runs if release succeeded
 
-**Why workflow_run?** Ensures publishing only happens after version is tagged
+**Why workflow_run?** Ensures deployment only happens after version is tagged
 and release is created.
 
 ### Workflow Dispatch
@@ -33,7 +33,7 @@ and release is created.
 ```mermaid
 graph TD
     A[Trigger: Release Success] --> B[publish_package]
-    A --> C[publish_documentation]
+    A --> C[deploy_documentation]
 
     B --> B1[1. Checkout Repository]
     B1 --> B2[2. Setup Version Control]
@@ -52,7 +52,7 @@ graph TD
     C6 --> C7[7. Build Documentation]
     C7 --> C8[8. Enable Pages]
     C8 --> C9[9. Upload Documentation]
-    C9 --> C10[10. Publish Documentation]
+    C9 --> C10[10. Deploy Documentation]
 
 	    B6 -.->|Upload| P1[PyPI Package]
 	    C10 -.->|Deploy| P2[GitHub Pages]
@@ -85,8 +85,9 @@ graph TD
 
 ### 1. publish_package
 
-**Runs on**: Ubuntu latest  
+**Runs on**: Ubuntu latest
 **Condition**: `github.event.workflow_run.conclusion == 'success'`
+**Environment**: `pypi`
 
 **Steps**:
 
@@ -114,10 +115,11 @@ graph TD
 **Why conditional?** Allows workflow to succeed even without PyPI token (useful
 for private packages or testing).
 
-### 2. publish_documentation
+### 2. deploy_documentation
 
-**Runs on**: Ubuntu latest  
-**Condition**: `github.event.workflow_run.conclusion == 'success'`  
+**Runs on**: Ubuntu latest
+**Condition**: `github.event.workflow_run.conclusion == 'success'`
+**Environment**: `github-pages`
 **Permissions**:
 
 - **pages**: `write` (deploy to GitHub Pages)
@@ -161,7 +163,7 @@ for private packages or testing).
    - Uploads `site/` directory as Pages artifact
    - Prepares for deployment
 
-10. **Publish Documentation** (`actions/deploy-pages@main`)
+10. **Deploy Documentation** (`actions/deploy-pages@main`)
     - Deploys uploaded artifact to GitHub Pages
     - Site becomes available at `https://{username}.github.io/{repo}/`
     - Uses GitHub-provided OIDC
@@ -175,10 +177,38 @@ for private packages or testing).
 ## Required Secrets
 
 - **PYPI_TOKEN**: PyPI API token (optional, skips publishing if not set)
-- **REPO_TOKEN**: Fine-grained PAT with pages write permission (for enabling
-  Pages)
+- **REPO_TOKEN**: Fine-grained personal access token with pages write permission
+  (for enabling Pages)
 
-## Publishing Destinations
+## GitHub Environments
+
+Both jobs use GitHub Environments to track deployments and enable
+environment-specific settings:
+
+### `pypi` Environment
+
+- **Purpose**: Tracks PyPI package deployments
+- **Benefits**:
+  - View deployment history in repository's Environments page
+  - Set up environment protection rules (e.g., required reviewers)
+  - Use environment-specific secrets (e.g., `PYPI_TOKEN`)
+  - Track deployment status and rollback capability
+
+### `github-pages` Environment
+
+- **Purpose**: Tracks GitHub Pages documentation deployments
+- **Benefits**:
+  - View documentation deployment history
+  - Monitor Pages deployment status
+  - Set up environment protection rules
+  - Automatic environment creation by GitHub Actions
+
+**Configuration**: Environments are automatically created on first deployment.
+You can configure protection rules and secrets in:
+
+- Repository → Settings → Environments → Select environment
+
+## Deployment Destinations
 
 ### PyPI
 
@@ -198,7 +228,7 @@ Runs automatically when release workflow succeeds.
 
 ### Manual Trigger
 
-GitHub Actions tab → Publish → Run workflow
+GitHub Actions tab → Deploy → Run workflow
 
 ### Viewing Published Content
 
@@ -218,7 +248,7 @@ uv add myapp
    account settings)
 2. **Configure REPO_TOKEN**: Required for enabling GitHub Pages
 3. **Test docs locally**: Run `uv run mkdocs serve` before pushing
-4. **Verify PyPI upload**: Check package page after publishing
+4. **Verify PyPI upload**: Check package page after deployment
 5. **Check Pages deployment**: Visit docs URL after workflow completes
 6. **Optional**: Consider switching to PyPI trusted publishing if you prefer
 OIDC-based publishing instead of long-lived tokens (requires workflow changes)

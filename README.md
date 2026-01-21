@@ -48,7 +48,7 @@ points.
 
 - Complete project structure in minutes
 - Pre-configured tools (uv, ruff, ty, pytest, MkDocs)
-- GitHub Actions workflows (health check, build, release, publish)
+- GitHub Actions workflows (health check, build, release, deploy)
 - 90% test coverage enforcement
 - Pre-commit hooks with all quality checks
 
@@ -95,7 +95,7 @@ After running `uv run pyrig init`, you get a complete project with:
 
 - **Complete directory structure** with source code, tests, docs, and CI/CD
 - **Pre-configured tools** (uv, ruff, ty, pytest, MkDocs, Podman)
-- **GitHub Actions workflows** (health check, build, release, publish)
+- **GitHub Actions workflows** (health check, build, release, deploy)
 - **90% test coverage** enforcement
 - **Pre-commit hooks** with all quality checks
 

@@ -52,7 +52,7 @@ graph LR
     C -.-> C1[auto-generated<br/>configuration files]
     D -.-> D1[PyInstaller &<br/>custom builders]
     E -.-> E1[Shared fixtures<br/>auto-discovery]
-    F -.-> F1[Health Check<br/>Build, Release<br/>Publish]
+    F -.-> F1[Health Check<br/>Build, Release<br/>Deploy]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000

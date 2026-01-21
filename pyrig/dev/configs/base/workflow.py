@@ -6,7 +6,7 @@ Actions workflows programmatically.
 
 The Workflow class provides:
     - **Job Builders**: Methods for creating common CI/CD jobs (test, build,
-      release, publish)
+      release, deploy)
     - **Step Builders**: Reusable step templates (checkout, setup Python, cache,
       run commands)
     - **Trigger Builders**: Methods for defining workflow triggers (push, PR,
@@ -263,6 +263,7 @@ class Workflow(YmlConfigFile):
         if_condition: str | None = None,
         outputs: dict[str, str] | None = None,
         steps: list[dict[str, Any]] | None = None,
+        environment: str | None = None,
         job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a job configuration.
@@ -276,6 +277,7 @@ class Workflow(YmlConfigFile):
             if_condition: Conditional expression for job execution.
             outputs: Job outputs mapping output names to step output references.
             steps: List of step configurations.
+            environment: Environment name for registering deployments on GitHub.
             job: Existing job dict to update.
 
         Returns:
@@ -294,6 +296,8 @@ class Workflow(YmlConfigFile):
         job_config["runs-on"] = runs_on
         if if_condition is not None:
             job_config["if"] = if_condition
+        if environment is not None:
+            job_config["environment"] = environment
         if outputs is not None:
             job_config["outputs"] = outputs
         if steps is not None:
@@ -1241,21 +1245,21 @@ class Workflow(YmlConfigFile):
         )
 
     @classmethod
-    def step_publish_documentation(
+    def step_deploy_documentation(
         cls,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that publishes the documentation to GitHub Pages.
+        """Create a step that deploys the documentation to GitHub Pages.
 
         Args:
             step: Existing step dict to update.
 
         Returns:
-            Step that runs uv publish-docs.
+            Step that deploys documentation to GitHub Pages.
         """
         return cls.get_step(
-            step_func=cls.step_publish_documentation,
+            step_func=cls.step_deploy_documentation,
             uses="actions/deploy-pages@main",
             step=step,
         )

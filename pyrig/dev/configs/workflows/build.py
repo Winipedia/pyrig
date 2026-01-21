@@ -11,8 +11,8 @@ The workflow builds:
 Artifacts are uploaded and made available for the release workflow to create
 GitHub releases.
 
-The publish workflow runs after a successful release and handles publishing to
-PyPI and GitHub Pages.
+The deploy workflow runs after a successful release and handles publishing to
+PyPI and deploying to GitHub Pages.
 
 See Also:
     pyrig.dev.configs.workflows.health_check.HealthCheckWorkflow

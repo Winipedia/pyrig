@@ -85,9 +85,9 @@ class TestWorkflow:
         result = Workflow.step_build_documentation()
         assert "run" in result, f"Expected 'run' in step, got {result}"
 
-    def test_step_publish_documentation(self) -> None:
+    def test_step_deploy_documentation(self) -> None:
         """Test method."""
-        result = Workflow.step_publish_documentation()
+        result = Workflow.step_deploy_documentation()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
 
     def test_run_if_condition(self) -> None:
