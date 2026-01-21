@@ -18,7 +18,6 @@ jobs:
   publish_package:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    environment: pypi
     steps:
     - name: Checkout Repository
       id: checkout_repository
@@ -44,10 +43,8 @@ jobs:
     permissions:
       pages: write
       id-token: write
-      deployments: write
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    environment: github-pages
     steps:
     - name: Checkout Repository
       id: checkout_repository

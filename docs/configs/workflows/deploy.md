@@ -87,7 +87,6 @@ graph TD
 
 **Runs on**: Ubuntu latest
 **Condition**: `github.event.workflow_run.conclusion == 'success'`
-**Environment**: `pypi`
 
 **Steps**:
 
@@ -119,7 +118,6 @@ for private packages or testing).
 
 **Runs on**: Ubuntu latest
 **Condition**: `github.event.workflow_run.conclusion == 'success'`
-**Environment**: `github-pages`
 **Permissions**:
 
 - **pages**: `write` (deploy to GitHub Pages)
@@ -179,34 +177,6 @@ for private packages or testing).
 - **PYPI_TOKEN**: PyPI API token (optional, skips publishing if not set)
 - **REPO_TOKEN**: Fine-grained personal access token with pages write permission
   (for enabling Pages)
-
-## GitHub Environments
-
-Both jobs use GitHub Environments to track deployments and enable
-environment-specific settings:
-
-### `pypi` Environment
-
-- **Purpose**: Tracks PyPI package deployments
-- **Benefits**:
-  - View deployment history in repository's Environments page
-  - Set up environment protection rules (e.g., required reviewers)
-  - Use environment-specific secrets (e.g., `PYPI_TOKEN`)
-  - Track deployment status and rollback capability
-
-### `github-pages` Environment
-
-- **Purpose**: Tracks GitHub Pages documentation deployments
-- **Benefits**:
-  - View documentation deployment history
-  - Monitor Pages deployment status
-  - Set up environment protection rules
-  - Automatic environment creation by GitHub Actions
-
-**Configuration**: Environments are automatically created on first deployment.
-You can configure protection rules and secrets in:
-
-- Repository → Settings → Environments → Select environment
 
 ## Deployment Destinations
 
