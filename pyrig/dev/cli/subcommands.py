@@ -101,18 +101,20 @@ def init() -> None:
     """Initialize a complete pyrig project from scratch.
 
     Transforms a basic Python project into a fully-configured, production-ready
-    pyrig project through a comprehensive 9-step automated sequence.
+    pyrig project through a comprehensive 11-step automated sequence.
 
     Initialization Steps:
-        1. Add development dependencies (uv add --dev)
+        1. Add development dependencies (uv add --group dev)
         2. Sync virtual environment (uv sync)
         3. Create priority config files (mkroot --priority)
-        4. Sync virtual environment again
+        4. Sync virtual environment again (apply new configs)
         5. Create complete project structure (mkroot)
         6. Generate test skeletons (mktests)
-        7. Run pre-commit hooks (install, stage, format/lint)
-        8. Run test suite (pytest)
-        9. Create initial git commit
+        7. Install pre-commit hooks (pre-commit install)
+        8. Add all files to version control (git add .)
+        9. Run pre-commit hooks (format/lint all files)
+        10. Run test suite (pytest)
+        11. Create initial git commit
 
     The process is automated and logged. Each step executes sequentially; if any
     step fails, the process stops immediately.
