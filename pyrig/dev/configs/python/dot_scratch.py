@@ -12,7 +12,7 @@ from pathlib import Path
 from pyrig.dev.configs.base.python import PythonConfigFile
 
 
-class DotExperimentConfigFile(PythonConfigFile):
+class DotScratchConfigFile(PythonConfigFile):
     """Manages .experiment.py scratch file.
 
     Generates .experiment.py at project root for local experimentation. Automatically
@@ -46,7 +46,7 @@ class DotExperimentConfigFile(PythonConfigFile):
         Returns:
             str: ".experiment" (extension .py added by parent class).
         """
-        return ".experiment"
+        return ".scratch"
 
     @classmethod
     def get_parent_path(cls) -> Path:
@@ -64,7 +64,7 @@ class DotExperimentConfigFile(PythonConfigFile):
         Returns:
             List of lines with Python docstring.
         """
-        return ['"""This file is for experimentation and is ignored by git."""']
+        return ['"""This file is for scratch work and is ignored by git."""']
 
     @classmethod
     def is_correct(cls) -> bool:

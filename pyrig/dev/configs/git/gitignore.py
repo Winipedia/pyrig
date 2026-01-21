@@ -17,7 +17,7 @@ import requests
 import pyrig
 from pyrig.dev.configs.base.string_ import StringConfigFile
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
-from pyrig.dev.configs.python.dot_experiment import DotExperimentConfigFile
+from pyrig.dev.configs.python.dot_scratch import DotScratchConfigFile
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 
 
@@ -91,7 +91,7 @@ class GitIgnoreConfigFile(StringConfigFile):
             *cls.get_github_python_gitignore_as_list(),
             "",
             f"# {pyrig.__name__} stuff",
-            DotExperimentConfigFile.L.get_path().as_posix(),
+            DotScratchConfigFile.L.get_path().as_posix(),
             DotEnvConfigFile.L.get_path().as_posix(),
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov

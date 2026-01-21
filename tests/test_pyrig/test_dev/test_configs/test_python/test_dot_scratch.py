@@ -1,0 +1,30 @@
+"""module."""
+
+from pathlib import Path
+
+from pyrig.dev.configs.python.dot_scratch import DotScratchConfigFile
+
+
+class TestDotScratchConfigFile:
+    """Test class."""
+
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert DotScratchConfigFile().is_correct()
+
+    def test_get_filename(self) -> None:
+        """Test method for get_filename."""
+        assert DotScratchConfigFile.get_filename() == ".scratch"
+
+    def test_get_parent_path(
+        self,
+    ) -> None:
+        """Test method for get_parent_path."""
+        assert DotScratchConfigFile.get_parent_path() == Path()
+
+    def test_get_lines(self) -> None:
+        """Test method for get_content_str."""
+        lines = DotScratchConfigFile.get_lines()
+        assert isinstance(lines, list)
+        for line in lines:
+            assert isinstance(line, str)
