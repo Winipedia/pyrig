@@ -66,7 +66,7 @@ The `.gitignore` file combines patterns from multiple sources:
 
 1. **GitHub's standard Python patterns** - Comprehensive Python-specific
    patterns
-2. **Pyrig-specific patterns** - `.experiment.py`, `.env`
+2. **Pyrig-specific patterns** - `.scratch.py`, `.env`
 3. **Tool caches** - `.pytest_cache/`, `.ruff_cache/`, `.rumdl_cache/`
 4. **Coverage reports** - `.coverage`, `coverage.xml`
 5. **Build artifacts** - `.venv/`, `dist/`, `/site/`
@@ -98,7 +98,7 @@ is always created successfully.
 
 Automatically includes paths to other config files that should be ignored:
 
-- `.experiment.py` - Experimental code file
+- `.scratch.py` - Scratch code file
 - `.env` - Environment variables and secrets
 
 ## Usage
@@ -138,7 +138,7 @@ These will be preserved when pyrig adds new required patterns.
 
 ### Pyrig-Specific
 
-- `.experiment.py` - Experimental code file
+- `.scratch.py` - Scratch code file
 - `.env` - Environment variables and secrets
 
 ### Tool Caches

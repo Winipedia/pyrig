@@ -51,7 +51,7 @@ or Docker.
 Environment variables file for local configuration, automatically excluded from
 version control.
 
-### [.experiment.py](dot_experiment.md)
+### [.scratch.py](dot_scratch.md)
 
 Scratch file for local experimentation, automatically excluded from version
 control.

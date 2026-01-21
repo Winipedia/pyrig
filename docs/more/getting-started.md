@@ -318,7 +318,7 @@ my-project/
 │       └── publish.yml              # PyPI and docs publishing
 │
 ├── .env                             # Environment variables (not committed)
-├── .experiment.py                   # file for experiments (not committed)
+├── .scratch.py                      # file for scratch work (not committed)
 ├── .gitignore                       # Git ignore patterns
 ├── .pre-commit-config.yaml          # Pre-commit hooks
 ├── .python-version                  # Python version (3.12+)

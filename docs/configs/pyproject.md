@@ -262,7 +262,7 @@ skips = ["*/tests/*.py"]          # Allow assert in tests
 
 - Security scanning for common vulnerabilities
 - Allow assert in tests (required by pytest)
-- Ignore dotfiles (e.g., .experiment.py)
+- Ignore dotfiles (e.g., .scratch.py)
 
 ### rumdl (Markdown Linter)
 
