@@ -41,11 +41,11 @@ graph TD
     B --> S1[1. Checkout Repository]
     S1 --> S2[2. Setup Version Control]
     S2 --> S3[3. Setup Package Manager]
-    S3 --> S4[4. Update Dependencies]
-    S4 --> S5[5. Install Dependencies]
-    S5 --> S6[6. Add Dependency Updates To Version Control]
-    S6 --> S7[7. Patch Version]
-    S7 --> S8[8. Add Version Bump To Version Control]
+    S3 --> S4[4. Patch Version]
+    S4 --> S5[5. Add Version Bump To Version Control]
+    S5 --> S6[6. Update Dependencies]
+    S6 --> S7[7. Install Dependencies]
+    S7 --> S8[8. Add Dependency Updates To Version Control]
     S8 --> S9[9. Commit Added Changes]
     S9 --> S10[10. Push Commits]
     S10 --> S11[11. Create & Push Tag]
@@ -69,18 +69,18 @@ graph TD
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S7 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S8 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-	    style S10 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-	    style S11 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-	    style S12 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-	    style S13 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
-	    style S14 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
-	    style S15 fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S7 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S8 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+    style S10 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+    style S11 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+    style S12 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+    style S13 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+    style S14 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+    style S15 fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
     style A1 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
     style A2 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
     style A3 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
@@ -107,20 +107,20 @@ graph TD
    - Installs uv package manager
    - Uses the default Python version (latest supported)
 
-4. **Update Dependencies**
-   - Updates lock file: `uv lock --upgrade`
-
-5. **Install Dependencies**
-   - Installs dependencies: `uv sync`
-
-6. **Add Dependency Updates To Version Control**
-   - Stages `pyproject.toml` and `uv.lock`
-
-7. **Patch Version**
+4. **Patch Version**
    - Bumps patch version: `uv version --bump patch`
    - Updates `pyproject.toml` with new version
 
-8. **Add Version Bump To Version Control**
+5. **Add Version Bump To Version Control**
+   - Stages `pyproject.toml` and `uv.lock`
+
+6. **Update Dependencies**
+   - Updates lock file: `uv lock --upgrade`
+
+7. **Install Dependencies**
+   - Installs dependencies: `uv sync`
+
+8. **Add Dependency Updates To Version Control**
    - Stages `pyproject.toml` and `uv.lock`
 
 9. **Commit Added Changes**

@@ -75,20 +75,24 @@ graph TD
 graph TD
     S1[1. Checkout Repository] --> S2[2. Setup Version Control]
     S2 --> S3[3. Setup Package Manager]
-    S3 --> S4[4. Update Dependencies]
-    S4 --> S5[5. Install Dependencies]
-    S5 --> S6[6. Add Dependency Updates To Version Control]
-    S6 --> S7[7. Build Artifacts]
-    S7 --> S8[8. Upload Artifacts]
+    S3 --> S4[4. Patch Version]
+    S4 --> S5[5. Add Version Bump To Version Control]
+    S5 --> S6[6. Update Dependencies]
+    S6 --> S7[7. Install Dependencies]
+    S7 --> S8[8. Add Dependency Updates To Version Control]
+    S8 --> S9[9. Build Artifacts]
+    S9 --> S10[10. Upload Artifacts]
 
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-	    style S7 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-	    style S8 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S7 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S8 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+    style S10 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
 ```
 
 **Steps**:
@@ -103,27 +107,34 @@ graph TD
    - Installs uv package manager
    - Uses the default Python version (latest supported)
 
-4. **Update Dependencies**
-   - Updates lock file: `uv lock --upgrade`
+4. **Patch Version**
+   - Bumps patch version: `uv version --bump patch`
+   - Updates `pyproject.toml` with new version
 
-5. **Install Dependencies**
-   - Installs dependencies: `uv sync`
-
-6. **Add Dependency Updates To Version Control**
+5. **Add Version Bump To Version Control**
    - Stages `pyproject.toml` and `uv.lock`
 
-7. **Build Artifacts**
+6. **Update Dependencies**
+   - Updates lock file: `uv lock --upgrade`
+
+7. **Install Dependencies**
+   - Installs dependencies: `uv sync`
+
+8. **Add Dependency Updates To Version Control**
+   - Stages `pyproject.toml` and `uv.lock`
+
+9. **Build Artifacts**
    - Runs `uv run pyrig build`
    - Executes configured builder classes
-(e.g., `myapp/dev/builders/` in a consumer repo)
+     (e.g., `myapp/dev/builders/` in a consumer repo)
    - Creates platform-specific executables, wheels, etc.
    - Outputs to `dist/` directory
 
-8. **Upload Artifacts** (`actions/upload-artifact@main`)
-   - Uploads `dist/` directory
-   - Artifact name: `pyrig-{OS}` (e.g., `pyrig-Linux`, `pyrig-Windows`,
-     `pyrig-macOS`)
-   - Available for download in release workflow
+10. **Upload Artifacts** (`actions/upload-artifact@main`)
+    - Uploads `dist/` directory
+    - Artifact name: `pyrig-{OS}` (e.g., `pyrig-Linux`, `pyrig-Windows`,
+      `pyrig-macOS`)
+    - Available for download in release workflow
 
 **Why matrix?** Different OS produce different artifacts (Linux ELF, Windows
 EXE, macOS Mach-O).
@@ -137,18 +148,26 @@ EXE, macOS Mach-O).
 
 ```mermaid
 graph TD
-    S1[1. Checkout Repository] --> S2[2. Install Container Engine]
-    S2 --> S3[3. Build Container Image]
-    S3 --> S4[4. Make Dist Folder]
-    S4 --> S5[5. Save Container Image]
-    S5 --> S6[6. Upload Artifacts]
+    S1[1. Checkout Repository] --> S2[2. Setup Version Control]
+    S2 --> S3[3. Setup Package Manager]
+    S3 --> S4[4. Patch Version]
+    S4 --> S5[5. Add Version Bump To Version Control]
+    S5 --> S6[6. Install Container Engine]
+    S6 --> S7[7. Build Container Image]
+    S7 --> S8[8. Make Dist Folder]
+    S8 --> S9[9. Save Container Image]
+    S9 --> S10[10. Upload Artifacts]
 
     style S1 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
     style S2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
-    style S3 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
-    style S4 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style S5 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
-    style S6 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
+    style S3 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S4 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S5 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S6 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
+    style S7 fill:#e76f51,stroke:#333,stroke-width:1px,color:#000
+    style S8 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+    style S9 fill:#f4a261,stroke:#333,stroke-width:1px,color:#000
+    style S10 fill:#9d84b7,stroke:#333,stroke-width:1px,color:#000
 ```
 
 **Steps**:
@@ -156,26 +175,40 @@ graph TD
 1. **Checkout Repository** (`actions/checkout@main`)
    - Clones the repository code
 
-2. **Install Container Engine** (`redhat-actions/podman-install@main`)
+2. **Setup Version Control**
+   - Configures git user as `github-actions[bot]`
+
+3. **Setup Package Manager** (`astral-sh/setup-uv@main`)
+   - Installs uv package manager
+   - Uses the default Python version (latest supported)
+
+4. **Patch Version**
+   - Bumps patch version: `uv version --bump patch`
+   - Updates `pyproject.toml` with new version
+
+5. **Add Version Bump To Version Control**
+   - Stages `pyproject.toml` and `uv.lock`
+
+6. **Install Container Engine** (`redhat-actions/podman-install@main`)
    - Installs Podman container engine
    - Uses `GITHUB_TOKEN` for authentication
 
-3. **Build Container Image**
+7. **Build Container Image**
    - Runs `podman build -t pyrig .`
    - Uses `Containerfile` in repository root
    - Tags image as `pyrig`
 
-4. **Make Dist Folder**
+8. **Make Dist Folder**
    - Creates `dist/` directory: `mkdir -p dist`
 
-5. **Save Container Image**
+9. **Save Container Image**
    - Exports image to tarball: `podman save -o dist/pyrig.tar pyrig`
    - Creates portable image archive
 
-6. **Upload Artifacts** (`actions/upload-artifact@main`)
-   - Uploads `dist/pyrig.tar`
-   - Artifact name: `container-image`
-   - Available for distribution or deployment
+10. **Upload Artifacts** (`actions/upload-artifact@main`)
+    - Uploads `dist/pyrig.tar`
+    - Artifact name: `container-image`
+    - Available for distribution or deployment
 
 **Why Podman?** Daemonless, rootless container engine preferred over Docker for
 security and simplicity.
