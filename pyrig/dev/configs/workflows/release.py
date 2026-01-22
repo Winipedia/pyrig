@@ -125,9 +125,7 @@ class ReleaseWorkflow(Workflow):
             List of steps for tagging, changelog, and release creation.
         """
         return [
-            *cls.steps_core_installed_setup(repo_token=True),
-            cls.step_patch_version(),
-            cls.step_add_version_bump_to_version_control(),
+            *cls.steps_core_installed_setup(repo_token=True, patch_version=True),
             cls.step_commit_added_changes(),
             cls.step_push_commits(),
             cls.step_create_and_push_tag(),

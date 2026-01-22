@@ -670,13 +670,18 @@ class Workflow(YmlConfigFile):
     # Combined Steps
     @classmethod
     def steps_core_setup(
-        cls, python_version: str | None = None, *, repo_token: bool = False
+        cls,
+        python_version: str | None = None,
+        *,
+        repo_token: bool = False,
+        patch_version: bool = False,
     ) -> list[dict[str, Any]]:
         """Get the core setup steps for any workflow.
 
         Args:
             python_version: Python version to use. Defaults to latest supported.
             repo_token: Whether to use REPO_TOKEN for checkout.
+            patch_version: Whether to patch the version.
 
         Returns:
             List with checkout and project management setup steps.
@@ -685,11 +690,18 @@ class Workflow(YmlConfigFile):
             python_version = str(
                 PyprojectConfigFile.L.get_latest_possible_python_version(level="minor")
             )
-        return [
+        core = [
             cls.step_checkout_repository(repo_token=repo_token),
             cls.step_setup_version_control(),
             cls.step_setup_package_manager(python_version=python_version),
         ]
+        if patch_version:
+            core = [
+                *core,
+                cls.step_patch_version(),
+                cls.step_add_version_bump_to_version_control(),
+            ]
+        return core
 
     @classmethod
     def steps_core_installed_setup(
@@ -698,6 +710,7 @@ class Workflow(YmlConfigFile):
         no_dev: bool = False,
         python_version: str | None = None,
         repo_token: bool = False,
+        patch_version: bool = False,
     ) -> list[dict[str, Any]]:
         """Get core setup steps with dependency update and installation.
 
@@ -705,12 +718,17 @@ class Workflow(YmlConfigFile):
             python_version: Python version to use. Defaults to latest supported.
             repo_token: Whether to use REPO_TOKEN for checkout.
             no_dev: Whether to install dev dependencies.
+            patch_version: Whether to patch the version.
 
         Returns:
             List with setup, dependency update, and dependency installation steps.
         """
         return [
-            *cls.steps_core_setup(python_version=python_version, repo_token=repo_token),
+            *cls.steps_core_setup(
+                python_version=python_version,
+                repo_token=repo_token,
+                patch_version=patch_version,
+            ),
             cls.step_update_dependencies(),
             cls.step_install_dependencies(no_dev=no_dev),
             cls.step_add_dependency_updates_to_version_control(),
@@ -723,6 +741,7 @@ class Workflow(YmlConfigFile):
         no_dev: bool = False,
         python_version: str | None = None,
         repo_token: bool = False,
+        patch_version: bool = False,
     ) -> list[dict[str, Any]]:
         """Get core setup steps for matrix jobs.
 
@@ -731,6 +750,7 @@ class Workflow(YmlConfigFile):
             python_version: Python version to use. If None (default),
                 steps_core_installed_setup will use latest supported version.
             repo_token: Whether to use REPO_TOKEN for checkout.
+            patch_version: Whether to patch the version.
 
         Returns:
             List with full setup steps for matrix execution.
@@ -740,6 +760,7 @@ class Workflow(YmlConfigFile):
                 python_version=python_version,
                 repo_token=repo_token,
                 no_dev=no_dev,
+                patch_version=patch_version,
             ),
         ]
 

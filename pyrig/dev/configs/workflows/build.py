@@ -135,7 +135,7 @@ class BuildWorkflow(Workflow):
             List of build steps, or placeholder if no builders defined.
         """
         return [
-            *cls.steps_core_matrix_setup(),
+            *cls.steps_core_matrix_setup(patch_version=True),
             cls.step_build_artifacts(),
             cls.step_upload_artifacts(),
         ]
@@ -148,7 +148,7 @@ class BuildWorkflow(Workflow):
             List of build steps.
         """
         return [
-            cls.step_checkout_repository(),
+            *cls.steps_core_setup(patch_version=True),
             cls.step_install_container_engine(),
             cls.step_build_container_image(),
             cls.step_make_dist_folder(),

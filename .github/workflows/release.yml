@@ -35,6 +35,12 @@ jobs:
       uses: astral-sh/setup-uv@main
       with:
         python-version: '3.14'
+    - name: Patch Version
+      id: patch_version
+      run: uv version --bump patch
+    - name: Add Version Bump To Version Control
+      id: add_version_bump_to_version_control
+      run: git add pyproject.toml uv.lock
     - name: Update Dependencies
       id: update_dependencies
       run: uv lock --upgrade
@@ -43,12 +49,6 @@ jobs:
       run: uv sync
     - name: Add Dependency Updates To Version Control
       id: add_dependency_updates_to_version_control
-      run: git add pyproject.toml uv.lock
-    - name: Patch Version
-      id: patch_version
-      run: uv version --bump patch
-    - name: Add Version Bump To Version Control
-      id: add_version_bump_to_version_control
       run: git add pyproject.toml uv.lock
     - name: Commit Added Changes
       id: commit_added_changes
