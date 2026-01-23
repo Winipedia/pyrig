@@ -299,6 +299,8 @@ my-project/
 │       │   │   └── test_shared_subcommands.py
 │       │   ├── test_configs/
 │       │   │   └── __init__.py
+│       │   ├── test_management/
+│       │   │   └── __init__.py
 │       │   └── test_tests/
 │       │       └── __init__.py
 │       ├── test_resources/          # Mirrors my_project/resources/
@@ -311,6 +313,11 @@ my-project/
 │   └── api.md                       # API reference (auto-generated)
 │
 ├── .github/                         # GitHub configuration
+│   ├── ISSUE_TEMPLATE/              # Issue templates
+│   │   ├── bug_report.yml           # Bug report template
+│   │   ├── feature_request.yml      # Feature request template
+│   │   └── config.yml               # Template chooser config
+│   ├── pull_request_template.md     # PR template
 │   └── workflows/                   # CI/CD workflows
 │       ├── health_check.yml         # Tests, linting, type checking
 │       ├── build.yml                # Build artifacts
@@ -322,9 +329,12 @@ my-project/
 ├── .gitignore                       # Git ignore patterns
 ├── .pre-commit-config.yaml          # Pre-commit hooks
 ├── .python-version                  # Python version (3.12+)
+├── CODE_OF_CONDUCT.md               # Contributor Covenant
+├── CONTRIBUTING.md                  # Contribution guidelines
 ├── Containerfile                    # Podman/Docker image definition
 ├── LICENSE                          # MIT license
 ├── README.md                        # Project readme
+├── SECURITY.md                      # Security policy
 ├── mkdocs.yml                       # MkDocs configuration
 ├── pyproject.toml                   # Project metadata and tool configs
 └── uv.lock                          # Dependency lock file
