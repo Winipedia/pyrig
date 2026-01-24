@@ -31,97 +31,116 @@
 
 ## What is pyrig?
 
-pyrig is an opinionated toolkit for Python projects that removes setup friction
-and enforces best practices. With a single command, it scaffolds a complete,
-production-ready project with CI/CD, testing, documentation, and more. It’s
-designed to be rerun safely to keep your repository up to date as standards
-evolve.
+pyrig generates and maintains a complete, production-ready Python project from a
+single command. It creates all the files you need—source structure, tests,
+CI/CD, documentation, configs—and keeps them in sync as your project evolves.
 
-**Philosophy**: pyrig ships minimal, best-practice defaults that work together
-out of the box. Every configuration, workflow, and tool is preconfigured and
-ready from day one—while still being customizable through pyrig’s extension
-points.
-
-### Key Features
-
-**Zero Configuration Setup**:
-
-- Complete project structure in minutes
-- Pre-configured tools (uv, ruff, ty, pytest, MkDocs)
-- GitHub Actions workflows (health check, build, release, deploy)
-- 90% test coverage enforcement
-- Pre-commit hooks with all quality checks
-
-**Automated Project Management**:
-
-- CLI framework with automatic command discovery
-- Configuration file system with validation
-- Automatic test skeleton generation
-- PyInstaller executable building
-- Multi-package architecture support
-
-**Opinionated Best Practices**:
-
-- Python >=3.12 with modern type hints
-- All ruff linting rules enabled
-- Strict type checking with ty
-- Signed commits and linear history
-- Repository protection rules
-
-### Quick Example
-
-```bash
-# Create repository on GitHub
-git clone https://github.com/username/my-project.git
-cd my-project
-
-# Initialize with uv and pyrig
-uv init
-uv add pyrig
-uv run pyrig init
-
-# Complete project ready in minutes:
-# ✓ Source code structure
-# ✓ Test framework with 90% coverage
-# ✓ CI/CD workflows
-# ✓ Documentation site
-# ✓ Pre-commit hooks
-# ✓ Container support
-```
-
-### What You Get
-
-After running `uv run pyrig init`, you get a complete project with:
-
-- **Complete directory structure** with source code, tests, docs, and CI/CD
-- **Pre-configured tools** (uv, ruff, ty, pytest, MkDocs, Podman)
-- **GitHub Actions workflows** (health check, build, release, deploy)
-- **90% test coverage** enforcement
-- **Pre-commit hooks** with all quality checks
-
-See the
-[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/)
-for the complete project structure and detailed setup instructions.
-
-### CLI Commands
-
-```bash
-uv run pyrig init        # Complete project initialization
-uv run pyrig mkroot      # Update project structure
-uv run pyrig mktests     # Generate test skeletons
-uv run pyrig build       # Build all artifacts
-uv run my-project --help # Your custom CLI
-```
+**Run once, stay current**: pyrig is idempotent. Rerun it anytime to update
+configs, add missing files, or sync with the latest best practices.
 
 ## Quick Start
 
-New to pyrig? Start here:
+```bash
+# Initialize project with uv and pyrig
+uv init
+uv add pyrig
+uv run pyrig init
+```
 
-- *[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/)*
-- Complete setup from zero to fully configured project
+That's it. You now have a complete project with:
 
-**[Full Documentation](https://winipedia.github.io/pyrig/)** - Comprehensive documentation on GitHub Pages
+- Source code structure with CLI entry point
+- Test framework with 90% coverage enforcement
+- GitHub Actions (CI/CD, releases, docs deployment)
+- Pre-commit hooks (linting, formatting, type checking)
+- MkDocs documentation site
+- Container support (Podman/Docker)
 
-**[CodeWiki Documentation](https://codewiki.google/github.com/winipedia/pyrig)** - AI-generated documentation
+See the
+[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/)
+for detailed setup instructions.
+
+## Key Features
+
+### Config File System
+
+pyrig's core is a declarative config file system. Each config file
+(pyproject.toml, .pre-commit-config.yaml, GitHub workflows, etc.) is a Python
+class that:
+
+- **Generates** the file with working sensible defaults
+- **Validates** existing files against expected structure
+- **Merges** missing values without removing your customizations (overrides are
+  possible, read the docs for details)
+
+Create custom configs by subclassing—pyrig discovers them automatically.
+
+### Multi-Package Inheritance
+
+Build on pyrig to create multiproject-wide standards. Your base package defines
+configs, fixtures, and CLI commands that all dependent projects inherit:
+
+```text
+pyrig → company-base → auth-service
+                     → payment-service
+                     → notification-service
+```
+
+Override any config by subclassing with the same class name. Leaf classes win.
+
+### Automatic Discovery
+
+Everything is discovered automatically across the dependency chain:
+
+- **CLI commands** from `<package>.dev.cli.subcommands`
+- **Config files** from `<package>.dev.configs`
+- **Test fixtures** from `<package>.dev.tests.fixtures`
+- **Builders** from `<package>.dev.builders`
+- **Tools** from `<package>.dev.management`
+
+No registration required. Just define and it works.
+
+### What Gets Generated
+
+After `pyrig init`, your project includes:
+
+| Category | Files |
+|----------|-------|
+| **Source** | Package structure, `main.py` CLI, `py.typed` marker |
+| **Tests** | Mirror structure, `conftest.py`, test skeletons |
+| **CI/CD** | Health check, build, release, deploy workflows |
+| **Docs** | MkDocs config, index, API reference |
+| **GitHub** | Issue templates, PR template, branch protection |
+| **Community** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY |
+| **Config** | pyproject.toml, .gitignore, .pre-commit-config.yaml, Containerfile |
+
+## CLI Commands
+
+```bash
+uv run pyrig init        # Complete project initialization
+uv run pyrig mkroot      # Create/update all config files
+uv run pyrig mktests     # Generate test skeletons
+uv run pyrig build       # Build artifacts (PyInstaller, etc.)
+uv run my-project --help # Your project's CLI
+```
+
+## Opinionated Defaults
+
+pyrig enforces modern Python best practices:
+
+- **Python 3.12+** with full type hints
+- **All ruff rules** enabled (with sensible exceptions)
+- **Strict type checking** with ty
+- **90% test coverage** minimum
+- **Linear git history** with branch protection
+
+## Documentation
+
+- **[Getting Started](https://winipedia.github.io/pyrig/more/getting-started/)** -
+  Complete setup guide
+- **[Full Documentation](https://winipedia.github.io/pyrig/)** - Comprehensive
+  reference
+- **[CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)** -
+  AI-generated docs
 
 ---
