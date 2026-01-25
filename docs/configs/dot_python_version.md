@@ -27,11 +27,11 @@ graph TD
     style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `ConfigFile`
+**Inherits from**: `StringConfigFile`
 
 **What this means**:
 
-- Inherits directly from the base ConfigFile class
+- String-based config file (single text content)
 - Reads Python version from pyproject.toml
 - Simple text file format
 
