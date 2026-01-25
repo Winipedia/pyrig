@@ -1,6 +1,7 @@
 # subcommands.py Configuration
 
-The `SubcommandsConfigFile` manages the `dev/cli/subcommands.py` file.
+The `SubcommandsConfigFile` manages the `{package_name}/dev/cli/subcommands.py`
+file.
 
 ## Overview
 

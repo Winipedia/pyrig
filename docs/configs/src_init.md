@@ -1,6 +1,6 @@
 # src/**init**.py Configuration
 
-The `SrcInitConfigFile` manages the `src/__init__.py` file.
+The `SrcInitConfigFile` manages the `{package_name}/src/__init__.py` file.
 
 ## Overview
 

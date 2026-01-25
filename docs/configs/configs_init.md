@@ -1,6 +1,7 @@
 # configs/**init**.py Configuration
 
-The `ConfigsInitConfigFile` manages the `dev/configs/__init__.py` file.
+The `ConfigsInitConfigFile` manages the `{package_name}/dev/configs/__init__.py`
+file.
 
 ## Overview
 
