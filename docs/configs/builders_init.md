@@ -1,7 +1,7 @@
 # builders/**init**.py Configuration
 
-The `BuildersInitConfigFile` manages the `dev/builders/__init__.py`
-file.
+The `BuildersInitConfigFile` manages the
+`{package_name}/dev/builders/__init__.py` file.
 
 ## Overview
 

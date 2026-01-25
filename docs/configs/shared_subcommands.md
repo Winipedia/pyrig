@@ -1,7 +1,7 @@
 # shared_subcommands.py Configuration
 
-The `SharedSubcommandsConfigFile` manages the `dev/cli/shared_subcommands.py`
-file.
+The `SharedSubcommandsConfigFile` manages the
+`{package_name}/dev/cli/shared_subcommands.py` file.
 
 ## Overview
 
