@@ -35,9 +35,9 @@ graph BT
 **What this means**:
 
 - Python file format (`.py` extension)
-- Overrides `is_correct()` to also accept file existence
+- Overrides `is_correct()` to only check file existence
 - Users can freely modify the file content
-- File is considered correct if it passes parent validation or exists
+- File is considered correct if it exists
 - Simple structure without strict content validation
 
 ## File Location
@@ -88,14 +88,14 @@ imports, or prototyping features. Run it directly with `python .scratch.py`.
 
 ## Validation Logic
 
-The `DotScratchConfigFile` overrides the `is_correct()` method to also
-accept file existence via `super().is_correct() or cls.get_path().exists()`.
-This is more permissive than the standard `StringConfigFile` validation.
+The `DotScratchConfigFile` overrides the `is_correct()` method to only check
+for file existence via `cls.get_path().exists()`. This is more permissive than
+the standard `StringConfigFile` validation.
 
-**Required**: The file must pass parent validation or exist.
+**Required**: The file must exist.
 
 **Flexible content**: You can modify the file content freely; validation
-accepts either parent validation success or file existence.
+only checks that the file exists.
 
 ## Troubleshooting
 
