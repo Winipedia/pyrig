@@ -17,10 +17,14 @@ Creates a .python-version file that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[DotPythonVersionConfigFile]
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
+    C --> D[DotPythonVersionConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
 **Inherits from**: `ConfigFile`
