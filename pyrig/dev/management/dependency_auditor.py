@@ -9,7 +9,7 @@ This complements Bandit:
 
 Example:
     >>> from pyrig.dev.management.dependency_auditor import DependencyAuditor
-    >>> DependencyAuditor.L.get_run_args().run()
+    >>> DependencyAuditor.L.get_audit_args().run()
 """
 
 from pyrig.dev.management.base.base import Tool
@@ -25,7 +25,7 @@ class DependencyAuditor(Tool):
         This wrapper intentionally stays small. Teams often need to customize
         pip-audit flags (e.g., ignores/formatting) based on their policy.
         Subclass this tool in your downstream package and override
-        ``get_run_args`` to add flags.
+        ``get_audit_args`` to add flags.
     """
 
     @classmethod
