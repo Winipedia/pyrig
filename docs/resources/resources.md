@@ -175,6 +175,8 @@ access its files.
 
 Pyrig includes the following resource files in `pyrig/resources/`:
 
+- **CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT.md** - Contributor Covenant 2.1 code of
+  conduct template
 - **GITIGNORE** - GitHub's standard Python .gitignore template
 - **LATEST_PYTHON_VERSION** - Latest stable Python version number
 - **MIT_LICENSE_TEMPLATE** - MIT license template text

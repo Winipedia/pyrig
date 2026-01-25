@@ -36,8 +36,8 @@ Format Features
 - **YAML**: PyYAML safe_load/dump, prevents code execution, preserves order
 - **JSON**: Built-in json module, 4-space indentation
 - **Text**: Content-based validation, appends user additions
-- **Python**: Extends TextConfigFile with .py extension
-- **Markdown**: Extends TextConfigFile with .md extension
+- **Python**: Extends StringConfigFile with .py extension
+- **Markdown**: Extends StringConfigFile with .md extension
 
 Specialized Classes
 -------------------
