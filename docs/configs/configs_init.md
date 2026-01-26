@@ -67,14 +67,6 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 ### Generated Content
 
-```python
-"""Custom configuration file definitions.
-
-Add custom ConfigFile subclasses here to manage project-specific configuration
-files. ConfigFile subclasses are automatically discovered and initialized when
-running `pyrig mkroot`. """
-```
-
 The file contains only the docstring from `pyrig.dev.configs`, allowing you to
 add custom config file implementations.
 

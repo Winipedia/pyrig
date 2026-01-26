@@ -60,12 +60,6 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 ### Generated Content
 
 ```python
-"""Pytest configuration for tests.
-
-This defines the pyrig pytest plugin that provides access to pyrig's test
-infrastructure, including fixtures, hooks, and test utilities.
-"""
-
 pytest_plugins = ["pyrig.dev.tests.conftest"]
 ```
 
