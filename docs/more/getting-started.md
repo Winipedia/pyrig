@@ -68,12 +68,12 @@ graph TD
     D --> D1[Optional]
     E --> E1[Recommended<br/>Required for private repos]
 
-    C --> C2[Used by: 
+    C --> C2[Used by:
     protect-repo
     codecov upload
     release
     ]
-    D --> D2[Used by: Publish workflow<br/>to publish to PyPI]
+    D --> D2[Used by: Deploy workflow<br/>to publish to PyPI]
     E --> E2[Used by: Health Check workflow<br/>to upload coverage]
 
     C2 --> C3[Permissions:
