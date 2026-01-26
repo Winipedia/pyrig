@@ -16,11 +16,11 @@ validation, and creating custom configuration files.
 
 Branch protection ruleset configuration for GitHub repository protection.
 
-### [builders/**init**.py](builders_init.md)
+### [builders/\_\_init\_\_.py](builders_init.md)
 
 Package initialization file for the builders directory structure.
 
-### [configs/**init**.py](configs_init.md)
+### [configs/\_\_init\_\_.py](configs_init.md)
 
 Package initialization file for the configs directory structure.
 
@@ -65,7 +65,7 @@ Python version specification file for pyenv and other version managers.
 API reference documentation page generated from Python docstrings using
 mkdocstrings.
 
-### [fixtures/**init**.py](fixtures_init.md)
+### [fixtures/\_\_init\_\_.py](fixtures_init.md)
 
 Package initialization file for the test fixtures directory structure.
 
@@ -113,7 +113,7 @@ settings.
 
 Repository homepage file with badges and project description for GitHub.
 
-### [resources/**init**.py](resources_init.md)
+### [resources/\_\_init\_\_.py](resources_init.md)
 
 Package initialization file for the resources directory structure.
 
@@ -126,7 +126,7 @@ Security policy file with vulnerability reporting guidelines.
 CLI shared subcommands file for defining reusable commands across all pyrig
 projects.
 
-### [src/**init**.py](src_init.md)
+### [src/\_\_init\_\_.py](src_init.md)
 
 Package initialization file for the src directory structure.
 
