@@ -1,7 +1,7 @@
 """Configuration management for .gitignore files.
 
 Manages .gitignore by combining GitHub's standard Python patterns with
-pyrig-specific patterns (.experiment, .env, tool caches, build artifacts).
+pyrig-specific patterns (.scratch.py, .env, tool caches, build artifacts).
 Intelligently merges with existing patterns, avoiding duplicates.
 
 See Also:
@@ -25,7 +25,7 @@ class GitIgnoreConfigFile(StringConfigFile):
     """Gitignore configuration manager.
 
     Combines GitHub's standard Python patterns with pyrig-specific patterns
-    (.experiment, .env, tool caches, build artifacts). Preserves existing
+    (.scratch.py, .env, tool caches, build artifacts). Preserves existing
     patterns and only adds missing ones.
 
     Examples:
@@ -77,7 +77,7 @@ class GitIgnoreConfigFile(StringConfigFile):
         """Get complete .gitignore patterns with intelligent merging.
 
         Combines GitHub's Python patterns with pyrig-specific patterns
-        (.experiment, .env, tool caches, build artifacts). Preserves existing
+        (.scratch.py, .env, tool caches, build artifacts). Preserves existing
         patterns and avoids duplicates.
 
         Returns:
