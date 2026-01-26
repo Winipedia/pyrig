@@ -147,13 +147,15 @@ keywords = ["data-processing", "etl", "pipeline", "analytics", "big-data"]
 
 ```toml
 [project.scripts]
+# note the entry point is invoked via pyrig and not directly via your project 
+# as pyrig handles the CLI infrastructure and discovers your CLI commands.
 my-app = "pyrig.dev.cli.cli:main"      # Creates CLI command: my-app
 ```
 
 **Why**: Creates an executable command when the package is installed. The entry
 point references pyrig's CLI infrastructure, which automatically discovers and
 runs your project's subcommands. You can invoke it via `uv run my-app <command>`
-or just `my-app <command>` after installation.
+or just `my-app <command>` after activating the project's virtual environment.
 
 ### Dependencies
 
