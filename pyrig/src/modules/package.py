@@ -280,6 +280,19 @@ def get_objs_from_obj(
 
 
 @cache
+def get_all_deps_depending_on_dep(
+    dep: ModuleType, *, include_self: bool = False
+) -> list[ModuleType]:
+    """Get all packages that depend on pyrig.
+
+    Returns:
+        List of imported module objects for dependent packages.
+    """
+    # Note we do not use cached to avoid caching the entire graph during CLI invocations
+    return DependencyGraph().get_all_depending_on(dep, include_self=include_self)
+
+
+@cache
 def discover_equivalent_modules_across_dependents(
     module: ModuleType, dep: ModuleType, until_pkg: ModuleType | None = None
 ) -> list[ModuleType]:
@@ -336,8 +349,7 @@ def discover_equivalent_modules_across_dependents(
         module_name,
         dep.__name__,
     )
-    graph = DependencyGraph.cached()
-    pkgs = graph.get_all_depending_on(dep, include_self=True)
+    pkgs = get_all_deps_depending_on_dep(dep, include_self=True)
 
     modules: list[ModuleType] = []
     for pkg in pkgs:

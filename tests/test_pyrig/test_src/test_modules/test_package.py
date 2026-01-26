@@ -29,6 +29,7 @@ from pyrig.src.modules.package import (
     discover_equivalent_modules_across_dependents,
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
+    get_all_deps_depending_on_dep,
     get_objs_from_obj,
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
@@ -425,3 +426,9 @@ def test_discover_leaf_subclass_across_dependents() -> None:
         cls=MyTestConfigFile, dep=pyrig, load_pkg_before=test_modules
     )
     assert final_leaf is MyTestConfigFile
+
+
+def test_get_all_deps_depending_on_dep() -> None:
+    """Test function."""
+    pkgs = get_all_deps_depending_on_dep(pyrig, include_self=True)
+    assert pyrig in pkgs, f"Expected pyrig in pkgs, got {pkgs}"

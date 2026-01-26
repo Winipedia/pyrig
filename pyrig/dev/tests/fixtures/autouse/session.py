@@ -59,7 +59,7 @@ from pyrig.src.modules.module import (
     get_module_name_replacing_start_module,
 )
 from pyrig.src.modules.package import (
-    DependencyGraph,
+    get_all_deps_depending_on_dep,
     get_pkg_name_from_project_name,
     get_project_name_from_pkg_name,
 )
@@ -503,9 +503,7 @@ def assert_src_does_not_use_dev() -> None:
 
     src_src_pkg = import_module(src_src_pkg_name)
 
-    pkgs_depending_on_pyrig = DependencyGraph.cached().get_all_depending_on(
-        pyrig, include_self=True
-    )
+    pkgs_depending_on_pyrig = get_all_deps_depending_on_dep(pyrig, include_self=True)
 
     possible_dev_usages = [
         get_module_name_replacing_start_module(dev, pkg.__name__)
