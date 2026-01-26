@@ -117,11 +117,13 @@ After `pyrig init`, your project includes:
 ## CLI Commands
 
 ```bash
-uv run pyrig init        # Complete project initialization
-uv run pyrig mkroot      # Create/update all config files
-uv run pyrig mktests     # Generate test skeletons
-uv run pyrig build       # Build artifacts (PyInstaller, etc.)
-uv run my-project --help # Your project's CLI
+uv run pyrig init         # Complete project initialization
+uv run pyrig mkroot       # Create/update all config files
+uv run pyrig mktests      # Generate test skeletons
+uv run pyrig mkinits      # Create __init__.py files
+uv run pyrig build        # Build artifacts (PyInstaller, etc.)
+uv run pyrig protect-repo # Configure repository protection
+uv run my-project --help  # Your project's CLI
 ```
 
 ## Opinionated Defaults
