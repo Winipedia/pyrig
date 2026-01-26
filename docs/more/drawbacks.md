@@ -173,7 +173,7 @@ predictability.
 - **Complete CI/CD** - Health check, build, release, deploy workflows ready
 - **Repository protection** - Automated branch protection and rulesets
 - **Matrix builds** - Test across OS (Ubuntu, Windows, macOS) and Python
-  versions (3.12, 3.13, 3.14)
+  versions (3.12+)
 - **Automated releases** - Version bumping, changelog, GitHub releases
 - **GitHub Pages** - Documentation auto-deployed
 - **Zero CI/CD config** - Workflows generated and maintained automatically
