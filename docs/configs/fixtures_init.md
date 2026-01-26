@@ -1,4 +1,4 @@
-# fixtures/**init**.py Configuration
+# fixtures/\_\_init\_\_.py Configuration
 
 The `FixturesInitConfigFile` manages the
 `{package_name}/dev/tests/fixtures/__init__.py` file.

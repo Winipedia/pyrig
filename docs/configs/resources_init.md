@@ -1,4 +1,4 @@
-# resources/**init**.py Configuration
+# resources/\_\_init\_\_.py Configuration
 
 The `ResourcesInitConfigFile` manages the `{package_name}/resources/__init__.py`
 file.
@@ -66,13 +66,6 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 3. **Package initialization**: Parent directories get `__init__.py` files
 
 ### Generated Content
-
-```python
-"""Static resource files for the project.
-
-Place static resource files here (templates, data files, etc.). Resources can be
-accessed at runtime using `pyrig.src.resource.get_resource_path()`. """
-```
 
 The file contains only the docstring, allowing you to add resource files to this
 directory.

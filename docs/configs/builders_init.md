@@ -1,4 +1,4 @@
-# builders/**init**.py Configuration
+# builders/\_\_init\_\_.py Configuration
 
 The `BuildersInitConfigFile` manages the
 `{package_name}/dev/builders/__init__.py` file.
@@ -67,14 +67,6 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 3. **Package initialization**: Parent directories get `__init__.py` files
 
 ### Generated Content
-
-```python
-"""Custom artifact builders for creating distributable packages.
-
-Add custom BuilderConfigFile subclasses here to create project-specific
-artifacts. Builders are automatically discovered and executed when running
-`pyrig build`. """
-```
 
 The file contains only the docstring, allowing you to add custom builder
 implementations.
