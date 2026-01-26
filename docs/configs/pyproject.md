@@ -322,7 +322,7 @@ uv run pyrig mkroot
 uv add some-package
 
 # Dev dependency
-uv add --dev some-dev-package
+uv add --group dev some-dev-package
 ```
 
 ### Updating Configuration
