@@ -306,7 +306,9 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     @cache
     @return_resource_content_on_fetch_error(resource_name="LATEST_PYTHON_VERSION")
-    def fetch_latest_python_version(cls) -> str:
+    def fetch_latest_python_version(
+        cls, level: Literal["major", "minor", "micro"] = "minor"
+    ) -> str:
         """Fetch latest stable Python version.
 
         Is fetched from endoflife.date API (cached, with fallback).
@@ -315,7 +317,8 @@ class PyprojectConfigFile(TomlConfigFile):
         resp = requests.get(url, timeout=10)
         resp.raise_for_status()
         data: list[dict[str, str]] = resp.json()
-        return data[0]["latest"]
+        latest_version = data[0]["latest"]
+        return str(adjust_version_to_level(Version(latest_version), level))
 
     @classmethod
     def get_latest_python_version(
