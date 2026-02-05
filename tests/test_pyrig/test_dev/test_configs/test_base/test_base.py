@@ -351,7 +351,7 @@ class TestConfigFile:
         mocker.patch(
             ConfigFile.__module__
             + "."
-            + discover_subclasses_across_dependents.__name__,  # ty:ignore[unresolved-attribute]
+            + discover_subclasses_across_dependents.__name__,
             return_value={my_test_config_file},
         )
         actual = my_test_config_file.get_all_subclasses()
