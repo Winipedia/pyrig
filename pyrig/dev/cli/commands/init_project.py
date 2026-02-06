@@ -33,6 +33,13 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    TextColumn,
+)
+
 from pyrig.dev.cli.subcommands import mkroot, mktests
 from pyrig.dev.management.package_manager import PackageManager
 from pyrig.dev.management.pre_committer import (
@@ -196,16 +203,24 @@ def init_project() -> None:
     project into a fully-configured, production-ready pyrig project.
 
     Each step returns an Args object that is executed via PackageManager. Steps
-    are executed in order with progress logging. If any step fails, the process
-    stops immediately.
+    are executed in order with a progress bar that updates after each step
+    completes. If any step fails, the process stops immediately.
 
     Note:
         This function should be run once when setting up a new project.
         Requires a git repository to be initialized.
     """
-    logger.info("Initializing project")
-    for step in SETUP_STEPS:
-        step_name = make_name_from_obj(step, join_on=" ")
-        logger.info(step_name)
-        PackageManager.L.get_run_args(*step()).run()
-    logger.info("Initialization complete!")
+    total = len(SETUP_STEPS)
+    with Progress(
+        TextColumn("[bold]{task.description}"),
+        BarColumn(),
+        MofNCompleteColumn(),
+    ) as progress:
+        task = progress.add_task("Initializing project", total=total)
+        for step in SETUP_STEPS:
+            step_name = make_name_from_obj(step, join_on=" ")
+            progress.update(task, description=step_name)
+            logger.debug(step_name)
+            PackageManager.L.get_run_args(*step()).run()
+            progress.advance(task)
+        progress.update(task, description="[green]Done!")
