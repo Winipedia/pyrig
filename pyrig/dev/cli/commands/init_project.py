@@ -29,7 +29,6 @@ Note:
     initialized.
 """
 
-import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -50,8 +49,6 @@ from pyrig.dev.management.pyrigger import Pyrigger
 from pyrig.dev.management.version_controller import VersionController
 from pyrig.src.processes import Args
 from pyrig.src.string_ import make_name_from_obj
-
-logger = logging.getLogger(__name__)
 
 
 def adding_dev_dependencies() -> Args:
@@ -220,7 +217,6 @@ def init_project() -> None:
         for step in SETUP_STEPS:
             step_name = make_name_from_obj(step, join_on=" ")
             progress.update(task, description=step_name)
-            logger.debug(step_name)
             PackageManager.L.get_run_args(*step()).run()
             progress.advance(task)
         progress.update(task, description="[green]Done!")
