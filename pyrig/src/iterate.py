@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 def nested_structure_is_subset(  # noqa: C901
     subset: dict[Any, Any] | list[Any] | Any,
     superset: dict[Any, Any] | list[Any] | Any,
-    on_false_dict_action: Callable[[dict[Any, Any], dict[Any, Any], Any], Any]
+    on_dict_mismatch: Callable[[dict[Any, Any], dict[Any, Any], Any], Any]
     | None = None,
-    on_false_list_action: Callable[[list[Any], list[Any], int], Any] | None = None,
+    on_list_mismatch: Callable[[list[Any], list[Any], int], Any] | None = None,
 ) -> bool:
     """Check if a nested structure is a subset of another with optional auto-correction.
 
@@ -41,10 +41,10 @@ def nested_structure_is_subset(  # noqa: C901
     Args:
         subset: The expected structure to check (treated as the "required" values).
         superset: The actual structure to check against (may contain additional values).
-        on_false_dict_action: Callback invoked on dict mismatches. Receives
+        on_dict_mismatch: Callback invoked on dict mismatches. Receives
             ``(subset_dict, superset_dict, key)`` where ``key`` is the mismatched key.
             Should modify ``superset_dict`` in-place to add/fix the missing value.
-        on_false_list_action: Callback invoked on list mismatches. Receives
+        on_list_mismatch: Callback invoked on list mismatches. Receives
             ``(subset_list, superset_list, index)`` where ``index`` is the position
             of the missing item in subset. Should modify ``superset_list`` in-place.
 
@@ -73,7 +73,7 @@ def nested_structure_is_subset(  # noqa: C901
     """
     if isinstance(subset, dict) and isinstance(superset, dict):
         iterable: Iterable[tuple[Any, Any]] = subset.items()
-        on_false_action: Callable[[Any, Any, Any], Any] | None = on_false_dict_action
+        on_false_action: Callable[[Any, Any, Any], Any] | None = on_dict_mismatch
 
         def get_actual(key_or_index: Any) -> Any:
             """Get actual value from superset."""
@@ -81,7 +81,7 @@ def nested_structure_is_subset(  # noqa: C901
 
     elif isinstance(subset, list) and isinstance(superset, list):
         iterable = enumerate(subset)
-        on_false_action = on_false_list_action
+        on_false_action = on_list_mismatch
 
         def get_actual(key_or_index: Any) -> Any:
             """Find matching element in superset list (order-independent).
@@ -103,7 +103,7 @@ def nested_structure_is_subset(  # noqa: C901
     for key_or_index, value in iterable:
         actual_value = get_actual(key_or_index)
         if not nested_structure_is_subset(
-            value, actual_value, on_false_dict_action, on_false_list_action
+            value, actual_value, on_dict_mismatch, on_list_mismatch
         ):
             all_good = False
             if on_false_action is not None:

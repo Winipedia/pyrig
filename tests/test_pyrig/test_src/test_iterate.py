@@ -34,13 +34,13 @@ def test_nested_structure_is_subset() -> None:
 
     false_values: list[Any] = []
 
-    def on_false_dict_action(
+    def on_dict_mismatch(
         subset_obj: dict[str, Any], _superset_obj: dict[str, Any], key: str
     ) -> None:
         fv = subset_obj[key]
         false_values.append(fv)
 
-    def on_false_list_action(
+    def on_list_mismatch(
         subset_obj: list[Any], _superset_obj: list[Any], index: int
     ) -> None:
         fv = subset_obj[index]
@@ -54,9 +54,7 @@ def test_nested_structure_is_subset() -> None:
         "a": 1,
         "b": [2, 3, {"c": 5}],
     }
-    nested_structure_is_subset(
-        subset, superset, on_false_dict_action, on_false_list_action
-    )
+    nested_structure_is_subset(subset, superset, on_dict_mismatch, on_list_mismatch)
     expected_false_values: list[Any] = [0, 4, {"c": 4}, [2, 0, {"c": 4}]]
     assert false_values == expected_false_values, (
         f"Expected false values to be {expected_false_values}, got {false_values}"
@@ -71,6 +69,6 @@ def test_nested_structure_is_subset() -> None:
         "b": [3, 2, {"c": 4}, {"d": 5}],
     }
     is_nested_subset = nested_structure_is_subset(
-        subset, superset, on_false_dict_action, on_false_list_action
+        subset, superset, on_dict_mismatch, on_list_mismatch
     )
     assert is_nested_subset, "Expected subset to be subset of superset"
