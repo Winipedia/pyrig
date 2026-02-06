@@ -158,10 +158,10 @@ def make_summary_error_msg(
         its own line with a "- " prefix.
     """
     msg = """
-    Found errors at:
-    """
+Found errors at:
+"""
     for error_location in errors_locations:
         msg += f"""
-        - {error_location}
-        """
+- {error_location}
+"""
     return msg
