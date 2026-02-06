@@ -368,9 +368,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         Returns:
             True if file exists and is completely empty.
         """
-        return (
-            cls.get_path().exists() and cls.get_path().read_text(encoding="utf-8") == ""
-        )
+        return cls.get_path().exists() and cls.get_path().stat().st_size == 0
 
     @staticmethod
     def is_correct_recursively(
