@@ -219,4 +219,4 @@ def init_project() -> None:
             progress.update(task, description=step_name)
             PackageManager.L.get_run_args(*step()).run()
             progress.advance(task)
-        progress.update(task, description="[green]Done!")
+        progress.update(task, description="[green]Initialization complete!")
