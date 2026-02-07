@@ -3,12 +3,6 @@ name = "pyrig"
 version = "7.0.19"
 description = "A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development."
 readme = "README.md"
-authors = [
-    {name = "Winipedia"},
-]
-maintainers = [
-    {name = "Winipedia"},
-]
 license = "MIT"
 license-files = [
     "LICENSE",
@@ -42,6 +36,12 @@ keywords = [
 dependencies = [
     "typer>=0.21.1",
 ]
+
+[[project.authors]]
+name = "Winipedia"
+
+[[project.maintainers]]
+name = "Winipedia"
 
 [project.urls]
 Homepage = "https://github.com/Winipedia/pyrig"
