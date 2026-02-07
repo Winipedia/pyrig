@@ -13,7 +13,7 @@ graph LR
     A --> E[pytest]
     A --> F[MkDocs]
     A --> G[Podman]
-    A --> H[pre-commit]
+    A --> H[prek]
     A --> I[GitHub<br/>Actions]
 
     B -.-> B1[Package<br/>Management]
@@ -95,7 +95,7 @@ COM812, ANN401)
 
 - Identifies common security issues
 - Scans for hardcoded passwords, SQL injection, etc.
-- Runs automatically in pre-commit hooks
+- Runs automatically in prek hooks
 - Skips assert checks in test files
 
 ### pip-audit
@@ -217,7 +217,7 @@ setup instructions
 - Required by pyrig
 - Enables collaboration and history tracking
 
-### pre-commit
+### prek
 
 **Purpose**: Git hook manager
 
@@ -227,6 +227,7 @@ setup instructions
 - Prevents bad code from entering repository
 - Configurable hooks (ruff, ty, bandit, rumdl)
 - Enforces consistency across team
+- Rust-based, fast drop-in replacement for pre-commit using TOML config
 
 ### GitHub
 
@@ -289,7 +290,7 @@ pyrig's tooling choices prioritize:
 3. **Simplicity**: Fewer tools that do more (ruff replaces 5+ tools)
 4. **Security**: Podman over Docker, bandit scanning,
 dependency auditing, signed commits
-5. **Automation**: Pre-commit hooks, autouse fixtures, CI/CD workflows
+5. **Automation**: Prek hooks, autouse fixtures, CI/CD workflows
 6. **Modern**: Latest Python versions, modern build backends, current best
    practices
 

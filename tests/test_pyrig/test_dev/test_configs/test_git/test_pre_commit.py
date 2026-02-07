@@ -7,60 +7,45 @@ from pathlib import Path
 import pytest
 
 from pyrig.dev.configs.base.yaml import YamlConfigFile
-from pyrig.dev.configs.git.pre_commit import PreCommitConfigConfigFile
+from pyrig.dev.configs.git.pre_commit import PrekConfigFile
 from pyrig.src.processes import Args
 
 
 @pytest.fixture
-def my_test_pre_commit_config_file(
+def my_test_prek_config_file(
     config_file_factory: Callable[[type[YamlConfigFile]], type[YamlConfigFile]],
-) -> type[PreCommitConfigConfigFile]:
-    """Create a test pre-commit config file class with tmp_path."""
+) -> type[PrekConfigFile]:
+    """Create a test prek config file class with tmp_path."""
 
-    class MyTestPreCommitConfigFile(
-        config_file_factory(PreCommitConfigConfigFile)  # type: ignore [misc]
+    class MyTestPrekConfigFile(
+        config_file_factory(PrekConfigFile)  # type: ignore [misc]
     ):
-        """Test pre-commit config file with tmp_path override."""
+        """Test prek config file with tmp_path override."""
 
-    return MyTestPreCommitConfigFile
+    return MyTestPrekConfigFile
 
 
-class TestPreCommitConfigConfigFile:
+class TestPrekConfigFile:
     """Test class."""
 
     def test_get_hook(self) -> None:
         """Test method for get_hook."""
-        hook = PreCommitConfigConfigFile.get_hook("test", Args(("test",)))
+        hook = PrekConfigFile.get_hook("test", Args(("test",)))
         assert hook["id"] == "test", f"Expected id to be 'test', got {hook['id']}"
-
-    def test_get_filename(
-        self, my_test_pre_commit_config_file: type[PreCommitConfigConfigFile]
-    ) -> None:
-        """Test method for get_filename."""
-        filename = my_test_pre_commit_config_file.get_filename()
-        # Filename starts with . and contains pre-commit
-        assert filename.startswith("."), (
-            f"Expected filename to start with '.', got {filename}"
-        )
-        assert "pre-commit" in filename, (
-            f"Expected 'pre-commit' in filename, got {filename}"
-        )
 
     def test_get_parent_path(
         self,
-        my_test_pre_commit_config_file: type[PreCommitConfigConfigFile],
+        my_test_prek_config_file: type[PrekConfigFile],
         tmp_path: Path,
     ) -> None:
         """Test method for get_parent_path."""
         with chdir(tmp_path):
-            parent_path = my_test_pre_commit_config_file.get_parent_path()
+            parent_path = my_test_prek_config_file.get_parent_path()
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
-    def test__get_configs(
-        self, my_test_pre_commit_config_file: type[PreCommitConfigConfigFile]
-    ) -> None:
+    def test__get_configs(self, my_test_prek_config_file: type[PrekConfigFile]) -> None:
         """Test method for get_configs."""
-        configs = my_test_pre_commit_config_file.get_configs()
+        configs = my_test_prek_config_file.get_configs()
         assert "repos" in configs, "Expected 'repos' key in configs"
         assert isinstance(configs["repos"], list), "Expected 'repos' to be a list"
         assert len(configs["repos"]) > 0, "Expected at least one repo in configs"

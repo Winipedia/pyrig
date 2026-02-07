@@ -127,7 +127,7 @@ graph TD
    - Commits all staged changes
    - Message:
      `[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)`
-   - `--no-verify`: Skips pre-commit hooks
+   - `--no-verify`: Skips prek hooks
    - `[skip ci]`: Prevents triggering another workflow run
 
 10. **Push Commits**

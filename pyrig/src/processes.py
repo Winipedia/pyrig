@@ -1,6 +1,6 @@
 """Subprocess execution utilities with enhanced error handling.
 
-Core module for running external tools (git, uv, pytest, pre-commit) throughout pyrig.
+Core module for running external tools (git, uv, pytest, prek) throughout pyrig.
 Provides consistent subprocess execution with automatic error logging and a fluent
 command-building interface.
 

@@ -26,10 +26,10 @@ pyrig project:
 5. **Creating Project Root** - Generates all remaining config files via
    [mkroot](mkroot.md)
 6. **Creating Test Files** - Generates test skeletons via [mktests](mktests.md)
-7. **Installing Pre-commit Hooks** - Installs pre-commit hooks into the git
+7. **Installing Prek Hooks** - Installs prek hooks into the git
    repository
 8. **Adding All Files to Version Control** - Stages all files for commit
-9. **Running Pre-commit Hooks** - Runs formatters/linters on all files
+9. **Running Prek Hooks** - Runs formatters/linters on all files
 10. **Running Tests** - Validates setup by running pytest
 11. **Committing Initial Changes** - Creates the initial git commit
 

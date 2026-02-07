@@ -208,9 +208,9 @@ information about each step.
 4. Syncing venv (install project itself, activate CLI)
 5. Creating project root (all config files and directory structure)
 6. Creating test files (test skeletons for all code)
-7. Installing pre-commit hooks (install hooks into git repository)
+7. Installing prek hooks (install hooks into git repository)
 8. Adding all files to version control (stage all files)
-9. Running pre-commit hooks (format and lint)
+9. Running prek hooks (format and lint)
 10. Running tests (validate everything works)
 11. Committing initial changes (create initial git commit)
 
@@ -336,7 +336,7 @@ my-project/
 ├── .env                             # Environment variables (not committed)
 ├── .scratch.py                      # file for scratch work (not committed)
 ├── .gitignore                       # Git ignore patterns
-├── .pre-commit-config.yaml          # Pre-commit hooks
+├── prek.toml                        # Prek hooks
 ├── .python-version                  # Python version (3.12+)
 ├── CODE_OF_CONDUCT.md               # Contributor Covenant
 ├── CONTRIBUTING.md                  # Contribution guidelines
@@ -369,7 +369,7 @@ Execute your code with `uv run my-project main`.
 
 - `pyproject.toml` - Project metadata, dependencies, tool configs
 - `.gitignore` - Git ignore patterns
-- `.pre-commit-config.yaml` - Pre-commit hooks
+- `prek.toml` - Prek hooks
 - `mkdocs.yml` - Documentation configuration
 - `Containerfile` - Container image definition
 - `LICENSE` - MIT license

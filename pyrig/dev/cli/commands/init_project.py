@@ -16,9 +16,9 @@ Initialization Steps:
     4. Syncing venv again (apply new configs)
     5. Creating project root (all remaining config files)
     6. Creating test files (test skeletons for all source code)
-    7. Installing pre-commit hooks (pre-commit install)
+    7. Installing prek hooks (prek install)
     8. Adding all files to version control (git add .)
-    9. Running pre-commit hooks (format/lint all files)
+    9. Running prek hooks (format/lint all files)
     10. Running tests (validate everything works)
     11. Committing initial changes (create initial git commit)
 
@@ -117,13 +117,13 @@ def creating_test_files() -> Args:
 
 
 def install_pre_commit_hooks() -> Args:
-    """Get args to install pre-commit hooks (Step 7).
+    """Get args to install prek hooks (Step 7).
 
-    Returns Args for installing pre-commit hooks into the git repository via
-    `pre-commit install`.
+    Returns Args for installing prek hooks into the git repository via
+    `prek install`.
 
     Returns:
-        Args object for installing pre-commit hooks.
+        Args object for installing prek hooks.
     """
     return PreCommitter.L.get_install_args()
 
@@ -140,13 +140,13 @@ def add_all_files_to_version_control() -> Args:
 
 
 def running_pre_commit_hooks() -> Args:
-    """Get args to run pre-commit hooks on all files (Step 9).
+    """Get args to run prek hooks on all files (Step 9).
 
     Returns Args for running formatters/linters on all files to ensure the
-    codebase follows style guidelines via `pre-commit run --all-files`.
+    codebase follows style guidelines via `prek run --all-files`.
 
     Returns:
-        Args object for running pre-commit hooks.
+        Args object for running prek hooks.
     """
     return PreCommitter.L.get_run_all_files_args()
 
@@ -172,7 +172,7 @@ def committing_initial_changes() -> Args:
     Returns:
         Args object for committing initial changes.
     """
-    # changes were added by the run pre-commit hooks step
+    # changes were added by the run prek hooks step
     return VersionController.L.get_commit_no_verify_args(
         msg=f"{Pyrigger.name()}: Initial commit"
     )

@@ -1,11 +1,11 @@
-# Pre-Commit Configuration
+# Prek Configuration
 
-The `PreCommitConfigConfigFile` manages the `.pre-commit-config.yaml` file for
+The `PrekConfigFile` manages the `prek.toml` file for
 automated code quality checks before commits.
 
 ## Overview
 
-Creates a pre-commit configuration that:
+Creates a prek configuration that:
 
 - Runs linting with Ruff
 - Formats code with Ruff
@@ -19,39 +19,38 @@ Creates a pre-commit configuration that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[YamlConfigFile]
-    B --> C[PreCommitConfigConfigFile]
+    A[ConfigFile] --> B[TomlConfigFile]
+    B --> C[PrekConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `YamlConfigFile`
+**Inherits from**: `TomlConfigFile`
 
 **What this means**:
 
-- Uses YAML format for configuration
-- Loads/dumps with PyYAML
+- Uses TOML format for configuration
+- Loads/dumps with tomlkit
 - Validation checks if all required hooks exist
 - Users can add additional hooks
 - File is considered correct if it's a superset of required configuration
 
 ## File Location
 
-**Path**: `.pre-commit-config.yaml` (project root)
+**Path**: `prek.toml` (project root)
 
-**Extension**: `.yaml` - Standard pre-commit configuration file extension.
+**Extension**: `.toml` - Standard prek configuration file extension.
 
-**Special filename handling**: `get_filename()` transforms the class name by
-adding a dot prefix and replacing underscores with hyphens:
-`PreCommitConfigConfigFile` → `.pre-commit-config`.
+**Filename**: Derived automatically from the class name `PrekConfigFile` →
+`prek`.
 
 ## How It Works
 
 ### Automatic Generation
 
-When initialized via `uv run pyrig mkroot`, the `.pre-commit-config.yaml` file
+When initialized via `uv run pyrig mkroot`, the `prek.toml` file
 is created with:
 
 1. **Local repository configuration**: All hooks run locally using system tools
@@ -62,40 +61,49 @@ is created with:
 
 ### Generated Configuration
 
-```yaml
-repos:
-  - repo: local
-    hooks:
-      - id: lint-code
-        name: lint-code
-        entry: ruff check --fix
-        language: system
-        always_run: true
-        pass_filenames: false
-      - id: format-code
-        name: format-code
-        entry: ruff format
-        language: system
-        always_run: true
-        pass_filenames: false
-      - id: check-types
-        name: check-types
-        entry: ty check
-        language: system
-        always_run: true
-        pass_filenames: false
-      - id: check-security
-        name: check-security
-        entry: bandit -c pyproject.toml -r .
-        language: system
-        always_run: true
-        pass_filenames: false
-      - id: check-markdown
-        name: check-markdown
-        entry: rumdl check --fix
-        language: system
-        always_run: true
-        pass_filenames: false
+```toml
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "format-code"
+name = "format-code"
+entry = "ruff format"
+language = "system"
+always_run = true
+pass_filenames = false
+
+[[repos.hooks]]
+id = "lint-code"
+name = "lint-code"
+entry = "ruff check --fix"
+language = "system"
+always_run = true
+pass_filenames = false
+
+[[repos.hooks]]
+id = "check-types"
+name = "check-types"
+entry = "ty check"
+language = "system"
+always_run = true
+pass_filenames = false
+
+[[repos.hooks]]
+id = "check-security"
+name = "check-security"
+entry = "bandit -c pyproject.toml -r ."
+language = "system"
+always_run = true
+pass_filenames = false
+
+[[repos.hooks]]
+id = "check-markdown"
+name = "check-markdown"
+entry = "rumdl check --fix"
+language = "system"
+always_run = true
+pass_filenames = false
 ```
 
 ### Hook Configuration
@@ -126,7 +134,7 @@ Each hook uses `language: system` (runs tools from your environment),
 
 ### Installation
 
-Pre-commit hooks are automatically installed when you run:
+Prek hooks are automatically installed when you run:
 
 ```bash
 uv run pyrig init
@@ -138,12 +146,12 @@ Or when running tests
 uv run pytest
 ```
 
-This runs `pre-commit install` to set up the Git hooks.
+This runs `prek install` to set up the Git hooks.
 
 ### Manual Installation
 
 ```bash
-uv run pre-commit install
+uv run prek install
 ```
 
 ### Running Hooks Manually
@@ -151,19 +159,19 @@ uv run pre-commit install
 Run all hooks on all files:
 
 ```bash
-uv run pre-commit run --all-files
+uv run prek run --all-files
 ```
 
 Run a specific hook:
 
 ```bash
-uv run pre-commit run lint-code
+uv run prek run lint-code
 ```
 
 Run with verbose output:
 
 ```bash
-uv run pre-commit run --all-files --verbose
+uv run prek run --all-files --verbose
 ```
 
 ### Automatic Execution
@@ -194,46 +202,44 @@ git commit --no-verify -m "Emergency fix"
 
 ## Adding Custom Hooks
 
-You can extend the configuration with additional hooks:
+You can extend the configuration with additional hooks in `prek.toml`:
 
-```yaml
-repos:
-  - repo: local
-    hooks:
-      # ... existing pyrig hooks ...
-      - id: check-yaml
-        name: check-yaml
-        entry: check-yaml
-        language: system
-        types: [yaml]
-      - id: check-json
-        name: check-json
-        entry: check-json
-        language: system
-        types: [json]
+```toml
+# ... existing pyrig hooks ...
+
+[[repos.hooks]]
+id = "check-toml"
+name = "check-toml"
+entry = "check-toml"
+language = "system"
+types = ["toml"]
+
+[[repos.hooks]]
+id = "check-json"
+name = "check-json"
+entry = "check-json"
+language = "system"
+types = ["json"]
 ```
 
 Or add hooks from external repositories:
 
-```yaml
-repos:
-  - repo: local
-    hooks:
-      # ... existing pyrig hooks ...
-
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-added-large-files
+```toml
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v4.5.0"
+hooks = [
+    {id = "trailing-whitespace"},
+    {id = "end-of-file-fixer"},
+    {id = "check-added-large-files"},
+]
 ```
 
 ## Best Practices
 
 1. **Keep pyrig hooks**: Don't remove the default hooks - they ensure code
    quality
-2. **Run manually before committing**: Use `uv run pre-commit run --all-files`
+2. **Run manually before committing**: Use `uv run prek run --all-files`
    to catch issues early
 3. **Fix issues, don't skip**: Avoid `--no-verify` - fix the actual problems
 4. **Keep tools updated**: Update tool versions in `pyproject.toml` to get
@@ -254,13 +260,13 @@ Pyrig uses `repo: local` instead of external repositories because:
 ## Integration with CI/CD
 
 The same hooks run in GitHub Actions workflows. See the workflow documentation
-for how pre-commit integrates with continuous integration.
+for how prek integrates with continuous integration.
 
 Example from a workflow:
 
 ```yaml
-- name: Run pre-commit hooks
-  run: uv run pre-commit run --all-files
+- name: Run prek hooks
+  run: uv run prek run --all-files
 ```
 
 This ensures the same quality checks run locally and in CI.
@@ -271,5 +277,5 @@ This ensures the same quality checks run locally and in CI.
   details
 - **Hooks slow**: Hooks check entire codebase; modify `always_run` and
   `pass_filenames` to only check changed files
-- **Hooks not running**: Run `uv run pre-commit install` to reinstall
+- **Hooks not running**: Run `uv run prek install` to reinstall
 - **Tools not found**: Run `uv sync` to install dependencies

@@ -1,9 +1,9 @@
-# PreCommitter (pre-commit)
+# PreCommitter (prek)
 
-Type-safe wrapper for [pre-commit](https://pre-commit.com/), the git hook
+Type-safe wrapper for [prek](https://github.com/j178/prek), the git hook
 manager.
 
-Pre-commit enforces code quality by running linters, formatters, and checks
+Prek enforces code quality by running linters, formatters, and checks
 before each commit.
 
 ## Subclassing Example
@@ -22,5 +22,5 @@ class PreCommitter(BasePC):
 ## Related
 
 - [Architecture](architecture.md) - Design philosophy and extension mechanisms
-- [Tooling - pre-commit](../more/tooling.md#pre-commit) - Why pyrig uses
-  pre-commit
+- [Tooling - prek](../more/tooling.md#prek) - Why pyrig uses
+  prek
