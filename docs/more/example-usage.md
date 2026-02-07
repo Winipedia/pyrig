@@ -1,14 +1,14 @@
 # Example Usage: Microservices Ecosystem
 
 This guide demonstrates pyrig's power in a real-world scenario: building a
-standardized microservices ecosystem for a company.
+standardized microservices ecosystem across multiple projects.
 
 ## Scenario
 
 You're building multiple Python microservices that need:
 
 - **Consistent standards** across all services
-- **Custom company-wide configurations** (logging, monitoring, security)
+- **Custom shared configurations** (logging, monitoring, security)
 - **Automatic synchronization** when standards change
 - **Self-healing** infrastructure via autouse fixtures
 
@@ -16,7 +16,7 @@ You're building multiple Python microservices that need:
 
 ```mermaid
 graph TD
-    A[pyrig] --> B[company-base]
+    A[pyrig] --> B[service-base]
     B --> C[auth-service]
     B --> D[payment-service]
     B --> E[notification-service]
@@ -28,18 +28,18 @@ graph TD
     style E fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Dependency chain**: `pyrig` → `company-base` → `auth-service`,
+**Dependency chain**: `pyrig` → `service-base` → `auth-service`,
 `payment-service`, `notification-service`
 
 ## Step 1: Create Base Package
 
-Create `company-base` that extends pyrig with company standards:
+Create `service-base` that extends pyrig with shared standards:
 
 ```bash
 # Create repository
-gh repo create company/company-base --public  # Or private if you want
-git clone https://github.com/company/company-base.git
-cd company-base
+gh repo create myorg/service-base --public  # Or private if you want
+git clone https://github.com/myorg/service-base.git
+cd service-base
 
 # Initialize with pyrig
 uv init
@@ -51,12 +51,12 @@ This creates a complete project structure with all pyrig's defaults.
 
 ## Step 2: Add Custom Config File
 
-Add a company-wide logging configuration that all microservices will inherit.
+Add a shared logging configuration that all microservices will inherit.
 
-**Create**: `company_base/dev/configs/logging_config.py`
+**Create**: `service_base/dev/configs/logging_config.py`
 
 ```python
-"""Company-wide logging configuration."""
+"""Shared logging configuration for all services."""
 
 from pathlib import Path
 from typing import Any
@@ -64,7 +64,7 @@ from pyrig.dev.configs.base.yaml import YamlConfigFile
 
 
 class LoggingConfigFile(YamlConfigFile):
-    """Logging configuration for all company microservices."""
+    """Logging configuration for all microservices."""
 
     @classmethod
     def get_parent_path(cls) -> Path:
@@ -103,16 +103,16 @@ class LoggingConfigFile(YamlConfigFile):
 - File created at `config/logging_config.yaml` when you run
   `uv run pyrig mkroot`
 - **Automatically discovered** via pyrig's ConfigFile discovery system
-- **Inherited by all services** that depend on `company-base`
+- **Inherited by all services** that depend on `service-base`
 
 ## Step 3: Override MkDocs Theme
 
-Customize documentation theme for company branding.
+Customize documentation theme with custom branding.
 
-**Create**: `company_base/dev/configs/docs/mkdocs.py`
+**Create**: `service_base/dev/configs/docs/mkdocs.py`
 
 ```python
-"""Company-branded MkDocs configuration."""
+"""Custom-branded MkDocs configuration."""
 
 from pathlib import Path
 from typing import Any
@@ -120,19 +120,19 @@ from pyrig.dev.configs.docs.mkdocs import MkdocsConfigFile as BaseMkdocsCF
 
 
 class MkdocsConfigFile(BaseMkdocsCF):
-    """Company-branded documentation theme."""
+    """Custom-branded documentation theme."""
 
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
-        """Override theme with company colors."""
+        """Override theme with custom colors."""
         config = super()._get_configs()
 
-        # Add company branding
+        # Add custom branding
         config["theme"]["palette"] = [
             {
                 "scheme": "slate",
-                "primary": "deep purple",  # Company color
-                "accent": "amber",         # Company accent
+                "primary": "deep purple",  # Brand color
+                "accent": "amber",         # Brand accent
                 "toggle": {
                     "icon": "material/brightness-4",
                     "name": "Light mode",
@@ -149,7 +149,7 @@ class MkdocsConfigFile(BaseMkdocsCF):
             },
         ]
 
-        # Add company logo
+        # Add custom logo
         config["theme"]["logo"] = "assets/logo.png"
         config["theme"]["favicon"] = "assets/favicon.ico"
 
@@ -162,27 +162,27 @@ class MkdocsConfigFile(BaseMkdocsCF):
 - **Leaf class override**: pyrig's discovery system automatically keeps only the
   most-derived (leaf) class when multiple classes are found in the
   inheritance chain
-- **All microservices** automatically get company branding
+- **All microservices** automatically get custom branding
 
 ## Step 4: Adjust Pyproject Settings
 
-Add company-specific dependencies and settings.
+Add shared dependencies and settings.
 
-**Create**: `company_base/dev/configs/pyproject.py`
+**Create**: `service_base/dev/configs/pyproject.py`
 
 ```python
-"""Company pyproject.toml with additional dependencies."""
+"""Base pyproject.toml with additional dependencies."""
 
 from typing import Any
 from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyprojectCF
 
 
 class PyprojectConfigFile(BasePyprojectCF):
-    """Company pyproject with monitoring and logging."""
+    """Base pyproject with monitoring and logging."""
 
     @classmethod
     def get_dependencies(cls) -> list[str]:
-        """Add company-standard runtime dependencies."""
+        """Add shared runtime dependencies."""
         deps = super().get_dependencies()
         return [
             *deps,
@@ -193,10 +193,10 @@ class PyprojectConfigFile(BasePyprojectCF):
 
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
-        """Add company-specific tool configs."""
+        """Add shared tool configs."""
         config = super()._get_configs()
 
-        # Add custom ruff rules for company standards
+        # Add custom ruff rules for shared standards
         config["tool"]["ruff"]["lint"]["ignore"].extend([
             "T201",  # Allow print statements in microservices
         ])
@@ -212,26 +212,26 @@ class PyprojectConfigFile(BasePyprojectCF):
 **What this does**:
 
 - **Adds dependencies** to all microservices automatically
-- **Adjusts linting rules** company-wide
+- **Adjusts linting rules** across all services
 - **Lowers coverage** to 85% (more realistic for microservices)
 
 ## Step 5: Create First Microservice
 
-Now create `auth-service` that depends on `company-base`:
+Now create `auth-service` that depends on `service-base`:
 
 ```bash
 # Create repository
-gh repo create company/auth-service
-git clone https://github.com/company/auth-service.git
+gh repo create myorg/auth-service
+git clone https://github.com/myorg/auth-service.git
 cd auth-service
 
 # Initialize with pyrig
 uv init
-uv add git+https://github.com/company/company-base.git  # This also brings in pyrig
+uv add git+https://github.com/myorg/service-base.git  # This also brings in pyrig
 uv run pyrig init
 ```
 
-Note: If you are a company your repos probably will not be public so you will
+Note: If your repos are private you will
 need tokens and stuff to do uv add. If you manage a package ecosystem for pypi
 then you can use uv add like usual
 
@@ -240,9 +240,9 @@ then you can use uv add like usual
 ```text
 auth-service/
 ├── config/
-│   └── logging_config.yaml        # ✓ From company-base
-├── mkdocs.yml                      # ✓ Company-branded theme
-├── pyproject.toml                  # ✓ With company dependencies
+│   └── logging_config.yaml        # ✓ From service-base
+├── mkdocs.yml                      # ✓ Custom-branded theme
+├── pyproject.toml                  # ✓ With shared dependencies
 ├── auth_service/
 │   ├── dev/
 │   │   ├── configs/               # ✓ Can add service-specific configs
@@ -255,37 +255,37 @@ auth-service/
 See the full generated project tree at:
 [Getting Started Documentation](getting-started.md)
 
-**All company standards applied automatically!**
+**All shared standards applied automatically!**
 
 ## Step 6: The Magic - Automatic Synchronization
 
-Here's where pyrig shines. When you update `company-base`, all services heal
+Here's where pyrig shines. When you update `service-base`, all services heal
 themselves.
 
-### Update Company Standards
+### Update Shared Standards
 
-In `company-base`, add a security requirement:
+In `service-base`, add a security requirement:
 
-**Update**: `company_base/dev/configs/pyproject.py`
+**Update**: `service_base/dev/configs/pyproject.py`
 
 ```python
 @classmethod
 def get_dependencies(cls) -> list[str]:
-    """Add company-standard runtime dependencies."""
+    """Add shared runtime dependencies."""
     deps = super().get_dependencies()
     return [
         *deps,
         "python-json-logger>=2.0.0",
         "prometheus-client>=0.19.0",
         "sentry-sdk>=1.40.0",
-        "cryptography>=42.0.0",  # NEW: Company security requirement
+        "cryptography>=42.0.0",  # NEW: Shared security requirement
     ]
 ```
 
 **Commit and release**:
 
 ```bash
-cd company-base
+cd service-base
 git add .
 git commit -m "Add cryptography requirement"
 git push
@@ -297,8 +297,8 @@ git push
 In `auth-service`:
 
 ```bash
-# Update company-base dependency
-uv add company-base --upgrade
+# Update service-base dependency
+uv add service-base --upgrade
 
 # Run tests (triggers autouse fixtures)
 uv run pytest
@@ -334,7 +334,7 @@ a while.
 
 ## Step 7: Service-Specific Customization
 
-Each service can still customize while keeping company standards.
+Each service can still customize while keeping shared standards.
 
 **In `auth-service`**, add service-specific config:
 
@@ -368,7 +368,7 @@ class AuthConfigFile(YamlConfigFile):
 
 **Result**: `auth-service` has both:
 
-- ✓ Company-wide `logging_config.yaml` (from `company-base`)
+- ✓ Shared `logging_config.yaml` (from `service-base`)
 - ✓ Service-specific `auth_config.yaml` (from `auth-service`)
 
 ## Step 8: Create More Services
@@ -377,10 +377,10 @@ Create `payment-service` and `notification-service` the same way:
 
 ```bash
 # Payment service
-uv init && uv add company-base && uv run pyrig init
+uv init && uv add service-base && uv run pyrig init
 
 # Notification service
-uv init && uv add company-base && uv run pyrig init
+uv init && uv add service-base && uv run pyrig init
 ```
 
 **All three services now have**:
@@ -407,7 +407,7 @@ configurations across package dependencies. For complete technical details, see:
 
 **ConfigFile Discovery**:
 
-1. Build dependency graph: `pyrig → company-base → auth-service`
+1. Build dependency graph: `pyrig → service-base → auth-service`
 2. Find all `<package>.dev.configs` modules
 3. Discover all ConfigFile subclasses
 4. Keep only leaf classes (classes with no subclasses sharing the same name)
@@ -428,9 +428,9 @@ configurations across package dependencies. For complete technical details, see:
 When you update the base package, changes automatically propagate to all
 dependent services:
 
-1. **Update company-base** - Make changes to config files
+1. **Update service-base** - Make changes to config files
 2. **Release new version** - GitHub Actions automatically creates release
-3. **Services update dependency** - Run `uv add company-base --upgrade`
+3. **Services update dependency** - Run `uv add service-base --upgrade`
 4. **Run pytest or pyrig mkroot** - Triggers validation
 5. **assert_root_is_correct runs** - Autouse fixture validates all configs
 6. **If incorrect** - `make_project_root()` discovers and initializes all
@@ -450,7 +450,7 @@ scanning.
 
 **Solution** (5 minutes):
 
-1. **Update `company-base/dev/configs/pyproject.py`**:
+1. **Update `service-base/dev/configs/pyproject.py`**:
 
    ```python
    @classmethod
@@ -459,7 +459,7 @@ scanning.
        return [*deps, "bandit>=1.7.0"]
    ```
 
-2. **Commit and push** → GitHub Actions releases `company-base` v1.2.0
+2. **Commit and push** → GitHub Actions releases `service-base` v1.2.0
 
 3. **In each service**:
 
@@ -478,26 +478,26 @@ scanning.
 
 **Solution** (2 minutes):
 
-1. **Update `company-base/dev/configs/docs/mkdocs.py`**: Change colors, then do
+1. **Update `service-base/dev/configs/docs/mkdocs.py`**: Change colors, then do
    the same steps as above
 2. **Release** new version
 3. **Services update** → All docs sites automatically rebranded at GitHub Pages
 
 ### Scenario: New Microservice
 
-**Problem**: Need to create `inventory-service` with all company standards.
+**Problem**: Need to create `inventory-service` with all shared standards.
 
 **Solution** (30 seconds):
 
 ```bash
-uv init && uv add company-base && uv run pyrig init
+uv init && uv add service-base && uv run pyrig init
 ```
 
 **Result**: Production-ready service with all standards in 30 seconds.
 
 ## Key Takeaways
 
-1. **One source of truth**: `company-base` defines all standards
+1. **One source of truth**: `service-base` defines all standards
 2. **Automatic propagation**: Changes flow to all services via dependency
    updates
 3. **Self-healing**: Autouse fixtures ensure compliance on every test run
@@ -515,7 +515,7 @@ You can create deeper hierarchies:
 
 ```text
 pyrig
-  └── company-base (company standards)
+  └── service-base (shared standards)
       ├── backend-base (backend-specific: databases, APIs)
       │   ├── auth-service
       │   └── payment-service
@@ -530,7 +530,7 @@ Each level adds/overrides configs, and leaf services inherit the entire chain.
 
 Verify everything works if you want:
 
-**In `company-base`**:
+**In `service-base`**:
 
 ```bash
 # Verify config discovery
@@ -550,13 +550,13 @@ uv run pytest -v
 
 ```bash
 # Verify inherited configs
-cat mkdocs.yml  # Should show company theme
-cat pyproject.toml  # Should show company dependencies
+cat mkdocs.yml  # Should show custom theme
+cat pyproject.toml  # Should show shared dependencies
 
 # Verify auto-healing
 rm mkdocs.yml  # Delete inherited config
 uv run pytest  # Auto-recreates it!
-cat mkdocs.yml  # Should show company theme
+cat mkdocs.yml  # Should show custom theme
 ```
 
 ## Summary

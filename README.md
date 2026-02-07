@@ -81,7 +81,7 @@ Build on pyrig to create multiproject-wide standards. Your base package defines
 configs, fixtures, and CLI commands that all dependent projects inherit:
 
 ```text
-pyrig → company-base → auth-service
+pyrig → service-base → auth-service
                      → payment-service
                      → notification-service
 ```

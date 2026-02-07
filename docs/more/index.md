@@ -65,11 +65,11 @@ get in return.
 Real-world example of using pyrig to build and maintain a standardized
 microservices ecosystem:
 
-- **Scenario**: Company with multiple Python microservices needing consistent
-  standards
+- **Scenario**: Organization with multiple Python microservices needing
+  consistent standards
 - **Architecture**: Base package extending pyrig, multiple services depending on
   it
-- **Custom Configs**: Add company-wide logging, monitoring, security
+- **Custom Configs**: Add shared logging, monitoring, security
   configurations
 - **Override Configs**: Customize MkDocs theme, pyproject.toml settings across
   all services
