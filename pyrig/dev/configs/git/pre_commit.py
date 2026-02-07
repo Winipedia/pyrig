@@ -1,11 +1,11 @@
-"""Configuration management for pre-commit hooks.
+"""Configuration management for prek hooks.
 
-Manages .pre-commit-config.yaml with local hooks (system-installed tools) for
+Manages prek.toml with local hooks (system-installed tools) for
 code quality: ruff (lint + format), ty (type check), bandit (security), rumdl
 (markdown). All hooks run on every commit.
 
 See Also:
-    pre-commit framework: https://pre-commit.com/
+    prek: https://github.com/j178/prek
     ruff: https://docs.astral.sh/ruff/
     bandit: https://bandit.readthedocs.io/
 """
@@ -14,7 +14,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from pyrig.dev.configs.base.yaml import YamlConfigFile
+from pyrig.dev.configs.base.toml import TomlConfigFile
 from pyrig.dev.management.linter import Linter
 from pyrig.dev.management.mdlinter import MDLinter
 from pyrig.dev.management.security_checker import SecurityChecker
@@ -26,43 +26,33 @@ from pyrig.src.processes import (
 logger = logging.getLogger(__name__)
 
 
-class PreCommitConfigConfigFile(YamlConfigFile):
-    """Pre-commit configuration manager.
+class PrekConfigFile(TomlConfigFile):
+    """Prek configuration manager.
 
-    Generates .pre-commit-config.yaml with local hooks (system-installed tools)
-    for code quality: lint-code (ruff check --fix), format-code (ruff format),
+    Generates prek.toml with local hooks (system-installed tools)
+    for code quality: format-code (ruff format), lint-code (ruff check --fix),
     check-types (ty check), check-security (bandit), check-markdown (rumdl check).
 
     Examples:
-        Generate .pre-commit-config.yaml::
+        Generate prek.toml::
 
-            PreCommitConfigConfigFile()
+            PrekConfigFile()
 
         Install hooks::
 
-            pre-commit install
+            prek install
 
     Note:
-        Must run `pre-commit install` after generating config.
+        Must run `prek install` after generating config.
 
     See Also:
         pyrig.dev.management.base.base.Args
-        pre-commit documentation: https://pre-commit.com/
+        prek documentation: https://github.com/j178/prek
     """
 
     @classmethod
-    def get_filename(cls) -> str:
-        """Get the pre-commit config filename.
-
-        Returns:
-            str: ".pre-commit-config" (extension added by parent).
-        """
-        filename = super().get_filename()
-        return f".{filename.replace('_', '-')}"
-
-    @classmethod
     def get_parent_path(cls) -> Path:
-        """Get the parent directory for .pre-commit-config.yaml.
+        """Get the parent directory for prek.toml.
 
         Returns:
             Path: Project root.
@@ -80,7 +70,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
         always_run: bool = True,
         **kwargs: Any,
     ) -> dict[str, Any]:
-        """Create a pre-commit hook configuration.
+        """Create a prek hook configuration.
 
         Args:
             name (str): Hook identifier and display name.
@@ -91,7 +81,7 @@ class PreCommitConfigConfigFile(YamlConfigFile):
             **kwargs (Any): Additional hook options (files, exclude, stages).
 
         Returns:
-            dict[str, Any]: Hook configuration for .pre-commit-config.yaml.
+            dict[str, Any]: Hook configuration for prek.toml.
         """
         hook: dict[str, Any] = {
             "id": name,
@@ -106,26 +96,26 @@ class PreCommitConfigConfigFile(YamlConfigFile):
 
     @classmethod
     def _get_configs(cls) -> dict[str, Any]:
-        """Get the complete pre-commit configuration.
+        """Get the complete prek configuration.
 
-        Generates .pre-commit-config.yaml with local hooks: lint-code (ruff check
-        --fix), format-code (ruff format), check-types (ty check), check-security
+        Generates prek.toml with local hooks: format-code (ruff format),
+        lint-code (ruff check --fix), check-types (ty check), check-security
         (bandit), check-markdown (rumdl check).
 
         Returns:
-            dict[str, Any]: Complete pre-commit configuration.
+            dict[str, Any]: Complete prek configuration.
 
         Note:
             All hooks use system-installed tools (no remote repos).
         """
         hooks: list[dict[str, Any]] = [
             cls.get_hook(
-                "lint-code",
-                Linter.L.get_check_fix_args(),
-            ),
-            cls.get_hook(
                 "format-code",
                 Linter.L.get_format_args(),
+            ),
+            cls.get_hook(
+                "lint-code",
+                Linter.L.get_check_fix_args(),
             ),
             cls.get_hook(
                 "check-types",

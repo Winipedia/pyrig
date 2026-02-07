@@ -96,9 +96,9 @@ application.
 
 Documentation site configuration for generating websites with MkDocs.
 
-### [Pre-Commit](pre_commit.md)
+### [Prek](pre_commit.md)
 
-Pre-commit hooks configuration for automated code quality checks before commits.
+Prek hooks configuration for automated code quality checks before commits.
 
 ### [py.typed](py_typed.md)
 

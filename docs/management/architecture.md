@@ -55,9 +55,9 @@ graph TD
     style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Example: How pre-commit uses `.L`**
+**Example: How prek uses `.L`**
 
-The pre-commit config file uses `.L` to reference tools:
+The prek config file uses `.L` to reference tools:
 
 ```python
 # pyrig/dev/configs/git/pre_commit.py
@@ -81,7 +81,7 @@ class TypeChecker(BaseTypeChecker):
         return "mypy"
 ```
 
-The pre-commit config **automatically** uses mypy. No need to override the
+The prek config **automatically** uses mypy. No need to override the
 config file itself.
 
 ### The `get_all_subclasses()` Pattern: ConfigFile Discovery
@@ -96,7 +96,7 @@ non-abstract implementations** across all dependent packages. This enables:
 graph TD
     subgraph pyrig
         A[PyprojectConfigFile]
-        B[PreCommitConfigConfigFile]
+        B[PrekConfigFile]
     end
     subgraph myapp
         C[MyAppConfigFile]
@@ -104,7 +104,7 @@ graph TD
     end
 
     E["get_all_subclasses()"] -.->|returns| F["[myapp.Pyproject,
-    PreCommit, MyApp]"]
+    Prek, MyApp]"]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -125,7 +125,7 @@ prevents confusion:
 
 | Component | Why Dynamic |
 |-----------|-------------|
-| Pre-commit hooks | Uses `Tool.L.get_*_args()` to build commands |
+| Prek hooks | Uses `Tool.L.get_*_args()` to build commands |
 | CLI commands | Uses `Tool.L` for all operations |
 | Most config file content | Generated from `Tool.L` or `ConfigFile.L` |
 
@@ -247,7 +247,7 @@ pyrig's default tools - they were chosen for their quality and integration.
 
 ### Why Some Replacements Need More Work
 
-- **ty → mypy**: Pre-commit uses `TypeChecker.L`, so it's automatic
+- **ty → mypy**: Prek uses `TypeChecker.L`, so it's automatic
 - **Podman → Docker**: Workflow steps use hardcoded GitHub Actions, not `.L`
 
 The rule: **If pyrig uses `.L`, your subclass applies automatically. If it's

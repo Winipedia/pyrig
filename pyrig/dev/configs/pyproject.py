@@ -104,7 +104,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 "keywords": [],
                 "scripts": {
-                    cls.get_project_name(): f"{cli.__name__}:{cli.main.__name__}"
+                    get_project_name_from_cwd(): f"{cli.__name__}:{cli.main.__name__}"
                 },
                 "dependencies": cls.make_dependency_versions(cls.get_dependencies()),
             },
@@ -148,7 +148,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "pytest": {
                     "ini_options": {
                         "testpaths": [tests_pkg_name],
-                        "addopts": f"--cov={cls.get_package_name()} --cov-report=term-missing --cov-fail-under={ProjectTester.L.get_coverage_threshold()}",  # noqa: E501
+                        "addopts": f"--cov={get_pkg_name_from_cwd()} --cov-report=term-missing --cov-fail-under={ProjectTester.L.get_coverage_threshold()}",  # noqa: E501
                     }
                 },
                 "bandit": {

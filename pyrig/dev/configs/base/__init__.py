@@ -12,7 +12,7 @@ Three layers:
 
 2. **Format-Specific**:
    - ``TomlConfigFile``: TOML files (pyproject.toml)
-   - ``YamlConfigFile`` / ``YmlConfigFile``: YAML files (.pre-commit-config.yaml)
+   - ``YamlConfigFile`` / ``YmlConfigFile``: YAML files
    - ``JsonConfigFile``: JSON files (package.json)
    - ``StringConfigFile``: Plain text with required content
    - ``PythonConfigFile``: Python source (.py)

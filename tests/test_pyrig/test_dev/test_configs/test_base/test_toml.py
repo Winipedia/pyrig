@@ -34,6 +34,28 @@ def my_test_toml_config_file(
 class TestTomlConfigFile:
     """Test class."""
 
+    def test_prettify_value(self) -> None:
+        """Test method for prettify_value."""
+        # scalar passthrough
+        assert TomlConfigFile.prettify_value("hello") == "hello"
+        assert TomlConfigFile.prettify_value(1) == 1
+        assert TomlConfigFile.prettify_value(value=True) is True
+
+        # list of scalars becomes multiline array
+        result = TomlConfigFile.prettify_value(["a", "b"])
+        assert list(result) == ["a", "b"]
+
+        # dict becomes inline table
+        result = TomlConfigFile.prettify_value({"k": "v"})
+        assert result["k"] == "v"
+
+        # nested: list of dicts with nested lists
+        result = TomlConfigFile.prettify_value(
+            [{"repo": "local", "hooks": [{"id": "test"}]}]
+        )
+        assert result[0]["repo"] == "local"
+        assert result[0]["hooks"][0]["id"] == "test"
+
     def test_prettify_dict(
         self, my_test_toml_config_file: type[TomlConfigFile]
     ) -> None:

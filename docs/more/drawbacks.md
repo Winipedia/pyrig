@@ -81,7 +81,7 @@ benefits.
 **What You Gain**:
 
 - **High code quality** - 90% coverage, all linting rules, strict typing
-- **Catch bugs early** - Pre-commit hooks prevent issues from entering codebase
+- **Catch bugs early** - Prek hooks prevent issues from entering codebase
 - **Consistent style** - No debates about formatting or conventions
 - **Better refactoring** - Type safety makes large changes safer
 - **Documentation through types** - Code is self-documenting
@@ -285,7 +285,7 @@ automation features.
 
 - Complete project structure from `pyrig init`
 - All tool configurations (ruff, ty, pytest, bandit, rumdl, etc.)
-- Pre-commit hooks configuration
+- Prek hooks configuration
 - GitHub Actions workflows
 - Documentation setup
 
@@ -359,7 +359,7 @@ still be left with a nice initial project structure and tooling.
 - Initial project structure
 - Tool configurations (you maintain them)
 - CLI framework (command discovery still works)
-- Pre-commit hooks (if you keep them)
+- Prek hooks (if you keep them)
 - Workflows (if you keep them)
 
 ### When to Use Partial Opt-Out
@@ -387,7 +387,7 @@ This approach works well if you:
 - All config files manually
 - Test structure manually
 - Workflow updates manually
-- Pre-commit hook updates manually
+- Prek hook updates manually
 
 ### Re-enabling pyrig
 

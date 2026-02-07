@@ -22,7 +22,7 @@ docstrings.
 | [Linter](linter.md) | ruff | Linting and formatting |
 | [TypeChecker](type_checker.md) | ty | Type checking |
 | [ProjectTester](project_tester.md) | pytest | Running tests |
-| [PreCommitter](pre_committer.md) | pre-commit | Git hooks |
+| [PreCommitter](pre_committer.md) | prek | Git hooks |
 | [SecurityChecker](security_checker.md) | bandit | Security scanning |
 | [DependencyAuditor](dependency_auditor.md) | pip-audit | Dependency vulnerability scanning |
 | [MDLinter](mdlinter.md) | rumdl | Markdown linting |

@@ -158,7 +158,7 @@ graph LR
 **Jobs**:
 
 - **health_checks**: Runs quality checks and applies branch protection rules
-  - Pre-commit checks (ruff lint/format, ty, bandit, rumdl)
+  - Prek checks (ruff lint/format, ty, bandit, rumdl)
   - Dependency security audit (pip-audit)
 - **matrix_health_checks**: Runs across OS (Ubuntu, Windows, macOS) and Python
   versions

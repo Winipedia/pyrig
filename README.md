@@ -4,7 +4,7 @@
 [![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Container](https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6)](https://podman.io/)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
+[![prek](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json)](https://github.com/j178/prek)
 [![MkDocs](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://www.mkdocs.org/)
 <!-- code-quality -->
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -52,7 +52,7 @@ That's it. You now have a complete project with:
 - Source code structure with CLI entry point
 - Test framework with 90% coverage enforcement
 - GitHub Actions (CI/CD, releases, docs deployment)
-- Pre-commit hooks (linting, formatting, type checking)
+- Prek hooks (linting, formatting, type checking)
 - MkDocs documentation site
 - Container support (Podman/Docker)
 
@@ -65,7 +65,7 @@ for detailed setup instructions.
 ### Config File System
 
 pyrig's core is a declarative config file system. Each config file
-(pyproject.toml, .pre-commit-config.yaml, GitHub workflows, etc.) is a Python
+(pyproject.toml, prek.toml, GitHub workflows, etc.) is a Python
 class that:
 
 - **Generates** the file with working sensible defaults
@@ -112,7 +112,7 @@ After `pyrig init`, your project includes:
 | **Docs** | MkDocs config, index, API reference |
 | **GitHub** | Issue templates, PR template, branch protection |
 | **Community** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY |
-| **Config** | pyproject.toml, .gitignore, .pre-commit-config.yaml, Containerfile |
+| **Config** | pyproject.toml, .gitignore, prek.toml, Containerfile |
 
 ## CLI Commands
 

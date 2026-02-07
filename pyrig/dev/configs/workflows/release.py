@@ -44,7 +44,7 @@ class ReleaseWorkflow(Workflow):
         1. Checkout and set up the project environment
         2. Update/install dependencies
         3. Bump patch version and stage changes
-        4. Run pre-commit, commit changes, and push commits
+        4. Run prek, commit changes, and push commits
         5. Create and push a version tag
         6. Download build artifacts from the triggering workflow run
         7. Generate changelog and create the GitHub release

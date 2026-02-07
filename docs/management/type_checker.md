@@ -39,9 +39,9 @@ class TypeChecker(BaseTC):
         return cls.get_args(*args)  # mypy doesn't need 'check' subcommand
 ```
 
-Because pyrig uses `TypeChecker.L` internally (including in pre-commit config
+Because pyrig uses `TypeChecker.L` internally (including in prek config
 generation), this override automatically applies everywhere - no need to modify
-pre-commit config or other components.
+prek config or other components.
 
 **Note**: When replacing type checkers, you may need to override
 `get_check_args()` since different tools use different command patterns. The
