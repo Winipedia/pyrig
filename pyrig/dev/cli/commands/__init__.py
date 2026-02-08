@@ -11,7 +11,7 @@ Architecture:
     - Lazy imports to avoid dev dependency errors
 
 Modules:
-    - `init_project`: Complete project initialization (11 steps)
+    - `init_project`: Complete project initialization
     - `create_root`: Project structure and config file generation
     - `create_tests`: Test skeleton generation
     - `make_inits`: __init__.py file creation for namespace packages
