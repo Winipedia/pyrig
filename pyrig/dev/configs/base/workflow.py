@@ -1421,7 +1421,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that commits with [skip ci] prefix.
         """
-        msg = '"[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)"'
+        msg = '"[skip ci] CI/CD: Committing possible staged changes"'
         return cls.get_step(
             step_func=cls.step_commit_added_changes,
             run=str(VersionController.L.get_commit_no_verify_args(msg=msg)),
