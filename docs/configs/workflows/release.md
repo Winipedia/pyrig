@@ -124,10 +124,11 @@ graph TD
    - Stages `pyproject.toml` and `uv.lock`
 
 9. **Commit Added Changes**
-   - Commits all staged changes
+   - Commits all staged changes, e.g. version bump and dependency updates
    - Message:
-     `[skip ci] CI/CD: Committing possible changes (e.g.: pyproject.toml)`
-   - `--no-verify`: Skips prek hooks
+     `[skip ci] CI/CD: Committing possible staged changes`
+   - `--no-verify`: Skips prek hooks, as they are already run in the health
+     check workflow
    - `[skip ci]`: Prevents triggering another workflow run
 
 10. **Push Commits**
