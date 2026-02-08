@@ -16,6 +16,8 @@ from pyrig.dev.cli.commands.init_project import (
     creating_priority_config_files,
     creating_project_root,
     creating_test_files,
+    get_setup_steps,
+    initializing_version_control,
     running_pre_commit_hooks,
     running_tests,
     syncing_venv,
@@ -30,6 +32,20 @@ from pyrig.src.modules.path import ModulePath
 from pyrig.src.processes import Args
 
 logger = logging.getLogger(__name__)
+
+
+def test_get_setup_steps() -> None:
+    """Test that get_setup_steps returns a non-empty list of callables."""
+    steps = get_setup_steps()
+    assert isinstance(steps, list), f"Expected list, got {type(steps)}"
+    assert len(steps) > 0, "Expected non-empty list of setup steps"
+    assert all(callable(step) for step in steps), "All steps should be callable"
+
+
+def test_initializing_version_control() -> None:
+    """Test function."""
+    res = initializing_version_control()
+    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
 def test_adding_dev_dependencies() -> None:

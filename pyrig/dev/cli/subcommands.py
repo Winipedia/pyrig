@@ -101,35 +101,34 @@ def init() -> None:
     """Initialize a complete pyrig project from scratch.
 
     Transforms a basic Python project into a fully-configured, production-ready
-    pyrig project through a comprehensive 11-step automated sequence.
+    pyrig project through a comprehensive automated sequence.
 
-    Initialization Steps:
-        1. Add development dependencies (uv add --group dev)
-        2. Sync virtual environment (uv sync)
-        3. Create priority config files (mkroot --priority)
-        4. Sync virtual environment again (apply new configs)
-        5. Create complete project structure (mkroot)
-        6. Generate test skeletons (mktests)
-        7. Install prek hooks (prek install)
-        8. Add all files to version control (git add .)
-        9. Run prek hooks (format/lint all files)
-        10. Run test suite (pytest)
-        11. Create initial git commit
+    The initialization steps execute in the following order:
+        - Initialize version control (git init)
+        - Add development dependencies (uv add --group dev)
+        - Sync virtual environment (uv sync)
+        - Create priority config files (mkroot --priority)
+        - Sync virtual environment again (apply new configs)
+        - Create complete project structure (mkroot)
+        - Generate test skeletons (mktests)
+        - Install prek hooks (prek install)
+        - Add all files to version control (git add .)
+        - Run prek hooks (format/lint all files)
+        - Run test suite (pytest)
+        - Create initial git commit
 
     The process is automated and logged. Each step executes sequentially; if any
     step fails, the process stops immediately.
 
     Example:
-        $ git clone https://github.com/username/my-project.git
         $ cd my-project
         $ uv init
         $ uv add pyrig
         $ uv run pyrig init
 
     Note:
-        Run once when setting up a new project. Requires a git repository to be
-        initialized. Individual steps are idempotent, but the full sequence is
-        designed for initial setup.
+        Run once when setting up a new project. Individual steps are idempotent,
+        but the full sequence is designed for initial setup.
     """
     from pyrig.dev.cli.commands.init_project import init_project  # noqa: PLC0415
 

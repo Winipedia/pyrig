@@ -14,31 +14,30 @@ uv run pyrig -v init
 ## What It Does
 
 The `init` command transforms a basic Python project into a fully-configured
-pyrig project:
+pyrig project. The following steps execute in order:
 
-1. **Adding Dev Dependencies** - Adds pyrig's development dependencies
-2. **Syncing Venv** - Installs all dependencies
-3. **Creating Priority Config Files** - Creates essential files (LICENSE,
-   pyproject.toml, package `__init__.py` files) that must exist before other
-   steps
-4. **Syncing Venv (Again)** - Installs the project itself, making CLI commands
-   available
-5. **Creating Project Root** - Generates all remaining config files via
-   [mkroot](mkroot.md)
-6. **Creating Test Files** - Generates test skeletons via [mktests](mktests.md)
-7. **Installing Prek Hooks** - Installs prek hooks into the git
-   repository
-8. **Adding All Files to Version Control** - Stages all files for commit
-9. **Running Prek Hooks** - Runs formatters/linters on all files
-10. **Running Tests** - Validates setup by running pytest
-11. **Committing Initial Changes** - Creates the initial git commit
+- **Initializing Version Control** - Initializes a git repository (`git init`)
+- **Adding Dev Dependencies** - Adds pyrig's development dependencies
+- **Syncing Venv** - Installs all dependencies
+- **Creating Priority Config Files** - Creates essential files (LICENSE,
+  pyproject.toml, package `__init__.py` files) that must exist before other
+  steps
+- **Syncing Venv (Again)** - Installs the project itself, making CLI commands
+  available
+- **Creating Project Root** - Generates all remaining config files via
+  [mkroot](mkroot.md)
+- **Creating Test Files** - Generates test skeletons via [mktests](mktests.md)
+- **Installing Prek Hooks** - Installs prek hooks into the git
+  repository
+- **Adding All Files to Version Control** - Stages all files for commit
+- **Running Prek Hooks** - Runs formatters/linters on all files
+- **Running Tests** - Validates setup by running pytest
+- **Committing Initial Changes** - Creates the initial git commit
 
 ## When to Use
 
 Use `init` when starting a new project from scratch. This command is designed
 for first-time setup, not repeated execution.
-
-**Prerequisites**: A git repository must be initialized before running `init`.
 
 ## Related
 

@@ -200,19 +200,20 @@ This command runs several automated steps to set up your complete project. See
 the [init command documentation](../cli/commands/init.md) for detailed
 information about each step.
 
-**Summary of steps:**
+**The following steps execute in order:**
 
-1. Adding dev dependencies (pyrig-dev)
-2. Syncing venv (install all dependencies)
-3. Creating priority config files (LICENSE, pyproject.toml, etc.)
-4. Syncing venv (install project itself, activate CLI)
-5. Creating project root (all config files and directory structure)
-6. Creating test files (test skeletons for all code)
-7. Installing prek hooks (install hooks into git repository)
-8. Adding all files to version control (stage all files)
-9. Running prek hooks (format and lint)
-10. Running tests (validate everything works)
-11. Committing initial changes (create initial git commit)
+- Initializing version control (git init)
+- Adding dev dependencies (pyrig-dev)
+- Syncing venv (install all dependencies)
+- Creating priority config files (LICENSE, pyproject.toml, etc.)
+- Syncing venv (install project itself, activate CLI)
+- Creating project root (all config files and directory structure)
+- Creating test files (test skeletons for all code)
+- Installing prek hooks (install hooks into git repository)
+- Adding all files to version control (stage all files)
+- Running prek hooks (format and lint)
+- Running tests (validate everything works)
+- Committing initial changes (create initial git commit)
 
 ### 6. Add Repository Secrets (for CI/CD)
 
