@@ -63,8 +63,11 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         """
         if super().is_correct():
             return True
-        updated_content = cls.replace_description(cls.get_file_content())
-        cls.dump(updated_content.splitlines())
+        file_content = cls.get_file_content()
+        updated_content = cls.replace_description(file_content)
+        # only dump if content changed
+        if updated_content != file_content:
+            cls.dump(updated_content.splitlines())
         # note dump clears the cache,
         # and this checks the real file again, which is the wanted behavior
         return super().is_correct()
