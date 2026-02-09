@@ -245,9 +245,7 @@ of tracking all matrix combinations and the health_checks job individually.
   permissions
 - **CODECOV_TOKEN**: Codecov upload token (recommended, required for private
   repos)
-  - See
-    [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens)
-    for details
+  - See the [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens) for details <!-- rumdl-disable-line MD013 -->
 
 ## Usage
 

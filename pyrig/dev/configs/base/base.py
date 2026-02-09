@@ -187,12 +187,11 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
             self.dump(self.get_configs())
 
         if not self.is_correct():
-            logger.info("Updating config file %s at: %s", self.__class__.__name__, path)
             config = self.add_missing_configs()
             self.dump(config)
 
         if not self.is_correct():
-            msg = f"Config file {path} is not correct."
+            msg = f"Config file {path} is not correct after adding missing configs."
             raise ValueError(msg)
 
     @classmethod
@@ -226,6 +225,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
             Parsed configuration as dict or list. Format-specific implementations
             typically return empty dict/list for empty files (opt-out behavior).
         """
+        logger.debug("Loading config file %s", cls.__name__)
         return cls._load()
 
     @classmethod
@@ -239,6 +239,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         Args:
             config: Configuration to write (dict or list).
         """
+        logger.info("Updating config file %s at: %s", cls.__name__, cls.get_path())
         cls.load.cache_clear()
         cls._dump(config)
         cls.load.cache_clear()
