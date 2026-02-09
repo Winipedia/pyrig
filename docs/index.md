@@ -38,12 +38,6 @@ project needs**. Every configuration, workflow, and tool is pre-configured and
 working from day one. No templates, no boilerplate - just a complete, tested,
 production-ready setup that lets you start coding immediately.
 
----
-
-> A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development.
-
----
-
 ## Quick Start
 
 ```bash
