@@ -227,7 +227,8 @@ cd auth-service
 
 # Initialize with pyrig
 uv init
-uv add git+https://github.com/myorg/service-base.git  # This also brings in pyrig
+# service base brings pyrig bc it is build with it
+uv add service-base
 uv run pyrig init
 ```
 

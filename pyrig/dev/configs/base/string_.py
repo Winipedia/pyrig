@@ -74,6 +74,9 @@ class StringConfigFile(ListConfigFile):
         Note:
             User additions are preserved via add_missing_configs(), not here.
         """
+        # add empty line at end if not already empty
+        if config and config[-1].strip():
+            config.append("")
         string = cls.make_string_from_lines(config)
         cls.get_path().write_text(string, encoding="utf-8")
 
@@ -87,9 +90,8 @@ class StringConfigFile(ListConfigFile):
         Returns:
             Merged list of lines (expected lines first, then existing lines).
         """
-        actual_lines = cls.load()
         expected_lines = cls.get_configs()
-        if not cls.override_content() and actual_lines:
+        if not cls.override_content() and (actual_lines := cls.load()):
             expected_lines = [*expected_lines, *actual_lines]
         return expected_lines
 
@@ -113,11 +115,7 @@ class StringConfigFile(ListConfigFile):
         Returns:
             List of lines from get_lines().
         """
-        lines = cls.get_lines()
-        # add empty line at end if not already empty
-        if lines and lines[-1].strip():
-            lines.append("")
-        return lines
+        return cls.get_lines()
 
     @classmethod
     def is_correct(cls) -> bool:

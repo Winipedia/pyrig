@@ -59,3 +59,25 @@ class MDLinter(Tool):
             Args for 'rumdl check --fix'.
         """
         return cls.get_check_args("--fix", *args)
+
+    @classmethod
+    def get_ignore_too_long_line_start(cls) -> str:
+        """Get the rumdl argument to ignore too long line.
+
+        This should start the region where to ignore it.
+
+        Returns:
+            str: '--ignore MD013'
+        """
+        return "<!-- rumdl-disable MD013 -->"
+
+    @classmethod
+    def get_ignore_too_long_line_end(cls) -> str:
+        """Get the rumdl argument to ignore too long line.
+
+        This should end the region where to ignore it.
+
+        Returns:
+            str: '--ignore MD013'
+        """
+        return "<!-- rumdl-enable MD013 -->"

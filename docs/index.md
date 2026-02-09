@@ -1,5 +1,6 @@
 # pyrig Documentation
 
+<!-- rumdl-disable MD013 -->
 <!-- tooling -->
 [![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -22,6 +23,7 @@
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yml)
 <!-- documentation -->
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://Winipedia.github.io/pyrig)
+<!-- rumdl-enable MD013 -->
 
 ---
 
@@ -38,29 +40,7 @@ production-ready setup that lets you start coding immediately.
 
 ---
 
-## Architecture Overview
-
-```mermaid
-graph LR
-    A[pyrig] --> B[CLI<br/>Commands]
-    A --> C[Config<br/>Files]
-    A --> D[Builders]
-    A --> E[Tests &<br/>Fixtures]
-    A --> F[CI/CD<br/>Workflows]
-
-    B -.-> B1[init, mkroot,<br/>mktests, mkinits,<br/>build, protect-repo]
-    C -.-> C1[auto-generated<br/>configuration files]
-    D -.-> D1[PyInstaller &<br/>custom builders]
-    E -.-> E1[Shared fixtures<br/>auto-discovery]
-    F -.-> F1[health check,<br/>build, release,<br/>deploy]
-
-    style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style D fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style F fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-```
+> A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development.
 
 ---
 

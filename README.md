@@ -1,5 +1,6 @@
 # pyrig
 
+<!-- rumdl-disable MD013 -->
 <!-- tooling -->
 [![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -22,6 +23,7 @@
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yml)
 <!-- documentation -->
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://Winipedia.github.io/pyrig)
+<!-- rumdl-enable MD013 -->
 
 ---
 
@@ -67,7 +69,7 @@ class PrekConfigFile(Base):
         return configs
 ```
 
-For more information, see [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/).
+For more information, see [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/). <!-- rumdl-disable-line MD013 -->
 
 ### Multi-Package Inheritance
 
@@ -124,7 +126,7 @@ After `pyrig init`, your project includes:
 | **Community** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY |
 | **Config** | pyproject.toml, .gitignore, prek.toml, Containerfile |
 
-See the [full project structure](https://winipedia.github.io/pyrig/more/getting-started/#what-you-get) in the Getting Started guide.
+See the [full project structure](https://winipedia.github.io/pyrig/more/getting-started/#what-you-get) in the Getting Started guide. <!-- rumdl-disable-line MD013 -->
 
 ## CLI Commands
 
@@ -140,7 +142,7 @@ uv run my-project --help  # Your project's CLI
 
 ## Documentation
 
-- **[Getting Started](https://winipedia.github.io/pyrig/more/getting-started/)** -
+- **[Getting Started](https://winipedia.github.io/pyrig/more/getting-started/)** - <!-- rumdl-disable-line MD013 -->
   Complete setup guide
 - **[Full Documentation](https://winipedia.github.io/pyrig/)** - Comprehensive
   reference

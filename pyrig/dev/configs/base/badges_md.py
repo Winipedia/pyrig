@@ -19,11 +19,14 @@ Example:
     >>> ReadmeFile()  # Creates README.md with badges
 """
 
+import re
+
 import pyrig
 from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.dev.configs.workflows.release import ReleaseWorkflow
+from pyrig.dev.management.mdlinter import MDLinter
 from pyrig.dev.management.remote_version_controller import RemoteVersionController
 from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.utils.urls import (
@@ -49,6 +52,24 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
     """
 
     @classmethod
+    def is_correct(cls) -> bool:
+        """Override to replace the description if it changed in pyproject.toml.
+
+        Normally StringConfigFile.add_missing_configs prepends the expected lines to
+        the actual lines. This leads to a stale description remaining in the file
+        if it was changed in pyproject.toml. This override detects the old description
+        block between ``---`` fences and replaces it with the current one before
+        the normal merge runs.
+        """
+        if super().is_correct():
+            return True
+        updated_content = cls.replace_description(cls.get_file_content())
+        cls.dump(updated_content.splitlines())
+        # note dump clears the cache,
+        # and this checks the real file again, which is the wanted behavior
+        return super().is_correct()
+
+    @classmethod
     def get_lines(cls) -> list[str]:
         """Generate Markdown with project name, categorized badges, and description.
 
@@ -65,7 +86,9 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         return [
             f"# {project_name}",
             "",
+            MDLinter.L.get_ignore_too_long_line_start(),
             *badges_lines,
+            MDLinter.L.get_ignore_too_long_line_end(),
             "",
             "---",
             "",
@@ -116,3 +139,12 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
                 rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({RemoteVersionController.L.get_documentation_url()})",
             ],
         }
+
+    @classmethod
+    def replace_description(cls, content: str) -> str:
+        """Replace the description between ``---`` fences with the current one."""
+        expected_description = PyprojectConfigFile.L.get_project_description()
+        pattern = r"---\s*\n(.*?)\n---"
+        replacement = f"---\n\n> {expected_description}\n\n---"
+        # only replace first occurence, as description is expected at the top
+        return re.sub(pattern, replacement, content, count=1, flags=re.DOTALL)

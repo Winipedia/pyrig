@@ -82,6 +82,10 @@ class TestStringConfigFile:
         content = ["New content."]
         my_test_string_config_file.dump(content)
         loaded = my_test_string_config_file.load()
+        content = my_test_string_config_file.get_path().read_text()
+        # assert has empyt line at the end
+        assert content.endswith("\n")
+        # load doesnt preserve the last "\n" as an "" in list bc of splitlines()
         assert loaded == ["New content."]
 
     def test__get_configs(
@@ -90,7 +94,7 @@ class TestStringConfigFile:
         """Test method for get_configs."""
         configs = my_test_string_config_file.get_configs()
         # empty line is added to the end of the file
-        assert configs == ["Test content.", ""]
+        assert configs == ["Test content."]
 
     def test_is_correct(
         self, my_test_string_config_file: type[StringConfigFile]

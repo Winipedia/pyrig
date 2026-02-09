@@ -1,6 +1,7 @@
 """module."""
 
 from collections.abc import Callable
+from pathlib import Path
 
 import pytest
 
@@ -15,6 +16,11 @@ def my_test_typed_config_file(
 
     class MyTestTypedConfigFile(config_file_factory(TypedConfigFile)):  # type: ignore [misc]
         """Test typed config file with tmp_path override."""
+
+        @classmethod
+        def get_parent_path(cls) -> Path:
+            """Get the parent path."""
+            return Path()
 
     return MyTestTypedConfigFile
 

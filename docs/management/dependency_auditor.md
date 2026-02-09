@@ -1,7 +1,7 @@
 # DependencyAuditor (pip-audit)
 
-Type-safe wrapper for [pip-audit](https://github.com/pypa/pip-audit), a tool that
-checks *installed dependencies* for known vulnerabilities.
+Type-safe wrapper for [pip-audit](https://github.com/pypa/pip-audit), a tool
+that checks *installed dependencies* for known vulnerabilities.
 
 This complements Bandit:
 
