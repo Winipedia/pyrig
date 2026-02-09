@@ -32,29 +32,17 @@
 ## What is pyrig?
 
 pyrig generates and maintains a complete, production-ready Python project from a
-single command. It creates all the files you need—source structure, tests,
-CI/CD, documentation, configs—and keeps them in sync as your project evolves.
-
-**Run once, stay current**: pyrig is idempotent. Rerun it anytime to update
-configs, add missing files, or sync with the latest best practices.
+single command. It creates all the files you need — source structure, tests,
+CI/CD, documentation, configs — and keeps them in sync as your project evolves.
+Rerun it anytime: pyrig is idempotent.
 
 ## Quick Start
 
 ```bash
-# Initialize project with uv and pyrig
 uv init
 uv add pyrig
 uv run pyrig init
 ```
-
-That's it. You now have a complete project with:
-
-- Source code structure with CLI entry point
-- Test framework with 90% coverage enforcement
-- GitHub Actions (CI/CD, releases, docs deployment)
-- Prek hooks (linting, formatting, type checking)
-- MkDocs documentation site
-- Container support (Podman/Docker)
 
 See the
 [Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/)
@@ -64,16 +52,22 @@ for detailed setup instructions.
 
 ### Config File System
 
-pyrig's core is a declarative config file system. Each config file
-(pyproject.toml, prek.toml, GitHub workflows, etc.) is a Python
-class that:
+Every config file (pyproject.toml, prek.toml, GitHub workflows, etc.) is a
+Python class that generates, validates, and merges automatically. Extend any
+config by subclassing — pyrig discovers it with no registration needed:
 
-- **Generates** the file with working sensible defaults
-- **Validates** existing files against expected structure
-- **Merges** missing values without removing your customizations (overrides are
-  possible, read the docs for details)
+```python
+# my_project/dev/configs/pre_commit.py
+from pyrig.dev.configs.pre_commit import PrekConfigFile as Base
 
-Create custom configs by subclassing—pyrig discovers them automatically.
+class PrekConfigFile(Base):
+    def _get_configs(self):
+        configs = super()._get_configs()
+        configs[0]["hooks"].append({"id": "my-hook", "name": "My Hook", ...})
+        return configs
+```
+
+For more information, see [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/).
 
 ### Multi-Package Inheritance
 
@@ -90,15 +84,31 @@ Override any config by subclassing with the same class name. Leaf classes win.
 
 ### Automatic Discovery
 
-Everything is discovered automatically across the dependency chain:
+Everything is discovered automatically across the dependency chain — CLI
+commands, config files, test fixtures, builders, and tools. For example, any
+public function in `subcommands.py` becomes a CLI command:
 
-- **CLI commands** from `<package>.dev.cli.subcommands`
-- **Config files** from `<package>.dev.configs`
-- **Test fixtures** from `<package>.dev.tests.fixtures`
-- **Builders** from `<package>.dev.builders`
-- **Tools** from `<package>.dev.management`
+```python
+# my_project/dev/cli/subcommands.py
+def greet(name: str) -> None:
+    """Say hello."""
+    print(f"Hello, {name}!")
+```
+
+```bash
+$ uv run my-project greet --name World
+Hello, World!
+```
 
 No registration required. Just define and it works.
+
+### Pytest Enforcement
+
+pytest itself enforces project correctness. Autouse session fixtures run before
+your tests to check invariants — missing test modules are auto-generated,
+configs are validated, namespace packages are prevented, and dev/src dependency
+separation is verified. See
+[Autouse Fixtures](https://winipedia.github.io/pyrig/tests/autouse/).
 
 ### What Gets Generated
 
@@ -114,6 +124,8 @@ After `pyrig init`, your project includes:
 | **Community** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY |
 | **Config** | pyproject.toml, .gitignore, prek.toml, Containerfile |
 
+See the [full project structure](https://winipedia.github.io/pyrig/more/getting-started/#what-you-get) in the Getting Started guide.
+
 ## CLI Commands
 
 ```bash
@@ -126,23 +138,13 @@ uv run pyrig protect-repo # Configure repository protection
 uv run my-project --help  # Your project's CLI
 ```
 
-## Opinionated Defaults
-
-pyrig enforces modern Python best practices:
-
-- **Python 3.12+** with full type hints
-- **All ruff rules** enabled (with sensible exceptions)
-- **Strict type checking** with ty
-- **90% test coverage** minimum
-- **Linear git history** with branch protection
-
 ## Documentation
 
 - **[Getting Started](https://winipedia.github.io/pyrig/more/getting-started/)** -
   Complete setup guide
 - **[Full Documentation](https://winipedia.github.io/pyrig/)** - Comprehensive
   reference
+- **[Trade-offs](https://winipedia.github.io/pyrig/more/drawbacks/)** -
+  What you give up and what you gain
 - **[CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)** -
   AI-generated docs
-
----
