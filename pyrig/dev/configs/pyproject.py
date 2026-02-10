@@ -22,6 +22,7 @@ from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
 from pyrig.dev.configs.licence import LicenceConfigFile
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
+from pyrig.dev.tools.package_manager import PackageManager
 from pyrig.dev.tools.project_tester import ProjectTester
 from pyrig.dev.tools.pyrigger import Pyrigger
 from pyrig.dev.tools.remote_version_controller import RemoteVersionController
@@ -115,8 +116,8 @@ class PyprojectConfigFile(TomlConfigFile):
                 )
             },
             "build-system": {
-                "requires": ["uv_build"],
-                "build-backend": "uv_build",
+                "requires": PackageManager.L.get_build_system_requires(),
+                "build-backend": PackageManager.L.get_build_backend(),
             },
             "tool": {
                 "uv": {

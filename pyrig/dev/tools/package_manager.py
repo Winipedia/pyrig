@@ -221,3 +221,27 @@ class PackageManager(Tool):
             'UV_NO_SYNC'
         """
         return "UV_NO_SYNC"
+
+    @classmethod
+    def get_build_system_requires(cls) -> list[str]:
+        """Get build-system requires for pyproject.toml.
+
+        If uv is not used but replaced by poetry for example, this should be
+        overridden to return ["poetry-core"].
+        Or if setuptools or hatch is preferred, that should be returned instead.
+
+        Returns:
+            List of dependencies for [build-system].requires.
+        """
+        return ["uv_build"]
+
+    @classmethod
+    def get_build_backend(cls) -> str:
+        """Get build-backend for pyproject.toml.
+
+        Should be overridden if get_build_system_requires is overridden and vice versa.
+
+        Returns:
+            Build backend for [build-system].build-backend.
+        """
+        return "uv_build"
