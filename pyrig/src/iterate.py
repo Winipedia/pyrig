@@ -6,7 +6,7 @@ are detected. Used primarily by ConfigFile to validate and merge configuration
 files.
 
 See Also:
-    pyrig.dev.configs.base.base.ConfigFile: Primary consumer of this module.
+    pyrig.rig.configs.base.base.ConfigFile: Primary consumer of this module.
 """
 
 import logging

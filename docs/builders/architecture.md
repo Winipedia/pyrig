@@ -34,7 +34,7 @@ Builders are discovered through the dependency graph:
 
 ```mermaid
 graph LR
-    A[pyrig.dev.builders] --> B[Package A builders]
+    A[pyrig.rig.builders] --> B[Package A builders]
     B --> C[Package B builders]
     C --> D[Package C builders]
 
@@ -54,7 +54,7 @@ graph LR
 ### Discovery Process
 
 1. **Find all packages** depending on pyrig using dependency graph
-2. **Locate builders modules** equivalent to `pyrig.dev.builders` in each
+2. **Locate builders modules** equivalent to `pyrig.rig.builders` in each
    package
 3. **Find all BuilderConfigFile subclasses** in those modules
 4. **Filter non-abstract classes** (discard parent classes, keep leaf
@@ -95,7 +95,7 @@ See the `BuilderConfigFile` docstrings for method details.
 ```python
 import shutil
 from pathlib import Path
-from pyrig.dev.builders.base.base import BuilderConfigFile
+from pyrig.rig.builders.base.base import BuilderConfigFile
 
 class DocumentationBuilder(BuilderConfigFile):
     @classmethod

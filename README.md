@@ -60,7 +60,7 @@ config by subclassing — pyrig discovers it with no registration needed:
 
 ```python
 # my_project/dev/configs/pre_commit.py
-from pyrig.dev.configs.pre_commit import PrekConfigFile as Base
+from pyrig.rig.configs.pre_commit import PrekConfigFile as Base
 
 class PrekConfigFile(Base):
     def _get_configs(self):

@@ -328,7 +328,7 @@ still be left with a nice initial project structure and tooling.
 
 ```python
 # Remove or comment out:
-# pytest_plugins = ["pyrig.dev.tests.conftest"]
+# pytest_plugins = ["pyrig.rig.tests.conftest"]
 ```
 
 **2. Remove from workflows**:
@@ -397,7 +397,7 @@ You can re-enable pyrig automation at any time:
 **1. Add back to conftest.py**:
 
 ```python
-pytest_plugins = ["pyrig.dev.tests.conftest"]
+pytest_plugins = ["pyrig.rig.tests.conftest"]
 ```
 
 **2. Add back to workflows**:

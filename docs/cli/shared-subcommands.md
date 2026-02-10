@@ -51,7 +51,7 @@ graph TD
     A[pyrig] -->|depended on by| B[myapp]
     B -->|depended on by| C[myplugin]
 
-    D[pyrig.dev.cli.shared_subcommands] -->|version| E[Commands]
+    D[pyrig.rig.cli.shared_subcommands] -->|version| E[Commands]
     F[myapp.dev.cli.shared_subcommands] -->|status| E
     G[myplugin.dev.cli.shared_subcommands] -->|health| E
 
@@ -78,7 +78,7 @@ pyrig
 
 Running `uv run myplugin version` discovers shared commands from:
 
-- `pyrig.dev.cli.shared_subcommands`
+- `pyrig.rig.cli.shared_subcommands`
 - `myapp.dev.cli.shared_subcommands`
 - `myplugin.dev.cli.shared_subcommands`
 

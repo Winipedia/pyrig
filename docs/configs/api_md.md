@@ -90,8 +90,8 @@ project:
 Create `myapp/dev/configs/markdown/docs/api.py`:
 
 ```python
-from pyrig.dev.configs.markdown.docs.api import ApiConfigFile as BaseApiCF
-from pyrig.dev.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.configs.markdown.docs.api import ApiConfigFile as BaseApiCF
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class ApiConfigFile(BaseApiCF):

@@ -149,7 +149,7 @@ keywords = ["data-processing", "etl", "pipeline", "analytics", "big-data"]
 [project.scripts]
 # note the entry point is invoked via pyrig and not directly via your project 
 # as pyrig handles the CLI infrastructure and discovers your CLI commands.
-my-app = "pyrig.dev.cli.cli:main"      # Creates CLI command: my-app
+my-app = "pyrig.rig.cli.cli:main"      # Creates CLI command: my-app
 ```
 
 **Why**: Creates an executable command when the package is installed. The entry

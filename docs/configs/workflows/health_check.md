@@ -5,7 +5,7 @@ Continuous integration workflow that validates code quality and runs tests.
 ## Overview
 
 **File**: `.github/workflows/health_check.yml`
-**Class**: `HealthCheckWorkflow` in `pyrig.dev.configs.workflows.health_check`  
+**Class**: `HealthCheckWorkflow` in `pyrig.rig.configs.workflows.health_check`  
 **Inherits**: `Workflow`
 
 The health check workflow is the first step in the CI/CD pipeline. It runs on

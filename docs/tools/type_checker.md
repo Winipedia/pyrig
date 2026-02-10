@@ -12,7 +12,7 @@ speed and accuracy.
 
 ```python
 # myapp/dev/tools/type_checker.py
-from pyrig.dev.tools.type_checker import TypeChecker as BaseTC
+from pyrig.rig.tools.type_checker import TypeChecker as BaseTC
 from pyrig.src.processes import Args
 
 class TypeChecker(BaseTC):
@@ -25,7 +25,7 @@ class TypeChecker(BaseTC):
 
 ```python
 # myapp/dev/tools/type_checker.py
-from pyrig.dev.tools.type_checker import TypeChecker as BaseTC
+from pyrig.rig.tools.type_checker import TypeChecker as BaseTC
 from pyrig.src.processes import Args
 
 class TypeChecker(BaseTC):

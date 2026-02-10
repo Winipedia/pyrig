@@ -25,7 +25,7 @@ using the CLI framework for running code.
 
 ```python
 from types import ModuleType
-from pyrig.dev.builders.pyinstaller import PyInstallerBuilder
+from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
 import myapp.resources
 
 class MyAppBuilder(PyInstallerBuilder):
@@ -143,7 +143,7 @@ Override `get_app_icon_png_path` to use a different icon:
 ```python
 from pathlib import Path
 from types import ModuleType
-from pyrig.dev.builders.pyinstaller import PyInstallerBuilder
+from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
 import myapp.another_resources_pkg
 
 class MyAppBuilder(PyInstallerBuilder):

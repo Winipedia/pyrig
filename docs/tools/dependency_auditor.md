@@ -12,7 +12,7 @@ This complements Bandit:
 
 ```python
 # myapp/dev/tools/dependency_auditor.py
-from pyrig.dev.tools.dependency_auditor import DependencyAuditor as BaseDA
+from pyrig.rig.tools.dependency_auditor import DependencyAuditor as BaseDA
 from pyrig.src.processes import Args
 
 

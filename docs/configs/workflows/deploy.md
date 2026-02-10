@@ -6,7 +6,7 @@ GitHub Pages.
 ## Overview
 
 **File**: `.github/workflows/deploy.yml`
-**Class**: `DeployWorkflow` in `pyrig.dev.configs.workflows.deploy`
+**Class**: `DeployWorkflow` in `pyrig.rig.configs.workflows.deploy`
 **Inherits**: `Workflow`
 
 The deploy workflow is the final step in the CI/CD pipeline. It runs after
