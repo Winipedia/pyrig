@@ -10,7 +10,7 @@ dependencies:
 
 ```mermaid
 graph TD
-    A[pyrig.dev.tests.fixtures] --> B[Package A fixtures]
+    A[pyrig.rig.tests.fixtures] --> B[Package A fixtures]
     B --> C[Package B fixtures]
     C --> D[Package C fixtures]
 
@@ -34,7 +34,7 @@ The discovery process happens automatically in `tests/conftest.py`:
 ```mermaid
 sequenceDiagram
     participant T as tests/conftest.py
-    participant P as pyrig.dev.tests.conftest
+    participant P as pyrig.rig.tests.conftest
     participant D as DependencyGraph
     participant F as Fixture Modules
 
@@ -42,7 +42,7 @@ sequenceDiagram
     P->>D: Find all packages depending on pyrig
     D-->>P: [pyrig, pkg_a, pkg_b, ...]
     P->>F: Find fixtures modules in each package
-    F-->>P: [pyrig.dev.tests.fixtures, pkg_a.dev.tests.fixtures, ...]
+    F-->>P: [pyrig.rig.tests.fixtures, pkg_a.dev.tests.fixtures, ...]
     P->>P: Register all Python files as pytest plugins
     P-->>T: All fixtures available
 
@@ -53,7 +53,7 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    A[Start: tests/conftest.py] --> B[Import pyrig.dev.tests.conftest]
+    A[Start: tests/conftest.py] --> B[Import pyrig.rig.tests.conftest]
     B --> C[Use cached DependencyGraph]
     C --> D[Find all packages depending on pyrig]
     D --> E[For each package...]
@@ -87,7 +87,7 @@ graph TD
 
 1. **Find dependent packages**: Uses dependency graph to find all packages
    depending on pyrig
-2. **Locate fixtures modules**: Finds equivalent of `pyrig.dev.tests.fixtures`
+2. **Locate fixtures modules**: Finds equivalent of `pyrig.rig.tests.fixtures`
    in each package
 3. **Collect Python files**: Recursively finds all `.py` files in fixtures
    modules
@@ -102,7 +102,7 @@ Pyrig will generate `tests/conftest.py`:
 ```python
 """Pytest configuration for tests."""
 
-pytest_plugins = ["pyrig.dev.tests.conftest"]
+pytest_plugins = ["pyrig.rig.tests.conftest"]
 ```
 
 This single line activates:
@@ -129,7 +129,7 @@ myapp/
 commands), fixtures must be explicitly decorated with:
 
 - `@pytest.fixture` from pytest, or
-- Scope-specific decorators from `pyrig.dev.utils.testing` (`@session_fixture`,
+- Scope-specific decorators from `pyrig.rig.utils.testing` (`@session_fixture`,
   `@module_fixture`, etc.)
 
 Pyrig does not auto-decorate fixture functions.
@@ -193,7 +193,7 @@ def test_main(main_test_fixture: None) -> None:
 Use pyrig's scope decorators for custom fixtures:
 
 ```python
-from pyrig.dev.utils.testing import (
+from pyrig.rig.utils.testing import (
     session_fixture,
     module_fixture,
     class_fixture,

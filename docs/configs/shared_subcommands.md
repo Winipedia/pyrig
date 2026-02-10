@@ -7,7 +7,7 @@ The `SharedSubcommandsConfigFile` manages the
 
 Creates a shared_subcommands.py file that:
 
-- Copies only the docstring from `pyrig.dev.cli.shared_subcommands`
+- Copies only the docstring from `pyrig.rig.cli.shared_subcommands`
 - Provides a place to define CLI subcommands shared across all pyrig projects
 - Automatically discovered by pyrig's CLI system
 - Allows creating reusable commands available in all your pyrig-based projects
@@ -47,9 +47,9 @@ graph TD
 
 **Path**: `{package_name}/dev/cli/shared_subcommands.py`
 
-**Source module**: `pyrig.dev.cli.shared_subcommands`
+**Source module**: `pyrig.rig.cli.shared_subcommands`
 
-**Path transformation**: `pyrig.dev.cli.shared_subcommands` →
+**Path transformation**: `pyrig.rig.cli.shared_subcommands` →
 `{package_name}.dev.cli.shared_subcommands` →
 `{package_name}/dev/cli/shared_subcommands.py`
 
@@ -60,7 +60,7 @@ graph TD
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from
-   `pyrig.dev.cli.shared_subcommands` is copied
+   `pyrig.rig.cli.shared_subcommands` is copied
 2. **Package structure**: The `dev/cli/` directory is created
 3. **Ready for customization**: You can add your own shared subcommand functions
 

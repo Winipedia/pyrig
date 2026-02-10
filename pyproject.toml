@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "7.1.1"
+version = "8.0.0"
 description = "A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development."
 readme = "README.md"
 license = "MIT"
@@ -51,7 +51,7 @@ Issues = "https://github.com/Winipedia/pyrig/issues"
 Changelog = "https://github.com/Winipedia/pyrig/releases"
 
 [project.scripts]
-pyrig = "pyrig.dev.cli.cli:main"
+pyrig = "pyrig.rig.cli.cli:main"
 
 [dependency-groups]
 dev = [

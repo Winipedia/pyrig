@@ -7,7 +7,7 @@ file.
 
 Creates a subcommands.py file that:
 
-- Copies only the docstring from `pyrig.dev.cli.subcommands`
+- Copies only the docstring from `pyrig.rig.cli.subcommands`
 - Provides a place to define custom CLI subcommands
 - Automatically discovered by pyrig's CLI system
 - Allows extending the CLI with project-specific commands
@@ -47,9 +47,9 @@ graph TD
 
 **Path**: `{package_name}/dev/cli/subcommands.py`
 
-**Source module**: `pyrig.dev.cli.subcommands`
+**Source module**: `pyrig.rig.cli.subcommands`
 
-**Path transformation**: `pyrig.dev.cli.subcommands` →
+**Path transformation**: `pyrig.rig.cli.subcommands` →
 `{package_name}.dev.cli.subcommands` → `{package_name}/dev/cli/subcommands.py`
 
 ## How It Works
@@ -58,7 +58,7 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Docstring copy**: Only the docstring from `pyrig.dev.cli.subcommands` is
+1. **Docstring copy**: Only the docstring from `pyrig.rig.cli.subcommands` is
    copied
 2. **Package structure**: The `dev/cli/` directory is created
 3. **Ready for customization**: You can add your own subcommand functions

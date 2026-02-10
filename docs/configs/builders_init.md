@@ -7,7 +7,7 @@ The `BuildersInitConfigFile` manages the
 
 Creates a builders package that:
 
-- Mirrors the structure of `pyrig.dev.builders`
+- Mirrors the structure of `pyrig.rig.builders`
 - Copies only the docstring from the source module
 - Ensures the builders directory exists with proper package structure
 - Provides a place for custom builder implementations
@@ -41,7 +41,7 @@ graph TD
 **What this means**:
 
 - Creates `__init__.py` files for package initialization
-- Copies only the docstring from `pyrig.dev.builders`
+- Copies only the docstring from `pyrig.rig.builders`
 - Automatically determines target path
 - Ensures parent directory is a valid Python package
 
@@ -49,9 +49,9 @@ graph TD
 
 **Path**: `{package_name}/dev/builders/__init__.py`
 
-**Source module**: `pyrig.dev.builders`
+**Source module**: `pyrig.rig.builders`
 
-**Path transformation**: `pyrig.dev.builders` →
+**Path transformation**: `pyrig.rig.builders` →
 `{package_name}.dev.builders` →
 `{package_name}/dev/builders/__init__.py`
 
@@ -61,7 +61,7 @@ graph TD
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Docstring copy**: Only the docstring from `pyrig.dev.builders.__init__.py`
+1. **Docstring copy**: Only the docstring from `pyrig.rig.builders.__init__.py`
    is copied
 2. **Package structure**: The `dev/builders/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files

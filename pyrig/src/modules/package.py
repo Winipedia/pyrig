@@ -299,7 +299,7 @@ def discover_equivalent_modules_across_dependents(
     """Find equivalent module paths across all packages that depend on a dependency.
 
     Core function for pyrig's multi-package architecture. Given a module path
-    within a base dependency (e.g., ``pyrig.dev.configs``), discovers and imports
+    within a base dependency (e.g., ``pyrig.rig.configs``), discovers and imports
     the equivalent module path in every package that depends on that dependency
     (e.g., ``myapp.dev.configs``, ``other_pkg.dev.configs``).
 
@@ -315,7 +315,7 @@ def discover_equivalent_modules_across_dependents(
 
     Args:
         module: Template module whose path will be replicated across dependents.
-            For example, ``pyrig.dev.configs`` would find ``myapp.dev.configs``
+            For example, ``pyrig.rig.configs`` would find ``myapp.dev.configs``
             in a package ``myapp`` that depends on ``pyrig``.
         dep: The base dependency package. All packages depending on this will
             be searched for equivalent modules.
@@ -329,10 +329,10 @@ def discover_equivalent_modules_across_dependents(
 
     Example:
         >>> # Find all dev.configs modules across pyrig ecosystem
-        >>> from pyrig.dev import configs
+        >>> from pyrig.rig import configs
         >>> import pyrig
         >>> modules = discover_equivalent_modules_across_dependents(configs, pyrig)
-        >>> # Returns: [pyrig.dev.configs, myapp.dev.configs, other_pkg.dev.configs]
+        >>> # Returns: [pyrig.rig.configs, myapp.dev.configs, other_pkg.dev.configs]
 
     Note:
         The module path transformation is a simple string replacement of the
@@ -404,7 +404,7 @@ def discover_subclasses_across_dependents[T: type](
         dep: The base dependency package (e.g., ``pyrig``). The function will
             search all packages that depend on this for subclass implementations.
         load_pkg_before: Template module path to replicate across dependents.
-            For example, ``pyrig.dev.configs`` would search for subclasses in
+            For example, ``pyrig.rig.configs`` would search for subclasses in
             ``myapp.dev.configs`` for each dependent package ``myapp``.
         discard_parents: If True, removes classes that have subclasses also
             in the result set. Essential for override patterns where a package
@@ -420,7 +420,7 @@ def discover_subclasses_across_dependents[T: type](
 
     Example:
         >>> # Discover all ConfigFile implementations across ecosystem
-        >>> from pyrig.dev import configs
+        >>> from pyrig.rig import configs
         >>> import pyrig
         >>> subclasses = discover_subclasses_across_dependents(
         ...     cls=ConfigFile,

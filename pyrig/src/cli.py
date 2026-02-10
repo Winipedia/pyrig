@@ -5,7 +5,7 @@ from `sys.argv[0]`. This is the foundation for pyrig's dynamic command discovery
 system, allowing shared commands to adapt behavior based on the invoking project.
 
 These utilities are used internally by pyrig's CLI infrastructure
-(``pyrig.dev.cli.cli``) and are available for shared commands that need to know
+(``pyrig.rig.cli.cli``) and are available for shared commands that need to know
 which project invoked them.
 
 Example:

@@ -54,13 +54,13 @@ sets parent path to `tests/`)
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring**: Explains the file's purpose as the pyrig pytest plugin
-2. **Plugin import**: Imports `pyrig.dev.tests.conftest` as a pytest plugin
+2. **Plugin import**: Imports `pyrig.rig.tests.conftest` as a pytest plugin
 3. **Pytest integration**: Automatically loads pyrig's fixtures and hooks
 
 ### Generated Content
 
 ```python
-pytest_plugins = ["pyrig.dev.tests.conftest"]
+pytest_plugins = ["pyrig.rig.tests.conftest"]
 ```
 
 The `pytest_plugins` list tells pytest to load pyrig's conftest module, making

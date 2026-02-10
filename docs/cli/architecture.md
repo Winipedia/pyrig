@@ -11,7 +11,7 @@ Commands are invoked through the console script entry point defined in
 
 ```toml
 [project.scripts]
-pyrig = "pyrig.dev.cli.cli:main"
+pyrig = "pyrig.rig.cli.cli:main"
 ```
 
 Running `uv run pyrig <command>` calls the `main()` function in
@@ -92,7 +92,7 @@ pyrig, while adapting to each project's context.
 ## Module Name Replacement
 
 The system uses module name replacement to support multi-package architectures.
-Given a module path within pyrig (e.g., `pyrig.dev.cli.subcommands`), the CLI
+Given a module path within pyrig (e.g., `pyrig.rig.cli.subcommands`), the CLI
 can derive the equivalent path in any dependent package (e.g.,
 `myapp.dev.cli.subcommands`).
 
@@ -150,7 +150,7 @@ Once registered, Typer handles argument parsing and command execution:
 
 ```mermaid
 graph TD
-    A[uv run pyrig init] --> B[Entry point: pyrig.dev.cli.cli:main]
+    A[uv run pyrig init] --> B[Entry point: pyrig.rig.cli.cli:main]
     B --> C[Register all commands]
     C --> D[Typer parses 'init' argument]
     D --> E[Execute init function]

@@ -105,7 +105,7 @@ debug = os.getenv("DEBUG", "false").lower() == "true"
 ### Using with pyrig
 
 ```python
-from pyrig.dev.configs.dot_env import DotEnvConfigFile
+from pyrig.rig.configs.dot_env import DotEnvConfigFile
 
 # Load all variables
 env_vars = DotEnvConfigFile.load()

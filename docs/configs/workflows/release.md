@@ -5,7 +5,7 @@ Release creation workflow that versions, tags, and publishes GitHub releases.
 ## Overview
 
 **File**: `.github/workflows/release.yml`
-**Class**: `ReleaseWorkflow` in `pyrig.dev.configs.workflows.release`  
+**Class**: `ReleaseWorkflow` in `pyrig.rig.configs.workflows.release`  
 **Inherits**: `Workflow`
 
 The release workflow runs after successful artifact builds. It bumps the

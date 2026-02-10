@@ -8,7 +8,7 @@ validating project health and enforcing conventions without explicit invocation.
 ```mermaid
 graph TD
     A[pytest starts] --> B[Load tests/conftest.py]
-    B --> C[Activate pyrig.dev.tests.conftest]
+    B --> C[Activate pyrig.rig.tests.conftest]
     C --> D[Discover all fixtures modules]
     D --> E[Register autouse fixtures]
     E --> F[Session fixtures run once]
@@ -262,7 +262,7 @@ graph TD
 Define autouse fixtures in your package's fixtures module:
 
 ```python
-from pyrig.dev.utils.testing import autouse_session_fixture
+from pyrig.rig.utils.testing import autouse_session_fixture
 
 @autouse_session_fixture
 def my_custom_validation() -> None:

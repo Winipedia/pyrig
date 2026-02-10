@@ -33,7 +33,7 @@ docstrings.
 ## Quick Example
 
 ```python
-from pyrig.dev.tools.linter import Linter
+from pyrig.rig.tools.linter import Linter
 
 # Get command arguments
 args = Linter.L.get_check_args()

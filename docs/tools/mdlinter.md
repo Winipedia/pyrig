@@ -10,7 +10,7 @@ catches common issues.
 
 ```python
 # myapp/dev/tools/mdlinter.py
-from pyrig.dev.tools.mdlinter import MDLinter as BaseMDL
+from pyrig.rig.tools.mdlinter import MDLinter as BaseMDL
 from pyrig.src.processes import Args
 
 class MDLinter(BaseMDL):

@@ -7,7 +7,7 @@ file.
 
 Creates a configs package that:
 
-- Mirrors the structure of `pyrig.dev.configs`
+- Mirrors the structure of `pyrig.rig.configs`
 - Copies only the docstring from the source module
 - Ensures the configs directory exists with proper package structure
 - Provides a place for custom config file implementations
@@ -41,7 +41,7 @@ graph BT
 **What this means**:
 
 - Creates `__init__.py` files for package initialization
-- Copies only the docstring from `pyrig.dev.configs`
+- Copies only the docstring from `pyrig.rig.configs`
 - Automatically determines target path
 - Ensures parent directory is a valid Python package
 
@@ -49,9 +49,9 @@ graph BT
 
 **Path**: `{package_name}/dev/configs/__init__.py`
 
-**Source module**: `pyrig.dev.configs`
+**Source module**: `pyrig.rig.configs`
 
-**Path transformation**: `pyrig.dev.configs` → `{package_name}.dev.configs` →
+**Path transformation**: `pyrig.rig.configs` → `{package_name}.dev.configs` →
 `{package_name}/dev/configs/__init__.py`
 
 ## How It Works
@@ -60,14 +60,14 @@ graph BT
 
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
-1. **Docstring copy**: Only the docstring from `pyrig.dev.configs.__init__.py`
+1. **Docstring copy**: Only the docstring from `pyrig.rig.configs.__init__.py`
    is copied
 2. **Package structure**: The `dev/configs/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files
 
 ### Generated Content
 
-The file contains only the docstring from `pyrig.dev.configs`, allowing you to
+The file contains only the docstring from `pyrig.rig.configs`, allowing you to
 add custom config file implementations.
 
 ## Usage

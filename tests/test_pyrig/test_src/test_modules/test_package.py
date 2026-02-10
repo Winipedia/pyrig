@@ -15,10 +15,10 @@ from pytest_mock import MockFixture
 
 import pyrig
 from pyrig import src
-from pyrig.dev import configs
-from pyrig.dev.configs.base.base import ConfigFile
-from pyrig.dev.utils import packages
-from pyrig.dev.utils.packages import find_packages
+from pyrig.rig import configs
+from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.utils import packages
+from pyrig.rig.utils.packages import find_packages
 from pyrig.src.modules.module import (
     import_module_from_file,
     make_obj_importpath,

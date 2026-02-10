@@ -9,7 +9,7 @@ its own commands programmatically.
 # myapp/dev/tools/pyrigger.py
 from collections.abc import Callable
 from typing import Any
-from pyrig.dev.tools.pyrigger import Pyrigger as BasePyrigger
+from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger
 from pyrig.src.processes import Args
 
 class Pyrigger(BasePyrigger):

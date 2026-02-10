@@ -43,7 +43,7 @@ Create a custom builder by subclassing `BuilderConfigFile`:
 
 ```python
 from pathlib import Path
-from pyrig.dev.builders.base.base import BuilderConfigFile
+from pyrig.rig.builders.base.base import BuilderConfigFile
 
 class MyBuilder(BuilderConfigFile):
     """Custom artifact builder."""

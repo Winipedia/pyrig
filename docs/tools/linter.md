@@ -10,7 +10,7 @@ with 10-100x faster performance.
 
 ```python
 # myapp/dev/tools/linter.py
-from pyrig.dev.tools.linter import Linter as BaseLinter
+from pyrig.rig.tools.linter import Linter as BaseLinter
 from pyrig.src.processes import Args
 
 class Linter(BaseLinter):

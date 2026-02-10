@@ -7,7 +7,7 @@ The `FixturesInitConfigFile` manages the
 
 Creates a fixtures package that:
 
-- Mirrors the structure of `pyrig.dev.tests.fixtures`
+- Mirrors the structure of `pyrig.rig.tests.fixtures`
 - Copies only the docstring from the source module
 - Ensures the fixtures directory exists with proper package structure
 - Provides a place for custom test fixtures
@@ -41,7 +41,7 @@ graph TD
 **What this means**:
 
 - Creates `__init__.py` files for package initialization
-- Copies only the docstring from `pyrig.dev.tests.fixtures`
+- Copies only the docstring from `pyrig.rig.tests.fixtures`
 - Automatically determines target path
 - Ensures parent directory is a valid Python package
 
@@ -49,9 +49,9 @@ graph TD
 
 **Path**: `{package_name}/dev/tests/fixtures/__init__.py`
 
-**Source module**: `pyrig.dev.tests.fixtures`
+**Source module**: `pyrig.rig.tests.fixtures`
 
-**Path transformation**: `pyrig.dev.tests.fixtures` →
+**Path transformation**: `pyrig.rig.tests.fixtures` →
 `{package_name}.dev.tests.fixtures` →
 `{package_name}/dev/tests/fixtures/__init__.py`
 
@@ -62,7 +62,7 @@ graph TD
 When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from
-   `pyrig.dev.tests.fixtures.__init__.py` is copied
+   `pyrig.rig.tests.fixtures.__init__.py` is copied
 2. **Package structure**: The `dev/tests/fixtures/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files
 

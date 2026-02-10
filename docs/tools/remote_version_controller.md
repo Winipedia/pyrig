@@ -11,10 +11,10 @@ links in README files.
 
 ```python
 # myapp/dev/tools/remote_version_controller.py
-from pyrig.dev.tools.remote_version_controller import (
+from pyrig.rig.tools.remote_version_controller import (
     RemoteVersionController as BaseRVC,
 )
-from pyrig.dev.tools.version_controller import VersionController
+from pyrig.rig.tools.version_controller import VersionController
 
 class RemoteVersionController(BaseRVC):
     @classmethod
