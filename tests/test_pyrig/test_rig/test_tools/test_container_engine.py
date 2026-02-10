@@ -8,6 +8,11 @@ from pyrig.rig.tools.container_engine import ContainerEngine
 class TestContainerEngine:
     """Test class."""
 
+    def test_get_dev_dependencies(self) -> None:
+        """Test method."""
+        result = ContainerEngine.L.get_dev_dependencies()
+        assert result == []
+
     def test_name(self) -> None:
         """Test method."""
         result = ContainerEngine.L.name()

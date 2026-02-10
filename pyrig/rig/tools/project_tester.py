@@ -36,6 +36,15 @@ class ProjectTester(Tool):
         return "pytest"
 
     @classmethod
+    def get_dev_dependencies(cls) -> list[str]:
+        """Get tool dependencies.
+
+        Returns:
+            List of tool dependencies.
+        """
+        return [*super().get_dev_dependencies(), "pytest-cov", "pytest-mock"]
+
+    @classmethod
     def get_coverage_threshold(cls) -> int:
         """Minimum test coverage percentage threshold."""
         return 90

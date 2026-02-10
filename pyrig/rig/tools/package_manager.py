@@ -27,7 +27,7 @@ class PackageManager(Tool):
 
     Example:
         >>> PackageManager.L.get_install_dependencies_args().run()
-        >>> PackageManager.L.get_add_dev_dependencies_args("pyrig-dev").run()
+        >>> PackageManager.L.get_add_dev_dependencies_args("ruff", "pytest").run()
     """
 
     @classmethod
@@ -38,6 +38,16 @@ class PackageManager(Tool):
             'uv'
         """
         return "uv"
+
+    @classmethod
+    def get_dev_dependencies(cls) -> list[str]:
+        """Get tool dependencies.
+
+        Returns:
+            List of tool dependencies.
+        """
+        # uv is a system dependency, so we don't have a dev dependency for it
+        return []
 
     @classmethod
     def get_init_project_args(cls, *args: str) -> Args:

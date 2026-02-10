@@ -50,6 +50,16 @@ class VersionController(Tool):
         return "git"
 
     @classmethod
+    def get_dev_dependencies(cls) -> list[str]:
+        """Get tool dependencies.
+
+        Returns:
+            List of tool dependencies.
+        """
+        # git is a system dependency, so we don't have a dev dependency for it
+        return []
+
+    @classmethod
     def get_default_branch(cls) -> str:
         """Get the default branch name.
 

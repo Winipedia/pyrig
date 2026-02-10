@@ -22,9 +22,9 @@ from pyrig.rig.cli import cli
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.licence import LicenceConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
-from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
@@ -290,7 +290,7 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def get_standard_dev_dependencies(cls) -> list[str]:
         """Get pyrig's standard dev dependencies (ruff, ty, pytest, etc.)."""
-        return sorted(Pyrigger.L.get_dev_dependencies())
+        return sorted(Tool.get_all_tool_dev_deps())
 
     @classmethod
     def get_dev_dependencies(cls) -> list[str]:

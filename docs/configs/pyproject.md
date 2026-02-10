@@ -54,7 +54,7 @@ graph LR
 
     B -.-> B1[Metadata, deps,<br/>scripts, classifiers]
     C -.-> C1[uv backend]
-    D -.-> D1[dev: pyrig-dev]
+    D -.-> D1[dev: tool deps]
     E -.-> E1[ruff, ty,<br/>pytest, bandit, rumdl]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -168,8 +168,9 @@ dependencies = [   # Runtime dependencies (preserved from existing config)
 
 [dependency-groups]
 dev = [                           # Development dependencies
-    "pyrig-dev",                  # Pyrig development tools (auto-added)
-    # User dev dependencies (sorted)
+    "ruff",                       # Each tool declares its own deps (auto-added)
+    "pytest",
+    # ... more tool deps (sorted)
 ]
 ```
 
@@ -178,8 +179,8 @@ dev = [                           # Development dependencies
 - `dependencies`: Required for package to run
 (read from existing pyproject.toml, normalized and sorted)
 - `dev`: Only needed for development (testing, linting, etc.)
-- `pyrig-dev` auto-added to dev dependencies to ensure development tools are
-  available
+- Each tool's dev dependencies are auto-added individually (e.g., ruff, pytest,
+  mkdocs). If you replace a tool, its deps are swapped automatically
 
 ### Build System
 
@@ -305,9 +306,10 @@ When dumping, pyrig normalizes dependencies:
 
 ### Standard Dev Dependencies
 
-Pyrig automatically adds:
-
-- `pyrig-dev`: Development tools
+Pyrig automatically adds dev dependencies declared by each tool (via
+`Tool.get_dev_dependencies()`). If you replace a tool, its deps are swapped
+automatically. Override `get_dev_dependencies()` in your tool subclass to
+customize what dev dependencies are added for your project.
 
 ## Usage
 
