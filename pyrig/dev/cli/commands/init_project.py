@@ -40,13 +40,13 @@ from rich.progress import (
 )
 
 from pyrig.dev.cli.subcommands import mkroot, mktests
-from pyrig.dev.management.package_manager import PackageManager
-from pyrig.dev.management.pre_committer import (
+from pyrig.dev.tools.package_manager import PackageManager
+from pyrig.dev.tools.pre_committer import (
     PreCommitter,
 )
-from pyrig.dev.management.project_tester import ProjectTester
-from pyrig.dev.management.pyrigger import Pyrigger
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.project_tester import ProjectTester
+from pyrig.dev.tools.pyrigger import Pyrigger
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.src.processes import Args
 from pyrig.src.string_ import make_name_from_obj
 

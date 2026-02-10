@@ -34,7 +34,7 @@ from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
 import pyrig
-from pyrig.dev.management.docs_builder import DocsBuilder
+from pyrig.dev.tools.docs_builder import DocsBuilder
 from pyrig.dev.utils.version_control import path_is_in_ignore
 from pyrig.src.modules.path import ModulePath
 

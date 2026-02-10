@@ -280,7 +280,7 @@ my-project/
 │   │   │   └── shared_subcommands.py # Shared commands
 │   │   ├── configs/                 # Config file managers
 │   │   │   └── __init__.py
-│   │   ├── management/              # Tools wrappers
+│   │   ├── tools/                   # Tools wrappers
 │   │   │   └── __init__.py
 │   │   └── tests/                   # Test infrastructure
 │   │       ├── __init__.py
@@ -308,7 +308,7 @@ my-project/
 │       │   │   └── test_shared_subcommands.py
 │       │   ├── test_configs/
 │       │   │   └── __init__.py
-│       │   ├── test_management/
+│       │   ├── test_tools/
 │       │   │   └── __init__.py
 │       │   └── test_tests/
 │       │       └── __init__.py

@@ -262,7 +262,7 @@ def get_priority(cls) -> float:
 - `PyprojectConfigFile`: 20 (must exist before other configs that read from it)
 - `ConfigsInitConfigFile`: 10 (creates package structure)
 - `FixturesInitConfigFile`: 10 (must exist before conftest.py)
-- `ManagementInitConfigFile`: 10 (creates management package structure)
+- `ToolsInitConfigFile`: 10 (creates tools package structure)
 - All others: 0 (no specific order required)
 
 #### How Initialization Works

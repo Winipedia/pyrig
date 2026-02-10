@@ -26,9 +26,9 @@ from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.dev.configs.workflows.release import ReleaseWorkflow
-from pyrig.dev.management.mdlinter import MDLinter
-from pyrig.dev.management.remote_version_controller import RemoteVersionController
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.mdlinter import MDLinter
+from pyrig.dev.tools.remote_version_controller import RemoteVersionController
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.dev.utils.urls import (
     get_codecov_url,
     get_pypi_badge_url,

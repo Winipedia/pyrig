@@ -24,9 +24,9 @@ from pyrig.dev.cli.commands.init_project import (
 )
 from pyrig.dev.cli.subcommands import init
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.management.package_manager import PackageManager
-from pyrig.dev.management.pyrigger import Pyrigger
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.package_manager import PackageManager
+from pyrig.dev.tools.pyrigger import Pyrigger
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.main import main
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.processes import Args
