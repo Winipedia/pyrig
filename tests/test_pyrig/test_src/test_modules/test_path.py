@@ -149,8 +149,7 @@ class TestModulePath:
             name = ModulePath.absolute_path_to_module_name(path)
             assert name == "test_module"
 
-    def test_absolute_path_to_module_name_relative(self) -> None:
-        """Test that relative paths are converted directly without resolving."""
+        # Test that relative paths are converted directly without resolving
         path = Path("video_vault/src/ui/pages/add_downloads.py")
         name = ModulePath.absolute_path_to_module_name(path)
         assert name == "video_vault.src.ui.pages.add_downloads"
