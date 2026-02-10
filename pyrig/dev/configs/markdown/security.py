@@ -10,7 +10,7 @@ See Also:
 from pathlib import Path
 
 from pyrig.dev.configs.base.markdown import MarkdownConfigFile
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.version_controller import VersionController
 
 SECURITY_TEMPLATE = """# Security Policy
 

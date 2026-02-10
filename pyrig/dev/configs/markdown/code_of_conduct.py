@@ -15,7 +15,7 @@ from pathlib import Path
 import requests
 
 from pyrig.dev.configs.base.markdown import MarkdownConfigFile
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 
 

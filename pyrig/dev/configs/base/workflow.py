@@ -18,7 +18,7 @@ The Workflow class provides:
 Key Features:
     - Type-safe workflow configuration using Python dicts
     - Reusable templates for common CI/CD patterns
-    - Integration with pyrig's management tools (Pyrigger, PackageManager, etc.)
+    - Integration with pyrig's tools (Pyrigger, PackageManager, etc.)
     - Support for multi-OS testing (Ubuntu, macOS, Windows)
     - Support for multi-Python version testing
     - Automatic caching for dependencies and build artifacts
@@ -38,16 +38,16 @@ from pyrig.dev.builders.base.base import BuilderConfigFile
 from pyrig.dev.cli.subcommands import build, protect_repo
 from pyrig.dev.configs.base.yml import YmlConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.management.container_engine import (
+from pyrig.dev.tools.container_engine import (
     ContainerEngine,
 )
-from pyrig.dev.management.dependency_auditor import DependencyAuditor
-from pyrig.dev.management.docs_builder import DocsBuilder
-from pyrig.dev.management.package_manager import PackageManager
-from pyrig.dev.management.pre_committer import PreCommitter
-from pyrig.dev.management.project_tester import ProjectTester
-from pyrig.dev.management.pyrigger import Pyrigger
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.dependency_auditor import DependencyAuditor
+from pyrig.dev.tools.docs_builder import DocsBuilder
+from pyrig.dev.tools.package_manager import PackageManager
+from pyrig.dev.tools.pre_committer import PreCommitter
+from pyrig.dev.tools.project_tester import ProjectTester
+from pyrig.dev.tools.pyrigger import Pyrigger
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.dev.utils.packages import src_pkg_is_pyrig
 from pyrig.src.string_ import (
     make_name_from_obj,
@@ -68,7 +68,7 @@ class Workflow(YmlConfigFile):
         - Defining workflow triggers (push, PR, schedule, workflow_run)
         - Managing artifacts and caching
         - Setting up Python environments with uv
-        - Running pyrig management commands
+        - Running pyrig commands
 
     Subclasses should:
         1. Implement get_jobs() to define workflow jobs
@@ -684,7 +684,7 @@ class Workflow(YmlConfigFile):
             patch_version: Whether to patch the version.
 
         Returns:
-            List with checkout and project management setup steps.
+            List with checkout and project setup steps.
         """
         if python_version is None:
             python_version = str(
@@ -1143,7 +1143,7 @@ class Workflow(YmlConfigFile):
         python_version: str,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that sets up the project management tool (uv).
+        """Create a step that sets up the project package manager (uv).
 
         Args:
             python_version: Python version to configure.

@@ -4,8 +4,8 @@ Provides a utility function to detect if code is executing within a GitHub Actio
 workflow, enabling environment-aware behavior in CI/CD pipelines.
 
 See Also:
-    pyrig.dev.management.version_controller: Git command wrappers and repo info
-    pyrig.dev.management.remote_version_controller: GitHub URL construction
+    pyrig.dev.tools.version_controller: Git command wrappers and repo info
+    pyrig.dev.tools.remote_version_controller: GitHub URL construction
 """
 
 import logging

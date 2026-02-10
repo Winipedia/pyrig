@@ -9,7 +9,7 @@ Functions:
     get_pypi_badge_url: Construct PyPI version badge URL
 """
 
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.version_controller import VersionController
 
 
 def get_codecov_url() -> str:

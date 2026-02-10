@@ -25,7 +25,7 @@ from typing import Any
 
 from pyrig.dev.configs.base.workflow import Workflow
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.version_controller import VersionController
 
 
 class BuildWorkflow(Workflow):

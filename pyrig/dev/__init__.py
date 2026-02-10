@@ -7,7 +7,7 @@ Subpackages:
     builders: Artifact building (PyInstaller executables, distributions)
     cli: Command-line interface and subcommands
     configs: Configuration file generators and managers
-    management: Tool wrappers (uv, git, ruff, pytest, etc.)
+    tools: Tool wrappers (uv, git, ruff, pytest, etc.)
     tests: Testing infrastructure and pytest fixtures
     utils: Development utilities and helpers
 

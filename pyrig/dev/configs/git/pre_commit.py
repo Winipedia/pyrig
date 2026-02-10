@@ -15,10 +15,10 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.dev.configs.base.toml import TomlConfigFile
-from pyrig.dev.management.linter import Linter
-from pyrig.dev.management.mdlinter import MDLinter
-from pyrig.dev.management.security_checker import SecurityChecker
-from pyrig.dev.management.type_checker import TypeChecker
+from pyrig.dev.tools.linter import Linter
+from pyrig.dev.tools.mdlinter import MDLinter
+from pyrig.dev.tools.security_checker import SecurityChecker
+from pyrig.dev.tools.type_checker import TypeChecker
 from pyrig.src.processes import (
     Args,
 )
@@ -46,7 +46,7 @@ class PrekConfigFile(TomlConfigFile):
         Must run `prek install` after generating config.
 
     See Also:
-        pyrig.dev.management.base.base.Args
+        pyrig.dev.tools.base.base.Args
         prek documentation: https://github.com/j178/prek
     """
 
