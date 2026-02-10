@@ -65,7 +65,7 @@ graph TD
 **Note**: `BuilderConfigFile` is a special subclass for artifact generation
 (e.g., creating executables). It repurposes the ConfigFile interface for build
 operations rather than configuration file management. Builders are discovered
-separately from `pyrig.dev.builders` and invoked via `pyrig build`. See
+separately from `pyrig.rig.builders` and invoked via `pyrig build`. See
 [Builder Documentation](../builders/index.md) for details.
 
 ### Required Methods
@@ -199,7 +199,7 @@ When configs are missing or incorrect, the system intelligently merges them:
 config file and override the `_get_configs()` method. Keep the class name the
 same (filename is derived from it) unless you also override `get_filename()`.
 Import the base class using:
-`from pyrig.dev.configs.some.config_file import MainConfigFile as BaseMainCF`
+`from pyrig.rig.configs.some.config_file import MainConfigFile as BaseMainCF`
 and subclass it.
 
 ## Automatic Discovery
@@ -209,7 +209,7 @@ on pyrig:
 
 ```mermaid
 graph LR
-    A[pyrig.dev.configs] --> D[All discovered]
+    A[pyrig.rig.configs] --> D[All discovered]
     B[pkg_a.dev.configs] --> D
     C[myapp.dev.configs] --> D
     D --> E[make_project_root called]
@@ -330,7 +330,7 @@ use this as their base (directly or indirectly via format-specific subclasses).
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.dict_cf import DictConfigFile
+from pyrig.rig.configs.base.dict_cf import DictConfigFile
 
 class MyConfigFile(DictConfigFile):
     @classmethod
@@ -368,7 +368,7 @@ Intermediate base class for list-based configuration files (e.g., `.gitignore`).
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.list_cf import ListConfigFile
+from pyrig.rig.configs.base.list_cf import ListConfigFile
 
 class MyListConfigFile(ListConfigFile):
     @classmethod
@@ -406,7 +406,7 @@ For JSON configuration files using Python's json module:
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.json import JsonConfigFile
+from pyrig.rig.configs.base.json import JsonConfigFile
 
 class MyConfigFile(JsonConfigFile):
     @classmethod
@@ -427,7 +427,7 @@ For YAML configuration files using PyYAML:
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.yaml import YamlConfigFile
+from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
     @classmethod
@@ -448,7 +448,7 @@ For TOML files using tomlkit (preserves formatting):
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.toml import TomlConfigFile
+from pyrig.rig.configs.base.toml import TomlConfigFile
 
 class MyConfigFile(TomlConfigFile):
     @classmethod
@@ -473,7 +473,7 @@ present.
 
 ```python
 from pathlib import Path
-from pyrig.dev.configs.base.string_ import StringConfigFile
+from pyrig.rig.configs.base.string_ import StringConfigFile
 
 class MyConfigFile(StringConfigFile):
     @classmethod
@@ -499,7 +499,7 @@ For Python source files:
 
 ```python
 from pathlib import Path
-from pyrig.dev.configs.base.python import PythonConfigFile
+from pyrig.rig.configs.base.python import PythonConfigFile
 
 class MyConfigFile(PythonConfigFile):
     @classmethod
@@ -519,7 +519,7 @@ For GitHub Actions workflow files in `.github/workflows/`:
 
 ```python
 from typing import Any
-from pyrig.dev.configs.base.workflow import Workflow
+from pyrig.rig.configs.base.workflow import Workflow
 
 class MyWorkflow(Workflow):
     @classmethod
@@ -556,7 +556,7 @@ Copies entire module content from pyrig to your project:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.copy_module import CopyModuleConfigFile
+from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 from pyrig import main
 
 class MainConfigFile(CopyModuleConfigFile):
@@ -573,10 +573,10 @@ Copies only the docstring, allowing custom implementation:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.copy_module_docstr import (
+from pyrig.rig.configs.base.copy_module_docstr import (
     CopyModuleOnlyDocstringConfigFile,
 )
-from pyrig.dev.cli import shared_subcommands
+from pyrig.rig.cli import shared_subcommands
 
 class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     @classmethod
@@ -592,8 +592,8 @@ Creates `__init__.py` files with docstrings:
 
 ```python
 from types import ModuleType
-from pyrig.dev.configs.base.init import InitConfigFile
-from pyrig.dev import configs
+from pyrig.rig.configs.base.init import InitConfigFile
+from pyrig.rig import configs
 
 class ConfigsInitConfigFile(InitConfigFile):
     @classmethod
@@ -602,7 +602,7 @@ class ConfigsInitConfigFile(InitConfigFile):
 ```
 
 Creates `myapp/dev/configs/__init__.py` with the docstring from
-`pyrig.dev.configs`.
+`pyrig.rig.configs`.
 
 ### MirrorTestConfigFile
 
@@ -610,7 +610,7 @@ Creates test files that mirror source module structure with skeleton tests:
 
 ```python
 from types import ModuleType
-from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 import myapp.core
 
 class CoreMirrorTest(MirrorTestConfigFile):
@@ -632,7 +632,7 @@ used. For example, to change the skeleton for test functions:
 
 ```python
 # myapp/dev/tests/mirror_test.py
-from pyrig.dev.tests.mirror_test import MirrorTestConfigFile as BaseMirrorTest
+from pyrig.rig.tests.mirror_test import MirrorTestConfigFile as BaseMirrorTest
 
 class MirrorTestConfigFile(BaseMirrorTest):
     @classmethod
@@ -710,7 +710,7 @@ def is_correct(cls) -> bool:
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.yaml import YamlConfigFile
+from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class DatabaseConfigFile(YamlConfigFile):
     """Configuration for database connection settings."""

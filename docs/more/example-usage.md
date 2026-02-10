@@ -60,7 +60,7 @@ Add a shared logging configuration that all microservices will inherit.
 
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.yaml import YamlConfigFile
+from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 
 class LoggingConfigFile(YamlConfigFile):
@@ -116,7 +116,7 @@ Customize documentation theme with custom branding.
 
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.docs.mkdocs import MkdocsConfigFile as BaseMkdocsCF
+from pyrig.rig.configs.docs.mkdocs import MkdocsConfigFile as BaseMkdocsCF
 
 
 class MkdocsConfigFile(BaseMkdocsCF):
@@ -174,7 +174,7 @@ Add shared dependencies and settings.
 """Base pyproject.toml with additional dependencies."""
 
 from typing import Any
-from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyprojectCF
+from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyprojectCF
 
 
 class PyprojectConfigFile(BasePyprojectCF):
@@ -346,7 +346,7 @@ Each service can still customize while keeping shared standards.
 
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.yaml import YamlConfigFile
+from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 
 class AuthConfigFile(YamlConfigFile):
@@ -536,7 +536,7 @@ Verify everything works if you want:
 ```bash
 # Verify config discovery
 uv run python -c "
-from pyrig.dev.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.base import ConfigFile
 configs = ConfigFile.get_all_subclasses()
 print(f'Found {len(configs)} config files')
 for c in configs:

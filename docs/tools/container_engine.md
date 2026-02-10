@@ -15,7 +15,7 @@ hardcoded GitHub Actions (not the `.L` pattern):
 
 ```python
 # myapp/dev/tools/container_engine.py
-from pyrig.dev.tools.container_engine import ContainerEngine as BaseCE
+from pyrig.rig.tools.container_engine import ContainerEngine as BaseCE
 
 class ContainerEngine(BaseCE):
     @classmethod
@@ -30,7 +30,7 @@ override this:
 
 ```python
 # myapp/dev/configs/base/workflow.py
-from pyrig.dev.configs.base.workflow import Workflow as BaseWorkflow
+from pyrig.rig.configs.base.workflow import Workflow as BaseWorkflow
 
 class Workflow(BaseWorkflow):
     @classmethod

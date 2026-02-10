@@ -235,7 +235,7 @@ To create your own workflow, subclass `Workflow` and implement `get_jobs()`:
 ```python
 # myapp/dev/configs/workflows/custom.py
 from typing import Any
-from pyrig.dev.configs.base.workflow import Workflow
+from pyrig.rig.configs.base.workflow import Workflow
 
 class CustomWorkflow(Workflow):
     """Custom workflow that runs on manual trigger."""

@@ -182,7 +182,7 @@ dependencies (LICENSE, pyproject.toml, `__init__.py` files).
 ```python
 from pathlib import Path
 from typing import Any
-from pyrig.dev.configs.base.yaml import YamlConfigFile
+from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
     @classmethod

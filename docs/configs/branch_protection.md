@@ -245,7 +245,7 @@ To customize branch protection rules, subclass `RepoProtectionConfigFile`:
 
 ```python
 from typing import Any
-from pyrig.dev.configs.git.branch_protection import RepoProtectionConfigFile
+from pyrig.rig.configs.git.branch_protection import RepoProtectionConfigFile
 
 class MyRepoProtectionConfigFile(RepoProtectionConfigFile):
     @classmethod

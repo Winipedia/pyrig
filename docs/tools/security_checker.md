@@ -10,7 +10,7 @@ passwords, and unsafe deserialization.
 
 ```python
 # myapp/dev/tools/security_checker.py
-from pyrig.dev.tools.security_checker import SecurityChecker as BaseSC
+from pyrig.rig.tools.security_checker import SecurityChecker as BaseSC
 from pyrig.src.processes import Args
 
 class SecurityChecker(BaseSC):

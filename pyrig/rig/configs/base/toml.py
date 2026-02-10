@@ -1,0 +1,139 @@
+"""TOML configuration file management.
+
+Provides TomlConfigFile base class using tomlkit for parsing and writing with
+formatting preservation. Arrays formatted as multiline for readability.
+
+Example:
+    >>> from pathlib import Path
+    >>> from typing import Any
+    >>> from pyrig.rig.configs.base.toml import TomlConfigFile
+    >>>
+    >>> class MyConfigFile(TomlConfigFile):
+    ...     @classmethod
+    ...     def get_parent_path(cls) -> Path:
+    ...         return Path()
+    ...
+    ...     @classmethod
+    ...     def _get_configs(cls) -> dict[str, Any]:
+    ...         return {"tool": {"myapp": {"dependencies": ["dep1", "dep2"]}}}
+"""
+
+from typing import Any
+
+import tomlkit
+from tomlkit.items import Table
+
+from pyrig.rig.configs.base.dict_cf import DictConfigFile
+
+
+class TomlConfigFile(DictConfigFile):
+    """Base class for TOML configuration files.
+
+    Uses tomlkit for parsing/writing with formatting preservation. Arrays formatted
+    as multiline, key order preserved.
+
+    Subclasses must implement:
+        - `get_parent_path`: Directory containing the TOML file
+        - `_get_configs`: Expected TOML configuration structure
+
+    Example:
+        >>> class MyConfigFile(TomlConfigFile):
+        ...     @classmethod
+        ...     def get_parent_path(cls) -> Path:
+        ...         return Path()
+        ...
+        ...     @classmethod
+        ...     def _get_configs(cls) -> dict[str, Any]:
+        ...         return {"tool": {"myapp": {"version": "1.0.0"}}}
+    """
+
+    @classmethod
+    def _load(cls) -> dict[str, Any]:
+        """Load and parse TOML file using tomlkit.parse.
+
+        Returns:
+            Parsed TOML as tomlkit.TOMLDocument (dict-like with formatting info).
+        """
+        return tomlkit.parse(cls.get_path().read_text(encoding="utf-8"))
+
+    @classmethod
+    def _dump(cls, config: dict[str, Any]) -> None:
+        """Write configuration to TOML with pretty formatting.
+
+        Args:
+            config: Configuration dict to write.
+
+        Raises:
+            TypeError: If config is not a dict (TOML requires top-level table).
+        """
+        if not isinstance(config, dict):
+            msg = f"Cannot dump {config} to toml file."
+            raise TypeError(msg)
+        cls.pretty_dump(config)
+
+    @classmethod
+    def prettify_value(cls, value: Any) -> Any:
+        """Recursively prettify a value for TOML output.
+
+        Lists of dicts become arrays of tables (``[[section]]`` syntax).
+        Other lists become multiline arrays. Dicts become tables with recursively
+        prettified values. Scalars are returned as-is.
+
+        Args:
+            value: Value to prettify (list, dict, or scalar).
+
+        Returns:
+            Prettified tomlkit value.
+        """
+        if isinstance(value, list):
+            if value and all(isinstance(item, dict) for item in value):
+                aot = tomlkit.aot()
+                for item in value:
+                    aot.append(cls.prettify_dict(item))
+                return aot
+            arr = tomlkit.array().multiline(multiline=True)
+            for item in value:
+                arr.append(cls.prettify_value(item))
+            return arr
+        if isinstance(value, dict):
+            return cls.prettify_dict(value)
+        return value
+
+    @classmethod
+    def prettify_dict(cls, config: dict[str, Any]) -> Table:
+        """Convert dict to tomlkit table with multiline arrays.
+
+        Recursively processes config: lists of dicts become arrays of tables
+        (``[[section]]`` syntax), other lists become multiline arrays, dicts become
+        nested tables, scalars added as-is.
+
+        Args:
+            config: Configuration dict to prettify.
+
+        Returns:
+            tomlkit.table() with formatted arrays.
+        """
+        t = tomlkit.table()
+        for k, v in config.items():
+            t.add(k, cls.prettify_value(v))
+        return t
+
+    @classmethod
+    def pretty_dump(cls, config: dict[str, Any]) -> None:
+        """Write configuration to TOML with pretty formatting.
+
+        Converts config to prettified tomlkit table via prettify_dict(), then writes
+        with multiline arrays and preserved key order.
+
+        Args:
+            config: Configuration dict to write.
+        """
+        # turn all lists into multiline arrays
+        config = cls.prettify_dict(config)
+        with cls.get_path().open("w") as f:
+            tomlkit.dump(config, f, sort_keys=False)
+
+    @classmethod
+    def get_file_extension(cls) -> str:
+        """Return "toml"."""
+        return "toml"

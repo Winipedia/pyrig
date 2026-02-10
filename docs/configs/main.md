@@ -11,7 +11,7 @@ Creates a main.py file that:
 - Provides an empty `main()` function template for your application logic
 - Copies the template implementation from `pyrig.main`
 - Gets automatically discovered and registered as a CLI command by
-  `pyrig.dev.cli.cli`
+  `pyrig.rig.cli.cli`
 - Automatically cleans up legacy root-level main.py files
 - Allows customization while maintaining required structure (`def main` and
   `if __name__ == "__main__":`)
@@ -201,7 +201,7 @@ The main.py file integrates with pyrig's CLI system. The CLI class discovers and
 registers commands from multiple sources:
 
 ```text
-CLI class (pyrig.dev.cli.cli)
+CLI class (pyrig.rig.cli.cli)
   ├─> main() from {package_name}/main.py (registered as "main" command)
   ├─> Subcommands (from {package_name}/dev/cli/subcommands.py)
   └─> Shared subcommands (from {package_name}/dev/cli/shared_subcommands.py)

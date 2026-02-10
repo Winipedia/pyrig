@@ -6,7 +6,7 @@ images.
 ## Overview
 
 **File**: `.github/workflows/build.yml`
-**Class**: `BuildWorkflow` in `pyrig.dev.configs.workflows.build`  
+**Class**: `BuildWorkflow` in `pyrig.rig.configs.workflows.build`  
 **Inherits**: `Workflow`
 
 The build workflow runs after successful health checks on the main branch. It

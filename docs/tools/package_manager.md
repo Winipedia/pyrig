@@ -10,7 +10,7 @@ setuptools with 10-100x faster performance.
 
 ```python
 # myapp/dev/tools/package_manager.py
-from pyrig.dev.tools.package_manager import PackageManager as BasePM
+from pyrig.rig.tools.package_manager import PackageManager as BasePM
 from pyrig.src.processes import Args
 
 class PackageManager(BasePM):

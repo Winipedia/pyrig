@@ -73,7 +73,7 @@ Because it uses `TypeChecker.L` (not `TypeChecker` directly), if you subclass
 
 ```python
 # myapp/dev/tools/type_checker.py
-from pyrig.dev.tools.type_checker import TypeChecker as BaseTypeChecker
+from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
     @classmethod
@@ -156,7 +156,7 @@ installs Podman. You must **also** subclass the workflow:
 
 ```python
 # myapp/dev/configs/workflows/build.py
-from pyrig.dev.configs.workflows.build import BuildWorkflow as BaseBuildWorkflow
+from pyrig.rig.configs.workflows.build import BuildWorkflow as BaseBuildWorkflow
 
 class BuildWorkflow(BaseBuildWorkflow):
     @classmethod
@@ -174,7 +174,7 @@ class BuildWorkflow(BaseBuildWorkflow):
 
 ```python
 # myapp/dev/tools/linter.py
-from pyrig.dev.tools.linter import Linter as BaseLinter
+from pyrig.rig.tools.linter import Linter as BaseLinter
 from pyrig.src.processes import Args
 
 class Linter(BaseLinter):
@@ -188,7 +188,7 @@ class Linter(BaseLinter):
 
 ```python
 # myapp/dev/tools/type_checker.py
-from pyrig.dev.tools.type_checker import TypeChecker as BaseTypeChecker
+from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
     @classmethod
@@ -201,7 +201,7 @@ class TypeChecker(BaseTypeChecker):
 ```python
 # myapp/dev/configs/my_config.py
 from pathlib import Path
-from pyrig.dev.configs.base.toml import TomlConfigFile
+from pyrig.rig.configs.base.toml import TomlConfigFile
 
 class MyAppConfigFile(TomlConfigFile):
     @classmethod
@@ -220,7 +220,7 @@ runs.
 
 ```python
 # myapp/dev/configs/pyproject.py
-from pyrig.dev.configs.pyproject import PyprojectConfigFile as BasePyproject
+from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyproject
 
 class PyprojectConfigFile(BasePyproject):
     @classmethod

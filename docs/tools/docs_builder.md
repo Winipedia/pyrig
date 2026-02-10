@@ -10,7 +10,7 @@ for themes, plugins, and GitHub Pages deployment.
 
 ```python
 # myapp/dev/tools/docs_builder.py
-from pyrig.dev.tools.docs_builder import DocsBuilder as BaseDB
+from pyrig.rig.tools.docs_builder import DocsBuilder as BaseDB
 from pyrig.src.processes import Args
 
 class DocsBuilder(BaseDB):
