@@ -207,3 +207,17 @@ class PackageManager(Tool):
             Args for 'uv version --short'.
         """
         return cls.get_version_args("--short", *args)
+
+    @classmethod
+    def get_no_auto_install_env_var(cls) -> str:
+        """Get environment variable name for disabling auto-install.
+
+        E.g. uv sync automatically if the venv is not in sync with the lock file
+        if you do uv run or uv version --bump or similar.
+        We do not want that in some cases so we can set this environment variable
+        to disable that behaviour globally for the shell session.
+
+        Returns:
+            'UV_NO_SYNC'
+        """
+        return "UV_NO_SYNC"

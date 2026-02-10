@@ -227,7 +227,10 @@ class Workflow(YmlConfigFile):
         Returns:
             Dict of environment variables.
         """
-        return {"PYTHONDONTWRITEBYTECODE": 1, "UV_NO_SYNC": 1}
+        return {
+            "PYTHONDONTWRITEBYTECODE": 1,
+            PackageManager.L.get_no_auto_install_env_var(): 1,
+        }
 
     # Workflow Conventions
     # ----------------------------------------------------------------------------
