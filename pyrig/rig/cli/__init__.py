@@ -3,8 +3,8 @@
 Provides complete CLI infrastructure for pyrig and pyrig-based projects with
 dynamic command discovery from multiple sources:
 
-1. Project-specific commands from `<package>.dev.cli.subcommands`
-2. Shared commands from `<package>.dev.cli.shared_subcommands` across the
+1. Project-specific commands from `<package>.rig.cli.subcommands`
+2. Shared commands from `<package>.rig.cli.shared_subcommands` across the
    dependency chain
 3. Main entry point from `<package>.main`
 

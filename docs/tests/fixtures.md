@@ -42,7 +42,7 @@ sequenceDiagram
     P->>D: Find all packages depending on pyrig
     D-->>P: [pyrig, pkg_a, pkg_b, ...]
     P->>F: Find fixtures modules in each package
-    F-->>P: [pyrig.rig.tests.fixtures, pkg_a.dev.tests.fixtures, ...]
+    F-->>P: [pyrig.rig.tests.fixtures, pkg_a.rig.tests.fixtures, ...]
     P->>P: Register all Python files as pytest plugins
     P-->>T: All fixtures available
 
@@ -118,7 +118,7 @@ Create fixtures in your package's fixtures module:
 
 ```text
 myapp/
-└── dev/
+└── rig/
     └── tests/
         └── fixtures/
             ├── __init__.py

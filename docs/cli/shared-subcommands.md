@@ -1,7 +1,7 @@
 # Shared Subcommands
 
 Shared subcommands are CLI commands available across all packages in the pyrig
-ecosystem. They are defined in `<package>/dev/cli/shared_subcommands.py` and
+ecosystem. They are defined in `<package>/rig/cli/shared_subcommands.py` and
 automatically discovered in all dependent packages.
 
 ## Purpose
@@ -14,7 +14,7 @@ Shared subcommands enable cross-package functionality:
 
 ## Defining Shared Commands
 
-Add a public function to your package's `dev/cli/shared_subcommands.py` module.
+Add a public function to your package's `rig/cli/shared_subcommands.py` module.
 Each public function is automatically discovered and registered as a Typer CLI
 command.
 
@@ -40,7 +40,7 @@ Shared commands are discovered through dependency graph traversal:
 
 1. **Extract current package name** from `sys.argv[0]`
 2. **Traverse the dependency chain** from pyrig to the current package
-3. **Import each package's** `dev.cli.shared_subcommands` module
+3. **Import each package's** `rig.cli.shared_subcommands` module
 4. **Register all public functions** from each module
 
 Commands are registered in dependency order (pyrig first). If multiple packages
@@ -52,8 +52,8 @@ graph TD
     B -->|depended on by| C[myplugin]
 
     D[pyrig.rig.cli.shared_subcommands] -->|version| E[Commands]
-    F[myapp.dev.cli.shared_subcommands] -->|status| E
-    G[myplugin.dev.cli.shared_subcommands] -->|health| E
+    F[myapp.rig.cli.shared_subcommands] -->|status| E
+    G[myplugin.rig.cli.shared_subcommands] -->|health| E
 
     H[uv run myplugin version] --> E
 
@@ -79,8 +79,8 @@ pyrig
 Running `uv run myplugin version` discovers shared commands from:
 
 - `pyrig.rig.cli.shared_subcommands`
-- `myapp.dev.cli.shared_subcommands`
-- `myplugin.dev.cli.shared_subcommands`
+- `myapp.rig.cli.shared_subcommands`
+- `myplugin.rig.cli.shared_subcommands`
 
 ## Context-Aware Commands
 
@@ -93,7 +93,7 @@ on which project invoked them.
 
 To add a shared command to your package:
 
-1. **Create the module** at `dev/cli/shared_subcommands.py` (created
+1. **Create the module** at `rig/cli/shared_subcommands.py` (created
    automatically by `uv run pyrig mkroot`)
 2. **Define public functions** — each becomes a CLI command
 3. **Use `get_project_name_from_argv()`** to adapt behavior to the calling
@@ -153,7 +153,7 @@ levels.
 
 | Aspect    | Subcommands              | Shared Subcommands               |
 | --------- | ------------------------ | -------------------------------- |
-| Location  | `dev/cli/subcommands.py` | `dev/cli/shared_subcommands.py`  |
+| Location  | `rig/cli/subcommands.py` | `rig/cli/shared_subcommands.py`  |
 | Scope     | Package-specific         | Cross-package                    |
 | Discovery | Current package only     | All packages in dependency chain |
 | Use case  | Project operations       | Ecosystem-wide utilities         |

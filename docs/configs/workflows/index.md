@@ -101,7 +101,7 @@ The workflow will exist but never execute.
 
 ### Modifying Workflows
 
-1. Edit the workflow class in `myapp/dev/configs/workflows/`
+1. Edit the workflow class in `myapp/rig/configs/workflows/`
 2. Override methods like `get_jobs()`, `get_workflow_triggers()`, etc.
 3. Run `uv run pyrig mkroot` to regenerate YAML
 

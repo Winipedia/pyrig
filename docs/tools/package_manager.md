@@ -9,7 +9,7 @@ setuptools with 10-100x faster performance.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/package_manager.py
+# myapp/rig/tools/package_manager.py
 from pyrig.rig.tools.package_manager import PackageManager as BasePM
 from pyrig.src.processes import Args
 

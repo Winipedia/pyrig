@@ -10,7 +10,7 @@ links in README files.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/remote_version_controller.py
+# myapp/rig/tools/remote_version_controller.py
 from pyrig.rig.tools.remote_version_controller import (
     RemoteVersionController as BaseRVC,
 )

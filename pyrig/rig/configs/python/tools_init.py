@@ -1,6 +1,6 @@
-"""Configuration for {package_name}/dev/tools/__init__.py.
+"""Configuration for {package_name}/rig/tools/__init__.py.
 
-Generates {package_name}/dev/tools/__init__.py with pyrig.rig.tools docstring
+Generates {package_name}/rig/tools/__init__.py with pyrig.rig.tools docstring
 for tool wrapper modules (uv, ruff, pyinstaller, etc.).
 
 See Also:
@@ -15,19 +15,19 @@ from pyrig.rig.configs.base.init import InitConfigFile
 
 
 class ToolsInitConfigFile(InitConfigFile):
-    """Manages {package_name}/dev/tools/__init__.py.
+    """Manages {package_name}/rig/tools/__init__.py.
 
     Generates __init__.py with pyrig.rig.tools docstring for tool wrapper
     modules that provide Python interfaces to CLI tools.
 
     Examples:
-        Generate {package_name}/dev/tools/__init__.py::
+        Generate {package_name}/rig/tools/__init__.py::
 
             ToolsInitConfigFile()
 
         Add tool wrappers::
 
-            # {package_name}/dev/tools/mytool.py
+            # {package_name}/rig/tools/mytool.py
             class MyTool(Tool):
                 '''MyTool wrapper.'''
                 @classmethod

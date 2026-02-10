@@ -26,8 +26,8 @@ myapp/                          tests/
 │   │   └── utils.py                        ├── test_parser.py
 │   └── api/                                └── test_utils.py
 │       └── client.py                   └── test_api/
-└── dev/                                    └── test_client.py
-    └── configs/                    └── test_dev/
+└── rig/                                    └── test_client.py
+    └── configs/                    └── test_rig/
         └── base.py                     └── test_configs/
                                             └── test_base.py
 ```
