@@ -34,6 +34,15 @@ class RemoteVersionController(Tool):
         return "github"
 
     @classmethod
+    def get_dev_dependencies(cls) -> list[str]:
+        """Get tool dependencies.
+
+        Returns:
+            List of tool dependencies.
+        """
+        return ["pygithub"]
+
+    @classmethod
     def get_url_base(cls) -> str:
         """Get the base URL for GitHub.
 

@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 # Allows alphanumeric, underscore, hyphen, and period (for namespace packages).
 # Performance: compiled once at module load vs. per-call compilation.
 # Used by DependencyGraph and PyprojectConfigFile.L.
-PACKAGE_REQ_NAME_SPLIT_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
+PACKAGE_REQ_NAME_SPLIT_PATTERN = re.compile(r"[^a-zA-Z0-9_.\[\]-]")
 
 
 def create_package(path: Path) -> ModuleType:

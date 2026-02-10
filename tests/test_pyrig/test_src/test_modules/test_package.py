@@ -178,7 +178,8 @@ class TestDependencyGraph:
 
         # Test with extras
         result = DependencyGraph.parse_pkg_name_from_req("package[extra]>=1.0")
-        assert result == "package", f"Expected 'package', got {result}"
+        expected = "package[extra]"
+        assert result == expected, f"Expected: {expected}, got {result}"
 
         # Test empty string
         result = DependencyGraph.parse_pkg_name_from_req("")
