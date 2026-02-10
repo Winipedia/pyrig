@@ -13,7 +13,7 @@ from pathlib import Path
 
 from pyrig.dev.configs.base.string_ import StringConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.management.package_manager import PackageManager
+from pyrig.dev.tools.package_manager import PackageManager
 from pyrig.main import main
 
 
@@ -36,7 +36,7 @@ class ContainerfileConfigFile(StringConfigFile):
 
     See Also:
         pyrig.dev.configs.pyproject.PyprojectConfigFile
-        pyrig.dev.management.package_manager.PackageManager
+        pyrig.dev.tools.package_manager.PackageManager
     """
 
     @classmethod

@@ -3,7 +3,7 @@
 from github.Repository import Repository
 
 from pyrig.dev.configs.git.branch_protection import RepoProtectionConfigFile
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.dev.utils.github_api import (
     create_or_update_ruleset,
     get_all_rulesets,

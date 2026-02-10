@@ -8,7 +8,7 @@ from pyrig.dev.cli.subcommands import (
     mktests,
     protect_repo,
 )
-from pyrig.dev.management.pyrigger import Pyrigger
+from pyrig.dev.tools.pyrigger import Pyrigger
 
 
 def test_mkroot() -> None:

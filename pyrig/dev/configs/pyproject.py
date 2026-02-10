@@ -21,11 +21,11 @@ from packaging.version import Version
 from pyrig.dev.cli import cli
 from pyrig.dev.configs.base.toml import TomlConfigFile
 from pyrig.dev.configs.licence import LicenceConfigFile
-from pyrig.dev.management.project_tester import ProjectTester
-from pyrig.dev.management.pyrigger import Pyrigger
-from pyrig.dev.management.remote_version_controller import RemoteVersionController
-from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
+from pyrig.dev.tools.project_tester import ProjectTester
+from pyrig.dev.tools.pyrigger import Pyrigger
+from pyrig.dev.tools.remote_version_controller import RemoteVersionController
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.dev.utils.resources import return_resource_content_on_fetch_error
 from pyrig.dev.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.modules.package import (

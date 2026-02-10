@@ -3,7 +3,7 @@
 from contextlib import chdir
 from pathlib import Path
 
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.dev.utils.version_control import (
     get_github_repo_token,
     path_is_in_ignore,

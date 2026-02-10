@@ -12,7 +12,7 @@ from pathlib import Path
 
 from pyrig.dev.configs.base.markdown import MarkdownConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
-from pyrig.dev.management.docs_builder import DocsBuilder
+from pyrig.dev.tools.docs_builder import DocsBuilder
 
 
 class ApiConfigFile(MarkdownConfigFile):

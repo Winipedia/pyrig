@@ -34,7 +34,7 @@ by subclassing the Tool wrapper classes. pyrig uses the `.L` (leaf) property
 internally, so your subclasses automatically apply everywhere. However, this
 requires significant additional work as tools are interconnected with configs,
 workflows, and CI/CD pipelines. See
-[Replacing Tools](../management/architecture.md#tool-replacement-complexity) for
+[Replacing Tools](../tools/architecture.md#tool-replacement-complexity) for
 details.
 
 ## Runtime Dev Folder

@@ -39,9 +39,9 @@ from pyrig.dev.configs.pyproject import (
     PyprojectConfigFile,
 )
 from pyrig.dev.configs.python.dot_scratch import DotScratchConfigFile
-from pyrig.dev.management.package_manager import PackageManager
-from pyrig.dev.management.version_controller import VersionController
 from pyrig.dev.tests.mirror_test import MirrorTestConfigFile
+from pyrig.dev.tools.package_manager import PackageManager
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.dev.utils.packages import (
     find_packages,
     get_namespace_packages,

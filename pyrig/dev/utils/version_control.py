@@ -23,7 +23,7 @@ from pathlib import Path
 import pathspec
 
 from pyrig.dev.configs.dot_env import DotEnvConfigFile
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.version_controller import VersionController
 
 logger = logging.getLogger(__name__)
 

@@ -15,7 +15,7 @@ from typing import Any
 from pyrig.dev.configs.base.json import JsonConfigFile
 from pyrig.dev.configs.pyproject import PyprojectConfigFile
 from pyrig.dev.configs.workflows.health_check import HealthCheckWorkflow
-from pyrig.dev.management.version_controller import VersionController
+from pyrig.dev.tools.version_controller import VersionController
 from pyrig.dev.utils.github_api import create_or_update_ruleset, get_repo
 from pyrig.dev.utils.version_control import get_github_repo_token
 
