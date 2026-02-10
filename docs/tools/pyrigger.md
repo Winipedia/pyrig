@@ -6,7 +6,7 @@ its own commands programmatically.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/pyrigger.py
+# myapp/rig/tools/pyrigger.py
 from collections.abc import Callable
 from typing import Any
 from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger

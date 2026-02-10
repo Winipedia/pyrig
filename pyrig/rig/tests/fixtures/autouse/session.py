@@ -15,7 +15,7 @@ Fixtures:
     assert_no_unit_test_package_usage: No unittest usage (pytest only).
     assert_dependencies_are_up_to_date: Dependencies current via uv lock/sync.
     assert_src_runs_without_dev_deps: Source runs without dev dependencies.
-    assert_src_does_not_use_dev: Source doesn't import dev code.
+    assert_src_does_not_use_rig: Source doesn't import rig code.
     assert_project_mgt_is_up_to_date: uv up to date (local only).
 """
 
@@ -161,7 +161,7 @@ def assert_all_src_code_in_one_package() -> None:
     """Verify source code is in a single package with expected structure.
 
     Checks that only expected top-level packages exist (source and tests)
-    and source package has exactly dev, src, resources subpackages and main module.
+    and source package has exactly rig, src, resources subpackages and main module.
 
     Raises:
         AssertionError: If unexpected packages/subpackages/submodules found.
@@ -184,7 +184,7 @@ def assert_all_src_code_in_one_package() -> None:
     Please move all code and login into the designated src package.
 """
 
-    # assert the src package's only submodules are main, src and dev
+    # assert the src package's only submodules are main, src and rig
     subpackages, submodules = get_modules_and_packages_from_package(src_package)
     subpackage_names = {p.__name__.split(".")[-1] for p in subpackages}
     submodule_names = {m.__name__.split(".")[-1] for m in submodules}
@@ -488,14 +488,14 @@ If this fails then there is likely an import in src that depends on dev dependen
 
 
 @autouse_session_fixture
-def assert_src_does_not_use_dev() -> None:
-    """Verify source code does not import any dev code.
+def assert_src_does_not_use_rig() -> None:
+    """Verify source code does not import any rig code.
 
-    Scans src subpackage for dev import statements to ensure production/dev
+    Scans src subpackage for rig import statements to ensure production/rig
     separation.
 
     Raises:
-        AssertionError: If any dev imports found in src code.
+        AssertionError: If any rig imports found in src code.
     """
     src_package = import_module(PyprojectConfigFile.L.get_package_name())
 
@@ -505,26 +505,26 @@ def assert_src_does_not_use_dev() -> None:
 
     pkgs_depending_on_pyrig = get_all_deps_depending_on_dep(pyrig, include_self=True)
 
-    possible_dev_usages = [
+    possible_rig_usages = [
         get_module_name_replacing_start_module(rig, pkg.__name__)
         for pkg in pkgs_depending_on_pyrig
     ]
-    possible_dev_usages = [re.escape(usage) for usage in possible_dev_usages]
+    possible_rig_usages = [re.escape(usage) for usage in possible_rig_usages]
 
-    possible_dev_usages_pattern = r"\b(" + "|".join(possible_dev_usages) + r")\b"
+    possible_rig_usages_pattern = r"\b(" + "|".join(possible_rig_usages) + r")\b"
 
     usages: list[str] = []
     folder_path = Path(src_src_pkg.__path__[0])
     for path in folder_path.rglob("*.py"):
         content = path.read_text(encoding="utf-8")
 
-        is_dev_used = re_search_excluding_docstrings(
-            possible_dev_usages_pattern, content
+        is_rig_used = re_search_excluding_docstrings(
+            possible_rig_usages_pattern, content
         )
-        if is_dev_used:
-            usages.append(f"{path}: {is_dev_used.group()}")
+        if is_rig_used:
+            usages.append(f"{path}: {is_rig_used.group()}")
 
-    msg = f"""Found dev usage in src:
+    msg = f"""Found rig usage in src:
     {make_summary_error_msg(usages)}
 """
     assert not usages, msg

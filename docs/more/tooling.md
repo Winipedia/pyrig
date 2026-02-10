@@ -303,7 +303,7 @@ and more capable, and from mypy to ty for faster, runtime type checking. We
 continuously evaluate the ecosystem and adopt superior tools as they mature.
 
 **Replacing Tools**: While not recommended, you can replace any tool by
-subclassing the Tool wrapper classes in `dev/tools/`. pyrig uses the `.L`
+subclassing the Tool wrapper classes in `rig/tools/`. pyrig uses the `.L`
 (leaf) property internally, so your subclasses automatically apply. However,
 tools are interconnected with configs, workflows, and CI/CD - replacing one
 often requires changes to others.

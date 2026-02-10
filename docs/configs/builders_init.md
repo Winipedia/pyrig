@@ -1,7 +1,7 @@
 # builders/\_\_init\_\_.py Configuration
 
 The `BuildersInitConfigFile` manages the
-`{package_name}/dev/builders/__init__.py` file.
+`{package_name}/rig/builders/__init__.py` file.
 
 ## Overview
 
@@ -47,13 +47,13 @@ graph TD
 
 ## File Location
 
-**Path**: `{package_name}/dev/builders/__init__.py`
+**Path**: `{package_name}/rig/builders/__init__.py`
 
 **Source module**: `pyrig.rig.builders`
 
 **Path transformation**: `pyrig.rig.builders` →
-`{package_name}.dev.builders` →
-`{package_name}/dev/builders/__init__.py`
+`{package_name}.rig.builders` →
+`{package_name}/rig/builders/__init__.py`
 
 ## How It Works
 
@@ -63,7 +63,7 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from `pyrig.rig.builders.__init__.py`
    is copied
-2. **Package structure**: The `dev/builders/` directory is created
+2. **Package structure**: The `rig/builders/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files
 
 ### Generated Content

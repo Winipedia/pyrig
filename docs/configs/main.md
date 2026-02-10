@@ -203,8 +203,8 @@ registers commands from multiple sources:
 ```text
 CLI class (pyrig.rig.cli.cli)
   ├─> main() from {package_name}/main.py (registered as "main" command)
-  ├─> Subcommands (from {package_name}/dev/cli/subcommands.py)
-  └─> Shared subcommands (from {package_name}/dev/cli/shared_subcommands.py)
+  ├─> Subcommands (from {package_name}/rig/cli/subcommands.py)
+  └─> Shared subcommands (from {package_name}/rig/cli/shared_subcommands.py)
 ```
 
 See the [CLI documentation](../cli/architecture.md) for details on adding custom

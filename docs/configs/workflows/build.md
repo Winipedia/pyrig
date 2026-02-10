@@ -126,7 +126,7 @@ graph TD
 9. **Build Artifacts**
    - Runs `uv run pyrig build`
    - Executes configured builder classes
-     (e.g., `myapp/dev/builders/` in a consumer repo)
+     (e.g., `myapp/rig/builders/` in a consumer repo)
    - Creates platform-specific executables, wheels, etc.
    - Outputs to `dist/` directory
 
@@ -248,7 +248,7 @@ GitHub Actions tab → Build → Run workflow
 
 ## Best Practices
 
-1. **Define builders**: Create builder classes in `myapp/dev/builders/` for
+1. **Define builders**: Create builder classes in `myapp/rig/builders/` for
    custom artifacts
 2. **Test locally**: Run `uv run pyrig build` before pushing
 3. **Check all platforms**: Verify artifacts build successfully on all OS

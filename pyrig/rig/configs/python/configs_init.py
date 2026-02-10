@@ -1,6 +1,6 @@
-"""Configuration for {package_name}/dev/configs/__init__.py.
+"""Configuration for {package_name}/rig/configs/__init__.py.
 
-Generates {package_name}/dev/configs/__init__.py with pyrig.rig.configs docstring.
+Generates {package_name}/rig/configs/__init__.py with pyrig.rig.configs docstring.
 Has priority 10 to be created before other config files. Enables automatic
 discovery of custom ConfigFile subclasses.
 
@@ -16,13 +16,13 @@ from pyrig.rig.configs.base.init import InitConfigFile
 
 
 class ConfigsInitConfigFile(InitConfigFile):
-    """Manages {package_name}/dev/configs/__init__.py.
+    """Manages {package_name}/rig/configs/__init__.py.
 
     Generates __init__.py with pyrig.rig.configs docstring for custom ConfigFile
     subclasses. Has priority 10 to be created before other config files.
 
     Examples:
-        Generate {package_name}/dev/configs/__init__.py::
+        Generate {package_name}/rig/configs/__init__.py::
 
             ConfigsInitConfigFile()
 

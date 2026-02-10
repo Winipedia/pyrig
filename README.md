@@ -59,7 +59,7 @@ Python class that generates, validates, and merges automatically. Extend any
 config by subclassing — pyrig discovers it with no registration needed:
 
 ```python
-# my_project/dev/configs/pre_commit.py
+# my_project/rig/configs/pre_commit.py
 from pyrig.rig.configs.pre_commit import PrekConfigFile as Base
 
 class PrekConfigFile(Base):
@@ -91,7 +91,7 @@ commands, config files, test fixtures, builders, and tools. For example, any
 public function in `subcommands.py` becomes a CLI command:
 
 ```python
-# my_project/dev/cli/subcommands.py
+# my_project/rig/cli/subcommands.py
 def greet(name: str) -> None:
     """Say hello."""
     print(f"Hello, {name}!")
@@ -108,7 +108,7 @@ No registration required. Just define and it works.
 
 pytest itself enforces project correctness. Autouse session fixtures run before
 your tests to check invariants — missing test modules are auto-generated,
-configs are validated, namespace packages are prevented, and dev/src dependency
+configs are validated, namespace packages are prevented, and rig/src dependency
 separation is verified. See
 [Autouse Fixtures](https://winipedia.github.io/pyrig/tests/autouse/).
 

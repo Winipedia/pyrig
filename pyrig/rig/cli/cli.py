@@ -11,8 +11,8 @@ discovered and integrated.
 Command Discovery:
     Discovers and registers commands from three sources:
     1. Main entry point: `main()` from `<package>.main`
-    2. Project-specific commands: Functions from `<package>.dev.cli.subcommands`
-    3. Shared commands: Functions from `<package>.dev.cli.shared_subcommands`
+    2. Project-specific commands: Functions from `<package>.rig.cli.subcommands`
+    3. Shared commands: Functions from `<package>.rig.cli.shared_subcommands`
        across all packages in the dependency chain
 
 Logging Configuration:
@@ -121,7 +121,7 @@ def add_subcommands() -> None:
 
     Dynamically discovers and registers two types of commands:
     1. Main entry point: `main()` from `<package>.main`
-    2. Subcommands: All functions from `<package>.dev.cli.subcommands`
+    2. Subcommands: All functions from `<package>.rig.cli.subcommands`
 
     Discovery Process:
         1. Extracts package name from `sys.argv[0]`
@@ -131,10 +131,10 @@ def add_subcommands() -> None:
         5. Registers each function as a Typer command
 
     This enables dependent projects to define their own commands by creating
-    `<package>.dev.cli.subcommands` with functions.
+    `<package>.rig.cli.subcommands` with functions.
 
     Example:
-        # myproject/dev/cli/subcommands.py
+        # myproject/rig/cli/subcommands.py
         def deploy() -> None:
             '''Deploy the application.'''
             ...
@@ -176,14 +176,14 @@ def add_shared_subcommands() -> None:
     """Discover and register shared CLI commands from the dependency chain.
 
     Discovers and registers shared commands available across all pyrig-based
-    projects. Commands are defined in `<package>.dev.cli.shared_subcommands`
+    projects. Commands are defined in `<package>.rig.cli.shared_subcommands`
     modules and automatically available in all dependent projects.
 
     Discovery Process:
         1. Extracts current package name from `sys.argv[0]`
         2. Imports current package
         3. Finds all packages in dependency chain from pyrig to current package
-        4. For each package, looks for `dev.cli.shared_subcommands` module
+        4. For each package, looks for `rig.cli.shared_subcommands` module
         5. Extracts all public functions from each module
         6. Registers each function as a Typer command
 

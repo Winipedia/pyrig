@@ -210,8 +210,8 @@ on pyrig:
 ```mermaid
 graph LR
     A[pyrig.rig.configs] --> D[All discovered]
-    B[pkg_a.dev.configs] --> D
-    C[myapp.dev.configs] --> D
+    B[pkg_a.rig.configs] --> D
+    C[myapp.rig.configs] --> D
     D --> E[make_project_root called]
     E --> F[All configs initialized]
 
@@ -584,7 +584,7 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
         return shared_subcommands
 ```
 
-Creates `myapp/dev/cli/shared_subcommands.py` with only the docstring.
+Creates `myapp/rig/cli/shared_subcommands.py` with only the docstring.
 
 ### InitConfigFile
 
@@ -601,7 +601,7 @@ class ConfigsInitConfigFile(InitConfigFile):
         return configs
 ```
 
-Creates `myapp/dev/configs/__init__.py` with the docstring from
+Creates `myapp/rig/configs/__init__.py` with the docstring from
 `pyrig.rig.configs`.
 
 ### MirrorTestConfigFile
@@ -626,12 +626,12 @@ fixtures for automatic test generation.
 
 #### Customizing Test Generation
 
-Subclass `MirrorTestConfigFile` in your project's `dev/tests/` directory to
+Subclass `MirrorTestConfigFile` in your project's `rig/tests/` directory to
 customize skeleton generation. The `L` class property ensures your subclass is
 used. For example, to change the skeleton for test functions:
 
 ```python
-# myapp/dev/tests/mirror_test.py
+# myapp/rig/tests/mirror_test.py
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile as BaseMirrorTest
 
 class MirrorTestConfigFile(BaseMirrorTest):
@@ -740,5 +740,5 @@ class DatabaseConfigFile(YamlConfigFile):
         return super().is_correct() or required_keys.issubset(actual_keys)
 ```
 
-Place in `myapp/dev/configs/database.py` and it will create
+Place in `myapp/rig/configs/database.py` and it will create
 `config/database.yaml` with the required structure.
