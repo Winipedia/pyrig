@@ -6,6 +6,11 @@ from pyrig.dev.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_get_no_auto_install_env_var(self) -> None:
+        """Test method."""
+        result = PackageManager.L.get_no_auto_install_env_var()
+        assert result == "UV_NO_SYNC"
+
     def test_get_run_no_dev_args(self) -> None:
         """Test method."""
         result = PackageManager.L.get_run_no_dev_args("pytest")
