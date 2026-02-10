@@ -201,22 +201,28 @@ class ModulePath:
 
     @staticmethod
     def absolute_path_to_module_name(path: Path) -> str:
-        """Convert an absolute file path to a dotted module name.
+        """Convert a file path to a dotted module name.
 
-        Resolves the path relative to the current working directory (or _MEIPASS
-        in frozen environments) and converts to a dotted module name.
+        For relative paths, converts directly to a module name (e.g.,
+        ``Path('pkg/mod.py')`` → ``'pkg.mod'``).
+
+        For absolute paths, resolves relative to the current working directory
+        (or _MEIPASS in frozen environments) first.
 
         Args:
-            path: Absolute path to a module file or package directory. Must be
-                within the current working directory.
+            path: Absolute or relative path to a module file or package
+                directory. Absolute paths must be within the current working
+                directory.
 
         Returns:
             Dotted module name.
 
         Raises:
-            ValueError: If the path is not relative to the CWD (raised by
-                ``Path.relative_to``).
+            ValueError: If an absolute path is not relative to the CWD
+                (raised by ``Path.relative_to``).
         """
+        if not path.is_absolute():
+            return ModulePath.relative_path_to_module_name(path)
         cwd = ModulePath.get_cwd()
         rel_path = path.resolve().relative_to(cwd)
         return ModulePath.relative_path_to_module_name(rel_path)
