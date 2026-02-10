@@ -40,6 +40,7 @@ from rich.progress import (
 )
 
 from pyrig.rig.cli.subcommands import mkroot, mktests
+from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pre_committer import (
     PreCommitter,
@@ -71,9 +72,7 @@ def adding_dev_dependencies() -> Args:
     Returns:
         Args object for adding dev dependencies.
     """
-    return PackageManager.L.get_add_dev_dependencies_args(
-        *Pyrigger.L.get_dev_dependencies()
-    )
+    return PackageManager.L.get_add_dev_dependencies_args(*Tool.get_all_tool_dev_deps())
 
 
 def creating_priority_config_files() -> Args:

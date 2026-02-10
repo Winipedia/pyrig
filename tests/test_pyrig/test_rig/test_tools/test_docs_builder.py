@@ -8,6 +8,16 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
+    def test_get_dev_dependencies(self) -> None:
+        """Test method."""
+        result = DocsBuilder.L.get_dev_dependencies()
+        assert result == [
+            "mkdocs",
+            "mkdocs-material",
+            "mkdocs-mermaid2-plugin",
+            "mkdocstrings[python]",
+        ]
+
     def test_get_docs_dir(self) -> None:
         """Test method."""
         result = DocsBuilder.L.get_docs_dir()

@@ -91,7 +91,7 @@ theme:
    `index.md` and `api.md` in the docs directory
 3. **`plugins`**: Search, Mermaid2, and mkdocstrings plugins enabled
    - `search`: Full-text search across documentation
-   - `mermaid2`: Beautiful diagrams in markdown (included via `pyrig-dev`)
+   - `mermaid2`: Beautiful diagrams in markdown (included via `DocsBuilder` tool deps) <!-- rumdl-disable-line MD013 -->
    - `mkdocstrings`: Automatic API documentation from Python docstrings
 4. **`theme`**: Material theme with dark mode as default and light/dark toggle
 
@@ -139,8 +139,8 @@ Pyrig uses the Material theme by default, which provides:
 - **Dark mode as default** (slate scheme) with toggle to switch to light mode
 - Extensive customization options
 
-The Material theme is included as a dependency via `pyrig-dev`, so it's
-automatically available.
+The Material theme is included as a dev dependency via the `DocsBuilder` tool,
+so it's automatically available.
 
 **Color Schemes**:
 

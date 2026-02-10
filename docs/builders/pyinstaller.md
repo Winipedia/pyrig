@@ -264,15 +264,5 @@ Running `uv run pyrig build`:
 ## Requirements
 
 PyInstaller builder requires PyInstaller and Pillow (for icon conversion). These
-dependencies are included automatically when you add `pyrig-dev` to your
-development dependencies:
-
-```toml
-[dependency-groups]
-dev = [
-    "pyrig-dev>=0.1.1",
-]
-```
-
-The `pyrig-dev` package includes all necessary build tools including PyInstaller
-and Pillow.
+dependencies are included automatically via `pyrig-dev` when you run
+`pyrig init` or `pyrig mkroot`.

@@ -6,6 +6,11 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_get_dev_dependencies(self) -> None:
+        """Test method."""
+        result = PackageManager.L.get_dev_dependencies()
+        assert result == []
+
     def test_get_build_system_requires(self) -> None:
         """Test method."""
         result = PackageManager.L.get_build_system_requires()

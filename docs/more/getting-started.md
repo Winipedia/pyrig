@@ -202,7 +202,7 @@ information about each step.
 **The following steps execute in order:**
 
 - Initializing version control (git init)
-- Adding dev dependencies (pyrig-dev)
+- Adding dev dependencies (tool deps)
 - Syncing venv (install all dependencies)
 - Creating priority config files (LICENSE, pyproject.toml, etc.)
 - Syncing venv (install project itself, activate CLI)

@@ -36,6 +36,20 @@ class DocsBuilder(Tool):
         return "mkdocs"
 
     @classmethod
+    def get_dev_dependencies(cls) -> list[str]:
+        """Get tool dependencies.
+
+        Returns:
+            List of tool dependencies.
+        """
+        return [
+            *super().get_dev_dependencies(),
+            "mkdocs-material",
+            "mkdocs-mermaid2-plugin",
+            "mkdocstrings[python]",
+        ]
+
+    @classmethod
     def get_docs_dir(cls) -> Path:
         """Get the documentation directory.
 

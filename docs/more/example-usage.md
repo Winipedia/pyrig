@@ -328,7 +328,7 @@ Note: We decided against it to just autoadd these changes as that would be too
 much magic and also things possibly can interfere with other customisations you
 made, so yprig raises to not do things silently. The only changes pyrig silently
 autoadds are `uv lock --upgrade` in the release workflow, which keeps your
-dependecies automatically up to date even when you do not work on a project for
+dependencies automatically up to date even when you do not work on a project for
 a while.
 
 **Only minimal manual intervention needed!**
@@ -444,20 +444,19 @@ system.
 
 ## Real-World Benefits
 
-### Scenario: Security Audit Requires New Dependency
+### Scenario: Security Audit Requires New Tool Dependency
 
-**Problem**: Security audit requires all services use `bandit` for security
-scanning.
+**Problem**: Security audit requires all services use `safety` alongside the
+default security checker.
 
 **Solution** (5 minutes):
 
-1. **Update `service-base/rig/configs/pyproject.py`**:
+1. **Override `get_dev_dependencies()` on your tool in `service-base`**:
 
    ```python
    @classmethod
    def get_dev_dependencies(cls) -> list[str]:
-       deps = super().get_dev_dependencies()
-       return [*deps, "bandit>=1.7.0"]
+       return [*super().get_dev_dependencies(), "safety"]
    ```
 
 2. **Commit and push** → GitHub Actions releases `service-base` v1.2.0
@@ -467,11 +466,11 @@ scanning.
    ```bash
    # all you gotta do
    uv lock --upgrade && uv sync
-   uv run pytest  # Auto-heals to add bandit or do pyrig mkroot
+   uv run pytest  # Auto-heals to add safety or do pyrig mkroot
    # commit and push and the new release etc happens automatically
    ```
 
-**Result**: All your microservices now have `bandit` without manual edits.
+**Result**: All your microservices now have `safety` without manual edits.
 
 ### Scenario: Change Documentation Theme
 

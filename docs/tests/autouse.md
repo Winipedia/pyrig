@@ -149,8 +149,8 @@ triple-quoted docstrings to avoid false positives from documentation.
 **Scope**: Session
 
 **Why**: Maintains consistent testing framework across codebase. If you want
-mocks, please use pytest-mock, it is already installed as dev dependency via
-pyrig-dev.
+mocks, please use pytest-mock, it is already installed as a dev dependency via
+the `ProjectTester` tool.
 
 ---
 

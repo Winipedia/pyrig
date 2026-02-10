@@ -38,6 +38,16 @@ class ContainerEngine(Tool):
         return "podman"
 
     @classmethod
+    def get_dev_dependencies(cls) -> list[str]:
+        """Get tool dependencies.
+
+        Returns:
+            List of tool dependencies.
+        """
+        # podman is not a python package, so we don't have a dev dependency for it
+        return []
+
+    @classmethod
     def get_build_args(cls, *args: str, project_name: str) -> Args:
         """Construct podman build arguments.
 

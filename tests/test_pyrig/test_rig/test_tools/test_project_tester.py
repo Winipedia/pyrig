@@ -6,6 +6,11 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
+    def test_get_dev_dependencies(self) -> None:
+        """Test method."""
+        result = ProjectTester.L.get_dev_dependencies()
+        assert result == ["pytest", "pytest-cov", "pytest-mock"]
+
     def test_get_test_args(self) -> None:
         """Test method."""
         result = ProjectTester.L.get_test_args()

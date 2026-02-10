@@ -44,11 +44,12 @@ class Pyrigger(Tool):
 
     @classmethod
     def get_dev_dependencies(cls) -> list[str]:
-        """Standard development dependencies for pyrig-based projects.
+        """Get tool dependencies.
 
-        The `pyrig-dev` meta-package includes testing, type checking, linting,
-        documentation, build tools and some other dev dependencies.
+        Returns:
+            List of tool dependencies.
         """
+        # only pyrig-dev not pyrig because pyrig is already installed as dependency
         return ["pyrig-dev"]
 
     @classmethod

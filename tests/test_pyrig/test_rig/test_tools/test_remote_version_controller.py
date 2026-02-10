@@ -6,6 +6,11 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 class TestRemoteVersionController:
     """Test class."""
 
+    def test_get_dev_dependencies(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.L.get_dev_dependencies()
+        assert result == ["pygithub"]
+
     def test_name(self) -> None:
         """Test method."""
         result = RemoteVersionController.L.name()

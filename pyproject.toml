@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "8.0.2"
+version = "8.1.0"
 description = "A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development."
 readme = "README.md"
 license = "MIT"
@@ -55,7 +55,21 @@ pyrig = "pyrig.rig.cli.cli:main"
 
 [dependency-groups]
 dev = [
-    "pyrig-dev>=0.1.18",
+    "bandit>=1.9.3",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.1",
+    "mkdocs-mermaid2-plugin>=1.2.3",
+    "mkdocstrings[python]>=1.0.3",
+    "pip-audit>=2.10.0",
+    "prek>=0.3.2",
+    "pygithub>=2.8.1",
+    "pyrig-dev>=0.1.19",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.1",
+    "ruff>=0.15.0",
+    "rumdl>=0.1.17",
+    "ty>=0.0.16",
 ]
 
 [build-system]
