@@ -50,13 +50,13 @@ Commands are automatically discovered from three sources:
 
 1. **Main entry point**: `main()` from `<package>.main`
 2. **Project-specific commands**: Public functions from
-   `<package>.dev.cli.subcommands`
+   `<package>.rig.cli.subcommands`
 3. **Shared commands**: Public functions from
-   `<package>.dev.cli.shared_subcommands` across the dependency chain
+   `<package>.rig.cli.shared_subcommands` across the dependency chain
 
 For packages depending on pyrig, you can define your own commands in
-`myapp/dev/cli/subcommands.py` (project-specific) or
-`myapp/dev/cli/shared_subcommands.py` (shared across dependents):
+`myapp/rig/cli/subcommands.py` (project-specific) or
+`myapp/rig/cli/shared_subcommands.py` (shared across dependents):
 
 ```bash
 uv run myapp deploy    # Project-specific command

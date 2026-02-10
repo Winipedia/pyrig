@@ -6,7 +6,7 @@ framework.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/project_tester.py
+# myapp/rig/tools/project_tester.py
 from pyrig.rig.tools.project_tester import ProjectTester as BasePT
 from pyrig.src.processes import Args
 

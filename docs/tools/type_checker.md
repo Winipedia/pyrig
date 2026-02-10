@@ -11,7 +11,7 @@ speed and accuracy.
 ### Extending Behavior
 
 ```python
-# myapp/dev/tools/type_checker.py
+# myapp/rig/tools/type_checker.py
 from pyrig.rig.tools.type_checker import TypeChecker as BaseTC
 from pyrig.src.processes import Args
 
@@ -24,7 +24,7 @@ class TypeChecker(BaseTC):
 ### Replacing with mypy
 
 ```python
-# myapp/dev/tools/type_checker.py
+# myapp/rig/tools/type_checker.py
 from pyrig.rig.tools.type_checker import TypeChecker as BaseTC
 from pyrig.src.processes import Args
 

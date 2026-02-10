@@ -83,14 +83,14 @@ changes.
 **Assertion**:
 
 - Verifies only one source package exists at the root (besides `tests`)
-- Ensures the source package contains only: `src/`, `dev/`, `resources/`
+- Ensures the source package contains only: `src/`, `rig/`, `resources/`
   subdirectories and `main.py`
 - Prevents code from being scattered across multiple top-level packages
 
 **Scope**: Session
 
 **Why**: Maintains clean project structure with a single source of truth. All
-application code should be in `src/`, development tools in `dev/`, and resources
+application code should be in `src/`, development tools in `rig/`, and resources
 in `resources/`. This enforces the convention that imports use
 `my_project.src.module` rather than `my_project.module`, which provides clear
 separation between the package namespace and source code.
@@ -192,11 +192,11 @@ catches accidental imports of dev dependencies in source code.
 
 ---
 
-### `assert_src_does_not_use_dev`
+### `assert_src_does_not_use_rig`
 
-**Purpose**: Prevent `src` from importing `dev` code.
+**Purpose**: Prevent `src` from importing `rig` code.
 
-**Assertion**: Scans all source files for dev imports of packages depending on
+**Assertion**: Scans all source files for rig imports of packages depending on
 pyrig using regex pattern matching, excluding triple-quoted docstrings to avoid
 false positives from documentation.
 
@@ -254,7 +254,7 @@ graph TD
 - `assert_no_unit_test_package_usage`
 - `assert_dependencies_are_up_to_date`
 - `assert_src_runs_without_dev_deps`
-- `assert_src_does_not_use_dev`
+- `assert_src_does_not_use_rig`
 - `assert_project_mgt_is_up_to_date` (local only)
 
 ## Creating Custom Autouse Fixtures

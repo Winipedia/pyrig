@@ -245,7 +245,7 @@ Package A (depends on pyrig)
 │   └── pkg-a-data.json
 │
 My App (depends on Package A)
-├── dev/
+├── rig/
 │   └── builders/
 │       └── executable.py  # MyAppBuilder
 └── resources/

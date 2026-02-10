@@ -102,5 +102,5 @@ infrastructure.
 2. **Add custom plugins**: You can add additional pytest plugins to the list
 3. **Avoid manual modification**: The file is auto-generated and should rarely
    need changes
-4. **Use fixtures package**: Add custom fixtures in `dev/tests/fixtures/`
+4. **Use fixtures package**: Add custom fixtures in `rig/tests/fixtures/`
    instead

@@ -14,7 +14,7 @@ hardcoded GitHub Actions (not the `.L` pattern):
 ### 1. Subclass the Tool
 
 ```python
-# myapp/dev/tools/container_engine.py
+# myapp/rig/tools/container_engine.py
 from pyrig.rig.tools.container_engine import ContainerEngine as BaseCE
 
 class ContainerEngine(BaseCE):
@@ -29,7 +29,7 @@ The workflow uses a hardcoded GitHub Action to install Podman. You must also
 override this:
 
 ```python
-# myapp/dev/configs/base/workflow.py
+# myapp/rig/configs/base/workflow.py
 from pyrig.rig.configs.base.workflow import Workflow as BaseWorkflow
 
 class Workflow(BaseWorkflow):

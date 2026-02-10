@@ -1,6 +1,6 @@
 # subcommands.py Configuration
 
-The `SubcommandsConfigFile` manages the `{package_name}/dev/cli/subcommands.py`
+The `SubcommandsConfigFile` manages the `{package_name}/rig/cli/subcommands.py`
 file.
 
 ## Overview
@@ -45,12 +45,12 @@ graph TD
 
 ## File Location
 
-**Path**: `{package_name}/dev/cli/subcommands.py`
+**Path**: `{package_name}/rig/cli/subcommands.py`
 
 **Source module**: `pyrig.rig.cli.subcommands`
 
 **Path transformation**: `pyrig.rig.cli.subcommands` →
-`{package_name}.dev.cli.subcommands` → `{package_name}/dev/cli/subcommands.py`
+`{package_name}.rig.cli.subcommands` → `{package_name}/rig/cli/subcommands.py`
 
 ## How It Works
 
@@ -60,7 +60,7 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from `pyrig.rig.cli.subcommands` is
    copied
-2. **Package structure**: The `dev/cli/` directory is created
+2. **Package structure**: The `rig/cli/` directory is created
 3. **Ready for customization**: You can add your own subcommand functions
 
 ### Generated Content

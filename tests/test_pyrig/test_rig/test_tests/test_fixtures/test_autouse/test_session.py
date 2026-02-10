@@ -37,7 +37,7 @@ def test_assert_src_runs_without_dev_deps() -> None:
     """Test function."""
 
 
-def test_assert_src_does_not_use_dev() -> None:
+def test_assert_src_does_not_use_rig() -> None:
     """Test function."""
 
 

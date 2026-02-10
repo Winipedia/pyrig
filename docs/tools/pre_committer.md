@@ -9,7 +9,7 @@ before each commit.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/pre_committer.py
+# myapp/rig/tools/pre_committer.py
 from pyrig.rig.tools.pre_committer import PreCommitter as BasePC
 from pyrig.src.processes import Args
 

@@ -1,7 +1,7 @@
 # shared_subcommands.py Configuration
 
 The `SharedSubcommandsConfigFile` manages the
-`{package_name}/dev/cli/shared_subcommands.py` file.
+`{package_name}/rig/cli/shared_subcommands.py` file.
 
 ## Overview
 
@@ -45,13 +45,13 @@ graph TD
 
 ## File Location
 
-**Path**: `{package_name}/dev/cli/shared_subcommands.py`
+**Path**: `{package_name}/rig/cli/shared_subcommands.py`
 
 **Source module**: `pyrig.rig.cli.shared_subcommands`
 
 **Path transformation**: `pyrig.rig.cli.shared_subcommands` →
-`{package_name}.dev.cli.shared_subcommands` →
-`{package_name}/dev/cli/shared_subcommands.py`
+`{package_name}.rig.cli.shared_subcommands` →
+`{package_name}/rig/cli/shared_subcommands.py`
 
 ## How It Works
 
@@ -61,7 +61,7 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from
    `pyrig.rig.cli.shared_subcommands` is copied
-2. **Package structure**: The `dev/cli/` directory is created
+2. **Package structure**: The `rig/cli/` directory is created
 3. **Ready for customization**: You can add your own shared subcommand functions
 
 ### Generated Content

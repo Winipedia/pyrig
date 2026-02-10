@@ -233,7 +233,7 @@ graph LR
 To create your own workflow, subclass `Workflow` and implement `get_jobs()`:
 
 ```python
-# myapp/dev/configs/workflows/custom.py
+# myapp/rig/configs/workflows/custom.py
 from typing import Any
 from pyrig.rig.configs.base.workflow import Workflow
 

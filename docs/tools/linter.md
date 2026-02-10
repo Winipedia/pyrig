@@ -9,7 +9,7 @@ with 10-100x faster performance.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/linter.py
+# myapp/rig/tools/linter.py
 from pyrig.rig.tools.linter import Linter as BaseLinter
 from pyrig.src.processes import Args
 

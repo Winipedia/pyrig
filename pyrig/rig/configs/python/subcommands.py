@@ -1,6 +1,6 @@
-"""Configuration for {package_name}/dev/cli/subcommands.py.
+"""Configuration for {package_name}/rig/cli/subcommands.py.
 
-Generates {package_name}/dev/cli/subcommands.py with pyrig.rig.cli.subcommands
+Generates {package_name}/rig/cli/subcommands.py with pyrig.rig.cli.subcommands
 docstring for custom CLI subcommands specific to the current project.
 
 See Also:
@@ -19,7 +19,7 @@ from pyrig.rig.configs.base.copy_module_docstr import (
 class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     """Manages subcommands.py.
 
-    Generates {package_name}/dev/cli/subcommands.py with pyrig.rig.cli.subcommands
+    Generates {package_name}/rig/cli/subcommands.py with pyrig.rig.cli.subcommands
     docstring for custom CLI subcommands specific to the current project.
 
     Examples:
@@ -29,7 +29,7 @@ class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
 
         Add project-specific subcommands::
 
-            # In {package_name}/dev/cli/subcommands.py
+            # In {package_name}/rig/cli/subcommands.py
             def my_command() -> None:
                 \"\"\"Project-specific command.\"\"\"
                 from myproject.core import do_something

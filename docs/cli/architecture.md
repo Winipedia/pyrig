@@ -15,7 +15,7 @@ pyrig = "pyrig.rig.cli.cli:main"
 ```
 
 Running `uv run pyrig <command>` calls the `main()` function in
-`pyrig/dev/cli/cli.py`.
+`pyrig/rig/cli/cli.py`.
 
 ## Command Registration Flow
 
@@ -64,7 +64,7 @@ graph LR
 ### Project-Specific Commands
 
 Each package can define its own CLI commands by creating a `subcommands` module
-at `<package>.dev.cli.subcommands`. When the CLI runs, it:
+at `<package>.rig.cli.subcommands`. When the CLI runs, it:
 
 1. Determines the current package from the invocation
 2. Registers the package's `main()` entry point
@@ -74,13 +74,13 @@ Example: When running `uv run myapp deploy`:
 
 - The CLI detects package name: `myapp`
 - Imports and registers `main()` from `myapp.main`
-- Imports `myapp.dev.cli.subcommands`
+- Imports `myapp.rig.cli.subcommands`
 - Registers all functions as commands (e.g., `deploy`, `status`)
 
 ### Shared Commands
 
 Shared commands are available across all pyrig-based projects. They are defined
-in `<package>.dev.cli.shared_subcommands` modules and automatically discovered
+in `<package>.rig.cli.shared_subcommands` modules and automatically discovered
 across the entire dependency chain from pyrig to the current package.
 
 Commands are registered in dependency order (pyrig first). If multiple packages
@@ -94,7 +94,7 @@ pyrig, while adapting to each project's context.
 The system uses module name replacement to support multi-package architectures.
 Given a module path within pyrig (e.g., `pyrig.rig.cli.subcommands`), the CLI
 can derive the equivalent path in any dependent package (e.g.,
-`myapp.dev.cli.subcommands`).
+`myapp.rig.cli.subcommands`).
 
 This allows any package depending on pyrig to define its own commands by
 following the same module structure.

@@ -201,7 +201,7 @@ class MyConfigFile(YamlConfigFile):
         }
 ```
 
-Place this in `myapp/dev/configs/my_config.py` and it will be automatically
+Place this in `myapp/rig/configs/my_config.py` and it will be automatically
 discovered and create `config/my_config.yaml`.
 
 See [Architecture](architecture.md) for:

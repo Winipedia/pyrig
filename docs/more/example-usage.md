@@ -53,7 +53,7 @@ This creates a complete project structure with all pyrig's defaults.
 
 Add a shared logging configuration that all microservices will inherit.
 
-**Create**: `service_base/dev/configs/logging_config.py`
+**Create**: `service_base/rig/configs/logging_config.py`
 
 ```python
 """Shared logging configuration for all services."""
@@ -109,7 +109,7 @@ class LoggingConfigFile(YamlConfigFile):
 
 Customize documentation theme with custom branding.
 
-**Create**: `service_base/dev/configs/docs/mkdocs.py`
+**Create**: `service_base/rig/configs/docs/mkdocs.py`
 
 ```python
 """Custom-branded MkDocs configuration."""
@@ -168,7 +168,7 @@ class MkdocsConfigFile(BaseMkdocsCF):
 
 Add shared dependencies and settings.
 
-**Create**: `service_base/dev/configs/pyproject.py`
+**Create**: `service_base/rig/configs/pyproject.py`
 
 ```python
 """Base pyproject.toml with additional dependencies."""
@@ -245,7 +245,7 @@ auth-service/
 ├── mkdocs.yml                      # ✓ Custom-branded theme
 ├── pyproject.toml                  # ✓ With shared dependencies
 ├── auth_service/
-│   ├── dev/
+│   ├── rig/
 │   │   ├── configs/               # ✓ Can add service-specific configs
 │   │   ├── cli/                   # ✓ Service-specific commands
 │   │   └── tests/                 # ✓ Service-specific fixtures
@@ -267,7 +267,7 @@ themselves.
 
 In `service-base`, add a security requirement:
 
-**Update**: `service_base/dev/configs/pyproject.py`
+**Update**: `service_base/rig/configs/pyproject.py`
 
 ```python
 @classmethod
@@ -339,7 +339,7 @@ Each service can still customize while keeping shared standards.
 
 **In `auth-service`**, add service-specific config:
 
-**Create**: `auth_service/dev/configs/auth_config.py`
+**Create**: `auth_service/rig/configs/auth_config.py`
 
 ```python
 """Auth service specific configuration."""
@@ -409,7 +409,7 @@ configurations across package dependencies. For complete technical details, see:
 **ConfigFile Discovery**:
 
 1. Build dependency graph: `pyrig → service-base → auth-service`
-2. Find all `<package>.dev.configs` modules
+2. Find all `<package>.rig.configs` modules
 3. Discover all ConfigFile subclasses
 4. Keep only leaf classes (classes with no subclasses sharing the same name)
 5. Initialize all leaf classes
@@ -451,7 +451,7 @@ scanning.
 
 **Solution** (5 minutes):
 
-1. **Update `service-base/dev/configs/pyproject.py`**:
+1. **Update `service-base/rig/configs/pyproject.py`**:
 
    ```python
    @classmethod
@@ -479,7 +479,7 @@ scanning.
 
 **Solution** (2 minutes):
 
-1. **Update `service-base/dev/configs/docs/mkdocs.py`**: Change colors, then do
+1. **Update `service-base/rig/configs/docs/mkdocs.py`**: Change colors, then do
    the same steps as above
 2. **Release** new version
 3. **Services update** → All docs sites automatically rebranded at GitHub Pages

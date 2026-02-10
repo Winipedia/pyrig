@@ -270,7 +270,7 @@ my-project/
 │   ├── __init__.py
 │   ├── main.py                      # CLI entry point
 │   ├── py.typed                     # PEP 561 type marker
-│   ├── dev/                         # Development infrastructure
+│   ├── rig/                         # Development infrastructure
 │   │   ├── __init__.py
 │   │   ├── builders/                # Build artifact definitions
 │   │   │   └── __init__.py
@@ -298,7 +298,7 @@ my-project/
 │   └── test_my_project/             # Mirrors my_project/ structure
 │       ├── __init__.py
 │       ├── test_main.py
-│       ├── test_dev/                # Mirrors my_project/dev/
+│       ├── test_rig/                # Mirrors my_project/rig/
 │       │   ├── __init__.py
 │       │   ├── test_builders/
 │       │   │   └── __init__.py
@@ -399,8 +399,8 @@ See [CLI Documentation](../cli/index.md) for all available commands.
 After completing setup:
 
 - **Add your code** to `my_project/src/`
-- **Create custom commands** in `my_project/dev/cli/subcommands.py`
-- **Add custom configs** in `my_project/dev/configs/`
+- **Create custom commands** in `my_project/rig/cli/subcommands.py`
+- **Add custom configs** in `my_project/rig/configs/`
 - **Write tests** in `tests/` (mirroring source structure)
 - **Build artifacts** with `uv run pyrig build`
 

@@ -9,7 +9,7 @@ catches common issues.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/mdlinter.py
+# myapp/rig/tools/mdlinter.py
 from pyrig.rig.tools.mdlinter import MDLinter as BaseMDL
 from pyrig.src.processes import Args
 

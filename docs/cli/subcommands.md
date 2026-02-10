@@ -1,6 +1,6 @@
 # Subcommands
 
-Project-specific CLI commands are defined in the `dev/cli/subcommands.py`
+Project-specific CLI commands are defined in the `rig/cli/subcommands.py`
 module. All public functions in this module are automatically registered as CLI
 commands.
 
@@ -11,7 +11,7 @@ name becomes the command name (underscores are converted to hyphens), and the
 docstring becomes the help text.
 
 Use `typer.Option` to add command-line options with flags. See the existing
-commands in `pyrig/dev/cli/subcommands.py` for examples.
+commands in `pyrig/rig/cli/subcommands.py` for examples.
 
 ## Command Pattern
 
@@ -20,7 +20,7 @@ Follow this pattern for all subcommands:
 1. **Define a wrapper function** in `subcommands.py`
 2. **Use lazy imports** to avoid circular dependencies and missing dev
    dependencies
-3. **Delegate to implementation** in `dev/cli/commands/`
+3. **Delegate to implementation** in `rig/cli/commands/`
 4. **Add a docstring** for CLI help text
 
 ```mermaid
@@ -42,9 +42,9 @@ graph LR
 The CLI system automatically discovers and registers three types of commands:
 
 1. **Main entry point** - The `main()` function from `<package>.main`
-2. **Subcommands** - All public functions from `<package>.dev.cli.subcommands`
+2. **Subcommands** - All public functions from `<package>.rig.cli.subcommands`
 3. **Shared subcommands** - All public functions
-    from `<package>.dev.cli.shared_subcommands` across all packages
+    from `<package>.rig.cli.shared_subcommands` across all packages
     in the dependency chain (see [Shared Subcommands](shared-subcommands.md))
 
 Functions are discovered and registered automatically:
@@ -55,7 +55,7 @@ Functions are discovered and registered automatically:
 - **Sorted by definition order** - commands appear in the order they're defined
 
 For implementation details on command discovery, see the docstrings in
-`pyrig/dev/cli/cli.py`.
+`pyrig/rig/cli/cli.py`.
 
 ## Command Naming
 
@@ -71,15 +71,15 @@ When a package depends on pyrig, it can define its own subcommands:
 
 ```text
 myapp/
-  dev/
+  rig/
     cli/
       subcommands.py  # Define myapp-specific commands here
 ```
 
 ```mermaid
 graph TD
-    A[pyrig/dev/cli/subcommands.py] -->|defines| B[pyrig commands]
-    C[myapp/dev/cli/subcommands.py] -->|defines| D[myapp commands]
+    A[pyrig/rig/cli/subcommands.py] -->|defines| B[pyrig commands]
+    C[myapp/rig/cli/subcommands.py] -->|defines| D[myapp commands]
 
     E[uv run pyrig init] --> B
     F[uv run myapp deploy] --> D
@@ -91,7 +91,7 @@ graph TD
 ```
 
 Running `uv run myapp <command>` will discover and execute commands from
-`myapp.dev.cli.subcommands`.
+`myapp.rig.cli.subcommands`.
 
 ## Built-in Commands
 

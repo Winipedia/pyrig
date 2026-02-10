@@ -1,6 +1,6 @@
-"""Configuration for {package_name}/dev/builders/__init__.py.
+"""Configuration for {package_name}/rig/builders/__init__.py.
 
-Generates {package_name}/dev/builders/__init__.py with pyrig.rig.builders docstring,
+Generates {package_name}/rig/builders/__init__.py with pyrig.rig.builders docstring,
 providing a starting point for custom builder classes.
 
 See Also:
@@ -15,18 +15,18 @@ from pyrig.rig.configs.base.init import InitConfigFile
 
 
 class BuildersInitConfigFile(InitConfigFile):
-    '''Manages {package_name}/dev/builders/__init__.py.
+    '''Manages {package_name}/rig/builders/__init__.py.
 
     Generates __init__.py with pyrig.rig.builders docstring for custom builder classes.
 
     Examples:
-        Generate {package_name}/dev/builders/__init__.py::
+        Generate {package_name}/rig/builders/__init__.py::
 
             BuildersInitConfigFile()
 
         Add custom builders::
 
-            # In {package_name}/dev/builders/__init__.py
+            # In {package_name}/rig/builders/__init__.py
             from pyrig.rig.builders.base.base import BuilderConfigFile
 
             class CustomBuilder(BuilderConfigFile):

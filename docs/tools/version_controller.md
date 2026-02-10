@@ -5,7 +5,7 @@ Type-safe wrapper for [Git](https://git-scm.com/), the version control system.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/version_controller.py
+# myapp/rig/tools/version_controller.py
 from pyrig.rig.tools.version_controller import VersionController as BaseVC
 from pyrig.src.processes import Args
 

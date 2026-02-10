@@ -1,6 +1,6 @@
-"""Configuration for {package_name}/dev/cli/shared_subcommands.py.
+"""Configuration for {package_name}/rig/cli/shared_subcommands.py.
 
-Generates {package_name}/dev/cli/shared_subcommands.py
+Generates {package_name}/rig/cli/shared_subcommands.py
 with pyrig.rig.cli.shared_subcommands
 docstring for custom CLI subcommands available in all pyrig projects.
 
@@ -20,7 +20,7 @@ from pyrig.rig.configs.base.copy_module_docstr import (
 class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     """Manages shared_subcommands.py.
 
-    Generates {package_name}/dev/cli/shared_subcommands.py
+    Generates {package_name}/rig/cli/shared_subcommands.py
     with pyrig.rig.cli.shared_subcommands docstring for custom CLI subcommands
     shared across all pyrig projects.
 
@@ -31,7 +31,7 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
 
         Add shared subcommands::
 
-            # In {package_name}/dev/cli/shared_subcommands.py
+            # In {package_name}/rig/cli/shared_subcommands.py
             def my_shared_command() -> None:
                 \"\"\"Shared command available in all projects.\"\"\"
                 from myproject.utils import shared_functionality

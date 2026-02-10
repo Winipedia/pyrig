@@ -60,7 +60,7 @@ graph TD
 The prek config file uses `.L` to reference tools:
 
 ```python
-# pyrig/dev/configs/git/pre_commit.py
+# pyrig/rig/configs/git/pre_commit.py
 hooks = [
     cls.get_hook("lint-code", Linter.L.get_check_fix_args()),
     cls.get_hook("check-types", TypeChecker.L.get_check_args()),
@@ -72,7 +72,7 @@ Because it uses `TypeChecker.L` (not `TypeChecker` directly), if you subclass
 `TypeChecker` to use mypy:
 
 ```python
-# myapp/dev/tools/type_checker.py
+# myapp/rig/tools/type_checker.py
 from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
@@ -143,7 +143,7 @@ prevents confusion:
 The workflow uses a hardcoded GitHub Action for Podman:
 
 ```python
-# pyrig/dev/configs/base/workflow.py
+# pyrig/rig/configs/base/workflow.py
 def step_install_container_engine(cls, ...):
     return cls.get_step(
         uses="redhat-actions/podman-install@main",  # Hardcoded!
@@ -155,7 +155,7 @@ Even if you subclass `ContainerEngine` to use Docker, the workflow still
 installs Podman. You must **also** subclass the workflow:
 
 ```python
-# myapp/dev/configs/workflows/build.py
+# myapp/rig/configs/workflows/build.py
 from pyrig.rig.configs.workflows.build import BuildWorkflow as BaseBuildWorkflow
 
 class BuildWorkflow(BaseBuildWorkflow):
@@ -173,7 +173,7 @@ class BuildWorkflow(BaseBuildWorkflow):
 ### Extending a Tool (Add Behavior)
 
 ```python
-# myapp/dev/tools/linter.py
+# myapp/rig/tools/linter.py
 from pyrig.rig.tools.linter import Linter as BaseLinter
 from pyrig.src.processes import Args
 
@@ -187,7 +187,7 @@ class Linter(BaseLinter):
 ### Replacing a Tool (Change the CLI)
 
 ```python
-# myapp/dev/tools/type_checker.py
+# myapp/rig/tools/type_checker.py
 from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
@@ -199,7 +199,7 @@ class TypeChecker(BaseTypeChecker):
 ### Adding a New ConfigFile
 
 ```python
-# myapp/dev/configs/my_config.py
+# myapp/rig/configs/my_config.py
 from pathlib import Path
 from pyrig.rig.configs.base.toml import TomlConfigFile
 
@@ -219,7 +219,7 @@ runs.
 ### Overriding an Existing ConfigFile
 
 ```python
-# myapp/dev/configs/pyproject.py
+# myapp/rig/configs/pyproject.py
 from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyproject
 
 class PyprojectConfigFile(BasePyproject):

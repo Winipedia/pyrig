@@ -9,7 +9,7 @@ for themes, plugins, and GitHub Pages deployment.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/docs_builder.py
+# myapp/rig/tools/docs_builder.py
 from pyrig.rig.tools.docs_builder import DocsBuilder as BaseDB
 from pyrig.src.processes import Args
 

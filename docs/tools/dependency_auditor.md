@@ -11,7 +11,7 @@ This complements Bandit:
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/dependency_auditor.py
+# myapp/rig/tools/dependency_auditor.py
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor as BaseDA
 from pyrig.src.processes import Args
 

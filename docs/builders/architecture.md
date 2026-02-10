@@ -79,7 +79,7 @@ All builders must:
 
 - Inherit from `BuilderConfigFile`
 - Implement the `create_artifacts` method
-- Be placed in a `dev/builders/` module
+- Be placed in a `rig/builders/` module
 
 When instantiated, the builder automatically triggers the build process. Builds
 happen in isolated temporary directories to avoid polluting the workspace.
@@ -114,7 +114,7 @@ Place builders in your package's builders module:
 
 ```text
 myapp/
-└── dev/
+└── rig/
     └── builders/
         ├── __init__.py
         └── documentation.py  # DocumentationBuilder defined here
@@ -129,7 +129,7 @@ base class works.
 
 When you run `uv run pyrig build`, pyrig:
 
-1. Finds `myapp.dev.builders` module
+1. Finds `myapp.rig.builders` module
 2. Discovers `DocumentationBuilder` class
 3. Instantiates it, triggering the build
 4. Outputs `dist/docs-Linux.zip` (or platform-specific name)
@@ -140,12 +140,12 @@ When you run `uv run pyrig build`, pyrig:
 pyrig (no concrete builders)
 │
 Package A (depends on pyrig)
-├── dev/
+├── rig/
 │   └── builders/
 │       └── executable.py  # PyInstallerBuilder subclass
 │
 Package B (depends on Package A)
-├── dev/
+├── rig/
     └── builders/
         └── documentation.py  # Custom builder
 

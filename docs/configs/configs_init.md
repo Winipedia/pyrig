@@ -1,6 +1,6 @@
 # configs/\_\_init\_\_.py Configuration
 
-The `ConfigsInitConfigFile` manages the `{package_name}/dev/configs/__init__.py`
+The `ConfigsInitConfigFile` manages the `{package_name}/rig/configs/__init__.py`
 file.
 
 ## Overview
@@ -47,12 +47,12 @@ graph BT
 
 ## File Location
 
-**Path**: `{package_name}/dev/configs/__init__.py`
+**Path**: `{package_name}/rig/configs/__init__.py`
 
 **Source module**: `pyrig.rig.configs`
 
-**Path transformation**: `pyrig.rig.configs` → `{package_name}.dev.configs` →
-`{package_name}/dev/configs/__init__.py`
+**Path transformation**: `pyrig.rig.configs` → `{package_name}.rig.configs` →
+`{package_name}/rig/configs/__init__.py`
 
 ## How It Works
 
@@ -62,7 +62,7 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 1. **Docstring copy**: Only the docstring from `pyrig.rig.configs.__init__.py`
    is copied
-2. **Package structure**: The `dev/configs/` directory is created
+2. **Package structure**: The `rig/configs/` directory is created
 3. **Package initialization**: Parent directories get `__init__.py` files
 
 ### Generated Content

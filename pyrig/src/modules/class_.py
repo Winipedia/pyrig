@@ -129,8 +129,8 @@ def get_all_subclasses[T: type](
         filtered out by other options).
 
     Example:
-        >>> # Discover all ConfigFile subclasses in myapp.dev.configs
-        >>> from myapp.dev import configs
+        >>> # Discover all ConfigFile subclasses in myapp.rig.configs
+        >>> from myapp.rig import configs
         >>> subclasses = get_all_subclasses(
         ...     ConfigFile,
         ...     load_package_before=configs,

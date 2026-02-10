@@ -9,7 +9,7 @@ passwords, and unsafe deserialization.
 ## Subclassing Example
 
 ```python
-# myapp/dev/tools/security_checker.py
+# myapp/rig/tools/security_checker.py
 from pyrig.rig.tools.security_checker import SecurityChecker as BaseSC
 from pyrig.src.processes import Args
 

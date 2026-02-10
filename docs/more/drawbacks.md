@@ -37,9 +37,9 @@ workflows, and CI/CD pipelines. See
 [Replacing Tools](../tools/architecture.md#tool-replacement-complexity) for
 details.
 
-## Runtime Dev Folder
+## Runtime Rig Folder
 
-**Trade-off**: The `dev/` folder is included in the package at runtime
+**Trade-off**: The `rig/` folder is included in the package at runtime
 
 **What You Sacrifice**:
 
@@ -60,7 +60,7 @@ details.
   structures
 - **Ecosystem power** - Build interconnected package families
 
-**Reality Check**: The `dev/` folder is extremely lightweight when unused (just
+**Reality Check**: The `rig/` folder is extremely lightweight when unused (just
 empty directories). When used, it enables powerful multi-package ecosystems.
 
 See: [Multi-Package Architecture](../cli/architecture.md) |
@@ -293,7 +293,7 @@ automation features.
 **CLI Framework**:
 
 - Typer-based CLI system (keep `pyproject.toml` entry point)
-- Command discovery mechanism (keep `dev/cli/` folder)
+- Command discovery mechanism (keep `rig/cli/` folder)
 - Multi-package command support
 
 ### What You Disable
@@ -319,7 +319,7 @@ automation features.
 - You maintain configs yourself
 
 You can also disable the cli by removing the entry point from `pyproject.toml`.
-If you disable that too you can also just delete the `dev/` folder. You will
+If you disable that too you can also just delete the `rig/` folder. You will
 still be left with a nice initial project structure and tooling.
 
 ### How to Opt Out

@@ -13,7 +13,7 @@ modules, classes, functions, and their docstrings.
 
 **File**: `docs/api.md`
 
-**Created by**: `ApiConfigFile` in `pyrig/dev/configs/markdown/docs/api.py`
+**Created by**: `ApiConfigFile` in `pyrig/rig/configs/markdown/docs/api.py`
 
 ## Default Content
 
@@ -71,7 +71,7 @@ By default, the API reference includes **all code in your project**:
 - All classes and their methods
 - All functions
 - All module-level variables
-- Development infrastructure (`dev/` folder)
+- Development infrastructure (`rig/` folder)
 - Source code (`src/` folder)
 - Resources (`resources/` folder)
 
@@ -87,7 +87,7 @@ project:
 
 ### Override ApiConfigFile
 
-Create `myapp/dev/configs/markdown/docs/api.py`:
+Create `myapp/rig/configs/markdown/docs/api.py`:
 
 ```python
 from pyrig.rig.configs.markdown.docs.api import ApiConfigFile as BaseApiCF

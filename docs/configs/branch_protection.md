@@ -259,7 +259,7 @@ class MyRepoProtectionConfigFile(RepoProtectionConfigFile):
         return config
 ```
 
-Place in `myapp/dev/configs/git/branch_protection.py` and it will override the
+Place in `myapp/rig/configs/git/branch_protection.py` and it will override the
 default configuration.
 
 ### Verifying Configuration
