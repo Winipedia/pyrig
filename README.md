@@ -143,11 +143,11 @@ uv run my-project --help  # Your project's CLI
 
 ## Documentation
 
-- **[Getting Started](https://winipedia.github.io/pyrig/more/getting-started/)** - <!-- rumdl-disable-line MD013 -->
-  Complete setup guide
+- **[Getting Started](https://winipedia.github.io/pyrig/more/getting-started/)** - Complete setup guide
 - **[Full Documentation](https://winipedia.github.io/pyrig/)** - Comprehensive
   reference
 - **[Trade-offs](https://winipedia.github.io/pyrig/more/drawbacks/)** -
   What you give up and what you gain
 - **[CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)** -
   AI-generated docs
+- **[Tutorials](https://www.youtube.com/@Winipedia-py/playlists)** - YouTube tutorials for pyrig
