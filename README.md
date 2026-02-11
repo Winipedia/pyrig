@@ -23,13 +23,14 @@
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yml)
 <!-- documentation -->
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://Winipedia.github.io/pyrig)
-<!-- rumdl-enable MD013 -->
 
 ---
 
 > A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development.
 
 ---
+
+<!-- rumdl-enable MD013 -->
 
 ## What is pyrig?
 
