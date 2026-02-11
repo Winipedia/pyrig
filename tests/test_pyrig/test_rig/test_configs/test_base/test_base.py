@@ -358,3 +358,7 @@ class TestConfigFile:
         assert my_test_config_file in actual, (
             "Expected my_test_config_file to be in actual"
         )
+
+
+class TestPriority:
+    """Test class."""

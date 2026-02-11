@@ -15,6 +15,7 @@ from pathlib import Path
 
 import requests
 
+from pyrig.rig.configs.base.base import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
@@ -34,7 +35,7 @@ class LicenseConfigFile(StringConfigFile):
     @classmethod
     def get_priority(cls) -> float:
         """Return priority 30 (created early for pyproject.toml license detection)."""
-        return 30
+        return Priority.HIGH
 
     @classmethod
     def get_filename(cls) -> str:

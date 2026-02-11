@@ -19,6 +19,7 @@ import spdx_matcher
 from packaging.version import Version
 
 from pyrig.rig.cli import cli
+from pyrig.rig.configs.base.base import Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
@@ -54,7 +55,7 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def get_priority(cls) -> float:
         """Return priority 20 (created early for other configs to read)."""
-        return 20
+        return Priority.MEDIUM
 
     @classmethod
     def _dump(cls, config: dict[str, Any] | list[Any]) -> None:

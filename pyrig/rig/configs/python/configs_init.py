@@ -12,6 +12,7 @@ See Also:
 from types import ModuleType
 
 from pyrig.rig import configs
+from pyrig.rig.configs.base.base import Priority
 from pyrig.rig.configs.base.init import InitConfigFile
 
 
@@ -38,7 +39,7 @@ class ConfigsInitConfigFile(InitConfigFile):
         Returns:
             float: 10.0 (ensures configs directory exists before other files use it).
         """
-        return 10
+        return Priority.LOW
 
     @classmethod
     def get_src_module(cls) -> ModuleType:
