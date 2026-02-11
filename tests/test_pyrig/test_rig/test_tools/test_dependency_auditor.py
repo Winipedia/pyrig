@@ -6,9 +6,9 @@ from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 class TestDependencyAuditor:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = DependencyAuditor.L.get_badge_group()
+        result = DependencyAuditor.L.get_group()
         assert isinstance(result, str)
         assert result == "security"
 

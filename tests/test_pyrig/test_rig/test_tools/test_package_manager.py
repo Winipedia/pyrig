@@ -6,9 +6,9 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = PackageManager.L.get_badge_group()
+        result = PackageManager.L.get_group()
         assert isinstance(result, str)
         assert result == "tooling"
 

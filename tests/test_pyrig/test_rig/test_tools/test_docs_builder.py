@@ -8,9 +8,9 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_badge_group()
+        result = DocsBuilder.L.get_group()
         assert isinstance(result, str)
         assert result == "documentation"
 

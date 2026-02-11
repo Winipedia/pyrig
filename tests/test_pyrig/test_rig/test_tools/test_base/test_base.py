@@ -8,9 +8,9 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestTool:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = PackageManager.L.get_badge_group()
+        result = PackageManager.L.get_group()
         assert isinstance(result, str)
         assert result == "tooling"
 
@@ -73,3 +73,7 @@ class TestTool:
         # Tool is abstract, test through concrete implementation
         result = PackageManager.L.get_args("run", "pytest")
         assert result == ("uv", "run", "pytest")
+
+
+class TestToolGroup:
+    """Test class."""

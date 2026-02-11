@@ -6,9 +6,9 @@ from pyrig.rig.tools.security_checker import SecurityChecker
 class TestSecurityChecker:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = SecurityChecker.L.get_badge_group()
+        result = SecurityChecker.L.get_group()
         assert isinstance(result, str)
         assert result == "security"
 

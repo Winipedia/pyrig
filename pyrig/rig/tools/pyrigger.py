@@ -13,7 +13,7 @@ from collections.abc import Callable
 from typing import Any
 
 import pyrig
-from pyrig.rig.tools.base.base import Tool
+from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.src.modules.package import get_project_name_from_pkg_name
 from pyrig.src.processes import Args
 
@@ -43,12 +43,12 @@ class Pyrigger(Tool):
         return pyrig.__name__
 
     @classmethod
-    def get_badge_group(cls) -> str:
+    def get_group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
         """
-        return "tooling"
+        return ToolGroup.TOOLING
 
     @classmethod
     def get_badge_urls(cls) -> tuple[str, str]:

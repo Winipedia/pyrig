@@ -37,9 +37,9 @@ class TestPyprojectConfigFile:
             PyprojectConfigFile.L.get_priority() > ConfigsInitConfigFile.get_priority()
         )
 
-    def test_detect_project_licence(self) -> None:
+    def test_detect_project_license(self) -> None:
         """Test method."""
-        license_id = PyprojectConfigFile.L.detect_project_licence()
+        license_id = PyprojectConfigFile.L.detect_project_license()
         assert license_id == "MIT", f"Expected 'MIT', got '{license_id}'"
 
     def test_get_latest_python_version(self) -> None:

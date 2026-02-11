@@ -6,9 +6,9 @@ from pyrig.rig.tools.linter import Linter
 class TestLinter:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = Linter.L.get_badge_group()
+        result = Linter.L.get_group()
         assert isinstance(result, str)
         assert result == "code-quality"
 

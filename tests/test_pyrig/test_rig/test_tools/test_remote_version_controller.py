@@ -6,9 +6,9 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 class TestRemoteVersionController:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_badge_group()
+        result = RemoteVersionController.L.get_group()
         assert isinstance(result, str)
         assert result == "tooling"
 
@@ -76,8 +76,3 @@ class TestRemoteVersionController:
             result
             == "https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yml?label=CI&logo=github"
         )
-
-    def test_get_license_badge_url(self) -> None:
-        """Test method."""
-        result = RemoteVersionController.L.get_license_badge_url()
-        assert result == "https://img.shields.io/github/license/Winipedia/pyrig"

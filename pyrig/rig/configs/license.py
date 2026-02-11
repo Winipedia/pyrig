@@ -16,18 +16,19 @@ from pathlib import Path
 import requests
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
+from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
 
 
-class LicenceConfigFile(StringConfigFile):
+class LicenseConfigFile(StringConfigFile):
     """Manages LICENSE files with MIT license (year + owner from git).
 
     Fetches from GitHub SPDX API with fallback. Priority 30 (created early
     for pyproject.toml license detection).
 
     See Also:
-        pyrig.rig.configs.pyproject.PyprojectConfigFile.L.detect_project_licence
+        pyrig.rig.configs.pyproject.PyprojectConfigFile.L.detect_project_license
     """
 
     @classmethod
@@ -87,3 +88,27 @@ class LicenceConfigFile(StringConfigFile):
         owner, _ = VersionController.L.get_repo_owner_and_name(check_repo_url=False)
         mit_license = mit_license.replace("[year]", str(year))
         return mit_license.replace("[fullname]", owner)
+
+    @classmethod
+    def get_license_badge_url(cls) -> str:
+        """Construct GitHub license badge URL.
+
+        Returns:
+            shields.io badge URL showing repository license.
+        """
+        owner, repo = VersionController.L.get_repo_owner_and_name(
+            check_repo_url=False,
+            url_encode=True,
+        )
+        return f"https://img.shields.io/github/license/{owner}/{repo}"
+
+    @classmethod
+    def get_license_badge(cls) -> str:
+        """Construct GitHub license badge Markdown string.
+
+        Returns:
+            Markdown string for shields.io badge showing repository license.
+        """
+        badge_url = cls.get_license_badge_url()
+        repo_url = RemoteVersionController.L.get_repo_url()
+        return rf"[![License]({badge_url})]({repo_url}/blob/main/LICENSE)"
