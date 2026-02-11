@@ -1,6 +1,5 @@
 # pyrig
 
-<!-- rumdl-disable MD013 -->
 <!-- tooling -->
 [![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -26,11 +25,10 @@
 
 ---
 
-> A Python toolkit to rig up your project that standardizes and automates project setup, configuration and development.
+> pyrig is python toolkit that rigs up your project
+by standardizing and automating project setup, configuration and maintanence
 
 ---
-
-<!-- rumdl-enable MD013 -->
 
 ## What is pyrig?
 
@@ -70,7 +68,7 @@ class PrekConfigFile(Base):
         return configs
 ```
 
-For more information, see [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/). <!-- rumdl-disable-line MD013 -->
+For more information, see [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/).
 
 ### Multi-Package Inheritance
 
@@ -127,7 +125,7 @@ After `pyrig init`, your project includes:
 | **Community** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY |
 | **Config** | pyproject.toml, .gitignore, prek.toml, Containerfile |
 
-See the [full project structure](https://winipedia.github.io/pyrig/more/getting-started/#what-you-get) in the Getting Started guide. <!-- rumdl-disable-line MD013 -->
+See the [full project structure](https://winipedia.github.io/pyrig/more/getting-started/#what-you-get) in the Getting Started guide.
 
 ## CLI Commands
 

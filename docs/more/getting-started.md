@@ -27,7 +27,7 @@ Setting up signed commits is highly recommended for verifying commit
 authenticity. However, since the repository owner has overwrite rights, it's
 not strictly required when you initialize the project yourself.
 
-See [GitHub's guide on signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification) for detailed setup instructions. <!-- rumdl-disable-line MD013 -->
+See [GitHub's guide on signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification) for detailed setup instructions.
 
 **uv** (Python package manager):
 

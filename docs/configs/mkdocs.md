@@ -91,8 +91,11 @@ theme:
    `index.md` and `api.md` in the docs directory
 3. **`plugins`**: Search, Mermaid2, and mkdocstrings plugins enabled
    - `search`: Full-text search across documentation
-   - `mermaid2`: Beautiful diagrams in markdown (included via `DocsBuilder` tool deps) <!-- rumdl-disable-line MD013 -->
+   - `mermaid2`: Beautiful diagrams in markdown
+   (included via `DocsBuilder` tool deps)
+
    - `mkdocstrings`: Automatic API documentation from Python docstrings
+
 4. **`theme`**: Material theme with dark mode as default and light/dark toggle
 
 ### Validation Logic

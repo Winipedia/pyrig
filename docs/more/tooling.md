@@ -307,5 +307,5 @@ subclassing the Tool wrapper classes in `rig/tools/`. pyrig uses the `.L`
 (leaf) property internally, so your subclasses automatically apply. However,
 tools are interconnected with configs, workflows, and CI/CD - replacing one
 often requires changes to others.
-See [Tool Architecture - Replacing Tools](../tools/architecture.md#tool-replacement-complexity) <!-- rumdl-disable-line MD013 -->
+See [Tool Architecture - Replacing Tools](../tools/architecture.md#tool-replacement-complexity)
 for details on how to do this and what additional work is required.

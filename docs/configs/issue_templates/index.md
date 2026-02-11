@@ -59,4 +59,4 @@ customization.
 
 ## See Also
 
-- [GitHub Docs: Issue Templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests) <!-- rumdl-disable-line MD013 -->
+- [GitHub Docs: Issue Templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests)

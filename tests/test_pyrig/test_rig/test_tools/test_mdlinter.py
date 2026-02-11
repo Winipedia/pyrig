@@ -6,16 +6,6 @@ from pyrig.rig.tools.mdlinter import MDLinter
 class TestMDLinter:
     """Test class."""
 
-    def test_get_ignore_too_long_line_start(self) -> None:
-        """Test method."""
-        result = MDLinter.L.get_ignore_too_long_line_start()
-        assert result == "<!-- rumdl-disable MD013 -->"
-
-    def test_get_ignore_too_long_line_end(self) -> None:
-        """Test method."""
-        result = MDLinter.L.get_ignore_too_long_line_end()
-        assert result == "<!-- rumdl-enable MD013 -->"
-
     def test_name(self) -> None:
         """Test method."""
         result = MDLinter.L.name()
