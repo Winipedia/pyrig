@@ -54,4 +54,4 @@ File must exist and contain text. Users can customize the template.
 
 ## See Also
 
-- [GitHub Docs: Issue Forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms) <!-- rumdl-disable-line MD013 -->
+- [GitHub Docs: Issue Forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms)

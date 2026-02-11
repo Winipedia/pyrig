@@ -26,7 +26,6 @@ from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.rig.configs.workflows.release import ReleaseWorkflow
-from pyrig.rig.tools.mdlinter import MDLinter
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.urls import (
@@ -89,9 +88,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         return [
             f"# {project_name}",
             "",
-            MDLinter.L.get_ignore_too_long_line_start(),
             *badges_lines,
-            MDLinter.L.get_ignore_too_long_line_end(),
             "",
             "---",
             "",

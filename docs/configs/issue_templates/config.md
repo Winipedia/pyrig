@@ -88,4 +88,4 @@ contact_links:
 
 ## See Also
 
-- [GitHub Docs: Configuring Issue Templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository) <!-- rumdl-disable-line MD013 -->
+- [GitHub Docs: Configuring Issue Templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)

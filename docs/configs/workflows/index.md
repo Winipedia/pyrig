@@ -70,7 +70,7 @@ Add these to your GitHub repository secrets:
 - **PYPI_TOKEN**: PyPI API token (for publishing packages)
 - **CODECOV_TOKEN**: Codecov token (recommended for all repos, required for
   private repos)
-  - See the [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens) for details <!-- rumdl-disable-line MD013 -->
+  - See the [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens) for details
 
 ### Workflow Pipeline
 
