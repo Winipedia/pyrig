@@ -25,8 +25,7 @@
 
 ---
 
-> pyrig is python toolkit that rigs up your project
-by standardizing and automating project setup, configuration and maintanence
+> pyrig is python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintanence <!-- rumdl-disable-line MD013 -->
 
 ---
 
