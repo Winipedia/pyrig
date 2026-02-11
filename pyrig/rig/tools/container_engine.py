@@ -38,6 +38,22 @@ class ContainerEngine(Tool):
         return "podman"
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "tooling"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge and connected page."""
+        return (
+            "https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6",
+            "https://podman.io",
+        )
+
+    @classmethod
     def get_dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 

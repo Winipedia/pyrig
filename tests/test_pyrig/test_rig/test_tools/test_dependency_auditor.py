@@ -6,6 +6,18 @@ from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 class TestDependencyAuditor:
     """Test class."""
 
+    def test_get_badge_group(self) -> None:
+        """Test method."""
+        result = DependencyAuditor.L.get_badge_group()
+        assert isinstance(result, str)
+        assert result == "security"
+
+    def test_get_badge_urls(self) -> None:
+        """Test method."""
+        result = DependencyAuditor.L.get_badge_urls()
+        assert isinstance(result, tuple)
+        assert all(isinstance(url, str) for url in result)
+
     def test_name(self) -> None:
         """Test method."""
         assert DependencyAuditor.L.name() == "pip-audit"

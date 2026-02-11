@@ -34,6 +34,25 @@ class RemoteVersionController(Tool):
         return "github"
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "tooling"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge and connected page."""
+        owner, repo = VersionController.L.get_repo_owner_and_name(
+            check_repo_url=False, url_encode=True
+        )
+        return (
+            f"https://img.shields.io/github/stars/{owner}/{repo}?style=social",
+            cls.get_repo_url(),
+        )
+
+    @classmethod
     def get_dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
@@ -99,6 +118,14 @@ class RemoteVersionController(Tool):
         return f"https://{owner}.github.io/{repo}"
 
     @classmethod
+    def get_documentation_badge(cls) -> str:
+        """Returns the badge for a markdown file.
+
+        Shows github pages for github.
+        """
+        return rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({cls.get_documentation_url()})"
+
+    @classmethod
     def get_cicd_url(cls, workflow_name: str) -> str:
         """Construct GitHub Actions workflow run URL.
 
@@ -111,7 +138,7 @@ class RemoteVersionController(Tool):
         return f"{cls.get_repo_url()}/actions/workflows/{workflow_name}.yml"
 
     @classmethod
-    def get_cicd_badge_url(cls, workflow_name: str, label: str, logo: str) -> str:
+    def get_cicd_badge_url(cls, workflow_name: str, label: str) -> str:
         """Construct GitHub Actions workflow status badge URL.
 
         Args:
@@ -126,7 +153,7 @@ class RemoteVersionController(Tool):
             check_repo_url=False,
             url_encode=True,
         )
-        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo={logo}"
+        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
 
     @classmethod
     def get_license_badge_url(cls) -> str:

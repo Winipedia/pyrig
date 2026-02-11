@@ -50,6 +50,22 @@ class VersionController(Tool):
         return "git"
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "tooling"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge and connected page."""
+        return (
+            "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white",
+            "https://git-scm.com",
+        )
+
+    @classmethod
     def get_dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 

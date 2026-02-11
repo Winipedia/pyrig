@@ -8,6 +8,18 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
+    def test_get_badge_group(self) -> None:
+        """Test method."""
+        result = DocsBuilder.L.get_badge_group()
+        assert isinstance(result, str)
+        assert result == "documentation"
+
+    def test_get_badge_urls(self) -> None:
+        """Test method."""
+        result = DocsBuilder.L.get_badge_urls()
+        assert isinstance(result, tuple)
+        assert all(isinstance(url, str) for url in result)
+
     def test_get_dev_dependencies(self) -> None:
         """Test method."""
         result = DocsBuilder.L.get_dev_dependencies()

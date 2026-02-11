@@ -6,6 +6,18 @@ from pyrig.rig.tools.linter import Linter
 class TestLinter:
     """Test class."""
 
+    def test_get_badge_group(self) -> None:
+        """Test method."""
+        result = Linter.L.get_badge_group()
+        assert isinstance(result, str)
+        assert result == "code-quality"
+
+    def test_get_badge_urls(self) -> None:
+        """Test method."""
+        result = Linter.L.get_badge_urls()
+        assert isinstance(result, tuple)
+        assert all(isinstance(url, str) for url in result)
+
     def test_name(self) -> None:
         """Test method."""
         result = Linter.L.name()

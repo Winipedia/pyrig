@@ -38,6 +38,22 @@ class SecurityChecker(Tool):
         return "bandit"
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "security"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge and connected page."""
+        return (
+            "https://img.shields.io/badge/security-bandit-yellow.svg",
+            "https://github.com/PyCQA/bandit",
+        )
+
+    @classmethod
     def get_run_args(cls, *args: str) -> Args:
         """Construct bandit arguments.
 

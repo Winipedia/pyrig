@@ -37,6 +37,22 @@ class MDLinter(Tool):
         return "rumdl"
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "code-quality"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge and connected page."""
+        return (
+            "https://img.shields.io/badge/markdown-rumdl-darkgreen",
+            "https://github.com/rvben/rumdl",
+        )
+
+    @classmethod
     def get_check_args(cls, *args: str) -> Args:
         """Construct rumdl check arguments.
 

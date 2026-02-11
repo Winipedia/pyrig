@@ -43,6 +43,22 @@ class Pyrigger(Tool):
         return pyrig.__name__
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "tooling"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge and connected page."""
+        return (
+            f"https://img.shields.io/badge/built%20with-{cls.name()}-3776AB?logo=buildkite&logoColor=black",
+            f"https://github.com/Winipedia/{cls.name()}",
+        )
+
+    @classmethod
     def get_dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 

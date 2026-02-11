@@ -21,11 +21,13 @@ Example:
 
 import re
 
-import pyrig
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.rig.configs.workflows.release import ReleaseWorkflow
+from pyrig.rig.tools.base.base import Tool
+from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.urls import (
@@ -110,35 +112,31 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         joined_python_versions = "|".join(str(v) for v in python_versions)
         health_check_wf_name = HealthCheckWorkflow.get_filename()
         release_wf_name = ReleaseWorkflow.get_filename()
-        return {
-            "tooling": [
-                rf"[![{pyrig.__name__}](https://img.shields.io/badge/built%20with-{pyrig.__name__}-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/{pyrig.__name__})",
-                r"[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)",
-                r"[![Container](https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6)](https://podman.io/)",
-                r"[![prek](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json)](https://github.com/j178/prek)",
-                r"[![MkDocs](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://www.mkdocs.org/)",
-            ],
-            "code-quality": [
-                r"[![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)",
-                r"[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)",
-                r"[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)",
-                r"[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)",
-                rf"[![codecov]({get_codecov_url()}/branch/{VersionController.L.get_default_branch()}/graph/badge.svg)]({get_codecov_url()})",
-                r"[![rumdl](https://img.shields.io/badge/markdown-rumdl-darkgreen)](https://github.com/rvben/rumdl)",
-            ],
-            "package-info": [
+        badge_groups = Tool.get_grouped_badges()
+        badge_groups[ProjectTester.L.get_badge_group()].extend(
+            [
+                rf"[![codecov]({get_codecov_url()}/branch/{VersionController.L.get_default_branch()}/graph/badge.svg)]({get_codecov_url()})"
+            ]
+        )
+        badge_groups["project-info"].extend(
+            [
                 rf"[![PyPI]({get_pypi_badge_url()})]({get_pypi_url()})",
                 rf"[![Python](https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white)](https://www.python.org/)",
                 rf"[![License]({RemoteVersionController.L.get_license_badge_url()})]({RemoteVersionController.L.get_repo_url()}/blob/main/LICENSE)",
-            ],
-            "ci/cd": [
-                rf"[![CI]({RemoteVersionController.L.get_cicd_badge_url(health_check_wf_name, 'CI', 'github')})]({RemoteVersionController.L.get_cicd_url(health_check_wf_name)})",  # noqa: E501
-                rf"[![CD]({RemoteVersionController.L.get_cicd_badge_url(release_wf_name, 'CD', 'github')})]({RemoteVersionController.L.get_cicd_url(release_wf_name)})",  # noqa: E501
-            ],
-            "documentation": [
-                rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({RemoteVersionController.L.get_documentation_url()})",
-            ],
-        }
+            ]
+        )
+        badge_groups["ci/cd"].extend(
+            [
+                rf"[![CI]({RemoteVersionController.L.get_cicd_badge_url(health_check_wf_name, 'CI')})]({RemoteVersionController.L.get_cicd_url(health_check_wf_name)})",  # noqa: E501
+                rf"[![CD]({RemoteVersionController.L.get_cicd_badge_url(release_wf_name, 'CD')})]({RemoteVersionController.L.get_cicd_url(release_wf_name)})",  # noqa: E501
+            ]
+        )
+        badge_groups[DocsBuilder.L.get_badge_group()].extend(
+            [
+                RemoteVersionController.L.get_documentation_badge(),
+            ]
+        )
+        return badge_groups
 
     @classmethod
     def replace_description(cls, content: str) -> str:

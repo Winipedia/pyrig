@@ -6,6 +6,25 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 class TestRemoteVersionController:
     """Test class."""
 
+    def test_get_badge_group(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.L.get_badge_group()
+        assert isinstance(result, str)
+        assert result == "tooling"
+
+    def test_get_badge_urls(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.L.get_badge_urls()
+        assert isinstance(result, tuple)
+        assert all(isinstance(url, str) for url in result)
+
+    def test_get_documentation_badge(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.L.get_documentation_badge()
+        assert isinstance(result, str)
+        assert "[![" in result
+        assert "Documentation" in result
+
     def test_get_dev_dependencies(self) -> None:
         """Test method."""
         result = RemoteVersionController.L.get_dev_dependencies()
@@ -52,9 +71,7 @@ class TestRemoteVersionController:
 
     def test_get_cicd_badge_url(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_cicd_badge_url(
-            "health_check", "CI", "github"
-        )
+        result = RemoteVersionController.L.get_cicd_badge_url("health_check", "CI")
         assert (
             result
             == "https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yml?label=CI&logo=github"

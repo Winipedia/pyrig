@@ -40,6 +40,22 @@ class PackageManager(Tool):
         return "uv"
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "tooling"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge urls for uv."""
+        return (
+            "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json",
+            "https://github.com/astral-sh/uv",
+        )
+
+    @classmethod
     def get_dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
