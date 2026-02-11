@@ -22,10 +22,11 @@ Example:
 import re
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
+from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.rig.configs.workflows.release import ReleaseWorkflow
-from pyrig.rig.tools.base.base import Tool
+from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
@@ -113,25 +114,26 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         health_check_wf_name = HealthCheckWorkflow.get_filename()
         release_wf_name = ReleaseWorkflow.get_filename()
         badge_groups = Tool.get_grouped_badges()
-        badge_groups[ProjectTester.L.get_badge_group()].extend(
+        badge_groups[ProjectTester.L.get_group()].extend(
             [
                 rf"[![codecov]({get_codecov_url()}/branch/{VersionController.L.get_default_branch()}/graph/badge.svg)]({get_codecov_url()})"
             ]
         )
-        badge_groups["project-info"].extend(
+        badge_groups[ToolGroup.PROJECT_INFO].extend(
             [
                 rf"[![PyPI]({get_pypi_badge_url()})]({get_pypi_url()})",
                 rf"[![Python](https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white)](https://www.python.org/)",
-                rf"[![License]({RemoteVersionController.L.get_license_badge_url()})]({RemoteVersionController.L.get_repo_url()}/blob/main/LICENSE)",
+                LicenseConfigFile.L.get_license_badge(),
             ]
         )
-        badge_groups["ci/cd"].extend(
+        badge_groups[ToolGroup.CI_CD].extend(
             [
-                rf"[![CI]({RemoteVersionController.L.get_cicd_badge_url(health_check_wf_name, 'CI')})]({RemoteVersionController.L.get_cicd_url(health_check_wf_name)})",  # noqa: E501
-                rf"[![CD]({RemoteVersionController.L.get_cicd_badge_url(release_wf_name, 'CD')})]({RemoteVersionController.L.get_cicd_url(release_wf_name)})",  # noqa: E501
+                RemoteVersionController.L.get_cicd_badge(health_check_wf_name, "CI"),
+                RemoteVersionController.L.get_cicd_badge(release_wf_name, "CD"),
             ]
         )
-        badge_groups[DocsBuilder.L.get_badge_group()].extend(
+
+        badge_groups[DocsBuilder.L.get_group()].extend(
             [
                 RemoteVersionController.L.get_documentation_badge(),
             ]

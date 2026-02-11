@@ -257,7 +257,7 @@ def get_priority(cls) -> float:
 
 **Priority values in pyrig**:
 
-- `LicenceConfigFile`: 30 (must exist before pyproject.toml for license
+- `LicenseConfigFile`: 30 (must exist before pyproject.toml for license
   detection)
 - `PyprojectConfigFile`: 20 (must exist before other configs that read from it)
 - `ConfigsInitConfigFile`: 10 (creates package structure)

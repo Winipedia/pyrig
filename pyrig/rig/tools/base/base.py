@@ -40,6 +40,18 @@ from pyrig.src.processes import Args
 logger = logging.getLogger(__name__)
 
 
+class ToolGroup:
+    """Constants for badge groups."""
+
+    CI_CD = "ci/cd"
+    CODE_QUALITY = "code-quality"
+    DOCUMENTATION = "documentation"
+    PROJECT_INFO = "project-info"
+    SECURITY = "security"
+    TOOLING = "tooling"
+    TESTING = "testing"
+
+
 class Tool(ABC):
     """Abstract base for tool command argument construction.
 
@@ -75,8 +87,10 @@ class Tool(ABC):
 
     @classmethod
     @abstractmethod
-    def get_badge_group(cls) -> str:
+    def get_group(cls) -> str:
         """Returns the group the tools belongs to.
+
+        Used e.g. for grouping badges in the Readme.md file.
 
         E.g. testing, tool, code-quality etc...
         """
@@ -163,7 +177,7 @@ class Tool(ABC):
         subclasses = cls.get_all_subclasses()
         groups = defaultdict(list)
         for tool in subclasses:
-            groups[tool.get_badge_group()].append(tool.get_badge())
+            groups[tool.get_group()].append(tool.get_badge())
         return groups
 
     @classmethod

@@ -1,6 +1,6 @@
 # LICENSE Configuration
 
-The `LicenceConfigFile` manages the `LICENSE` file for the project.
+The `LicenseConfigFile` manages the `LICENSE` file for the project.
 
 ## Overview
 
@@ -18,7 +18,7 @@ Creates a LICENSE file that:
 graph TD
     A[ConfigFile] --> B[ListConfigFile]
     B --> C[StringConfigFile]
-    C --> D[LicenceConfigFile]
+    C --> D[LicenseConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff

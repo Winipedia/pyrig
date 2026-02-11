@@ -6,9 +6,9 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = ProjectTester.L.get_badge_group()
+        result = ProjectTester.L.get_group()
         assert isinstance(result, str)
         assert result == "testing"
 

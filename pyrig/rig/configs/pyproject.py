@@ -20,7 +20,7 @@ from packaging.version import Version
 
 from pyrig.rig.cli import cli
 from pyrig.rig.configs.base.toml import TomlConfigFile
-from pyrig.rig.configs.licence import LicenceConfigFile
+from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
@@ -90,8 +90,8 @@ class PyprojectConfigFile(TomlConfigFile):
                 "maintainers": [
                     {"name": repo_owner},
                 ],
-                "license": cls.detect_project_licence(),
-                "license-files": [LicenceConfigFile.L.get_path().name],
+                "license": cls.detect_project_license(),
+                "license-files": [LicenseConfigFile.L.get_path().name],
                 "requires-python": cls.get_project_requires_python(),
                 "classifiers": [
                     *cls.make_python_version_classifiers(),
@@ -166,18 +166,18 @@ class PyprojectConfigFile(TomlConfigFile):
         }
 
     @classmethod
-    def detect_project_licence(cls) -> str:
-        """Detect the project's licence from the LICENSE file.
+    def detect_project_license(cls) -> str:
+        """Detect the project's license from the LICENSE file.
 
-        Reads the LICENSE file and uses spdx_matcher to identify the licence
+        Reads the LICENSE file and uses spdx_matcher to identify the license
         type and return its SPDX identifier.
 
         Returns:
-            str: SPDX licence identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
+            str: SPDX license identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
 
         Raises:
             FileNotFoundError: If LICENSE file doesn't exist.
-            StopIteration: If no licence is detected (empty licenses dict).
+            StopIteration: If no license is detected (empty licenses dict).
 
         Note:
             This method reads from the LICENSE file in the project root.

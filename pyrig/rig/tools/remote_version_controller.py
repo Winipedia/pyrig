@@ -10,7 +10,7 @@ Example:
     >>> RemoteVersionController.L.get_documentation_url()
 """
 
-from pyrig.rig.tools.base.base import Tool
+from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.rig.tools.version_controller import VersionController
 
 
@@ -34,12 +34,12 @@ class RemoteVersionController(Tool):
         return "github"
 
     @classmethod
-    def get_badge_group(cls) -> str:
+    def get_group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
         """
-        return "tooling"
+        return ToolGroup.TOOLING
 
     @classmethod
     def get_badge_urls(cls) -> tuple[str, str]:
@@ -156,14 +156,16 @@ class RemoteVersionController(Tool):
         return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
 
     @classmethod
-    def get_license_badge_url(cls) -> str:
-        """Construct GitHub license badge URL.
+    def get_cicd_badge(cls, workflow_name: str, label: str) -> str:
+        """Construct GitHub Actions workflow status badge Markdown string.
+
+        Args:
+            workflow_name: Workflow file name without `.yml` extension.
+            label: Badge text label (e.g., "CI", "Build").
 
         Returns:
-            shields.io badge URL showing repository license.
+            Markdown string for shields.io badge showing workflow status.
         """
-        owner, repo = VersionController.L.get_repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
-        )
-        return f"https://img.shields.io/github/license/{owner}/{repo}"
+        badge_url = cls.get_cicd_badge_url(workflow_name, label)
+        cicd_url = cls.get_cicd_url(workflow_name)
+        return rf"[![{label}]({badge_url})]({cicd_url})"

@@ -8,9 +8,9 @@ from pyrig.rig.tools.container_engine import ContainerEngine
 class TestContainerEngine:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.get_badge_group()
+        result = ContainerEngine.L.get_group()
         assert isinstance(result, str)
         assert result == "tooling"
 

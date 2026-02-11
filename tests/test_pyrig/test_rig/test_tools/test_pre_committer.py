@@ -6,9 +6,9 @@ from pyrig.rig.tools.pre_committer import PreCommitter
 class TestPreCommitter:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = PreCommitter.L.get_badge_group()
+        result = PreCommitter.L.get_group()
         assert isinstance(result, str)
         assert result == "code-quality"
 

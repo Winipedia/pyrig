@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
-from pyrig.rig.configs.licence import LicenceConfigFile
+from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
@@ -82,7 +82,7 @@ class TestCopyModuleOnlyDocstringConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            LicenceConfigFile()
+            LicenseConfigFile()
             PyprojectConfigFile()
             my_test_copy_module_only_docstring_config_file()
             assert my_test_copy_module_only_docstring_config_file.is_correct()

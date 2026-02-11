@@ -6,9 +6,9 @@ from pyrig.rig.tools.mdlinter import MDLinter
 class TestMDLinter:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = MDLinter.L.get_badge_group()
+        result = MDLinter.L.get_group()
         assert isinstance(result, str)
         assert result == "code-quality"
 

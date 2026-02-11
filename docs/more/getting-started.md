@@ -151,7 +151,7 @@ graph TD
 # 4. Public or Private
 # 5. You do not need to initialize with README, 
 #   .gitignore bc pyrig will create it for you. 
-#   (create a licence if you do not want the MIT license)
+#   (create a license if you do not want the MIT license)
 # 6. Click "Create repository"
 ```
 

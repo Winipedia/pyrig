@@ -8,9 +8,9 @@ from pyrig.rig.tools.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
-    def test_get_badge_group(self) -> None:
+    def test_get_group(self) -> None:
         """Test method."""
-        result = VersionController.L.get_badge_group()
+        result = VersionController.L.get_group()
         assert isinstance(result, str)
         assert result == "tooling"
 
