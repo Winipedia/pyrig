@@ -87,6 +87,15 @@ from pyrig.src.string_ import split_on_uppercase
 logger = logging.getLogger(__name__)
 
 
+class Priority:
+    """A class to represent priority levels for config file initialization."""
+
+    DEFAULT = 0
+    LOW = DEFAULT + 10
+    MEDIUM = LOW + 10
+    HIGH = MEDIUM + 10
+
+
 class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
     """Abstract base class for declarative configuration file management.
 
@@ -251,7 +260,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         Returns:
             Priority as float. Higher numbers processed first.
         """
-        return 0
+        return Priority.DEFAULT
 
     @classmethod
     def get_path(cls) -> Path:

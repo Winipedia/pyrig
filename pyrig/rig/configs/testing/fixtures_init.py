@@ -10,6 +10,7 @@ See Also:
 
 from types import ModuleType
 
+from pyrig.rig.configs.base.base import Priority
 from pyrig.rig.configs.base.init import InitConfigFile
 from pyrig.rig.tests import fixtures
 
@@ -46,7 +47,7 @@ class FixturesInitConfigFile(InitConfigFile):
         Returns:
             float: 10.0 (ensures fixtures directory exists before conftest.py uses it).
         """
-        return 10
+        return Priority.LOW
 
     @classmethod
     def get_src_module(cls) -> ModuleType:
