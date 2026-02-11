@@ -38,6 +38,22 @@ class DependencyAuditor(Tool):
         return "pip-audit"
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "security"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge and connected page."""
+        return (
+            "https://img.shields.io/badge/security-pip--audit-blue?logo=python",
+            "https://github.com/pypa/pip-audit",
+        )
+
+    @classmethod
     def get_audit_args(cls, *args: str) -> Args:
         """Construct pip-audit arguments.
 

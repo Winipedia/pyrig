@@ -8,6 +8,18 @@ from pyrig.rig.tools.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_get_badge_group(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_badge_group()
+        assert isinstance(result, str)
+        assert result == "tooling"
+
+    def test_get_badge_urls(self) -> None:
+        """Test method."""
+        result = VersionController.L.get_badge_urls()
+        assert isinstance(result, tuple)
+        assert all(isinstance(url, str) for url in result)
+
     def test_get_dev_dependencies(self) -> None:
         """Test method."""
         result = VersionController.L.get_dev_dependencies()

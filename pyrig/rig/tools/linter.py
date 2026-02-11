@@ -39,6 +39,22 @@ class Linter(Tool):
         return "ruff"
 
     @classmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+        return "code-quality"
+
+    @classmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the badge and connected page."""
+        return (
+            "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json",
+            "https://github.com/astral-sh/ruff",
+        )
+
+    @classmethod
     def get_check_args(cls, *args: str) -> Args:
         """Construct ruff check arguments.
 

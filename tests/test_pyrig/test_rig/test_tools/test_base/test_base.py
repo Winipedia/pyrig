@@ -8,6 +8,42 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestTool:
     """Test class."""
 
+    def test_get_badge_group(self) -> None:
+        """Test method."""
+        result = PackageManager.L.get_badge_group()
+        assert isinstance(result, str)
+        assert result == "tooling"
+
+    def test_get_badge_urls(self) -> None:
+        """Test method."""
+        result = PackageManager.L.get_badge_urls()
+        assert isinstance(result, tuple)
+
+        assert all(isinstance(url, str) for url in result)
+
+    def test_get_badge(self) -> None:
+        """Test method."""
+        result = PackageManager.L.get_badge()
+        assert isinstance(result, str)
+        assert "uv" in result
+        assert "[![" in result
+
+    def test_get_all_subclasses(self) -> None:
+        """Test method."""
+        result = Tool.get_all_subclasses()
+        assert isinstance(result, list)
+        assert len(result) > 0
+        assert all(hasattr(tool, "name") for tool in result)
+
+    def test_get_grouped_badges(self) -> None:
+        """Test method."""
+        result = Tool.get_grouped_badges()
+        assert isinstance(result, dict)
+        assert len(result) > 0
+        assert all(
+            isinstance(k, str) and isinstance(v, list) for k, v in result.items()
+        )
+
     def test_get_dev_dependencies(self) -> None:
         """Test method."""
         result = PackageManager.L.get_dev_dependencies()

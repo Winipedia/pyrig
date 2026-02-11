@@ -25,6 +25,7 @@ Example:
 
 import logging
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from typing import Self
 
 import pyrig
@@ -73,6 +74,32 @@ class Tool(ABC):
         """
 
     @classmethod
+    @abstractmethod
+    def get_badge_group(cls) -> str:
+        """Returns the group the tools belongs to.
+
+        E.g. testing, tool, code-quality etc...
+        """
+
+    @classmethod
+    @abstractmethod
+    def get_badge_urls(cls) -> tuple[str, str]:
+        """Returns the url for a badge, like found in a Readme.md file.
+
+        The first url is the picture, the badge, and the second the link
+        where you are led when clicking on the badge.
+
+        Returns:
+            a tuple of two str that are urls.
+        """
+
+    @classmethod
+    def get_badge(cls) -> str:
+        """Returns the badge string for a markdown file."""
+        badge, page = cls.get_badge_urls()
+        return f"[![{cls.name()}]({badge})]({page})"
+
+    @classmethod
     def get_dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
@@ -110,6 +137,36 @@ class Tool(ABC):
         )
 
     @classmethod
+    def get_all_subclasses(cls) -> list[type[Self]]:
+        """Get all the tools subclasses.
+
+        Finds all non abstract subclasses that are a final leave
+        across dependecies of pyrig.
+
+        Returns:
+            _list of subclasses of the Tool class cls
+        """
+        return sorted(
+            discover_subclasses_across_dependents(
+                cls,
+                pyrig,
+                tools,
+                discard_parents=True,
+                exclude_abstract=True,
+            ),
+            key=lambda t: t.name(),
+        )
+
+    @classmethod
+    def get_grouped_badges(cls) -> dict[str, list[str]]:
+        """Get a dict with all badges of tools grouped by their group."""
+        subclasses = cls.get_all_subclasses()
+        groups = defaultdict(list)
+        for tool in subclasses:
+            groups[tool.get_badge_group()].append(tool.get_badge())
+        return groups
+
+    @classmethod
     def get_all_tool_dev_deps(cls) -> list[str]:
         """Get all dev dependencies for all tools.
 
@@ -122,13 +179,7 @@ class Tool(ABC):
         Returns:
             List of all tool dependencies.
         """
-        subclasses = discover_subclasses_across_dependents(
-            cls,
-            pyrig,
-            tools,
-            discard_parents=True,
-            exclude_abstract=True,
-        )
+        subclasses = cls.get_all_subclasses()
         all_dev_deps: list[str] = []
         for subclass in subclasses:
             all_dev_deps.extend(subclass.get_dev_dependencies())

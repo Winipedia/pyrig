@@ -9,6 +9,18 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 class TestPyrigger:
     """Test class."""
 
+    def test_get_badge_group(self) -> None:
+        """Test method."""
+        result = Pyrigger.L.get_badge_group()
+        assert isinstance(result, str)
+        assert result == "tooling"
+
+    def test_get_badge_urls(self) -> None:
+        """Test method."""
+        result = Pyrigger.L.get_badge_urls()
+        assert isinstance(result, tuple)
+        assert all(isinstance(url, str) for url in result)
+
     def test_get_dev_dependencies(self) -> None:
         """Test method."""
         result = Pyrigger.L.get_dev_dependencies()
