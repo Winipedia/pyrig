@@ -38,13 +38,13 @@ class ModulePath:
           ``pkg_type_to_dir_path``
 
     Frozen Environment Support:
-        Methods ``get_cwd``, ``get_rel_cwd``, ``get_meipass``, and ``in_frozen_env``
+        Methods ``cwd``, ``get_rel_cwd``, ``get_meipass``, and ``in_frozen_env``
         handle PyInstaller frozen executables where files are extracted to a
         temporary ``_MEIPASS`` directory.
     """
 
     @staticmethod
-    def get_cwd() -> Path:
+    def cwd() -> Path:
         """Get the base directory for module path resolution.
 
         In normal execution, returns the current working directory. In frozen
@@ -223,7 +223,7 @@ class ModulePath:
         """
         if not path.is_absolute():
             return ModulePath.relative_path_to_module_name(path)
-        cwd = ModulePath.get_cwd()
+        cwd = ModulePath.cwd()
         rel_path = path.resolve().relative_to(cwd)
         return ModulePath.relative_path_to_module_name(rel_path)
 

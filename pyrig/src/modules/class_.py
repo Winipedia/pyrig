@@ -201,7 +201,7 @@ def discard_parent_classes[T: type](
 
 
 @cache
-def get_cached_instance[T](cls: type[T]) -> T:
+def cached_instance[T](cls: type[T]) -> T:
     """Get or create a cached singleton instance of a class.
 
     Uses ``functools.cache`` to memoize class instantiation. The first call
@@ -219,8 +219,8 @@ def get_cached_instance[T](cls: type[T]) -> T:
         ...     def __init__(self):
         ...         print("Creating resource...")
         ...
-        >>> get_cached_instance(ExpensiveResource)  # prints "Creating resource..."
-        >>> get_cached_instance(ExpensiveResource)  # returns cached, no print
+        >>> cached_instance(ExpensiveResource)  # prints "Creating resource..."
+        >>> cached_instance(ExpensiveResource)  # returns cached, no print
     """
     return cls()
 

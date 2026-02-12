@@ -28,9 +28,9 @@ class TestProjectTester:
         result = ProjectTester.L.get_test_args()
         assert result == ("pytest",)
 
-    def test_get_coverage_threshold(self) -> None:
+    def test_coverage_threshold(self) -> None:
         """Test method."""
-        result = ProjectTester.L.get_coverage_threshold()
+        result = ProjectTester.L.coverage_threshold()
         expected = 90
         assert result == expected
 

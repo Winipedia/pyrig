@@ -143,10 +143,8 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     # Initialize git repo in the test project directory
     with chdir(src_project_dir):
         VersionController.L.get_init_args().run()
-        VersionController.L.get_config_local_user_email_args(
-            email="test@example.com"
-        ).run()
-        VersionController.L.get_config_local_user_name_args(name="Test User").run()
+        VersionController.L.config_local_user_email_args(email="test@example.com").run()
+        VersionController.L.config_local_user_name_args(name="Test User").run()
 
     with chdir(src_project_dir):
         # Create a clean environment dict without VIRTUAL_ENV to force
@@ -180,7 +178,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         args.run(env=clean_env)
 
         # Verify pyrig was installed correctly by running init also assert init passes
-        args = PackageManager.L.run_args(*Pyrigger.L.get_cmd_args(cmd=init))
+        args = PackageManager.L.run_args(*Pyrigger.L.cmd_args(cmd=init))
         res = args.run(env=clean_env)
 
         assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"

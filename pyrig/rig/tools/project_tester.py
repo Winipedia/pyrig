@@ -61,7 +61,7 @@ class ProjectTester(Tool):
         return [*super().dev_dependencies(), "pytest-mock"]
 
     @classmethod
-    def get_coverage_threshold(cls) -> int:
+    def coverage_threshold(cls) -> int:
         """Minimum test coverage percentage threshold."""
         return 90
 

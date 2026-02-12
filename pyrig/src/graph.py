@@ -14,7 +14,7 @@ import heapq
 from collections import deque
 from typing import Self
 
-from pyrig.src.modules.class_ import get_cached_instance
+from pyrig.src.modules.class_ import cached_instance
 
 
 class DiGraph:
@@ -39,7 +39,7 @@ class DiGraph:
     def cached(cls) -> Self:
         """Get or create a cached singleton instance of this graph class.
 
-        Uses ``get_cached_instance`` to ensure only one instance exists per class.
+        Uses ``cached_instance`` to ensure only one instance exists per class.
         Subclasses like ``DependencyGraph`` use this to avoid rebuilding the
         dependency graph on every access, since it's expensive to scan all
         installed distributions.
@@ -47,7 +47,7 @@ class DiGraph:
         Returns:
             The cached singleton instance, created on first call.
         """
-        return get_cached_instance(cls)
+        return cached_instance(cls)
 
     def __init__(self) -> None:
         """Initialize an empty directed graph with no nodes or edges."""

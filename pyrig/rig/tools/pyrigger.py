@@ -6,7 +6,7 @@ Used for programmatic execution of pyrig commands.
 Example:
     >>> from pyrig.rig.tools.pyrigger import Pyrigger
     >>> from pyrig.rig.cli.subcommands import build
-    >>> Pyrigger.L.get_cmd_args(cmd=build)  # pyrig build
+    >>> Pyrigger.L.cmd_args(cmd=build)  # pyrig build
 """
 
 from collections.abc import Callable
@@ -30,7 +30,7 @@ class Pyrigger(Tool):
 
     Example:
         >>> from pyrig.rig.cli.subcommands import build
-        >>> Pyrigger.L.get_cmd_args(cmd=build).run()
+        >>> Pyrigger.L.cmd_args(cmd=build).run()
     """
 
     @classmethod
@@ -69,7 +69,7 @@ class Pyrigger(Tool):
         return ["pyrig-dev"]
 
     @classmethod
-    def get_cmd_args(cls, *args: str, cmd: Callable[..., Any]) -> Args:
+    def cmd_args(cls, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments from callable.
 
         Args:
