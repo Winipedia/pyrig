@@ -10,11 +10,11 @@ Example:
     >>>
     >>> class MyDictConfigFile(DictConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def get_file_extension(cls) -> str:
+    ...     def extension(cls) -> str:
     ...         return "conf"
     ...
     ...     @classmethod
@@ -26,7 +26,7 @@ Example:
     ...         pass
     ...
     ...     @classmethod
-    ...     def _get_configs(cls) -> dict[str, Any]:
+    ...     def _configs(cls) -> dict[str, Any]:
     ...         return {"key": "value"}
 """
 
@@ -39,12 +39,12 @@ class DictConfigFile(ConfigFile[dict[str, Any]]):
     """Abstract base class for dict-based configuration files.
 
     Specifies dict[str, Any] as the configuration type. Subclasses inherit
-    proper typing for load(), dump(), get_configs(), etc.
+    proper typing for load(), dump(), configs(), etc.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the config file
-        - `get_file_extension`: File extension without leading dot
-        - `_get_configs`: Expected configuration as dict
+        - `parent_path`: Directory containing the config file
+        - `extension`: File extension without leading dot
+        - `_configs`: Expected configuration as dict
         - `_load`: Load and parse the file
         - `_dump`: Write configuration to file
     """

@@ -19,12 +19,12 @@ def my_test_yaml_config_file(
         """Test yaml config file with tmp_path override."""
 
         @classmethod
-        def get_parent_path(cls) -> Path:
+        def parent_path(cls) -> Path:
             """Get the path to the config file."""
             return Path()
 
         @classmethod
-        def _get_configs(cls) -> dict[str, Any]:
+        def _configs(cls) -> dict[str, Any]:
             """Get the config."""
             return {"key": "value"}
 
@@ -48,8 +48,6 @@ class TestYamlConfigFile:
             "Expected dump to work"
         )
 
-    def test_get_file_extension(
-        self, my_test_yaml_config_file: type[YamlConfigFile]
-    ) -> None:
+    def test_extension(self, my_test_yaml_config_file: type[YamlConfigFile]) -> None:
         """Test method."""
-        assert my_test_yaml_config_file.get_file_extension() == "yaml", "Expected yaml"
+        assert my_test_yaml_config_file.extension() == "yaml", "Expected yaml"

@@ -25,6 +25,6 @@ class PyTypedConfigFile(TypedConfigFile):
     """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Return package directory path."""
         return Path(PyprojectConfigFile.L.get_package_name())

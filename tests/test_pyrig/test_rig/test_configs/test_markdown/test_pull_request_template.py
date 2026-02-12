@@ -10,9 +10,9 @@ from pyrig.rig.configs.markdown.pull_request_template import (
 class TestPullRequestTemplateConfigFile:
     """Test class."""
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        result = PullRequestTemplateConfigFile.get_parent_path()
+        result = PullRequestTemplateConfigFile.parent_path()
         assert result == Path(".github")
 
     def test_get_lines(self) -> None:

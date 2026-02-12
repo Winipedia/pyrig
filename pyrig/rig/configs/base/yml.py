@@ -10,11 +10,11 @@ Example:
     >>>
     >>> class MkDocsConfigFile(YmlConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def _get_configs(cls) -> dict[str, Any]:
+    ...     def _configs(cls) -> dict[str, Any]:
     ...         return {"site_name": "My Project", "theme": {"name": "material"}}
 """
 
@@ -27,14 +27,14 @@ class YmlConfigFile(YamlConfigFile):
     Extends YamlConfigFile with "yml" extension. All functionality inherited.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the .yml file
-        - `_get_configs`: Expected YAML configuration structure
+        - `parent_path`: Directory containing the .yml file
+        - `_configs`: Expected YAML configuration structure
 
     See Also:
         pyrig.rig.configs.base.yaml.YamlConfigFile: Parent class
     """
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return "yml"."""
         return "yml"

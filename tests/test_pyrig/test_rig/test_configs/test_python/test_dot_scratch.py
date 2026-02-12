@@ -12,15 +12,15 @@ class TestDotScratchConfigFile:
         """Test method."""
         assert DotScratchConfigFile().is_correct()
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
-        assert DotScratchConfigFile.get_filename() == ".scratch"
+        assert DotScratchConfigFile.filename() == ".scratch"
 
-    def test_get_parent_path(
+    def test_parent_path(
         self,
     ) -> None:
         """Test method."""
-        assert DotScratchConfigFile.get_parent_path() == Path()
+        assert DotScratchConfigFile.parent_path() == Path()
 
     def test_get_lines(self) -> None:
         """Test method."""

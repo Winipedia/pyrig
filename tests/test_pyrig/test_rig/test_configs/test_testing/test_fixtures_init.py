@@ -8,10 +8,10 @@ from pyrig.rig.tests import fixtures
 class TestFixturesInitConfigFile:
     """Test class."""
 
-    def test_get_priority(self) -> None:
+    def test_priority(self) -> None:
         """Test method."""
-        assert FixturesInitConfigFile.get_priority() > 0
-        assert FixturesInitConfigFile.get_priority() > ConftestConfigFile.get_priority()
+        assert FixturesInitConfigFile.priority() > 0
+        assert FixturesInitConfigFile.priority() > ConftestConfigFile.priority()
 
     def test_get_src_module(self) -> None:
         """Test method."""

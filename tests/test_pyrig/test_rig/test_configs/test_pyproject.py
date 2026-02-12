@@ -31,11 +31,9 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
-    def test_get_priority(self) -> None:
+    def test_priority(self) -> None:
         """Test method."""
-        assert (
-            PyprojectConfigFile.L.get_priority() > ConfigsInitConfigFile.get_priority()
-        )
+        assert PyprojectConfigFile.L.priority() > ConfigsInitConfigFile.priority()
 
     def test_detect_project_license(self) -> None:
         """Test method."""
@@ -101,11 +99,11 @@ class TestPyprojectConfigFile:
             my_test_pyproject_config_file,
             my_test_pyproject_config_file.remove_wrong_dependencies.__name__,
         )
-        config = my_test_pyproject_config_file.get_configs()
+        config = my_test_pyproject_config_file.configs()
         my_test_pyproject_config_file.dump(config)
         spy.assert_called_once_with(config)
 
-    def test_get_parent_path(
+    def test_parent_path(
         self,
         my_test_pyproject_config_file: type[PyprojectConfigFile],
         tmp_path: Path,
@@ -113,14 +111,14 @@ class TestPyprojectConfigFile:
         """Test method."""
         with chdir(tmp_path):
             expected = Path()
-            actual = my_test_pyproject_config_file.get_parent_path()
+            actual = my_test_pyproject_config_file.parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test__get_configs(self) -> None:
+    def test__configs(self) -> None:
         """Test method."""
         # pyproject get configs internally uses load which makes it a special case
-        # where the file must exist before calling get_configs
-        configs = PyprojectConfigFile.L.get_configs()
+        # where the file must exist before calling configs
+        configs = PyprojectConfigFile.L.configs()
         assert "project" in configs, "Expected 'project' key in configs"
         assert "build-system" in configs, "Expected 'build-system' key in configs"
         assert "tool" in configs, "Expected 'tool' key in configs"
@@ -150,7 +148,7 @@ class TestPyprojectConfigFile:
     ) -> None:
         """Test method."""
         my_test_pyproject_config_file()
-        config = my_test_pyproject_config_file.get_configs()
+        config = my_test_pyproject_config_file.configs()
         # add wrong dependencies to config
         config["project"]["dependencies"] = [
             "wrong>=1.0.0,<2.0.0",

@@ -51,7 +51,7 @@ class PrekConfigFile(TomlConfigFile):
     """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for prek.toml.
 
         Returns:
@@ -95,7 +95,7 @@ class PrekConfigFile(TomlConfigFile):
         return hook
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Get the complete prek configuration.
 
         Generates prek.toml with local hooks: format-code (ruff format),

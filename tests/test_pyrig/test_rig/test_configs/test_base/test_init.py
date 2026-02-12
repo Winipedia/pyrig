@@ -47,14 +47,12 @@ def my_test_init_config_file(
 class TestInitConfigFile:
     """Test class."""
 
-    def test_get_parent_path(
-        self, my_test_init_config_file: type[InitConfigFile]
-    ) -> None:
+    def test_parent_path(self, my_test_init_config_file: type[InitConfigFile]) -> None:
         """Test method."""
-        assert isinstance(my_test_init_config_file.get_parent_path(), Path)
+        assert isinstance(my_test_init_config_file.parent_path(), Path)
 
-    def test_get_filename(self, my_test_init_config_file: type[InitConfigFile]) -> None:
+    def test_filename(self, my_test_init_config_file: type[InitConfigFile]) -> None:
         """Test method."""
         expected = "__init__"
-        actual = my_test_init_config_file.get_filename()
+        actual = my_test_init_config_file.filename()
         assert expected == actual, f"Expected {expected}, got {actual}"

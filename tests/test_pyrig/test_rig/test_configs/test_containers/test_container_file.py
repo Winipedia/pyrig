@@ -8,21 +8,21 @@ from pyrig.rig.configs.containers.container_file import ContainerfileConfigFile
 class TestContainerfileConfigFile:
     """Test class."""
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.get_filename() == "Containerfile"
+        assert ContainerfileConfigFile.filename() == "Containerfile"
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.get_parent_path() == Path()
+        assert ContainerfileConfigFile.parent_path() == Path()
 
-    def test_get_file_extension(self) -> None:
+    def test_extension(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.get_file_extension() == ""
+        assert ContainerfileConfigFile.extension() == ""
 
-    def test_get_extension_sep(self) -> None:
+    def test_extension_separator(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.get_extension_sep() == ""
+        assert ContainerfileConfigFile.extension_separator() == ""
 
     def test_get_lines(self) -> None:
         """Test method."""

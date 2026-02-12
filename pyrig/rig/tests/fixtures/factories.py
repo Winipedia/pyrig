@@ -5,7 +5,7 @@ redirected to pytest's ``tmp_path``, enabling isolated testing without affecting
 real files or build artifacts.
 
 Fixtures:
-    config_file_factory: Creates ConfigFile subclasses with ``get_path()``
+    config_file_factory: Creates ConfigFile subclasses with ``path()``
         redirected to tmp_path. Also works for BuilderConfigFile subclasses.
 """
 
@@ -26,7 +26,7 @@ def config_file_factory[T: ConfigFile](
     """Provide a factory for creating test-safe ConfigFile subclasses.
 
     Creates dynamic subclasses that redirect all file operations to pytest's
-    tmp_path for isolated testing. Overrides ``get_path()``, ``get_parent_path()``,
+    tmp_path for isolated testing. Overrides ``path()``, ``parent_path()``,
     ``_dump()``, ``_load()``, and ``create_file()`` to ensure complete isolation.
 
     Args:
@@ -46,20 +46,20 @@ def config_file_factory[T: ConfigFile](
             base_class: The ConfigFile subclass to wrap.
 
         Returns:
-            A subclass with get_path() redirected to tmp_path.
+            A subclass with path() redirected to tmp_path.
         """
 
         class TestConfigFile(base_class):  # type: ignore [misc, valid-type]
             """Test config file with tmp_path override."""
 
             @classmethod
-            def get_path(cls) -> Path:
+            def path(cls) -> Path:
                 """Get the file path redirected to tmp_path.
 
                 Returns:
                     Path within tmp_path.
                 """
-                path = super().get_path()
+                path = super().path()
                 # append tmp_path to path if not already in tmp_path
                 if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
                     path = tmp_path / path
@@ -78,10 +78,10 @@ def config_file_factory[T: ConfigFile](
                     return super()._load()
 
             @classmethod
-            def get_parent_path(cls) -> Path:
+            def parent_path(cls) -> Path:
                 """Get parent path redirected to tmp_path for test isolation."""
                 # append tmp_path to path if not already in tmp_path
-                path = super().get_parent_path()
+                path = super().parent_path()
                 if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
                     path = tmp_path / path
                 return path

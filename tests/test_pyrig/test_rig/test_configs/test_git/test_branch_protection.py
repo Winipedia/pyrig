@@ -24,15 +24,15 @@ class TestRepoProtectionConfigFile:
         """Test method."""
         RepoProtectionConfigFile.L.set_secure_repo_settings()
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        assert RepoProtectionConfigFile.get_parent_path() == Path()
+        assert RepoProtectionConfigFile.parent_path() == Path()
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
-        assert RepoProtectionConfigFile.get_filename() == "branch-protection"
+        assert RepoProtectionConfigFile.filename() == "branch-protection"
 
-    def test__get_configs(self) -> None:
+    def test__configs(self) -> None:
         """Test method."""
-        configs = RepoProtectionConfigFile.get_configs()
+        configs = RepoProtectionConfigFile.configs()
         assert isinstance(configs, dict)

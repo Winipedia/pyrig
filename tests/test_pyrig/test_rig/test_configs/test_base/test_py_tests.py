@@ -10,12 +10,12 @@ from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 class TestPythonTestsConfigFile:
     """Test class."""
 
-    def test_get_parent_path(
+    def test_parent_path(
         self,
         tmp_path: Path,
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
             expected = Path(MirrorTestConfigFile.get_tests_package_name())
-            actual = PythonTestsConfigFile.get_parent_path()
+            actual = PythonTestsConfigFile.parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"

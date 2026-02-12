@@ -129,7 +129,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Extract test filename from the derived test path.
 
         Returns:
@@ -139,7 +139,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return test_path.stem  # filename without extension
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get parent directory for the test file.
 
         Returns:
@@ -188,7 +188,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             True if all functions and methods are covered by tests, or if the
             parent class validation passes.
         """
-        if not cls.get_path().exists():
+        if not cls.path().exists():
             return False
         test_module_content = get_module_content_as_str(cls.get_test_module())
         untested_funcs = [
@@ -210,16 +210,16 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         )
 
     @classmethod
-    def add_missing_configs(cls) -> list[Any]:
+    def merge_configs(cls) -> list[Any]:
         """Return test configurations without merging.
 
-        For mirror tests, get_configs() already includes existing tests,
+        For mirror tests, configs() already includes existing tests,
         so no additional merging is needed.
 
         Returns:
-            List of test configurations from get_configs().
+            List of test configurations from configs().
         """
-        return cls.get_configs()
+        return cls.configs()
 
     @classmethod
     def definition_package(cls) -> ModuleType:

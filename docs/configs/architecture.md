@@ -74,9 +74,9 @@ Every ConfigFile subclass must implement:
 
 | Method                 | Purpose                                    | Returns            |
 | ---------------------- | ------------------------------------------ | ------------------ |
-| `get_parent_path()`    | Directory containing the file              | `Path`             |
-| `get_file_extension()` | File extension without dot                 | `str`              |
-| `_get_configs()`       | Expected configuration structure           | `ConfigT`          |
+| `parent_path()`    | Directory containing the file              | `Path`             |
+| `extension()` | File extension without dot                 | `str`              |
+| `_configs()`       | Expected configuration structure           | `ConfigT`          |
 | `_load()`              | Parse file content (internal)              | `ConfigT`          |
 | `_dump(config)`        | Write configuration to file (internal)     | `None`             |
 
@@ -84,20 +84,20 @@ Every ConfigFile subclass must implement:
 `DictConfigFile`, `list[Any]` for `ListConfigFile`, or
 `dict[str, Any] | list[Any]` for base classes like `YamlConfigFile` and
 `JsonConfigFile`. Format-specific subclasses provide implementations for
-`_load()`, `_dump()`, and `get_file_extension()`.
+`_load()`, `_dump()`, and `extension()`.
 
 Subclasses implement `_load()` and `_dump()` (internal methods). Users call
 `load()` and `dump()` (public API with caching).
 
 ### Caching System
 
-Both `load()` and `get_configs()` use `@functools.cache` to avoid redundant
+Both `load()` and `configs()` use `@functools.cache` to avoid redundant
 operations:
 
-- **First call**: Executes `_load()` or `_get_configs()` and caches the result
+- **First call**: Executes `_load()` or `_configs()` and caches the result
 - **Subsequent calls**: Returns cached data without re-execution
 - **Cache invalidation**: `dump()` clears the `load()` cache before and after
-  writing (the `get_configs()` cache is never cleared since config structure
+  writing (the `configs()` cache is never cleared since config structure
   shouldn't change at runtime)
 
 This provides significant performance improvements when config files
@@ -105,7 +105,7 @@ are accessed multiple times, while ensuring data consistency after writes.
 
 ### Caching Pitfall: Never Mutate Cached Results
 
-Due to caching, mutating the object returned by `load()` or `get_configs()`
+Due to caching, mutating the object returned by `load()` or `configs()`
 creates subtle bugs:
 
 ```python
@@ -133,12 +133,12 @@ deps = [*MyConfigFile.load()["dependencies"], "new-dep"]
 ```
 
 This is especially important for ConfigFiles that call `load()` inside
-`_get_configs()`. For example, `PyprojectConfigFile.L._get_configs()` reads
+`_configs()`. For example, `PyprojectConfigFile.L._configs()` reads
 the existing `pyproject.toml` (via calling `load()`) to preserve user-defined
-values. If `_get_configs()` mutates the loaded data, the cache becomes corrupted
+values. If `_configs()` mutates the loaded data, the cache becomes corrupted
 and subsequent calls return incorrect values.
 
-**Rule**: Always treat `load()` and `get_configs()` results as read-only. Return
+**Rule**: Always treat `load()` and `configs()` results as read-only. Return
 new structures instead of modifying in place.
 
 ## Initialization Process
@@ -189,15 +189,15 @@ structure.
 When configs are missing or incorrect, the system intelligently merges them:
 
 - **Dict values** - Missing keys are added. **Important**: Keys with incorrect
-  values are overwritten with the expected values from `_get_configs()`. This
+  values are overwritten with the expected values from `_configs()`. This
   ensures required configuration is always correct.
 - **List values** - Missing items are inserted at the correct index
 - **User additions** - Preserved during merge (extra keys in dicts, extra items
   in lists)
 
 **Customizing default values**: To change default values, subclass the specific
-config file and override the `_get_configs()` method. Keep the class name the
-same (filename is derived from it) unless you also override `get_filename()`.
+config file and override the `_configs()` method. Keep the class name the
+same (filename is derived from it) unless you also override `filename()`.
 Import the base class using:
 `from pyrig.rig.configs.some.config_file import MainConfigFile as BaseMainCF`
 and subclass it.
@@ -241,12 +241,12 @@ priority-based system that balances correctness with performance.
 
 #### Priority System
 
-Each ConfigFile subclass can override `get_priority()` to specify initialization
+Each ConfigFile subclass can override `priority()` to specify initialization
 order:
 
 ```python
 @classmethod
-def get_priority(cls) -> float:
+def priority(cls) -> float:
     """Return priority for this config file.
 
     Higher numbers are processed first. 
@@ -291,7 +291,7 @@ group:
   priority > 0
 - `ConfigFile.subclasses()` - Discover all config files (sorted by
   priority)
-- `ConfigFile.get_priority_subclasses()` - Get only config files with priority >
+- `ConfigFile.priority_subclasses()` - Get only config files with priority >
   0
 
 **Priority-only initialization**:
@@ -319,7 +319,7 @@ dependencies (like LICENSE before pyproject.toml) are always met.
 
 These subclasses implement common methods for specific file formats, simplifying
 ConfigFile creation. They provide implementations for `_load()`, `_dump()`, and
-`get_file_extension()` so you only need to define the file location and expected
+`extension()` so you only need to define the file location and expected
 content.
 
 ### DictConfigFile
@@ -334,11 +334,11 @@ from pyrig.rig.configs.base.dict_cf import DictConfigFile
 
 class MyConfigFile(DictConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path("config")
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         return "conf"
 
     @classmethod
@@ -352,7 +352,7 @@ class MyConfigFile(DictConfigFile):
         pass
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -372,11 +372,11 @@ from pyrig.rig.configs.base.list_cf import ListConfigFile
 
 class MyListConfigFile(ListConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path(".")
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         return "list"
 
     @classmethod
@@ -390,7 +390,7 @@ class MyListConfigFile(ListConfigFile):
         pass
 
     @classmethod
-    def _get_configs(cls) -> list[Any]:
+    def _configs(cls) -> list[Any]:
         return ["item1", "item2"]
 ```
 
@@ -410,11 +410,11 @@ from pyrig.rig.configs.base.json import JsonConfigFile
 
 class MyConfigFile(JsonConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path("config")
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -431,11 +431,11 @@ from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path("config")
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -452,11 +452,11 @@ from pyrig.rig.configs.base.toml import TomlConfigFile
 
 class MyConfigFile(TomlConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path(".")
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         return {"tool": {"myapp": {"setting": "value"}}}
 ```
 
@@ -477,7 +477,7 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 
 class MyConfigFile(StringConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path(".")
 
     @classmethod
@@ -485,7 +485,7 @@ class MyConfigFile(StringConfigFile):
         return ["# Required header"]
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         return "someext"
 ```
 
@@ -503,7 +503,7 @@ from pyrig.rig.configs.base.python import PythonConfigFile
 
 class MyConfigFile(PythonConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path("myapp/src")
 
     @classmethod
@@ -661,11 +661,11 @@ The system:
 2. Converts to snake_case
 3. Adds the file extension
 
-Override `get_filename()` for custom names:
+Override `filename()` for custom names:
 
 ```python
 @classmethod
-def get_filename(cls) -> str:
+def filename(cls) -> str:
     return ""  # Creates ".env" instead of "dot_env.env"
 ```
 
@@ -716,12 +716,12 @@ class DatabaseConfigFile(YamlConfigFile):
     """Configuration for database connection settings."""
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Place in config/ directory."""
         return Path("config")
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Required database configuration."""
         return {
             "database": {

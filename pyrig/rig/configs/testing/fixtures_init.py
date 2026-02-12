@@ -41,7 +41,7 @@ class FixturesInitConfigFile(InitConfigFile):
     """
 
     @classmethod
-    def get_priority(cls) -> float:
+    def priority(cls) -> float:
         """Get the priority for this config file.
 
         Returns:

@@ -150,9 +150,9 @@ Creates test versions of `ConfigFile` subclasses using temporary paths:
 ```python
 def test_my_config(config_file_factory):
     TestConfig = config_file_factory(MyConfigFile)
-    # TestConfig.get_path() returns path in tmp_path
+    # TestConfig.path() returns path in tmp_path
     config = TestConfig()
-    assert TestConfig.get_path().exists()
+    assert TestConfig.path().exists()
 ```
 
 **Purpose**: Isolate config file tests from actual project files. Prevents file
@@ -166,10 +166,10 @@ subclasses using temporary paths:
 ```python
 def test_my_builder(config_file_factory):
     TestBuilder = config_file_factory(MyBuilder)
-    # TestBuilder.get_path() returns path in tmp_path
+    # TestBuilder.path() returns path in tmp_path
     builder = TestBuilder()
     builder.build()
-    assert TestBuilder.get_parent_path().exists()
+    assert TestBuilder.parent_path().exists()
 ```
 
 **Purpose**: Isolate artifact generation tests from actual build directories.

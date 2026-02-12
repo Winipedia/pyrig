@@ -62,7 +62,7 @@ class SecurityConfigFile(MarkdownConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get the SECURITY filename.
 
         Returns:
@@ -71,7 +71,7 @@ class SecurityConfigFile(MarkdownConfigFile):
         return "SECURITY"
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for SECURITY.md.
 
         Returns:
@@ -95,8 +95,8 @@ class SecurityConfigFile(MarkdownConfigFile):
         Returns:
             bool: True if file exists with content, False otherwise.
         """
-        return cls.get_path().exists() and bool(
-            cls.get_path().read_text(encoding="utf-8").strip()
+        return cls.path().exists() and bool(
+            cls.path().read_text(encoding="utf-8").strip()
         )
 
     @classmethod

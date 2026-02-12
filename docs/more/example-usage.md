@@ -67,12 +67,12 @@ class LoggingConfigFile(YamlConfigFile):
     """Logging configuration for all microservices."""
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Place in config/ directory."""
         return Path("config")
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Required logging configuration."""
         return {
             "logging": {
@@ -123,9 +123,9 @@ class MkdocsConfigFile(BaseMkdocsCF):
     """Custom-branded documentation theme."""
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Override theme with custom colors."""
-        config = super()._get_configs()
+        config = super()._configs()
 
         # Add custom branding
         config["theme"]["palette"] = [
@@ -192,9 +192,9 @@ class PyprojectConfigFile(BasePyprojectCF):
         ]
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Add shared tool configs."""
-        config = super()._get_configs()
+        config = super()._configs()
 
         # Add custom ruff rules for shared standards
         config["tool"]["ruff"]["lint"]["ignore"].extend([
@@ -353,11 +353,11 @@ class AuthConfigFile(YamlConfigFile):
     """JWT and OAuth configuration."""
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path("config")
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         return {
             "auth": {
                 "jwt_algorithm": "RS256",

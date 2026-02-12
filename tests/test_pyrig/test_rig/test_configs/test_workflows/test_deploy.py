@@ -63,11 +63,11 @@ class TestDeployWorkflow:
     def test_is_correct(self, my_test_deploy_workflow: type[DeployWorkflow]) -> None:
         """Test method."""
         test_workflow = my_test_deploy_workflow()
-        workflow_path = test_workflow.get_path()
+        workflow_path = test_workflow.path()
         workflow_path.write_text("")
         assert test_workflow.is_correct(), "Expected workflow to be correct when empty"
 
-        proper_config = test_workflow.get_configs()
+        proper_config = test_workflow.configs()
         test_workflow.dump(proper_config)
         assert test_workflow.is_correct(), (
             "Expected workflow to be correct with proper config"

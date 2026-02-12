@@ -40,7 +40,7 @@ class DotScratchConfigFile(PythonConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get the scratch filename.
 
         Returns:
@@ -49,7 +49,7 @@ class DotScratchConfigFile(PythonConfigFile):
         return ".scratch"
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for .scratch.py.
 
         Returns:
@@ -73,4 +73,4 @@ class DotScratchConfigFile(PythonConfigFile):
         Returns:
             True if the file exists.
         """
-        return cls.get_path().exists()
+        return cls.path().exists()

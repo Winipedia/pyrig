@@ -9,7 +9,7 @@ Example:
     >>>
     >>> class MyPackageTypedFile(TypedConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path("src/mypackage")
     >>>
     >>> MyPackageTypedFile()  # Creates src/mypackage/py.typed (empty file)
@@ -30,14 +30,14 @@ class TypedConfigFile(DictConfigFile):
     The marker file only needs to exist; content is ignored by type checkers.
 
     Subclasses must implement:
-        - `get_parent_path`: Package directory containing the py.typed file
+        - `parent_path`: Package directory containing the py.typed file
 
     See Also:
         PEP 561: https://peps.python.org/pep-0561/
     """
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return "typed"."""
         return "typed"
 
@@ -65,7 +65,7 @@ class TypedConfigFile(DictConfigFile):
             raise ValueError(msg)
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Return empty dict (marker file has no meaningful content).
 
         Returns:

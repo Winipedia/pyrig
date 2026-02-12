@@ -174,7 +174,7 @@ When initialized via `uv run pyrig mkroot`, the `branch-protection.json` file is
 created by:
 
 1. **Generating ruleset configuration**:
-   `RepoProtectionConfigFile.get_configs()` creates the complete ruleset
+   `RepoProtectionConfigFile.configs()` creates the complete ruleset
 2. **Setting required status checks**: Uses health check workflow job IDs
 3. **Configuring bypass actors**: Adds repository admin bypass permissions
 4. **Applying security defaults**: Enforces pyrig's opinionated protection rules
@@ -249,9 +249,9 @@ from pyrig.rig.configs.git.branch_protection import RepoProtectionConfigFile
 
 class MyRepoProtectionConfigFile(RepoProtectionConfigFile):
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Custom branch protection configuration."""
-        config = super()._get_configs()
+        config = super()._configs()
         # Require 2 approvals instead of 1
         for rule in config["rules"]:
             if rule.get("type") == "pull_request":

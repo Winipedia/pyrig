@@ -55,7 +55,7 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
     """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for pull_request_template.md.
 
         Returns:
@@ -79,6 +79,6 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         Returns:
             bool: True if file exists with content, False otherwise.
         """
-        return cls.get_path().exists() and bool(
-            cls.get_path().read_text(encoding="utf-8").strip()
+        return cls.path().exists() and bool(
+            cls.path().read_text(encoding="utf-8").strip()
         )

@@ -106,7 +106,7 @@ class BuilderConfigFile(ListConfigFile):
         """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for artifacts.
 
         For builders, this is the directory where artifacts are stored. The default
@@ -124,7 +124,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             List of artifact paths (non-recursive).
         """
-        return list(cls.get_parent_path().glob("*"))
+        return list(cls.parent_path().glob("*"))
 
     @classmethod
     def _dump(cls, config: list[Path]) -> None:  # noqa: ARG003
@@ -136,12 +136,12 @@ class BuilderConfigFile(ListConfigFile):
         cls.build()
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return empty string (builders don't use file extensions)."""
         return ""
 
     @classmethod
-    def _get_configs(cls) -> list[Path]:
+    def _configs(cls) -> list[Path]:
         """Return empty list (builders don't use config lists)."""
         return []
 
@@ -161,7 +161,7 @@ class BuilderConfigFile(ListConfigFile):
         Not creating the file itself, as the file creation is handled by the
         create_artifacts() method.
         """
-        cls.get_parent_path().mkdir(parents=True, exist_ok=True)
+        cls.parent_path().mkdir(parents=True, exist_ok=True)
 
     @classmethod
     def definition_package(cls) -> ModuleType:
@@ -232,7 +232,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Platform-specific path for the artifact.
         """
-        return cls.get_parent_path() / cls.get_platform_specific_name(artifact)
+        return cls.parent_path() / cls.get_platform_specific_name(artifact)
 
     @classmethod
     def get_platform_specific_name(cls, artifact: Path) -> str:

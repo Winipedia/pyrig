@@ -38,7 +38,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
     '''
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get the test filename with reversed prefix.
 
         Returns:
@@ -47,7 +47,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
         Note:
             Reverses class name parts to convert "zero_test" to "test_zero".
         """
-        filename = super().get_filename()
+        filename = super().filename()
         return "_".join(reversed(filename.split("_")))
 
     @classmethod
