@@ -36,6 +36,7 @@ from pyrig.src.modules.package import (
     discover_subclasses_across_dependents,
 )
 from pyrig.src.processes import Args
+from pyrig.src.string_ import make_linked_badge_markdown
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +112,11 @@ class Tool(ABC):
     def get_badge(cls) -> str:
         """Returns the badge string for a markdown file."""
         badge, page = cls.get_badge_urls()
-        return f"[![{cls.name()}]({badge})]({page})"
+        return make_linked_badge_markdown(
+            badge_url=badge,
+            link_url=page,
+            alt_text=cls.name(),
+        )
 
     @classmethod
     def get_dev_dependencies(cls) -> list[str]:

@@ -7,11 +7,11 @@ Example:
         RemoteVersionController,
     )
     >>> RemoteVersionController.L.get_repo_url()
-    >>> RemoteVersionController.L.get_documentation_url()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.rig.tools.version_controller import VersionController
+from pyrig.src.string_ import make_linked_badge_markdown
 
 
 class RemoteVersionController(Tool):
@@ -102,30 +102,6 @@ class RemoteVersionController(Tool):
         return f"{cls.get_repo_url()}/releases"
 
     @classmethod
-    def get_documentation_url(cls) -> str:
-        """Construct GitHub Pages URL.
-
-        Returns:
-            URL in format: `https://{owner}.github.io/{repo}`
-
-        Note:
-            Site may not exist if GitHub Pages not enabled.
-        """
-        owner, repo = VersionController.L.get_repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
-        )
-        return f"https://{owner}.github.io/{repo}"
-
-    @classmethod
-    def get_documentation_badge(cls) -> str:
-        """Returns the badge for a markdown file.
-
-        Shows github pages for github.
-        """
-        return rf"[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)]({cls.get_documentation_url()})"
-
-    @classmethod
     def get_cicd_url(cls, workflow_name: str) -> str:
         """Construct GitHub Actions workflow run URL.
 
@@ -168,4 +144,8 @@ class RemoteVersionController(Tool):
         """
         badge_url = cls.get_cicd_badge_url(workflow_name, label)
         cicd_url = cls.get_cicd_url(workflow_name)
-        return rf"[![{label}]({badge_url})]({cicd_url})"
+        return make_linked_badge_markdown(
+            badge_url=badge_url,
+            link_url=cicd_url,
+            alt_text=label,
+        )

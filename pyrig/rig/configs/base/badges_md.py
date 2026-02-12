@@ -28,14 +28,8 @@ from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.rig.configs.workflows.release import ReleaseWorkflow
 from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.rig.tools.docs_builder import DocsBuilder
-from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
-from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.urls import (
-    get_codecov_url,
-    get_pypi_badge_url,
-    get_pypi_url,
-)
+from pyrig.src.string_ import make_linked_badge_markdown
 
 
 class BadgesMarkdownConfigFile(MarkdownConfigFile):
@@ -114,15 +108,14 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         health_check_wf_name = HealthCheckWorkflow.get_filename()
         release_wf_name = ReleaseWorkflow.get_filename()
         badge_groups = Tool.get_grouped_badges()
-        badge_groups[ProjectTester.L.get_group()].extend(
-            [
-                rf"[![codecov]({get_codecov_url()}/branch/{VersionController.L.get_default_branch()}/graph/badge.svg)]({get_codecov_url()})"
-            ]
-        )
+
         badge_groups[ToolGroup.PROJECT_INFO].extend(
             [
-                rf"[![PyPI]({get_pypi_badge_url()})]({get_pypi_url()})",
-                rf"[![Python](https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white)](https://www.python.org/)",
+                make_linked_badge_markdown(
+                    badge_url=f"https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white",
+                    link_url="https://www.python.org",
+                    alt_text="python",
+                ),
                 LicenseConfigFile.L.get_license_badge(),
             ]
         )
@@ -135,7 +128,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
         badge_groups[DocsBuilder.L.get_group()].extend(
             [
-                RemoteVersionController.L.get_documentation_badge(),
+                DocsBuilder.L.get_documentation_badge(),
             ]
         )
         return badge_groups

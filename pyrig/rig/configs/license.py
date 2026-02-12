@@ -20,6 +20,7 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
+from pyrig.src.string_ import make_linked_badge_markdown
 
 
 class LicenseConfigFile(StringConfigFile):
@@ -112,4 +113,8 @@ class LicenseConfigFile(StringConfigFile):
         """
         badge_url = cls.get_license_badge_url()
         repo_url = RemoteVersionController.L.get_repo_url()
-        return rf"[![License]({badge_url})]({repo_url}/blob/main/LICENSE)"
+        return make_linked_badge_markdown(
+            badge_url=badge_url,
+            link_url=f"{repo_url}/blob/main/{cls.get_filename()}",
+            alt_text="License",
+        )
