@@ -58,7 +58,7 @@ class ProjectTester(Tool):
         Returns:
             List of tool dependencies.
         """
-        return [*super().get_dev_dependencies(), "pytest-cov", "pytest-mock"]
+        return [*super().get_dev_dependencies(), "pytest-mock"]
 
     @classmethod
     def get_coverage_threshold(cls) -> int:

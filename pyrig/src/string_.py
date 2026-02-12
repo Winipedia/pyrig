@@ -165,3 +165,33 @@ Found errors at:
 - {error_location}
 """
     return msg
+
+
+def make_linked_badge_markdown(
+    badge_url: str,
+    link_url: str,
+    alt_text: str,
+) -> str:
+    """Return Markdown for a clickable badge image.
+
+    The generated Markdown has the following structure:
+
+        [![alt_text](badge_url)](link_url)
+
+    Args:
+        badge_url: The URL of the badge image.
+        link_url: The URL the badge should link to when clicked.
+        alt_text: The alternative text for the image (used for accessibility).
+
+    Returns:
+        A Markdown string representing a linked badge image.
+
+    Example:
+        >>> make_linked_badge_markdown(
+        ...     badge_url="https://img.shields.io/badge/tests-passing-brightgreen",
+        ...     link_url="https://github.com/user/repo/actions",
+        ...     alt_text="Tests",
+        ... )
+        '[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/user/repo/actions)'
+    """
+    return f"[![{alt_text}]({badge_url})]({link_url})"

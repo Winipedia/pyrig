@@ -18,13 +18,6 @@ class TestRemoteVersionController:
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_documentation_badge(self) -> None:
-        """Test method."""
-        result = RemoteVersionController.L.get_documentation_badge()
-        assert isinstance(result, str)
-        assert "[![" in result
-        assert "Documentation" in result
-
     def test_get_dev_dependencies(self) -> None:
         """Test method."""
         result = RemoteVersionController.L.get_dev_dependencies()
@@ -55,11 +48,6 @@ class TestRemoteVersionController:
         """Test method."""
         result = RemoteVersionController.L.get_releases_url()
         assert result == "https://github.com/Winipedia/pyrig/releases"
-
-    def test_get_documentation_url(self) -> None:
-        """Test method."""
-        result = RemoteVersionController.L.get_documentation_url()
-        assert result == "https://Winipedia.github.io/pyrig"
 
     def test_get_cicd_url(self) -> None:
         """Test method."""

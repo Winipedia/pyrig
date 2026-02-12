@@ -18,10 +18,9 @@ from pyrig.rig.tools.version_controller import VersionController
 
 class RemoteVersionController(BaseRVC):
     @classmethod
-    def get_documentation_url(cls) -> str:
-        # Use custom documentation domain instead of GitHub Pages
-        _, repo = VersionController.L.get_repo_owner_and_name()
-        return f"https://docs.example.com/{repo}"
+    def get_issues_url(cls) -> str:
+        # Use custom issues domain instead of GitHub
+        return f"https://issues.example.com
 ```
 
 ## Related

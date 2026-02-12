@@ -8,6 +8,20 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
+    def test_get_documentation_url(self) -> None:
+        """Test method."""
+        result = DocsBuilder.L.get_documentation_url()
+        assert isinstance(result, str)
+        assert result.startswith("https://")
+        assert "github.io" in result
+
+    def test_get_documentation_badge(self) -> None:
+        """Test method."""
+        result = DocsBuilder.L.get_documentation_badge()
+        assert isinstance(result, str)
+        assert "[![" in result
+        assert "Documentation" in result
+
     def test_get_group(self) -> None:
         """Test method."""
         result = DocsBuilder.L.get_group()

@@ -5,6 +5,7 @@ from types import ModuleType
 import pytest
 
 from pyrig.src.string_ import (
+    make_linked_badge_markdown,
     make_name_from_obj,
     make_summary_error_msg,
     re_search_excluding_docstrings,
@@ -132,3 +133,14 @@ def test_make_summary_error_msg() -> None:
 
     for item in items:
         assert item in multi_item_msg
+
+
+def test_make_linked_badge_markdown() -> None:
+    """Test function."""
+    result = make_linked_badge_markdown(
+        badge_url="https://example.com/badge.svg",
+        link_url="https://example.com/",
+        alt_text="Example Badge",
+    )
+    expected = "[![Example Badge](https://example.com/badge.svg)](https://example.com/)"
+    assert result == expected, f"Expected '{expected}', got '{result}'"
