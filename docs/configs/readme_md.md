@@ -53,7 +53,7 @@ graph TD
 **Filename**: `README` - The standard repository documentation file recognized
 by GitHub, GitLab, and other platforms.
 
-**Special filename handling**: `get_filename()` returns `"README"` (uppercase)
+**Special filename handling**: `filename()` returns `"README"` (uppercase)
 to follow convention.
 
 ## How It Works

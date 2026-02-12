@@ -10,11 +10,11 @@ Example:
     >>>
     >>> class PackageJsonFile(JsonConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def _get_configs(cls) -> dict[str, Any]:
+    ...     def _configs(cls) -> dict[str, Any]:
     ...         return {"name": "my-package", "version": "1.0.0"}
 """
 
@@ -31,30 +31,30 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
     list as top-level structures.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the JSON file
-        - `_get_configs`: Expected JSON configuration structure
+        - `parent_path`: Directory containing the JSON file
+        - `_configs`: Expected JSON configuration structure
 
     Example:
         Dict configuration::
 
             >>> class MyConfigFile(JsonConfigFile):
             ...     @classmethod
-            ...     def get_parent_path(cls) -> Path:
+            ...     def parent_path(cls) -> Path:
             ...         return Path()
             ...
             ...     @classmethod
-            ...     def _get_configs(cls) -> dict[str, Any]:
+            ...     def _configs(cls) -> dict[str, Any]:
             ...         return {"setting": "value", "nested": {"key": "value"}}
 
         List configuration::
 
             >>> class MyListConfigFile(JsonConfigFile):
             ...     @classmethod
-            ...     def get_parent_path(cls) -> Path:
+            ...     def parent_path(cls) -> Path:
             ...         return Path()
             ...
             ...     @classmethod
-            ...     def _get_configs(cls) -> list[Any]:
+            ...     def _configs(cls) -> list[Any]:
             ...         return ["item1", "item2", {"key": "value"}]
     """
 
@@ -65,7 +65,7 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         Returns:
             Parsed JSON content as dict or list.
         """
-        path = cls.get_path()
+        path = cls.path()
         data: dict[str, Any] | list[Any] = json.loads(path.read_text(encoding="utf-8"))
         return data
 
@@ -76,10 +76,10 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         Args:
             config: Configuration dict or list to write.
         """
-        with cls.get_path().open("w") as f:
+        with cls.path().open("w") as f:
             json.dump(config, f, indent=4)
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return "json"."""
         return "json"

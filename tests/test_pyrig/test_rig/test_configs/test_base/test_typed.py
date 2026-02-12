@@ -18,7 +18,7 @@ def my_test_typed_config_file(
         """Test typed config file with tmp_path override."""
 
         @classmethod
-        def get_parent_path(cls) -> Path:
+        def parent_path(cls) -> Path:
             """Get the parent path."""
             return Path()
 
@@ -28,12 +28,10 @@ def my_test_typed_config_file(
 class TestTypedConfigFile:
     """Test class."""
 
-    def test_get_file_extension(
-        self, my_test_typed_config_file: type[TypedConfigFile]
-    ) -> None:
+    def test_extension(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method."""
         expected = "typed"
-        actual = my_test_typed_config_file.get_file_extension()
+        actual = my_test_typed_config_file.extension()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__load(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
@@ -52,9 +50,7 @@ class TestTypedConfigFile:
         with pytest.raises(ValueError, match=r"Cannot dump to py\.typed file"):
             my_test_typed_config_file.dump({"key": "value"})
 
-    def test__get_configs(
-        self, my_test_typed_config_file: type[TypedConfigFile]
-    ) -> None:
+    def test__configs(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method."""
-        configs = my_test_typed_config_file.get_configs()
-        assert configs == {}, "Expected get_configs to return empty dict"
+        configs = my_test_typed_config_file.configs()
+        assert configs == {}, "Expected configs to return empty dict"

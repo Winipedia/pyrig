@@ -8,7 +8,7 @@ Example:
     >>>
     >>> class NotesFile(TxtConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path("docs")
     ...
     ...     @classmethod
@@ -25,7 +25,7 @@ class TxtConfigFile(StringConfigFile):
     Extends StringConfigFile with "txt" extension. Inherits content-based validation.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the .txt file
+        - `parent_path`: Directory containing the .txt file
         - `get_lines`: Required content as list of lines
 
     See Also:
@@ -33,6 +33,6 @@ class TxtConfigFile(StringConfigFile):
     """
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return "txt"."""
         return "txt"

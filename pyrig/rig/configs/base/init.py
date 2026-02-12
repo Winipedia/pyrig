@@ -37,7 +37,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Return "__init__" for __init__.py files.
 
         Returns:
@@ -46,12 +46,12 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         return "__init__"
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Return package directory by appending module's isolated name to base path.
 
         Returns:
             Package directory path where __init__.py will be created.
         """
-        path = super().get_parent_path()
+        path = super().parent_path()
         # this path will be parent of the init file
         return path / get_isolated_obj_name(cls.get_src_module())

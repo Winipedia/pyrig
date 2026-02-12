@@ -62,12 +62,10 @@ def get_github_repo_token() -> str:
     dotenv = DotEnvConfigFile.L.load()
     token = dotenv.get("REPO_TOKEN")
     if token:
-        logger.debug(
-            "Using repository token from %s file", DotEnvConfigFile.L.get_path()
-        )
+        logger.debug("Using repository token from %s file", DotEnvConfigFile.L.path())
         return token
 
-    msg = f"Expected repository token in {DotEnvConfigFile.L.get_path()} or as env var."
+    msg = f"Expected repository token in {DotEnvConfigFile.L.path()} or as env var."
     raise ValueError(msg)
 
 

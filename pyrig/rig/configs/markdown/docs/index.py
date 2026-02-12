@@ -36,7 +36,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
     """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for index.md.
 
         Returns:

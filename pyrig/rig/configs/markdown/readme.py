@@ -29,7 +29,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get the README filename.
 
         Returns:
@@ -38,7 +38,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
         return "README"
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for README.md.
 
         Returns:

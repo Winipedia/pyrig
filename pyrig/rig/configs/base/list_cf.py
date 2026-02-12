@@ -10,11 +10,11 @@ Example:
     >>>
     >>> class MyListConfigFile(ListConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def get_file_extension(cls) -> str:
+    ...     def extension(cls) -> str:
     ...         return "list"
     ...
     ...     @classmethod
@@ -26,7 +26,7 @@ Example:
     ...         pass
     ...
     ...     @classmethod
-    ...     def _get_configs(cls) -> list[Any]:
+    ...     def _configs(cls) -> list[Any]:
     ...         return ["item1", "item2"]
 """
 
@@ -39,12 +39,12 @@ class ListConfigFile(ConfigFile[list[Any]]):
     """Abstract base class for list-based configuration files.
 
     Specifies list[Any] as the configuration type. Subclasses inherit
-    proper typing for load(), dump(), get_configs(), etc.
+    proper typing for load(), dump(), configs(), etc.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the config file
-        - `get_file_extension`: File extension without leading dot
-        - `_get_configs`: Expected configuration as list
+        - `parent_path`: Directory containing the config file
+        - `extension`: File extension without leading dot
+        - `_configs`: Expected configuration as list
         - `_load`: Load and parse the file
         - `_dump`: Write configuration to file
     """

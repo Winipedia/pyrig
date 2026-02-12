@@ -8,7 +8,7 @@ Example:
     >>>
     >>> class ReadmeFile(MarkdownConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path()
     ...
     ...     @classmethod
@@ -25,7 +25,7 @@ class MarkdownConfigFile(StringConfigFile):
     Extends StringConfigFile with "md" extension. Inherits content-based validation.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the .md file
+        - `parent_path`: Directory containing the .md file
         - `get_lines`: Required Markdown content as list of lines
 
     See Also:
@@ -34,6 +34,6 @@ class MarkdownConfigFile(StringConfigFile):
     """
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return "md"."""
         return "md"

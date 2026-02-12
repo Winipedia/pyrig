@@ -6,7 +6,7 @@ from pyrig.rig.configs.base.yml import YmlConfigFile
 class TestYmlConfigFile:
     """Test class."""
 
-    def test_get_file_extension(self) -> None:
+    def test_extension(self) -> None:
         """Test method."""
-        extension = YmlConfigFile.get_file_extension()
+        extension = YmlConfigFile.extension()
         assert extension == "yml"

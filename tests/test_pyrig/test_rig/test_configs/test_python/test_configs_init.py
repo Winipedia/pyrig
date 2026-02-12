@@ -7,9 +7,9 @@ from pyrig.rig.configs.python.configs_init import ConfigsInitConfigFile
 class TestConfigsInitConfigFile:
     """Test class."""
 
-    def test_get_priority(self) -> None:
+    def test_priority(self) -> None:
         """Test method."""
-        assert ConfigsInitConfigFile.get_priority() > 0
+        assert ConfigsInitConfigFile.priority() > 0
 
     def test_get_src_module(self) -> None:
         """Test method."""

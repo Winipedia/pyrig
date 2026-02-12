@@ -19,7 +19,7 @@ def my_test_string_config_file(
         """Test text config file with tmp_path override."""
 
         @classmethod
-        def get_parent_path(cls) -> Path:
+        def parent_path(cls) -> Path:
             """Get the parent path."""
             return Path()
 
@@ -29,7 +29,7 @@ def my_test_string_config_file(
             return ["Test content."]
 
         @classmethod
-        def get_file_extension(cls) -> str:
+        def extension(cls) -> str:
             """Get the file extension."""
             return "txt"
 
@@ -39,7 +39,7 @@ def my_test_string_config_file(
 class TestStringConfigFile:
     """Test class."""
 
-    def test_add_missing_configs(
+    def test_merge_configs(
         self,
         my_test_string_config_file: type[StringConfigFile],
         tmp_path: Path,
@@ -49,7 +49,7 @@ class TestStringConfigFile:
             my_test_string_config_file()
 
             my_test_string_config_file.dump(["New content."])
-            added_configs = my_test_string_config_file.add_missing_configs()
+            added_configs = my_test_string_config_file.merge_configs()
             assert added_configs == ["Test content.", "", "New content."]
 
     def test_make_string_from_lines(self) -> None:
@@ -82,17 +82,15 @@ class TestStringConfigFile:
         content = ["New content."]
         my_test_string_config_file.dump(content)
         loaded = my_test_string_config_file.load()
-        content = my_test_string_config_file.get_path().read_text()
+        content = my_test_string_config_file.path().read_text()
         # assert has empyt line at the end
         assert content.endswith("\n")
         # load doesnt preserve the last "\n" as an "" in list bc of splitlines()
         assert loaded == ["New content."]
 
-    def test__get_configs(
-        self, my_test_string_config_file: type[StringConfigFile]
-    ) -> None:
+    def test__configs(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
-        configs = my_test_string_config_file.get_configs()
+        configs = my_test_string_config_file.configs()
         # empty line is added to the end of the file
         assert configs == ["Test content."]
 

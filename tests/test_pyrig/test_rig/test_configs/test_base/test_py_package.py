@@ -20,7 +20,7 @@ def my_test_python_package_config_file(
         """Test python package config file with tmp_path override."""
 
         @classmethod
-        def get_parent_path(cls) -> Path:
+        def parent_path(cls) -> Path:
             """Get the parent path."""
             return Path()
 
@@ -41,5 +41,5 @@ class TestPythonPackageConfigFile:
         """Test method."""
         my_test_python_package_config_file()
         assert (
-            my_test_python_package_config_file.get_path().parent / "__init__.py"
+            my_test_python_package_config_file.path().parent / "__init__.py"
         ).exists(), "Expected __init__.py to be created"

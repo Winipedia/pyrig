@@ -22,10 +22,10 @@ def my_test_py_typed_config_file(
 class TestPyTypedConfigFile:
     """Test class."""
 
-    def test_get_parent_path(
+    def test_parent_path(
         self, my_test_py_typed_config_file: type[PyTypedConfigFile]
     ) -> None:
         """Test method."""
-        parent_path = my_test_py_typed_config_file.get_parent_path()
+        parent_path = my_test_py_typed_config_file.parent_path()
         # The parent path should be the package name
         assert len(parent_path.as_posix()) > 0, "Expected parent_path to be non-empty"

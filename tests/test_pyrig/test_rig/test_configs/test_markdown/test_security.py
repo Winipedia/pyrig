@@ -8,14 +8,14 @@ from pyrig.rig.configs.markdown.security import SecurityConfigFile
 class TestSecurityConfigFile:
     """Test class."""
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.get_filename()
+        result = SecurityConfigFile.filename()
         assert result == "SECURITY"
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.get_parent_path()
+        result = SecurityConfigFile.parent_path()
         assert result == Path()
 
     def test_get_lines(self) -> None:

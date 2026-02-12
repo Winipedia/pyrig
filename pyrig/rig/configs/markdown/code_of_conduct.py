@@ -42,7 +42,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get the CODE_OF_CONDUCT filename.
 
         Returns:
@@ -51,7 +51,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return "CODE_OF_CONDUCT"
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for CODE_OF_CONDUCT.md.
 
         Returns:
@@ -79,8 +79,8 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             # if in pyrig just run get contributor covenant
             # to trigger resource update if needed
             cls.get_contributor_covenant()
-        return cls.get_path().exists() and bool(
-            cls.get_path().read_text(encoding="utf-8").strip()
+        return cls.path().exists() and bool(
+            cls.path().read_text(encoding="utf-8").strip()
         )
 
     @classmethod
