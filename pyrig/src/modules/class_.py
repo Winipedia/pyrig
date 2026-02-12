@@ -235,7 +235,7 @@ class classproperty[T]:  # noqa: N801
     Example:
         >>> class MyClass:
         ...     @classproperty
-        ...     def name(cls) -> str:
+        ...     def get_name(cls) -> str:
         ...         return cls.__name__.lower()
         ...
         >>> MyClass.name

@@ -77,7 +77,7 @@ from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
     @classmethod
-    def name(cls) -> str:
+    def get_name(cls) -> str:
         return "mypy"
 ```
 
@@ -192,7 +192,7 @@ from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
     @classmethod
-    def name(cls) -> str:
+    def get_name(cls) -> str:
         return "mypy"  # Use mypy instead of ty
 ```
 
@@ -236,8 +236,8 @@ The parent class is automatically excluded from discovery.
 
 | Replacement | Complexity | What's Needed |
 |-------------|------------|---------------|
-| ty → mypy | **Low** | Just subclass `TypeChecker.name()` |
-| ruff → black | **Low** | Subclass `Linter.name()` and adjust methods |
+| ty → mypy | **Low** | Just subclass `TypeChecker.get_name()` |
+| ruff → black | **Low** | Subclass `Linter.get_name()` and adjust methods |
 | Podman → Docker | **Medium** | Subclass Tool + override workflow steps |
 | uv → pip | **High** | Affects nearly everything |
 

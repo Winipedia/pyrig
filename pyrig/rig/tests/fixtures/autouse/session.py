@@ -560,7 +560,7 @@ def assert_project_mgt_is_up_to_date() -> None:
 
         is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
 
-        msg = f"""The tool {PackageManager.L.name()} is not up to date.
+        msg = f"""The tool {PackageManager.L.get_name()} is not up to date.
         This fixture ran `{PackageManager.L.get_update_self_args()}` but it failed.
         Output: {std_msg}
         """

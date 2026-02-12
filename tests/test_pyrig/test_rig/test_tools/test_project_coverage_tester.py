@@ -6,9 +6,9 @@ from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 class TestProjectCoverageTester:
     """Test class."""
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = ProjectCoverageTester.L.name()
+        result = ProjectCoverageTester.L.get_name()
         assert result == "pytest-cov"
 
     def test_get_group(self) -> None:

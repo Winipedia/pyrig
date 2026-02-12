@@ -30,7 +30,7 @@ from pyrig.src.processes import Args
 
 class TypeChecker(BaseTC):
     @classmethod
-    def name(cls) -> str:
+    def get_name(cls) -> str:
         return "mypy"
 
     @classmethod

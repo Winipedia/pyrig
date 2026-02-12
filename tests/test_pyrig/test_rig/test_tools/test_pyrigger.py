@@ -26,9 +26,9 @@ class TestPyrigger:
         result = Pyrigger.L.get_dev_dependencies()
         assert isinstance(result, list), f"Expected list, got {type(result)}"
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = Pyrigger.L.name()
+        result = Pyrigger.L.get_name()
         assert result == "pyrig"
 
     def test_get_cmd_args(self, mocker: MockFixture) -> None:

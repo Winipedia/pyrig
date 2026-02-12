@@ -18,9 +18,9 @@ class TestPreCommitter:
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = PreCommitter.L.name()
+        result = PreCommitter.L.get_name()
         assert result == "prek"
 
     def test_get_install_args(self) -> None:

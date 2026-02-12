@@ -23,9 +23,9 @@ class TestRemoteVersionController:
         result = RemoteVersionController.L.get_dev_dependencies()
         assert result == ["pygithub"]
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.name()
+        result = RemoteVersionController.L.get_name()
         assert result == "github"
 
     def test_get_url_base(self) -> None:

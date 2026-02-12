@@ -18,9 +18,9 @@ class TestMDLinter:
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = MDLinter.L.name()
+        result = MDLinter.L.get_name()
         assert result == "rumdl"
 
     def test_get_check_args(self) -> None:

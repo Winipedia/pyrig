@@ -6,9 +6,9 @@ from pyrig.rig.tools.package_index import PackageIndex
 class TestPackageIndex:
     """Test class."""
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = PackageIndex.L.name()
+        result = PackageIndex.L.get_name()
         assert result == "pypi"
 
     def test_get_group(self) -> None:
