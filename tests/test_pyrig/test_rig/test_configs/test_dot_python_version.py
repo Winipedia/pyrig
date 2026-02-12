@@ -20,11 +20,11 @@ class TestDotPythonVersionConfigFile:
         """Test method."""
         assert DotPythonVersionConfigFile.parent_path() == Path()
 
-    def test_get_lines(self) -> None:
+    def test_lines(self) -> None:
         """Test method."""
-        lines = DotPythonVersionConfigFile.get_lines()
+        lines = DotPythonVersionConfigFile.lines()
         assert len(lines) == 1
 
-    def test_override_content(self) -> None:
+    def test_should_override_content(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.override_content()
+        assert DotPythonVersionConfigFile.should_override_content()

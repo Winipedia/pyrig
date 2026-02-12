@@ -149,7 +149,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return test_path.parent
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Generate complete test module content with skeletons for untested code.
 
         Returns:
@@ -163,16 +163,16 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return lines
 
     @classmethod
-    def override_content(cls) -> bool:
+    def should_override_content(cls) -> bool:
         """Enable content override mode for skeleton insertion.
 
         Returns:
-            True to enable override mode, allowing get_lines() to provide
+            True to enable override mode, allowing lines() to provide
             the complete merged content (existing tests plus new skeletons).
 
         Note:
             The "override" refers to the parent class file-writing behavior.
-            The actual content returned by get_lines() is additive -
+            The actual content returned by lines() is additive -
             new skeletons are appended/inserted while preserving existing tests.
         """
         return True

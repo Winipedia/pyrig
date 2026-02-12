@@ -165,7 +165,7 @@ class TestMirrorTestConfigFile:
             parent_path = my_test_mirror_test_config_file.parent_path()
             assert parent_path == Path(MirrorTestConfigFile.get_tests_package_name())
 
-    def test_get_lines(
+    def test_lines(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
@@ -174,15 +174,15 @@ class TestMirrorTestConfigFile:
         with chdir(tmp_path):
             # create the file first to not trigger dump in get_content_str
             my_test_mirror_test_config_file.create_file()
-            lines = my_test_mirror_test_config_file.get_lines()
+            lines = my_test_mirror_test_config_file.lines()
             content = "\n".join(lines)
             assert "def test_mirror_method" in content
             assert "def test_mirror_function" in content
             assert "class TestMirrorClass" in content
 
-    def test_override_content(self) -> None:
+    def test_should_override_content(self) -> None:
         """Test method."""
-        assert MirrorTestConfigFile.override_content(), "Expected True"
+        assert MirrorTestConfigFile.should_override_content(), "Expected True"
 
     def test_is_correct(self) -> None:
         """Test method."""

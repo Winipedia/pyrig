@@ -481,7 +481,7 @@ class MyConfigFile(StringConfigFile):
         return Path(".")
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         return ["# Required header"]
 
     @classmethod
@@ -507,7 +507,7 @@ class MyConfigFile(PythonConfigFile):
         return Path("myapp/src")
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         return ['"""Module docstring."""', '', 'def main():', '    pass']
 ```
 
@@ -687,7 +687,7 @@ its own config files:
 @classmethod
 def is_correct(cls) -> bool:
     """Check if config contains required structure."""
-    content = cls.get_file_content()
+    content = cls.file_content()
     return super().is_correct() or (
         "required_string" in content
         and "another_required_string" in content

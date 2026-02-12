@@ -82,7 +82,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
         return "test_main"
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the test file content.
 
         Returns:
@@ -108,4 +108,4 @@ class MainTestConfigFile(PythonPackageConfigFile):
         Note:
             Reads file from disk to check content.
         """
-        return super().is_correct() or "def test_main" in cls.get_file_content()
+        return super().is_correct() or "def test_main" in cls.file_content()

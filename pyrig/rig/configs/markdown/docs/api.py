@@ -48,7 +48,7 @@ class ApiConfigFile(MarkdownConfigFile):
         return DocsBuilder.L.get_docs_dir()
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the api.md file content.
 
         Returns:

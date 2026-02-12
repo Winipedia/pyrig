@@ -58,7 +58,7 @@ class DotScratchConfigFile(PythonConfigFile):
         return Path()
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the .scratch.py file content.
 
         Returns:

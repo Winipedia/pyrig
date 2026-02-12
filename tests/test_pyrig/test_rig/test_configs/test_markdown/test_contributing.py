@@ -18,9 +18,9 @@ class TestContributingConfigFile:
         result = ContributingConfigFile.parent_path()
         assert result == Path()
 
-    def test_get_lines(self) -> None:
+    def test_lines(self) -> None:
         """Test method."""
-        result = ContributingConfigFile.get_lines()
+        result = ContributingConfigFile.lines()
         assert len(result) > 0
 
     def test_is_correct(self) -> None:

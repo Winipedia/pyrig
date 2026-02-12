@@ -64,7 +64,7 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         return Path(".github")
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the pull request template content.
 
         Returns:

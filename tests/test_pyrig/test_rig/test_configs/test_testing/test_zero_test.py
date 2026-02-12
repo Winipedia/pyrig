@@ -32,10 +32,10 @@ class TestZeroTestConfigFile:
             f"Expected filename to start with 'test_', got {filename}"
         )
 
-    def test_get_lines(
+    def test_lines(
         self, my_test_zero_test_config_file: type[ZeroTestConfigFile]
     ) -> None:
         """Test method."""
-        lines = my_test_zero_test_config_file.get_lines()
+        lines = my_test_zero_test_config_file.lines()
         content_str = "\n".join(lines)
         assert "test_zero" in content_str, "Expected 'test_zero' in content"

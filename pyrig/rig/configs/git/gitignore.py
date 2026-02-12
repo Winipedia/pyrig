@@ -73,7 +73,7 @@ class GitIgnoreConfigFile(StringConfigFile):
         return "gitignore"
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get complete .gitignore patterns with intelligent merging.
 
         Combines GitHub's Python patterns with pyrig-specific patterns

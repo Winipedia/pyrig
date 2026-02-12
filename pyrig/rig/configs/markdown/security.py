@@ -80,7 +80,7 @@ class SecurityConfigFile(MarkdownConfigFile):
         return Path()
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the security template content with email inserted.
 
         Returns:

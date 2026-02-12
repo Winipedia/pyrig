@@ -12,7 +12,7 @@ Example:
     ...         return Path("docs")
     ...
     ...     @classmethod
-    ...     def get_lines(cls) -> list[str]:
+    ...     def lines(cls) -> list[str]:
     ...         return ["# Project Notes"]
 """
 
@@ -26,7 +26,7 @@ class TxtConfigFile(StringConfigFile):
 
     Subclasses must implement:
         - `parent_path`: Directory containing the .txt file
-        - `get_lines`: Required content as list of lines
+        - `lines`: Required content as list of lines
 
     See Also:
         pyrig.rig.configs.base.string_.StringConfigFile: Parent class

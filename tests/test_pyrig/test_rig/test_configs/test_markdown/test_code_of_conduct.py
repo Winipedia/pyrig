@@ -28,9 +28,9 @@ class TestCodeOfConductConfigFile:
         result = CodeOfConductConfigFile.parent_path()
         assert result == Path()
 
-    def test_get_lines(self) -> None:
+    def test_lines(self) -> None:
         """Test method."""
-        lines = CodeOfConductConfigFile.get_lines()
+        lines = CodeOfConductConfigFile.lines()
         assert len(lines) > 0
 
     def test_is_correct(self) -> None:

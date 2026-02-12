@@ -71,7 +71,7 @@ class BuilderConfigFile(ListConfigFile):
             class ExecutableBuilder(BuilderConfigFile):
                 @classmethod
                 def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
-                    exe_path = temp_artifacts_dir / f"{cls.get_app_name()}.exe"
+                    exe_path = temp_artifacts_dir / f"{cls.app_name()}.exe"
                     # ... compile and create executable ...
 
     See Also:
@@ -191,9 +191,9 @@ class BuilderConfigFile(ListConfigFile):
         logger.debug("Building artifacts with %s", cls.__name__)
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_dir_path = Path(temp_dir)
-            temp_artifacts_dir = cls.get_temp_artifacts_path(temp_dir_path)
+            temp_artifacts_dir = cls.temp_artifacts_path(temp_dir_path)
             cls.create_artifacts(temp_artifacts_dir)
-            artifacts = cls.get_temp_artifacts(temp_artifacts_dir)
+            artifacts = cls.temp_artifacts(temp_artifacts_dir)
             cls.rename_artifacts(artifacts)
         logger.debug("Built %d artifact(s) with %s", len(artifacts), cls.__name__)
 
@@ -217,13 +217,13 @@ class BuilderConfigFile(ListConfigFile):
         Args:
             artifact: Path to the artifact.
         """
-        platform_specific_path = cls.get_platform_specific_path(artifact)
+        platform_specific_path = cls.platform_specific_path(artifact)
         logger.debug("Moving artifact: %s to: %s", artifact, platform_specific_path)
         shutil.move(str(artifact), str(platform_specific_path))
         logger.info("Created artifact: %s", platform_specific_path.name)
 
     @classmethod
-    def get_platform_specific_path(cls, artifact: Path) -> Path:
+    def platform_specific_path(cls, artifact: Path) -> Path:
         """Get the platform-specific path for an artifact.
 
         Args:
@@ -232,10 +232,10 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Platform-specific path for the artifact.
         """
-        return cls.parent_path() / cls.get_platform_specific_name(artifact)
+        return cls.parent_path() / cls.platform_specific_name(artifact)
 
     @classmethod
-    def get_platform_specific_name(cls, artifact: Path) -> str:
+    def platform_specific_name(cls, artifact: Path) -> str:
         """Get the platform-specific name for an artifact.
 
         Args:
@@ -247,7 +247,7 @@ class BuilderConfigFile(ListConfigFile):
         return f"{artifact.stem}-{platform.system()}{artifact.suffix}"
 
     @classmethod
-    def get_temp_artifacts(cls, temp_artifacts_dir: Path) -> list[Path]:
+    def temp_artifacts(cls, temp_artifacts_dir: Path) -> list[Path]:
         """Get all artifacts from the temporary build directory.
 
         Args:
@@ -260,7 +260,7 @@ class BuilderConfigFile(ListConfigFile):
         return list(temp_artifacts_dir.glob("*"))
 
     @classmethod
-    def get_temp_artifacts_path(cls, temp_dir: Path) -> Path:
+    def temp_artifacts_path(cls, temp_dir: Path) -> Path:
         """Create and return the temporary artifacts subdirectory.
 
         Args:
@@ -274,7 +274,7 @@ class BuilderConfigFile(ListConfigFile):
         return path
 
     @classmethod
-    def get_app_name(cls) -> str:
+    def app_name(cls) -> str:
         """Get the application name from pyproject.toml.
 
         Returns:
@@ -283,7 +283,7 @@ class BuilderConfigFile(ListConfigFile):
         return PyprojectConfigFile.L.get_project_name()
 
     @classmethod
-    def get_root_path(cls) -> Path:
+    def root_path(cls) -> Path:
         """Get the project root directory path.
 
         Returns:
@@ -294,34 +294,34 @@ class BuilderConfigFile(ListConfigFile):
         return src_path.parent
 
     @classmethod
-    def get_main_path(cls) -> Path:
+    def main_path(cls) -> Path:
         """Get the absolute path to the main.py entry point.
 
         Returns:
             Absolute path to main.py.
         """
-        return cls.get_src_pkg_path() / cls.get_main_path_relative_to_src_pkg()
+        return cls.src_pkg_path() / cls.main_path_relative_to_src_pkg()
 
     @classmethod
-    def get_resources_path(cls) -> Path:
+    def resources_path(cls) -> Path:
         """Get the absolute path to the resources directory.
 
         Returns:
             Absolute path to the resources directory.
         """
-        return cls.get_src_pkg_path() / cls.get_resources_path_relative_to_src_pkg()
+        return cls.src_pkg_path() / cls.resources_path_relative_to_src_pkg()
 
     @classmethod
-    def get_src_pkg_path(cls) -> Path:
+    def src_pkg_path(cls) -> Path:
         """Get the absolute path to the source package.
 
         Returns:
             Absolute path to the source package directory.
         """
-        return cls.get_root_path() / PyprojectConfigFile.L.get_package_name()
+        return cls.root_path() / PyprojectConfigFile.L.get_package_name()
 
     @classmethod
-    def get_main_path_relative_to_src_pkg(cls) -> Path:
+    def main_path_relative_to_src_pkg(cls) -> Path:
         """Get the relative path to main.py from the source package.
 
         Returns:
@@ -332,7 +332,7 @@ class BuilderConfigFile(ListConfigFile):
         return project_main_file.relative_to(pyrig_pkg_dir)
 
     @classmethod
-    def get_resources_path_relative_to_src_pkg(cls) -> Path:
+    def resources_path_relative_to_src_pkg(cls) -> Path:
         """Get the relative path to resources from the source package.
 
         Returns:
