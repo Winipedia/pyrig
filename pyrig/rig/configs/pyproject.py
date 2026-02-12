@@ -32,11 +32,11 @@ from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.modules.package import (
-    get_pkg_name_from_cwd,
-    get_pkg_name_from_project_name,
-    get_project_name_from_cwd,
+    pkg_name_from_cwd,
+    pkg_name_from_project_name,
+    project_name_from_cwd,
 )
-from pyrig.src.string_ import get_pkg_req_name_split_pattern
+from pyrig.src.string_ import pkg_req_name_split_pattern
 
 
 class PyprojectConfigFile(TomlConfigFile):
@@ -82,7 +82,7 @@ class PyprojectConfigFile(TomlConfigFile):
 
         return {
             "project": {
-                "name": get_project_name_from_cwd(),
+                "name": project_name_from_cwd(),
                 "version": cls.project_version(),
                 "description": cls.project_description(),
                 "readme": "README.md",
@@ -107,7 +107,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 "keywords": [],
                 "scripts": {
-                    get_project_name_from_cwd(): f"{cli.__name__}:{cli.main.__name__}"
+                    project_name_from_cwd(): f"{cli.__name__}:{cli.main.__name__}"
                 },
                 "dependencies": cls.make_dependency_versions(cls.dependencies()),
             },
@@ -124,7 +124,7 @@ class PyprojectConfigFile(TomlConfigFile):
             "tool": {
                 "uv": {
                     "build-backend": {
-                        "module-name": get_pkg_name_from_cwd(),
+                        "module-name": pkg_name_from_cwd(),
                         "module-root": "",
                     }
                 },
@@ -151,7 +151,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "pytest": {
                     "ini_options": {
                         "testpaths": [tests_pkg_name],
-                        "addopts": f"--cov={get_pkg_name_from_cwd()} --cov-report=term-missing --cov-fail-under={ProjectTester.L.get_coverage_threshold()}",  # noqa: E501
+                        "addopts": f"--cov={pkg_name_from_cwd()} --cov-report=term-missing --cov-fail-under={ProjectTester.L.get_coverage_threshold()}",  # noqa: E501
                     }
                 },
                 "bandit": {
@@ -265,7 +265,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Uses REQ_NAME_SPLIT_PATTERN from package module for consistency.
         (e.g., 'requests>=2.0' -> 'requests').
         """
-        return get_pkg_req_name_split_pattern().split(dep)[0]
+        return pkg_req_name_split_pattern().split(dep)[0]
 
     @classmethod
     def package_name(cls) -> str:
@@ -274,7 +274,7 @@ class PyprojectConfigFile(TomlConfigFile):
         (e.g., 'my-project' -> 'my_project').
         """
         project_name = cls.project_name()
-        return get_pkg_name_from_project_name(project_name)
+        return pkg_name_from_project_name(project_name)
 
     @classmethod
     def project_name(cls) -> str:

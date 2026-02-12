@@ -1,15 +1,15 @@
 """module."""
 
-from pyrig.src.cli import get_pkg_name_from_argv, get_project_name_from_argv
+from pyrig.src.cli import pkg_name_from_argv, project_name_from_argv
 
 
-def test_get_project_name_from_argv() -> None:
+def test_project_name_from_argv() -> None:
     """Test function."""
-    result = get_project_name_from_argv()
+    result = project_name_from_argv()
     assert isinstance(result, str), "Expected string result"
 
 
-def test_get_pkg_name_from_argv() -> None:
+def test_pkg_name_from_argv() -> None:
     """Test function."""
-    result = get_pkg_name_from_argv()
+    result = pkg_name_from_argv()
     assert isinstance(result, str), "Expected string result"

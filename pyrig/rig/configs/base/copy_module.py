@@ -1,7 +1,7 @@
 """Module content copying configuration management.
 
 Provides CopyModuleConfigFile for replicating module content with path transformation
-(pyrig.X -> target_project.X).
+(pyrig.X -> tarproject.X).
 
 Example:
     >>> from types import ModuleType
@@ -34,7 +34,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     """Base class for copying module content with path transformation.
 
     Copies source module content to target location, transforming paths
-    (pyrig.X -> target_project.X).
+    (pyrig.X -> tarproject.X).
 
     Subclasses must implement:
         - `src_module`: Return the source module to copy

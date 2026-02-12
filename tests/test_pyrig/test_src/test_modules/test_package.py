@@ -26,10 +26,10 @@ from pyrig.src.modules.package import (
     discover_subclasses_across_dependents,
     get_all_deps_depending_on_dep,
     get_objs_from_obj,
-    get_pkg_name_from_cwd,
-    get_pkg_name_from_project_name,
-    get_project_name_from_cwd,
-    get_project_name_from_pkg_name,
+    pkg_name_from_cwd,
+    pkg_name_from_project_name,
+    project_name_from_cwd,
+    project_name_from_pkg_name,
 )
 from tests.test_pyrig.test_src import test_modules
 from tests.test_pyrig.test_src.test_modules.test_class_ import (
@@ -90,38 +90,38 @@ def test_find_packages_with_namespace(mocker: MockFixture) -> None:
     mock_find_namespace.assert_called_once_with(where=".", exclude=[], include=("*",))
 
 
-def test_get_pkg_name_from_project_name() -> None:
+def test_pkg_name_from_project_name() -> None:
     """Test function."""
     project_name = "test-project"
-    pkg_name = get_pkg_name_from_project_name(project_name)
+    pkg_name = pkg_name_from_project_name(project_name)
     expected_pkg_name = "test_project"
     assert pkg_name == expected_pkg_name, (
         f"Expected {expected_pkg_name}, got {pkg_name}"
     )
 
 
-def test_get_project_name_from_pkg_name() -> None:
+def test_project_name_from_pkg_name() -> None:
     """Test function."""
     pkg_name = "test_project"
-    project_name = get_project_name_from_pkg_name(pkg_name)
+    project_name = project_name_from_pkg_name(pkg_name)
     expected_project_name = "test-project"
     assert project_name == expected_project_name, (
         f"Expected {expected_project_name}, got {project_name}"
     )
 
 
-def test_get_project_name_from_cwd() -> None:
+def test_project_name_from_cwd() -> None:
     """Test function."""
-    project_name = get_project_name_from_cwd()
+    project_name = project_name_from_cwd()
     expected_project_name = pyrig.__name__
     assert project_name == expected_project_name, (
         f"Expected {expected_project_name}, got {project_name}"
     )
 
 
-def test_get_pkg_name_from_cwd() -> None:
+def test_pkg_name_from_cwd() -> None:
     """Test function."""
-    pkg_name = get_pkg_name_from_cwd()
+    pkg_name = pkg_name_from_cwd()
     expected_pkg_name = pyrig.__name__
     assert pkg_name == expected_pkg_name, (
         f"Expected {expected_pkg_name}, got {pkg_name}"

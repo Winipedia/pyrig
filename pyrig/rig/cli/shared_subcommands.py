@@ -9,7 +9,7 @@ from importlib.metadata import version as _version
 
 import typer
 
-from pyrig.src.cli import get_project_name_from_argv
+from pyrig.src.cli import project_name_from_argv
 
 
 def version() -> None:
@@ -32,5 +32,5 @@ def version() -> None:
         The package must be installed (even in editable mode) for version
         retrieval to work.
     """
-    project_name = get_project_name_from_argv()
+    project_name = project_name_from_argv()
     typer.echo(f"{project_name} version {_version(project_name)}")

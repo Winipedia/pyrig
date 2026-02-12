@@ -23,9 +23,9 @@ class TestPackageIndex:
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_package_index_url(self) -> None:
+    def test_package_index_url(self) -> None:
         """Test method."""
-        result = PackageIndex.L.get_package_index_url()
+        result = PackageIndex.L.package_index_url()
         assert isinstance(result, str)
         assert result.startswith("https://pypi.org/project/")
 

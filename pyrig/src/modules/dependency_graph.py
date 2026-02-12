@@ -14,7 +14,7 @@ from types import ModuleType
 
 from pyrig.src.graph import DiGraph
 from pyrig.src.modules.module import import_module_with_default
-from pyrig.src.string_ import get_pkg_req_name_split_pattern
+from pyrig.src.string_ import pkg_req_name_split_pattern
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class DependencyGraph(DiGraph):
         """
         # Split on the first non-alphanumeric character (except -, _, and .)
         # Uses module-level compiled pattern for performance
-        dep = get_pkg_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
+        dep = pkg_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
         return DependencyGraph.normalize_package_name(dep) if dep else None
 
     def get_all_depending_on(

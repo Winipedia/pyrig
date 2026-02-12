@@ -1003,7 +1003,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_patch_version,
-            run=str(PackageManager.L.get_patch_version_args()),
+            run=str(PackageManager.L.patch_version_args()),
             step=step,
         )
 
@@ -1196,7 +1196,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv publish with PYPI_TOKEN.
         """
-        run = str(PackageManager.L.get_publish_args(token=cls.insert_pypi_token()))
+        run = str(PackageManager.L.publish_args(token=cls.insert_pypi_token()))
         run_if = cls.run_if_condition(run, cls.insert_pypi_token())
         return cls.step(
             step_func=cls.step_publish_to_pypi,
@@ -1439,7 +1439,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_push_commits,
-            run=str(VersionController.L.get_push_args()),
+            run=str(VersionController.L.push_args()),
             step=step,
         )
 
@@ -1461,9 +1461,7 @@ class Workflow(YmlConfigFile):
             step_func=cls.step_create_and_push_tag,
             run=str(VersionController.L.get_tag_args(tag=cls.insert_version()))
             + " && "
-            + str(
-                VersionController.L.get_push_origin_tag_args(tag=cls.insert_version())
-            ),
+            + str(VersionController.L.push_origin_tag_args(tag=cls.insert_version())),
             step=step,
         )
 

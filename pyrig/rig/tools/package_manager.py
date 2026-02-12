@@ -174,7 +174,7 @@ class PackageManager(Tool):
         return cls.args("self", "update", *args)
 
     @classmethod
-    def get_patch_version_args(cls, *args: str) -> Args:
+    def patch_version_args(cls, *args: str) -> Args:
         """Construct uv version arguments for patch bump.
 
         Args:
@@ -198,7 +198,7 @@ class PackageManager(Tool):
         return cls.args("build", *args)
 
     @classmethod
-    def get_publish_args(cls, *args: str, token: str) -> Args:
+    def publish_args(cls, *args: str, token: str) -> Args:
         """Construct uv publish arguments with token.
 
         Args:

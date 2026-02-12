@@ -59,7 +59,7 @@ def create_package(path: Path) -> ModuleType:
     return import_pkg_with_dir_fallback(path)
 
 
-def get_pkg_name_from_project_name(project_name: str) -> str:
+def pkg_name_from_project_name(project_name: str) -> str:
     """Convert project name to package name (hyphens → underscores).
 
     Args:
@@ -71,7 +71,7 @@ def get_pkg_name_from_project_name(project_name: str) -> str:
     return project_name.replace("-", "_")
 
 
-def get_project_name_from_pkg_name(pkg_name: str) -> str:
+def project_name_from_pkg_name(pkg_name: str) -> str:
     """Convert package name to project name (underscores → hyphens).
 
     Args:
@@ -83,7 +83,7 @@ def get_project_name_from_pkg_name(pkg_name: str) -> str:
     return pkg_name.replace("_", "-")
 
 
-def get_project_name_from_cwd() -> str:
+def project_name_from_cwd() -> str:
     """Get project name from current directory name.
 
     Returns:
@@ -93,13 +93,13 @@ def get_project_name_from_cwd() -> str:
     return cwd.name
 
 
-def get_pkg_name_from_cwd() -> str:
+def pkg_name_from_cwd() -> str:
     """Get package name from current directory name.
 
     Returns:
         Package name (directory name with underscores).
     """
-    return get_pkg_name_from_project_name(get_project_name_from_cwd())
+    return pkg_name_from_project_name(project_name_from_cwd())
 
 
 def get_objs_from_obj(

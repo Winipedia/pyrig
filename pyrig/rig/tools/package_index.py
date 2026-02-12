@@ -5,7 +5,7 @@ Shows package version badge from PyPI.
 
 Example:
     >>> from pyrig.rig.tools.package_index import PackageIndex
-    >>> PackageIndex.L.get_package_index_url()
+    >>> PackageIndex.L.package_index_url()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -24,7 +24,7 @@ class PackageIndex(Tool):
         - PyPI integration
 
     Example:
-        >>> PackageIndex.L.get_package_index_url()
+        >>> PackageIndex.L.package_index_url()
     """
 
     @classmethod
@@ -52,11 +52,11 @@ class PackageIndex(Tool):
         )
         return (
             f"https://img.shields.io/pypi/v/{repo}?logo=pypi&logoColor=white",
-            cls.get_package_index_url(),
+            cls.package_index_url(),
         )
 
     @classmethod
-    def get_package_index_url(cls) -> str:
+    def package_index_url(cls) -> str:
         """Construct PyPI package URL.
 
         Assumes package name matches repository name.

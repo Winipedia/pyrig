@@ -37,7 +37,7 @@ import typer
 import pyrig
 from pyrig import main as pyrig_main
 from pyrig.rig.cli import shared_subcommands, subcommands
-from pyrig.src.cli import get_pkg_name_from_argv
+from pyrig.src.cli import pkg_name_from_argv
 from pyrig.src.modules.function import get_all_functions_from_module
 from pyrig.src.modules.module import (
     get_module_name_replacing_start_module,
@@ -147,7 +147,7 @@ def add_subcommands() -> None:
         are excluded).
     """
     # extract project name from sys.argv[0]
-    pkg_name = get_pkg_name_from_argv()
+    pkg_name = pkg_name_from_argv()
     logger.debug("Registering subcommands for package: %s", pkg_name)
 
     main_module_name = get_module_name_replacing_start_module(pyrig_main, pkg_name)
@@ -203,7 +203,7 @@ def add_shared_subcommands() -> None:
         packages define the same command name, the last one registered takes
         precedence.
     """
-    package_name = get_pkg_name_from_argv()
+    package_name = pkg_name_from_argv()
     package = import_module(package_name)
     all_shared_subcommands_modules = discover_equivalent_modules_across_dependents(
         shared_subcommands,
