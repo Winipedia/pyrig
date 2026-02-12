@@ -41,7 +41,7 @@ class VersionController(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -50,7 +50,7 @@ class VersionController(Tool):
         return "git"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -58,7 +58,7 @@ class VersionController(Tool):
         return ToolGroup.TOOLING
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
             "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white",
@@ -66,7 +66,7 @@ class VersionController(Tool):
         )
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
         Returns:
@@ -103,7 +103,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git init'.
         """
-        return cls.get_args("init", *args)
+        return cls.build_args("init", *args)
 
     @classmethod
     def get_add_args(cls, *args: str) -> Args:
@@ -115,7 +115,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git add'.
         """
-        return cls.get_args("add", *args)
+        return cls.build_args("add", *args)
 
     @classmethod
     def get_add_all_args(cls, *args: str) -> Args:
@@ -163,7 +163,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git commit'.
         """
-        return cls.get_args("commit", *args)
+        return cls.build_args("commit", *args)
 
     @classmethod
     def get_commit_no_verify_args(cls, *args: str, msg: str) -> Args:
@@ -188,7 +188,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git push'.
         """
-        return cls.get_args("push", *args)
+        return cls.build_args("push", *args)
 
     @classmethod
     def get_push_origin_args(cls, *args: str) -> Args:
@@ -225,7 +225,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git config'.
         """
-        return cls.get_args("config", *args)
+        return cls.build_args("config", *args)
 
     @classmethod
     def get_config_global_args(cls, *args: str) -> Args:
@@ -314,7 +314,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git tag'.
         """
-        return cls.get_args("tag", tag, *args)
+        return cls.build_args("tag", tag, *args)
 
     @classmethod
     def get_config_get_args(cls, *args: str) -> Args:
@@ -374,7 +374,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git diff'.
         """
-        return cls.get_args("diff", *args)
+        return cls.build_args("diff", *args)
 
     @classmethod
     def get_diff_quiet_args(cls, *args: str) -> Args:

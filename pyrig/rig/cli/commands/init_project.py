@@ -72,7 +72,9 @@ def adding_dev_dependencies() -> Args:
     Returns:
         Args object for adding dev dependencies.
     """
-    return PackageManager.L.get_add_dev_dependencies_args(*Tool.get_all_tool_dev_deps())
+    return PackageManager.L.get_add_dev_dependencies_args(
+        *Tool.subclasses_dev_dependencies()
+    )
 
 
 def creating_priority_config_files() -> Args:
@@ -184,7 +186,7 @@ def committing_initial_changes() -> Args:
     """
     # changes were added by the run prek hooks step
     return VersionController.L.get_commit_no_verify_args(
-        msg=f"{Pyrigger.get_name()}: Initial commit"
+        msg=f"{Pyrigger.name()}: Initial commit"
     )
 
 

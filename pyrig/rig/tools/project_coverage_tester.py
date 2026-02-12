@@ -30,7 +30,7 @@ class ProjectCoverageTester(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -39,7 +39,7 @@ class ProjectCoverageTester(Tool):
         return "pytest-cov"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -47,7 +47,7 @@ class ProjectCoverageTester(Tool):
         return ToolGroup.TESTING
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
             f"{cls.get_remote_coverage_url()}/branch/{VersionController.L.get_default_branch()}/graph/badge.svg",

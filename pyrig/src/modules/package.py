@@ -18,9 +18,9 @@ from typing import Any
 from pyrig.src.graph import DiGraph
 from pyrig.src.modules.class_ import (
     discard_parent_classes,
+    discover_all_subclasses,
     get_all_cls_from_module,
     get_all_methods_from_cls,
-    get_all_subclasses,
 )
 from pyrig.src.modules.function import get_all_functions_from_module
 from pyrig.src.modules.imports import (
@@ -378,7 +378,7 @@ def discover_subclasses_across_dependents[T: type](
 
     Primary discovery function for pyrig's multi-package plugin architecture.
     Combines ``discover_equivalent_modules_across_dependents`` with
-    ``get_all_subclasses`` to find subclass implementations across all packages
+    ``subclasses`` to find subclass implementations across all packages
     that depend on a base dependency.
 
     This is the main mechanism that enables:
@@ -389,7 +389,7 @@ def discover_subclasses_across_dependents[T: type](
     The discovery process:
         1. Finds all equivalent modules across dependent packages using
            ``discover_equivalent_modules_across_dependents``
-        2. For each module, calls ``get_all_subclasses`` to discover subclasses
+        2. For each module, calls ``subclasses`` to discover subclasses
            of ``cls`` defined in that module (applying ``discard_parents`` and
            ``exclude_abstract`` filters per-module)
         3. Aggregates all discovered subclasses into a single list
@@ -433,14 +433,14 @@ def discover_subclasses_across_dependents[T: type](
 
     Note:
         When ``discard_parents=True``, the filtering is performed twice: once
-        within each ``get_all_subclasses`` call (per-module) and once after
+        within each ``subclasses`` call (per-module) and once after
         aggregation (cross-module). The second pass is essential because a
         parent class from module A and its child from module B would both
         survive the per-module filtering.
 
     See Also:
         discover_equivalent_modules_across_dependents: Module discovery
-        get_all_subclasses: Per-module subclass discovery
+        subclasses: Per-module subclass discovery
         discover_leaf_subclass_across_dependents: When exactly one leaf expected
     """
     logger.debug(
@@ -451,7 +451,7 @@ def discover_subclasses_across_dependents[T: type](
     subclasses: list[T] = []
     for pkg in discover_equivalent_modules_across_dependents(load_pkg_before, dep):
         subclasses.extend(
-            get_all_subclasses(
+            discover_all_subclasses(
                 cls,
                 load_package_before=pkg,
                 discard_parents=discard_parents,

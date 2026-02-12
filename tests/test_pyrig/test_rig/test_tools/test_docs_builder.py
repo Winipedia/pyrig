@@ -22,21 +22,21 @@ class TestDocsBuilder:
         assert "[![" in result
         assert "Documentation" in result
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_group()
+        result = DocsBuilder.L.group()
         assert isinstance(result, str)
         assert result == "documentation"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_badge_urls()
+        result = DocsBuilder.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_dev_dependencies(self) -> None:
+    def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_dev_dependencies()
+        result = DocsBuilder.L.dev_dependencies()
         assert result == [
             "mkdocs",
             "mkdocs-material",
@@ -49,9 +49,9 @@ class TestDocsBuilder:
         result = DocsBuilder.L.get_docs_dir()
         assert result == Path("docs")
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_name()
+        result = DocsBuilder.L.name()
         assert result == "mkdocs"
 
     def test_get_build_args(self) -> None:

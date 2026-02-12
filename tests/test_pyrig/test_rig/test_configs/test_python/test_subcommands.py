@@ -8,6 +8,6 @@ class TestSubcommandsConfigFile:
     """Test class."""
 
     def test_get_src_module(self) -> None:
-        """Test method for get_src_module."""
+        """Test method."""
         module = SubcommandsConfigFile.get_src_module()
         assert module == subcommands

@@ -307,8 +307,8 @@ When dumping, pyrig normalizes dependencies:
 ### Standard Dev Dependencies
 
 Pyrig automatically adds dev dependencies declared by each tool (via
-`Tool.get_dev_dependencies()`). If you replace a tool, its deps are swapped
-automatically. Override `get_dev_dependencies()` in your tool subclass to
+`Tool.dev_dependencies()`). If you replace a tool, its deps are swapped
+automatically. Override `dev_dependencies()` in your tool subclass to
 customize what dev dependencies are added for your project.
 
 ## Usage

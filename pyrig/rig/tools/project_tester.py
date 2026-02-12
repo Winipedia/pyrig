@@ -27,7 +27,7 @@ class ProjectTester(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -36,7 +36,7 @@ class ProjectTester(Tool):
         return "pytest"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -44,7 +44,7 @@ class ProjectTester(Tool):
         return ToolGroup.TESTING
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
             "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest",
@@ -52,13 +52,13 @@ class ProjectTester(Tool):
         )
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
         Returns:
             List of tool dependencies.
         """
-        return [*super().get_dev_dependencies(), "pytest-mock"]
+        return [*super().dev_dependencies(), "pytest-mock"]
 
     @classmethod
     def get_coverage_threshold(cls) -> int:
@@ -75,7 +75,7 @@ class ProjectTester(Tool):
         Returns:
             Args for 'uv run pytest'.
         """
-        return cls.get_args(*args)
+        return cls.build_args(*args)
 
     @classmethod
     def get_run_tests_in_ci_args(cls, *args: str) -> Args:

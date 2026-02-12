@@ -6,21 +6,21 @@ from pyrig.rig.tools.linter import Linter
 class TestLinter:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = Linter.L.get_group()
+        result = Linter.L.group()
         assert isinstance(result, str)
         assert result == "code-quality"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = Linter.L.get_badge_urls()
+        result = Linter.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = Linter.L.get_name()
+        result = Linter.L.name()
         assert result == "ruff"
 
     def test_get_check_args(self) -> None:

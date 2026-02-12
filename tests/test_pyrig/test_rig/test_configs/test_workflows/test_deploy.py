@@ -33,20 +33,20 @@ class TestDeployWorkflow:
     def test_get_workflow_triggers(
         self, my_test_deploy_workflow: type[DeployWorkflow]
     ) -> None:
-        """Test method for get_workflow_triggers."""
+        """Test method."""
         result = my_test_deploy_workflow.get_workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
 
     def test_get_jobs(self, my_test_deploy_workflow: type[DeployWorkflow]) -> None:
-        """Test method for get_jobs."""
+        """Test method."""
         result = my_test_deploy_workflow.get_jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_publish_package(
         self, my_test_deploy_workflow: type[DeployWorkflow]
     ) -> None:
-        """Test method for job_publish."""
+        """Test method."""
         result = my_test_deploy_workflow.job_publish_package()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
@@ -56,12 +56,12 @@ class TestDeployWorkflow:
     def test_steps_publish_package(
         self, my_test_deploy_workflow: type[DeployWorkflow]
     ) -> None:
-        """Test method for steps_publish."""
+        """Test method."""
         result = my_test_deploy_workflow.steps_publish_package()
         assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_is_correct(self, my_test_deploy_workflow: type[DeployWorkflow]) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         test_workflow = my_test_deploy_workflow()
         workflow_path = test_workflow.get_path()
         workflow_path.write_text("")

@@ -77,14 +77,14 @@ class TestPyprojectConfigFile:
         assert new_dep == "dep", f"Expected {new_dep}, got {dep}"
 
     def test_get_project_description(self) -> None:
-        """Test method for get_project_description."""
+        """Test method."""
         description = PyprojectConfigFile.L.get_project_description()
         assert isinstance(description, str), "Expected description to be a string"
 
     def test_is_correct(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         my_test_pyproject_config_file()
         is_correct = my_test_pyproject_config_file.is_correct()
         assert is_correct, "Expected config to be correct after initialization"
@@ -94,7 +94,7 @@ class TestPyprojectConfigFile:
         my_test_pyproject_config_file: type[PyprojectConfigFile],
         mocker: MockFixture,
     ) -> None:
-        """Test method for dump."""
+        """Test method."""
         my_test_pyproject_config_file()
         # spy on remove_wrong_dependencies
         spy = mocker.spy(
@@ -110,14 +110,14 @@ class TestPyprojectConfigFile:
         my_test_pyproject_config_file: type[PyprojectConfigFile],
         tmp_path: Path,
     ) -> None:
-        """Test method for get_parent_path."""
+        """Test method."""
         with chdir(tmp_path):
             expected = Path()
             actual = my_test_pyproject_config_file.get_parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__get_configs(self) -> None:
-        """Test method for get_configs."""
+        """Test method."""
         # pyproject get configs internally uses load which makes it a special case
         # where the file must exist before calling get_configs
         configs = PyprojectConfigFile.L.get_configs()
@@ -126,19 +126,19 @@ class TestPyprojectConfigFile:
         assert "tool" in configs, "Expected 'tool' key in configs"
 
     def test_get_package_name(self) -> None:
-        """Test method for get_package_name."""
+        """Test method."""
         package_name = PyprojectConfigFile.L.get_package_name()
         assert len(package_name) > 0, "Expected package name to be non-empty"
 
     def test_get_project_name(self) -> None:
-        """Test method for get_project_name."""
+        """Test method."""
         project_name = PyprojectConfigFile.L.get_project_name()
         assert len(project_name) > 0, "Expected project name to be non-empty"
 
     def test_make_dependency_versions(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
-        """Test method for make_dependency_to_version_dict."""
+        """Test method."""
         dependencies = ["dep1", "dep1"]
         deps_versions = my_test_pyproject_config_file.make_dependency_versions(
             dependencies
@@ -148,7 +148,7 @@ class TestPyprojectConfigFile:
     def test_remove_wrong_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
-        """Test method for remove_wrong_dependencies."""
+        """Test method."""
         my_test_pyproject_config_file()
         config = my_test_pyproject_config_file.get_configs()
         # add wrong dependencies to config
@@ -160,25 +160,25 @@ class TestPyprojectConfigFile:
         assert config["project"]["dependencies"] == ["wrong>=1.0.0,<2.0.0"]
 
     def test_get_all_dependencies(self) -> None:
-        """Test method for get_all_dependencies."""
+        """Test method."""
         # get_all_dependencies should return a set (union of deps and dev_deps)
         all_deps = PyprojectConfigFile.L.get_all_dependencies()
         assert isinstance(all_deps, list), f"Expected list, got {type(all_deps)}"
 
     def test_get_dependencies(self) -> None:
-        """Test method for get_dependencies."""
+        """Test method."""
         # get_dependencies may raise if dependencies key doesn't exist
         # This is expected behavior for the test config
         deps = PyprojectConfigFile.L.get_dependencies()
         assert isinstance(deps, list), f"Expected list, got {type(deps)}"
 
     def test_get_dev_dependencies(self) -> None:
-        """Test method for get_dev_dependencies."""
+        """Test method."""
         dev_deps = PyprojectConfigFile.L.get_dev_dependencies()
         assert isinstance(dev_deps, list), f"Expected list, got {type(dev_deps)}"
 
     def test_get_standard_dev_dependencies(self) -> None:
-        """Test method for get_standard_dev_dependencies."""
+        """Test method."""
         standard_dev_deps = PyprojectConfigFile.L.get_standard_dev_dependencies()
         assert isinstance(standard_dev_deps, list), (
             f"Expected list, got {type(standard_dev_deps)}"
@@ -187,7 +187,7 @@ class TestPyprojectConfigFile:
     def test_get_latest_possible_python_version(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
-        """Test method for get_latest_possible_python_version."""
+        """Test method."""
         my_test_pyproject_config_file()
         config = my_test_pyproject_config_file.load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
@@ -223,7 +223,7 @@ class TestPyprojectConfigFile:
     def test_fetch_latest_python_version(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
-        """Test method for fetch_latest_python_version."""
+        """Test method."""
         latest_version = my_test_pyproject_config_file.fetch_latest_python_version()
         assert Version(latest_version) >= Version("3.13"), (
             "Expected fetch_latest_python_version to return a version >= 3.11"
@@ -232,7 +232,7 @@ class TestPyprojectConfigFile:
     def test_get_supported_python_versions(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
-        """Test method for get_supported_python_versions."""
+        """Test method."""
         my_test_pyproject_config_file()
         config = my_test_pyproject_config_file.load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
@@ -267,7 +267,7 @@ class TestPyprojectConfigFile:
     def test_get_first_supported_python_version(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
-        """Test method for get_first_supported_python_version."""
+        """Test method."""
         my_test_pyproject_config_file()
         config = my_test_pyproject_config_file.load()
         config["project"]["requires-python"] = ">=3.8, <3.12"

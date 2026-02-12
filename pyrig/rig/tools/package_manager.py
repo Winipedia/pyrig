@@ -31,7 +31,7 @@ class PackageManager(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -40,7 +40,7 @@ class PackageManager(Tool):
         return "uv"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -48,7 +48,7 @@ class PackageManager(Tool):
         return ToolGroup.TOOLING
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge urls for uv."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json",
@@ -56,7 +56,7 @@ class PackageManager(Tool):
         )
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
         Returns:
@@ -75,7 +75,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv init'.
         """
-        return cls.get_args("init", *args)
+        return cls.build_args("init", *args)
 
     @classmethod
     def get_run_args(cls, *args: str) -> Args:
@@ -87,7 +87,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv run'.
         """
-        return cls.get_args("run", *args)
+        return cls.build_args("run", *args)
 
     @classmethod
     def get_run_no_dev_args(cls, *args: str) -> Args:
@@ -111,7 +111,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv add'.
         """
-        return cls.get_args("add", *args)
+        return cls.build_args("add", *args)
 
     @classmethod
     def get_add_dev_dependencies_args(cls, *args: str) -> Args:
@@ -123,7 +123,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv add --group dev'.
         """
-        return cls.get_args("add", "--group", "dev", *args)
+        return cls.build_args("add", "--group", "dev", *args)
 
     @classmethod
     def get_install_dependencies_args(cls, *args: str) -> Args:
@@ -135,7 +135,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv sync'.
         """
-        return cls.get_args("sync", *args)
+        return cls.build_args("sync", *args)
 
     @classmethod
     def get_install_dependencies_no_dev_args(cls, *args: str) -> Args:
@@ -159,7 +159,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv lock --upgrade'.
         """
-        return cls.get_args("lock", "--upgrade", *args)
+        return cls.build_args("lock", "--upgrade", *args)
 
     @classmethod
     def get_update_self_args(cls, *args: str) -> Args:
@@ -171,7 +171,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv self update'.
         """
-        return cls.get_args("self", "update", *args)
+        return cls.build_args("self", "update", *args)
 
     @classmethod
     def get_patch_version_args(cls, *args: str) -> Args:
@@ -183,7 +183,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv version --bump patch'.
         """
-        return cls.get_args("version", "--bump", "patch", *args)
+        return cls.build_args("version", "--bump", "patch", *args)
 
     @classmethod
     def get_build_args(cls, *args: str) -> Args:
@@ -195,7 +195,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv build'.
         """
-        return cls.get_args("build", *args)
+        return cls.build_args("build", *args)
 
     @classmethod
     def get_publish_args(cls, *args: str, token: str) -> Args:
@@ -208,7 +208,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv publish --token <token>'.
         """
-        return cls.get_args("publish", "--token", token, *args)
+        return cls.build_args("publish", "--token", token, *args)
 
     @classmethod
     def get_version_args(cls, *args: str) -> Args:
@@ -220,7 +220,7 @@ class PackageManager(Tool):
         Returns:
             Args for 'uv version'.
         """
-        return cls.get_args("version", *args)
+        return cls.build_args("version", *args)
 
     @classmethod
     def get_version_short_args(cls, *args: str) -> Args:
