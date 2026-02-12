@@ -59,7 +59,7 @@ See the
 pyrig's `init` command scaffolds a complete, production-ready Python project
 (source layout, tests, CI/CD, docs, configs) and is safe to re-run — it's
 idempotent. See the Getting Started guide for details and the full generated
-project structure. See the [Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/) for the full layout.
+project structure. See the [Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/#what-you-get) for the full layout.
 
 ### Config File System
 
