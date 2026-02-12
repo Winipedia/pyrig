@@ -8,16 +8,16 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
-    def test_get_documentation_url(self) -> None:
+    def test_documentation_url(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_documentation_url()
+        result = DocsBuilder.L.documentation_url()
         assert isinstance(result, str)
         assert result.startswith("https://")
         assert "github.io" in result
 
-    def test_get_documentation_badge(self) -> None:
+    def test_documentation_badge(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_documentation_badge()
+        result = DocsBuilder.L.documentation_badge()
         assert isinstance(result, str)
         assert "[![" in result
         assert "Documentation" in result
@@ -44,9 +44,9 @@ class TestDocsBuilder:
             "mkdocstrings[python]",
         ]
 
-    def test_get_docs_dir(self) -> None:
+    def test_docs_dir(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_docs_dir()
+        result = DocsBuilder.L.docs_dir()
         assert result == Path("docs")
 
     def test_name(self) -> None:
@@ -54,7 +54,7 @@ class TestDocsBuilder:
         result = DocsBuilder.L.name()
         assert result == "mkdocs"
 
-    def test_get_build_args(self) -> None:
+    def test_build_args(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.get_build_args()
+        result = DocsBuilder.L.build_args()
         assert result == ("mkdocs", "build")

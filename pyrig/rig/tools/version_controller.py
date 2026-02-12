@@ -4,7 +4,7 @@ Provides type-safe wrapper for Git commands: init, add, commit, push, tag, confi
 
 Example:
     >>> from pyrig.rig.tools.version_controller import VersionController
-    >>> VersionController.L.get_add_all_args().run()
+    >>> VersionController.L.add_all_args().run()
     >>> VersionController.L.get_commit_no_verify_args("Update docs").run()
     >>> VersionController.L.get_push_args().run()
 """
@@ -36,7 +36,7 @@ class VersionController(Tool):
 
     Example:
         >>> VersionController.L.get_init_args().run()
-        >>> VersionController.L.get_add_all_args().run()
+        >>> VersionController.L.add_all_args().run()
         >>> VersionController.L.get_commit_no_verify_args("Initial commit").run()
     """
 
@@ -103,10 +103,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git init'.
         """
-        return cls.build_args("init", *args)
+        return cls.args("init", *args)
 
     @classmethod
-    def get_add_args(cls, *args: str) -> Args:
+    def add_args(cls, *args: str) -> Args:
         """Construct git add arguments.
 
         Args:
@@ -115,10 +115,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git add'.
         """
-        return cls.build_args("add", *args)
+        return cls.args("add", *args)
 
     @classmethod
-    def get_add_all_args(cls, *args: str) -> Args:
+    def add_all_args(cls, *args: str) -> Args:
         """Construct git add arguments for all files.
 
         Args:
@@ -127,10 +127,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git add .'.
         """
-        return cls.get_add_args(".", *args)
+        return cls.add_args(".", *args)
 
     @classmethod
-    def get_add_pyproject_toml_args(cls, *args: str) -> Args:
+    def add_pyproject_toml_args(cls, *args: str) -> Args:
         """Construct git add arguments for pyproject.toml.
 
         Args:
@@ -139,10 +139,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git add pyproject.toml'.
         """
-        return cls.get_add_args("pyproject.toml", *args)
+        return cls.add_args("pyproject.toml", *args)
 
     @classmethod
-    def get_add_pyproject_toml_and_lock_file_args(cls, *args: str) -> Args:
+    def add_pyproject_toml_and_lock_file_args(cls, *args: str) -> Args:
         """Construct git add arguments for pyproject.toml and uv.lock.
 
         Args:
@@ -151,7 +151,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git add pyproject.toml uv.lock'.
         """
-        return cls.get_add_pyproject_toml_args("uv.lock", *args)
+        return cls.add_pyproject_toml_args("uv.lock", *args)
 
     @classmethod
     def get_commit_args(cls, *args: str) -> Args:
@@ -163,7 +163,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git commit'.
         """
-        return cls.build_args("commit", *args)
+        return cls.args("commit", *args)
 
     @classmethod
     def get_commit_no_verify_args(cls, *args: str, msg: str) -> Args:
@@ -188,7 +188,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git push'.
         """
-        return cls.build_args("push", *args)
+        return cls.args("push", *args)
 
     @classmethod
     def get_push_origin_args(cls, *args: str) -> Args:
@@ -225,7 +225,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git config'.
         """
-        return cls.build_args("config", *args)
+        return cls.args("config", *args)
 
     @classmethod
     def get_config_global_args(cls, *args: str) -> Args:
@@ -314,7 +314,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git tag'.
         """
-        return cls.build_args("tag", tag, *args)
+        return cls.args("tag", tag, *args)
 
     @classmethod
     def get_config_get_args(cls, *args: str) -> Args:
@@ -374,7 +374,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git diff'.
         """
-        return cls.build_args("diff", *args)
+        return cls.args("diff", *args)
 
     @classmethod
     def get_diff_quiet_args(cls, *args: str) -> Args:

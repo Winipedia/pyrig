@@ -15,8 +15,8 @@ from pyrig.src.processes import Args
 
 class PreCommitter(BasePC):
     @classmethod
-    def get_run_all_files_args(cls, *args: str) -> Args:
-        return super().get_run_all_files_args("--show-diff-on-failure", *args)
+    def run_all_files_args(cls, *args: str) -> Args:
+        return super().run_all_files_args("--show-diff-on-failure", *args)
 ```
 
 ## Related

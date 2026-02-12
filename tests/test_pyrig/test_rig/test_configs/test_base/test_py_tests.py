@@ -16,6 +16,6 @@ class TestPythonTestsConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            expected = Path(MirrorTestConfigFile.get_tests_package_name())
+            expected = Path(MirrorTestConfigFile.tests_package_name())
             actual = PythonTestsConfigFile.parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"

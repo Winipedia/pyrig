@@ -5,8 +5,8 @@ Ruff is a fast Python linter and formatter written in Rust.
 
 Example:
     >>> from pyrig.rig.tools.linter import Linter
-    >>> Linter.L.get_check_args().run()
-    >>> Linter.L.get_format_args().run()
+    >>> Linter.L.check_args().run()
+    >>> Linter.L.format_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -24,9 +24,9 @@ class Linter(Tool):
         - Auto-fix: Automatically fix linting issues
 
     Example:
-        >>> Linter.L.get_check_args().run()
-        >>> Linter.L.get_check_fix_args().run()
-        >>> Linter.L.get_format_args().run()
+        >>> Linter.L.check_args().run()
+        >>> Linter.L.check_fix_args().run()
+        >>> Linter.L.format_args().run()
     """
 
     @classmethod
@@ -55,7 +55,7 @@ class Linter(Tool):
         )
 
     @classmethod
-    def get_check_args(cls, *args: str) -> Args:
+    def check_args(cls, *args: str) -> Args:
         """Construct ruff check arguments.
 
         Args:
@@ -64,10 +64,10 @@ class Linter(Tool):
         Returns:
             Args for 'ruff check'.
         """
-        return cls.build_args("check", *args)
+        return cls.args("check", *args)
 
     @classmethod
-    def get_check_fix_args(cls, *args: str) -> Args:
+    def check_fix_args(cls, *args: str) -> Args:
         """Construct ruff check arguments with auto-fix.
 
         Args:
@@ -76,10 +76,10 @@ class Linter(Tool):
         Returns:
             Args for 'ruff check --fix'.
         """
-        return cls.get_check_args("--fix", *args)
+        return cls.check_args("--fix", *args)
 
     @classmethod
-    def get_format_args(cls, *args: str) -> Args:
+    def format_args(cls, *args: str) -> Args:
         """Construct ruff format arguments.
 
         Args:
@@ -88,4 +88,4 @@ class Linter(Tool):
         Returns:
             Args for 'ruff format'.
         """
-        return cls.build_args("format", *args)
+        return cls.args("format", *args)

@@ -78,13 +78,13 @@ class PyprojectConfigFile(TomlConfigFile):
         repo_owner, _ = VersionController.L.get_repo_owner_and_name(
             check_repo_url=False
         )
-        tests_pkg_name = MirrorTestConfigFile.L.get_tests_package_name()
+        tests_pkg_name = MirrorTestConfigFile.L.tests_package_name()
 
         return {
             "project": {
                 "name": get_project_name_from_cwd(),
-                "version": cls.get_project_version(),
-                "description": cls.get_project_description(),
+                "version": cls.project_version(),
+                "description": cls.project_description(),
                 "readme": "README.md",
                 "authors": [
                     {"name": repo_owner},
@@ -94,13 +94,13 @@ class PyprojectConfigFile(TomlConfigFile):
                 ],
                 "license": cls.detect_project_license(),
                 "license-files": [LicenseConfigFile.L.path().name],
-                "requires-python": cls.get_project_requires_python(),
+                "requires-python": cls.requires_python(),
                 "classifiers": [
                     *cls.make_python_version_classifiers(),
                 ],
                 "urls": {
                     "Homepage": RemoteVersionController.L.get_repo_url(),
-                    "Documentation": DocsBuilder.L.get_documentation_url(),
+                    "Documentation": DocsBuilder.L.documentation_url(),
                     "Source": RemoteVersionController.L.get_repo_url(),
                     "Issues": RemoteVersionController.L.get_issues_url(),
                     "Changelog": RemoteVersionController.L.get_releases_url(),
@@ -109,17 +109,17 @@ class PyprojectConfigFile(TomlConfigFile):
                 "scripts": {
                     get_project_name_from_cwd(): f"{cli.__name__}:{cli.main.__name__}"
                 },
-                "dependencies": cls.make_dependency_versions(cls.get_dependencies()),
+                "dependencies": cls.make_dependency_versions(cls.dependencies()),
             },
             "dependency-groups": {
                 "dev": cls.make_dependency_versions(
-                    cls.get_dev_dependencies(),
-                    additional=cls.get_standard_dev_dependencies(),
+                    cls.dev_dependencies(),
+                    additional=Tool.subclasses_dev_dependencies(),
                 )
             },
             "build-system": {
-                "requires": PackageManager.L.get_build_system_requires(),
-                "build-backend": PackageManager.L.get_build_backend(),
+                "requires": PackageManager.L.build_system_requires(),
+                "build-backend": PackageManager.L.build_backend(),
             },
             "tool": {
                 "uv": {
@@ -206,19 +206,19 @@ class PyprojectConfigFile(TomlConfigFile):
         )
 
     @classmethod
-    def get_project_description(cls) -> str:
+    def project_description(cls) -> str:
         """Get project description from pyproject.toml."""
         return str(cls.load().get("project", {}).get("description", ""))
 
     @classmethod
-    def get_project_version(cls) -> str:
+    def project_version(cls) -> str:
         """Get project version from pyproject.toml."""
         return str(cls.load().get("project", {}).get("version", ""))
 
     @classmethod
     def make_python_version_classifiers(cls) -> list[str]:
         """Generate PyPI classifiers (Python versions, OS Independent, Typed)."""
-        versions = cls.get_supported_python_versions()
+        versions = cls.supported_python_versions()
         python_version_classifiers = [
             f"Programming Language :: Python :: {v.major}.{v.minor}" for v in versions
         ]
@@ -232,7 +232,7 @@ class PyprojectConfigFile(TomlConfigFile):
         return [*python_version_classifiers, *os_classifiers, *typing_classifiers]
 
     @classmethod
-    def get_project_requires_python(cls, default: str = ">=3.12") -> str:
+    def requires_python(cls, default: str = ">=3.12") -> str:
         """Get requires-python constraint from pyproject.toml."""
         return str(cls.load().get("project", {}).get("requires-python", default))
 
@@ -268,40 +268,27 @@ class PyprojectConfigFile(TomlConfigFile):
         return get_pkg_req_name_split_pattern().split(dep)[0]
 
     @classmethod
-    def get_package_name(cls) -> str:
+    def package_name(cls) -> str:
         """Get Python package name with underscores.
 
         (e.g., 'my-project' -> 'my_project').
         """
-        project_name = cls.get_project_name()
+        project_name = cls.project_name()
         return get_pkg_name_from_project_name(project_name)
 
     @classmethod
-    def get_project_name(cls) -> str:
+    def project_name(cls) -> str:
         """Get project name from pyproject.toml."""
         return str(cls.load().get("project", {}).get("name", ""))
 
     @classmethod
-    def get_all_dependencies(cls) -> list[str]:
-        """Get all dependencies (runtime + dev)."""
-        all_deps = cls.get_dependencies()
-        # Due to caching in load(), mutating in place causes bugs.
-        # Always return a new structure instead of modifying.
-        return [*all_deps, *cls.get_dev_dependencies()]
-
-    @classmethod
-    def get_standard_dev_dependencies(cls) -> list[str]:
-        """Get pyrig's standard dev dependencies (ruff, ty, pytest, etc.)."""
-        return sorted(Tool.subclasses_dev_dependencies())
-
-    @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get dev dependencies from pyproject.toml."""
         dev_deps: list[str] = cls.load().get("dependency-groups", {}).get("dev", [])
         return dev_deps
 
     @classmethod
-    def get_dependencies(cls) -> list[str]:
+    def dependencies(cls) -> list[str]:
         """Get runtime dependencies from pyproject.toml."""
         deps: list[str] = cls.load().get("project", {}).get("dependencies", [])
         return deps
@@ -324,7 +311,7 @@ class PyprojectConfigFile(TomlConfigFile):
         return str(adjust_version_to_level(Version(latest_version), level))
 
     @classmethod
-    def get_latest_python_version(
+    def latest_python_version(
         cls, level: Literal["major", "minor", "micro"] = "minor"
     ) -> Version:
         """Get latest stable Python version at precision level (major/minor/micro)."""
@@ -332,34 +319,34 @@ class PyprojectConfigFile(TomlConfigFile):
         return adjust_version_to_level(latest_version, level)
 
     @classmethod
-    def get_latest_possible_python_version(
+    def latest_possible_python_version(
         cls, level: Literal["major", "minor", "micro"] = "micro"
     ) -> Version:
         """Get latest Python version allowed by requires-python constraint."""
         constraint = cls.load()["project"]["requires-python"]
         version_constraint = VersionConstraint(constraint)
-        version = version_constraint.get_upper_inclusive()
+        version = version_constraint.upper_inclusive()
         if version is None:
-            version = cls.get_latest_python_version()
+            version = cls.latest_python_version()
 
         return adjust_version_to_level(version, level)
 
     @classmethod
-    def get_first_supported_python_version(cls) -> Version:
+    def first_supported_python_version(cls) -> Version:
         """Get minimum supported Python version from requires-python."""
-        constraint = cls.get_project_requires_python()
+        constraint = cls.requires_python()
         version_constraint = VersionConstraint(constraint)
-        lower = version_constraint.get_lower_inclusive()
+        lower = version_constraint.find_lower_inclusive()
         if lower is None:
             msg = "Need a lower bound for python version"
             raise ValueError(msg)
         return lower
 
     @classmethod
-    def get_supported_python_versions(cls) -> list[Version]:
+    def supported_python_versions(cls) -> list[Version]:
         """Get all supported Python minor versions within requires-python constraint."""
-        constraint = cls.get_project_requires_python()
+        constraint = cls.requires_python()
         version_constraint = VersionConstraint(constraint)
-        return version_constraint.get_version_range(
-            level="minor", upper_default=cls.get_latest_python_version()
+        return version_constraint.version_range(
+            level="minor", upper_default=cls.latest_python_version()
         )

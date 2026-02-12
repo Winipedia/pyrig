@@ -23,12 +23,12 @@ class TestSecurityChecker:
         result = SecurityChecker.L.name()
         assert result == "bandit"
 
-    def test_get_run_args(self) -> None:
+    def test_run_args(self) -> None:
         """Test method."""
-        result = SecurityChecker.L.get_run_args()
+        result = SecurityChecker.L.run_args()
         assert result == ("bandit",)
 
-    def test_get_run_with_config_args(self) -> None:
+    def test_run_with_config_args(self) -> None:
         """Test method."""
-        result = SecurityChecker.L.get_run_with_config_args()
+        result = SecurityChecker.L.run_with_config_args()
         assert result == ("bandit", "-c", "pyproject.toml", "-r", ".")

@@ -12,11 +12,11 @@ Example:
     A shared ``version`` command that displays the invoking project's version::
 
         from pyrig.src.cli import get_project_name_from_argv
-        from importlib.metadata import version as get_version
+        from importlib.metadata import version as version
 
         def version() -> None:
             project_name = get_project_name_from_argv()
-            print(f"{project_name} version {get_version(project_name)}")
+            print(f"{project_name} version {version(project_name)}")
 """
 
 import sys

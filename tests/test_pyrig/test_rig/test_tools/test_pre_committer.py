@@ -23,17 +23,17 @@ class TestPreCommitter:
         result = PreCommitter.L.name()
         assert result == "prek"
 
-    def test_get_install_args(self) -> None:
+    def test_install_args(self) -> None:
         """Test method."""
-        result = PreCommitter.L.get_install_args()
+        result = PreCommitter.L.install_args()
         assert result == ("prek", "install")
 
-    def test_get_run_args(self) -> None:
+    def test_run_args(self) -> None:
         """Test method."""
-        result = PreCommitter.L.get_run_args()
+        result = PreCommitter.L.run_args()
         assert result == ("prek", "run")
 
-    def test_get_run_all_files_args(self) -> None:
+    def test_run_all_files_args(self) -> None:
         """Test method."""
-        result = PreCommitter.L.get_run_all_files_args()
+        result = PreCommitter.L.run_all_files_args()
         assert result == ("prek", "run", "--all-files")

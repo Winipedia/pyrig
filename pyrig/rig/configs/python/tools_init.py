@@ -35,8 +35,8 @@ class ToolsInitConfigFile(InitConfigFile):
                 def name(cls) -> str:
                     return "mytool"
                 @classmethod
-                def get_run_args(cls, *args: str) -> Args:
-                    return cls.build_args("run", *args)
+                def run_args(cls, *args: str) -> Args:
+                    return cls.args("run", *args)
 
     See Also:
         pyrig.rig.tools
@@ -53,7 +53,7 @@ class ToolsInitConfigFile(InitConfigFile):
         return Priority.LOW
 
     @classmethod
-    def get_src_module(cls) -> ModuleType:
+    def src_module(cls) -> ModuleType:
         """Get the source module to copy docstring from.
 
         Returns:

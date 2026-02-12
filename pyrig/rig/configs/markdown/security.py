@@ -86,7 +86,7 @@ class SecurityConfigFile(MarkdownConfigFile):
         Returns:
             list[str]: Security template lines.
         """
-        return [*cls.get_security_template_with_contact_method().splitlines()]
+        return [*cls.template_with_contact_method().splitlines()]
 
     @classmethod
     def is_correct(cls) -> bool:
@@ -100,17 +100,17 @@ class SecurityConfigFile(MarkdownConfigFile):
         )
 
     @classmethod
-    def get_security_template_with_contact_method(cls) -> str:
+    def template_with_contact_method(cls) -> str:
         """Get the security template content with email inserted.
 
         Returns:
             str: Security template content with user's email.
         """
-        contact_method = cls.get_contact_method()
+        contact_method = cls.contact_method()
         return SECURITY_TEMPLATE.replace("[INSERT CONTACT METHOD]", contact_method)
 
     @classmethod
-    def get_contact_method(cls) -> str:
+    def contact_method(cls) -> str:
         """Get the contact method for security reports.
 
         Returns:

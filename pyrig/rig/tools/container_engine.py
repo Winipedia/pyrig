@@ -5,8 +5,8 @@ Used for creating containerized builds, particularly PyInstaller executables.
 
 Example:
     >>> from pyrig.rig.tools.container_engine import ContainerEngine
-    >>> build_args = ContainerEngine.L.get_build_args(project_name="myapp")
-    >>> build_args.run()
+    >>> args = ContainerEngine.L.build_args(project_name="myapp")
+    >>> args.run()
 """
 
 from pathlib import Path
@@ -22,8 +22,8 @@ class ContainerEngine(Tool):
 
     Example:
         >>> from pathlib import Path
-        >>> ContainerEngine.L.get_build_args(project_name="app:v1").run()
-        >>> ContainerEngine.L.get_save_args(
+        >>> ContainerEngine.L.build_args(project_name="app:v1").run()
+        >>> ContainerEngine.L.save_args(
         ...     image_file=Path("app.tar"), image_path=Path("./dist")
         ... ).run()
     """
@@ -64,7 +64,7 @@ class ContainerEngine(Tool):
         return []
 
     @classmethod
-    def get_build_args(cls, *args: str, project_name: str) -> Args:
+    def build_args(cls, *args: str, project_name: str) -> Args:
         """Construct podman build arguments.
 
         Args:
@@ -74,10 +74,10 @@ class ContainerEngine(Tool):
         Returns:
             Args for 'podman build'.
         """
-        return cls.build_args("build", "-t", project_name, ".", *args)
+        return cls.args("build", "-t", project_name, ".", *args)
 
     @classmethod
-    def get_save_args(cls, *args: str, image_file: Path, image_path: Path) -> Args:
+    def save_args(cls, *args: str, image_file: Path, image_path: Path) -> Args:
         """Construct podman save arguments.
 
         Args:
@@ -89,7 +89,7 @@ class ContainerEngine(Tool):
         Returns:
             Args for 'podman save'.
         """
-        return cls.build_args(
+        return cls.args(
             "save",
             "-o",
             image_path.as_posix(),

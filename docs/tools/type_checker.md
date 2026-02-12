@@ -17,8 +17,8 @@ from pyrig.src.processes import Args
 
 class TypeChecker(BaseTC):
     @classmethod
-    def get_check_args(cls, *args: str) -> Args:
-        return super().get_check_args("--verbose", *args)
+    def check_args(cls, *args: str) -> Args:
+        return super().check_args("--verbose", *args)
 ```
 
 ### Replacing with mypy
@@ -34,9 +34,9 @@ class TypeChecker(BaseTC):
         return "mypy"
 
     @classmethod
-    def get_check_args(cls, *args: str) -> Args:
+    def check_args(cls, *args: str) -> Args:
         # mypy uses different command syntax than ty
-        return cls.build_args(*args)  # mypy doesn't need 'check' subcommand
+        return cls.args(*args)  # mypy doesn't need 'check' subcommand
 ```
 
 Because pyrig uses `TypeChecker.L` internally (including in prek config
@@ -44,7 +44,7 @@ generation), this override automatically applies everywhere - no need to modify
 prek config or other components.
 
 **Note**: When replacing type checkers, you may need to override
-`get_check_args()` since different tools use different command patterns. The
+`check_args()` since different tools use different command patterns. The
 example above shows how mypy differs from ty (which uses `ty check`).
 You might have to adjust other files as well. E.g. pyproject.toml to add mypy
 as a dev dependency or to add mypy configuration.

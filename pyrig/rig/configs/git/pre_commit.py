@@ -60,7 +60,7 @@ class PrekConfigFile(TomlConfigFile):
         return Path()
 
     @classmethod
-    def get_hook(
+    def hook(
         cls,
         name: str,
         args: Args,
@@ -109,25 +109,25 @@ class PrekConfigFile(TomlConfigFile):
             All hooks use system-installed tools (no remote repos).
         """
         hooks: list[dict[str, Any]] = [
-            cls.get_hook(
+            cls.hook(
                 "format-code",
-                Linter.L.get_format_args(),
+                Linter.L.format_args(),
             ),
-            cls.get_hook(
+            cls.hook(
                 "lint-code",
-                Linter.L.get_check_fix_args(),
+                Linter.L.check_fix_args(),
             ),
-            cls.get_hook(
+            cls.hook(
                 "check-types",
-                TypeChecker.L.get_check_args(),
+                TypeChecker.L.check_args(),
             ),
-            cls.get_hook(
+            cls.hook(
                 "check-security",
-                SecurityChecker.L.get_run_with_config_args(),
+                SecurityChecker.L.run_with_config_args(),
             ),
-            cls.get_hook(
+            cls.hook(
                 "check-markdown",
-                MDLinter.L.get_check_fix_args(),
+                MDLinter.L.check_fix_args(),
             ),
         ]
         return {

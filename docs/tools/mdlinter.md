@@ -15,8 +15,8 @@ from pyrig.src.processes import Args
 
 class MDLinter(BaseMDL):
     @classmethod
-    def get_check_args(cls, *args: str) -> Args:
-        return super().get_check_args("--verbose", *args)
+    def check_args(cls, *args: str) -> Args:
+        return super().check_args("--verbose", *args)
 ```
 
 ## Related

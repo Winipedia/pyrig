@@ -62,20 +62,20 @@ class DeployWorkflow(Workflow):
     """
 
     @classmethod
-    def get_workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers.
 
         Returns:
             Trigger for release workflow completion.
         """
-        triggers = super().get_workflow_triggers()
+        triggers = super().workflow_triggers()
         triggers.update(
-            cls.on_workflow_run(workflows=[ReleaseWorkflow.get_workflow_name()])
+            cls.on_workflow_run(workflows=[ReleaseWorkflow.workflow_name()])
         )
         return triggers
 
     @classmethod
-    def get_jobs(cls) -> dict[str, Any]:
+    def jobs(cls) -> dict[str, Any]:
         """Get the workflow jobs.
 
         Returns:
@@ -93,7 +93,7 @@ class DeployWorkflow(Workflow):
         Returns:
             Job that builds and publishes to PyPI.
         """
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_publish_package,
             steps=cls.steps_publish_package(),
             if_condition=cls.if_workflow_run_is_success(),
@@ -106,7 +106,7 @@ class DeployWorkflow(Workflow):
         Returns:
             Job that deploys documentation to GitHub Pages.
         """
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_deploy_documentation,
             permissions={"pages": "write", "id-token": "write"},
             steps=cls.steps_deploy_documentation(),

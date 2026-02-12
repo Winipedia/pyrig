@@ -8,14 +8,14 @@ from pyrig.rig.configs.markdown.code_of_conduct import CodeOfConductConfigFile
 class TestCodeOfConductConfigFile:
     """Test class."""
 
-    def test_get_contributor_covenant_with_contact_method(self) -> None:
+    def test_contributor_covenant_with_contact_method(self) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.get_contributor_covenant_with_contact_method()
+        result = CodeOfConductConfigFile.contributor_covenant_with_contact_method()
         assert len(result) > 0
 
-    def test_get_contact_method(self) -> None:
+    def test_contact_method(self) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.get_contact_method()
+        result = CodeOfConductConfigFile.contact_method()
         assert len(result) > 0
 
     def test_filename(self) -> None:
@@ -38,7 +38,7 @@ class TestCodeOfConductConfigFile:
         result = CodeOfConductConfigFile.is_correct()
         assert result
 
-    def test_get_contributor_covenant(self) -> None:
+    def test_contributor_covenant(self) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.get_contributor_covenant()
+        result = CodeOfConductConfigFile.contributor_covenant()
         assert len(result) > 0

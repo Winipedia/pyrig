@@ -66,7 +66,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         Returns:
             list[str]: Contributor Covenant 2.1 lines.
         """
-        return [*cls.get_contributor_covenant_with_contact_method().splitlines()]
+        return [*cls.contributor_covenant_with_contact_method().splitlines()]
 
     @classmethod
     def is_correct(cls) -> bool:
@@ -78,21 +78,21 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         if src_pkg_is_pyrig():
             # if in pyrig just run get contributor covenant
             # to trigger resource update if needed
-            cls.get_contributor_covenant()
+            cls.contributor_covenant()
         return cls.path().exists() and bool(
             cls.path().read_text(encoding="utf-8").strip()
         )
 
     @classmethod
-    def get_contributor_covenant_with_contact_method(cls) -> str:
+    def contributor_covenant_with_contact_method(cls) -> str:
         """Get the Contributor Covenant with the contact method.
 
         Returns:
             str: Contributor Covenant 2.1 content with contact method inserted
                 in place of [INSERT CONTACT METHOD].
         """
-        contact_method = cls.get_contact_method()
-        return cls.get_contributor_covenant().replace(
+        contact_method = cls.contact_method()
+        return cls.contributor_covenant().replace(
             "[INSERT CONTACT METHOD]", contact_method
         )
 
@@ -101,7 +101,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     @return_resource_content_on_fetch_error(
         resource_name="CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT.md"
     )
-    def get_contributor_covenant(cls) -> str:
+    def contributor_covenant(cls) -> str:
         """Fetch Contributor Covenant from GitHub MVG (with fallback).
 
         Returns:
@@ -115,7 +115,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return resp.text
 
     @classmethod
-    def get_contact_method(cls) -> str:
+    def contact_method(cls) -> str:
         """Get the contact method for the code of conduct.
 
         Returns:

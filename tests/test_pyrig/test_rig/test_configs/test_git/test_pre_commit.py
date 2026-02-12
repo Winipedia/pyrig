@@ -28,9 +28,9 @@ def my_test_prek_config_file(
 class TestPrekConfigFile:
     """Test class."""
 
-    def test_get_hook(self) -> None:
+    def test_hook(self) -> None:
         """Test method."""
-        hook = PrekConfigFile.get_hook("test", Args(("test",)))
+        hook = PrekConfigFile.hook("test", Args(("test",)))
         assert hook["id"] == "test", f"Expected id to be 'test', got {hook['id']}"
 
     def test_parent_path(

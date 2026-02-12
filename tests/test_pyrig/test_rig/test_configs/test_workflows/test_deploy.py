@@ -30,17 +30,17 @@ class TestDeployWorkflow:
         result = DeployWorkflow.steps_deploy_documentation()
         assert len(result) > 0, f"Expected steps to be non-empty, got {result}"
 
-    def test_get_workflow_triggers(
+    def test_workflow_triggers(
         self, my_test_deploy_workflow: type[DeployWorkflow]
     ) -> None:
         """Test method."""
-        result = my_test_deploy_workflow.get_workflow_triggers()
+        result = my_test_deploy_workflow.workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
 
-    def test_get_jobs(self, my_test_deploy_workflow: type[DeployWorkflow]) -> None:
+    def test_jobs(self, my_test_deploy_workflow: type[DeployWorkflow]) -> None:
         """Test method."""
-        result = my_test_deploy_workflow.get_jobs()
+        result = my_test_deploy_workflow.jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_publish_package(

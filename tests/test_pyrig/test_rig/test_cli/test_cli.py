@@ -9,7 +9,7 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 def test_add_subcommands() -> None:
     """Test for the add_subcommands func."""
     # run --help comd to see if its available
-    args = Pyrigger.L.build_args("--help")
+    args = Pyrigger.L.args("--help")
     result = args.run()
     stdout = result.stdout
     assert "pyrig" in stdout, f"Expected pyrig in stdout, got {stdout}"
@@ -17,7 +17,7 @@ def test_add_subcommands() -> None:
 
 def test_add_shared_subcommands() -> None:
     """Test function."""
-    args = Pyrigger.L.build_args("--help")
+    args = Pyrigger.L.args("--help")
     result = args.run()
     stdout = result.stdout
     assert "version" in stdout, f"Expected version in stdout, got {stdout}"
@@ -25,7 +25,7 @@ def test_add_shared_subcommands() -> None:
 
 def test_main() -> None:
     """Test for the main cli entrypoint."""
-    args = Pyrigger.L.build_args("--help")
+    args = Pyrigger.L.args("--help")
     result = args.run()
     assert result.returncode == 0, "Expected returncode 0"
 
