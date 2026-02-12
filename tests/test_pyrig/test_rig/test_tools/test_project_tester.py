@@ -34,9 +34,9 @@ class TestProjectTester:
         expected = 90
         assert result == expected
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = ProjectTester.L.name()
+        result = ProjectTester.L.get_name()
         assert result == "pytest"
 
     def test_get_run_tests_in_ci_args(self) -> None:

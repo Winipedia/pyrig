@@ -48,9 +48,9 @@ class TestPackageManager:
         result = PackageManager.L.get_install_dependencies_args("--no-group", "dev")
         assert result == ("uv", "sync", "--no-group", "dev")
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = PackageManager.L.name()
+        result = PackageManager.L.get_name()
         assert result == "uv"
 
     def test_get_init_project_args(self) -> None:

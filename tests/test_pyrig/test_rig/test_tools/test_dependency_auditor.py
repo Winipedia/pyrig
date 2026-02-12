@@ -18,9 +18,9 @@ class TestDependencyAuditor:
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        assert DependencyAuditor.L.name() == "pip-audit"
+        assert DependencyAuditor.L.get_name() == "pip-audit"
 
     def test_get_audit_args(self) -> None:
         """Test method."""

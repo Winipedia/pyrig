@@ -49,9 +49,9 @@ class TestDocsBuilder:
         result = DocsBuilder.L.get_docs_dir()
         assert result == Path("docs")
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.name()
+        result = DocsBuilder.L.get_name()
         assert result == "mkdocs"
 
     def test_get_build_args(self) -> None:

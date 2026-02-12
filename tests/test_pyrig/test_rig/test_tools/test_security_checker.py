@@ -18,9 +18,9 @@ class TestSecurityChecker:
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = SecurityChecker.L.name()
+        result = SecurityChecker.L.get_name()
         assert result == "bandit"
 
     def test_get_run_args(self) -> None:

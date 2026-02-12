@@ -25,9 +25,9 @@ class TestContainerEngine:
         result = ContainerEngine.L.get_dev_dependencies()
         assert result == []
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.name()
+        result = ContainerEngine.L.get_name()
         assert result == "podman"
 
     def test_get_build_args(self) -> None:

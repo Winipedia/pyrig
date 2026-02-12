@@ -88,9 +88,9 @@ class TestVersionController:
         result = VersionController.L.get_tag_args(tag=tag)
         assert result == ("git", "tag", tag)
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
-        result = VersionController.L.name()
+        result = VersionController.L.get_name()
         assert result == "git"
 
     def test_get_init_args(self) -> None:

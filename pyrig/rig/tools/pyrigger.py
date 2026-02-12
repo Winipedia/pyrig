@@ -34,7 +34,7 @@ class Pyrigger(Tool):
     """
 
     @classmethod
-    def name(cls) -> str:
+    def get_name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -54,8 +54,8 @@ class Pyrigger(Tool):
     def get_badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
-            f"https://img.shields.io/badge/built%20with-{cls.name()}-3776AB?logo=buildkite&logoColor=black",
-            f"https://github.com/Winipedia/{cls.name()}",
+            f"https://img.shields.io/badge/built%20with-{cls.get_name()}-3776AB?logo=buildkite&logoColor=black",
+            f"https://github.com/Winipedia/{cls.get_name()}",
         )
 
     @classmethod

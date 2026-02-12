@@ -184,7 +184,7 @@ def committing_initial_changes() -> Args:
     """
     # changes were added by the run prek hooks step
     return VersionController.L.get_commit_no_verify_args(
-        msg=f"{Pyrigger.name()}: Initial commit"
+        msg=f"{Pyrigger.get_name()}: Initial commit"
     )
 
 

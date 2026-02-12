@@ -68,7 +68,7 @@ class Tool(ABC):
     Example:
         >>> class MyTool(Tool):
         ...     @classmethod
-        ...     def name(cls) -> str:
+        ...     def get_name(cls) -> str:
         ...         return "mytool"
         ...     @classmethod
         ...     def get_build_args(cls, *args: str) -> Args:
@@ -79,7 +79,7 @@ class Tool(ABC):
 
     @classmethod
     @abstractmethod
-    def name(cls) -> str:
+    def get_name(cls) -> str:
         """Get tool command name.
 
         Returns:
@@ -115,7 +115,7 @@ class Tool(ABC):
         return make_linked_badge_markdown(
             badge_url=badge,
             link_url=page,
-            alt_text=cls.name(),
+            alt_text=cls.get_name(),
         )
 
     @classmethod
@@ -125,7 +125,7 @@ class Tool(ABC):
         Returns:
             List of tool dependencies. Defaults to the name of the tool.
         """
-        return [cls.name()]
+        return [cls.get_name()]
 
     @classmethod
     def get_args(cls, *args: str) -> Args:
@@ -140,7 +140,7 @@ class Tool(ABC):
         Note:
             Subclasses provide higher-level methods calling this internally.
         """
-        return Args((cls.name(), *args))
+        return Args((cls.get_name(), *args))
 
     @classproperty
     def L(cls) -> type[Self]:  # noqa: N802, N805
@@ -173,7 +173,7 @@ class Tool(ABC):
                 discard_parents=True,
                 exclude_abstract=True,
             ),
-            key=lambda t: t.name(),
+            key=lambda t: t.get_name(),
         )
 
     @classmethod

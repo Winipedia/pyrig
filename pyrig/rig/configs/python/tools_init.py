@@ -32,7 +32,7 @@ class ToolsInitConfigFile(InitConfigFile):
             class MyTool(Tool):
                 '''MyTool wrapper.'''
                 @classmethod
-                def name(cls) -> str:
+                def get_name(cls) -> str:
                     return "mytool"
                 @classmethod
                 def get_run_args(cls, *args: str) -> Args:

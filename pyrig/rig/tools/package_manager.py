@@ -31,7 +31,7 @@ class PackageManager(Tool):
     """
 
     @classmethod
-    def name(cls) -> str:
+    def get_name(cls) -> str:
         """Get tool name.
 
         Returns:

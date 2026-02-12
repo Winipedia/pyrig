@@ -33,7 +33,7 @@ class TestTool:
         result = Tool.get_all_subclasses()
         assert isinstance(result, list)
         assert len(result) > 0
-        assert all(hasattr(tool, "name") for tool in result)
+        assert all(issubclass(cls, Tool) for cls in result)
 
     def test_get_grouped_badges(self) -> None:
         """Test method."""
@@ -63,10 +63,10 @@ class TestTool:
         """Test method."""
         assert PackageManager.L.L is PackageManager
 
-    def test_name(self) -> None:
+    def test_get_name(self) -> None:
         """Test method."""
         # Tool is abstract, test through concrete implementation
-        assert PackageManager.L.name() == "uv"
+        assert PackageManager.L.get_name() == "uv"
 
     def test_get_args(self) -> None:
         """Test method."""
