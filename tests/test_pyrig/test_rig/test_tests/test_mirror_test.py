@@ -131,9 +131,9 @@ class TestMirrorTestConfigFile:
                 == my_test_mirror_test_config_file.get_configs()
             )
 
-    def test_get_definition_pkg(self) -> None:
+    def test_definition_package(self) -> None:
         """Test method."""
-        assert MirrorTestConfigFile.get_definition_pkg() is tests
+        assert MirrorTestConfigFile.definition_package() is tests
 
     def test_leaf(self) -> None:
         """Test method."""

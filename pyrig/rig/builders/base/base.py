@@ -164,7 +164,7 @@ class BuilderConfigFile(ListConfigFile):
         cls.get_parent_path().mkdir(parents=True, exist_ok=True)
 
     @classmethod
-    def get_definition_pkg(cls) -> ModuleType:
+    def definition_package(cls) -> ModuleType:
         """Get the package where the BuilderConfigFile subclasses are to be defined.
 
         Default is pyrig.rig.builders, which overrides the default pyrig.rig.configs.

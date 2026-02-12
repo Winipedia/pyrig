@@ -24,17 +24,13 @@ Example:
 """
 
 import logging
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from collections import defaultdict
+from types import ModuleType
 from typing import Self
 
-import pyrig
 from pyrig.rig import tools
-from pyrig.src.modules.class_ import classproperty
-from pyrig.src.modules.package import (
-    discover_leaf_subclass_across_dependents,
-    discover_subclasses_across_dependents,
-)
+from pyrig.src.modules.subclass import Subclass
 from pyrig.src.processes import Args
 from pyrig.src.string_ import make_linked_badge_markdown
 
@@ -53,7 +49,7 @@ class ToolGroup:
     TESTING = "testing"
 
 
-class Tool(ABC):
+class Tool(Subclass):
     """Abstract base for tool command argument construction.
 
     Provides consistent interface for constructing command-line arguments.
@@ -109,6 +105,28 @@ class Tool(ABC):
         """
 
     @classmethod
+    def definition_package(cls) -> ModuleType:
+        """Get the package where the tool subclasses are supposed to be defined."""
+        return tools
+
+    @classmethod
+    def sorting_key(cls, subclass: type[Self]) -> str:
+        """Return a sort key for the given tool subclass.
+
+        The returned value is used to order discovered tool subclasses. The
+        base implementation returns the tool's name which provides a stable
+        alphabetical ordering. Subclasses may override to sort by priority or
+        other criteria.
+
+        Args:
+            subclass (type[Self]): The subclass to compute a key for.
+
+        Returns:
+            str: A value suitable for use as a sort key.
+        """
+        return subclass.name()
+
+    @classmethod
     def badge(cls) -> str:
         """Returns the badge string for a markdown file."""
         badge, page = cls.badge_urls()
@@ -142,45 +160,11 @@ class Tool(ABC):
         """
         return Args((cls.name(), *args))
 
-    @classproperty
-    def L(cls) -> type[Self]:  # noqa: N802, N805
-        """Get the final leaf subclass (deepest in the inheritance tree).
-
-        Returns:
-            Final leaf subclass type. Can be abstract.
-        """
-        return discover_leaf_subclass_across_dependents(
-            cls=cls,
-            dep=pyrig,
-            load_pkg_before=tools,
-        )
-
-    @classmethod
-    def subclasses(cls) -> list[type[Self]]:
-        """Get all the tools subclasses.
-
-        Finds all non abstract subclasses that are a final leave
-        across dependecies of pyrig.
-
-        Returns:
-            _list of subclasses of the Tool class cls
-        """
-        return sorted(
-            discover_subclasses_across_dependents(
-                cls,
-                pyrig,
-                tools,
-                discard_parents=True,
-                exclude_abstract=True,
-            ),
-            key=lambda t: t.name(),
-        )
-
     @classmethod
     def grouped_badges(cls) -> dict[str, list[str]]:
         """Get a dict with all badges of tools grouped by their group."""
         subclasses = cls.subclasses()
-        groups = defaultdict(list)
+        groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:
             groups[tool.group()].append(tool.badge())
         return groups
