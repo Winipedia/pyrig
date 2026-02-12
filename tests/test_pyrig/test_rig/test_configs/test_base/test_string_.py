@@ -24,7 +24,7 @@ def my_test_string_config_file(
             return Path()
 
         @classmethod
-        def get_lines(cls) -> list[str]:
+        def lines(cls) -> list[str]:
             """Get the content string."""
             return ["Test content."]
 
@@ -58,15 +58,13 @@ class TestStringConfigFile:
         string = StringConfigFile.make_string_from_lines(lines)
         assert string == "Test content.\nSecond line."
 
-    def test_override_content(self) -> None:
+    def test_should_override_content(self) -> None:
         """Test method."""
-        assert not StringConfigFile.override_content(), "Expected False"
+        assert not StringConfigFile.should_override_content(), "Expected False"
 
-    def test_get_lines(
-        self, my_test_string_config_file: type[StringConfigFile]
-    ) -> None:
+    def test_lines(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
-        lines = my_test_string_config_file.get_lines()
+        lines = my_test_string_config_file.lines()
         assert lines == ["Test content."]
 
     def test__load(self, my_test_string_config_file: type[StringConfigFile]) -> None:
@@ -102,10 +100,10 @@ class TestStringConfigFile:
         is_correct = my_test_string_config_file.is_correct()
         assert is_correct, "Expected config to be correct after initialization"
 
-    def test_get_file_content(
+    def test_file_content(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
         """Test method."""
         my_test_string_config_file()
-        file_content = my_test_string_config_file.get_file_content()
+        file_content = my_test_string_config_file.file_content()
         assert file_content == "Test content.", "Expected 'Test content.'"

@@ -76,7 +76,7 @@ class ContainerfileConfigFile(StringConfigFile):
         return ""
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get Containerfile build instructions.
 
         Generates optimized layer sequence: base image, workdir, uv install,

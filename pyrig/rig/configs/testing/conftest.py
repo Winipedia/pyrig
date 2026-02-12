@@ -39,7 +39,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
     '''
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the conftest.py file content.
 
         Returns:
@@ -68,5 +68,5 @@ class ConftestConfigFile(PythonTestsConfigFile):
         """
         return super().is_correct() or (
             f'pytest_plugins = ["{make_obj_importpath(conftest)}"]'
-            in cls.get_file_content()
+            in cls.file_content()
         )

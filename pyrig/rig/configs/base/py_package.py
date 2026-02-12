@@ -13,7 +13,7 @@ Example:
     ...         return Path("src/mypackage/subpackage")
     ...
     ...     @classmethod
-    ...     def get_lines(cls) -> list[str]:
+    ...     def lines(cls) -> list[str]:
     ...         return ['"""Subpackage docstring."""']
     >>>
     >>> MyPackageInit()  # Creates src/, src/mypackage/, src/mypackage/subpackage/
@@ -31,7 +31,7 @@ class PythonPackageConfigFile(PythonConfigFile):
 
     Subclasses must implement:
         - `parent_path`: Directory containing the package file
-        - `get_lines`: Required Python code as list of lines
+        - `lines`: Required Python code as list of lines
 
     See Also:
         pyrig.rig.configs.base.python.PythonConfigFile: Parent class

@@ -90,7 +90,7 @@ class ContributingConfigFile(MarkdownConfigFile):
         return Path()
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the contributing template content.
 
         Returns:

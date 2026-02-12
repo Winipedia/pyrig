@@ -43,7 +43,7 @@ class TestBuilderConfigFile:
         """Test method."""
         my_test_builder_config_file()
         with chdir(tmp_path):
-            platform_file = my_test_builder_config_file.get_platform_specific_path(
+            platform_file = my_test_builder_config_file.platform_specific_path(
                 Path(my_test_builder_config_file.filename())
             )
             assert platform_file.exists()
@@ -129,13 +129,13 @@ class TestBuilderConfigFile:
             files = [file]
             BuilderConfigFile.rename_artifacts(files)
             assert not file.exists()
-            pltform_specific_path = BuilderConfigFile.get_platform_specific_path(file)
+            pltform_specific_path = BuilderConfigFile.platform_specific_path(file)
             assert pltform_specific_path.exists()
 
-    def test_get_platform_specific_path(self) -> None:
+    def test_platform_specific_path(self) -> None:
         """Test method."""
         path = Path("test.txt")
-        platform_specific_path = BuilderConfigFile.get_platform_specific_path(path)
+        platform_specific_path = BuilderConfigFile.platform_specific_path(path)
         assert platform_specific_path == BuilderConfigFile.parent_path() / (
             f"test-{platform.system()}.txt"
         )
@@ -148,60 +148,60 @@ class TestBuilderConfigFile:
             file.write_text("test")
             BuilderConfigFile.rename_artifact(file)
             assert not file.exists()
-            pltform_specific_path = BuilderConfigFile.get_platform_specific_path(file)
+            pltform_specific_path = BuilderConfigFile.platform_specific_path(file)
             assert pltform_specific_path.exists()
 
-    def test_get_platform_specific_name(self) -> None:
+    def test_platform_specific_name(self) -> None:
         """Test method."""
         path = Path("test.txt")
-        platform_specific_name = BuilderConfigFile.get_platform_specific_name(path)
+        platform_specific_name = BuilderConfigFile.platform_specific_name(path)
         assert platform_specific_name == f"test-{platform.system()}.txt"
 
-    def test_get_temp_artifacts(self, tmp_path: Path) -> None:
+    def test_temp_artifacts(self, tmp_path: Path) -> None:
         """Test method."""
         # write a file to tmp_path
         file = tmp_path / "test.txt"
         file.write_text("test")
-        artifacts = BuilderConfigFile.get_temp_artifacts(tmp_path)
+        artifacts = BuilderConfigFile.temp_artifacts(tmp_path)
         assert artifacts == [file]
 
-    def test_get_temp_artifacts_path(self, tmp_path: Path) -> None:
+    def test_temp_artifacts_path(self, tmp_path: Path) -> None:
         """Test method."""
-        temp_artifacts_path = BuilderConfigFile.get_temp_artifacts_path(tmp_path)
+        temp_artifacts_path = BuilderConfigFile.temp_artifacts_path(tmp_path)
         assert temp_artifacts_path == tmp_path / BuilderConfigFile.ARTIFACTS_DIR_NAME
         assert temp_artifacts_path.exists()
 
-    def test_get_app_name(self) -> None:
+    def test_app_name(self) -> None:
         """Test method."""
-        app_name = BuilderConfigFile.get_app_name()
+        app_name = BuilderConfigFile.app_name()
         assert app_name == "pyrig"
 
-    def test_get_root_path(self) -> None:
+    def test_root_path(self) -> None:
         """Test method."""
-        root_path = BuilderConfigFile.get_root_path()
+        root_path = BuilderConfigFile.root_path()
         assert root_path == Path.cwd()
 
-    def test_get_main_path(self) -> None:
+    def test_main_path(self) -> None:
         """Test method."""
-        main_path = BuilderConfigFile.get_main_path()
+        main_path = BuilderConfigFile.main_path()
         assert main_path == Path.cwd() / "pyrig" / "main.py"
 
-    def test_get_resources_path(self) -> None:
+    def test_resources_path(self) -> None:
         """Test method."""
-        resources_path = BuilderConfigFile.get_resources_path()
+        resources_path = BuilderConfigFile.resources_path()
         assert resources_path == Path.cwd() / "pyrig" / "resources"
 
-    def test_get_src_pkg_path(self) -> None:
+    def test_src_pkg_path(self) -> None:
         """Test method."""
-        src_pkg_path = BuilderConfigFile.get_src_pkg_path()
+        src_pkg_path = BuilderConfigFile.src_pkg_path()
         assert src_pkg_path == Path.cwd() / "pyrig"
 
-    def test_get_main_path_relative_to_src_pkg(self) -> None:
+    def test_main_path_relative_to_src_pkg(self) -> None:
         """Test method."""
-        main_path = BuilderConfigFile.get_main_path_relative_to_src_pkg()
+        main_path = BuilderConfigFile.main_path_relative_to_src_pkg()
         assert main_path == Path("main.py")
 
-    def test_get_resources_path_relative_to_src_pkg(self) -> None:
+    def test_resources_path_relative_to_src_pkg(self) -> None:
         """Test method."""
-        resources_path = BuilderConfigFile.get_resources_path_relative_to_src_pkg()
+        resources_path = BuilderConfigFile.resources_path_relative_to_src_pkg()
         assert resources_path == Path("resources")

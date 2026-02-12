@@ -13,7 +13,7 @@ Example:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def get_lines(cls) -> list[str]:
+    ...     def lines(cls) -> list[str]:
     ...         return ["MIT License", "", "Copyright (c) 2024"]
     ...
     ...     @classmethod
@@ -38,7 +38,7 @@ class StringConfigFile(ListConfigFile):
 
     Subclasses must implement:
         - `parent_path`: Directory containing the text file
-        - `get_lines`: Required content as list of lines
+        - `lines`: Required content as list of lines
         - `extension`: File extension (can be empty string)
 
     See Also:
@@ -48,7 +48,7 @@ class StringConfigFile(ListConfigFile):
 
     @classmethod
     @abstractmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         r"""Return required content that must be present in file.
 
         Returns:
@@ -85,18 +85,18 @@ class StringConfigFile(ListConfigFile):
         """Merge expected config lines with existing file content.
 
         Places expected lines first, followed by existing content. If
-        override_content() is True, existing content is discarded.
+        should_override_content() is True, existing content is discarded.
 
         Returns:
             Merged list of lines (expected lines first, then existing lines).
         """
         expected_lines = cls.configs()
-        if not cls.override_content() and (actual_lines := cls.load()):
+        if not cls.should_override_content() and (actual_lines := cls.load()):
             expected_lines = [*expected_lines, *actual_lines]
         return expected_lines
 
     @classmethod
-    def override_content(cls) -> bool:
+    def should_override_content(cls) -> bool:
         """Override file content even if it exists.
 
         If True the content of the StringConfigFile subclass will replace the
@@ -113,9 +113,9 @@ class StringConfigFile(ListConfigFile):
         r"""Return required content as list of lines.
 
         Returns:
-            List of lines from get_lines().
+            List of lines from lines().
         """
-        return cls.get_lines()
+        return cls.lines()
 
     @classmethod
     def is_correct(cls) -> bool:
@@ -124,13 +124,11 @@ class StringConfigFile(ListConfigFile):
         Returns:
             True if empty, exact match, or required content present anywhere.
         """
-        all_lines_in_file = all(
-            line in cls.get_file_content() for line in cls.get_lines()
-        )
+        all_lines_in_file = all(line in cls.file_content() for line in cls.lines())
         return super().is_correct() or all_lines_in_file
 
     @classmethod
-    def get_file_content(cls) -> str:
+    def file_content(cls) -> str:
         r"""Get the current file content.
 
         Convenience method to get the file content as a string by joining
@@ -146,7 +144,7 @@ class StringConfigFile(ListConfigFile):
                 # Line 1
                 # Line 2
 
-                content = MyStringConfigFile.get_file_content()
+                content = MyStringConfigFile.file_content()
                 # Returns: "Line 1\nLine 2"
         """
         return cls.make_string_from_lines(cls.load())

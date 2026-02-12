@@ -17,10 +17,10 @@ from pyrig.rig.cli.commands.init_project import (
     creating_priority_config_files,
     creating_project_root,
     creating_test_files,
-    get_setup_steps,
     initializing_version_control,
     running_pre_commit_hooks,
     running_tests,
+    setup_steps,
     syncing_venv,
 )
 from pyrig.rig.cli.subcommands import init
@@ -34,9 +34,9 @@ from pyrig.src.processes import Args
 logger = logging.getLogger(__name__)
 
 
-def test_get_setup_steps() -> None:
-    """Test that get_setup_steps returns a non-empty list of callables."""
-    steps = get_setup_steps()
+def test_setup_steps() -> None:
+    """Test that setup_steps returns a non-empty list of callables."""
+    steps = setup_steps()
     assert isinstance(steps, list), f"Expected list, got {type(steps)}"
     assert len(steps) > 0, "Expected non-empty list of setup steps"
     assert all(callable(step) for step in steps), "All steps should be callable"

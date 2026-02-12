@@ -20,9 +20,9 @@ class TestMainTestConfigFile:
         """Test method."""
         assert MainTestConfigFile.filename() == "test_main"
 
-    def test_get_lines(self) -> None:
+    def test_lines(self) -> None:
         """Test method."""
-        lines = MainTestConfigFile.get_lines()
+        lines = MainTestConfigFile.lines()
         content_str = "\n".join(lines)
         assert len(content_str) > 0
         assert "def test_main" in content_str

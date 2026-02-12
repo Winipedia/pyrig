@@ -98,7 +98,7 @@ class ApiConfigFile(BaseApiCF):
     """Custom API reference for public API only."""
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Document only the public API from src/."""
         project_name = PyprojectConfigFile.L.get_project_name()
         return [
@@ -121,7 +121,7 @@ class ApiConfigFile(BaseApiCF):
 ```
 
 Common customizations include documenting only `src/`, specific modules, or
-specific classes, and excluding private members. Override `get_lines()` and
+specific classes, and excluding private members. Override `lines()` and
 return the appropriate mkdocstrings directives.
 
 ## Docstring Style

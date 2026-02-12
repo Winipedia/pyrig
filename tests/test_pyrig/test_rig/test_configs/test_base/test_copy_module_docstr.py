@@ -57,14 +57,14 @@ def my_test_copy_module_only_docstring_config_file(
 class TestCopyModuleOnlyDocstringConfigFile:
     """Test class."""
 
-    def test_get_lines(
+    def test_lines(
         self,
         my_test_copy_module_only_docstring_config_file: type[
             CopyModuleOnlyDocstringConfigFile
         ],
     ) -> None:
         """Test method."""
-        lines = my_test_copy_module_only_docstring_config_file.get_lines()
+        lines = my_test_copy_module_only_docstring_config_file.lines()
         content_str = "\n".join(lines)
 
         # assert its only the docstring

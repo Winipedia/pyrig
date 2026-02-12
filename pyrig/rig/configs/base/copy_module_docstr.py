@@ -37,7 +37,7 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
     """
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Extract only the docstring from source module.
 
         Returns:

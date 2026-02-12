@@ -12,7 +12,7 @@ Example:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def get_lines(cls) -> list[str]:
+    ...     def lines(cls) -> list[str]:
     ...         return ["# My Project", "", "Description here."]
 """
 
@@ -26,7 +26,7 @@ class MarkdownConfigFile(StringConfigFile):
 
     Subclasses must implement:
         - `parent_path`: Directory containing the .md file
-        - `get_lines`: Required Markdown content as list of lines
+        - `lines`: Required Markdown content as list of lines
 
     See Also:
         pyrig.rig.configs.base.string_.StringConfigFile: Parent class

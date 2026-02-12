@@ -203,9 +203,9 @@ class PyInstallerBuilder(BuilderConfigFile):
         temp_dir = temp_artifacts_dir.parent
 
         options = [
-            str(cls.get_main_path()),
+            str(cls.main_path()),
             "--name",
-            cls.get_app_name(),
+            cls.app_name(),
             "--clean",
             "--noconfirm",
             "--onefile",
@@ -233,7 +233,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         Returns:
             Path where PyInstaller will write the executable.
         """
-        return cls.get_temp_artifacts_path(temp_dir)
+        return cls.temp_artifacts_path(temp_dir)
 
     @classmethod
     def temp_workpath(cls, temp_dir: Path) -> Path:
@@ -313,4 +313,4 @@ class PyInstallerBuilder(BuilderConfigFile):
         Returns:
             Absolute path to the PNG icon file (`<src_pkg>/resources/icon.png`).
         """
-        return cls.get_resources_path() / "icon.png"
+        return cls.resources_path() / "icon.png"

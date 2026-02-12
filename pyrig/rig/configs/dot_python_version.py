@@ -39,11 +39,11 @@ class DotPythonVersionConfigFile(StringConfigFile):
         return Path()
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get minimum supported Python version from pyproject.toml."""
         return [str(PyprojectConfigFile.L.get_first_supported_python_version())]
 
     @classmethod
-    def override_content(cls) -> bool:
+    def should_override_content(cls) -> bool:
         """Overriding content bc only one .python-version needed."""
         return True
