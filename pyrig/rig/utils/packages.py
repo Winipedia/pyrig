@@ -28,13 +28,13 @@ See Also:
 
 import logging
 from collections.abc import Iterable
-from pathlib import Path
 
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
 import pyrig
 from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.version_control import path_is_in_ignore
 from pyrig.src.modules.path import ModulePath
 
@@ -88,7 +88,7 @@ def find_packages(
             >>> find_packages(exclude=['tests*'])
             ['myproject', 'myproject.utils']
     """
-    gitignore_path = Path(".gitignore")
+    gitignore_path = VersionController.L.ignore_path()
     if exclude is None:
         exclude = (
             gitignore_path.read_text(encoding="utf-8").splitlines()

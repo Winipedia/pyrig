@@ -8,6 +8,11 @@ from pyrig.rig.tools.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_ignore_filename(self) -> None:
+        """Test method."""
+        result = VersionController.L.ignore_filename()
+        assert result == ".gitignore", f"Expected '.gitignore', got {result}"
+
     def test_group(self) -> None:
         """Test method."""
         result = VersionController.L.group()
