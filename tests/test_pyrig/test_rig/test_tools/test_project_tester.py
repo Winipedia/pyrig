@@ -23,9 +23,9 @@ class TestProjectTester:
         result = ProjectTester.L.dev_dependencies()
         assert result == ["pytest", "pytest-mock"]
 
-    def test_get_test_args(self) -> None:
+    def test_test_args(self) -> None:
         """Test method."""
-        result = ProjectTester.L.get_test_args()
+        result = ProjectTester.L.test_args()
         assert result == ("pytest",)
 
     def test_coverage_threshold(self) -> None:

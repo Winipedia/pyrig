@@ -16,15 +16,15 @@ from typing import Any, overload
 from pyrig.src.modules.function import is_func
 from pyrig.src.modules.imports import walk_package
 from pyrig.src.modules.inspection import (
-    get_def_line,
-    get_module_of_obj,
-    get_obj_members,
+    def_line,
+    module_of_obj,
+    obj_members,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def get_all_methods_from_cls(
+def all_methods_from_cls(
     class_: type,
     *,
     exclude_parent_methods: bool = False,
@@ -45,7 +45,7 @@ def get_all_methods_from_cls(
     """
     methods = [
         (method, name)
-        for name, method in get_obj_members(class_, include_annotate=include_annotate)
+        for name, method in obj_members(class_, include_annotate=include_annotate)
         if is_func(method)
     ]
 
@@ -53,16 +53,16 @@ def get_all_methods_from_cls(
         methods = [
             (method, name)
             for method, name in methods
-            if get_module_of_obj(method).__name__ == class_.__module__
+            if module_of_obj(method).__name__ == class_.__module__
             and name in class_.__dict__
         ]
 
     only_methods = [method for method, _name in methods]
     # sort by definition order
-    return sorted(only_methods, key=get_def_line)
+    return sorted(only_methods, key=def_line)
 
 
-def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
+def all_cls_from_module(module: ModuleType | str) -> list[type]:
     """Extract all classes defined directly in a module.
 
     Args:
@@ -82,10 +82,10 @@ def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
     classes = [
         obj
         for _, obj in inspect.getmembers(module, inspect.isclass)
-        if get_module_of_obj(obj, default).__name__ == module.__name__
+        if module_of_obj(obj, default).__name__ == module.__name__
     ]
     # sort by definition order
-    return sorted(classes, key=get_def_line)
+    return sorted(classes, key=def_line)
 
 
 def discover_all_subclasses[T: type](

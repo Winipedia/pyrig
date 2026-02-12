@@ -17,7 +17,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
-from pyrig.rig.utils.version_control import get_github_repo_token
+from pyrig.rig.utils.version_control import github_repo_token
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
         )
         bypass_id = 5  # GitHubs standard id for repo owner
         return {
-            "name": VersionController.L.get_default_ruleset_name(),
+            "name": VersionController.L.default_ruleset_name(),
             "target": "branch",
             "enforcement": "active",
             "conditions": {"ref_name": {"exclude": [], "include": ["~DEFAULT_BRANCH"]}},
@@ -113,7 +113,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
         Applies pyrig's standard protection rules to the main branch. Updates
         existing ruleset if present.
         """
-        token = get_github_repo_token()
+        token = github_repo_token()
         owner, repo_name = VersionController.L.repo_owner_and_name()
         create_or_update_ruleset(
             token=token,
@@ -131,7 +131,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
         """
         logger.info("Configuring secure repository settings")
         owner, repo_name = VersionController.L.repo_owner_and_name()
-        token = get_github_repo_token()
+        token = github_repo_token()
         repo = repository(token, owner, repo_name)
 
         toml_description = PyprojectConfigFile.L.project_description()
@@ -140,7 +140,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
         repo.edit(
             name=repo_name,
             description=toml_description,
-            default_branch=VersionController.L.get_default_branch(),
+            default_branch=VersionController.L.default_branch(),
             delete_branch_on_merge=True,
             allow_update_branch=True,
             allow_merge_commit=False,

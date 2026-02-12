@@ -5,7 +5,7 @@ Uses PyGithub for authentication and API calls.
 
 Functions:
     create_or_update_ruleset: Create or update a GitHub repository ruleset
-    get_all_rulesets: Retrieve all rulesets defined for a repository
+    all_rulesets: Retrieve all rulesets defined for a repository
     repository: Get a PyGithub Repository object for API operations
     ruleset_exists: Check if a ruleset with the given name exists
     github_api_request: Make a generic GitHub API request for a repository
@@ -89,7 +89,7 @@ def create_or_update_ruleset(
     return result
 
 
-def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
+def all_rulesets(token: str, owner: str, repo_name: str) -> Any:
     """Retrieve all rulesets defined for a repository.
 
     Fetches all repository rulesets regardless of target or enforcement level.
@@ -109,7 +109,7 @@ def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
     Examples:
         Get all rulesets::
 
-            >>> rulesets = get_all_rulesets(
+            >>> rulesets = all_rulesets(
             ...     token="ghp_...", owner="myorg", repo_name="myrepo"
             ... )
             >>> for rs in rulesets:
@@ -179,7 +179,7 @@ def ruleset_exists(token: str, owner: str, repo_name: str, ruleset_name: str) ->
     Note:
         Returns 0 (falsy) when not found, convenient for boolean checks.
     """
-    rulesets = get_all_rulesets(token, owner, repo_name)
+    rulesets = all_rulesets(token, owner, repo_name)
     main_ruleset = next((rs for rs in rulesets if rs["name"] == ruleset_name), None)
     return main_ruleset["id"] if main_ruleset else 0
 

@@ -7,7 +7,7 @@ from pyrig.src.modules.module import create_module
 from pyrig.src.modules.package import create_package
 from pyrig.src.modules.path import (
     ModulePath,
-    get_default_init_module_content,
+    default_init_module_content,
     make_dir_with_init_file,
     make_init_module,
     make_init_modules_for_package,
@@ -39,9 +39,9 @@ def test_make_dir_with_init_file(tmp_path: Path) -> None:
         assert (test_dir / "__init__.py").exists()
 
 
-def test_get_default_init_module_content() -> None:
+def test_default_init_module_content() -> None:
     """Test function."""
-    result = get_default_init_module_content()
+    result = default_init_module_content()
     # assert is str
     assert isinstance(result, str), f"Expected str, got {type(result)}"
 
@@ -84,9 +84,9 @@ class TestModulePath:
         with chdir(tmp_path):
             assert ModulePath.rel_cwd() == Path()
 
-    def test_get_meipass(self) -> None:
+    def test_meipass(self) -> None:
         """Test method."""
-        assert ModulePath.get_meipass() == Path()
+        assert ModulePath.meipass() == Path()
 
     def test_in_frozen_env(self) -> None:
         """Test method."""

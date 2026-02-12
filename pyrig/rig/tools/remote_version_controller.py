@@ -62,7 +62,7 @@ class RemoteVersionController(Tool):
         return ["pygithub"]
 
     @classmethod
-    def get_url_base(cls) -> str:
+    def url_base(cls) -> str:
         """Get the base URL for GitHub.
 
         Returns:
@@ -81,10 +81,10 @@ class RemoteVersionController(Tool):
             check_repo_url=False,
             url_encode=True,
         )
-        return f"{cls.get_url_base()}/{owner}/{repo}"
+        return f"{cls.url_base()}/{owner}/{repo}"
 
     @classmethod
-    def get_issues_url(cls) -> str:
+    def issues_url(cls) -> str:
         """Construct GitHub issues URL.
 
         Returns:

@@ -38,10 +38,10 @@ import pyrig
 from pyrig import main as pyrig_main
 from pyrig.rig.cli import shared_subcommands, subcommands
 from pyrig.src.cli import pkg_name_from_argv
-from pyrig.src.modules.function import get_all_functions_from_module
+from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.module import (
-    get_module_name_replacing_start_module,
     import_module_with_file_fallback,
+    module_name_replacing_start_module,
 )
 from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
 from pyrig.src.modules.path import ModulePath
@@ -150,22 +150,20 @@ def add_subcommands() -> None:
     pkg_name = pkg_name_from_argv()
     logger.debug("Registering subcommands for package: %s", pkg_name)
 
-    main_module_name = get_module_name_replacing_start_module(pyrig_main, pkg_name)
+    main_module_name = module_name_replacing_start_module(pyrig_main, pkg_name)
     main_module_path = ModulePath.module_name_to_relative_file_path(main_module_name)
     main_module = import_module_with_file_fallback(main_module_path)
     app.command()(main_module.main)
 
     # replace the first parent with pkg_name
-    subcommands_module_name = get_module_name_replacing_start_module(
-        subcommands, pkg_name
-    )
+    subcommands_module_name = module_name_replacing_start_module(subcommands, pkg_name)
     subcommands_module_path = ModulePath.module_name_to_relative_file_path(
         subcommands_module_name
     )
 
     subcommands_module = import_module_with_file_fallback(subcommands_module_path)
 
-    sub_cmds = get_all_functions_from_module(subcommands_module)
+    sub_cmds = all_functions_from_module(subcommands_module)
 
     for sub_cmd in sub_cmds:
         logger.debug("Registering subcommand: %s", sub_cmd.__name__)  # ty:ignore[unresolved-attribute]
@@ -215,7 +213,7 @@ def add_shared_subcommands() -> None:
             "Registering shared subcommands from module: %s",
             shared_subcommands_module.__name__,
         )
-        sub_cmds = get_all_functions_from_module(shared_subcommands_module)
+        sub_cmds = all_functions_from_module(shared_subcommands_module)
         for sub_cmd in sub_cmds:
             logger.debug("Registering shared subcommand: %s", sub_cmd.__name__)  # ty:ignore[unresolved-attribute]
             app.command()(sub_cmd)
