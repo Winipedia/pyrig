@@ -20,14 +20,14 @@ Example:
 '''
 
 from pyrig.rig.configs.base.python import PythonConfigFile
-from pyrig.src.modules.path import make_pkg_dir
+from pyrig.src.modules.path import make_package_dir
 
 
 class PythonPackageConfigFile(PythonConfigFile):
     """Base class for Python package files.
 
     Extends PythonConfigFile to automatically create __init__.py files in all parent
-    directories via make_pkg_dir() after dumping.
+    directories via make_package_dir() after dumping.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the package file
@@ -35,7 +35,7 @@ class PythonPackageConfigFile(PythonConfigFile):
 
     See Also:
         pyrig.rig.configs.base.python.PythonConfigFile: Parent class
-        pyrig.src.modules.path.make_pkg_dir: Package directory creation
+        pyrig.src.modules.path.make_package_dir: Package directory creation
         pyrig.rig.configs.base.init.InitConfigFile: For __init__.py files
     """
 
@@ -43,11 +43,11 @@ class PythonPackageConfigFile(PythonConfigFile):
     def _dump(cls, config: list[str]) -> None:
         """Write config file and create parent __init__.py files.
 
-        Calls super()._dump() then make_pkg_dir() to ensure parent directories are
+        Calls super()._dump() then make_package_dir() to ensure parent directories are
         valid packages.
 
         Args:
             config: List of lines to write to the file.
         """
         super()._dump(config)
-        make_pkg_dir(cls.path().parent)
+        make_package_dir(cls.path().parent)

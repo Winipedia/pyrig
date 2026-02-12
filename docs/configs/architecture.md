@@ -210,7 +210,7 @@ on pyrig:
 ```mermaid
 graph LR
     A[pyrig.rig.configs] --> D[All discovered]
-    B[pkg_a.rig.configs] --> D
+    B[package_a.rig.configs] --> D
     C[myapp.rig.configs] --> D
     D --> E[make_project_root called]
     E --> F[All configs initialized]

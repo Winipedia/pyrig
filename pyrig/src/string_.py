@@ -197,7 +197,7 @@ def make_linked_badge_markdown(
     return f"[![{alt_text}]({badge_url})]({link_url})"
 
 
-def pkg_req_name_split_pattern() -> re.Pattern[str]:
+def package_req_name_split_pattern() -> re.Pattern[str]:
     """Helper function to access the regex pattern for parsing package names.
 
     Pre-compiled regex for parsing package names from requirement strings.

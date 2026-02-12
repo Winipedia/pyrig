@@ -19,7 +19,7 @@ Resource Bundling:
     1. **Default resources** (automatic): All `resources` modules from packages
        depending on pyrig
     2. **Additional resources** (subclass-specified): Packages specified by
-       `additional_resource_pkgs()`
+       `additional_resource_packages()`
 
     All resources are bundled using PyInstaller's `--add-data` option and are
     accessible at runtime via `importlib.resources` or `pyrig.src.resource`.
@@ -40,7 +40,7 @@ Example:
 
         class MyAppBuilder(PyInstallerBuilder):
             @classmethod
-            def additional_resource_pkgs(cls) -> list[ModuleType]:
+            def additional_resource_packages(cls) -> list[ModuleType]:
                 return [myapp.resources]
 
     Build the executable::
@@ -83,10 +83,10 @@ class PyInstallerBuilder(BuilderConfigFile):
         - Clean build (`--clean`)
 
     Resources are automatically discovered from packages depending on pyrig, plus
-    additional packages specified by `additional_resource_pkgs()`.
+    additional packages specified by `additional_resource_packages()`.
 
     Subclasses must implement:
-        additional_resource_pkgs: Return list of additional resource packages.
+        additional_resource_packages: Return list of additional resource packages.
 
     Example:
         Basic PyInstaller builder::
@@ -97,7 +97,7 @@ class PyInstallerBuilder(BuilderConfigFile):
 
             class MyAppBuilder(PyInstallerBuilder):
                 @classmethod
-                def additional_resource_pkgs(cls) -> list[ModuleType]:
+                def additional_resource_packages(cls) -> list[ModuleType]:
                     return [myapp.resources]
 
     See Also:
@@ -120,7 +120,7 @@ class PyInstallerBuilder(BuilderConfigFile):
 
     @classmethod
     @abstractmethod
-    def additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_packages(cls) -> list[ModuleType]:
         """Return packages containing additional resources to bundle.
 
         Subclasses must implement this method to specify resource packages beyond
@@ -134,14 +134,14 @@ class PyInstallerBuilder(BuilderConfigFile):
             ::
 
                 @classmethod
-                def additional_resource_pkgs(cls) -> list[ModuleType]:
+                def additional_resource_packages(cls) -> list[ModuleType]:
                     import myapp.resources
                     import myapp.plugins.resources
                     return [myapp.resources, myapp.plugins.resources]
         """
 
     @classmethod
-    def default_additional_resource_pkgs(cls) -> list[ModuleType]:
+    def default_additional_resource_packages(cls) -> list[ModuleType]:
         """Get resource packages from all pyrig-dependent packages.
 
         Automatically discovers all `resources` modules from packages that depend
@@ -155,7 +155,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         return discover_equivalent_modules_across_dependents(resources, pyrig)
 
     @classmethod
-    def all_resource_pkgs(cls) -> list[ModuleType]:
+    def all_resource_packages(cls) -> list[ModuleType]:
         """Get all resource packages to bundle in the executable.
 
         Combines auto-discovered resource packages with additional packages
@@ -165,8 +165,8 @@ class PyInstallerBuilder(BuilderConfigFile):
             List of all resource packages to bundle.
         """
         return [
-            *cls.default_additional_resource_pkgs(),
-            *cls.additional_resource_pkgs(),
+            *cls.default_additional_resource_packages(),
+            *cls.additional_resource_packages(),
         ]
 
     @classmethod
@@ -181,10 +181,10 @@ class PyInstallerBuilder(BuilderConfigFile):
             --add-data argument.
         """
         add_datas: list[tuple[str, str]] = []
-        resources_pkgs = cls.all_resource_pkgs()
-        for pkg in resources_pkgs:
-            pkg_datas = collect_data_files(pkg.__name__, include_py_files=True)
-            add_datas.extend(pkg_datas)
+        resources_packages = cls.all_resource_packages()
+        for package in resources_packages:
+            package_datas = collect_data_files(package.__name__, include_py_files=True)
+            add_datas.extend(package_datas)
         return add_datas
 
     @classmethod
@@ -311,6 +311,6 @@ class PyInstallerBuilder(BuilderConfigFile):
         use a custom icon location.
 
         Returns:
-            Absolute path to the PNG icon file (`<src_pkg>/resources/icon.png`).
+            Absolute path to the PNG icon file (`<src_package>/resources/icon.png`).
         """
         return cls.resources_path() / "icon.png"

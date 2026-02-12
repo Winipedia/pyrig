@@ -68,7 +68,7 @@ def test_creating_priority_config_files() -> None:
 
 def test_creating_project_root() -> None:
     """Test function."""
-    # mock the real underlying subprocess.run from subprocess pkg
+    # mock the real underlying subprocess.run from subprocess package
     res = creating_project_root()
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
@@ -120,7 +120,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     project_name = "src-project"
 
     pyrig_temp_path = tmp_path / PyprojectConfigFile.L.project_name()
-    pyrig_path = ModulePath.pkg_type_to_dir_path(pyrig)
+    pyrig_path = ModulePath.package_type_to_dir_path(pyrig)
     shutil.copytree(
         pyrig_path.parent,
         pyrig_temp_path,
@@ -183,7 +183,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
         assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
 
-        # assert the pkgs own cli is available
+        # assert the packages own cli is available
         args = PackageManager.L.run_args(project_name, "--help")
         res = args.run(env=clean_env)
         stdout = res.stdout
@@ -208,8 +208,8 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         keywords = pyproject_toml.get("project", {}).get("keywords")
         assert keywords == []
 
-    pkg_dir = src_project_dir / "src_project"
-    assert pkg_dir.exists(), f"Expected {pkg_dir} to be created"
-    assert (pkg_dir / "__init__.py").exists(), (
-        f"Expected {pkg_dir / '__init__.py'} to be created"
+    package_dir = src_project_dir / "src_project"
+    assert package_dir.exists(), f"Expected {package_dir} to be created"
+    assert (package_dir / "__init__.py").exists(), (
+        f"Expected {package_dir / '__init__.py'} to be created"
     )

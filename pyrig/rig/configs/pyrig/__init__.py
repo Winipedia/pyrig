@@ -2,7 +2,7 @@
 
 Provides ConfigFile subclasses that are only active when pyrig itself is the
 project being configured. Uses conditional class definition based on
-``src_pkg_is_pyrig()`` to prevent pyrig-specific configs from leaking into
+``src_package_is_pyrig()`` to prevent pyrig-specific configs from leaking into
 dependent projects.
 
 Architecture
@@ -30,5 +30,5 @@ Example:
 
 See Also:
     pyrig.rig.configs.pyproject.PyprojectConfigFile: Base pyproject.toml config
-    pyrig.rig.utils.packages.src_pkg_is_pyrig: Package detection utility
+    pyrig.rig.utils.packages.src_package_is_pyrig: Package detection utility
 """

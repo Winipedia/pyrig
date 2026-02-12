@@ -3,7 +3,7 @@
 Extends the base PyprojectConfigFile with pyrig-specific PyPI classifiers and
 keywords. Only active when pyrig itself is the project being configured.
 
-The conditional class definition uses ``src_pkg_is_pyrig()`` to ensure this
+The conditional class definition uses ``src_package_is_pyrig()`` to ensure this
 class is only discoverable via ``__subclasses__()`` when running within pyrig's
 repository. Other projects depending on pyrig will not inherit these settings.
 
@@ -19,15 +19,15 @@ Example:
 
 See Also:
     pyrig.rig.configs.pyproject.PyprojectConfigFile: Base pyproject.toml config
-    pyrig.rig.utils.packages.src_pkg_is_pyrig: Package detection utility
+    pyrig.rig.utils.packages.src_package_is_pyrig: Package detection utility
 """
 
 from typing import Any
 
 from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyprojectConfigFile
-from pyrig.rig.utils.packages import src_pkg_is_pyrig
+from pyrig.rig.utils.packages import src_package_is_pyrig
 
-if src_pkg_is_pyrig():
+if src_package_is_pyrig():
 
     class PyprojectConfigFile(BasePyprojectConfigFile):
         """Pyrig-specific pyproject.toml configuration.

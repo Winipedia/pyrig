@@ -5,7 +5,7 @@ Utilities for discovering Python packages with additional filtering and automati
 
 Functions:
     find_packages: Discover Python packages with depth and pattern filtering
-    src_pkg_is_pyrig: Check if the current project is pyrig itself
+    src_package_is_pyrig: Check if the current project is pyrig itself
     find_namespace_packages: Find all PEP 420 namespace packages
 
 Examples:
@@ -17,8 +17,8 @@ Examples:
 
     Check if current project is pyrig::
 
-        >>> from pyrig.rig.utils.packages import src_pkg_is_pyrig
-        >>> src_pkg_is_pyrig()
+        >>> from pyrig.rig.utils.packages import src_package_is_pyrig
+        >>> src_package_is_pyrig()
         False
 
 See Also:
@@ -114,7 +114,7 @@ def find_packages(
     return package_names_list
 
 
-def src_pkg_is_pyrig() -> bool:
+def src_package_is_pyrig() -> bool:
     """Check if the current project is pyrig itself.
 
     Determines whether the current working directory is the pyrig project by
@@ -126,14 +126,14 @@ def src_pkg_is_pyrig() -> bool:
     Examples:
         Conditional logic for pyrig development::
 
-            >>> if src_pkg_is_pyrig():
+            >>> if src_package_is_pyrig():
             ...     print("Running in pyrig development mode")
 
     Note:
         Detects the pyrig repository, not pyrig as an installed dependency.
     """
-    pkgs = find_packages(depth=0, include_namespace_packages=False)
-    return pyrig.__name__ in pkgs
+    packages = find_packages(depth=0, include_namespace_packages=False)
+    return pyrig.__name__ in packages
 
 
 def find_namespace_packages() -> list[str]:
@@ -150,8 +150,8 @@ def find_namespace_packages() -> list[str]:
     Examples:
         Find all namespace packages::
 
-            >>> ns_pkgs = find_namespace_packages()
-            >>> print(ns_pkgs)
+            >>> ns_packages = find_namespace_packages()
+            >>> print(ns_packages)
             ['myproject.plugins', 'myproject.extensions']
 
     See Also:
@@ -167,7 +167,7 @@ def find_namespace_packages() -> list[str]:
     namespace_packages = [
         p
         for p in namespace_packages
-        if not path_is_in_ignore(ModulePath.pkg_name_to_relative_dir_path(p))
+        if not path_is_in_ignore(ModulePath.package_name_to_relative_dir_path(p))
     ]
     result = list(set(namespace_packages) - set(packages))
     logger.debug("Found %d namespace packages: %s", len(result), result)

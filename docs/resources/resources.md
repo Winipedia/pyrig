@@ -138,8 +138,8 @@ from myapp import resources as myapp_resources
 icon = resource_path("icon.png", myapp_resources)
 
 # Access dependency resources
-from pkg_a import resources as pkg_a_resources
-template = resource_path("template.html", pkg_a_resources)
+from package_a import resources as package_a_resources
+template = resource_path("template.html", package_a_resources)
 
 # Access pyrig's resources
 from pyrig import resources as pyrig_resources
@@ -149,8 +149,8 @@ gitignore = resource_path("GITIGNORE", pyrig_resources)
 ```mermaid
 graph TD
     A[myapp] --> B[myapp.resources]
-    A --> C[pkg_a dependency]
-    C --> D[pkg_a.resources]
+    A --> C[package_a dependency]
+    C --> D[package_a.resources]
     A --> E[pyrig dependency]
     E --> F[pyrig.resources]
 

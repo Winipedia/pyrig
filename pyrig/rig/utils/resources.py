@@ -38,7 +38,7 @@ from requests import RequestException
 from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
 from pyrig import resources
-from pyrig.rig.utils.packages import src_pkg_is_pyrig
+from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.src.resource import resource_path
 
 logger = logging.getLogger(__name__)
@@ -112,7 +112,7 @@ def return_resource_file_content_on_exceptions(
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
             result = decorated_func(*args, **kwargs)
-            if src_pkg_is_pyrig() and overwrite_resource and result != content:
+            if src_package_is_pyrig() and overwrite_resource and result != content:
                 path.write_text(result, encoding="utf-8")
                 logger.info(
                     "Updated resource file: %s",

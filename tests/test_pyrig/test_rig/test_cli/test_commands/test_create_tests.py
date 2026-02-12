@@ -11,7 +11,7 @@ from pyrig.rig.cli.commands.create_tests import (
     create_tests_for_package,
     make_test_skeletons,
 )
-from pyrig.src.modules.imports import import_pkg_with_dir_fallback
+from pyrig.src.modules.imports import import_package_with_dir_fallback
 from pyrig.src.modules.module import (
     create_module,
     make_obj_importpath,
@@ -60,8 +60,8 @@ def test_create_tests_for_package(tmp_path: Path) -> None:
         assert mod2_path.exists()
         assert sub_mod1_path.exists()
 
-        pkg = import_pkg_with_dir_fallback(package_path)
-        create_tests_for_package(pkg)
+        package = import_package_with_dir_fallback(package_path)
+        create_tests_for_package(package)
 
         # assert the test modules were created
         test_mod1_path = Path("tests/test_src_package/test_mod1.py")

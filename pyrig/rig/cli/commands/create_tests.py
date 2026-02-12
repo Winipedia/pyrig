@@ -43,15 +43,15 @@ def create_tests_for_package(package: ModuleType) -> None:
     """
     logger.debug("Creating tests for package: %s", package.__name__)
     all_modules: list[ModuleType] = []
-    pkgs_without_modules: list[ModuleType] = []
+    packages_without_modules: list[ModuleType] = []
     for pkg, modules in walk_package(package):
         if not modules:
-            pkgs_without_modules.append(pkg)
+            packages_without_modules.append(pkg)
             continue
         all_modules.extend(modules)
 
     with ThreadPoolExecutor() as executor:
-        list(executor.map(create_test_package, pkgs_without_modules))
+        list(executor.map(create_test_package, packages_without_modules))
 
     # create test modules for all modules
     MirrorTestConfigFile.L.create_test_modules(all_modules)
@@ -64,6 +64,6 @@ def create_test_package(package: ModuleType) -> None:
         package: The source package to create a test package for.
     """
     test_package_name = MirrorTestConfigFile.L.test_obj_importpath_from_obj(package)
-    test_package_path = ModulePath.pkg_name_to_relative_dir_path(test_package_name)
+    test_package_path = ModulePath.package_name_to_relative_dir_path(test_package_name)
     # create package if it doesn't exist
     create_package(test_package_path)

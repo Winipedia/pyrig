@@ -75,11 +75,12 @@ class TestClass:
 def test_create_module(tmp_path: Path) -> None:
     """Test function."""
     # Test creating a regular module
+    package_path = tmp_path / test_create_module.__name__
     with chdir(tmp_path):
-        module_path = tmp_path / "test_pkg.test_module.py"
+        module_path = package_path / "test_module.py"
         module = create_module(module_path)
         assert isinstance(module, ModuleType)
-        assert module.__name__ == "test_pkg.test_module"
+        assert module.__name__ == test_create_module.__name__ + ".test_module"
         assert module.__file__ == str(module_path)
 
 
@@ -300,11 +301,11 @@ def test_import_module_from_file(tmp_path: Path) -> None:
         module = import_module_from_file(module_path)
         assert module.__name__ == "test_module"
 
-        module_pkg_path = tmp_path / "test_pkg" / "test_module.py"
-        module_pkg_path.parent.mkdir()
-        module_pkg_path.write_text('"""Test module."""\n')
-        module = import_module_from_file(module_pkg_path)
-        assert module.__name__ == "test_pkg.test_module"
+        module_package_path = tmp_path / "test_package" / "test_module.py"
+        module_package_path.parent.mkdir()
+        module_package_path.write_text('"""Test module."""\n')
+        module = import_module_from_file(module_package_path)
+        assert module.__name__ == "test_package.test_module"
 
 
 def test_module_has_docstring(tmp_path: Path) -> None:

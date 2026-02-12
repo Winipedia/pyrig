@@ -8,9 +8,9 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig.src.modules.imports import (
-    import_pkg_from_dir,
-    import_pkg_with_dir_fallback,
-    import_pkg_with_dir_fallback_with_default,
+    import_package_from_dir,
+    import_package_with_dir_fallback,
+    import_package_with_dir_fallback_with_default,
     module_is_package,
     modules_and_packages_from_package,
     walk_package,
@@ -28,7 +28,7 @@ def test_modules_and_packages_from_package(tmp_path: Path) -> None:
         init_file.write_text('"""Test package."""\n')
         module_file = package_dir / "test_module.py"
         module_file.write_text('"""Test module."""\n')
-        package = import_pkg_from_dir(package_dir)
+        package = import_package_from_dir(package_dir)
 
         packages, modules = modules_and_packages_from_package(package)
         assert packages == [], f"Expected no packages, got {packages}"
@@ -74,10 +74,10 @@ def test_walk_package(mocker: MockFixture) -> None:
         f"Expected {len(expected)} results, got {len(result)}"
     )
 
-    for i, (pkg, modules) in enumerate(result):
-        expected_pkg, expected_modules = expected[i]
-        assert pkg == expected_pkg, (
-            f"Expected package {expected_pkg}, got {pkg} at index {i}"
+    for i, (package, modules) in enumerate(result):
+        expected_package, expected_modules = expected[i]
+        assert package == expected_package, (
+            f"Expected package {expected_package}, got {package} at index {i}"
         )
         assert modules == expected_modules, (
             f"Expected modules {expected_modules}, got {modules} at index {i}"
@@ -102,53 +102,53 @@ def test_module_is_package() -> None:
     )
 
 
-def test_import_pkg_with_dir_fallback(tmp_path: Path) -> None:
+def test_import_package_with_dir_fallback(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         non_existing_dir = tmp_path / "non_existing"
         assert not non_existing_dir.exists()
         with pytest.raises(FileNotFoundError):
-            import_pkg_with_dir_fallback(non_existing_dir)
+            import_package_with_dir_fallback(non_existing_dir)
         # import nonexisting againto ccheck if somehow cached in sy
         with pytest.raises(FileNotFoundError):
-            import_pkg_with_dir_fallback(non_existing_dir)
+            import_package_with_dir_fallback(non_existing_dir)
 
         existing_dir = tmp_path / "existing"
         existing_dir.mkdir()
         init_file = existing_dir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_pkg_with_dir_fallback(existing_dir)
+        package = import_package_with_dir_fallback(existing_dir)
         assert package.__name__ == "existing"
 
 
-def test_import_pkg_from_dir(tmp_path: Path) -> None:
+def test_import_package_from_dir(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         non_existing_dir = tmp_path / "non_existing"
         assert not non_existing_dir.exists()
         with pytest.raises(FileNotFoundError):
-            import_pkg_from_dir(non_existing_dir)
+            import_package_from_dir(non_existing_dir)
 
         package_dir = tmp_path / "test_package"
         package_dir.mkdir()
         init_file = package_dir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_pkg_from_dir(package_dir)
+        package = import_package_from_dir(package_dir)
         assert package.__name__ == "test_package"
 
         subdir = package_dir / "subdir"
         subdir.mkdir()
         init_file = subdir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_pkg_from_dir(subdir)
+        package = import_package_from_dir(subdir)
         assert package.__name__ == "test_package.subdir"
 
 
-def test_import_pkg_with_dir_fallback_with_default() -> None:
+def test_import_package_with_dir_fallback_with_default() -> None:
     """Test function."""
-    assert import_pkg_with_dir_fallback_with_default(Path("non_existing")) is None
+    assert import_package_with_dir_fallback_with_default(Path("non_existing")) is None
     assert (
-        import_pkg_with_dir_fallback_with_default(
+        import_package_with_dir_fallback_with_default(
             Path("non_existing"), default="default"
         )
         == "default"

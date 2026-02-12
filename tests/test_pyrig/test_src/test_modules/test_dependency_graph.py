@@ -77,31 +77,31 @@ class TestDependencyGraph:
         deps = DependencyGraph.all_dependencies()
         assert "setuptools" in deps, "Expected 'setuptools' to be in dependencies"
 
-    def test_parse_pkg_name_from_req(self) -> None:
+    def test_parse_package_name_from_req(self) -> None:
         """Test method."""
         # Test simple package name
-        result = DependencyGraph.parse_pkg_name_from_req("requests")
+        result = DependencyGraph.parse_package_name_from_req("requests")
         assert result == "requests", f"Expected 'requests', got {result}"
 
         # Test with version specifier
-        result = DependencyGraph.parse_pkg_name_from_req("requests>=2.0.0")
+        result = DependencyGraph.parse_package_name_from_req("requests>=2.0.0")
         assert result == "requests", f"Expected 'requests', got {result}"
 
         # Test with complex version specifier
-        result = DependencyGraph.parse_pkg_name_from_req("package-name>=1.0,<2.0")
+        result = DependencyGraph.parse_package_name_from_req("package-name>=1.0,<2.0")
         assert result == "package_name", f"Expected 'package_name', got {result}"
 
         # Test with extras
-        result = DependencyGraph.parse_pkg_name_from_req("package[extra]>=1.0")
+        result = DependencyGraph.parse_package_name_from_req("package[extra]>=1.0")
         expected = "package[extra]"
         assert result == expected, f"Expected: {expected}, got {result}"
 
         # Test empty string
-        result = DependencyGraph.parse_pkg_name_from_req("")
+        result = DependencyGraph.parse_package_name_from_req("")
         assert result is None, f"Expected None for empty string, got {result}"
 
         # Test with trailing spaces (leading spaces result in empty first split)
-        result = DependencyGraph.parse_pkg_name_from_req("  package-name  >=1.0")
+        result = DependencyGraph.parse_package_name_from_req("  package-name  >=1.0")
         assert result == "package_name", f"Expected 'package_name', got {result}"
 
     def test_all_depending_on(self, mocker: MockFixture) -> None:
@@ -113,57 +113,57 @@ class TestDependencyGraph:
         graph = DependencyGraph.cached()
 
         # Add nodes and edges manually
-        # Structure: pkg_a -> pkg_b -> pkg_c
-        # (pkg_a depends on pkg_b, pkg_b depends on pkg_c)
-        graph.add_node("pkg_a")
-        graph.add_node("pkg_b")
-        graph.add_node("pkg_c")
-        graph.add_edge("pkg_a", "pkg_b")
-        graph.add_edge("pkg_b", "pkg_c")
+        # Structure: package_a -> package_b -> package_c
+        # (package_a depends on package_b, package_b depends on package_c)
+        graph.add_node("package_a")
+        graph.add_node("package_b")
+        graph.add_node("package_c")
+        graph.add_edge("package_a", "package_b")
+        graph.add_edge("package_b", "package_c")
 
         # Mock import_packages to return mock modules in the order they're given
-        mock_pkg_a = ModuleType("pkg_a")
-        mock_pkg_b = ModuleType("pkg_b")
-        mock_pkg_c = ModuleType("pkg_c")
+        mock_package_a = ModuleType("package_a")
+        mock_package_b = ModuleType("package_b")
+        mock_package_c = ModuleType("package_c")
 
         def mock_import_packages(names: list[str]) -> list[ModuleType]:
             result: list[ModuleType] = []
             for name in names:
-                if name == "pkg_a":
-                    result.append(mock_pkg_a)
-                elif name == "pkg_b":
-                    result.append(mock_pkg_b)
-                elif name == "pkg_c":
-                    result.append(mock_pkg_c)
+                if name == "package_a":
+                    result.append(mock_package_a)
+                elif name == "package_b":
+                    result.append(mock_package_b)
+                elif name == "package_c":
+                    result.append(mock_package_c)
             return result
 
         mocker.patch.object(graph, "import_packages", side_effect=mock_import_packages)
 
-        # Test getting all packages depending on pkg_c
-        result = graph.all_depending_on(mock_pkg_c, include_self=False)
+        # Test getting all packages depending on package_c
+        result = graph.all_depending_on(mock_package_c, include_self=False)
 
-        # pkg_a and pkg_b depend on pkg_c (transitively)
+        # package_a and package_b depend on package_c (transitively)
         expected_count = 2
-        assert mock_pkg_a in result, (
-            f"Expected pkg_a in dependents of pkg_c, got {result}"
+        assert mock_package_a in result, (
+            f"Expected package_a in dependents of package_c, got {result}"
         )
-        assert mock_pkg_b in result, (
-            f"Expected pkg_b in dependents of pkg_c, got {result}"
+        assert mock_package_b in result, (
+            f"Expected package_b in dependents of package_c, got {result}"
         )
 
-        # Verify topological order: pkg_b should come before pkg_a
-        # (because pkg_a depends on pkg_b)
-        pkg_b_index = result.index(mock_pkg_b)
-        pkg_a_index = result.index(mock_pkg_a)
-        assert pkg_b_index < pkg_a_index, (
-            f"Expected pkg_b (index {pkg_b_index}) before pkg_a (index {pkg_a_index}) "
+        # Verify topological order: package_b should come before package_a
+        # (because package_a depends on package_b)
+        package_b_index = result.index(mock_package_b)
+        package_a_index = result.index(mock_package_a)
+        assert package_b_index < package_a_index, (
+            f"Expected package_b (index {package_b_index}) before package_a (index {package_a_index}) "  # noqa: E501
             f"in topological order, got {[m.__name__ for m in result]}"
         )
 
         # Test with include_self=True
-        result = graph.all_depending_on(mock_pkg_c, include_self=True)
-        assert mock_pkg_c in result, (
-            f"Expected pkg_c in result when include_self=True, got {result}"
+        result = graph.all_depending_on(mock_package_c, include_self=True)
+        assert mock_package_c in result, (
+            f"Expected package_c in result when include_self=True, got {result}"
         )
         assert len(result) == expected_count + 1, (
             f"Expected {expected_count + 1} packages with include_self=True, "
@@ -171,14 +171,14 @@ class TestDependencyGraph:
         )
 
         # Verify topological order with include_self:
-        # pkg_c should come first, then pkg_b, then pkg_a
-        pkg_c_index = result.index(mock_pkg_c)
-        pkg_b_index = result.index(mock_pkg_b)
-        pkg_a_index = result.index(mock_pkg_a)
-        assert pkg_c_index < pkg_b_index < pkg_a_index, (
-            f"Expected topological order: pkg_c, pkg_b, pkg_a. "
-            f"Got indices: pkg_c={pkg_c_index}, pkg_b={pkg_b_index}, "
-            f"pkg_a={pkg_a_index}"
+        # package_c should come first, then package_b, then package_a
+        package_c_index = result.index(mock_package_c)
+        package_b_index = result.index(mock_package_b)
+        package_a_index = result.index(mock_package_a)
+        assert package_c_index < package_b_index < package_a_index, (
+            f"Expected topological order: package_c, package_b, package_a. "
+            f"Got indices: package_c={package_c_index}, package_b={package_b_index}, "
+            f"package_a={package_a_index}"
         )
 
     def test_import_packages(self) -> None:

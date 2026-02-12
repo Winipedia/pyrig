@@ -34,10 +34,11 @@ def make_init_files() -> None:
         return
 
     # make init files for all namespace packages
-    pkg_paths = [
-        ModulePath.pkg_name_to_relative_dir_path(pkg) for pkg in any_namespace_packages
+    package_paths = [
+        ModulePath.package_name_to_relative_dir_path(package)
+        for package in any_namespace_packages
     ]
     with ThreadPoolExecutor() as executor:
-        list(executor.map(make_init_module, pkg_paths))
+        list(executor.map(make_init_module, package_paths))
 
     logger.info("Created __init__.py files for all namespace packages")

@@ -14,7 +14,7 @@ from typing import Any
 
 import pyrig
 from pyrig.rig.tools.base.base import Tool, ToolGroup
-from pyrig.src.modules.package import project_name_from_pkg_name
+from pyrig.src.modules.package import project_name_from_package_name
 from pyrig.src.processes import Args
 
 
@@ -79,5 +79,5 @@ class Pyrigger(Tool):
         Returns:
             Args for 'pyrig <cmd_name>'.
         """
-        cmd_name = project_name_from_pkg_name(cmd.__name__)  # ty:ignore[unresolved-attribute]
+        cmd_name = project_name_from_package_name(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return cls.args(cmd_name, *args)

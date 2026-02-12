@@ -25,7 +25,7 @@ def my_test_pyinstaller_builder(
         """Test PyInstaller builder class."""
 
         @classmethod
-        def additional_resource_pkgs(cls) -> list[ModuleType]:
+        def additional_resource_packages(cls) -> list[ModuleType]:
             """Get the resource packages."""
             return []
 
@@ -48,33 +48,33 @@ def my_test_pyinstaller_builder(
 class TestPyInstallerBuilder:
     """Test class."""
 
-    def test_default_additional_resource_pkgs(self) -> None:
+    def test_default_additional_resource_packages(self) -> None:
         """Test method."""
         # Test that default additional resource packages are discovered
-        result = PyInstallerBuilder.default_additional_resource_pkgs()
+        result = PyInstallerBuilder.default_additional_resource_packages()
         # Should return a list of modules
         assert isinstance(result, list), f"Expected list, got {type(result)}"
         # All items should be modules
-        for pkg in result:
-            assert hasattr(pkg, "__name__"), f"Expected module, got {pkg}"
+        for package in result:
+            assert hasattr(package, "__name__"), f"Expected module, got {package}"
 
-    def test_all_resource_pkgs(
+    def test_all_resource_packages(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
         # Test that all resource packages includes both default and resources
-        result = my_test_pyinstaller_builder.all_resource_pkgs()
+        result = my_test_pyinstaller_builder.all_resource_packages()
         # Should return a list of modules
         assert isinstance(result, list), f"Expected list, got {type(result)}"
         # Should include at least the resources package
         assert len(result) > 0, f"Expected at least one resource package, got {result}"
 
-    def test_additional_resource_pkgs(
+    def test_additional_resource_packages(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
-        additional_pkgs = my_test_pyinstaller_builder.additional_resource_pkgs()
-        assert len(additional_pkgs) == 0, "Expected no additional packages"
+        additional_packages = my_test_pyinstaller_builder.additional_resource_packages()
+        assert len(additional_packages) == 0, "Expected no additional packages"
 
     def test_temp_distpath(self, tmp_path: Path) -> None:
         """Test method."""
@@ -96,7 +96,7 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method."""
         result = my_test_pyinstaller_builder.add_datas()
-        # should contain the resource.py and __init__.py from the resources pkg
+        # should contain the resource.py and __init__.py from the resources package
         assert len(result) > 1, f"Expected at least two files, got {result}"
 
     def test_pyinstaller_options(

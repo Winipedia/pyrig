@@ -109,7 +109,7 @@ topological order (dependencies before dependents).
 graph TD
     A[pyrig] --> B[myapp]
     B --> C[myplugin]
-    A --> D[another-pkg]
+    A --> D[another-package]
 
     A:::base
     B:::dep1
@@ -167,6 +167,6 @@ automatically generates argument parsing from the function signature.
 
 The pyrig CLI system is designed for project automation and development
 workflows. It provides a convenient way to execute project commands without the
-verbosity of `python -m myapp.subpkg.subpkg2.module` or the boilerplate of
-`if __name__ == "__main__":` guards. Simply define functions in your
+verbosity of `python -m myapp.subpackage.subpackage2.module` or the boilerplate
+of `if __name__ == "__main__":` guards. Simply define functions in your
 `subcommands.py` module and they become accessible as `uv run myapp <command>`.

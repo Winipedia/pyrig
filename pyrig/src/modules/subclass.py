@@ -99,5 +99,7 @@ class Subclass(ABC):
             subclasses: Get all subclasses regardless of priority
         """
         return discover_leaf_subclass_across_dependents(
-            cls=cls, dep=cls.base_dependency(), load_pkg_before=cls.definition_package()
+            cls=cls,
+            dep=cls.base_dependency(),
+            load_package_before=cls.definition_package(),
         )

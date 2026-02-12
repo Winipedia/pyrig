@@ -61,8 +61,8 @@ from pyrig.src.modules.module import (
 )
 from pyrig.src.modules.package import (
     all_deps_depending_on_dep,
-    pkg_name_from_project_name,
-    project_name_from_pkg_name,
+    package_name_from_project_name,
+    project_name_from_package_name,
 )
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.requests import internet_is_available
@@ -175,7 +175,7 @@ def assert_all_src_code_in_one_package() -> None:
         src_package_name,
     }
 
-    # pkgs must be exactly the expected packages
+    # packages must be exactly the expected packages
     assert (
         set(packages) == expected_packages
     ), f"""Pyrig enforces a single source package with a specific structure.
@@ -191,8 +191,8 @@ def assert_all_src_code_in_one_package() -> None:
     submodule_names = {m.__name__.split(".")[-1] for m in submodules}
 
     expected_subpackages = {
-        isolated_obj_name(sub_pkg)
-        for sub_pkg in [
+        isolated_obj_name(sub_package)
+        for sub_package in [
             rig,
             src,
             resources,
@@ -234,7 +234,7 @@ def assert_src_package_correctly_named() -> None:
     src_package = import_module(PyprojectConfigFile.L.package_name())
 
     src_package_name = src_package.__name__
-    src_package_name_from_cwd = pkg_name_from_project_name(cwd_name)
+    src_package_name_from_cwd = package_name_from_project_name(cwd_name)
     msg = (
         f"Expected source package to be named {src_package_name_from_cwd}, "
         f"but it is named {src_package_name}"
@@ -290,11 +290,11 @@ def assert_no_unit_test_package_usage() -> None:
     """
     unit_test_str = "UnitTest".lower()
     unit_test_pattern = re.compile(unit_test_str)
-    pkgs = find_packages()
+    packages = find_packages()
     usages: list[str] = []
-    for pkg in pkgs:
-        pkg_path = ModulePath.pkg_name_to_relative_dir_path(pkg)
-        for path in pkg_path.rglob("*.py"):
+    for package in packages:
+        package_path = ModulePath.package_name_to_relative_dir_path(package)
+        for path in package_path.rglob("*.py"):
             content = path.read_text(encoding="utf-8")
             is_unit_test_used = re_search_excluding_docstrings(
                 unit_test_pattern, content
@@ -404,7 +404,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
 
     project_path = Path(src_package_file_str).parent
 
-    project_name = project_name_from_pkg_name(src_package.__name__)
+    project_name = project_name_from_package_name(src_package.__name__)
 
     temp_project_path = tmp_path / src_package.__name__
 
@@ -442,15 +442,15 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             Path(config).unlink()
 
         # run walk_package with src and import all modules to catch dev dep imports
-        src_pkg_name = PyprojectConfigFile.L.package_name()
+        src_package_name = PyprojectConfigFile.L.package_name()
         script_args = [
             "python",
             "-c",
             "; ".join(
                 (
                     "from pyrig.src.modules.imports import walk_package",
-                    f"from {src_pkg_name} import main",
-                    f"from {src_pkg_name} import src",
+                    f"from {src_package_name} import main",
+                    f"from {src_package_name} import src",
                     "packages=list(walk_package(src))",
                     # verify packages is a list
                     "assert isinstance(packages, list)",
@@ -500,22 +500,22 @@ def assert_src_does_not_use_rig() -> None:
     """
     src_package = import_module(PyprojectConfigFile.L.package_name())
 
-    src_src_pkg_name = module_name_replacing_start_module(src, src_package.__name__)
+    src_src_package_name = module_name_replacing_start_module(src, src_package.__name__)
 
-    src_src_pkg = import_module(src_src_pkg_name)
+    src_src_package = import_module(src_src_package_name)
 
-    pkgs_depending_on_pyrig = all_deps_depending_on_dep(pyrig, include_self=True)
+    packages_depending_on_pyrig = all_deps_depending_on_dep(pyrig, include_self=True)
 
     possible_rig_usages = [
-        module_name_replacing_start_module(rig, pkg.__name__)
-        for pkg in pkgs_depending_on_pyrig
+        module_name_replacing_start_module(rig, package.__name__)
+        for package in packages_depending_on_pyrig
     ]
     possible_rig_usages = [re.escape(usage) for usage in possible_rig_usages]
 
     possible_rig_usages_pattern = r"\b(" + "|".join(possible_rig_usages) + r")\b"
 
     usages: list[str] = []
-    folder_path = Path(src_src_pkg.__path__[0])
+    folder_path = Path(src_src_package.__path__[0])
     for path in folder_path.rglob("*.py"):
         content = path.read_text(encoding="utf-8")
 

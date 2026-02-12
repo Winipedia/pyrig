@@ -30,7 +30,7 @@ import myapp.resources
 
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
-    def additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_packages(cls) -> list[ModuleType]:
         """Specify packages containing resources to bundle."""
         return [myapp.resources]
 ```
@@ -38,7 +38,7 @@ class MyAppBuilder(PyInstallerBuilder):
 A use case we had was that we needed to add the migrations folder for a database
 once as we had it not located in the resources directory. Resource modules from
 packages depending on pyrig are discovered automatically via
-`default_additional_resource_pkgs()`.
+`default_additional_resource_packages()`.
 
 ### 2. Add an Icon
 
@@ -89,12 +89,12 @@ graph TD
 Resources are automatically collected from:
 
 1. **All packages depending on pyrig** - their `resources` modules
-2. **Your additional packages** - specified in `additional_resource_pkgs`
+2. **Your additional packages** - specified in `additional_resource_packages`
 
 ```mermaid
 graph LR
     A[pyrig.resources] --> D[Bundled in executable]
-    B[pkg_a.resources] --> D
+    B[package_a.resources] --> D
     C[myapp.resources] --> D
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -144,12 +144,12 @@ Override `app_icon_png_path` to use a different icon:
 from pathlib import Path
 from types import ModuleType
 from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
-import myapp.another_resources_pkg
+import myapp.another_resources_package
 
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
-    def additional_resource_pkgs(cls) -> list[ModuleType]:
-        return [myapp.another_resources_pkg]
+    def additional_resource_packages(cls) -> list[ModuleType]:
+        return [myapp.another_resources_package]
 
     @classmethod
     def app_icon_png_path(cls) -> Path:
@@ -182,7 +182,7 @@ Override `pyinstaller_options` for full control:
 ```python
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
-    def additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_packages(cls) -> list[ModuleType]:
         return [myapp.resources]
 
     @classmethod
@@ -214,7 +214,7 @@ import myapp.data
 
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
-    def additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_packages(cls) -> list[ModuleType]:
         return [
             myapp.resources,
             myapp.templates,
@@ -229,7 +229,7 @@ class MyAppBuilder(PyInstallerBuilder):
     ARTIFACTS_DIR_NAME = "build/executables"  # Custom output directory
 
     @classmethod
-    def additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_packages(cls) -> list[ModuleType]:
         return [myapp.resources]
 ```
 
@@ -242,7 +242,7 @@ pyrig (base package)
 │
 Package A (depends on pyrig)
 ├── resources/
-│   └── pkg-a-data.json
+│   └── package-a-data.json
 │
 My App (depends on Package A)
 ├── rig/
@@ -255,7 +255,7 @@ My App (depends on Package A)
 Running `uv run pyrig build`:
 ✓ Discovers MyAppBuilder
 ✓ Bundles pyrig.resources (base-config.json)
-✓ Bundles pkg_a.resources (pkg-a-data.json)
+✓ Bundles package_a.resources (package-a-data.json)
 ✓ Bundles myapp.resources (icon.png, app-config.json)
 ✓ Converts icon.png to platform format
 ✓ Creates executable: dist/myapp-Linux

@@ -140,14 +140,14 @@ class TestDiGraph:
     def test_topological_sort_subgraph(self) -> None:
         """Test topological sorting of a subgraph."""
         graph = DiGraph()
-        # Build graph: pyrig <- pkg1 <- pkg2
-        # (pkg2 depends on pkg1, pkg1 depends on pyrig)
-        graph.add_edge("pkg2", "pkg1")
-        graph.add_edge("pkg1", "pyrig")
+        # Build graph: pyrig <- package1 <- package2
+        # (package2 depends on package1, package1 depends on pyrig)
+        graph.add_edge("package2", "package1")
+        graph.add_edge("package1", "pyrig")
 
-        # Sort should give: pyrig, pkg1, pkg2 (dependencies first)
-        result = graph.topological_sort_subgraph({"pyrig", "pkg1", "pkg2"})
-        assert result == ["pyrig", "pkg1", "pkg2"]
+        # Sort should give: pyrig, package1, package2 (dependencies first)
+        result = graph.topological_sort_subgraph({"pyrig", "package1", "package2"})
+        assert result == ["pyrig", "package1", "package2"]
 
         # Test with more complex graph
         graph2 = DiGraph()
