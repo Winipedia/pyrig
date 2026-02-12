@@ -35,7 +35,7 @@ from typing import Any
 import pyrig
 from pyrig.rig.configs.base.workflow import Workflow
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.src.modules.package import DependencyGraph
+from pyrig.src.modules.dependency_graph import DependencyGraph
 
 
 class HealthCheckWorkflow(Workflow):

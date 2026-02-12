@@ -32,11 +32,11 @@ from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.modules.package import (
-    PACKAGE_REQ_NAME_SPLIT_PATTERN,
     get_pkg_name_from_cwd,
     get_pkg_name_from_project_name,
     get_project_name_from_cwd,
 )
+from pyrig.src.string_ import get_pkg_req_name_split_pattern
 
 
 class PyprojectConfigFile(TomlConfigFile):
@@ -265,7 +265,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Uses REQ_NAME_SPLIT_PATTERN from package module for consistency.
         (e.g., 'requests>=2.0' -> 'requests').
         """
-        return PACKAGE_REQ_NAME_SPLIT_PATTERN.split(dep)[0]
+        return get_pkg_req_name_split_pattern().split(dep)[0]
 
     @classmethod
     def get_package_name(cls) -> str:
