@@ -99,7 +99,7 @@ def test_install_pre_commit_hooks() -> None:
 
 def test_add_all_files_to_version_control() -> None:
     """Test function."""
-    res = VersionController.L.get_add_all_args()
+    res = VersionController.L.add_all_args()
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
@@ -119,7 +119,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     # copy the pyrig package to tmp_path/pyrig with shutil
     project_name = "src-project"
 
-    pyrig_temp_path = tmp_path / PyprojectConfigFile.L.get_project_name()
+    pyrig_temp_path = tmp_path / PyprojectConfigFile.L.project_name()
     pyrig_path = ModulePath.pkg_type_to_dir_path(pyrig)
     shutil.copytree(
         pyrig_path.parent,
@@ -128,7 +128,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     pyrig_temp_path = pyrig_temp_path.resolve()
     with chdir(pyrig_temp_path):
         # build the package
-        args = PackageManager.L.get_build_args()
+        args = PackageManager.L.build_args()
         args.run()
 
     dist_files = list((pyrig_temp_path / "dist").glob("*.whl"))
@@ -138,7 +138,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     src_project_dir.mkdir()
 
     # Get the current Python version in major.minor format
-    python_version = str(PyprojectConfigFile.L.get_first_supported_python_version())
+    python_version = str(PyprojectConfigFile.L.first_supported_python_version())
 
     # Initialize git repo in the test project directory
     with chdir(src_project_dir):
@@ -158,7 +158,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         args.run(env=clean_env)
 
         # Add pyrig wheel as a dependency
-        PackageManager.L.get_add_dependencies_args(wheel_path).run(env=clean_env)
+        PackageManager.L.add_dependencies_args(wheel_path).run(env=clean_env)
 
         # uv add converts absolute paths to relative paths, which breaks when
         # the project is copied to a different location (e.g., in the
@@ -176,17 +176,17 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         pyproject_toml.write_text(pyproject_content, encoding="utf-8")
 
         # Sync to update the lock file with the new absolute path
-        args = PackageManager.L.get_install_dependencies_args()
+        args = PackageManager.L.install_dependencies_args()
         args.run(env=clean_env)
 
         # Verify pyrig was installed correctly by running init also assert init passes
-        args = PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(cmd=init))
+        args = PackageManager.L.run_args(*Pyrigger.L.get_cmd_args(cmd=init))
         res = args.run(env=clean_env)
 
         assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
 
         # assert the pkgs own cli is available
-        args = PackageManager.L.get_run_args(project_name, "--help")
+        args = PackageManager.L.run_args(project_name, "--help")
         res = args.run(env=clean_env)
         stdout = res.stdout
         expected = project_name
@@ -194,12 +194,12 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
             f"Expected {expected} in stdout, got {stdout}"
         )
         #  assert running the main command works
-        args = PackageManager.L.get_run_args(project_name, main.__name__)
+        args = PackageManager.L.run_args(project_name, main.__name__)
         res = args.run(env=clean_env)
         assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
 
         # asert calling version works
-        args = PackageManager.L.get_run_args(project_name, "version")
+        args = PackageManager.L.run_args(project_name, "version")
         res = args.run(env=clean_env)
         stdout = res.stdout
         expected = f"{project_name} version 0.1.0"

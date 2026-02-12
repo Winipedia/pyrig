@@ -39,7 +39,7 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
 from pyrig import resources
 from pyrig.rig.utils.packages import src_pkg_is_pyrig
-from pyrig.src.resource import get_resource_path
+from pyrig.src.resource import resource_path
 
 logger = logging.getLogger(__name__)
 
@@ -92,8 +92,8 @@ def return_resource_file_content_on_exceptions(
     Note:
         Uses stop_after_attempt(1) - no actual retries.
     """
-    resource_path = get_resource_path(resource_name, resources)
-    content = resource_path.read_text(encoding="utf-8")
+    path = resource_path(resource_name, resources)
+    content = path.read_text(encoding="utf-8")
 
     def decorator(func: Callable[P, str]) -> Callable[P, str]:
         tenacity_decorator = retry(
@@ -113,10 +113,10 @@ def return_resource_file_content_on_exceptions(
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
             result = decorated_func(*args, **kwargs)
             if src_pkg_is_pyrig() and overwrite_resource and result != content:
-                resource_path.write_text(result, encoding="utf-8")
+                path.write_text(result, encoding="utf-8")
                 logger.info(
                     "Updated resource file: %s",
-                    resource_path,
+                    path,
                 )
             return result
 

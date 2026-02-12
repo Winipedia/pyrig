@@ -134,7 +134,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
         token = get_github_repo_token()
         repo = get_repo(token, owner, repo_name)
 
-        toml_description = PyprojectConfigFile.L.get_project_description()
+        toml_description = PyprojectConfigFile.L.project_description()
         logger.debug("Setting repository description: %s", toml_description)
 
         repo.edit(

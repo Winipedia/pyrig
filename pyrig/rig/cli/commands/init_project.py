@@ -72,7 +72,7 @@ def adding_dev_dependencies() -> Args:
     Returns:
         Args object for adding dev dependencies.
     """
-    return PackageManager.L.get_add_dev_dependencies_args(
+    return PackageManager.L.add_dev_dependencies_args(
         *Tool.subclasses_dev_dependencies()
     )
 
@@ -101,7 +101,7 @@ def syncing_venv() -> Args:
     Returns:
         Args object for syncing the virtual environment.
     """
-    return PackageManager.L.get_install_dependencies_args()
+    return PackageManager.L.install_dependencies_args()
 
 
 def creating_project_root() -> Args:
@@ -137,7 +137,7 @@ def install_pre_commit_hooks() -> Args:
     Returns:
         Args object for installing prek hooks.
     """
-    return PreCommitter.L.get_install_args()
+    return PreCommitter.L.install_args()
 
 
 def add_all_files_to_version_control() -> Args:
@@ -148,7 +148,7 @@ def add_all_files_to_version_control() -> Args:
     Returns:
         Args object for adding all files to version control.
     """
-    return VersionController.L.get_add_all_args()
+    return VersionController.L.add_all_args()
 
 
 def running_pre_commit_hooks() -> Args:
@@ -160,7 +160,7 @@ def running_pre_commit_hooks() -> Args:
     Returns:
         Args object for running prek hooks.
     """
-    return PreCommitter.L.get_run_all_files_args()
+    return PreCommitter.L.run_all_files_args()
 
 
 def running_tests() -> Args:
@@ -239,6 +239,6 @@ def init_project() -> None:
         for step in steps:
             step_name = make_name_from_obj(step, join_on=" ")
             progress.update(task, description=step_name)
-            PackageManager.L.get_run_args(*step()).run()
+            PackageManager.L.run_args(*step()).run()
             progress.advance(task)
         progress.update(task, description="[green]Initialization complete!")

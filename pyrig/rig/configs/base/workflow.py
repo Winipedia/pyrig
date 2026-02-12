@@ -60,7 +60,7 @@ class Workflow(YmlConfigFile):
 
     Provides a declarative API for building GitHub Actions workflow YAML files
     programmatically. Subclasses define specific workflows by implementing
-    get_jobs() and optionally overriding trigger/permission methods.
+    jobs() and optionally overriding trigger/permission methods.
 
     The class provides extensive utilities for:
         - Creating jobs with matrix strategies
@@ -71,9 +71,9 @@ class Workflow(YmlConfigFile):
         - Running pyrig commands
 
     Subclasses should:
-        1. Implement get_jobs() to define workflow jobs
-        2. Override get_workflow_triggers() to customize triggers
-        3. Override get_permissions() if special permissions needed
+        1. Implement jobs() to define workflow jobs
+        2. Override workflow_triggers() to customize triggers
+        3. Override permissions() if special permissions needed
 
     Attributes:
         UBUNTU_LATEST (str): Runner label for Ubuntu ("ubuntu-latest")
@@ -89,15 +89,15 @@ class Workflow(YmlConfigFile):
 
             class MyWorkflow(Workflow):
                 @classmethod
-                def get_jobs(cls) -> dict[str, Any]:
+                def jobs(cls) -> dict[str, Any]:
                     return {
                         "test": cls.job_test(),
                         "build": cls.job_build_artifacts(),
                     }
 
                 @classmethod
-                def get_workflow_triggers(cls) -> dict[str, Any]:
-                    triggers = super().get_workflow_triggers()
+                def workflow_triggers(cls) -> dict[str, Any]:
+                    triggers = super().workflow_triggers()
                     triggers.update(cls.on_push())
                     return triggers
 
@@ -123,13 +123,13 @@ class Workflow(YmlConfigFile):
             Dict with name, triggers, permissions, defaults, env, and jobs.
         """
         return {
-            "name": cls.get_workflow_name(),
-            "on": cls.get_workflow_triggers(),
-            "permissions": cls.get_permissions(),
-            "run-name": cls.get_run_name(),
-            "defaults": cls.get_defaults(),
-            "env": cls.get_global_env(),
-            "jobs": cls.get_jobs(),
+            "name": cls.workflow_name(),
+            "on": cls.workflow_triggers(),
+            "permissions": cls.permissions(),
+            "run-name": cls.run_name(),
+            "defaults": cls.defaults(),
+            "env": cls.global_env(),
+            "jobs": cls.jobs(),
         }
 
     @classmethod
@@ -172,7 +172,7 @@ class Workflow(YmlConfigFile):
     # ----------------------------------------------------------------------------
     @classmethod
     @abstractmethod
-    def get_jobs(cls) -> dict[str, Any]:
+    def jobs(cls) -> dict[str, Any]:
         """Get the workflow jobs.
 
         Subclasses must implement this to define their jobs.
@@ -182,7 +182,7 @@ class Workflow(YmlConfigFile):
         """
 
     @classmethod
-    def get_workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers.
 
         Override to customize when the workflow runs.
@@ -194,7 +194,7 @@ class Workflow(YmlConfigFile):
         return cls.on_workflow_dispatch()
 
     @classmethod
-    def get_permissions(cls) -> dict[str, Any]:
+    def permissions(cls) -> dict[str, Any]:
         """Get the workflow permissions.
 
         Override to request additional permissions.
@@ -206,7 +206,7 @@ class Workflow(YmlConfigFile):
         return {}
 
     @classmethod
-    def get_defaults(cls) -> dict[str, Any]:
+    def defaults(cls) -> dict[str, Any]:
         """Get the workflow defaults.
 
         Override to customize default settings.
@@ -218,7 +218,7 @@ class Workflow(YmlConfigFile):
         return {"run": {"shell": "bash"}}
 
     @classmethod
-    def get_global_env(cls) -> dict[str, Any]:
+    def global_env(cls) -> dict[str, Any]:
         """Get the global environment variables.
 
         Override to add environment variables.
@@ -235,7 +235,7 @@ class Workflow(YmlConfigFile):
     # Workflow Conventions
     # ----------------------------------------------------------------------------
     @classmethod
-    def get_workflow_name(cls) -> str:
+    def workflow_name(cls) -> str:
         """Generate a human-readable workflow name from the class name.
 
         Returns:
@@ -245,18 +245,18 @@ class Workflow(YmlConfigFile):
         return " ".join(split_on_uppercase(name))
 
     @classmethod
-    def get_run_name(cls) -> str:
+    def run_name(cls) -> str:
         """Get the display name for workflow runs.
 
         Returns:
             The workflow name by default.
         """
-        return cls.get_workflow_name()
+        return cls.workflow_name()
 
     # Build Utilities
     # ----------------------------------------------------------------------------
     @classmethod
-    def get_job(  # noqa: PLR0913
+    def job(  # noqa: PLR0913
         cls,
         job_func: Callable[..., Any],
         needs: list[str] | None = None,
@@ -403,7 +403,7 @@ class Workflow(YmlConfigFile):
             Trigger configuration for workflow completion events.
         """
         if workflows is None:
-            workflows = [cls.get_workflow_name()]
+            workflows = [cls.workflow_name()]
         config: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
         if branches is not None:
             config["branches"] = branches
@@ -424,7 +424,7 @@ class Workflow(YmlConfigFile):
 
     # Steps
     @classmethod
-    def get_step(  # noqa: PLR0913
+    def step(  # noqa: PLR0913
         cls,
         step_func: Callable[..., Any],
         run: str | None = None,
@@ -562,10 +562,10 @@ class Workflow(YmlConfigFile):
         if matrix is None:
             matrix = {}
         strategy["matrix"] = matrix
-        return cls.get_strategy(strategy=strategy)
+        return cls.strategy(strategy=strategy)
 
     @classmethod
-    def get_strategy(
+    def strategy(
         cls,
         *,
         strategy: dict[str, Any],
@@ -606,7 +606,7 @@ class Workflow(YmlConfigFile):
         )["python-version"]
         matrix["os"] = os_matrix
         matrix["python-version"] = python_version_matrix
-        return cls.get_matrix(matrix=matrix)
+        return cls.matrix(matrix=matrix)
 
     @classmethod
     def matrix_os(
@@ -629,7 +629,7 @@ class Workflow(YmlConfigFile):
         if matrix is None:
             matrix = {}
         matrix["os"] = os
-        return cls.get_matrix(matrix=matrix)
+        return cls.matrix(matrix=matrix)
 
     @classmethod
     def matrix_python_version(
@@ -649,15 +649,15 @@ class Workflow(YmlConfigFile):
         """
         if python_version is None:
             python_version = [
-                str(v) for v in PyprojectConfigFile.L.get_supported_python_versions()
+                str(v) for v in PyprojectConfigFile.L.supported_python_versions()
             ]
         if matrix is None:
             matrix = {}
         matrix["python-version"] = python_version
-        return cls.get_matrix(matrix=matrix)
+        return cls.matrix(matrix=matrix)
 
     @classmethod
-    def get_matrix(cls, matrix: dict[str, list[Any]]) -> dict[str, Any]:
+    def matrix(cls, matrix: dict[str, list[Any]]) -> dict[str, Any]:
         """Return the matrix configuration.
 
         Args:
@@ -691,7 +691,7 @@ class Workflow(YmlConfigFile):
         """
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.L.get_latest_possible_python_version(level="minor")
+                PyprojectConfigFile.L.latest_possible_python_version(level="minor")
             )
         core = [
             cls.step_checkout_repository(repo_token=repo_token),
@@ -782,9 +782,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that echoes an opt-out message.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_opt_out_of_workflow,
-            run=f"echo 'Opting out of {cls.get_workflow_name()} workflow.'",
+            run=f"echo 'Opting out of {cls.workflow_name()} workflow.'",
             step=step,
         )
 
@@ -802,7 +802,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step configuration for result aggregation.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_aggregate_jobs,
             run="echo 'Aggregating jobs into one job.'",
             step=step,
@@ -822,7 +822,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that echoes a skip message.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_no_builder_defined,
             run="echo 'No non-abstract builders defined. Skipping build.'",
             step=step,
@@ -844,7 +844,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that installs podman.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_install_container_engine,
             uses="redhat-actions/podman-install@main",
             with_={"github-token": cls.insert_github_token()},
@@ -865,11 +865,11 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that builds the container image.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_build_container_image,
             run=str(
-                ContainerEngine.L.get_build_args(
-                    project_name=PyprojectConfigFile.L.get_project_name()
+                ContainerEngine.L.build_args(
+                    project_name=PyprojectConfigFile.L.project_name()
                 )
             ),
             step=step,
@@ -889,12 +889,12 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that saves the container image.
         """
-        image_file = Path(f"{PyprojectConfigFile.L.get_project_name()}.tar")
+        image_file = Path(f"{PyprojectConfigFile.L.project_name()}.tar")
         image_path = Path(cls.ARTIFACTS_DIR_NAME) / image_file
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_save_container_image,
             run=str(
-                ContainerEngine.L.get_save_args(
+                ContainerEngine.L.save_args(
                     image_file=image_file,
                     image_path=image_path,
                 )
@@ -918,7 +918,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that makes the dist folder.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_make_dist_folder,
             run=f"mkdir -p {cls.ARTIFACTS_DIR_NAME}",
             step=step,
@@ -942,10 +942,8 @@ class Workflow(YmlConfigFile):
             step = {}
         if src_pkg_is_pyrig():
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
-        run = str(
-            PackageManager.L.get_run_args(*ProjectTester.L.get_run_tests_in_ci_args())
-        )
-        return cls.get_step(
+        run = str(PackageManager.L.run_args(*ProjectTester.L.run_tests_in_ci_args()))
+        return cls.step(
             step_func=cls.step_run_tests,
             run=run,
             step=step,
@@ -978,7 +976,7 @@ class Workflow(YmlConfigFile):
         fail_ci_if_error = cls.insert_var(
             "${{ secrets.CODECOV_TOKEN && 'true' || 'false' }}"
         )
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_upload_coverage_report,
             uses="codecov/codecov-action@main",
             with_={
@@ -1003,7 +1001,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that increments version and stages pyproject.toml.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_patch_version,
             run=str(PackageManager.L.get_patch_version_args()),
             step=step,
@@ -1023,9 +1021,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that stages pyproject.toml.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_add_version_bump_to_version_control,
-            run=str(VersionController.L.get_add_pyproject_toml_and_lock_file_args()),
+            run=str(VersionController.L.add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
 
@@ -1043,9 +1041,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that stages pyproject.toml and uv.lock.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_add_dependency_updates_to_version_control,
-            run=str(VersionController.L.get_add_pyproject_toml_and_lock_file_args()),
+            run=str(VersionController.L.add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
 
@@ -1073,7 +1071,7 @@ class Workflow(YmlConfigFile):
             step.setdefault("with", {})["fetch-depth"] = fetch_depth
         if repo_token:
             step.setdefault("with", {})["token"] = cls.insert_repo_token()
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_checkout_repository,
             uses="actions/checkout@main",
             step=step,
@@ -1093,7 +1091,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that sets git user.email and user.name.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_setup_version_control,
             run=str(
                 VersionController.L.get_config_global_user_email_args(
@@ -1129,11 +1127,11 @@ class Workflow(YmlConfigFile):
             step = {}
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.L.get_latest_possible_python_version(level="minor")
+                PyprojectConfigFile.L.latest_possible_python_version(level="minor")
             )
 
         step.setdefault("with", {})["python-version"] = python_version
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_setup_python,
             uses="actions/setup-python@main",
             step=step,
@@ -1155,7 +1153,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step using astral-sh/setup-uv.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_setup_package_manager,
             uses="astral-sh/setup-uv@main",
             with_={"python-version": python_version},
@@ -1176,9 +1174,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv build.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_build_wheel,
-            run=str(PackageManager.L.get_build_args()),
+            run=str(PackageManager.L.build_args()),
             step=step,
         )
 
@@ -1200,7 +1198,7 @@ class Workflow(YmlConfigFile):
         """
         run = str(PackageManager.L.get_publish_args(token=cls.insert_pypi_token()))
         run_if = cls.run_if_condition(run, cls.insert_pypi_token())
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_publish_to_pypi,
             run=run_if,
             step=step,
@@ -1220,9 +1218,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv build-docs.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_build_documentation,
-            run=str(PackageManager.L.get_run_args(*DocsBuilder.L.get_build_args())),
+            run=str(PackageManager.L.run_args(*DocsBuilder.L.build_args())),
             step=step,
         )
 
@@ -1240,7 +1238,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that enables GitHub Pages.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_enable_pages,
             uses="actions/configure-pages@main",
             with_={"token": cls.insert_repo_token(), "enablement": "true"},
@@ -1261,7 +1259,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that uploads the documentation to GitHub Pages.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_upload_documentation,
             uses="actions/upload-pages-artifact@main",
             with_={"path": "site"},
@@ -1282,7 +1280,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that deploys documentation to GitHub Pages.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_deploy_documentation,
             uses="actions/deploy-pages@main",
             step=step,
@@ -1302,9 +1300,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv lock --upgrade.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_update_dependencies,
-            run=str(PackageManager.L.get_update_dependencies_args()),
+            run=str(PackageManager.L.update_dependencies_args()),
             step=step,
         )
 
@@ -1324,12 +1322,12 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv sync.
         """
-        install = str(PackageManager.L.get_install_dependencies_args())
+        install = str(PackageManager.L.install_dependencies_args())
         if no_dev:
             install += " --no-group dev"
         run = install
 
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_install_dependencies,
             run=run,
             step=step,
@@ -1349,12 +1347,10 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs the pyrig protect-repo command.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_protect_repository,
             run=str(
-                PackageManager.L.get_run_args(
-                    *Pyrigger.L.get_cmd_args(cmd=protect_repo)
-                )
+                PackageManager.L.run_args(*Pyrigger.L.get_cmd_args(cmd=protect_repo))
             ),
             env={"REPO_TOKEN": cls.insert_repo_token()},
             step=step,
@@ -1377,11 +1373,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs prek on all files.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_run_pre_commit_hooks,
-            run=str(
-                PackageManager.L.get_run_args(*PreCommitter.L.get_run_all_files_args())
-            ),
+            run=str(PackageManager.L.run_args(*PreCommitter.L.run_all_files_args())),
             step=step,
         )
 
@@ -1402,11 +1396,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs pip-audit.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_run_dependency_audit,
-            run=str(
-                PackageManager.L.get_run_args(*DependencyAuditor.L.get_audit_args())
-            ),
+            run=str(PackageManager.L.run_args(*DependencyAuditor.L.audit_args())),
             step=step,
         )
 
@@ -1425,7 +1417,7 @@ class Workflow(YmlConfigFile):
             Step that commits with [skip ci] prefix.
         """
         msg = '"[skip ci] CI/CD: Committing possible staged changes"'
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_commit_added_changes,
             run=str(VersionController.L.get_commit_no_verify_args(msg=msg)),
             step=step,
@@ -1445,7 +1437,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs git push.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_push_commits,
             run=str(VersionController.L.get_push_args()),
             step=step,
@@ -1465,7 +1457,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that creates a git tag and pushes it.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_create_and_push_tag,
             run=str(VersionController.L.get_tag_args(tag=cls.insert_version()))
             + " && "
@@ -1492,7 +1484,7 @@ class Workflow(YmlConfigFile):
             Step that runs mkdir (cross-platform).
         """
         # should work on all OSs
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_create_folder,
             run=f"mkdir {folder}",
             step=step,
@@ -1536,7 +1528,7 @@ class Workflow(YmlConfigFile):
         """
         if name is None:
             name = cls.insert_artifact_name()
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_upload_artifacts,
             uses="actions/upload-artifact@main",
             with_={"name": name, "path": str(path)},
@@ -1557,9 +1549,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs the pyrig build command.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_build_artifacts,
-            run=str(PackageManager.L.get_run_args(*Pyrigger.L.get_cmd_args(cmd=build))),
+            run=str(PackageManager.L.run_args(*Pyrigger.L.get_cmd_args(cmd=build))),
             step=step,
         )
 
@@ -1586,7 +1578,7 @@ class Workflow(YmlConfigFile):
         if name is not None:
             with_["name"] = name
         with_["merge-multiple"] = "true"
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_download_artifacts,
             uses="actions/download-artifact@main",
             with_=with_,
@@ -1622,7 +1614,7 @@ class Workflow(YmlConfigFile):
         if name is not None:
             with_["name"] = name
         with_["merge-multiple"] = "true"
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_download_artifacts_from_workflow_run,
             uses="actions/download-artifact@main",
             with_=with_,
@@ -1643,7 +1635,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step using release-changelog-builder-action.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_build_changelog,
             uses="mikepenz/release-changelog-builder-action@develop",
             with_={"token": cls.insert_github_token()},
@@ -1664,7 +1656,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that outputs the version for later steps.
         """
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_extract_version,
             run=f'echo "version={cls.insert_version()}" >> $GITHUB_OUTPUT',
             step=step,
@@ -1687,7 +1679,7 @@ class Workflow(YmlConfigFile):
             Step using ncipollo/release-action.
         """
         version = cls.insert_version_from_extract_version_step()
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_create_release,
             uses="ncipollo/release-action@main",
             with_={
@@ -1740,7 +1732,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Shell command that outputs the version with v prefix.
         """
-        script = str(PackageManager.L.get_version_short_args())
+        script = str(PackageManager.L.version_short_args())
         return f"v$({script})"
 
     @classmethod
@@ -1857,7 +1849,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Artifact name in format: package-os.
         """
-        return f"{PyprojectConfigFile.L.get_project_name()}-{cls.insert_os()}"
+        return f"{PyprojectConfigFile.L.project_name()}-{cls.insert_os()}"
 
     # ifs
     # ----------------------------------------------------------------------------

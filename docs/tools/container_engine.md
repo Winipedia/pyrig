@@ -35,7 +35,7 @@ from pyrig.rig.configs.base.workflow import Workflow as BaseWorkflow
 class Workflow(BaseWorkflow):
     @classmethod
     def step_install_container_engine(cls, *, step=None):
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_install_container_engine,
             uses="docker/setup-buildx-action@v3",
             step=step,

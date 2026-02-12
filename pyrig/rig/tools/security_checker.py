@@ -5,8 +5,8 @@ Bandit is a tool designed to find common security issues in Python code.
 
 Example:
     >>> from pyrig.rig.tools.security_checker import SecurityChecker
-    >>> SecurityChecker.L.get_run_args("-r", ".").run()
-    >>> SecurityChecker.L.get_run_with_config_args().run()
+    >>> SecurityChecker.L.run_args("-r", ".").run()
+    >>> SecurityChecker.L.run_with_config_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -24,8 +24,8 @@ class SecurityChecker(Tool):
         - Config-based scanning: Use pyproject.toml configuration
 
     Example:
-        >>> SecurityChecker.L.get_run_args("-r", ".").run()
-        >>> SecurityChecker.L.get_run_with_config_args().run()
+        >>> SecurityChecker.L.run_args("-r", ".").run()
+        >>> SecurityChecker.L.run_with_config_args().run()
     """
 
     @classmethod
@@ -54,7 +54,7 @@ class SecurityChecker(Tool):
         )
 
     @classmethod
-    def get_run_args(cls, *args: str) -> Args:
+    def run_args(cls, *args: str) -> Args:
         """Construct bandit arguments.
 
         Args:
@@ -63,10 +63,10 @@ class SecurityChecker(Tool):
         Returns:
             Args for 'bandit'.
         """
-        return cls.build_args(*args)
+        return cls.args(*args)
 
     @classmethod
-    def get_run_with_config_args(cls, *args: str) -> Args:
+    def run_with_config_args(cls, *args: str) -> Args:
         """Construct bandit arguments with pyproject.toml config.
 
         Args:
@@ -75,4 +75,4 @@ class SecurityChecker(Tool):
         Returns:
             Args for 'bandit -c pyproject.toml -r .'.
         """
-        return cls.get_run_args("-c", "pyproject.toml", "-r", ".", *args)
+        return cls.run_args("-c", "pyproject.toml", "-r", ".", *args)

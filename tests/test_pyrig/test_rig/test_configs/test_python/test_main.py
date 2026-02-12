@@ -39,9 +39,9 @@ class TestMainConfigFile:
         MainConfigFile()
         spy.assert_called_once()
 
-    def test_get_src_module(self) -> None:
+    def test_src_module(self) -> None:
         """Test method."""
-        module = MainConfigFile.get_src_module()
+        module = MainConfigFile.src_module()
         assert module == main
 
     def test_is_correct(self) -> None:

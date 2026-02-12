@@ -59,7 +59,7 @@ class TestTool:
         # should be the same as the dev dependencies in pyproject.toml
         no_version_from_toml = [
             PyprojectConfigFile.remove_version_from_dep(dep)
-            for dep in PyprojectConfigFile.get_dev_dependencies()
+            for dep in PyprojectConfigFile.dev_dependencies()
         ]
         assert result == no_version_from_toml
 
@@ -68,10 +68,10 @@ class TestTool:
         # Tool is abstract, test through concrete implementation
         assert PackageManager.L.name() == "uv"
 
-    def test_build_args(self) -> None:
+    def test_args(self) -> None:
         """Test method."""
         # Tool is abstract, test through concrete implementation
-        result = PackageManager.L.build_args("run", "pytest")
+        result = PackageManager.L.args("run", "pytest")
         assert result == ("uv", "run", "pytest")
 
 

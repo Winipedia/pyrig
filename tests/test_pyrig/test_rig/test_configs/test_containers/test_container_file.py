@@ -26,7 +26,7 @@ class TestContainerfileConfigFile:
 
     def test_lines(self) -> None:
         """Test method."""
-        layers = ContainerfileConfigFile.get_layers()
+        layers = ContainerfileConfigFile.layers()
         lines = ContainerfileConfigFile.lines()
         content = "\n".join(lines)
         assert all(layer in content for layer in layers)
@@ -35,7 +35,7 @@ class TestContainerfileConfigFile:
         """Test method."""
         assert ContainerfileConfigFile().is_correct()
 
-    def test_get_layers(self) -> None:
+    def test_layers(self) -> None:
         """Test method."""
-        layers = ContainerfileConfigFile.get_layers()
+        layers = ContainerfileConfigFile.layers()
         assert len(layers) > 0

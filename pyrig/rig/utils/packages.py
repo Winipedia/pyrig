@@ -161,9 +161,7 @@ def get_namespace_packages() -> list[str]:
     packages = find_packages(depth=None)
     namespace_packages = find_packages(depth=None, include_namespace_packages=True)
     namespace_packages = [
-        p
-        for p in namespace_packages
-        if not p.startswith(DocsBuilder.L.get_docs_dir().name)
+        p for p in namespace_packages if not p.startswith(DocsBuilder.L.docs_dir().name)
     ]
     # exclude all that are in .gitignore
     namespace_packages = [

@@ -20,17 +20,17 @@ def my_test_workflow(
         """Test workflow class with tmp_path override."""
 
         @classmethod
-        def get_workflow_triggers(cls) -> dict[str, Any]:
+        def workflow_triggers(cls) -> dict[str, Any]:
             """Get the workflow triggers."""
             return {"workflow_dispatch": {}}
 
         @classmethod
-        def get_permissions(cls) -> dict[str, Any]:
+        def permissions(cls) -> dict[str, Any]:
             """Get the workflow permissions."""
             return {}
 
         @classmethod
-        def get_jobs(cls) -> dict[str, Any]:
+        def jobs(cls) -> dict[str, Any]:
             """Get the workflow jobs."""
             return {
                 "test_job": {
@@ -196,53 +196,53 @@ class TestWorkflow:
                 f"Expected '.github/workflows', got {result}"
             )
 
-    def test_get_jobs(self, my_test_workflow: type[Workflow]) -> None:
+    def test_jobs(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_jobs()
+        result = my_test_workflow.jobs()
         assert "test_job" in result, "Expected 'test_job' in jobs"
 
-    def test_get_workflow_triggers(self, my_test_workflow: type[Workflow]) -> None:
+    def test_workflow_triggers(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_workflow_triggers()
+        result = my_test_workflow.workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
 
-    def test_get_global_env(self, my_test_workflow: type[Workflow]) -> None:
+    def test_global_env(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_global_env()
+        result = my_test_workflow.global_env()
         assert "PYTHONDONTWRITEBYTECODE" in result, (
             "Expected 'PYTHONDONTWRITEBYTECODE' in global env"
         )
 
-    def test_get_permissions(self, my_test_workflow: type[Workflow]) -> None:
+    def test_permissions(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_permissions()
+        result = my_test_workflow.permissions()
         assert result == {}, f"Expected empty dict, got {result}"
 
-    def test_get_defaults(self, my_test_workflow: type[Workflow]) -> None:
+    def test_defaults(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_defaults()
+        result = my_test_workflow.defaults()
         assert "run" in result, "Expected 'run' in defaults"
         assert result["run"]["shell"] == "bash", "Expected shell to be 'bash'"
 
-    def test_get_workflow_name(self, my_test_workflow: type[Workflow]) -> None:
+    def test_workflow_name(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_workflow_name()
+        result = my_test_workflow.workflow_name()
         assert len(result) > 0, "Expected workflow name to be non-empty"
 
-    def test_get_run_name(self, my_test_workflow: type[Workflow]) -> None:
+    def test_run_name(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_run_name()
-        assert result == my_test_workflow.get_workflow_name(), (
+        result = my_test_workflow.run_name()
+        assert result == my_test_workflow.workflow_name(), (
             "Expected run name to match workflow name"
         )
 
-    def test_get_job(self, my_test_workflow: type[Workflow]) -> None:
+    def test_job(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
 
         def job_test() -> None:
             pass
 
-        result = my_test_workflow.get_job(job_test, steps=[])
+        result = my_test_workflow.job(job_test, steps=[])
         assert len(result) == 1, "Expected job to have one key"
 
     def test_make_name_from_func(self, my_test_workflow: type[Workflow]) -> None:
@@ -288,13 +288,13 @@ class TestWorkflow:
         assert "contents" in result, "Expected 'contents' in result"
         assert result["contents"] == "read", "Expected default permission to be 'read'"
 
-    def test_get_step(self, my_test_workflow: type[Workflow]) -> None:
+    def test_step(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
 
         def step_test() -> None:
             pass
 
-        result = my_test_workflow.get_step(step_test, run="echo test")
+        result = my_test_workflow.step(step_test, run="echo test")
         assert "name" in result, "Expected 'name' in step"
         assert "id" in result, "Expected 'id' in step"
 
@@ -322,9 +322,9 @@ class TestWorkflow:
         result = my_test_workflow.strategy_matrix()
         assert "matrix" in result, "Expected 'matrix' in strategy"
 
-    def test_get_strategy(self, my_test_workflow: type[Workflow]) -> None:
+    def test_strategy(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_strategy(strategy={})
+        result = my_test_workflow.strategy(strategy={})
         assert "fail-fast" in result, "Expected 'fail-fast' in strategy"
 
     def test_matrix_os_and_python_version(
@@ -345,9 +345,9 @@ class TestWorkflow:
         result = my_test_workflow.matrix_python_version()
         assert "python-version" in result, "Expected 'python-version' in matrix"
 
-    def test_get_matrix(self, my_test_workflow: type[Workflow]) -> None:
+    def test_matrix(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_matrix({"test": ["value"]})
+        result = my_test_workflow.matrix({"test": ["value"]})
         assert "test" in result, "Expected 'test' in matrix"
 
     def test_steps_core_setup(self, my_test_workflow: type[Workflow]) -> None:

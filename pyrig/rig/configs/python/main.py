@@ -60,7 +60,7 @@ class MainConfigFile(CopyModuleConfigFile):
         self.__class__.delete_root_main()
 
     @classmethod
-    def get_src_module(cls) -> ModuleType:
+    def src_module(cls) -> ModuleType:
         """Get the source module to copy.
 
         Returns:

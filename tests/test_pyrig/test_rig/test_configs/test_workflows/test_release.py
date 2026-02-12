@@ -18,27 +18,25 @@ def my_test_release_workflow(
 class TestReleaseWorkflow:
     """Test class."""
 
-    def test_get_workflow_triggers(
+    def test_workflow_triggers(
         self, my_test_release_workflow: type[ReleaseWorkflow]
     ) -> None:
         """Test method."""
-        result = my_test_release_workflow.get_workflow_triggers()
+        result = my_test_release_workflow.workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "pull_request" not in result
 
-    def test_get_permissions(
-        self, my_test_release_workflow: type[ReleaseWorkflow]
-    ) -> None:
+    def test_permissions(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
         """Test method."""
-        result = my_test_release_workflow.get_permissions()
+        result = my_test_release_workflow.permissions()
         assert "contents" in result, "Expected 'contents' in permissions"
         assert result["contents"] == "write", "Expected 'contents' to be 'write'"
         assert "actions" in result, "Expected 'actions' in permissions"
         assert result["actions"] == "read", "Expected 'actions' to be 'read'"
 
-    def test_get_jobs(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
+    def test_jobs(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
         """Test method."""
-        result = my_test_release_workflow.get_jobs()
+        result = my_test_release_workflow.jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_release(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:

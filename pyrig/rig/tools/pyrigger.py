@@ -80,4 +80,4 @@ class Pyrigger(Tool):
             Args for 'pyrig <cmd_name>'.
         """
         cmd_name = get_project_name_from_pkg_name(cmd.__name__)  # ty:ignore[unresolved-attribute]
-        return cls.build_args(cmd_name, *args)
+        return cls.args(cmd_name, *args)

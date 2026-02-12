@@ -77,20 +77,20 @@ class HealthCheckWorkflow(Workflow):
     BASE_CRON_HOUR = 0
 
     @classmethod
-    def get_workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers.
 
         Returns:
             Triggers for pull requests, pushes, and scheduled runs.
         """
-        triggers = super().get_workflow_triggers()
+        triggers = super().workflow_triggers()
         triggers.update(cls.on_pull_request())
         triggers.update(cls.on_push())
-        triggers.update(cls.on_schedule(cron=cls.get_staggered_cron()))
+        triggers.update(cls.on_schedule(cron=cls.staggered_cron()))
         return triggers
 
     @classmethod
-    def get_staggered_cron(cls) -> str:
+    def staggered_cron(cls) -> str:
         """Get a staggered cron schedule based on dependency depth.
 
         Packages with more dependencies run later to avoid conflicts
@@ -99,7 +99,7 @@ class HealthCheckWorkflow(Workflow):
         Returns:
             Cron expression with hour offset based on dependency depth.
         """
-        offset = cls.get_dependency_offset()
+        offset = cls.dependency_offset()
         base_time = datetime.now(tz=UTC).replace(
             hour=cls.BASE_CRON_HOUR, minute=0, second=0, microsecond=0
         )
@@ -107,18 +107,18 @@ class HealthCheckWorkflow(Workflow):
         return f"0 {scheduled_time.hour} * * *"
 
     @classmethod
-    def get_dependency_offset(cls) -> int:
+    def dependency_offset(cls) -> int:
         """Calculate hour offset based on dependency depth to pyrig.
 
         Returns:
             Number of hours to offset from base cron hour.
         """
         graph = DependencyGraph.cached()
-        src_pkg = import_module(PyprojectConfigFile.L.get_package_name())
+        src_pkg = import_module(PyprojectConfigFile.L.package_name())
         return graph.shortest_path_length(src_pkg.__name__, pyrig.__name__)
 
     @classmethod
-    def get_jobs(cls) -> dict[str, Any]:
+    def jobs(cls) -> dict[str, Any]:
         """Get the workflow jobs.
 
         Returns:
@@ -141,7 +141,7 @@ class HealthCheckWorkflow(Workflow):
             cls.job_matrix_health_checks
         )
         health_checks_job_id = cls.make_id_from_func(cls.job_health_checks)
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_health_check,
             needs=[matrix_health_checks_job_id, health_checks_job_id],
             steps=cls.steps_aggregate_jobs(),
@@ -154,7 +154,7 @@ class HealthCheckWorkflow(Workflow):
         Returns:
             Job configuration for matrix testing.
         """
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_matrix_health_checks,
             strategy=cls.strategy_matrix_os_and_python_version(),
             runs_on=cls.insert_matrix_os(),
@@ -170,7 +170,7 @@ class HealthCheckWorkflow(Workflow):
         Returns:
             Job configuration for health checks.
         """
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_health_checks,
             steps=cls.steps_health_checks(),
         )

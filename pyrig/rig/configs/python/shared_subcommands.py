@@ -46,7 +46,7 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     """
 
     @classmethod
-    def get_src_module(cls) -> ModuleType:
+    def src_module(cls) -> ModuleType:
         """Get the source module to copy docstring from.
 
         Returns:

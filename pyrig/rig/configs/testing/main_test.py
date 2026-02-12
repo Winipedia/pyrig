@@ -53,14 +53,10 @@ class MainTestConfigFile(PythonPackageConfigFile):
         Note:
             Converts pyrig.main test path to project-specific test path.
         """
-        test_obj_importpath = MirrorTestConfigFile.L.get_test_obj_importpath_from_obj(
-            main
-        )
+        test_obj_importpath = MirrorTestConfigFile.L.test_obj_importpath_from_obj(main)
         # this is now tests.test_pyrig.test_main
-        test_module_prefix = MirrorTestConfigFile.L.get_test_module_prefix()
-        test_package_name = (
-            test_module_prefix + PyprojectConfigFile.L.get_package_name()
-        )
+        test_module_prefix = MirrorTestConfigFile.L.test_module_prefix()
+        test_package_name = test_module_prefix + PyprojectConfigFile.L.package_name()
         test_pyrig_name = test_module_prefix + pyrig.__name__
 
         test_obj_importpath = test_obj_importpath.replace(

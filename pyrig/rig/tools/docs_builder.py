@@ -5,7 +5,7 @@ MkDocs is a static site generator for project documentation.
 
 Example:
     >>> from pyrig.rig.tools.docs_builder import DocsBuilder
-    >>> DocsBuilder.L.get_build_args().run()
+    >>> DocsBuilder.L.build_args().run()
 """
 
 from pathlib import Path
@@ -25,7 +25,7 @@ class DocsBuilder(Tool):
         - Building: Build static documentation site
 
     Example:
-        >>> DocsBuilder.L.get_build_args().run()
+        >>> DocsBuilder.L.build_args().run()
     """
 
     @classmethod
@@ -68,7 +68,7 @@ class DocsBuilder(Tool):
         ]
 
     @classmethod
-    def get_docs_dir(cls) -> Path:
+    def docs_dir(cls) -> Path:
         """Get the documentation directory.
 
         Returns:
@@ -77,7 +77,7 @@ class DocsBuilder(Tool):
         return Path("docs")
 
     @classmethod
-    def get_build_args(cls, *args: str) -> Args:
+    def build_args(cls, *args: str) -> Args:
         """Construct mkdocs build arguments.
 
         Args:
@@ -86,10 +86,10 @@ class DocsBuilder(Tool):
         Returns:
             Args for 'mkdocs build'.
         """
-        return cls.build_args("build", *args)
+        return cls.args("build", *args)
 
     @classmethod
-    def get_documentation_url(cls) -> str:
+    def documentation_url(cls) -> str:
         """Construct GitHub Pages URL.
 
         Returns:
@@ -105,13 +105,13 @@ class DocsBuilder(Tool):
         return f"https://{owner}.github.io/{repo}"
 
     @classmethod
-    def get_documentation_badge(cls) -> str:
+    def documentation_badge(cls) -> str:
         """Returns the badge for a markdown file.
 
         Shows github pages for github.
         """
         return make_linked_badge_markdown(
             badge_url="https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white",
-            link_url=cls.get_documentation_url(),
+            link_url=cls.documentation_url(),
             alt_text="Documentation",
         )

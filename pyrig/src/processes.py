@@ -102,7 +102,7 @@ class Args(tuple[str, ...]):
 
     Tuple subclass representing a complete command ready for execution.
     Returned by all Tool.get_*_args methods (e.g., PackageManager.get_sync_args,
-    Linter.get_check_args) to provide a consistent interface for building, inspecting,
+    Linter.check_args) to provide a consistent interface for building, inspecting,
     and executing subprocess commands.
 
     The class enables a fluent API pattern where commands can be built incrementally

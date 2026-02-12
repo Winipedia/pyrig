@@ -36,7 +36,7 @@ docstrings.
 from pyrig.rig.tools.linter import Linter
 
 # Get command arguments
-args = Linter.L.get_check_args()
+args = Linter.L.check_args()
 print(args)  # ruff check
 
 # Execute

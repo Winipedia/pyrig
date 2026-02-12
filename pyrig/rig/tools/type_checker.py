@@ -5,7 +5,7 @@ Ty is Astral's extremely fast Python type checker.
 
 Example:
     >>> from pyrig.rig.tools.type_checker import TypeChecker
-    >>> TypeChecker.L.get_check_args().run()
+    >>> TypeChecker.L.check_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -21,8 +21,8 @@ class TypeChecker(Tool):
         - Type checking: Verify type annotations and correctness
 
     Example:
-        >>> TypeChecker.L.get_check_args().run()
-        >>> TypeChecker.L.get_check_args("src/").run()
+        >>> TypeChecker.L.check_args().run()
+        >>> TypeChecker.L.check_args("src/").run()
     """
 
     @classmethod
@@ -51,7 +51,7 @@ class TypeChecker(Tool):
         )
 
     @classmethod
-    def get_check_args(cls, *args: str) -> Args:
+    def check_args(cls, *args: str) -> Args:
         """Construct ty check arguments.
 
         Args:
@@ -60,4 +60,4 @@ class TypeChecker(Tool):
         Returns:
             Args for 'ty check'.
         """
-        return cls.build_args("check", *args)
+        return cls.args("check", *args)

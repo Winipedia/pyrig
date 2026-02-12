@@ -523,14 +523,14 @@ from pyrig.rig.configs.base.workflow import Workflow
 
 class MyWorkflow(Workflow):
     @classmethod
-    def get_workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(cls) -> dict[str, Any]:
         """Define when the workflow runs."""
-        triggers = super().get_workflow_triggers()
+        triggers = super().workflow_triggers()
         triggers.update(cls.on_push())  # Trigger on push
         return triggers
 
     @classmethod
-    def get_jobs(cls) -> dict[str, Any]:
+    def jobs(cls) -> dict[str, Any]:
         """Define the workflow jobs."""
         return {
             "my-job": {
@@ -561,7 +561,7 @@ from pyrig import main
 
 class MainConfigFile(CopyModuleConfigFile):
     @classmethod
-    def get_src_module(cls) -> ModuleType:
+    def src_module(cls) -> ModuleType:
         return main
 ```
 
@@ -580,7 +580,7 @@ from pyrig.rig.cli import shared_subcommands
 
 class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     @classmethod
-    def get_src_module(cls) -> ModuleType:
+    def src_module(cls) -> ModuleType:
         return shared_subcommands
 ```
 
@@ -597,7 +597,7 @@ from pyrig.rig import configs
 
 class ConfigsInitConfigFile(InitConfigFile):
     @classmethod
-    def get_src_module(cls) -> ModuleType:
+    def src_module(cls) -> ModuleType:
         return configs
 ```
 
@@ -615,7 +615,7 @@ import myapp.core
 
 class CoreMirrorTest(MirrorTestConfigFile):
     @classmethod
-    def get_src_module(cls) -> ModuleType:
+    def src_module(cls) -> ModuleType:
         return myapp.core
 ```
 
@@ -636,7 +636,7 @@ from pyrig.rig.tests.mirror_test import MirrorTestConfigFile as BaseMirrorTest
 
 class MirrorTestConfigFile(BaseMirrorTest):
     @classmethod
-    def get_test_func_skeleton(cls, test_func_name: str) -> str:
+    def test_func_skeleton(cls, test_func_name: str) -> str:
         return f'''
 def {test_func_name}() -> None:
     """Test function for {test_func_name.removeprefix("test_")}."""

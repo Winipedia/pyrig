@@ -45,7 +45,7 @@ class ApiConfigFile(MarkdownConfigFile):
         Returns:
             Path: docs directory.
         """
-        return DocsBuilder.L.get_docs_dir()
+        return DocsBuilder.L.docs_dir()
 
     @classmethod
     def lines(cls) -> list[str]:
@@ -57,5 +57,5 @@ class ApiConfigFile(MarkdownConfigFile):
         Note:
             Reads project name from pyproject.toml.
         """
-        project_name = PyprojectConfigFile.L.get_project_name()
+        project_name = PyprojectConfigFile.L.project_name()
         return ["# API Reference", "", f"::: {project_name}"]

@@ -7,7 +7,7 @@ from pyrig.rig.configs.python.subcommands import SubcommandsConfigFile
 class TestSubcommandsConfigFile:
     """Test class."""
 
-    def test_get_src_module(self) -> None:
+    def test_src_module(self) -> None:
         """Test method."""
-        module = SubcommandsConfigFile.get_src_module()
+        module = SubcommandsConfigFile.src_module()
         assert module == subcommands

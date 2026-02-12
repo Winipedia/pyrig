@@ -9,7 +9,7 @@ Example:
     >>>
     >>> class SrcPackageInit(InitConfigFile):
     ...     @classmethod
-    ...     def get_src_module(cls) -> ModuleType:
+    ...     def src_module(cls) -> ModuleType:
     ...         return pyrig.src
     >>>
     >>> SrcPackageInit()  # Creates myproject/src/__init__.py
@@ -29,7 +29,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
     Filename is always "__init__", parent path derived from source module name.
 
     Subclasses must implement:
-        - `get_src_module`: Return the source package to copy docstring from
+        - `src_module`: Return the source package to copy docstring from
 
     See Also:
         pyrig.rig.configs.base.copy_module_docstr: Parent class
@@ -54,4 +54,4 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         """
         path = super().parent_path()
         # this path will be parent of the init file
-        return path / get_isolated_obj_name(cls.get_src_module())
+        return path / get_isolated_obj_name(cls.src_module())
