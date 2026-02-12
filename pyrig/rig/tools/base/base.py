@@ -16,7 +16,7 @@ Benefits:
 
 Example:
     >>> from pyrig.rig.tools.package_manager import PackageManager
-    >>> args = PackageManager.L.get_install_dependencies_args()
+    >>> args = PackageManager.L.install_dependencies_args()
     >>> print(args)
     uv sync
     >>> args.run()
@@ -67,9 +67,9 @@ class Tool(Subclass):
         ...     def name(cls) -> str:
         ...         return "mytool"
         ...     @classmethod
-        ...     def get_build_args(cls, *args: str) -> Args:
-        ...         return cls.build_args("build", *args)
-        >>> MyTool.get_build_args("--verbose")
+        ...     def build_args(cls, *args: str) -> Args:
+        ...         return cls.args("build", *args)
+        >>> MyTool.build_args("--verbose")
         Args(('mytool', 'build', '--verbose'))
     """
 
@@ -146,7 +146,7 @@ class Tool(Subclass):
         return [cls.name()]
 
     @classmethod
-    def build_args(cls, *args: str) -> Args:
+    def args(cls, *args: str) -> Args:
         """Construct command arguments with tool name prepended.
 
         Args:

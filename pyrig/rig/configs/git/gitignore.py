@@ -88,7 +88,7 @@ class GitIgnoreConfigFile(StringConfigFile):
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
         needed = [
-            *cls.get_github_python_gitignore_as_list(),
+            *cls.github_python_gitignore_lines(),
             "",
             f"# {pyrig.__name__} stuff",
             DotScratchConfigFile.L.path().as_posix(),
@@ -110,7 +110,7 @@ class GitIgnoreConfigFile(StringConfigFile):
     @classmethod
     @cache
     @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
-    def get_github_python_gitignore_as_str(cls) -> str:
+    def github_python_gitignore(cls) -> str:
         """Fetch GitHub's standard Python gitignore patterns.
 
         Returns:
@@ -129,7 +129,7 @@ class GitIgnoreConfigFile(StringConfigFile):
         return res.text
 
     @classmethod
-    def get_github_python_gitignore_as_list(cls) -> list[str]:
+    def github_python_gitignore_lines(cls) -> list[str]:
         """Fetch GitHub's standard Python gitignore patterns as a list.
 
         Returns:
@@ -139,5 +139,5 @@ class GitIgnoreConfigFile(StringConfigFile):
             requests.HTTPError: If HTTP request fails.
             RuntimeError: If fetch fails and no fallback exists.
         """
-        gitignore_str = cls.get_github_python_gitignore_as_str()
+        gitignore_str = cls.github_python_gitignore()
         return gitignore_str.splitlines()

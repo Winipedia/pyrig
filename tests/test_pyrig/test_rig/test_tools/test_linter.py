@@ -23,17 +23,17 @@ class TestLinter:
         result = Linter.L.name()
         assert result == "ruff"
 
-    def test_get_check_args(self) -> None:
+    def test_check_args(self) -> None:
         """Test method."""
-        result = Linter.L.get_check_args()
+        result = Linter.L.check_args()
         assert result == ("ruff", "check")
 
-    def test_get_check_fix_args(self) -> None:
+    def test_check_fix_args(self) -> None:
         """Test method."""
-        result = Linter.L.get_check_fix_args()
+        result = Linter.L.check_fix_args()
         assert result == ("ruff", "check", "--fix")
 
-    def test_get_format_args(self) -> None:
+    def test_format_args(self) -> None:
         """Test method."""
-        result = Linter.L.get_format_args()
+        result = Linter.L.format_args()
         assert result == ("ruff", "format")

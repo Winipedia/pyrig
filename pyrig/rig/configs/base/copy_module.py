@@ -10,7 +10,7 @@ Example:
     >>>
     >>> class StringModuleCopy(CopyModuleConfigFile):
     ...     @classmethod
-    ...     def get_src_module(cls) -> ModuleType:
+    ...     def src_module(cls) -> ModuleType:
     ...         return pyrig.src.string_
     >>>
     >>> StringModuleCopy()  # Copies pyrig/src/string.py -> myproject/src/string.py
@@ -37,7 +37,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     (pyrig.X -> target_project.X).
 
     Subclasses must implement:
-        - `get_src_module`: Return the source module to copy
+        - `src_module`: Return the source module to copy
 
     See Also:
         pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
@@ -47,7 +47,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
 
     @classmethod
     @abstractmethod
-    def get_src_module(cls) -> ModuleType:
+    def src_module(cls) -> ModuleType:
         """Return the source module to copy.
 
         Returns:
@@ -63,9 +63,9 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Target directory path for copied module.
         """
-        src_module = cls.get_src_module()
+        src_module = cls.src_module()
         new_module_name = get_module_name_replacing_start_module(
-            src_module, PyprojectConfigFile.L.get_package_name()
+            src_module, PyprojectConfigFile.L.package_name()
         )
         new_module_path = ModulePath.module_name_to_relative_file_path(new_module_name)
         return new_module_path.parent
@@ -77,7 +77,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Full source code of the module as list of lines.
         """
-        src_module = cls.get_src_module()
+        src_module = cls.src_module()
         return [*get_module_content_as_str(src_module).splitlines()]
 
     @classmethod
@@ -87,5 +87,5 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Module name without package prefix or extension.
         """
-        src_module = cls.get_src_module()
+        src_module = cls.src_module()
         return get_isolated_obj_name(src_module)

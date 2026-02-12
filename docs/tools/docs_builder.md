@@ -15,8 +15,8 @@ from pyrig.src.processes import Args
 
 class DocsBuilder(BaseDB):
     @classmethod
-    def get_build_args(cls, *args: str) -> Args:
-        return super().get_build_args("--strict", *args)
+    def build_args(cls, *args: str) -> Args:
+        return super().build_args("--strict", *args)
 ```
 
 ## Related

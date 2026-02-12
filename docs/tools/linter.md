@@ -15,8 +15,8 @@ from pyrig.src.processes import Args
 
 class Linter(BaseLinter):
     @classmethod
-    def get_check_args(cls, *args: str) -> Args:
-        return super().get_check_args("--show-source", *args)
+    def check_args(cls, *args: str) -> Args:
+        return super().check_args("--show-source", *args)
 ```
 
 ## Related

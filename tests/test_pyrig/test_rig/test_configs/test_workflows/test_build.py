@@ -32,18 +32,18 @@ class TestBuildWorkflow:
         result = my_test_build_workflow.steps_build_container_image()
         assert len(result) > 0, f"Expected some steps, got {result}"
 
-    def test_get_workflow_triggers(
+    def test_workflow_triggers(
         self, my_test_build_workflow: type[BuildWorkflow]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow.get_workflow_triggers()
+        result = my_test_build_workflow.workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
         assert "pull_request" not in result
 
-    def test_get_jobs(self, my_test_build_workflow: type[BuildWorkflow]) -> None:
+    def test_jobs(self, my_test_build_workflow: type[BuildWorkflow]) -> None:
         """Test method."""
-        result = my_test_build_workflow.get_jobs()
+        result = my_test_build_workflow.jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_build_artifacts(

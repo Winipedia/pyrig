@@ -28,12 +28,12 @@ class TestSecurityConfigFile:
         result = SecurityConfigFile.is_correct()
         assert result
 
-    def test_get_security_template_with_contact_method(self) -> None:
+    def test_template_with_contact_method(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.get_security_template_with_contact_method()
+        result = SecurityConfigFile.template_with_contact_method()
         assert len(result) > 0
 
-    def test_get_contact_method(self) -> None:
+    def test_contact_method(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.get_contact_method()
+        result = SecurityConfigFile.contact_method()
         assert len(result) > 0

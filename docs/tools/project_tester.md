@@ -12,9 +12,9 @@ from pyrig.src.processes import Args
 
 class ProjectTester(BasePT):
     @classmethod
-    def get_run_tests_in_ci_args(cls, *args: str) -> Args:
+    def run_tests_in_ci_args(cls, *args: str) -> Args:
         # Add parallel execution
-        return super().get_run_tests_in_ci_args("-n", "auto", *args)
+        return super().run_tests_in_ci_args("-n", "auto", *args)
 ```
 
 ## Related

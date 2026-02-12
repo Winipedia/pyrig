@@ -62,8 +62,8 @@ The prek config file uses `.L` to reference tools:
 ```python
 # pyrig/rig/configs/git/pre_commit.py
 hooks = [
-    cls.get_hook("lint-code", Linter.L.get_check_fix_args()),
-    cls.get_hook("check-types", TypeChecker.L.get_check_args()),
+    cls.hook("lint-code", Linter.L.check_fix_args()),
+    cls.hook("check-types", TypeChecker.L.check_args()),
     # ...
 ]
 ```
@@ -145,7 +145,7 @@ The workflow uses a hardcoded GitHub Action for Podman:
 ```python
 # pyrig/rig/configs/base/workflow.py
 def step_install_container_engine(cls, ...):
-    return cls.get_step(
+    return cls.step(
         uses="redhat-actions/podman-install@main",  # Hardcoded!
         ...
     )
@@ -161,7 +161,7 @@ from pyrig.rig.configs.workflows.build import BuildWorkflow as BaseBuildWorkflow
 class BuildWorkflow(BaseBuildWorkflow):
     @classmethod
     def step_install_container_engine(cls, *, step=None):
-        return cls.get_step(
+        return cls.step(
             step_func=cls.step_install_container_engine,
             uses="docker/setup-buildx-action@v3",
             step=step,
@@ -179,9 +179,9 @@ from pyrig.src.processes import Args
 
 class Linter(BaseLinter):
     @classmethod
-    def get_check_args(cls, *args: str) -> Args:
+    def check_args(cls, *args: str) -> Args:
         # Always include --show-source
-        return super().get_check_args("--show-source", *args)
+        return super().check_args("--show-source", *args)
 ```
 
 ### Replacing a Tool (Change the CLI)

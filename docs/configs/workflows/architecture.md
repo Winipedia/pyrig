@@ -83,8 +83,8 @@ Instead of writing YAML manually, you define workflows in Python:
 ```python
 class MyWorkflow(Workflow):
     @classmethod
-    def get_jobs(cls) -> dict[str, Any]:
-        return cls.get_job(
+    def jobs(cls) -> dict[str, Any]:
+        return cls.job(
             job_func=cls.my_job,
             runs_on=cls.UBUNTU_LATEST,
             steps=[
@@ -230,7 +230,7 @@ graph LR
 
 ## Creating Custom Workflows
 
-To create your own workflow, subclass `Workflow` and implement `get_jobs()`:
+To create your own workflow, subclass `Workflow` and implement `jobs()`:
 
 ```python
 # myapp/rig/configs/workflows/custom.py
@@ -241,14 +241,14 @@ class CustomWorkflow(Workflow):
     """Custom workflow that runs on manual trigger."""
 
     @classmethod
-    def get_workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(cls) -> dict[str, Any]:
         """Trigger manually via workflow_dispatch."""
-        triggers = super().get_workflow_triggers()
+        triggers = super().workflow_triggers()
         triggers.update(cls.on_workflow_dispatch())
         return triggers
 
     @classmethod
-    def get_jobs(cls) -> dict[str, Any]:
+    def jobs(cls) -> dict[str, Any]:
         """Define the workflow jobs."""
         jobs: dict[str, Any] = {}
         jobs.update(cls.job_custom_task())
@@ -257,7 +257,7 @@ class CustomWorkflow(Workflow):
     @classmethod
     def job_custom_task(cls) -> dict[str, Any]:
         """Custom job that runs a script."""
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_custom_task,
             runs_on=cls.UBUNTU_LATEST,
             steps=[

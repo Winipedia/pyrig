@@ -80,7 +80,7 @@ Using specialized base classes::
         '''Copies my_module to the target project.'''
 
         @classmethod
-        def get_src_module(cls) -> ModuleType:
+        def src_module(cls) -> ModuleType:
             return my_module
 
 See Also:

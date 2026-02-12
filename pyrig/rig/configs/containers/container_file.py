@@ -89,10 +89,10 @@ class ContainerfileConfigFile(StringConfigFile):
         Note:
             Reads from pyproject.toml and may make API calls for Python version.
         """
-        return cls.get_layers()
+        return cls.layers()
 
     @classmethod
-    def get_layers(cls) -> list[str]:
+    def layers(cls) -> list[str]:
         """Get Containerfile build instructions.
 
         Generates optimized layer sequence: base image, workdir, uv install,
@@ -105,13 +105,11 @@ class ContainerfileConfigFile(StringConfigFile):
         Note:
             Reads from pyproject.toml and may make API calls for Python version.
         """
-        latest_python_version = (
-            PyprojectConfigFile.L.get_latest_possible_python_version()
-        )
-        project_name = PyprojectConfigFile.L.get_project_name()
-        package_name = PyprojectConfigFile.L.get_package_name()
+        latest_python_version = PyprojectConfigFile.L.latest_possible_python_version()
+        project_name = PyprojectConfigFile.L.project_name()
+        package_name = PyprojectConfigFile.L.package_name()
         app_user_name = "appuser"
-        entrypoint_args = list(PackageManager.L.get_run_args(project_name))
+        entrypoint_args = list(PackageManager.L.run_args(project_name))
         default_cmd_args = [main.__name__]
         return [
             f"FROM python:{latest_python_version}-slim",

@@ -181,9 +181,9 @@ class PyprojectConfigFile(BasePyprojectCF):
     """Base pyproject with monitoring and logging."""
 
     @classmethod
-    def get_dependencies(cls) -> list[str]:
+    def dependencies(cls) -> list[str]:
         """Add shared runtime dependencies."""
-        deps = super().get_dependencies()
+        deps = super().dependencies()
         return [
             *deps,
             "python-json-logger>=2.0.0",  # JSON logging
@@ -271,9 +271,9 @@ In `service-base`, add a security requirement:
 
 ```python
 @classmethod
-def get_dependencies(cls) -> list[str]:
+def dependencies(cls) -> list[str]:
     """Add shared runtime dependencies."""
-    deps = super().get_dependencies()
+    deps = super().dependencies()
     return [
         *deps,
         "python-json-logger>=2.0.0",

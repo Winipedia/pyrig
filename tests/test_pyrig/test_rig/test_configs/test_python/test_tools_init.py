@@ -11,6 +11,6 @@ class TestToolsInitConfigFile:
         """Test method."""
         assert ToolsInitConfigFile.priority() > 0
 
-    def test_get_src_module(self) -> None:
+    def test_src_module(self) -> None:
         """Test method."""
-        assert ToolsInitConfigFile.get_src_module() is tools
+        assert ToolsInitConfigFile.src_module() is tools

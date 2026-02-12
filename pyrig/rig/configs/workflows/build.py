@@ -63,23 +63,23 @@ class BuildWorkflow(Workflow):
     """
 
     @classmethod
-    def get_workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers.
 
         Returns:
             Trigger for health check completion on main.
         """
-        triggers = super().get_workflow_triggers()
+        triggers = super().workflow_triggers()
         triggers.update(
             cls.on_workflow_run(
-                workflows=[HealthCheckWorkflow.get_workflow_name()],
+                workflows=[HealthCheckWorkflow.workflow_name()],
                 branches=[VersionController.L.get_default_branch()],
             )
         )
         return triggers
 
     @classmethod
-    def get_jobs(cls) -> dict[str, Any]:
+    def jobs(cls) -> dict[str, Any]:
         """Get the workflow jobs.
 
         Returns:
@@ -97,7 +97,7 @@ class BuildWorkflow(Workflow):
         Returns:
             Job configuration for building artifacts.
         """
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_build_artifacts,
             if_condition=cls.combined_if(
                 cls.if_workflow_run_is_success(),
@@ -116,7 +116,7 @@ class BuildWorkflow(Workflow):
         Returns:
             Job configuration for building container image.
         """
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_build_container_image,
             if_condition=cls.combined_if(
                 cls.if_workflow_run_is_success(),

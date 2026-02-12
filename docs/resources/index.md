@@ -11,7 +11,7 @@ executables.
 Learn how to manage and access static resources:
 
 - Resource package structure
-- Accessing resources with `get_resource_path`
+- Accessing resources with `resource_path`
 - PyInstaller compatibility
 - Accessing resources across packages
 - Common use cases

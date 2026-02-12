@@ -38,14 +38,14 @@ class TestGitIgnoreConfigFile:
             lines = my_test_gitignore_config_file.lines()
             assert "__pycache__/" in lines
 
-    def test_get_github_python_gitignore_as_str(self) -> None:
+    def test_github_python_gitignore(self) -> None:
         """Test method."""
-        github_gitignore = GitIgnoreConfigFile.get_github_python_gitignore_as_str()
+        github_gitignore = GitIgnoreConfigFile.github_python_gitignore()
         assert "__pycache__/" in github_gitignore
 
-    def test_get_github_python_gitignore_as_list(self) -> None:
+    def test_github_python_gitignore_lines(self) -> None:
         """Test method."""
-        github_gitignore = GitIgnoreConfigFile.get_github_python_gitignore_as_list()
+        github_gitignore = GitIgnoreConfigFile.github_python_gitignore_lines()
         assert "__pycache__/" in github_gitignore
 
     def test_filename(

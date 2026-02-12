@@ -11,7 +11,7 @@ class TestConfigsInitConfigFile:
         """Test method."""
         assert ConfigsInitConfigFile.priority() > 0
 
-    def test_get_src_module(self) -> None:
+    def test_src_module(self) -> None:
         """Test method."""
-        module = ConfigsInitConfigFile.get_src_module()
+        module = ConfigsInitConfigFile.src_module()
         assert module == configs

@@ -15,8 +15,8 @@ from pyrig.src.processes import Args
 
 class PackageManager(BasePM):
     @classmethod
-    def get_install_dependencies_args(cls, *args: str) -> Args:
-        return super().get_install_dependencies_args("--frozen", *args)
+    def install_dependencies_args(cls, *args: str) -> Args:
+        return super().install_dependencies_args("--frozen", *args)
 ```
 
 ## Replacing uv

@@ -18,12 +18,12 @@ Examples:
     Parse and extract bounds::
 
         >>> vc = VersionConstraint(">=3.8,<3.12")
-        >>> vc.get_lower_inclusive()
+        >>> vc.find_lower_inclusive()
         <Version('3.8')>
 
     Generate version range::
 
-        >>> vc.get_version_range(level="minor")
+        >>> vc.version_range(level="minor")
         [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
 
 See Also:
@@ -100,12 +100,12 @@ class VersionConstraint:
         Parse and extract bounds::
 
             >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.get_lower_inclusive()
+            >>> vc.find_lower_inclusive()
             <Version('3.8')>
 
         Generate version range::
 
-            >>> vc.get_version_range(level="minor")
+            >>> vc.version_range(level="minor")
             [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
 
     Note:
@@ -171,7 +171,7 @@ class VersionConstraint:
             max(self.lowers_inclusive) if self.lowers_inclusive else None
         )
 
-    def get_lower_inclusive(
+    def find_lower_inclusive(
         self, default: str | Version | None = None
     ) -> Version | None:
         """Get the inclusive lower bound of the version constraint.
@@ -189,10 +189,10 @@ class VersionConstraint:
 
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.get_lower_inclusive()
+            >>> vc.find_lower_inclusive()
             <Version('3.8')>
             >>> vc = VersionConstraint(">3.7.5,<3.12")
-            >>> vc.get_lower_inclusive()  # >3.7.5 becomes >=3.7.6
+            >>> vc.find_lower_inclusive()  # >3.7.5 becomes >=3.7.6
             <Version('3.7.6')>
 
         Note:
@@ -204,7 +204,7 @@ class VersionConstraint:
 
         return self.lower_inclusive
 
-    def get_upper_exclusive(
+    def find_upper_exclusive(
         self, default: str | Version | None = None
     ) -> Version | None:
         """Get the exclusive upper bound of the version constraint.
@@ -222,10 +222,10 @@ class VersionConstraint:
 
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.get_upper_exclusive()
+            >>> vc.find_upper_exclusive()
             <Version('3.12')>
             >>> vc = VersionConstraint(">=3.8,<=3.11.5")
-            >>> vc.get_upper_exclusive()  # <=3.11.5 becomes <3.11.6
+            >>> vc.find_upper_exclusive()  # <=3.11.5 becomes <3.11.6
             <Version('3.11.6')>
 
         Note:
@@ -237,9 +237,7 @@ class VersionConstraint:
 
         return self.upper_exclusive
 
-    def get_upper_inclusive(
-        self, default: str | Version | None = None
-    ) -> Version | None:
+    def upper_inclusive(self, default: str | Version | None = None) -> Version | None:
         """Get the inclusive upper bound of the version constraint.
 
         Returns effective upper bound in inclusive form (<=). Exclusive bounds (<)
@@ -257,10 +255,10 @@ class VersionConstraint:
 
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12.5")
-            >>> vc.get_upper_inclusive()  # <3.12.5 becomes <=3.12.4
+            >>> vc.upper_inclusive()  # <3.12.5 becomes <=3.12.4
             <Version('3.12.4')>
             >>> vc = VersionConstraint(">=3.8,<3.12.0")
-            >>> vc.get_upper_inclusive()  # <3.12.0 becomes <=3.11
+            >>> vc.upper_inclusive()  # <3.12.0 becomes <=3.11
             <Version('3.11')>
 
         Note:
@@ -270,19 +268,22 @@ class VersionConstraint:
         if default:
             default = Version(str(default))
             default = Version(f"{default.major}.{default.minor}.{default.micro + 1}")
-        upper_exclusive = self.get_upper_exclusive(default)
+        upper_exclusive = self.find_upper_exclusive(default)
         if upper_exclusive is None:
             return None
 
-        if upper_exclusive.micro != 0:
-            return Version(
-                f"{upper_exclusive.major}.{upper_exclusive.minor}.{upper_exclusive.micro - 1}"  # noqa: E501
-            )
-        if upper_exclusive.minor != 0:
-            return Version(f"{upper_exclusive.major}.{upper_exclusive.minor - 1}")
-        return Version(f"{upper_exclusive.major - 1}")
+        major, minor, micro = (
+            upper_exclusive.major,
+            upper_exclusive.minor,
+            upper_exclusive.micro,
+        )
+        if micro != 0:
+            return Version(f"{major}.{minor}.{micro - 1}")
+        if minor != 0:
+            return Version(f"{major}.{minor - 1}")
+        return Version(f"{major - 1}")
 
-    def get_version_range(
+    def version_range(
         self,
         level: Literal["major", "minor", "micro"] = "major",
         lower_default: str | Version | None = None,
@@ -316,18 +317,18 @@ class VersionConstraint:
 
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.get_version_range(level="minor")
+            >>> vc.version_range(level="minor")
             [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
             >>> vc = VersionConstraint(">=3.10.1,<=3.10.3")
-            >>> vc.get_version_range(level="micro")
+            >>> vc.version_range(level="micro")
             [<Version('3.10.1')>, <Version('3.10.2')>, <Version('3.10.3')>]
 
         Note:
             Generates all version combinations between bounds, then filters using
             constraint's contains() method. Handles complex constraints properly.
         """
-        lower = self.get_lower_inclusive(lower_default)
-        upper = self.get_upper_inclusive(upper_default)
+        lower = self.find_lower_inclusive(lower_default)
+        upper = self.upper_inclusive(upper_default)
 
         if lower is None or upper is None:
             msg = "No lower or upper bound. Please specify default values."

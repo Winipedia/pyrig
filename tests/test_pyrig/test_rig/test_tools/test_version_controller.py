@@ -98,24 +98,24 @@ class TestVersionController:
         result = VersionController.L.get_init_args()
         assert result == ("git", "init")
 
-    def test_get_add_args(self) -> None:
+    def test_add_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_add_args("file.py")
+        result = VersionController.L.add_args("file.py")
         assert result == ("git", "add", "file.py")
 
-    def test_get_add_all_args(self) -> None:
+    def test_add_all_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_add_all_args()
+        result = VersionController.L.add_all_args()
         assert result == ("git", "add", ".")
 
-    def test_get_add_pyproject_toml_args(self) -> None:
+    def test_add_pyproject_toml_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_add_pyproject_toml_args()
+        result = VersionController.L.add_pyproject_toml_args()
         assert result == ("git", "add", "pyproject.toml")
 
-    def test_get_add_pyproject_toml_and_lock_file_args(self) -> None:
+    def test_add_pyproject_toml_and_lock_file_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_add_pyproject_toml_and_lock_file_args()
+        result = VersionController.L.add_pyproject_toml_and_lock_file_args()
         assert result == ("git", "add", "pyproject.toml", "uv.lock")
 
     def test_get_commit_args(self) -> None:

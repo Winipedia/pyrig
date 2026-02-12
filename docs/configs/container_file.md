@@ -64,7 +64,7 @@ created with all required layers:
 
 ### Layer Structure
 
-The Containerfile is built from discrete layers returned by `get_layers()`:
+The Containerfile is built from discrete layers returned by `layers()`:
 
 ```python
 [

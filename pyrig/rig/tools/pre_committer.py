@@ -5,8 +5,8 @@ Enforces code quality standards via linters, formatters, and checks.
 
 Example:
     >>> from pyrig.rig.tools.pre_committer import PreCommitter
-    >>> PreCommitter.L.get_install_args().run()
-    >>> PreCommitter.L.get_run_all_files_args().run()
+    >>> PreCommitter.L.install_args().run()
+    >>> PreCommitter.L.run_all_files_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -24,8 +24,8 @@ class PreCommitter(Tool):
         - Verbosity: Control output detail
 
     Example:
-        >>> PreCommitter.L.get_install_args().run()
-        >>> PreCommitter.L.get_run_all_files_args().run()
+        >>> PreCommitter.L.install_args().run()
+        >>> PreCommitter.L.run_all_files_args().run()
     """
 
     @classmethod
@@ -54,7 +54,7 @@ class PreCommitter(Tool):
         )
 
     @classmethod
-    def get_install_args(cls, *args: str) -> Args:
+    def install_args(cls, *args: str) -> Args:
         """Construct prek install arguments.
 
         Args:
@@ -63,10 +63,10 @@ class PreCommitter(Tool):
         Returns:
             Args for 'prek install'.
         """
-        return cls.build_args("install", *args)
+        return cls.args("install", *args)
 
     @classmethod
-    def get_run_args(cls, *args: str) -> Args:
+    def run_args(cls, *args: str) -> Args:
         """Construct prek run arguments.
 
         Args:
@@ -75,10 +75,10 @@ class PreCommitter(Tool):
         Returns:
             Args for 'prek run'.
         """
-        return cls.build_args("run", *args)
+        return cls.args("run", *args)
 
     @classmethod
-    def get_run_all_files_args(cls, *args: str) -> Args:
+    def run_all_files_args(cls, *args: str) -> Args:
         """Construct prek run arguments for all files.
 
         Args:
@@ -87,4 +87,4 @@ class PreCommitter(Tool):
         Returns:
             Args for 'prek run --all-files'.
         """
-        return cls.get_run_args("--all-files", *args)
+        return cls.run_args("--all-files", *args)

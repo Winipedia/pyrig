@@ -15,8 +15,8 @@ from pyrig.src.processes import Args
 
 class SecurityChecker(BaseSC):
     @classmethod
-    def get_run_with_config_args(cls, *args: str) -> Args:
-        return super().get_run_with_config_args("-q", *args)
+    def run_with_config_args(cls, *args: str) -> Args:
+        return super().run_with_config_args("-q", *args)
 ```
 
 ## Related

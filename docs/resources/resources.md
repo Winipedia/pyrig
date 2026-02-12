@@ -24,17 +24,17 @@ The `resources` package is automatically created by pyrig when you run
 
 ## Accessing Resources
 
-### Using `get_resource_path`
+### Using `resource_path`
 
-The `get_resource_path` function provides cross-platform, environment-agnostic
+The `resource_path` function provides cross-platform, environment-agnostic
 access to resources:
 
 ```python
-from pyrig.src.resource import get_resource_path
+from pyrig.src.resource import resource_path
 import myapp.resources
 
 # Get path to a resource file
-config_path = get_resource_path("config.json", myapp.resources)
+config_path = resource_path("config.json", myapp.resources)
 
 # Use the path like any other Path object
 config_data = config_path.read_text()
@@ -51,12 +51,12 @@ contents if persistence is needed.
 
 ### How It Works
 
-`get_resource_path` uses `importlib.resources.files()` and `as_file()` to
+`resource_path` uses `importlib.resources.files()` and `as_file()` to
 provide a unified interface:
 
 ```mermaid
 graph TD
-    A[get_resource_path called] --> B[importlib.resources.files package / name]
+    A[resource_path called] --> B[importlib.resources.files package / name]
     B --> C[as_file context manager]
     C --> D{Environment?}
     D -->|Development| E[Returns actual file path]
@@ -91,12 +91,12 @@ running in.
 
 ```python
 from PIL import Image
-from pyrig.src.resource import get_resource_path
+from pyrig.src.resource import resource_path
 from myapp import resources
 
 def load_icon() -> Image.Image:
     """Load application icon."""
-    icon_path = get_resource_path("icon.png", resources)
+    icon_path = resource_path("icon.png", resources)
     return Image.open(icon_path)
 ```
 
@@ -104,12 +104,12 @@ def load_icon() -> Image.Image:
 
 ```python
 import pandas as pd
-from pyrig.src.resource import get_resource_path
+from pyrig.src.resource import resource_path
 from myapp.resources import data  # subpackage
 
 def load_csv() -> pd.DataFrame:
     """Load CSV data from resources/data/ subpackage."""
-    csv_path = get_resource_path("users.csv", data)
+    csv_path = resource_path("users.csv", data)
     return pd.read_csv(csv_path)
 ```
 
@@ -117,12 +117,12 @@ def load_csv() -> pd.DataFrame:
 
 ```python
 import json
-from pyrig.src.resource import get_resource_path
+from pyrig.src.resource import resource_path
 from myapp import resources
 
 def load_config() -> dict:
     """Load JSON configuration."""
-    config_path = get_resource_path("config.json", resources)
+    config_path = resource_path("config.json", resources)
     return json.loads(config_path.read_text())
 ```
 
@@ -135,15 +135,15 @@ module:
 ```python
 # Access your own resources
 from myapp import resources as myapp_resources
-icon = get_resource_path("icon.png", myapp_resources)
+icon = resource_path("icon.png", myapp_resources)
 
 # Access dependency resources
 from pkg_a import resources as pkg_a_resources
-template = get_resource_path("template.html", pkg_a_resources)
+template = resource_path("template.html", pkg_a_resources)
 
 # Access pyrig's resources
 from pyrig import resources as pyrig_resources
-gitignore = get_resource_path("GITIGNORE", pyrig_resources)
+gitignore = resource_path("GITIGNORE", pyrig_resources)
 ```
 
 ```mermaid

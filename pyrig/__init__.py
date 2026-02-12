@@ -15,5 +15,5 @@ Subpackages:
         configuration file system (configs), tool wrappers (tools),
         test infrastructure (tests), and development utilities (utils).
     resources: Static resource files (templates, licenses, data files).
-        Accessible via get_resource_path(name, package) from pyrig.src.resource.
+        Accessible via resource_path(name, package) from pyrig.src.resource.
 """

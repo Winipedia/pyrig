@@ -37,7 +37,7 @@ def my_test_init_config_file(
         """Test init config file with tmp_path override."""
 
         @classmethod
-        def get_src_module(cls) -> ModuleType:
+        def src_module(cls) -> ModuleType:
             """Get the source module."""
             return mock_module
 

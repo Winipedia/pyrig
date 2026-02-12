@@ -32,34 +32,34 @@ class TestHealthCheckWorkflow:
         result = HealthCheckWorkflow.steps_health_checks()
         assert len(result) > 0, "Expected steps to be non-empty"
 
-    def test_get_staggered_cron(
+    def test_staggered_cron(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
         """Test method."""
-        result = my_test_health_check_workflow.get_staggered_cron()
+        result = my_test_health_check_workflow.staggered_cron()
         assert len(result) > 0, "Expected cron to be non-empty"
 
-    def test_get_dependency_offset(
+    def test_dependency_offset(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
         """Test method."""
-        result = my_test_health_check_workflow.get_dependency_offset()
+        result = my_test_health_check_workflow.dependency_offset()
         assert result >= 0, "Expected offset to be non-negative"
 
-    def test_get_workflow_triggers(
+    def test_workflow_triggers(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
         """Test method."""
-        result = my_test_health_check_workflow.get_workflow_triggers()
+        result = my_test_health_check_workflow.workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "pull_request" in result, "Expected 'pull_request' in triggers"
         assert "schedule" in result, "Expected 'schedule' in triggers"
 
-    def test_get_jobs(
+    def test_jobs(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
         """Test method."""
-        result = my_test_health_check_workflow.get_jobs()
+        result = my_test_health_check_workflow.jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_matrix_health_checks(

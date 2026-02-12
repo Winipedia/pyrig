@@ -10,22 +10,22 @@ from pyrig.rig.utils.resources import (
     return_resource_content_on_fetch_error,
     return_resource_file_content_on_exceptions,
 )
-from pyrig.src.resource import get_resource_path
+from pyrig.src.resource import resource_path
 
 
 def test_return_resource_file_content_on_exceptions(
     tmp_path: Path, mocker: MockFixture
 ) -> None:
     """Test function."""
-    # mock pyrig.resources.get_resource_path to return tmp_path / "test_resource.txt"
-    resource_path = tmp_path / "test_resource.txt"
+    # mock pyrig.resources.resource_path to return tmp_path / "test_resource.txt"
+    path = tmp_path / "test_resource.txt"
 
     mocker.patch(
-        resources.__name__ + "." + get_resource_path.__name__,
-        return_value=resource_path,
+        resources.__name__ + "." + resource_path.__name__,
+        return_value=path,
     )
     # create resource file
-    resource_path.write_text("Hello World!")
+    path.write_text("Hello World!")
 
     @return_resource_file_content_on_exceptions("test_resource.txt", (ValueError,))
     def test_func() -> str:
@@ -40,14 +40,14 @@ def test_return_resource_content_on_fetch_error(
     tmp_path: Path, mocker: MockFixture
 ) -> None:
     """Test function."""
-    # mock pyrig.resources.get_resource_path to return tmp_path / "test_resource.txt"
-    resource_path = tmp_path / "test_resource.txt"
+    # mock pyrig.resources.resource_path to return tmp_path / "test_resource.txt"
+    path = tmp_path / "test_resource.txt"
     mocker.patch(
-        resources.__name__ + "." + get_resource_path.__name__,
-        return_value=resource_path,
+        resources.__name__ + "." + resource_path.__name__,
+        return_value=path,
     )
     # create resource file
-    resource_path.write_text("Hello World!")
+    path.write_text("Hello World!")
 
     @return_resource_content_on_fetch_error("test_resource.txt")
     def test_func() -> str:

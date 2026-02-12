@@ -5,7 +5,7 @@ Ensures tests run in correct virtual environment.
 
 Example:
     >>> from pyrig.rig.tools.project_tester import ProjectTester
-    >>> ProjectTester.L.get_run_tests_in_ci_args().run()
+    >>> ProjectTester.L.run_tests_in_ci_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -22,8 +22,8 @@ class ProjectTester(Tool):
         - CI testing: Run with CI flags (logging, coverage XML)
 
     Example:
-        >>> ProjectTester.L.get_run_tests_in_ci_args().run()
-        >>> ProjectTester.L.get_run_tests_in_ci_args("tests/test_module.py").run()
+        >>> ProjectTester.L.run_tests_in_ci_args().run()
+        >>> ProjectTester.L.run_tests_in_ci_args("tests/test_module.py").run()
     """
 
     @classmethod
@@ -75,10 +75,10 @@ class ProjectTester(Tool):
         Returns:
             Args for 'uv run pytest'.
         """
-        return cls.build_args(*args)
+        return cls.args(*args)
 
     @classmethod
-    def get_run_tests_in_ci_args(cls, *args: str) -> Args:
+    def run_tests_in_ci_args(cls, *args: str) -> Args:
         """Construct uv run pytest arguments for CI.
 
         Args:

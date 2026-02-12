@@ -67,34 +67,34 @@ class ReleaseWorkflow(Workflow):
     """
 
     @classmethod
-    def get_workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(cls) -> dict[str, Any]:
         """Get the workflow triggers.
 
         Returns:
             Trigger for build workflow completion.
         """
-        triggers = super().get_workflow_triggers()
+        triggers = super().workflow_triggers()
         triggers.update(
             cls.on_workflow_run(
-                workflows=[BuildWorkflow.get_workflow_name()],
+                workflows=[BuildWorkflow.workflow_name()],
             )
         )
         return triggers
 
     @classmethod
-    def get_permissions(cls) -> dict[str, Any]:
+    def permissions(cls) -> dict[str, Any]:
         """Get the workflow permissions.
 
         Returns:
             Permissions with write access for creating releases.
         """
-        permissions = super().get_permissions()
+        permissions = super().permissions()
         permissions["contents"] = "write"
         permissions["actions"] = "read"
         return permissions
 
     @classmethod
-    def get_jobs(cls) -> dict[str, Any]:
+    def jobs(cls) -> dict[str, Any]:
         """Get the workflow jobs.
 
         Returns:
@@ -111,7 +111,7 @@ class ReleaseWorkflow(Workflow):
         Returns:
             Job configuration for creating releases.
         """
-        return cls.get_job(
+        return cls.job(
             job_func=cls.job_release,
             if_condition=cls.if_workflow_run_is_success(),
             steps=cls.steps_release(),

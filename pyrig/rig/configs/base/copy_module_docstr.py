@@ -12,7 +12,7 @@ Example:
     >>>
     >>> class StringDocstringCopy(CopyModuleOnlyDocstringConfigFile):
     ...     @classmethod
-    ...     def get_src_module(cls) -> ModuleType:
+    ...     def src_module(cls) -> ModuleType:
     ...         return pyrig.src.string_
     >>>
     >>> StringDocstringCopy()  # Creates file with only docstring
@@ -29,7 +29,7 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
     Validates file starts with triple quotes.
 
     Subclasses must implement:
-        - `get_src_module`: Return the source module to copy docstring from
+        - `src_module`: Return the source module to copy docstring from
 
     See Also:
         pyrig.rig.configs.base.copy_module.CopyModuleConfigFile: Parent class
@@ -43,9 +43,9 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         Returns:
             Module docstring wrapped in triple quotes with newline.
         """
-        docstring = cls.get_src_module().__doc__
+        docstring = cls.src_module().__doc__
         if docstring is None:
-            msg = f"Source module {cls.get_src_module()} has no docstring"
+            msg = f"Source module {cls.src_module()} has no docstring"
             raise ValueError(msg)
         return [*f'"""{docstring}"""'.splitlines()]
 
@@ -60,4 +60,4 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         Returns:
             True if parent validation passes or source module has a docstring.
         """
-        return module_has_docstring(cls.get_src_module())
+        return module_has_docstring(cls.src_module())

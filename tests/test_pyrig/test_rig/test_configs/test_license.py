@@ -9,14 +9,14 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 class TestLicenseConfigFile:
     """Test class."""
 
-    def test_get_license_badge_url(self) -> None:
+    def test_license_badge_url(self) -> None:
         """Test method."""
-        result = LicenseConfigFile.L.get_license_badge_url()
+        result = LicenseConfigFile.L.license_badge_url()
         assert result == "https://img.shields.io/github/license/Winipedia/pyrig"
 
-    def test_get_license_badge(self) -> None:
+    def test_license_badge(self) -> None:
         """Test method."""
-        result = LicenseConfigFile.L.get_license_badge()
+        result = LicenseConfigFile.L.license_badge()
         assert (
             result
             == "[![License](https://img.shields.io/github/license/Winipedia/pyrig)](https://github.com/Winipedia/pyrig/blob/main/LICENSE)"
@@ -31,14 +31,14 @@ class TestLicenseConfigFile:
         """Test method."""
         assert LicenseConfigFile().is_correct()
 
-    def test_get_mit_license(self) -> None:
+    def test_mit_license(self) -> None:
         """Test method."""
-        mit_license = LicenseConfigFile.get_mit_license()
+        mit_license = LicenseConfigFile.mit_license()
         assert "MIT License" in mit_license
 
-    def test_get_mit_license_with_year_and_owner(self) -> None:
+    def test_mit_license_with_year_and_owner(self) -> None:
         """Test method."""
-        mit_license = LicenseConfigFile.get_mit_license_with_year_and_owner()
+        mit_license = LicenseConfigFile.mit_license_with_year_and_owner()
         assert "MIT License" in mit_license
         assert "Winipedia" in mit_license
 

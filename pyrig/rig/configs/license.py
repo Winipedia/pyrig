@@ -62,14 +62,14 @@ class LicenseConfigFile(StringConfigFile):
     @classmethod
     def lines(cls) -> list[str]:
         """Get MIT license with year and owner."""
-        return cls.get_mit_license_with_year_and_owner().splitlines()
+        return cls.mit_license_with_year_and_owner().splitlines()
 
     @classmethod
     def is_correct(cls) -> bool:
         """Check if LICENSE exists and is non-empty."""
         if src_pkg_is_pyrig():
             # if in pyrig just run get mit licence to trigger resource update if needed
-            cls.get_mit_license()
+            cls.mit_license()
         return cls.path().exists() and bool(
             cls.path().read_text(encoding="utf-8").strip()
         )
@@ -77,7 +77,7 @@ class LicenseConfigFile(StringConfigFile):
     @classmethod
     @cache
     @return_resource_content_on_fetch_error(resource_name="MIT_LICENSE_TEMPLATE")
-    def get_mit_license(cls) -> str:
+    def mit_license(cls) -> str:
         """Fetch MIT license from GitHub SPDX API (with fallback)."""
         url = "https://api.github.com/licenses/mit"
         resp = requests.get(url, timeout=10)
@@ -87,16 +87,16 @@ class LicenseConfigFile(StringConfigFile):
         return mit_license
 
     @classmethod
-    def get_mit_license_with_year_and_owner(cls) -> str:
+    def mit_license_with_year_and_owner(cls) -> str:
         """Get MIT license with year and owner from git."""
-        mit_license = cls.get_mit_license()
+        mit_license = cls.mit_license()
         year = datetime.now(tz=UTC).year
         owner, _ = VersionController.L.get_repo_owner_and_name(check_repo_url=False)
         mit_license = mit_license.replace("[year]", str(year))
         return mit_license.replace("[fullname]", owner)
 
     @classmethod
-    def get_license_badge_url(cls) -> str:
+    def license_badge_url(cls) -> str:
         """Construct GitHub license badge URL.
 
         Returns:
@@ -109,13 +109,13 @@ class LicenseConfigFile(StringConfigFile):
         return f"https://img.shields.io/github/license/{owner}/{repo}"
 
     @classmethod
-    def get_license_badge(cls) -> str:
+    def license_badge(cls) -> str:
         """Construct GitHub license badge Markdown string.
 
         Returns:
             Markdown string for shields.io badge showing repository license.
         """
-        badge_url = cls.get_license_badge_url()
+        badge_url = cls.license_badge_url()
         repo_url = RemoteVersionController.L.get_repo_url()
         return make_linked_badge_markdown(
             badge_url=badge_url,

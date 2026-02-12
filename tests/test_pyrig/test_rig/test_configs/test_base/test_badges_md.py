@@ -10,7 +10,7 @@ class TestBadgesMarkdownConfigFile:
 
     def test_replace_description(self) -> None:
         """Test that replace_description replaces a stale description."""
-        expected_description = PyprojectConfigFile.L.get_project_description()
+        expected_description = PyprojectConfigFile.L.project_description()
         old_description = "Old stale project description"
         content = f"# Project\n\n---\n\n> {old_description}\n\n---\n"
         result = BadgesMarkdownConfigFile.replace_description(content)
@@ -29,7 +29,7 @@ class TestBadgesMarkdownConfigFile:
         assert issubclass(badges_md_config_cls, BadgesMarkdownConfigFile)
         assert badges_md_config_cls.is_correct()
 
-    def test_get_badges(self) -> None:
+    def test_badges(self) -> None:
         """Test method."""
-        badges = BadgesMarkdownConfigFile.get_badges()
+        badges = BadgesMarkdownConfigFile.badges()
         assert isinstance(badges, dict)

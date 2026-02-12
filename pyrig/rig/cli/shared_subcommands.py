@@ -5,7 +5,7 @@ This means that any function defined in this module becomes a CLI command that i
 available in all dependent projects as a shared command.
 """
 
-from importlib.metadata import version as get_version
+from importlib.metadata import version as _version
 
 import typer
 
@@ -33,4 +33,4 @@ def version() -> None:
         retrieval to work.
     """
     project_name = get_project_name_from_argv()
-    typer.echo(f"{project_name} version {get_version(project_name)}")
+    typer.echo(f"{project_name} version {_version(project_name)}")

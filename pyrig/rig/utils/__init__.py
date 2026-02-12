@@ -24,7 +24,7 @@ Examples:
 
         >>> from pyrig.rig.utils.versions import VersionConstraint
         >>> vc = VersionConstraint(">=3.8,<3.12")
-        >>> vc.get_version_range(level="minor")
+        >>> vc.version_range(level="minor")
         [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
 
 Note:

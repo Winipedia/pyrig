@@ -5,8 +5,8 @@ Rumdl is a fast markdown linter written in Rust.
 
 Example:
     >>> from pyrig.rig.tools.mdlinter import MDLinter
-    >>> MDLinter.L.get_check_args().run()
-    >>> MDLinter.L.get_check_fix_args().run()
+    >>> MDLinter.L.check_args().run()
+    >>> MDLinter.L.check_fix_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -23,8 +23,8 @@ class MDLinter(Tool):
         - Auto-fix: Automatically fix markdown issues
 
     Example:
-        >>> MDLinter.L.get_check_args().run()
-        >>> MDLinter.L.get_check_fix_args().run()
+        >>> MDLinter.L.check_args().run()
+        >>> MDLinter.L.check_fix_args().run()
     """
 
     @classmethod
@@ -53,7 +53,7 @@ class MDLinter(Tool):
         )
 
     @classmethod
-    def get_check_args(cls, *args: str) -> Args:
+    def check_args(cls, *args: str) -> Args:
         """Construct rumdl check arguments.
 
         Args:
@@ -62,10 +62,10 @@ class MDLinter(Tool):
         Returns:
             Args for 'rumdl check'.
         """
-        return cls.build_args("check", *args)
+        return cls.args("check", *args)
 
     @classmethod
-    def get_check_fix_args(cls, *args: str) -> Args:
+    def check_fix_args(cls, *args: str) -> Args:
         """Construct rumdl check arguments with auto-fix.
 
         Args:
@@ -74,4 +74,4 @@ class MDLinter(Tool):
         Returns:
             Args for 'rumdl check --fix'.
         """
-        return cls.get_check_args("--fix", *args)
+        return cls.check_args("--fix", *args)

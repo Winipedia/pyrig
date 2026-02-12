@@ -42,7 +42,7 @@ def my_test_copy_module_config_file(
         """Test copy module config file with tmp_path override."""
 
         @classmethod
-        def get_src_module(cls) -> ModuleType:
+        def src_module(cls) -> ModuleType:
             """Get the source module."""
             return mock_module
 
@@ -58,11 +58,11 @@ def my_test_copy_module_config_file(
 class TestCopyModuleConfigFile:
     """Test class."""
 
-    def test_get_src_module(
+    def test_src_module(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method."""
-        src_module = my_test_copy_module_config_file.get_src_module()
+        src_module = my_test_copy_module_config_file.src_module()
         assert isinstance(src_module, ModuleType), "Expected ModuleType"
         expected_name = "test_package.test_subpackage.test_module"
         assert src_module.__name__ == expected_name, (

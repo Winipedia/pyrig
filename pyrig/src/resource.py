@@ -2,7 +2,7 @@
 
 Provides unified access to static resource files using `importlib.resources`, working
 in both development and PyInstaller-bundled environments. The primary function
-`get_resource_path` abstracts away environment-specific path resolution.
+`resource_path` abstracts away environment-specific path resolution.
 """
 
 from importlib.resources import as_file, files
@@ -10,7 +10,7 @@ from pathlib import Path
 from types import ModuleType
 
 
-def get_resource_path(name: str, package: ModuleType) -> Path:
+def resource_path(name: str, package: ModuleType) -> Path:
     """Get filesystem path to a resource file within a package.
 
     Provides cross-platform, environment-agnostic access to static resources bundled
@@ -32,7 +32,7 @@ def get_resource_path(name: str, package: ModuleType) -> Path:
 
     Example:
         >>> from myapp import resources
-        >>> config_path = get_resource_path("config.json", resources)
+        >>> config_path = resource_path("config.json", resources)
         >>> config_data = config_path.read_text()
 
     Warning:

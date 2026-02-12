@@ -75,13 +75,13 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         Returns:
             Formatted Markdown with H1 header, badge categories, and description.
         """
-        project_name = PyprojectConfigFile.L.get_project_name()
-        badges = cls.get_badges()
+        project_name = PyprojectConfigFile.L.project_name()
+        badges = cls.badges()
         badges_lines: list[str] = []
         for badge_category, badge_list in badges.items():
             badges_lines.append(f"<!-- {badge_category} -->")
             badges_lines.extend(badge_list)
-        description = PyprojectConfigFile.L.get_project_description()
+        description = PyprojectConfigFile.L.project_description()
         return [
             f"# {project_name}",
             "",
@@ -96,14 +96,14 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         ]
 
     @classmethod
-    def get_badges(cls) -> dict[str, list[str]]:
+    def badges(cls) -> dict[str, list[str]]:
         """Get categorized badges from project metadata and Git info.
 
         Returns:
             Dict mapping category names (tooling, code-quality, package-info, ci/cd,
             documentation) to lists of badge Markdown strings.
         """
-        python_versions = PyprojectConfigFile.L.get_supported_python_versions()
+        python_versions = PyprojectConfigFile.L.supported_python_versions()
         joined_python_versions = "|".join(str(v) for v in python_versions)
         health_check_wf_name = HealthCheckWorkflow.filename()
         release_wf_name = ReleaseWorkflow.filename()
@@ -116,7 +116,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
                     link_url="https://www.python.org",
                     alt_text="python",
                 ),
-                LicenseConfigFile.L.get_license_badge(),
+                LicenseConfigFile.L.license_badge(),
             ]
         )
         badge_groups[ToolGroup.CI_CD].extend(
@@ -128,7 +128,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
         badge_groups[DocsBuilder.L.group()].extend(
             [
-                DocsBuilder.L.get_documentation_badge(),
+                DocsBuilder.L.documentation_badge(),
             ]
         )
         return badge_groups
@@ -136,7 +136,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
     @classmethod
     def replace_description(cls, content: str) -> str:
         """Replace the description between ``---`` fences with the current one."""
-        expected_description = PyprojectConfigFile.L.get_project_description()
+        expected_description = PyprojectConfigFile.L.project_description()
         pattern = r"---\s*\n(.*?)\n---"
         replacement = f"---\n\n> {expected_description}\n\n---"
         # only replace first occurence, as description is expected at the top

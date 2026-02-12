@@ -23,7 +23,7 @@ class TestTypeChecker:
         result = TypeChecker.L.name()
         assert result == "ty"
 
-    def test_get_check_args(self) -> None:
+    def test_check_args(self) -> None:
         """Test method."""
-        result = TypeChecker.L.get_check_args()
+        result = TypeChecker.L.check_args()
         assert result == ("ty", "check")

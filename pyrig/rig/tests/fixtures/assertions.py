@@ -53,12 +53,12 @@ def main_test_fixture(mocker: MockerFixture) -> None:
         pyrig.rig.configs.testing.main_test.MainTestConfigFile: Generates test.
         pyrig.rig.configs.python.main.MainConfigFile: Generates main.py.
     """
-    project_name = PyprojectConfigFile.L.get_project_name()
-    src_package_name = PyprojectConfigFile.L.get_package_name()
+    project_name = PyprojectConfigFile.L.project_name()
+    src_package_name = PyprojectConfigFile.L.package_name()
 
     cmds = [
-        PackageManager.L.get_run_args(project_name, "--help"),
-        PackageManager.L.get_run_args(project_name, main.main.__name__, "--help"),
+        PackageManager.L.run_args(project_name, "--help"),
+        PackageManager.L.run_args(project_name, main.main.__name__, "--help"),
     ]
     success = False
     for cmd in cmds:
