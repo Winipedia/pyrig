@@ -104,9 +104,9 @@ class TestBuilderConfigFile:
         assert my_test_builder_config_file.get_parent_path().exists()
         assert not my_test_builder_config_file.get_path().exists()
 
-    def test_get_definition_pkg(self) -> None:
+    def test_definition_package(self) -> None:
         """Test method."""
-        assert BuilderConfigFile.get_definition_pkg() is builders
+        assert BuilderConfigFile.definition_package() is builders
 
     def test_build(
         self,

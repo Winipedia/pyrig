@@ -66,7 +66,7 @@ See Also:
 
 import inspect
 import logging
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from functools import cache
@@ -74,14 +74,9 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Self
 
-import pyrig
 from pyrig.rig import configs
 from pyrig.src.iterate import nested_structure_is_subset
-from pyrig.src.modules.class_ import classproperty
-from pyrig.src.modules.package import (
-    discover_leaf_subclass_across_dependents,
-    discover_subclasses_across_dependents,
-)
+from pyrig.src.modules.subclass import Subclass
 from pyrig.src.string_ import split_on_uppercase
 
 logger = logging.getLogger(__name__)
@@ -96,7 +91,7 @@ class Priority:
     HIGH = MEDIUM + 10
 
 
-class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
+class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
     """Abstract base class for declarative configuration file management.
 
     Declarative, idempotent system for managing config files. Preserves user
@@ -174,6 +169,39 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         Returns:
             Minimum required configuration as dict or list.
         """
+
+    @classmethod
+    def definition_package(cls) -> ModuleType:
+        """Get the package where the ConfigFile subclasses are supposed to be defined.
+
+        Default is pyrig.rig.configs.
+        But can be overridden by subclasses to define their own package.
+
+        Returns:
+            Package module where the ConfigFile subclass is defined.
+        """
+        return configs
+
+    @classmethod
+    def sorting_key(cls, subclass: type[Self]) -> float:
+        """Return a numeric sort key for the given config-file subclass.
+
+        Subclasses may define priorities via `get_priority()`. This method
+        returns a value that can be used to sort subclasses so that higher
+        priority subclasses appear earlier. Implementations should return a
+        float where a smaller value sorts earlier when used with Python's
+        ascending sort; this base implementation returns the negative of the
+        subclass priority so that higher priority sorts first.
+
+        Args:
+            subclass (type[Self]): The subclass to compute a key for.
+
+        Returns:
+            float: A numeric key suitable for sorting subclasses.
+        """
+        # sort by priority (higher first),
+        # so return negative priority for ascending sort
+        return -subclass.get_priority()
 
     def __init__(self) -> None:
         """Initialize config file, creating or updating as needed.
@@ -400,52 +428,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         return nested_structure_is_subset(expected_config, actual_config)
 
     @classmethod
-    def get_definition_pkg(cls) -> ModuleType:
-        """Get the package where the ConfigFile subclasses are supposed to be defined.
-
-        Default is pyrig.rig.configs.
-        But can be overridden by subclasses to define their own package.
-
-        Returns:
-            Package module where the ConfigFile subclass is defined.
-        """
-        return configs
-
-    @classmethod
-    def subclasses(cls) -> list[type[Self]]:
-        """Discover all non-abstract ConfigFile subclasses across all packages.
-
-        Returns:
-            List of ConfigFile subclass types, sorted by priority (highest first).
-
-        See Also:
-            get_priority_subclasses: Get only subclasses with priority > 0
-            init_all_subclasses: Initialize all discovered subclasses
-        """
-        subclasses = discover_subclasses_across_dependents(
-            cls,
-            pyrig,
-            cls.get_definition_pkg(),
-            discard_parents=True,
-            exclude_abstract=True,
-        )
-        return cls.get_subclasses_ordered_by_priority(*subclasses)
-
-    @classmethod
-    def get_subclasses_ordered_by_priority[T: type[Self]](
-        cls, *subclasses: T
-    ) -> list[T]:
-        """Order subclasses by priority.
-
-        Args:
-            subclasses: ConfigFile subclasses to order.
-
-        Returns:
-            List of ConfigFile subclass types, sorted by priority (highest first).
-        """
-        return sorted(subclasses, key=lambda x: x.get_priority(), reverse=True)
-
-    @classmethod
     def get_priority_subclasses(cls) -> list[type[Self]]:
         """Get ConfigFile subclasses with priority > 0.
 
@@ -521,17 +503,3 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         """
         logger.info("Creating priority config files")
         cls.init_subclasses(*cls.get_priority_subclasses())
-
-    @classproperty
-    def L(cls) -> type[Self]:  # noqa: N802, N805
-        """Get the final leaf subclass (deepest in the inheritance tree).
-
-        Returns:
-            Final leaf subclass type. Can be abstract.
-
-        See Also:
-            subclasses: Get all subclasses regardless of priority
-        """
-        return discover_leaf_subclass_across_dependents(
-            cls=cls, dep=pyrig, load_pkg_before=cls.get_definition_pkg()
-        )
