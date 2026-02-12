@@ -71,15 +71,15 @@ class TestVersionController:
         result = VersionController.L.get_diff_args()
         assert result == ("git", "diff")
 
-    def test_get_push_origin_args(self) -> None:
+    def test_push_origin_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_push_origin_args()
+        result = VersionController.L.push_origin_args()
         assert result == ("git", "push", "origin")
 
-    def test_get_push_origin_tag_args(self) -> None:
+    def test_push_origin_tag_args(self) -> None:
         """Test method."""
         tag = "v1.2.3"
-        result = VersionController.L.get_push_origin_tag_args(tag=tag)
+        result = VersionController.L.push_origin_tag_args(tag=tag)
         assert result == ("git", "push", "origin", tag)
 
     def test_get_tag_args(self) -> None:
@@ -128,9 +128,9 @@ class TestVersionController:
         result = VersionController.L.get_commit_no_verify_args(msg="Fix bug")
         assert result == ("git", "commit", "--no-verify", "-m", "Fix bug")
 
-    def test_get_push_args(self) -> None:
+    def test_push_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_push_args()
+        result = VersionController.L.push_args()
         assert result == ("git", "push")
 
     def test_get_config_args(self) -> None:

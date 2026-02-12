@@ -6,7 +6,7 @@ Example:
     >>> from pyrig.rig.tools.version_controller import VersionController
     >>> VersionController.L.add_all_args().run()
     >>> VersionController.L.get_commit_no_verify_args("Update docs").run()
-    >>> VersionController.L.get_push_args().run()
+    >>> VersionController.L.push_args().run()
 """
 
 import logging
@@ -15,7 +15,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
-from pyrig.src.modules.package import get_project_name_from_cwd
+from pyrig.src.modules.package import project_name_from_cwd
 from pyrig.src.processes import Args
 
 logger = logging.getLogger(__name__)
@@ -179,7 +179,7 @@ class VersionController(Tool):
         return cls.get_commit_args("--no-verify", "-m", msg, *args)
 
     @classmethod
-    def get_push_args(cls, *args: str) -> Args:
+    def push_args(cls, *args: str) -> Args:
         """Construct git push arguments.
 
         Args:
@@ -191,7 +191,7 @@ class VersionController(Tool):
         return cls.args("push", *args)
 
     @classmethod
-    def get_push_origin_args(cls, *args: str) -> Args:
+    def push_origin_args(cls, *args: str) -> Args:
         """Construct git push arguments for origin.
 
         Args:
@@ -200,10 +200,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git push origin'.
         """
-        return cls.get_push_args("origin", *args)
+        return cls.push_args("origin", *args)
 
     @classmethod
-    def get_push_origin_tag_args(cls, *args: str, tag: str) -> Args:
+    def push_origin_tag_args(cls, *args: str, tag: str) -> Args:
         """Construct git push arguments for origin and tag.
 
         Args:
@@ -213,7 +213,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git push origin <tag>'.
         """
-        return cls.get_push_origin_args(tag, *args)
+        return cls.push_origin_args(tag, *args)
 
     @classmethod
     def get_config_args(cls, *args: str) -> Args:
@@ -408,7 +408,7 @@ class VersionController(Tool):
                 "No git remote found, using git username and CWD for repo info"
             )
             owner = cls.get_username()
-            repo = get_project_name_from_cwd()
+            repo = project_name_from_cwd()
             logger.debug("Derived repository: %s/%s", owner, repo)
         else:
             parts = url.removesuffix(".git").split("/")
