@@ -8,7 +8,7 @@ from pyrig.src.git import (
 
 
 def test_running_in_github_actions() -> None:
-    """Test func for running_in_github_actions."""
+    """Test function."""
     is_running_og = running_in_github_actions()
     assert isinstance(is_running_og, bool), (
         f"Expected is_running to be bool, got {type(is_running_og)}"

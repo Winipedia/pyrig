@@ -25,7 +25,7 @@ class TestZeroTestConfigFile:
     def test_get_filename(
         self, my_test_zero_test_config_file: type[ZeroTestConfigFile]
     ) -> None:
-        """Test method for get_filename."""
+        """Test method."""
         filename = my_test_zero_test_config_file.get_filename()
         # ZeroTestConfigFile reverses the filename
         assert filename.startswith("test_"), (
@@ -35,7 +35,7 @@ class TestZeroTestConfigFile:
     def test_get_lines(
         self, my_test_zero_test_config_file: type[ZeroTestConfigFile]
     ) -> None:
-        """Test method for get_content_str."""
+        """Test method."""
         lines = my_test_zero_test_config_file.get_lines()
         content_str = "\n".join(lines)
         assert "test_zero" in content_str, "Expected 'test_zero' in content"

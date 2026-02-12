@@ -11,9 +11,9 @@ from typing import Any, ClassVar
 from pyrig.src.modules.class_ import (
     classproperty,
     discard_parent_classes,
+    discover_all_subclasses,
     get_all_cls_from_module,
     get_all_methods_from_cls,
-    get_all_subclasses,
     get_cached_instance,
 )
 from pyrig.src.modules.inspection import get_unwrapped_obj
@@ -128,7 +128,7 @@ class AnotherAbstractChild(AbstractParent):
 
 
 def test_get_all_methods_from_cls() -> None:
-    """Test func for get_all_methods_from_cls."""
+    """Test function."""
     # Test case 1: Get all methods excluding inherited methods
     methods = get_all_methods_from_cls(TestClass, exclude_parent_methods=True)
 
@@ -172,7 +172,7 @@ def test_get_all_methods_from_cls() -> None:
 
 
 def test_get_all_cls_from_module() -> None:
-    """Test func for get_all_cls_from_module."""
+    """Test function."""
     # use this file as the module
     module = test_get_all_cls_from_module.__module__
 
@@ -195,10 +195,10 @@ def test_get_all_cls_from_module() -> None:
     )
 
 
-def test_get_all_subclasses() -> None:
-    """Test func for get_all_subclasses."""
+def test_discover_all_subclasses() -> None:
+    """Test func."""
     # Test with ParentClass - should find TestClass as subclass
-    subclasses = get_all_subclasses(ParentClass)
+    subclasses = discover_all_subclasses(ParentClass)
 
     expected_subclasses: set[type] = {ParentClass, TestClass}
 
@@ -208,20 +208,20 @@ def test_get_all_subclasses() -> None:
         )
 
     # Test with TestClass - should have no subclasses
-    subclasses = get_all_subclasses(TestClass)
+    subclasses = discover_all_subclasses(TestClass)
 
     assert subclasses == {TestClass}, (
         f"Expected no subclasses for TestClass, got {subclasses}"
     )
 
     # test with discard_parents
-    subclasses = get_all_subclasses(ParentClass, discard_parents=True)
+    subclasses = discover_all_subclasses(ParentClass, discard_parents=True)
     assert ParentClass not in subclasses, f"Expected ParentClass not in {subclasses}"
     assert TestClass in subclasses, f"Expected TestClass in {subclasses}"
 
 
 def test_discard_parent_classes() -> None:
-    """Test func for discard_parent_classes."""
+    """Test function."""
     classes = discard_parent_classes([ParentClass, TestClass])
     assert ParentClass not in classes, f"Expected ParentClass not in {classes}"
     assert TestClass in classes, f"Expected TestClass in {classes}"

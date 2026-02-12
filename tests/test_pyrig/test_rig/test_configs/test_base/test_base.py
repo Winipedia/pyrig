@@ -158,7 +158,7 @@ class TestConfigFile:
 
     def test_init_all_subclasses(self, mocker: MockFixture) -> None:
         """Test method."""
-        num_subclasses = ConfigFile.get_all_subclasses()
+        num_subclasses = ConfigFile.subclasses()
         mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
         ConfigFile.init_all_subclasses()
         assert mock.call_count == len(num_subclasses)
@@ -175,18 +175,18 @@ class TestConfigFile:
         assert ConfigFile.get_extension_sep() == "."
 
     def test_get_parent_path(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for get_parent_path."""
+        """Test method."""
         expected = Path("parent_dir")
         actual = my_test_config_file.get_parent_path()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_load(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for load."""
+        """Test method."""
         # assert is dict
         assert isinstance(my_test_config_file.load(), dict), "Expected dict"
 
     def test_dump(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for dump."""
+        """Test method."""
         # assert dumps correctly
         storage_dict = my_test_config_file.load()
         dunmp_dict = {"key": "value"}
@@ -199,17 +199,17 @@ class TestConfigFile:
             my_test_config_file.dump([])
 
     def test_get_file_extension(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for get_file_extension."""
+        """Test method."""
         assert my_test_config_file.get_file_extension() == "txt", "Expected txt"
 
     def test__get_configs(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for get_configs."""
+        """Test method."""
         assert isinstance(my_test_config_file.get_configs(), dict), "Expected dict"
 
     def test___init__(
         self, my_test_config_file: type[ConfigFile], mocker: MockFixture
     ) -> None:
-        """Test method for __init__."""
+        """Test method."""
         # create file first to not trigger dunmp in init
         my_test_config_file.get_path().parent.mkdir(parents=True, exist_ok=True)
         # write non-empty file to trigger add_missing_configs,
@@ -250,7 +250,7 @@ class TestConfigFile:
             my_test_config_file()
 
     def test_get_path(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for get_path."""
+        """Test method."""
         # will be my.txt not my_test.txt bc the fixture factory
         # creates a runtime subclass TestConfigFile so filename will removesuffix
         # see implementation of config_file_factory fixture and get_filename
@@ -262,13 +262,13 @@ class TestConfigFile:
         )
 
     def test_get_filename(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for get_filename."""
+        """Test method."""
         expected = "my"
         actual = my_test_config_file.get_filename()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_add_missing_configs(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for add_missing_configs."""
+        """Test method."""
         # same test as in init test
         expected: dict[str, Any] = {
             "key0": "value0",
@@ -284,7 +284,7 @@ class TestConfigFile:
         assert actual == expected, "Expected config to be correct"
 
     def test_add_missing_dict_val(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for add_missing_dict_val."""
+        """Test method."""
         expected: dict[str, Any] = {"key": "value"}
         actual: dict[str, Any] = {}
         my_test_config_file.add_missing_dict_val(expected, actual, "key")
@@ -293,26 +293,26 @@ class TestConfigFile:
     def test_insert_missing_list_val(
         self, my_test_config_file: type[ConfigFile]
     ) -> None:
-        """Test method for insert_missing_list_val."""
+        """Test method."""
         expected: list[Any] = ["value"]
         actual: list[Any] = []
         my_test_config_file.insert_missing_list_val(expected, actual, 0)
         assert actual[0] == expected[0], "Expected config to be correct"
 
     def test_is_correct(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         assert not my_test_config_file.is_correct(), "Expected config to be correct"
         assert my_test_config_file().is_correct(), "Expected config to be correct"
 
     def test_is_unwanted(self, my_test_config_file: type[ConfigFile]) -> None:
-        """Test method for is_unwanted."""
+        """Test method."""
         my_test_config_file().get_path().write_text("")
         assert my_test_config_file.is_unwanted(), "Expected config to be unwanted"
 
     def test_is_correct_recursively(
         self, my_test_config_file: type[ConfigFile]
     ) -> None:
-        """Test method for is_correct_recursively."""
+        """Test method."""
         expected: dict[str, Any] = {
             "key0": "value0",
             "key1": "value1",
@@ -343,10 +343,10 @@ class TestConfigFile:
             "Expected config to be correct"
         )
 
-    def test_get_all_subclasses(
+    def test_subclasses(
         self, my_test_config_file: type[ConfigFile], mocker: MockFixture
     ) -> None:
-        """Test method for get_all_subclasses."""
+        """Test method."""
         # mock get_all_subcls to return my_test_config_file
         mocker.patch(
             ConfigFile.__module__
@@ -354,7 +354,7 @@ class TestConfigFile:
             + discover_subclasses_across_dependents.__name__,
             return_value={my_test_config_file},
         )
-        actual = my_test_config_file.get_all_subclasses()
+        actual = my_test_config_file.subclasses()
         assert my_test_config_file in actual, (
             "Expected my_test_config_file to be in actual"
         )

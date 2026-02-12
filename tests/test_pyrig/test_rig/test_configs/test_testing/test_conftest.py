@@ -29,7 +29,7 @@ class TestConftestConfigFile:
     def test_get_lines(
         self, my_test_conftest_config_file: type[ConftestConfigFile]
     ) -> None:
-        """Test method for get_content_str."""
+        """Test method."""
         lines = my_test_conftest_config_file.get_lines()
         content_str = "\n".join(lines)
         assert "pytest_plugins" in content_str, (

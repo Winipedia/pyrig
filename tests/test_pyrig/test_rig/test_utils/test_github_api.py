@@ -19,7 +19,7 @@ from pyrig.rig.utils.version_control import (
 
 @skip_if_no_internet
 def test_get_repo() -> None:
-    """Test func for get_repo."""
+    """Test function."""
     owner, repo_name = VersionController.L.get_repo_owner_and_name()
     repo = get_repo(
         get_github_repo_token(),
@@ -32,7 +32,7 @@ def test_get_repo() -> None:
 
 @skip_if_no_internet
 def test_get_all_rulesets() -> None:
-    """Test func for get_all_rulesets."""
+    """Test function."""
     rulesets = get_all_rulesets(
         get_github_repo_token(),
         *VersionController.L.get_repo_owner_and_name(),
@@ -42,7 +42,7 @@ def test_get_all_rulesets() -> None:
 
 @skip_if_no_internet
 def test_ruleset_exists() -> None:
-    """Test func for ruleset_exists."""
+    """Test function."""
     owner, repo_name = VersionController.L.get_repo_owner_and_name()
     ruleset_id = ruleset_exists(
         get_github_repo_token(),
@@ -55,7 +55,7 @@ def test_ruleset_exists() -> None:
 
 @skip_if_no_internet
 def test_create_or_update_ruleset() -> None:
-    """Test func for create_or_update_ruleset."""
+    """Test function."""
     token = get_github_repo_token()
     owner, repo_name = VersionController.L.get_repo_owner_and_name()
     create_or_update_ruleset(

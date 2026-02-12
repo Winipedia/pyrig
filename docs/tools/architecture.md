@@ -36,7 +36,7 @@ to use each is essential:
 | Mechanism | Purpose | Used For |
 |-----------|---------|----------|
 | **`.L` (Leaf)** | Get the deepest subclass of a Tool or ConfigFile | Internal pyrig operations that should use your customizations |
-| **`get_all_subclasses()`** | Discover all ConfigFile implementations | Finding all configs to generate, including new ones you define |
+| **`subclasses()`** | Discover all ConfigFile implementations | Finding all configs to generate, including new ones you define |
 
 ### The `.L` Pattern: Dynamic Tool Resolution
 
@@ -77,16 +77,16 @@ from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         return "mypy"
 ```
 
 The prek config **automatically** uses mypy. No need to override the
 config file itself.
 
-### The `get_all_subclasses()` Pattern: ConfigFile Discovery
+### The `subclasses()` Pattern: ConfigFile Discovery
 
-For `ConfigFile` classes, pyrig uses `get_all_subclasses()` to discover **all
+For `ConfigFile` classes, pyrig uses `subclasses()` to discover **all
 non-abstract implementations** across all dependent packages. This enables:
 
 - Adding entirely new config files by creating new `ConfigFile` subclasses
@@ -103,7 +103,7 @@ graph TD
         D[PyprojectConfigFile]
     end
 
-    E["get_all_subclasses()"] -.->|returns| F["[myapp.Pyproject,
+    E["subclasses()"] -.->|returns| F["[myapp.Pyproject,
     Prek, MyApp]"]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -192,7 +192,7 @@ from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         return "mypy"  # Use mypy instead of ty
 ```
 
@@ -236,8 +236,8 @@ The parent class is automatically excluded from discovery.
 
 | Replacement | Complexity | What's Needed |
 |-------------|------------|---------------|
-| ty → mypy | **Low** | Just subclass `TypeChecker.get_name()` |
-| ruff → black | **Low** | Subclass `Linter.get_name()` and adjust methods |
+| ty → mypy | **Low** | Just subclass `TypeChecker.name()` |
+| ruff → black | **Low** | Subclass `Linter.name()` and adjust methods |
 | Podman → Docker | **Medium** | Subclass Tool + override workflow steps |
 | uv → pip | **High** | Affects nearly everything |
 

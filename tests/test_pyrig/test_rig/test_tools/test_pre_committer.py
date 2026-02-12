@@ -6,21 +6,21 @@ from pyrig.rig.tools.pre_committer import PreCommitter
 class TestPreCommitter:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = PreCommitter.L.get_group()
+        result = PreCommitter.L.group()
         assert isinstance(result, str)
         assert result == "code-quality"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = PreCommitter.L.get_badge_urls()
+        result = PreCommitter.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = PreCommitter.L.get_name()
+        result = PreCommitter.L.name()
         assert result == "prek"
 
     def test_get_install_args(self) -> None:

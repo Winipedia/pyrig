@@ -7,7 +7,7 @@ class TestPythonConfigFile:
     """Test class."""
 
     def test_get_file_extension(self) -> None:
-        """Test method for get_file_extension."""
+        """Test method."""
         expected = "py"
         actual = PythonConfigFile.get_file_extension()
         assert actual == expected, f"Expected {expected}, got {actual}"

@@ -8,7 +8,7 @@ from pyrig.src.modules.module import make_obj_importpath
 
 
 def test_build_artifacts(mocker: MockFixture) -> None:
-    """Test func for build."""
+    """Test function."""
     # mock init_all_subclasses to avoid actually running builds
     mock_init = mocker.patch(make_obj_importpath(BuilderConfigFile.init_all_subclasses))
     build_artifacts()

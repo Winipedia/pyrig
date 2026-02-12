@@ -34,7 +34,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
             """test module."""
 
             def test_main(main_test_fixture: None) -> None:
-                """Test func for main."""
+                """Test function."""
                 assert main_test_fixture is None
 
     See Also:
@@ -93,7 +93,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
             "",
             "",
             "def test_main(main_test_fixture: None) -> None:",
-            '    """Test func for main."""',
+            '    """Test function."""',
             "    assert main_test_fixture is None",
             "",
         ]

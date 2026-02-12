@@ -88,7 +88,7 @@ def get_all_cls_from_module(module: ModuleType | str) -> list[type]:
     return sorted(classes, key=get_def_line)
 
 
-def get_all_subclasses[T: type](
+def discover_all_subclasses[T: type](
     cls: T,
     load_package_before: ModuleType | None = None,
     *,
@@ -131,7 +131,7 @@ def get_all_subclasses[T: type](
     Example:
         >>> # Discover all ConfigFile subclasses in myapp.rig.configs
         >>> from myapp.rig import configs
-        >>> subclasses = get_all_subclasses(
+        >>> subclasses = subclasses(
         ...     ConfigFile,
         ...     load_package_before=configs,
         ...     discard_parents=True,
@@ -153,7 +153,7 @@ def get_all_subclasses[T: type](
     subclasses_set: set[T] = {cls}
     subclasses_set.update(cls.__subclasses__())
     for subclass in cls.__subclasses__():
-        subclasses_set.update(get_all_subclasses(subclass))
+        subclasses_set.update(discover_all_subclasses(subclass))
     if load_package_before is not None:
         # remove all not in the package
         subclasses_set = {
@@ -235,10 +235,10 @@ class classproperty[T]:  # noqa: N801
     Example:
         >>> class MyClass:
         ...     @classproperty
-        ...     def get_name(cls) -> str:
+        ...     def cls_name(cls) -> str:
         ...         return cls.__name__.lower()
         ...
-        >>> MyClass.name
+        >>> MyClass.cls_name # returns 'myclass'
         'myclass'
 
     Args:

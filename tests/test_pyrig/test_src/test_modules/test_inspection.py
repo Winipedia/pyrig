@@ -18,14 +18,14 @@ from pyrig.src.modules.inspection import (
 
 
 def test_get_obj_members() -> None:
-    """Test func for get_obj_members."""
+    """Test function."""
     members = get_obj_members(test_get_obj_members)
     assert isinstance(members, list), f"Expected list, got {type(members)}"
     assert len(members) > 0, f"Expected at least 1 member, got {len(members)}"
 
 
 def test_get_def_line() -> None:
-    """Test func for get_def_line."""
+    """Test function."""
 
     # Test with a function defined in this module
     def test_function() -> None:
@@ -57,13 +57,13 @@ def test_get_def_line() -> None:
 
 
 def test_inside_frozen_bundle() -> None:
-    """Test func for inside_frozen_bundle."""
+    """Test function."""
     result = inside_frozen_bundle()
     assert result is False, f"Expected False, got {result}"
 
 
 def test_get_qualname_of_obj() -> None:
-    """Test func for get_name_of_obj."""
+    """Test function."""
 
     # Test with a function
     def test_function() -> None:
@@ -135,7 +135,7 @@ class _TestDeeplyNestedClassMethod:
 
 
 def test_get_unwrapped_obj() -> None:
-    """Test func for get_unwrapped_obj."""
+    """Test function."""
     unwrapped_func = get_unwrapped_obj(_deeply_decorated_func)
     assert unwrapped_func.__name__ == "_deeply_decorated_func", (
         f"Expected '_deeply_decorated_func', got {unwrapped_func.__name__}"
@@ -150,7 +150,7 @@ def test_get_unwrapped_obj() -> None:
 
 
 def test_get_module_of_obj() -> None:
-    """Test func for get_module_of_obj."""
+    """Test function."""
 
     # Test with a function
     def test_function() -> None:

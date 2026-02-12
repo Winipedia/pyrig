@@ -19,7 +19,7 @@ from pyrig.src.modules.module import make_obj_importpath
 
 
 def test_get_modules_and_packages_from_package(tmp_path: Path) -> None:
-    """Test func for get_modules_and_packages_from_package."""
+    """Test function."""
     # Create a temporary package with known content
     with chdir(tmp_path):
         package_dir = tmp_path / "test_package"
@@ -39,7 +39,7 @@ def test_get_modules_and_packages_from_package(tmp_path: Path) -> None:
 
 
 def test_walk_package(mocker: MockFixture) -> None:
-    """Test func for walk_package."""
+    """Test function."""
     # Create mock package hierarchy
     root_package = ModuleType("root")
     sub_package1 = ModuleType("root.sub1")
@@ -87,7 +87,7 @@ def test_walk_package(mocker: MockFixture) -> None:
 
 
 def test_module_is_package() -> None:
-    """Test func for module_is_package."""
+    """Test function."""
     # Create a mock module with __path__ attribute (package)
     mock_package = ModuleType("test_package")
     mock_package.__path__ = ["some/path"]

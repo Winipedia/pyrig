@@ -6,7 +6,7 @@ from pyrig.src.iterate import nested_structure_is_subset
 
 
 def test_nested_structure_is_subset() -> None:
-    """Test func for nested_structure_is_subset."""
+    """Test function."""
     subset: dict[str, Any] = {
         "a": 1,
         "b": [2, 3, {"c": 4}],

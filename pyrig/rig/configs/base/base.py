@@ -412,7 +412,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         return configs
 
     @classmethod
-    def get_all_subclasses(cls) -> list[type[Self]]:
+    def subclasses(cls) -> list[type[Self]]:
         """Discover all non-abstract ConfigFile subclasses across all packages.
 
         Returns:
@@ -453,10 +453,10 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
             List of ConfigFile subclass types with priority > 0 (highest first).
 
         See Also:
-            get_all_subclasses: Get all subclasses regardless of priority
+            subclasses: Get all subclasses regardless of priority
             init_priority_subclasses: Initialize only priority subclasses
         """
-        return [cf for cf in cls.get_all_subclasses() if cf.get_priority() > 0]
+        return [cf for cf in cls.subclasses() if cf.get_priority() > 0]
 
     @classmethod
     def init_subclasses(
@@ -503,12 +503,12 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
         """Initialize all discovered ConfigFile subclasses in priority order.
 
         See Also:
-            get_all_subclasses: Discovery mechanism
+            subclasses: Discovery mechanism
             init_subclasses: Initialization mechanism
             init_priority_subclasses: Initialize only priority files
         """
         logger.info("Creating all config files")
-        cls.init_subclasses(*cls.get_all_subclasses())
+        cls.init_subclasses(*cls.subclasses())
 
     @classmethod
     def init_priority_subclasses(cls) -> None:
@@ -530,7 +530,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](ABC):
             Final leaf subclass type. Can be abstract.
 
         See Also:
-            get_all_subclasses: Get all subclasses regardless of priority
+            subclasses: Get all subclasses regardless of priority
         """
         return discover_leaf_subclass_across_dependents(
             cls=cls, dep=pyrig, load_pkg_before=cls.get_definition_pkg()

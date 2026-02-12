@@ -6,26 +6,26 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 class TestRemoteVersionController:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_group()
+        result = RemoteVersionController.L.group()
         assert isinstance(result, str)
         assert result == "tooling"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_badge_urls()
+        result = RemoteVersionController.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_dev_dependencies(self) -> None:
+    def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_dev_dependencies()
+        result = RemoteVersionController.L.dev_dependencies()
         assert result == ["pygithub"]
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_name()
+        result = RemoteVersionController.L.name()
         assert result == "github"
 
     def test_get_url_base(self) -> None:

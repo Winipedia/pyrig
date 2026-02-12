@@ -30,13 +30,13 @@ from pyrig.src.processes import Args
 
 class TypeChecker(BaseTC):
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         return "mypy"
 
     @classmethod
     def get_check_args(cls, *args: str) -> Args:
         # mypy uses different command syntax than ty
-        return cls.get_args(*args)  # mypy doesn't need 'check' subcommand
+        return cls.build_args(*args)  # mypy doesn't need 'check' subcommand
 ```
 
 Because pyrig uses `TypeChecker.L` internally (including in prek config

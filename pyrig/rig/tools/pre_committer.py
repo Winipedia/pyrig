@@ -29,7 +29,7 @@ class PreCommitter(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -38,7 +38,7 @@ class PreCommitter(Tool):
         return "prek"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -46,7 +46,7 @@ class PreCommitter(Tool):
         return ToolGroup.CODE_QUALITY
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json",
@@ -63,7 +63,7 @@ class PreCommitter(Tool):
         Returns:
             Args for 'prek install'.
         """
-        return cls.get_args("install", *args)
+        return cls.build_args("install", *args)
 
     @classmethod
     def get_run_args(cls, *args: str) -> Args:
@@ -75,7 +75,7 @@ class PreCommitter(Tool):
         Returns:
             Args for 'prek run'.
         """
-        return cls.get_args("run", *args)
+        return cls.build_args("run", *args)
 
     @classmethod
     def get_run_all_files_args(cls, *args: str) -> Args:

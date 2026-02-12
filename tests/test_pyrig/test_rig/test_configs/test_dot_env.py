@@ -26,7 +26,7 @@ class TestDotEnvConfigFile:
     """Test class."""
 
     def test__load(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
-        """Test method for load."""
+        """Test method."""
         # Create the .env file with some content
         my_test_dotenv_config_file.get_path().parent.mkdir(parents=True, exist_ok=True)
         my_test_dotenv_config_file.get_path().write_text(
@@ -40,7 +40,7 @@ class TestDotEnvConfigFile:
         assert loaded["KEY3"] == "", "Expected KEY3 to be empty string"
 
     def test__dump(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
-        """Test method for dump."""
+        """Test method."""
         # dump should raise ValueError if config is not empty (truthy)
         with pytest.raises(ValueError, match=r"Dumping to .* is not allowed"):
             my_test_dotenv_config_file.dump({"key": "value"})
@@ -52,13 +52,13 @@ class TestDotEnvConfigFile:
     def test_get_file_extension(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
     ) -> None:
-        """Test method for get_file_extension."""
+        """Test method."""
         assert my_test_dotenv_config_file.get_file_extension() == "env", "Expected env"
 
     def test_get_filename(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
     ) -> None:
-        """Test method for get_filename."""
+        """Test method."""
         # Should return empty string so path becomes .env not env.env
         expected = ""
         actual = my_test_dotenv_config_file.get_filename()
@@ -69,7 +69,7 @@ class TestDotEnvConfigFile:
         my_test_dotenv_config_file: type[DotEnvConfigFile],
         tmp_path: Path,
     ) -> None:
-        """Test method for get_parent_path."""
+        """Test method."""
         # Should return Path() (root)
         with chdir(tmp_path):
             expected = Path()
@@ -79,7 +79,7 @@ class TestDotEnvConfigFile:
     def test__get_configs(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
     ) -> None:
-        """Test method for get_configs."""
+        """Test method."""
         # Should return empty dict
         expected: dict[str, Any] = {}
         actual = my_test_dotenv_config_file.get_configs()
@@ -88,7 +88,7 @@ class TestDotEnvConfigFile:
     def test_is_correct(
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
     ) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         # Create the file
         my_test_dotenv_config_file.get_path().parent.mkdir(parents=True, exist_ok=True)
         my_test_dotenv_config_file.get_path().touch()

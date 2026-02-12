@@ -11,7 +11,7 @@ from pyrig.rig.utils.version_control import (
 
 
 def test_get_github_repo_token() -> None:
-    """Test func for get_github_token."""
+    """Test function."""
     token = get_github_repo_token()
     assert isinstance(token, str), f"Expected token to be str, got {type(token)}"
 

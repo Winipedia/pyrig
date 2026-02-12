@@ -9,26 +9,26 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 class TestPyrigger:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = Pyrigger.L.get_group()
+        result = Pyrigger.L.group()
         assert isinstance(result, str)
         assert result == "tooling"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = Pyrigger.L.get_badge_urls()
+        result = Pyrigger.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_dev_dependencies(self) -> None:
+    def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = Pyrigger.L.get_dev_dependencies()
+        result = Pyrigger.L.dev_dependencies()
         assert isinstance(result, list), f"Expected list, got {type(result)}"
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = Pyrigger.L.get_name()
+        result = Pyrigger.L.name()
         assert result == "pyrig"
 
     def test_get_cmd_args(self, mocker: MockFixture) -> None:

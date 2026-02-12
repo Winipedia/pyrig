@@ -6,7 +6,7 @@ from pyrig.src.processes import Args, run_subprocess
 
 
 def test_run_subprocess() -> None:
-    """Test func for run_subprocess."""
+    """Test function."""
     cmd = ["echo", "hello"]
     res = run_subprocess(cmd)
     assert res.returncode == 0, "Expected returncode 0"

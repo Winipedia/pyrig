@@ -8,26 +8,26 @@ from pyrig.rig.tools.container_engine import ContainerEngine
 class TestContainerEngine:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.get_group()
+        result = ContainerEngine.L.group()
         assert isinstance(result, str)
         assert result == "tooling"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.get_badge_urls()
+        result = ContainerEngine.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_dev_dependencies(self) -> None:
+    def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.get_dev_dependencies()
+        result = ContainerEngine.L.dev_dependencies()
         assert result == []
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.get_name()
+        result = ContainerEngine.L.name()
         assert result == "podman"
 
     def test_get_build_args(self) -> None:

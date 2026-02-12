@@ -17,7 +17,7 @@ from pyrig.src.modules.module import make_obj_importpath
 
 
 def test_find_packages(mocker: MockFixture) -> None:
-    """Test func for find_packages."""
+    """Test function."""
     # Mock setuptools find_packages
     mock_find_packages = mocker.patch(
         make_obj_importpath(packages) + "._find_packages",

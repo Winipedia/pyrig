@@ -38,7 +38,7 @@ class TestPythonPackageConfigFile:
     def test__dump(
         self, my_test_python_package_config_file: type[PythonPackageConfigFile]
     ) -> None:
-        """Test method for dump."""
+        """Test method."""
         my_test_python_package_config_file()
         assert (
             my_test_python_package_config_file.get_path().parent / "__init__.py"
