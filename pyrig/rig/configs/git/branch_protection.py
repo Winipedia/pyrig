@@ -16,7 +16,7 @@ from pyrig.rig.configs.base.json import JsonConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.github_api import create_or_update_ruleset, get_repo
+from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
 from pyrig.rig.utils.version_control import get_github_repo_token
 
 logger = logging.getLogger(__name__)
@@ -114,7 +114,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
         existing ruleset if present.
         """
         token = get_github_repo_token()
-        owner, repo_name = VersionController.L.get_repo_owner_and_name()
+        owner, repo_name = VersionController.L.repo_owner_and_name()
         create_or_update_ruleset(
             token=token,
             owner=owner,
@@ -130,9 +130,9 @@ class RepoProtectionConfigFile(JsonConfigFile):
         settings based on pyproject.toml and pyrig defaults.
         """
         logger.info("Configuring secure repository settings")
-        owner, repo_name = VersionController.L.get_repo_owner_and_name()
+        owner, repo_name = VersionController.L.repo_owner_and_name()
         token = get_github_repo_token()
-        repo = get_repo(token, owner, repo_name)
+        repo = repository(token, owner, repo_name)
 
         toml_description = PyprojectConfigFile.L.project_description()
         logger.debug("Setting repository description: %s", toml_description)

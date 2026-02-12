@@ -329,7 +329,7 @@ class VersionController(Tool):
         return cls.config_args("--get", *args)
 
     @classmethod
-    def config_get_remote_origin_url_args(cls, *args: str) -> Args:
+    def config_remote_origin_url_args(cls, *args: str) -> Args:
         """Construct git config get remote origin URL arguments.
 
         Args:
@@ -390,7 +390,7 @@ class VersionController(Tool):
 
     @classmethod
     @cache
-    def get_repo_owner_and_name(
+    def repo_owner_and_name(
         cls,
         *,
         check_repo_url: bool = True,
@@ -401,7 +401,7 @@ class VersionController(Tool):
         Returns:
             Tuple of (owner, repository_name).
         """
-        url = cls.get_repo_remote(check=check_repo_url)
+        url = cls.repo_remote(check=check_repo_url)
         if not url:
             # we default to git username and repo name from cwd
             logger.debug(
@@ -424,7 +424,7 @@ class VersionController(Tool):
 
     @classmethod
     @cache
-    def get_repo_remote(cls, *, check: bool = True) -> str:
+    def repo_remote(cls, *, check: bool = True) -> str:
         """Get the remote origin URL from git config.
 
         Args:
@@ -437,7 +437,7 @@ class VersionController(Tool):
         Raises:
             subprocess.CalledProcessError: If check=True and command fails.
         """
-        args = cls.config_get_remote_origin_url_args()
+        args = cls.config_remote_origin_url_args()
         stdout = args.run(check=check).stdout
         return stdout.strip()
 

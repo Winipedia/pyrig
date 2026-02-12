@@ -75,9 +75,7 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def _configs(cls) -> dict[str, Any]:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
-        repo_owner, _ = VersionController.L.get_repo_owner_and_name(
-            check_repo_url=False
-        )
+        repo_owner, _ = VersionController.L.repo_owner_and_name(check_repo_url=False)
         tests_pkg_name = MirrorTestConfigFile.L.tests_package_name()
 
         return {
@@ -99,11 +97,11 @@ class PyprojectConfigFile(TomlConfigFile):
                     *cls.make_python_version_classifiers(),
                 ],
                 "urls": {
-                    "Homepage": RemoteVersionController.L.get_repo_url(),
+                    "Homepage": RemoteVersionController.L.repo_url(),
                     "Documentation": DocsBuilder.L.documentation_url(),
-                    "Source": RemoteVersionController.L.get_repo_url(),
+                    "Source": RemoteVersionController.L.repo_url(),
                     "Issues": RemoteVersionController.L.get_issues_url(),
-                    "Changelog": RemoteVersionController.L.get_releases_url(),
+                    "Changelog": RemoteVersionController.L.releases_url(),
                 },
                 "keywords": [],
                 "scripts": {

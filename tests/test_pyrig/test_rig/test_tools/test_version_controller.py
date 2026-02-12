@@ -56,9 +56,9 @@ class TestVersionController:
         result = VersionController.L.config_get_args()
         assert result == ("git", "config", "--get")
 
-    def test_config_get_remote_origin_url_args(self) -> None:
+    def test_config_remote_origin_url_args(self) -> None:
         """Test method."""
-        result = VersionController.L.config_get_remote_origin_url_args()
+        result = VersionController.L.config_remote_origin_url_args()
         assert result == ("git", "config", "--get", "remote.origin.url")
 
     def test_config_get_user_name_args(self) -> None:
@@ -185,15 +185,15 @@ class TestVersionController:
         assert isinstance(result, list)
         assert all(isinstance(item, str) for item in result)
 
-    def test_get_repo_owner_and_name(self) -> None:
+    def test_repo_owner_and_name(self) -> None:
         """Test method."""
-        result = VersionController.L.get_repo_owner_and_name()
+        result = VersionController.L.repo_owner_and_name()
         assert isinstance(result, tuple)
         assert all(isinstance(item, str) for item in result)
 
-    def test_get_repo_remote(self) -> None:
+    def test_repo_remote(self) -> None:
         """Test method."""
-        result = VersionController.L.get_repo_remote()
+        result = VersionController.L.repo_remote()
         assert isinstance(result, str)
 
     def test_get_username(self) -> None:

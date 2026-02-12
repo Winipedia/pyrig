@@ -6,7 +6,7 @@ Uses PyGithub for authentication and API calls.
 Functions:
     create_or_update_ruleset: Create or update a GitHub repository ruleset
     get_all_rulesets: Retrieve all rulesets defined for a repository
-    get_repo: Get a PyGithub Repository object for API operations
+    repository: Get a PyGithub Repository object for API operations
     ruleset_exists: Check if a ruleset with the given name exists
     github_api_request: Make a generic GitHub API request for a repository
 
@@ -120,7 +120,7 @@ def get_all_rulesets(token: str, owner: str, repo_name: str) -> Any:
     )
 
 
-def get_repo(token: str, owner: str, repo_name: str) -> Repository:
+def repository(token: str, owner: str, repo_name: str) -> Repository:
     """Get a PyGithub Repository object for API operations.
 
     Creates an authenticated PyGithub client and retrieves a Repository object.
@@ -140,7 +140,7 @@ def get_repo(token: str, owner: str, repo_name: str) -> Repository:
     Examples:
         Get a repository object::
 
-            >>> repo = get_repo(token="ghp_...", owner="myorg", repo_name="myrepo")
+            >>> repo = repository(token="ghp_...", owner="myorg", repo_name="myrepo")
             >>> print(repo.full_name)
             'myorg/myrepo'
     """
@@ -225,7 +225,7 @@ def github_api_request(  # noqa: PLR0913
         Uses PyGithub's internal `_requester` with automatic API version header.
     """
     logger.debug("GitHub API request: %s %s/%s/%s", method, owner, repo_name, endpoint)
-    repo = get_repo(token, owner, repo_name)
+    repo = repository(token, owner, repo_name)
     url = f"{repo.url}/{endpoint}"
 
     _headers, res = repo._requester.requestJsonAndCheck(  # noqa: SLF001
