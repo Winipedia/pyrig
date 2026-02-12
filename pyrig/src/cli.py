@@ -22,7 +22,7 @@ Example:
 import sys
 from pathlib import Path
 
-from pyrig.src.modules.package import pkg_name_from_project_name
+from pyrig.src.modules.package import package_name_from_project_name
 
 
 def project_name_from_argv() -> str:
@@ -42,12 +42,12 @@ def project_name_from_argv() -> str:
         'my-project'
 
     See Also:
-        pkg_name_from_argv: Converts the result to a Python package name.
+        package_name_from_argv: Converts the result to a Python package name.
     """
     return Path(sys.argv[0]).name
 
 
-def pkg_name_from_argv() -> str:
+def package_name_from_argv() -> str:
     """Extract the Python package name from the command-line invocation.
 
     Combines `project_name_from_argv` with hyphen-to-underscore conversion
@@ -60,12 +60,12 @@ def pkg_name_from_argv() -> str:
 
     Example:
         >>> # When invoked as: uv run my-project build
-        >>> pkg_name_from_argv()
+        >>> package_name_from_argv()
         'my_project'
 
     See Also:
         project_name_from_argv: Returns the raw project name without conversion.
-        pyrig.src.modules.package.pkg_name_from_project_name: conversion function.
+        pyrig.src.modules.package.package_name_from_project_name: conversion function.
     """
     project_name = project_name_from_argv()
-    return pkg_name_from_project_name(project_name)
+    return package_name_from_project_name(project_name)

@@ -240,7 +240,8 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Converts the test module's import name to a filesystem path.
 
         Returns:
-            Relative path to the test file (e.g., Path("tests/test_pkg/test_mod.py")).
+            Relative path to the test file
+            (e.g., Path("tests/test_package/test_mod.py")).
         """
         test_module_name = cls.test_module_name()
         return ModulePath.module_name_to_relative_file_path(test_module_name)
@@ -265,7 +266,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             src_module: Source module to derive test path from.
 
         Returns:
-            Test module import path (e.g., "tests.test_pkg.test_mod").
+            Test module import path (e.g., "tests.test_package.test_mod").
         """
         return cls.test_obj_importpath_from_obj(src_module)
 

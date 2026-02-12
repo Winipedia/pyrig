@@ -9,7 +9,7 @@ from pyrig.src.string_ import (
     make_linked_badge_markdown,
     make_name_from_obj,
     make_summary_error_msg,
-    pkg_req_name_split_pattern,
+    package_req_name_split_pattern,
     re_search_excluding_docstrings,
     split_on_uppercase,
 )
@@ -148,9 +148,9 @@ def test_make_linked_badge_markdown() -> None:
     assert result == expected, f"Expected '{expected}', got '{result}'"
 
 
-def test_pkg_req_name_split_pattern() -> None:
+def test_package_req_name_split_pattern() -> None:
     """Test function."""
-    result = pkg_req_name_split_pattern()
+    result = package_req_name_split_pattern()
     assert isinstance(result, re.Pattern), (
         f"Expected a compiled regex pattern, got {type(result)}"
     )

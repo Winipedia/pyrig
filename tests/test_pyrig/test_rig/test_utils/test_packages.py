@@ -10,7 +10,7 @@ from pyrig.rig.utils import packages
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
     find_packages,
-    src_pkg_is_pyrig,
+    src_package_is_pyrig,
 )
 from pyrig.rig.utils.version_control import path_is_in_ignore
 from pyrig.src.modules.module import make_obj_importpath
@@ -103,7 +103,7 @@ __pycache__/
 def test_find_namespace_packages(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        # make pkg in gitignore
+        # make package in gitignore
         GitignoreConfigFile()
 
         (Path.cwd() / "docs").mkdir()
@@ -121,6 +121,6 @@ def test_find_namespace_packages(tmp_path: Path) -> None:
         assert find_namespace_packages() == []
 
 
-def test_src_pkg_is_pyrig() -> None:
+def test_src_package_is_pyrig() -> None:
     """Test function."""
-    assert src_pkg_is_pyrig()
+    assert src_package_is_pyrig()

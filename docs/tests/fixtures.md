@@ -40,9 +40,9 @@ sequenceDiagram
 
     T->>P: Import as pytest plugin
     P->>D: Find all packages depending on pyrig
-    D-->>P: [pyrig, pkg_a, pkg_b, ...]
+    D-->>P: [pyrig, package_a, package_b, ...]
     P->>F: Find fixtures modules in each package
-    F-->>P: [pyrig.rig.tests.fixtures, pkg_a.rig.tests.fixtures, ...]
+    F-->>P: [pyrig.rig.tests.fixtures, package_a.rig.tests.fixtures, ...]
     P->>P: Register all Python files as pytest plugins
     P-->>T: All fixtures available
 

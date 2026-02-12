@@ -10,7 +10,7 @@ Discovery Process:
     3. Registers them as pytest plugins via the ``pytest_plugins`` list
 
 Attributes:
-    fixtures_pkgs (list[ModuleType]): Discovered fixtures modules from pyrig
+    fixtures_packages (list[ModuleType]): Discovered fixtures modules from pyrig
         and all dependent packages.
     pytest_plugin_paths (list[Path]): Relative paths to all fixture Python
         files to be registered as pytest plugins.
@@ -32,18 +32,18 @@ from pyrig.src.modules.path import ModulePath
 
 # find the fixtures module in all packages that depend on pyrig
 # and add all paths to pytest_plugins
-fixtures_pkgs = discover_equivalent_modules_across_dependents(fixtures, pyrig)
+fixtures_packages = discover_equivalent_modules_across_dependents(fixtures, pyrig)
 
 
 pytest_plugin_paths: list[Path] = []
-for pkg in fixtures_pkgs:
-    absolute_path = ModulePath.pkg_type_to_dir_path(pkg)
-    relative_path = ModulePath.pkg_name_to_relative_dir_path(pkg.__name__)
+for package in fixtures_packages:
+    absolute_path = ModulePath.package_type_to_dir_path(package)
+    relative_path = ModulePath.package_name_to_relative_dir_path(package.__name__)
 
-    pkg_root = Path(absolute_path.as_posix().removesuffix(relative_path.as_posix()))
+    package_root = Path(absolute_path.as_posix().removesuffix(relative_path.as_posix()))
 
     for path in absolute_path.rglob("*.py"):
-        rel_plugin_path = path.relative_to(pkg_root)
+        rel_plugin_path = path.relative_to(package_root)
         pytest_plugin_paths.append(rel_plugin_path)
 
 pytest_plugins = [

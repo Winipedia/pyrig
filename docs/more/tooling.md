@@ -202,7 +202,7 @@ setup instructions
 **Why**:
 
 - Required by PyInstaller
-- Provides pkg_resources utilities
+- Provides package_resources utilities
 - Industry standard (though being replaced by uv)
 
 ## Version Control

@@ -48,7 +48,7 @@ from pyrig.rig.tools.pre_committer import PreCommitter
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.packages import src_pkg_is_pyrig
+from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.src.string_ import (
     make_name_from_obj,
     split_on_uppercase,
@@ -940,7 +940,7 @@ class Workflow(YmlConfigFile):
         """
         if step is None:
             step = {}
-        if src_pkg_is_pyrig():
+        if src_package_is_pyrig():
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
         run = str(PackageManager.L.run_args(*ProjectTester.L.run_tests_in_ci_args()))
         return cls.step(
