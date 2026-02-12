@@ -51,7 +51,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
         return "_".join(reversed(filename.split("_")))
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the placeholder test content.
 
         Returns:

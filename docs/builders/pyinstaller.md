@@ -154,7 +154,7 @@ class MyAppBuilder(PyInstallerBuilder):
     @classmethod
     def app_icon_png_path(cls) -> Path:
         """Use custom icon location."""
-        return cls.get_root_path() / "assets" / "custom-icon.png"
+        return cls.root_path() / "assets" / "custom-icon.png"
 ```
 
 ## PyInstaller Options
@@ -163,7 +163,7 @@ The builder generates these PyInstaller options:
 
 | Option        | Value                            | Purpose                                       |
 | ------------- | -------------------------------- | --------------------------------------------- |
-| (positional)  | `cls.get_main_path()`            | Entry point script (main.py)                  |
+| (positional)  | `cls.main_path()`            | Entry point script (main.py)                  |
 | `--name`      | Project name from pyproject.toml | Executable name                               |
 | `--onefile`   | Enabled                          | Single executable file                        |
 | `--noconsole` | Enabled                          | No console window (GUI mode)                  |

@@ -102,7 +102,7 @@ class DocumentationBuilder(BuilderConfigFile):
     def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
         """Build documentation as a zip file."""
 
-        docs_dir = cls.get_root_path() / "docs"
+        docs_dir = cls.root_path() / "docs"
         output_zip = temp_artifacts_dir / "docs"
 
         shutil.make_archive(str(output_zip), 'zip', docs_dir)

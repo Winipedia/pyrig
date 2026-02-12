@@ -35,7 +35,7 @@ graph TD
 
 - Python file in the tests directory (`PythonTestsConfigFile`
 sets parent path to `tests/`)
-- Uses line-based content via `get_lines()` (inherited from `StringConfigFile`)
+- Uses line-based content via `lines()` (inherited from `StringConfigFile`)
 - Validates by checking if required content exists anywhere in the file
 - Allows user additions as long as required `pytest_plugins` import exists
 

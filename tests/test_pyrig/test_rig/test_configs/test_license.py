@@ -65,7 +65,7 @@ class TestLicenseConfigFile:
         # Should return empty string
         assert LicenseConfigFile.extension() == "", "Expected ''"
 
-    def test_get_lines(self) -> None:
+    def test_lines(self) -> None:
         """Test method."""
         # Should return empty string
-        assert isinstance(LicenseConfigFile.get_lines(), list)
+        assert isinstance(LicenseConfigFile.lines(), list)

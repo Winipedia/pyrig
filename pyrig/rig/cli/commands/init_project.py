@@ -190,7 +190,7 @@ def committing_initial_changes() -> Args:
     )
 
 
-def get_setup_steps() -> list[Callable[..., Any]]:
+def setup_steps() -> list[Callable[..., Any]]:
     """Return the ordered list of setup step functions for project initialization.
 
     Each function in the returned list takes no arguments and returns an Args
@@ -228,15 +228,15 @@ def init_project() -> None:
     Note:
         This function should be run once when setting up a new project.
     """
-    setup_steps = get_setup_steps()
-    total = len(setup_steps)
+    steps = setup_steps()
+    total = len(steps)
     with Progress(
         TextColumn("[bold]{task.description}"),
         BarColumn(),
         MofNCompleteColumn(),
     ) as progress:
         task = progress.add_task("Initializing project", total=total)
-        for step in setup_steps:
+        for step in steps:
             step_name = make_name_from_obj(step, join_on=" ")
             progress.update(task, description=step_name)
             PackageManager.L.get_run_args(*step()).run()

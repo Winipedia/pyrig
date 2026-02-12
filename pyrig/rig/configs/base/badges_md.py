@@ -59,7 +59,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         """
         if super().is_correct():
             return True
-        file_content = cls.get_file_content()
+        file_content = cls.file_content()
         updated_content = cls.replace_description(file_content)
         # only dump if content changed
         if updated_content != file_content:
@@ -69,7 +69,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         return super().is_correct()
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Generate Markdown with project name, categorized badges, and description.
 
         Returns:

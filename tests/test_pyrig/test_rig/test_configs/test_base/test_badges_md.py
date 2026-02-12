@@ -17,9 +17,9 @@ class TestBadgesMarkdownConfigFile:
         assert f"> {expected_description}" in result
         assert old_description not in result
 
-    def test_get_lines(self) -> None:
+    def test_lines(self) -> None:
         """Test method."""
-        lines = BadgesMarkdownConfigFile.get_lines()
+        lines = BadgesMarkdownConfigFile.lines()
         content_str = "\n".join(lines)
         assert isinstance(content_str, str)
 

@@ -25,7 +25,7 @@ def my_test_python_package_config_file(
             return Path()
 
         @classmethod
-        def get_lines(cls) -> list[str]:
+        def lines(cls) -> list[str]:
             """Get the content string."""
             return ['"""Test content."""']
 

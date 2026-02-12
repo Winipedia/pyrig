@@ -27,7 +27,7 @@ def my_test_gitignore_config_file(
 class TestGitIgnoreConfigFile:
     """Test class."""
 
-    def test_get_lines(
+    def test_lines(
         self,
         my_test_gitignore_config_file: type[GitIgnoreConfigFile],
         tmp_path: Path,
@@ -35,7 +35,7 @@ class TestGitIgnoreConfigFile:
         """Test method."""
         with chdir(tmp_path):
             my_test_gitignore_config_file.create_file()
-            lines = my_test_gitignore_config_file.get_lines()
+            lines = my_test_gitignore_config_file.lines()
             assert "__pycache__/" in lines
 
     def test_get_github_python_gitignore_as_str(self) -> None:

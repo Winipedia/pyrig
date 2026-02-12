@@ -8,7 +8,7 @@ Example:
     >>>
     >>> class MyTestFile(PythonTestsConfigFile):
     ...     @classmethod
-    ...     def get_lines(cls) -> list[str]:
+    ...     def lines(cls) -> list[str]:
     ...         return ["import pytest"]
     ...
     ...     @classmethod
@@ -30,7 +30,7 @@ class PythonTestsConfigFile(PythonConfigFile):
     Extends PythonConfigFile with parent path automatically set to tests/.
 
     Subclasses must implement:
-        - `get_lines`: Required test code as list of lines
+        - `lines`: Required test code as list of lines
         - `filename`: Test file name (e.g., "test_myclass")
 
     See Also:

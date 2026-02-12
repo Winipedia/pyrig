@@ -71,7 +71,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         return new_module_path.parent
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Return source module's content as list of lines.
 
         Returns:

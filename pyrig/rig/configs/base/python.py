@@ -12,7 +12,7 @@ Example:
     ...         return Path("src")
     ...
     ...     @classmethod
-    ...     def get_lines(cls) -> list[str]:
+    ...     def lines(cls) -> list[str]:
     ...         return ["from typing import Any", "import sys"]
 """
 
@@ -26,7 +26,7 @@ class PythonConfigFile(StringConfigFile):
 
     Subclasses must implement:
         - `parent_path`: Directory containing the .py file
-        - `get_lines`: Required Python code as list of lines
+        - `lines`: Required Python code as list of lines
 
     See Also:
         pyrig.rig.configs.base.string_.StringConfigFile: Parent class

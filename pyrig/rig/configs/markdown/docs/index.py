@@ -45,7 +45,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         return DocsBuilder.L.get_docs_dir()
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get the index.md file content.
 
         Returns:
@@ -54,7 +54,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         Note:
             Reads project name from pyproject.toml.
         """
-        lines = super().get_lines()
+        lines = super().lines()
         project_name = PyprojectConfigFile.L.get_project_name()
         lines[0] = lines[0].replace(project_name, f"{project_name} Documentation", 1)
         return lines

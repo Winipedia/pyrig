@@ -60,7 +60,7 @@ class LicenseConfigFile(StringConfigFile):
         return ""
 
     @classmethod
-    def get_lines(cls) -> list[str]:
+    def lines(cls) -> list[str]:
         """Get MIT license with year and owner."""
         return cls.get_mit_license_with_year_and_owner().splitlines()
 

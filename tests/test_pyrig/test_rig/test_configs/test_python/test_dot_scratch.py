@@ -22,9 +22,9 @@ class TestDotScratchConfigFile:
         """Test method."""
         assert DotScratchConfigFile.parent_path() == Path()
 
-    def test_get_lines(self) -> None:
+    def test_lines(self) -> None:
         """Test method."""
-        lines = DotScratchConfigFile.get_lines()
+        lines = DotScratchConfigFile.lines()
         assert isinstance(lines, list)
         for line in lines:
             assert isinstance(line, str)
