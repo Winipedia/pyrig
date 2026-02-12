@@ -121,4 +121,4 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         Returns:
             str: The email in the version control, e.g. the email in git config
         """
-        return f"<{VersionController.L.get_email()}>"
+        return f"<{VersionController.L.email()}>"

@@ -56,16 +56,16 @@ from typing import Any, Self, cast, overload
 
 from pyrig.rig import tests
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
-from pyrig.src.modules.class_ import get_all_cls_from_module, get_all_methods_from_cls
-from pyrig.src.modules.function import get_all_functions_from_module
-from pyrig.src.modules.inspection import get_qualname_of_obj
+from pyrig.src.modules.class_ import all_cls_from_module, all_methods_from_cls
+from pyrig.src.modules.function import all_functions_from_module
+from pyrig.src.modules.inspection import qualname_of_obj
 from pyrig.src.modules.module import (
-    get_default_module_content,
-    get_isolated_obj_name,
-    get_module_content_as_str,
+    default_module_content,
     import_module_with_file_fallback,
     import_obj_from_importpath,
+    isolated_obj_name,
     make_obj_importpath,
+    module_content_as_str,
     module_has_docstring,
 )
 from pyrig.src.modules.path import ModulePath
@@ -190,7 +190,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         if not cls.path().exists():
             return False
-        test_module_content = get_module_content_as_str(cls.test_module())
+        test_module_content = module_content_as_str(cls.test_module())
         untested_funcs = [
             f for f in cls.untested_func_names() if f not in test_module_content
         ]
@@ -303,10 +303,10 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Note:
             Preserves all existing test implementations while adding new skeletons.
         """
-        test_module_content = get_module_content_as_str(cls.test_module())
+        test_module_content = module_content_as_str(cls.test_module())
         # if module content has no docstring, add the default one
         if not module_has_docstring(cls.test_module()):
-            test_module_content = get_default_module_content() + test_module_content
+            test_module_content = default_module_content() + test_module_content
         test_module_content = cls.test_module_content_with_func_skeletons(
             test_module_content
         )
@@ -344,11 +344,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Note:
             Logs debug information about the number and names of untested functions.
         """
-        funcs = get_all_functions_from_module(cls.src_module())
-        test_funcs = get_all_functions_from_module(cls.test_module())
+        funcs = all_functions_from_module(cls.src_module())
+        test_funcs = all_functions_from_module(cls.test_module())
 
         supposed_test_func_names = [cls.test_name_for_obj(f) for f in funcs]
-        actual_test_func_names = [get_qualname_of_obj(f) for f in test_funcs]
+        actual_test_func_names = [qualname_of_obj(f) for f in test_funcs]
 
         untested_func_names = tuple(
             f for f in supposed_test_func_names if f not in actual_test_func_names
@@ -470,14 +470,14 @@ def {test_func_name}() -> None:
             Only considers methods defined directly on the class, excluding
             inherited methods from parent classes.
         """
-        classes = get_all_cls_from_module(cls.src_module())
-        test_classes = get_all_cls_from_module(cls.test_module())
+        classes = all_cls_from_module(cls.src_module())
+        test_classes = all_cls_from_module(cls.test_module())
 
         class_to_methods = {
-            c: get_all_methods_from_cls(c, exclude_parent_methods=True) for c in classes
+            c: all_methods_from_cls(c, exclude_parent_methods=True) for c in classes
         }
         test_class_to_test_methods = {
-            tc: get_all_methods_from_cls(tc, exclude_parent_methods=True)
+            tc: all_methods_from_cls(tc, exclude_parent_methods=True)
             for tc in test_classes
         }
 
@@ -486,7 +486,7 @@ def {test_func_name}() -> None:
             for c, ms in class_to_methods.items()
         }
         actual_test_class_to_test_methods_names = {
-            get_isolated_obj_name(tc): [get_isolated_obj_name(tm) for tm in tms]
+            isolated_obj_name(tc): [isolated_obj_name(tm) for tm in tms]
             for tc, tms in test_class_to_test_methods.items()
         }
 
@@ -584,7 +584,7 @@ class {test_class_name}:
 
         See Also:
             make_subclass_for_module: Creates individual subclasses
-            get_subclasses_ordered_by_priority: Inherited ordering method
+            subclasses_ordered_by_priority: Inherited ordering method
         """
         return list(map(cls.make_subclass_for_module, modules))
 
@@ -818,7 +818,7 @@ class {test_class_name}:
             'test_my_function'
         """
         prefix = cls.test_prefix_for_obj(obj)
-        name = get_isolated_obj_name(obj)
+        name = isolated_obj_name(obj)
         return prefix + name
 
     @classmethod

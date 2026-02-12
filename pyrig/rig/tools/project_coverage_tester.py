@@ -50,7 +50,7 @@ class ProjectCoverageTester(Tool):
     def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
-            f"{cls.remote_coverage_url()}/branch/{VersionController.L.get_default_branch()}/graph/badge.svg",
+            f"{cls.remote_coverage_url()}/branch/{VersionController.L.default_branch()}/graph/badge.svg",
             cls.remote_coverage_url(),
         )
 

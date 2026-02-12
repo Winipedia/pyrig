@@ -6,7 +6,7 @@ command-building interface.
 
 Utilities:
     run_subprocess: Execute commands with detailed error logging on failure.
-    Args: Immutable command container returned by all Tool.get_*_args methods.
+    Args: Immutable command container returned by all Tool.*_args methods.
 
 Example:
     >>> from pyrig.src.processes import run_subprocess, Args
@@ -101,7 +101,7 @@ class Args(tuple[str, ...]):
     """Immutable command-line arguments container with execution capabilities.
 
     Tuple subclass representing a complete command ready for execution.
-    Returned by all Tool.get_*_args methods (e.g., PackageManager.get_sync_args,
+    Returned by all Tool.*_args methods (e.g., PackageManager.sync_args,
     Linter.check_args) to provide a consistent interface for building, inspecting,
     and executing subprocess commands.
 

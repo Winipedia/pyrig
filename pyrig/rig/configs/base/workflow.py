@@ -229,7 +229,7 @@ class Workflow(YmlConfigFile):
         """
         return {
             "PYTHONDONTWRITEBYTECODE": 1,
-            PackageManager.L.get_no_auto_install_env_var(): 1,
+            PackageManager.L.no_auto_install_env_var(): 1,
         }
 
     # Workflow Conventions
@@ -360,7 +360,7 @@ class Workflow(YmlConfigFile):
             Trigger configuration for push events.
         """
         if branches is None:
-            branches = [VersionController.L.get_default_branch()]
+            branches = [VersionController.L.default_branch()]
         return {"push": {"branches": branches}}
 
     @classmethod
@@ -1457,7 +1457,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_create_and_push_tag,
-            run=str(VersionController.L.get_tag_args(tag=cls.insert_version()))
+            run=str(VersionController.L.tag_args(tag=cls.insert_version()))
             + " && "
             + str(VersionController.L.push_origin_tag_args(tag=cls.insert_version())),
             step=step,

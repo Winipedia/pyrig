@@ -8,7 +8,7 @@ implementations, and CLI commands across the package dependency ecosystem.
 Key functions:
     walk_package: Recursive package traversal for discovery
     import_pkg_with_dir_fallback: Import with direct file fallback
-    get_modules_and_packages_from_package: Extract direct children from a package
+    modules_and_packages_from_package: Extract direct children from a package
 """
 
 import importlib.machinery
@@ -130,7 +130,7 @@ def import_pkg_with_dir_fallback_with_default(
         return default
 
 
-def get_modules_and_packages_from_package(
+def modules_and_packages_from_package(
     package: ModuleType,
 ) -> tuple[list[ModuleType], list[ModuleType]]:
     """Extract and import all direct subpackages and modules from a package.
@@ -202,7 +202,7 @@ def walk_package(
         module children (not subpackages) in that package.
     """
     logger.debug("Walking package: %s", package.__name__)
-    subpackages, submodules = get_modules_and_packages_from_package(package)
+    subpackages, submodules = modules_and_packages_from_package(package)
     yield package, submodules
     for subpackage in subpackages:
         yield from walk_package(subpackage)

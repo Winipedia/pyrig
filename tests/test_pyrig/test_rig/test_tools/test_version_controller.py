@@ -30,25 +30,25 @@ class TestVersionController:
         result = VersionController.L.config_get_user_email_args()
         assert result == ("git", "config", "--get", "user.email")
 
-    def test_get_email(self) -> None:
+    def test_email(self) -> None:
         """Test method."""
-        result = VersionController.L.get_email()
+        result = VersionController.L.email()
         assert isinstance(result, str)
         assert len(result) > 0
 
-    def test_get_default_branch(self) -> None:
+    def test_default_branch(self) -> None:
         """Test method."""
-        result = VersionController.L.get_default_branch()
+        result = VersionController.L.default_branch()
         assert result == "main"
 
-    def test_get_default_ruleset_name(self) -> None:
+    def test_default_ruleset_name(self) -> None:
         """Test method."""
-        result = VersionController.L.get_default_ruleset_name()
+        result = VersionController.L.default_ruleset_name()
         assert result == "main-protection"
 
-    def test_get_diff_quiet_args(self) -> None:
+    def test_diff_quiet_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_diff_quiet_args()
+        result = VersionController.L.diff_quiet_args()
         assert result == ("git", "diff", "--quiet")
 
     def test_config_get_args(self) -> None:
@@ -66,9 +66,9 @@ class TestVersionController:
         result = VersionController.L.config_get_user_name_args()
         assert result == ("git", "config", "--get", "user.name")
 
-    def test_get_diff_args(self) -> None:
+    def test_diff_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_diff_args()
+        result = VersionController.L.diff_args()
         assert result == ("git", "diff")
 
     def test_push_origin_args(self) -> None:
@@ -82,10 +82,10 @@ class TestVersionController:
         result = VersionController.L.push_origin_tag_args(tag=tag)
         assert result == ("git", "push", "origin", tag)
 
-    def test_get_tag_args(self) -> None:
+    def test_tag_args(self) -> None:
         """Test method."""
         tag = "v1.2.3"
-        result = VersionController.L.get_tag_args(tag=tag)
+        result = VersionController.L.tag_args(tag=tag)
         assert result == ("git", "tag", tag)
 
     def test_name(self) -> None:
@@ -93,9 +93,9 @@ class TestVersionController:
         result = VersionController.L.name()
         assert result == "git"
 
-    def test_get_init_args(self) -> None:
+    def test_init_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_init_args()
+        result = VersionController.L.init_args()
         assert result == ("git", "init")
 
     def test_add_args(self) -> None:
@@ -174,14 +174,14 @@ class TestVersionController:
         result = VersionController.L.config_global_user_name_args(name="Test User")
         assert result == ("git", "config", "--global", "user.name", "Test User")
 
-    def test_get_ignore_path(self) -> None:
+    def test_ignore_path(self) -> None:
         """Test method."""
-        result = VersionController.L.get_ignore_path()
+        result = VersionController.L.ignore_path()
         assert result == Path(".gitignore")
 
-    def test_get_loaded_ignore(self) -> None:
+    def test_loaded_ignore(self) -> None:
         """Test method."""
-        result = VersionController.L.get_loaded_ignore()
+        result = VersionController.L.loaded_ignore()
         assert isinstance(result, list)
         assert all(isinstance(item, str) for item in result)
 
@@ -196,14 +196,14 @@ class TestVersionController:
         result = VersionController.L.repo_remote()
         assert isinstance(result, str)
 
-    def test_get_username(self) -> None:
+    def test_username(self) -> None:
         """Test method."""
-        result = VersionController.L.get_username()
+        result = VersionController.L.username()
         assert isinstance(result, str)
 
-    def test_get_diff(self) -> None:
+    def test_diff(self) -> None:
         """Test method."""
-        result = VersionController.L.get_diff()
+        result = VersionController.L.diff()
         assert isinstance(result, str)
 
     def test_has_unstaged_diff(self) -> None:
