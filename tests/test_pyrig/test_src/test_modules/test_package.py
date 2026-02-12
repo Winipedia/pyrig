@@ -20,12 +20,12 @@ from pyrig.src.modules.module import (
     make_obj_importpath,
 )
 from pyrig.src.modules.package import (
+    all_deps_depending_on_dep,
     create_package,
     discover_equivalent_modules_across_dependents,
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
-    get_all_deps_depending_on_dep,
-    get_objs_from_obj,
+    objs_from_obj,
     pkg_name_from_cwd,
     pkg_name_from_project_name,
     project_name_from_cwd,
@@ -128,7 +128,7 @@ def test_pkg_name_from_cwd() -> None:
     )
 
 
-def test_get_objs_from_obj(tmp_path: Path) -> None:
+def test_objs_from_obj(tmp_path: Path) -> None:
     """Test function."""
     # Create a test module with functions and classes
     module_content = '''"""Test module."""
@@ -161,7 +161,7 @@ class TestClass2:
         test_objs_module = import_module_from_file(module_file)
 
         # Test getting objects from module
-        objs = get_objs_from_obj(test_objs_module)
+        objs = objs_from_obj(test_objs_module)
 
         # Should contain 2 functions and 2 classes
         expected_function_count = 2
@@ -174,7 +174,7 @@ class TestClass2:
         )
 
         # Test getting objects from a class
-        class_objs = get_objs_from_obj(test_objs_module.TestClass1)
+        class_objs = objs_from_obj(test_objs_module.TestClass1)
 
         # Should contain at least the method1
         method_names = [getattr(obj, "__name__", None) for obj in class_objs]
@@ -186,7 +186,7 @@ class TestClass2:
         def test_func() -> None:
             pass
 
-        result = get_objs_from_obj(test_func)
+        result = objs_from_obj(test_func)
         assert result == [], f"Expected empty list for function, got {result}"
 
 
@@ -238,7 +238,7 @@ def test_discover_leaf_subclass_across_dependents() -> None:
     assert final_leaf is MyTestConfigFile
 
 
-def test_get_all_deps_depending_on_dep() -> None:
+def test_all_deps_depending_on_dep() -> None:
     """Test function."""
-    pkgs = get_all_deps_depending_on_dep(pyrig, include_self=True)
+    pkgs = all_deps_depending_on_dep(pyrig, include_self=True)
     assert pyrig in pkgs, f"Expected pyrig in pkgs, got {pkgs}"

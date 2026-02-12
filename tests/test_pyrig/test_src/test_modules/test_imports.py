@@ -8,17 +8,17 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig.src.modules.imports import (
-    get_modules_and_packages_from_package,
     import_pkg_from_dir,
     import_pkg_with_dir_fallback,
     import_pkg_with_dir_fallback_with_default,
     module_is_package,
+    modules_and_packages_from_package,
     walk_package,
 )
 from pyrig.src.modules.module import make_obj_importpath
 
 
-def test_get_modules_and_packages_from_package(tmp_path: Path) -> None:
+def test_modules_and_packages_from_package(tmp_path: Path) -> None:
     """Test function."""
     # Create a temporary package with known content
     with chdir(tmp_path):
@@ -30,7 +30,7 @@ def test_get_modules_and_packages_from_package(tmp_path: Path) -> None:
         module_file.write_text('"""Test module."""\n')
         package = import_pkg_from_dir(package_dir)
 
-        packages, modules = get_modules_and_packages_from_package(package)
+        packages, modules = modules_and_packages_from_package(package)
         assert packages == [], f"Expected no packages, got {packages}"
         modules_names = [m.__name__ for m in modules]
         assert modules_names == [package.__name__ + ".test_module"], (
@@ -48,10 +48,8 @@ def test_walk_package(mocker: MockFixture) -> None:
     module2 = ModuleType("root.sub1.module2")
     module3 = ModuleType("root.sub2.module3")
 
-    # Mock get_modules_and_packages_from_package
-    mock_get_modules = mocker.patch(
-        make_obj_importpath(get_modules_and_packages_from_package)
-    )
+    # Mock modules_and_packages_from_package
+    mock_modules = mocker.patch(make_obj_importpath(modules_and_packages_from_package))
 
     # Define side effects for different packages
     def side_effect(package: ModuleType) -> tuple[list[ModuleType], list[ModuleType]]:
@@ -63,7 +61,7 @@ def test_walk_package(mocker: MockFixture) -> None:
             return [], [module3]
         return [], []
 
-    mock_get_modules.side_effect = side_effect
+    mock_modules.side_effect = side_effect
 
     result = list(walk_package(root_package))
     expected = [

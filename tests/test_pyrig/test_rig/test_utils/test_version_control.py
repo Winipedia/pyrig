@@ -5,14 +5,14 @@ from pathlib import Path
 
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.version_control import (
-    get_github_repo_token,
+    github_repo_token,
     path_is_in_ignore,
 )
 
 
-def test_get_github_repo_token() -> None:
+def test_github_repo_token() -> None:
     """Test function."""
-    token = get_github_repo_token()
+    token = github_repo_token()
     assert isinstance(token, str), f"Expected token to be str, got {type(token)}"
 
 
@@ -29,7 +29,7 @@ dist/
 *.egg-info/
 .pytest_cache/
 """
-        VersionController.L.get_ignore_path().write_text(content)
+        VersionController.L.ignore_path().write_text(content)
         assert path_is_in_ignore("folder/file.pyc")
         assert path_is_in_ignore("__pycache__/file.pdf")
         assert path_is_in_ignore(".venv/file.py")

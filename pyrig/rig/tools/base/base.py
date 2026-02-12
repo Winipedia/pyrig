@@ -53,7 +53,7 @@ class Tool(Subclass):
     """Abstract base for tool command argument construction.
 
     Provides consistent interface for constructing command-line arguments.
-    Subclasses implement `name` and provide `get_*_args` methods.
+    Subclasses implement `name` and provide `*_args` methods.
 
     Pattern:
         - Each tool method returns `Args` object

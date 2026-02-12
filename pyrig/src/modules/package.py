@@ -14,17 +14,17 @@ from types import ModuleType
 from typing import Any
 
 from pyrig.src.modules.class_ import (
+    all_cls_from_module,
+    all_methods_from_cls,
     discard_parent_classes,
     discover_all_subclasses,
-    get_all_cls_from_module,
-    get_all_methods_from_cls,
 )
 from pyrig.src.modules.dependency_graph import DependencyGraph
-from pyrig.src.modules.function import get_all_functions_from_module
+from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.imports import (
-    get_modules_and_packages_from_package,
     import_pkg_with_dir_fallback,
     module_is_package,
+    modules_and_packages_from_package,
 )
 from pyrig.src.modules.module import (
     import_module_with_file_fallback,
@@ -102,7 +102,7 @@ def pkg_name_from_cwd() -> str:
     return pkg_name_from_project_name(project_name_from_cwd())
 
 
-def get_objs_from_obj(
+def objs_from_obj(
     obj: Callable[..., Any] | type | ModuleType,
 ) -> Sequence[Callable[..., Any] | type | ModuleType]:
     """Extract contained objects from a container.
@@ -120,18 +120,18 @@ def get_objs_from_obj(
     """
     if isinstance(obj, ModuleType):
         if module_is_package(obj):
-            return get_modules_and_packages_from_package(obj)[1]
+            return modules_and_packages_from_package(obj)[1]
         objs: list[Callable[..., Any] | type] = []
-        objs.extend(get_all_functions_from_module(obj))
-        objs.extend(get_all_cls_from_module(obj))
+        objs.extend(all_functions_from_module(obj))
+        objs.extend(all_cls_from_module(obj))
         return objs
     if isinstance(obj, type):
-        return get_all_methods_from_cls(obj, exclude_parent_methods=True)
+        return all_methods_from_cls(obj, exclude_parent_methods=True)
     return []
 
 
 @cache
-def get_all_deps_depending_on_dep(
+def all_deps_depending_on_dep(
     dep: ModuleType, *, include_self: bool = False
 ) -> list[ModuleType]:
     """Get all packages that depend on pyrig.
@@ -140,7 +140,7 @@ def get_all_deps_depending_on_dep(
         List of imported module objects for dependent packages.
     """
     # Note we do not use cached to avoid caching the entire graph during CLI invocations
-    return DependencyGraph().get_all_depending_on(dep, include_self=include_self)
+    return DependencyGraph().all_depending_on(dep, include_self=include_self)
 
 
 @cache
@@ -191,7 +191,7 @@ def discover_equivalent_modules_across_dependents(
         This assumes consistent package structure across the ecosystem.
 
     See Also:
-        DependencyGraph.get_all_depending_on: Finds dependent packages
+        DependencyGraph.all_depending_on: Finds dependent packages
         discover_subclasses_across_dependents: Uses this to find subclasses
     """
     module_name = module.__name__
@@ -200,7 +200,7 @@ def discover_equivalent_modules_across_dependents(
         module_name,
         dep.__name__,
     )
-    pkgs = get_all_deps_depending_on_dep(dep, include_self=True)
+    pkgs = all_deps_depending_on_dep(dep, include_self=True)
 
     modules: list[ModuleType] = []
     for pkg in pkgs:

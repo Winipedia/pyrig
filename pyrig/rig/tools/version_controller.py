@@ -35,7 +35,7 @@ class VersionController(Tool):
         - Configuration: user name/email
 
     Example:
-        >>> VersionController.L.get_init_args().run()
+        >>> VersionController.L.init_args().run()
         >>> VersionController.L.add_all_args().run()
         >>> VersionController.L.commit_no_verify_args("Initial commit").run()
     """
@@ -76,7 +76,7 @@ class VersionController(Tool):
         return []
 
     @classmethod
-    def get_default_branch(cls) -> str:
+    def default_branch(cls) -> str:
         """Get the default branch name.
 
         Returns:
@@ -85,16 +85,16 @@ class VersionController(Tool):
         return "main"
 
     @classmethod
-    def get_default_ruleset_name(cls) -> str:
+    def default_ruleset_name(cls) -> str:
         """Get the default branch protection ruleset name.
 
         Returns:
             Default ruleset name.
         """
-        return f"{cls.get_default_branch()}-protection"
+        return f"{cls.default_branch()}-protection"
 
     @classmethod
-    def get_init_args(cls, *args: str) -> Args:
+    def init_args(cls, *args: str) -> Args:
         """Construct git init arguments.
 
         Args:
@@ -304,7 +304,7 @@ class VersionController(Tool):
         return cls.config_global_args("user.name", name, *args)
 
     @classmethod
-    def get_tag_args(cls, *args: str, tag: str) -> Args:
+    def tag_args(cls, *args: str, tag: str) -> Args:
         """Construct git tag arguments.
 
         Args:
@@ -365,7 +365,7 @@ class VersionController(Tool):
         return cls.config_get_args("user.email", *args)
 
     @classmethod
-    def get_diff_args(cls, *args: str) -> Args:
+    def diff_args(cls, *args: str) -> Args:
         """Construct git diff arguments.
 
         Args:
@@ -377,7 +377,7 @@ class VersionController(Tool):
         return cls.args("diff", *args)
 
     @classmethod
-    def get_diff_quiet_args(cls, *args: str) -> Args:
+    def diff_quiet_args(cls, *args: str) -> Args:
         """Construct git diff arguments with --quiet flag.
 
         Args:
@@ -386,7 +386,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git diff --quiet'.
         """
-        return cls.get_diff_args("--quiet", *args)
+        return cls.diff_args("--quiet", *args)
 
     @classmethod
     @cache
@@ -407,7 +407,7 @@ class VersionController(Tool):
             logger.debug(
                 "No git remote found, using git username and CWD for repo info"
             )
-            owner = cls.get_username()
+            owner = cls.username()
             repo = project_name_from_cwd()
             logger.debug("Derived repository: %s/%s", owner, repo)
         else:
@@ -443,7 +443,7 @@ class VersionController(Tool):
 
     @classmethod
     @cache
-    def get_username(cls) -> str:
+    def username(cls) -> str:
         """Get git username from local config.
 
         Returns:
@@ -463,23 +463,23 @@ class VersionController(Tool):
         Returns:
             True if there are unstaged changes.
         """
-        args = cls.get_diff_quiet_args()
+        args = cls.diff_quiet_args()
         completed_process = args.run(check=False)
         return completed_process.returncode != 0
 
     @classmethod
-    def get_diff(cls) -> str:
+    def diff(cls) -> str:
         """Get the diff output.
 
         Returns:
             Diff output.
         """
-        args = cls.get_diff_args()
+        args = cls.diff_args()
         completed_process = args.run(check=False)
         return completed_process.stdout
 
     @classmethod
-    def get_ignore_path(cls) -> Path:
+    def ignore_path(cls) -> Path:
         """Get the path to the .gitignore file.
 
         Returns:
@@ -488,16 +488,16 @@ class VersionController(Tool):
         return Path(".gitignore")
 
     @classmethod
-    def get_loaded_ignore(cls) -> list[str]:
+    def loaded_ignore(cls) -> list[str]:
         """Get the loaded gitignore patterns.
 
         Returns:
             List of gitignore patterns.
         """
-        return cls.get_ignore_path().read_text(encoding="utf-8").splitlines()
+        return cls.ignore_path().read_text(encoding="utf-8").splitlines()
 
     @classmethod
-    def get_email(cls) -> str:
+    def email(cls) -> str:
         """Get the email from git config.
 
         Returns:

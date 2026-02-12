@@ -14,18 +14,18 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-from pyrig.src.modules.function import get_all_functions_from_module
+from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.inspection import (
-    get_module_of_obj,
-    get_qualname_of_obj,
-    get_unwrapped_obj,
+    module_of_obj,
+    qualname_of_obj,
+    unwrapped_obj,
 )
 from pyrig.src.modules.path import ModulePath, make_dir_with_init_file
 
 logger = logging.getLogger(__name__)
 
 
-def get_module_content_as_str(module: ModuleType) -> str:
+def module_content_as_str(module: ModuleType) -> str:
     """Read the source code of a module as a string.
 
     Args:
@@ -67,7 +67,7 @@ def create_module(path: Path) -> ModuleType:
 
     if not path.exists():
         logger.info("Creating module at: %s", path)
-        path.write_text(get_default_module_content())
+        path.write_text(default_module_content())
     return import_module_with_file_fallback(path)
 
 
@@ -175,8 +175,8 @@ def make_obj_importpath(obj: Callable[..., Any] | type | ModuleType) -> str:
     """
     if isinstance(obj, ModuleType):
         return obj.__name__
-    module: str | None = get_module_of_obj(obj).__name__
-    obj_name = get_qualname_of_obj(obj)
+    module: str | None = module_of_obj(obj).__name__
+    obj_name = qualname_of_obj(obj)
     if not module:
         return obj_name
     return module + "." + obj_name
@@ -218,7 +218,7 @@ def import_obj_from_importpath(
         return obj
 
 
-def get_isolated_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
+def isolated_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
     """Extract the bare name of an object without its module or class prefix.
 
     For modules, returns the last component of the dotted name. For classes,
@@ -232,15 +232,15 @@ def get_isolated_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
         The bare object name (e.g., ``"MyClass"`` not ``"package.module.MyClass"``).
 
     Example:
-        >>> get_isolated_obj_name(Path)
+        >>> isolated_obj_name(Path)
         'Path'
     """
-    obj = get_unwrapped_obj(obj)
+    obj = unwrapped_obj(obj)
     if isinstance(obj, ModuleType):
         return obj.__name__.split(".")[-1]
     if isinstance(obj, type):
         return obj.__name__
-    return get_qualname_of_obj(obj).split(".")[-1]
+    return qualname_of_obj(obj).split(".")[-1]
 
 
 def execute_all_functions_from_module(module: ModuleType) -> list[Any]:
@@ -260,10 +260,10 @@ def execute_all_functions_from_module(module: ModuleType) -> list[Any]:
         All functions must accept zero arguments or have default values for all
         parameters. Raises ``TypeError`` if a function requires arguments.
     """
-    return [f() for f in get_all_functions_from_module(module)]
+    return [f() for f in all_functions_from_module(module)]
 
 
-def get_default_module_content() -> str:
+def default_module_content() -> str:
     """Generate default content for a new Python module file.
 
     Used by ``create_module`` when creating new module files. The content is a
@@ -303,7 +303,7 @@ def import_module_with_default(
         return default
 
 
-def get_module_name_replacing_start_module(
+def module_name_replacing_start_module(
     module: ModuleType, new_start_module_name: str
 ) -> str:
     """Replace the root package name in a module's fully qualified name.
@@ -320,7 +320,7 @@ def get_module_name_replacing_start_module(
 
     Example:
         >>> # If module.__name__ is "pyrig.src.modules.module"
-        >>> get_module_name_replacing_start_module(module, "tests")
+        >>> module_name_replacing_start_module(module, "tests")
         'tests.src.modules.module'
     """
     module_current_start = module.__name__.split(".")[0]

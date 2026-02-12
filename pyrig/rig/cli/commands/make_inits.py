@@ -7,7 +7,7 @@ packages without __init__.py) to ensure proper importability.
 import logging
 from concurrent.futures import ThreadPoolExecutor
 
-from pyrig.rig.utils.packages import get_namespace_packages
+from pyrig.rig.utils.packages import find_namespace_packages
 from pyrig.src.modules.path import ModulePath, make_init_module
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def make_init_files() -> None:
         directory is excluded from scanning.
     """
     logger.info("Starting __init__.py file creation")
-    any_namespace_packages = get_namespace_packages()
+    any_namespace_packages = find_namespace_packages()
     if not any_namespace_packages:
         logger.info(
             "No namespace packages found, all packages already have __init__.py files"

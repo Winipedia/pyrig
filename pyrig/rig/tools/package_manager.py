@@ -66,7 +66,7 @@ class PackageManager(Tool):
         return []
 
     @classmethod
-    def get_init_project_args(cls, *args: str) -> Args:
+    def init_project_args(cls, *args: str) -> Args:
         """Construct uv init arguments.
 
         Args:
@@ -235,7 +235,7 @@ class PackageManager(Tool):
         return cls.version_args("--short", *args)
 
     @classmethod
-    def get_no_auto_install_env_var(cls) -> str:
+    def no_auto_install_env_var(cls) -> str:
         """Get environment variable name for disabling auto-install.
 
         E.g. uv sync automatically if the venv is not in sync with the lock file

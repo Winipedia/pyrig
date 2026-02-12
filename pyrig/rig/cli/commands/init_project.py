@@ -60,7 +60,7 @@ def initializing_version_control() -> Args:
     Returns:
         Args object for initializing version control.
     """
-    return VersionController.L.get_init_args()
+    return VersionController.L.init_args()
 
 
 def adding_dev_dependencies() -> Args:
@@ -172,7 +172,7 @@ def running_tests() -> Args:
     Returns:
         Args object for running tests.
     """
-    return ProjectTester.L.get_test_args()
+    return ProjectTester.L.test_args()
 
 
 def committing_initial_changes() -> Args:

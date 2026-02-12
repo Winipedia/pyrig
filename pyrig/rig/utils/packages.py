@@ -6,7 +6,7 @@ Utilities for discovering Python packages with additional filtering and automati
 Functions:
     find_packages: Discover Python packages with depth and pattern filtering
     src_pkg_is_pyrig: Check if the current project is pyrig itself
-    get_namespace_packages: Find all PEP 420 namespace packages
+    find_namespace_packages: Find all PEP 420 namespace packages
 
 Examples:
     Find packages with depth limit::
@@ -136,7 +136,7 @@ def src_pkg_is_pyrig() -> bool:
     return pyrig.__name__ in pkgs
 
 
-def get_namespace_packages() -> list[str]:
+def find_namespace_packages() -> list[str]:
     """Find all PEP 420 namespace packages in the project.
 
     Discovers namespace packages (packages without `__init__.py`) by comparing
@@ -150,7 +150,7 @@ def get_namespace_packages() -> list[str]:
     Examples:
         Find all namespace packages::
 
-            >>> ns_pkgs = get_namespace_packages()
+            >>> ns_pkgs = find_namespace_packages()
             >>> print(ns_pkgs)
             ['myproject.plugins', 'myproject.extensions']
 

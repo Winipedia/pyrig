@@ -447,7 +447,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         """Initialize specific ConfigFile subclasses with priority-based ordering.
 
         Groups by priority, initializes in the order given, parallel within groups.
-        Order by priority is defined in get_subclasses_ordered_by_priority.
+        Order by priority is defined in subclasses_ordered_by_priority.
 
         Args:
             subclasses: ConfigFile subclasses to initialize.

@@ -44,23 +44,23 @@ from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import (
+    find_namespace_packages,
     find_packages,
-    get_namespace_packages,
 )
 from pyrig.rig.utils.testing import autouse_session_fixture
 from pyrig.src.git import (
     running_in_github_actions,
 )
 from pyrig.src.modules.imports import (
-    get_modules_and_packages_from_package,
+    modules_and_packages_from_package,
     walk_package,
 )
 from pyrig.src.modules.module import (
-    get_isolated_obj_name,
-    get_module_name_replacing_start_module,
+    isolated_obj_name,
+    module_name_replacing_start_module,
 )
 from pyrig.src.modules.package import (
-    get_all_deps_depending_on_dep,
+    all_deps_depending_on_dep,
     pkg_name_from_project_name,
     project_name_from_pkg_name,
 )
@@ -92,13 +92,13 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
     if in_github_actions:
         unstaged_changes = VersionController.L.has_unstaged_diff()
         assert not unstaged_changes, msg.format(
-            unstaged_changes=VersionController.L.get_diff()
+            unstaged_changes=VersionController.L.diff()
         )
     yield
     if in_github_actions:
         unstaged_changes = VersionController.L.has_unstaged_diff()
         assert not unstaged_changes, msg.format(
-            unstaged_changes=VersionController.L.get_diff()
+            unstaged_changes=VersionController.L.diff()
         )
 
 
@@ -141,7 +141,7 @@ def assert_no_namespace_packages() -> None:
     Raises:
         AssertionError: If namespace packages were found (lists created paths).
     """
-    any_namespace_packages = get_namespace_packages()
+    any_namespace_packages = find_namespace_packages()
     if any_namespace_packages:
         make_init_files()
 
@@ -186,19 +186,19 @@ def assert_all_src_code_in_one_package() -> None:
 """
 
     # assert the src package's only submodules are main, src and rig
-    subpackages, submodules = get_modules_and_packages_from_package(src_package)
+    subpackages, submodules = modules_and_packages_from_package(src_package)
     subpackage_names = {p.__name__.split(".")[-1] for p in subpackages}
     submodule_names = {m.__name__.split(".")[-1] for m in submodules}
 
     expected_subpackages = {
-        get_isolated_obj_name(sub_pkg)
+        isolated_obj_name(sub_pkg)
         for sub_pkg in [
             rig,
             src,
             resources,
         ]
     }
-    expected_submodules = {get_isolated_obj_name(main)}
+    expected_submodules = {isolated_obj_name(main)}
     assert (
         subpackage_names == expected_subpackages
     ), f"""Pyrig enforces a single source package with a specific structure.
@@ -500,14 +500,14 @@ def assert_src_does_not_use_rig() -> None:
     """
     src_package = import_module(PyprojectConfigFile.L.package_name())
 
-    src_src_pkg_name = get_module_name_replacing_start_module(src, src_package.__name__)
+    src_src_pkg_name = module_name_replacing_start_module(src, src_package.__name__)
 
     src_src_pkg = import_module(src_src_pkg_name)
 
-    pkgs_depending_on_pyrig = get_all_deps_depending_on_dep(pyrig, include_self=True)
+    pkgs_depending_on_pyrig = all_deps_depending_on_dep(pyrig, include_self=True)
 
     possible_rig_usages = [
-        get_module_name_replacing_start_module(rig, pkg.__name__)
+        module_name_replacing_start_module(rig, pkg.__name__)
         for pkg in pkgs_depending_on_pyrig
     ]
     possible_rig_usages = [re.escape(usage) for usage in possible_rig_usages]

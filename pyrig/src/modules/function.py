@@ -11,10 +11,10 @@ from types import ModuleType
 from typing import Any
 
 from pyrig.src.modules.inspection import (
-    get_def_line,
-    get_module_of_obj,
-    get_obj_members,
-    get_unwrapped_obj,
+    def_line,
+    module_of_obj,
+    obj_members,
+    unwrapped_obj,
 )
 
 
@@ -47,12 +47,12 @@ def is_func(obj: Any) -> bool:
     if is_func_or_method(obj):
         return True
 
-    unwrapped = get_unwrapped_obj(obj)
+    unwrapped = unwrapped_obj(obj)
 
     return is_func_or_method(unwrapped)
 
 
-def get_all_functions_from_module(
+def all_functions_from_module(
     module: ModuleType | str, *, include_annotate: bool = False
 ) -> list[Callable[..., Any]]:
     """Extract all functions defined directly in a module.
@@ -70,9 +70,9 @@ def get_all_functions_from_module(
         module = import_module(module)
     funcs = [
         func
-        for _name, func in get_obj_members(module, include_annotate=include_annotate)
+        for _name, func in obj_members(module, include_annotate=include_annotate)
         if is_func(func)
-        if get_module_of_obj(func).__name__ == module.__name__
+        if module_of_obj(func).__name__ == module.__name__
     ]
     # sort by definition order
-    return sorted(funcs, key=get_def_line)
+    return sorted(funcs, key=def_line)

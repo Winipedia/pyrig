@@ -100,7 +100,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     "Homepage": RemoteVersionController.L.repo_url(),
                     "Documentation": DocsBuilder.L.documentation_url(),
                     "Source": RemoteVersionController.L.repo_url(),
-                    "Issues": RemoteVersionController.L.get_issues_url(),
+                    "Issues": RemoteVersionController.L.issues_url(),
                     "Changelog": RemoteVersionController.L.releases_url(),
                 },
                 "keywords": [],

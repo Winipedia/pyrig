@@ -38,7 +38,7 @@ class ModulePath:
           ``pkg_type_to_dir_path``
 
     Frozen Environment Support:
-        Methods ``cwd``, ``rel_cwd``, ``get_meipass``, and ``in_frozen_env``
+        Methods ``cwd``, ``rel_cwd``, ``meipass``, and ``in_frozen_env``
         handle PyInstaller frozen executables where files are extracted to a
         temporary ``_MEIPASS`` directory.
     """
@@ -54,9 +54,7 @@ class ModulePath:
         Returns:
             Absolute path to CWD, or _MEIPASS directory in frozen environment.
         """
-        return (
-            Path.cwd() if not ModulePath.in_frozen_env() else ModulePath.get_meipass()
-        )
+        return Path.cwd() if not ModulePath.in_frozen_env() else ModulePath.meipass()
 
     @staticmethod
     def rel_cwd() -> Path:
@@ -69,10 +67,10 @@ class ModulePath:
         Returns:
             Empty Path in normal execution, or _MEIPASS in frozen environment.
         """
-        return Path() if not ModulePath.in_frozen_env() else ModulePath.get_meipass()
+        return Path() if not ModulePath.in_frozen_env() else ModulePath.meipass()
 
     @staticmethod
-    def get_meipass() -> Path:
+    def meipass() -> Path:
         """Get the PyInstaller _MEIPASS temporary extraction directory.
 
         PyInstaller bundles Python files into a single executable and extracts
@@ -262,7 +260,7 @@ def make_dir_with_init_file(path: Path) -> None:
     make_init_modules_for_package(path)
 
 
-def get_default_init_module_content() -> str:
+def default_init_module_content() -> str:
     """Generate the default content for new ``__init__.py`` files.
 
     Returns:
@@ -275,7 +273,7 @@ def get_default_init_module_content() -> str:
 def make_init_module(path: Path) -> None:
     """Create an ``__init__.py`` file in the specified directory.
 
-    Creates the file with default content from ``get_default_init_module_content``.
+    Creates the file with default content from ``default_init_module_content``.
     Logs the creation at INFO level.
 
     Args:
@@ -291,7 +289,7 @@ def make_init_module(path: Path) -> None:
 
     logger.info("Creating __init__.py file at: %s", init_path)
 
-    content = get_default_init_module_content()
+    content = default_init_module_content()
     init_path.write_text(content)
 
 

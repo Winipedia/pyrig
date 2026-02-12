@@ -61,7 +61,7 @@ class DependencyGraph(DiGraph):
         return DependencyGraph.normalize_package_name(name)
 
     @staticmethod
-    def get_all_dependencies() -> list[str]:
+    def all_dependencies() -> list[str]:
         """Get all installed package names.
 
         Returns:
@@ -100,7 +100,7 @@ class DependencyGraph(DiGraph):
         dep = pkg_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
         return DependencyGraph.normalize_package_name(dep) if dep else None
 
-    def get_all_depending_on(
+    def all_depending_on(
         self, package: ModuleType | str, *, include_self: bool = False
     ) -> list[ModuleType]:
         """Find all packages that depend on the given package.

@@ -33,9 +33,9 @@ class TestPackageManager:
         result = PackageManager.L.build_backend()
         assert result == "uv_build"
 
-    def test_get_no_auto_install_env_var(self) -> None:
+    def test_no_auto_install_env_var(self) -> None:
         """Test method."""
-        result = PackageManager.L.get_no_auto_install_env_var()
+        result = PackageManager.L.no_auto_install_env_var()
         assert result == "UV_NO_SYNC"
 
     def test_run_no_dev_args(self) -> None:
@@ -53,9 +53,9 @@ class TestPackageManager:
         result = PackageManager.L.name()
         assert result == "uv"
 
-    def test_get_init_project_args(self) -> None:
+    def test_init_project_args(self) -> None:
         """Test method."""
-        result = PackageManager.L.get_init_project_args("--name", "myproject")
+        result = PackageManager.L.init_project_args("--name", "myproject")
         assert result == ("uv", "init", "--name", "myproject")
 
     def test_run_args(self) -> None:

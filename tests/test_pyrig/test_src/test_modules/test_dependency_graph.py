@@ -72,9 +72,9 @@ class TestDependencyGraph:
             "Expected edge from 'test-package' to 'dependency2'"
         )
 
-    def test_get_all_dependencies(self) -> None:
+    def test_all_dependencies(self) -> None:
         """Test method."""
-        deps = DependencyGraph.get_all_dependencies()
+        deps = DependencyGraph.all_dependencies()
         assert "setuptools" in deps, "Expected 'setuptools' to be in dependencies"
 
     def test_parse_pkg_name_from_req(self) -> None:
@@ -104,7 +104,7 @@ class TestDependencyGraph:
         result = DependencyGraph.parse_pkg_name_from_req("  package-name  >=1.0")
         assert result == "package_name", f"Expected 'package_name', got {result}"
 
-    def test_get_all_depending_on(self, mocker: MockFixture) -> None:
+    def test_all_depending_on(self, mocker: MockFixture) -> None:
         """Test method."""
         # Mock the build method to prevent it from running
         mocker.patch.object(DependencyGraph, "build")
@@ -140,7 +140,7 @@ class TestDependencyGraph:
         mocker.patch.object(graph, "import_packages", side_effect=mock_import_packages)
 
         # Test getting all packages depending on pkg_c
-        result = graph.get_all_depending_on(mock_pkg_c, include_self=False)
+        result = graph.all_depending_on(mock_pkg_c, include_self=False)
 
         # pkg_a and pkg_b depend on pkg_c (transitively)
         expected_count = 2
@@ -161,7 +161,7 @@ class TestDependencyGraph:
         )
 
         # Test with include_self=True
-        result = graph.get_all_depending_on(mock_pkg_c, include_self=True)
+        result = graph.all_depending_on(mock_pkg_c, include_self=True)
         assert mock_pkg_c in result, (
             f"Expected pkg_c in result when include_self=True, got {result}"
         )

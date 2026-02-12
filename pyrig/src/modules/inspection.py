@@ -13,9 +13,7 @@ from types import ModuleType
 from typing import Any, cast
 
 
-def get_obj_members(
-    obj: Any, *, include_annotate: bool = False
-) -> list[tuple[str, Any]]:
+def obj_members(obj: Any, *, include_annotate: bool = False) -> list[tuple[str, Any]]:
     """Get all members of an object as name-value pairs using static introspection.
 
     Uses `inspect.getmembers_static` to retrieve members without invoking descriptors,
@@ -48,7 +46,7 @@ def inside_frozen_bundle() -> bool:
     return getattr(sys, "frozen", False)
 
 
-def get_def_line(obj: Any) -> int:
+def def_line(obj: Any) -> int:
     """Get the source line number where an object is defined.
 
     Handles functions, methods, properties, staticmethods, classmethods, and decorators
@@ -65,7 +63,7 @@ def get_def_line(obj: Any) -> int:
     """
     if isinstance(obj, property):
         obj = obj.fget
-    unwrapped = get_unwrapped_obj(obj)
+    unwrapped = unwrapped_obj(obj)
     if hasattr(unwrapped, "__code__"):
         return int(unwrapped.__code__.co_firstlineno)
     # getsourcelines does not work if in a pyinstaller bundle or something
@@ -74,7 +72,7 @@ def get_def_line(obj: Any) -> int:
     return inspect.getsourcelines(unwrapped)[1]
 
 
-def get_unwrapped_obj(obj: Any) -> Any:
+def unwrapped_obj(obj: Any) -> Any:
     """Unwrap a method-like object to its underlying function.
 
     Iteratively unwraps layers of wrapping until reaching the original function:
@@ -102,7 +100,7 @@ def get_unwrapped_obj(obj: Any) -> Any:
     return obj
 
 
-def get_qualname_of_obj(obj: Callable[..., Any] | type) -> str:
+def qualname_of_obj(obj: Callable[..., Any] | type) -> str:
     """Get the qualified name of a callable or type.
 
     Includes class name for methods (e.g., "MyClass.my_method").
@@ -113,11 +111,11 @@ def get_qualname_of_obj(obj: Callable[..., Any] | type) -> str:
     Returns:
         Qualified name string.
     """
-    unwrapped = get_unwrapped_obj(obj)
+    unwrapped = unwrapped_obj(obj)
     return cast("str", unwrapped.__qualname__)
 
 
-def get_module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
+def module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
     """Return the module where a method-like object is defined.
 
     Unwraps the object first to handle decorated functions, then uses
@@ -135,7 +133,7 @@ def get_module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType
     Raises:
         ValueError: If module cannot be determined and no default is provided.
     """
-    unwrapped = get_unwrapped_obj(obj)
+    unwrapped = unwrapped_obj(obj)
     module = inspect.getmodule(unwrapped)
     if not module:
         msg = f"Could not determine module of {obj}"

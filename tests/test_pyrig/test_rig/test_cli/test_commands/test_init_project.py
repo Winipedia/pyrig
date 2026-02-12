@@ -142,7 +142,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
     # Initialize git repo in the test project directory
     with chdir(src_project_dir):
-        VersionController.L.get_init_args().run()
+        VersionController.L.init_args().run()
         VersionController.L.config_local_user_email_args(email="test@example.com").run()
         VersionController.L.config_local_user_name_args(name="Test User").run()
 
@@ -152,7 +152,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         clean_env = os.environ.copy()
         clean_env.pop("VIRTUAL_ENV", None)
 
-        args = PackageManager.L.get_init_project_args("--python", python_version)
+        args = PackageManager.L.init_project_args("--python", python_version)
         args.run(env=clean_env)
 
         # Add pyrig wheel as a dependency

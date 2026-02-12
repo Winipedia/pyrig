@@ -8,8 +8,8 @@ from pytest_mock import MockFixture
 from pyrig.rig.configs.git.gitignore import GitIgnoreConfigFile
 from pyrig.rig.utils import packages
 from pyrig.rig.utils.packages import (
+    find_namespace_packages,
     find_packages,
-    get_namespace_packages,
     src_pkg_is_pyrig,
 )
 from pyrig.rig.utils.version_control import path_is_in_ignore
@@ -100,25 +100,25 @@ __pycache__/
     )
 
 
-def test_get_namespace_packages(tmp_path: Path) -> None:
+def test_find_namespace_packages(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         # make pkg in gitignore
         GitIgnoreConfigFile()
 
         (Path.cwd() / "docs").mkdir()
-        assert get_namespace_packages() == []
+        assert find_namespace_packages() == []
         (Path.cwd() / "src").mkdir()
-        assert get_namespace_packages() == ["src"]
+        assert find_namespace_packages() == ["src"]
         (Path.cwd() / "src" / "__init__.py").write_text("")
-        assert get_namespace_packages() == []
+        assert find_namespace_packages() == []
 
         # assert exists
         assert (Path.cwd() / ".gitignore").exists()
         assert path_is_in_ignore("dist")
 
         (Path.cwd() / "dist").mkdir()
-        assert get_namespace_packages() == []
+        assert find_namespace_packages() == []
 
 
 def test_src_pkg_is_pyrig() -> None:

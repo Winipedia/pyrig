@@ -18,7 +18,7 @@ The tools system is built on three core principles:
 
 ```mermaid
 graph LR
-    A[Tool Subclass] -->|get_*_args| B[Args Object]
+    A[Tool Subclass] -->|*_args| B[Args Object]
     B -->|.run| C[subprocess.run]
     B -->|str| D["'uv sync'"]
 
@@ -125,7 +125,7 @@ prevents confusion:
 
 | Component | Why Dynamic |
 |-----------|-------------|
-| Prek hooks | Uses `Tool.L.get_*_args()` to build commands |
+| Prek hooks | Uses `Tool.L.*_args()` to build commands |
 | CLI commands | Uses `Tool.L` for all operations |
 | Most config file content | Generated from `Tool.L` or `ConfigFile.L` |
 

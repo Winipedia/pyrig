@@ -4,7 +4,7 @@ Utilities for GitHub token retrieval, gitignore file handling, and repository
 configuration constants.
 
 Functions:
-    get_github_repo_token: Retrieve GitHub token from environment or .env
+    github_repo_token: Retrieve GitHub token from environment or .env
     path_is_in_ignore: Check if a path matches any pattern in .gitignore
 
 Module Attributes:
@@ -28,7 +28,7 @@ from pyrig.rig.tools.version_controller import VersionController
 logger = logging.getLogger(__name__)
 
 
-def get_github_repo_token() -> str:
+def github_repo_token() -> str:
     """Retrieve the GitHub repository token for API authentication.
 
     Searches for REPO_TOKEN in order: environment variable, then .env file.
@@ -43,7 +43,7 @@ def get_github_repo_token() -> str:
     Examples:
         Get the token::
 
-            >>> token = get_github_repo_token()
+            >>> token = github_repo_token()
             >>> print(token[:7])
             'ghp_...'
 
@@ -83,7 +83,7 @@ def path_is_in_ignore(path: str | Path) -> bool:
         pathspec.PatternError: If gitignore_lines contains malformed patterns.
 
     See Also:
-        VersionController.L.get_loaded_ignore: Load patterns from .gitignore file.
+        VersionController.L.loaded_ignore: Load patterns from .gitignore file.
     """
     as_path = Path(path)
     if as_path.is_absolute():
@@ -97,7 +97,7 @@ def path_is_in_ignore(path: str | Path) -> bool:
 
     spec = pathspec.PathSpec.from_lines(
         "gitignore",
-        VersionController.L.get_loaded_ignore(),
+        VersionController.L.loaded_ignore(),
     )
 
     return spec.match_file(as_posix)

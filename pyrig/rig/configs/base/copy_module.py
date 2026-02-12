@@ -23,9 +23,9 @@ from types import ModuleType
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.module import (
-    get_isolated_obj_name,
-    get_module_content_as_str,
-    get_module_name_replacing_start_module,
+    isolated_obj_name,
+    module_content_as_str,
+    module_name_replacing_start_module,
 )
 from pyrig.src.modules.path import ModulePath
 
@@ -64,7 +64,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             Target directory path for copied module.
         """
         src_module = cls.src_module()
-        new_module_name = get_module_name_replacing_start_module(
+        new_module_name = module_name_replacing_start_module(
             src_module, PyprojectConfigFile.L.package_name()
         )
         new_module_path = ModulePath.module_name_to_relative_file_path(new_module_name)
@@ -78,7 +78,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             Full source code of the module as list of lines.
         """
         src_module = cls.src_module()
-        return [*get_module_content_as_str(src_module).splitlines()]
+        return [*module_content_as_str(src_module).splitlines()]
 
     @classmethod
     def filename(cls) -> str:
@@ -88,4 +88,4 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             Module name without package prefix or extension.
         """
         src_module = cls.src_module()
-        return get_isolated_obj_name(src_module)
+        return isolated_obj_name(src_module)

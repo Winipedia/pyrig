@@ -15,22 +15,22 @@ from pytest_mock import MockFixture
 
 from pyrig.src.modules.module import (
     create_module,
+    default_module_content,
     execute_all_functions_from_module,
-    get_default_module_content,
-    get_isolated_obj_name,
-    get_module_content_as_str,
-    get_module_name_replacing_start_module,
     import_module_from_file,
     import_module_with_default,
     import_module_with_file_fallback,
     import_module_with_file_fallback_with_default,
     import_obj_from_importpath,
+    isolated_obj_name,
     make_obj_importpath,
+    module_content_as_str,
     module_has_docstring,
+    module_name_replacing_start_module,
 )
 
 
-def test_get_module_content_as_str(tmp_path: Path) -> None:
+def test_module_content_as_str(tmp_path: Path) -> None:
     """Test function."""
     # Create a temporary module file with known content
     module_content = '''"""Test module."""
@@ -59,7 +59,7 @@ class TestClass:
         test_module = import_module("test_module")
 
         # Test getting module content
-        result = get_module_content_as_str(test_module)
+        result = module_content_as_str(test_module)
         assert result == module_content, (
             f"Expected module content to match, got {result!r}"
         )
@@ -139,14 +139,14 @@ def test_import_obj_from_importpath() -> None:
         import_obj_from_importpath("sys.nonexistent_attr")
 
 
-def test_get_isolated_obj_name() -> None:
+def test_isolated_obj_name() -> None:
     """Test function."""
     # Test with a module
-    result = get_isolated_obj_name(sys)
+    result = isolated_obj_name(sys)
     assert result == "sys", f"Expected 'sys', got {result}"
 
     # Test with a nested module
-    result = get_isolated_obj_name(os.path)
+    result = isolated_obj_name(os.path)
     # On Windows, os.path is ntpath; on Unix, it's posixpath
     expected_names = ["path", "ntpath", "posixpath"]
     assert result in expected_names, f"Expected one of {expected_names}, got {result}"
@@ -155,14 +155,14 @@ def test_get_isolated_obj_name() -> None:
     class TestClass:
         pass
 
-    result = get_isolated_obj_name(TestClass)
+    result = isolated_obj_name(TestClass)
     assert result == "TestClass", f"Expected 'TestClass', got {result}"
 
     # Test with a function
     def test_function() -> None:
         pass
 
-    result = get_isolated_obj_name(test_function)
+    result = isolated_obj_name(test_function)
     assert result == "test_function", f"Expected 'test_function', got {result}"
 
 
@@ -224,9 +224,9 @@ def func3() -> None:
             del sys.modules["test_exec_module"]
 
 
-def test_get_default_module_content() -> None:
+def test_default_module_content() -> None:
     """Test function."""
-    result = get_default_module_content()
+    result = default_module_content()
     # assert is str
     assert isinstance(result, str), f"Expected str, got {type(result)}"
 
@@ -242,11 +242,11 @@ def test_import_module_with_default() -> None:
     assert result == "default", f"Expected default, got {result}"
 
 
-def test_get_module_name_replacing_start_module(mocker: MockFixture) -> None:
+def test_module_name_replacing_start_module(mocker: MockFixture) -> None:
     """Test function."""
     mock_module = mocker.MagicMock(spec=ModuleType)
     mock_module.__name__ = "some.module.name"
-    new_name = get_module_name_replacing_start_module(mock_module, "new")
+    new_name = module_name_replacing_start_module(mock_module, "new")
     expected_new_name = "new.module.name"
     assert new_name == expected_new_name, (
         f"Expected {expected_new_name}, got {new_name}"

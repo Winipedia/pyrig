@@ -9,14 +9,14 @@ from functools import wraps
 from typing import Any, ClassVar
 
 from pyrig.src.modules.class_ import (
+    all_cls_from_module,
+    all_methods_from_cls,
     cached_instance,
     classproperty,
     discard_parent_classes,
     discover_all_subclasses,
-    get_all_cls_from_module,
-    get_all_methods_from_cls,
 )
-from pyrig.src.modules.inspection import get_unwrapped_obj
+from pyrig.src.modules.inspection import unwrapped_obj
 
 
 def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -30,7 +30,7 @@ def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
-# Test classes for get_all_methods_from_cls
+# Test classes for all_methods_from_cls
 class ParentClass:
     """Parent class for testing inheritance."""
 
@@ -127,10 +127,10 @@ class AnotherAbstractChild(AbstractParent):
         """Another abstract method."""
 
 
-def test_get_all_methods_from_cls() -> None:
+def test_all_methods_from_cls() -> None:
     """Test function."""
     # Test case 1: Get all methods excluding inherited methods
-    methods = get_all_methods_from_cls(TestClass, exclude_parent_methods=True)
+    methods = all_methods_from_cls(TestClass, exclude_parent_methods=True)
 
     # assert __annotate__ is not considered a method (3.14 introduces this injection)
     assert "__annotate__" not in [
@@ -146,12 +146,12 @@ def test_get_all_methods_from_cls() -> None:
         TestClass._private_method,  # noqa: SLF001
         TestClass.decorated_method,
     ]
-    expected_method_names = [get_unwrapped_obj(m).__name__ for m in expected_methods]
-    method_names = [get_unwrapped_obj(m).__name__ for m in methods]
+    expected_method_names = [unwrapped_obj(m).__name__ for m in expected_methods]
+    method_names = [unwrapped_obj(m).__name__ for m in methods]
     assert method_names == expected_method_names
 
     # Test case 2: Get all methods including inherited methods
-    methods = get_all_methods_from_cls(TestClass, exclude_parent_methods=False)
+    methods = all_methods_from_cls(TestClass, exclude_parent_methods=False)
 
     # expected methods in order of definition
     expected_methods = [
@@ -166,17 +166,17 @@ def test_get_all_methods_from_cls() -> None:
         TestClass._private_method,  # noqa: SLF001
         TestClass.decorated_method,
     ]
-    expected_method_names = [get_unwrapped_obj(m).__name__ for m in expected_methods]
-    method_names = [get_unwrapped_obj(m).__name__ for m in methods]
+    expected_method_names = [unwrapped_obj(m).__name__ for m in expected_methods]
+    method_names = [unwrapped_obj(m).__name__ for m in methods]
     assert method_names == expected_method_names
 
 
-def test_get_all_cls_from_module() -> None:
+def test_all_cls_from_module() -> None:
     """Test function."""
     # use this file as the module
-    module = test_get_all_cls_from_module.__module__
+    module = test_all_cls_from_module.__module__
 
-    classes = get_all_cls_from_module(module)
+    classes = all_cls_from_module(module)
 
     # expected classes in order of definition
     expected_classes: list[type] = [

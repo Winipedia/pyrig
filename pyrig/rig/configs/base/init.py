@@ -20,7 +20,7 @@ from pathlib import Path
 from pyrig.rig.configs.base.copy_module_docstr import (
     CopyModuleOnlyDocstringConfigFile,
 )
-from pyrig.src.modules.module import get_isolated_obj_name
+from pyrig.src.modules.module import isolated_obj_name
 
 
 class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
@@ -54,4 +54,4 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         """
         path = super().parent_path()
         # this path will be parent of the init file
-        return path / get_isolated_obj_name(cls.src_module())
+        return path / isolated_obj_name(cls.src_module())

@@ -21,8 +21,8 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.python.main import MainConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.modules.module import (
-    get_module_content_as_str,
-    get_module_name_replacing_start_module,
+    module_content_as_str,
+    module_name_replacing_start_module,
 )
 
 logger = logging.getLogger(__name__)
@@ -71,7 +71,7 @@ def main_test_fixture(mocker: MockerFixture) -> None:
         msg = f"Expected {main.main.__name__} to be callable by one of {cmd_strs}"
         assert success, msg
 
-    main_module_name = get_module_name_replacing_start_module(main, src_package_name)
+    main_module_name = module_name_replacing_start_module(main, src_package_name)
     main_module = import_module(main_module_name)
     main_mock = mocker.patch.object(main_module, main.main.__name__)
     main_module.main()
@@ -85,7 +85,7 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     del sys.modules[main_module_name]
     # run module as __main__, pytest-cov will see it
     # run only if file content is the same as pyrig.main
-    main_module_content = get_module_content_as_str(main_module).strip()
+    main_module_content = module_content_as_str(main_module).strip()
 
     lines = MainConfigFile.L.lines()
     config_main_module_content = MainConfigFile.L.make_string_from_lines(lines).strip()

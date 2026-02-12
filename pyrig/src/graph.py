@@ -113,7 +113,7 @@ class DiGraph:
         "A depends on B"), this returns all packages that depend on the target,
         either directly or transitively.
 
-        Used by ``DependencyGraph.get_all_depending_on`` to discover all packages
+        Used by ``DependencyGraph.all_depending_on`` to discover all packages
         in the ecosystem that depend on a given package (e.g., finding all packages
         that depend on pyrig).
 
@@ -192,7 +192,7 @@ class DiGraph:
         multiple nodes have no remaining dependencies. An edge A → B means
         "A depends on B", so B appears before A in the result.
 
-        Used by ``DependencyGraph.get_all_depending_on`` to ensure packages are
+        Used by ``DependencyGraph.all_depending_on`` to ensure packages are
         processed in the correct order: base dependencies before dependents.
         This is critical for discovering plugin implementations where a child
         package's class extends a parent package's class.
