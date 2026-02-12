@@ -50,86 +50,85 @@ uv run pyrig init
 ```
 
 See the
-[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/)
-for detailed setup instructions.
+[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/) for detailed setup instructions.
 
-## Key Features
+## Features
+
+### Project Scaffolding & Idempotent Init
+
+pyrig's `init` command scaffolds a complete, production-ready Python project
+(source layout, tests, CI/CD, docs, configs) and is safe to re-run — it's
+idempotent. See the Getting Started guide for details and the full generated
+project structure. See the [Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/) for the full layout.
 
 ### Config File System
 
-Every config file (pyproject.toml, prek.toml, GitHub workflows, etc.) is a
-Python class that generates, validates, and merges automatically. Extend any
-config by subclassing — pyrig discovers it with no registration needed:
+Genrated Files are modeled as Python classes that generate, validate, and
+merge automatically. Extend or override configurations by subclassing. See the
+[Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/) documentation for details.
 
-```python
-# my_project/rig/configs/pre_commit.py
-from pyrig.rig.configs.pre_commit import PrekConfigFile as Base
+### Dynamic Multi-Package CLI Discovery
 
-class PrekConfigFile(Base):
-    def _get_configs(self):
-        configs = super()._get_configs()
-        configs[0]["hooks"].append({"id": "my-hook", "name": "My Hook", ...})
-        return configs
-```
+Commands are discovered automatically from `<package>.rig.cli.subcommands` and
+shared modules across the dependency chain, so projects add CLI commands with
+no registration required — see the [CLI docs](https://winipedia.github.io/pyrig/cli/) for details.
 
-For more information, see [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/).
+### Pytest Enforcement & Autouse Fixtures
 
-### Multi-Package Inheritance
+Autouse fixtures validate project invariants during tests, auto-generate
+missing test skeletons, and ensure configs and separation rules are enforced.
+See the [Autouse fixtures](https://winipedia.github.io/pyrig/tests/autouse/) documentation for details.
 
-Build on pyrig to create multiproject-wide standards. Your base package defines
-configs, fixtures, and CLI commands that all dependent projects inherit:
+### Multi-Package Inheritance Model
 
-```text
-pyrig → service-base → auth-service
-                     → payment-service
-                     → notification-service
-```
+Define multiproject-wide standards in a base package (configs, fixtures, CLI)
+that downstream projects inherit and can override, enabling consistent policies
+across multiple services — see the
+[CLI architecture](https://winipedia.github.io/pyrig/cli/architecture/)
+documentation for more on inheritance and command discovery.
 
-Override any config by subclassing with the same class name. Leaf classes win.
+### Tool Wrappers
 
-### Automatic Discovery
+pyrig provides type-safe Python wrappers for all tools that are used (`uv`,
+`git`, `ruff`, `pytest`, etc.) to standardize usage and expose clear, typed
+interfaces. Via pyrig's multi-package inheritance model, projects can adjust or
+replace tool implementations by subclassing and overriding the provided tool
+classes — this allows organization-wide customization or per-project overrides,
+making tool behavior highly flexible — see the
+[Tools docs](https://winipedia.github.io/pyrig/tools/) for details.
 
-Everything is discovered automatically across the dependency chain — CLI
-commands, config files, test fixtures, builders, and tools. For example, any
-public function in `subcommands.py` becomes a CLI command:
+### Builders
 
-```python
-# my_project/rig/cli/subcommands.py
-def greet(name: str) -> None:
-    """Say hello."""
-    print(f"Hello, {name}!")
-```
+pyrig includes a builders system (for example, PyInstaller integration) to
+create distributables, standardize build processes, and integrate with
+packaging back-ends — see the [Builders docs](https://winipedia.github.io/pyrig/builders/) for details.
 
-```bash
-$ uv run my-project greet --name World
-Hello, World!
-```
+### Resource Abstraction (Dev + PyInstaller)
 
-No registration required. Just define and it works.
+Helpers provide reliable access to package resource files in development and
+when bundled with PyInstaller. See the
+[Resources docs](https://winipedia.github.io/pyrig/resources/) for resource
+handling details.
 
-### Pytest Enforcement
+### CI/CD & Repository Automation
 
-pytest itself enforces project correctness. Autouse session fixtures run before
-your tests to check invariants — missing test modules are auto-generated,
-configs are validated, namespace packages are prevented, and rig/src dependency
-separation is verified. See
-[Autouse Fixtures](https://winipedia.github.io/pyrig/tests/autouse/).
+pyrig generates GitHub workflows, branch protection configs, issue/PR templates
+and includes commands to help configure repository protections and release flows
+— see the
+[Branch protection docs](https://winipedia.github.io/pyrig/configs/branch_protection/)
+for repository automation details.
 
-### What Gets Generated
+### Logging & CLI UX Controls
 
-After `pyrig init`, your project includes:
+Global CLI verbosity flags (`-v`, `-vv`, `-q`) provide flexible logging
+formatting and levels to improve developer ergonomics for commands and tools —
+see the [CLI docs](https://winipedia.github.io/pyrig/cli/).
 
-| Category | Files |
-|----------|-------|
-| **Source** | Package structure, `main.py` CLI, `py.typed` marker |
-| **Tests** | Mirror structure, `conftest.py`, test skeletons |
-| **CI/CD** | Health check, build, release, deploy workflows |
-| **Docs** | MkDocs config, index, API reference |
-| **GitHub** | Issue templates, PR template, branch protection |
-| **Community** | CODE_OF_CONDUCT, CONTRIBUTING, SECURITY |
-| **Config** | pyproject.toml, .gitignore, prek.toml, Containerfile |
+### Packaging & Distribution Integration
 
-See the [full project structure](https://winipedia.github.io/pyrig/more/getting-started/#what-you-get) in the Getting Started guide.
+pyrig integrates with packaging and build back-ends (console scripts,
+`uv_build`) to simplify publishing and distribution. See `pyproject.toml` and
+the [Builders docs](https://winipedia.github.io/pyrig/builders/) for packaging and build details.
 
 ## CLI Commands
 
