@@ -18,10 +18,11 @@ import pyrig
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
+from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
 
 
-class GitIgnoreConfigFile(StringConfigFile):
+class GitignoreConfigFile(StringConfigFile):
     """Gitignore configuration manager.
 
     Combines GitHub's standard Python patterns with pyrig-specific patterns
@@ -31,11 +32,11 @@ class GitIgnoreConfigFile(StringConfigFile):
     Examples:
         Initialize .gitignore::
 
-            GitIgnoreConfigFile()
+            GitignoreConfigFile()
 
         Load patterns::
 
-            patterns = GitIgnoreConfigFile.load()
+            patterns = GitignoreConfigFile.load()
 
     Note:
         Makes HTTP request to GitHub for Python.gitignore. Uses fallback on failure.
@@ -47,12 +48,12 @@ class GitIgnoreConfigFile(StringConfigFile):
 
     @classmethod
     def filename(cls) -> str:
-        """Get an empty filename to produce ".gitignore".
+        """Get the filename for .gitignore.
 
         Returns:
-            str: Empty string (produces ".gitignore" not "gitignore.gitignore").
+            str: The filename for .gitignore.
         """
-        return ""
+        return VersionController.L.ignore_filename()
 
     @classmethod
     def parent_path(cls) -> Path:
@@ -64,13 +65,22 @@ class GitIgnoreConfigFile(StringConfigFile):
         return Path()
 
     @classmethod
+    def extension_separator(cls) -> str:
+        """Get the file extension for .gitignore.
+
+        Returns:
+            str: empty string (no extension or separator).
+        """
+        return ""
+
+    @classmethod
     def extension(cls) -> str:
         """Get the file extension for .gitignore.
 
         Returns:
-            str: "gitignore" (combined with empty filename produces ".gitignore").
+            str: empty string (no extension).
         """
-        return "gitignore"
+        return ""
 
     @classmethod
     def lines(cls) -> list[str]:

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from pytest_mock import MockFixture
 
-from pyrig.rig.configs.git.gitignore import GitIgnoreConfigFile
+from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
 from pyrig.rig.utils import packages
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
@@ -104,7 +104,7 @@ def test_find_namespace_packages(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         # make pkg in gitignore
-        GitIgnoreConfigFile()
+        GitignoreConfigFile()
 
         (Path.cwd() / "docs").mkdir()
         assert find_namespace_packages() == []

@@ -6,6 +6,12 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 class TestRemoteVersionController:
     """Test class."""
 
+    def test_cicd_badge(self) -> None:
+        """Test method."""
+        result = RemoteVersionController.L.cicd_badge_url("health_check", "CI")
+        expected = "https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yml?label=CI&logo=github"
+        assert result == expected, f"Expected {expected}, got {result}"
+
     def test_group(self) -> None:
         """Test method."""
         result = RemoteVersionController.L.group()

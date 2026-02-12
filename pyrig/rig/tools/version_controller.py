@@ -85,6 +85,15 @@ class VersionController(Tool):
         return "main"
 
     @classmethod
+    def ignore_filename(cls) -> str:
+        """Get the filename for .gitignore.
+
+        Returns:
+            Filename for .gitignore.
+        """
+        return ".gitignore"
+
+    @classmethod
     def default_ruleset_name(cls) -> str:
         """Get the default branch protection ruleset name.
 
@@ -485,7 +494,7 @@ class VersionController(Tool):
         Returns:
             Path to .gitignore.
         """
-        return Path(".gitignore")
+        return Path(cls.ignore_filename())
 
     @classmethod
     def loaded_ignore(cls) -> list[str]:
