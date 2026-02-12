@@ -16,6 +16,7 @@ import requests
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.utils.packages import src_pkg_is_pyrig
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
 
 
@@ -74,6 +75,10 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         Returns:
             bool: True if file exists with content, False otherwise.
         """
+        if src_pkg_is_pyrig():
+            # if in pyrig just run get contributor covenant
+            # to trigger resource update if needed
+            cls.get_contributor_covenant()
         return cls.get_path().exists() and bool(
             cls.get_path().read_text(encoding="utf-8").strip()
         )
