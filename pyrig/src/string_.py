@@ -195,3 +195,18 @@ def make_linked_badge_markdown(
         '[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/user/repo/actions)'
     """
     return f"[![{alt_text}]({badge_url})]({link_url})"
+
+
+def get_pkg_req_name_split_pattern() -> re.Pattern[str]:
+    """Helper function to access the regex pattern for parsing package names.
+
+    Pre-compiled regex for parsing package names from requirement strings.
+    Matches everything before the first version specifier (>, <, =, [, ;, etc.)
+    Allows alphanumeric, underscore, hyphen, and period (for namespace packages).
+    Used by DependencyGraph and PyprojectConfigFile.L.
+
+    Returns:
+        re.Pattern: The pre-compiled regex pattern.
+    """
+    # re.compile is already internally cached by Python
+    return re.compile(r"[^a-zA-Z0-9_.\[\]-]")
