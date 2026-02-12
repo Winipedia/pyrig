@@ -79,10 +79,10 @@ class TestModulePath:
         with chdir(tmp_path):
             assert ModulePath.cwd() == tmp_path
 
-    def test_get_rel_cwd(self, tmp_path: Path) -> None:
+    def test_rel_cwd(self, tmp_path: Path) -> None:
         """Test method."""
         with chdir(tmp_path):
-            assert ModulePath.get_rel_cwd() == Path()
+            assert ModulePath.rel_cwd() == Path()
 
     def test_get_meipass(self) -> None:
         """Test method."""

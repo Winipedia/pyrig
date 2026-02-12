@@ -7,8 +7,8 @@ from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.github_api import (
     create_or_update_ruleset,
     get_all_rulesets,
-    get_repo,
     github_api_request,
+    repository,
     ruleset_exists,
 )
 from pyrig.rig.utils.testing import skip_if_no_internet
@@ -18,10 +18,10 @@ from pyrig.rig.utils.version_control import (
 
 
 @skip_if_no_internet
-def test_get_repo() -> None:
+def test_repository() -> None:
     """Test function."""
-    owner, repo_name = VersionController.L.get_repo_owner_and_name()
-    repo = get_repo(
+    owner, repo_name = VersionController.L.repo_owner_and_name()
+    repo = repository(
         get_github_repo_token(),
         owner,
         repo_name,
@@ -35,7 +35,7 @@ def test_get_all_rulesets() -> None:
     """Test function."""
     rulesets = get_all_rulesets(
         get_github_repo_token(),
-        *VersionController.L.get_repo_owner_and_name(),
+        *VersionController.L.repo_owner_and_name(),
     )
     assert isinstance(rulesets, list), "Expected rulesets to be a list"
 
@@ -43,7 +43,7 @@ def test_get_all_rulesets() -> None:
 @skip_if_no_internet
 def test_ruleset_exists() -> None:
     """Test function."""
-    owner, repo_name = VersionController.L.get_repo_owner_and_name()
+    owner, repo_name = VersionController.L.repo_owner_and_name()
     ruleset_id = ruleset_exists(
         get_github_repo_token(),
         owner,
@@ -57,7 +57,7 @@ def test_ruleset_exists() -> None:
 def test_create_or_update_ruleset() -> None:
     """Test function."""
     token = get_github_repo_token()
-    owner, repo_name = VersionController.L.get_repo_owner_and_name()
+    owner, repo_name = VersionController.L.repo_owner_and_name()
     create_or_update_ruleset(
         token=token,
         owner=owner,
@@ -69,7 +69,7 @@ def test_create_or_update_ruleset() -> None:
 @skip_if_no_internet
 def test_github_api_request() -> None:
     """Test function."""
-    owner, repo_name = VersionController.L.get_repo_owner_and_name()
+    owner, repo_name = VersionController.L.repo_owner_and_name()
     github_api_request(
         get_github_repo_token(),
         owner,

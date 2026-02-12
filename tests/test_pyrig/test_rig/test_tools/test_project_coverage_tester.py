@@ -23,8 +23,8 @@ class TestProjectCoverageTester:
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_remote_coverage_url(self) -> None:
+    def test_remote_coverage_url(self) -> None:
         """Test method."""
-        result = ProjectCoverageTester.L.get_remote_coverage_url()
+        result = ProjectCoverageTester.L.remote_coverage_url()
         assert isinstance(result, str)
         assert result.startswith("https://codecov.io/gh/")
