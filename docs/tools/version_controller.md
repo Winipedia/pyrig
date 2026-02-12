@@ -11,9 +11,9 @@ from pyrig.src.processes import Args
 
 class VersionController(BaseVC):
     @classmethod
-    def get_commit_args(cls, *args: str) -> Args:
+    def commit_args(cls, *args: str) -> Args:
         # Always sign commits
-        return super().get_commit_args("-S", *args)
+        return super().commit_args("-S", *args)
 ```
 
 ## Related

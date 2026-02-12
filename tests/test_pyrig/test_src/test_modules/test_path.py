@@ -74,10 +74,10 @@ def test_make_pkg_dir(tmp_path: Path) -> None:
 class TestModulePath:
     """Test class."""
 
-    def test_get_cwd(self, tmp_path: Path) -> None:
+    def test_cwd(self, tmp_path: Path) -> None:
         """Test method."""
         with chdir(tmp_path):
-            assert ModulePath.get_cwd() == tmp_path
+            assert ModulePath.cwd() == tmp_path
 
     def test_get_rel_cwd(self, tmp_path: Path) -> None:
         """Test method."""

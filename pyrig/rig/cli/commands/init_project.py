@@ -88,7 +88,7 @@ def creating_priority_config_files() -> Args:
         Args object for creating priority config files.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
-    return Pyrigger.L.get_cmd_args("--priority", cmd=mkroot)
+    return Pyrigger.L.cmd_args("--priority", cmd=mkroot)
 
 
 def syncing_venv() -> Args:
@@ -113,7 +113,7 @@ def creating_project_root() -> Args:
     Returns:
         Args object for creating the project root.
     """
-    return Pyrigger.L.get_cmd_args(cmd=mkroot)
+    return Pyrigger.L.cmd_args(cmd=mkroot)
 
 
 def creating_test_files() -> Args:
@@ -125,7 +125,7 @@ def creating_test_files() -> Args:
     Returns:
         Args object for creating test files.
     """
-    return Pyrigger.L.get_cmd_args(cmd=mktests)
+    return Pyrigger.L.cmd_args(cmd=mktests)
 
 
 def install_pre_commit_hooks() -> Args:
@@ -185,7 +185,7 @@ def committing_initial_changes() -> Args:
         Args object for committing initial changes.
     """
     # changes were added by the run prek hooks step
-    return VersionController.L.get_commit_no_verify_args(
+    return VersionController.L.commit_no_verify_args(
         msg=f"{Pyrigger.name()}: Initial commit"
     )
 

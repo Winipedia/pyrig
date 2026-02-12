@@ -9,12 +9,12 @@ from functools import wraps
 from typing import Any, ClassVar
 
 from pyrig.src.modules.class_ import (
+    cached_instance,
     classproperty,
     discard_parent_classes,
     discover_all_subclasses,
     get_all_cls_from_module,
     get_all_methods_from_cls,
-    get_cached_instance,
 )
 from pyrig.src.modules.inspection import get_unwrapped_obj
 
@@ -227,14 +227,14 @@ def test_discard_parent_classes() -> None:
     assert TestClass in classes, f"Expected TestClass in {classes}"
 
 
-def test_get_cached_instance() -> None:
+def test_cached_instance() -> None:
     """Test function."""
 
     class TestClass:
         """Test class."""
 
-    instance1 = get_cached_instance(TestClass)
-    instance2 = get_cached_instance(TestClass)
+    instance1 = cached_instance(TestClass)
+    instance2 = cached_instance(TestClass)
     assert instance1 is instance2
 
 

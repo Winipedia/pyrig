@@ -5,7 +5,7 @@ Provides type-safe wrapper for Git commands: init, add, commit, push, tag, confi
 Example:
     >>> from pyrig.rig.tools.version_controller import VersionController
     >>> VersionController.L.add_all_args().run()
-    >>> VersionController.L.get_commit_no_verify_args("Update docs").run()
+    >>> VersionController.L.commit_no_verify_args("Update docs").run()
     >>> VersionController.L.push_args().run()
 """
 
@@ -37,7 +37,7 @@ class VersionController(Tool):
     Example:
         >>> VersionController.L.get_init_args().run()
         >>> VersionController.L.add_all_args().run()
-        >>> VersionController.L.get_commit_no_verify_args("Initial commit").run()
+        >>> VersionController.L.commit_no_verify_args("Initial commit").run()
     """
 
     @classmethod
@@ -154,7 +154,7 @@ class VersionController(Tool):
         return cls.add_pyproject_toml_args("uv.lock", *args)
 
     @classmethod
-    def get_commit_args(cls, *args: str) -> Args:
+    def commit_args(cls, *args: str) -> Args:
         """Construct git commit arguments.
 
         Args:
@@ -166,7 +166,7 @@ class VersionController(Tool):
         return cls.args("commit", *args)
 
     @classmethod
-    def get_commit_no_verify_args(cls, *args: str, msg: str) -> Args:
+    def commit_no_verify_args(cls, *args: str, msg: str) -> Args:
         """Construct git commit arguments with no verification.
 
         Args:
@@ -176,7 +176,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git commit --no-verify -m <msg>'.
         """
-        return cls.get_commit_args("--no-verify", "-m", msg, *args)
+        return cls.commit_args("--no-verify", "-m", msg, *args)
 
     @classmethod
     def push_args(cls, *args: str) -> Args:
@@ -216,7 +216,7 @@ class VersionController(Tool):
         return cls.push_origin_args(tag, *args)
 
     @classmethod
-    def get_config_args(cls, *args: str) -> Args:
+    def config_args(cls, *args: str) -> Args:
         """Construct git config arguments.
 
         Args:
@@ -228,7 +228,7 @@ class VersionController(Tool):
         return cls.args("config", *args)
 
     @classmethod
-    def get_config_global_args(cls, *args: str) -> Args:
+    def config_global_args(cls, *args: str) -> Args:
         """Construct git config arguments with --global flag.
 
         Args:
@@ -237,10 +237,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --global'.
         """
-        return cls.get_config_args("--global", *args)
+        return cls.config_args("--global", *args)
 
     @classmethod
-    def get_config_local_args(cls, *args: str) -> Args:
+    def config_local_args(cls, *args: str) -> Args:
         """Construct git config arguments with --local flag.
 
         Args:
@@ -249,10 +249,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --local'.
         """
-        return cls.get_config_args("--local", *args)
+        return cls.config_args("--local", *args)
 
     @classmethod
-    def get_config_local_user_email_args(cls, *args: str, email: str) -> Args:
+    def config_local_user_email_args(cls, *args: str, email: str) -> Args:
         """Construct git config arguments for local user email.
 
         Args:
@@ -262,10 +262,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --local user.email <email>'.
         """
-        return cls.get_config_local_args("user.email", email, *args)
+        return cls.config_local_args("user.email", email, *args)
 
     @classmethod
-    def get_config_local_user_name_args(cls, *args: str, name: str) -> Args:
+    def config_local_user_name_args(cls, *args: str, name: str) -> Args:
         """Construct git config arguments for local user name.
 
         Args:
@@ -275,10 +275,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --local user.name <name>'.
         """
-        return cls.get_config_local_args("user.name", name, *args)
+        return cls.config_local_args("user.name", name, *args)
 
     @classmethod
-    def get_config_global_user_email_args(cls, *args: str, email: str) -> Args:
+    def config_global_user_email_args(cls, *args: str, email: str) -> Args:
         """Construct git config arguments for global user email.
 
         Args:
@@ -288,10 +288,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --global user.email <email>'.
         """
-        return cls.get_config_global_args("user.email", email, *args)
+        return cls.config_global_args("user.email", email, *args)
 
     @classmethod
-    def get_config_global_user_name_args(cls, *args: str, name: str) -> Args:
+    def config_global_user_name_args(cls, *args: str, name: str) -> Args:
         """Construct git config arguments for global user name.
 
         Args:
@@ -301,7 +301,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --global user.name <name>'.
         """
-        return cls.get_config_global_args("user.name", name, *args)
+        return cls.config_global_args("user.name", name, *args)
 
     @classmethod
     def get_tag_args(cls, *args: str, tag: str) -> Args:
@@ -317,7 +317,7 @@ class VersionController(Tool):
         return cls.args("tag", tag, *args)
 
     @classmethod
-    def get_config_get_args(cls, *args: str) -> Args:
+    def config_get_args(cls, *args: str) -> Args:
         """Construct git config get arguments.
 
         Args:
@@ -326,10 +326,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --get'.
         """
-        return cls.get_config_args("--get", *args)
+        return cls.config_args("--get", *args)
 
     @classmethod
-    def get_config_get_remote_origin_url_args(cls, *args: str) -> Args:
+    def config_get_remote_origin_url_args(cls, *args: str) -> Args:
         """Construct git config get remote origin URL arguments.
 
         Args:
@@ -338,10 +338,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --get remote.origin.url'.
         """
-        return cls.get_config_get_args("remote.origin.url", *args)
+        return cls.config_get_args("remote.origin.url", *args)
 
     @classmethod
-    def get_config_get_user_name_args(cls, *args: str) -> Args:
+    def config_get_user_name_args(cls, *args: str) -> Args:
         """Construct git config get user name arguments.
 
         Args:
@@ -350,10 +350,10 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --get user.name'.
         """
-        return cls.get_config_get_args("user.name", *args)
+        return cls.config_get_args("user.name", *args)
 
     @classmethod
-    def get_config_get_user_email_args(cls, *args: str) -> Args:
+    def config_get_user_email_args(cls, *args: str) -> Args:
         """Construct git config get user email arguments.
 
         Args:
@@ -362,7 +362,7 @@ class VersionController(Tool):
         Returns:
             Args for 'git config --get user.email'.
         """
-        return cls.get_config_get_args("user.email", *args)
+        return cls.config_get_args("user.email", *args)
 
     @classmethod
     def get_diff_args(cls, *args: str) -> Args:
@@ -437,7 +437,7 @@ class VersionController(Tool):
         Raises:
             subprocess.CalledProcessError: If check=True and command fails.
         """
-        args = cls.get_config_get_remote_origin_url_args()
+        args = cls.config_get_remote_origin_url_args()
         stdout = args.run(check=check).stdout
         return stdout.strip()
 
@@ -452,7 +452,7 @@ class VersionController(Tool):
         Raises:
             subprocess.CalledProcessError: If user.name not configured.
         """
-        args = cls.get_config_get_user_name_args()
+        args = cls.config_get_user_name_args()
         stdout = args.run().stdout
         return stdout.strip()
 
@@ -503,6 +503,6 @@ class VersionController(Tool):
         Returns:
             Email.
         """
-        args = cls.get_config_get_user_email_args()
+        args = cls.config_get_user_email_args()
         stdout = args.run().stdout
         return stdout.strip()
