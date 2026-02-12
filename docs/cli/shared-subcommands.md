@@ -20,7 +20,7 @@ command.
 
 Pyrig includes a built-in `version` command that demonstrates the pattern:
 
-- Uses `get_project_name_from_argv()` to detect which project invoked the CLI
+- Uses `project_name_from_argv()` to detect which project invoked the CLI
 - Retrieves and displays that project's version (not pyrig's version)
 - Works in any package without modification
 
@@ -85,7 +85,7 @@ Running `uv run myplugin version` discovers shared commands from:
 ## Context-Aware Commands
 
 Shared commands can adapt to the calling package using
-`get_project_name_from_argv()` from `pyrig.src.cli`. This utility extracts the
+`project_name_from_argv()` from `pyrig.src.cli`. This utility extracts the
 package name from `sys.argv[0]`, enabling commands to behave differently based
 on which project invoked them.
 
@@ -96,16 +96,16 @@ To add a shared command to your package:
 1. **Create the module** at `rig/cli/shared_subcommands.py` (created
    automatically by `uv run pyrig mkroot`)
 2. **Define public functions** — each becomes a CLI command
-3. **Use `get_project_name_from_argv()`** to adapt behavior to the calling
+3. **Use `project_name_from_argv()`** to adapt behavior to the calling
    package
 
 ```python
 import typer
-from pyrig.src.cli import get_project_name_from_argv
+from pyrig.src.cli import project_name_from_argv
 
 def status() -> None:
     """Display project status."""
-    typer.echo(f"Status for {get_project_name_from_argv()}: OK")
+    typer.echo(f"Status for {project_name_from_argv()}: OK")
 ```
 
 ## Inheritance
