@@ -222,7 +222,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return cls.get_configs()
 
     @classmethod
-    def get_definition_pkg(cls) -> ModuleType:
+    def definition_package(cls) -> ModuleType:
         """Get the package where the ConfigFile subclasses are supposed to be defined.
 
         Default is pyrig.rig.tests. which overrides the default of pyrig.rig.configs.
