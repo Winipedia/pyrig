@@ -81,7 +81,7 @@ def return_resource_file_content_on_exceptions(
         Fallback to resource file on network errors::
 
             >>> @return_resource_file_content_on_exceptions(
-            ...     "GITHUB_GITIGNORE",
+            ...     "GITIGNORE",
             ...     (requests.RequestException, TimeoutError)
             ... )
             ... def fetch_gitignore() -> str:

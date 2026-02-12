@@ -653,7 +653,7 @@ Filenames are automatically derived from class names:
 | `MyConfigFile`        | `my_config`  |
 | `PyprojectConfigFile` | `pyproject`  |
 | `DotEnvConfigFile`    | `dot_env`    |
-| `GitIgnoreConfigFile` | `git_ignore` |
+| `GitignoreConfigFile` | `git_ignore` |
 
 The system:
 

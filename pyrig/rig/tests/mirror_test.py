@@ -203,7 +203,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             m
             for ms in cls.untested_class_and_method_names().values()
             for m in ms
-            if ("def " + m) not in test_module_content
+            if ("def " + m + "(") not in test_module_content
         ]
         return super().is_correct() or not (
             untested_funcs or untested_classes or untested_methods

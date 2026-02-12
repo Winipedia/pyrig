@@ -4,7 +4,7 @@ Generates .scratch.py at project root for local experimentation. Automatically
 added to .gitignore (never committed).
 
 See Also:
-    pyrig.rig.configs.git.gitignore.GitIgnoreConfigFile
+    pyrig.rig.configs.git.gitignore.GitignoreConfigFile
 """
 
 from pathlib import Path
@@ -33,10 +33,10 @@ class DotScratchConfigFile(PythonConfigFile):
             print(result)
 
     Note:
-        Automatically added to .gitignore by GitIgnoreConfigFile.
+        Automatically added to .gitignore by GitignoreConfigFile.
 
     See Also:
-        pyrig.rig.configs.git.gitignore.GitIgnoreConfigFile
+        pyrig.rig.configs.git.gitignore.GitignoreConfigFile
     """
 
     @classmethod
