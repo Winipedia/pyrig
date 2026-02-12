@@ -37,7 +37,7 @@ import typer
 import pyrig
 from pyrig import main as pyrig_main
 from pyrig.rig.cli import shared_subcommands, subcommands
-from pyrig.src.cli import pkg_name_from_argv
+from pyrig.src.cli import package_name_from_argv
 from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.module import (
     import_module_with_file_fallback,
@@ -147,16 +147,18 @@ def add_subcommands() -> None:
         are excluded).
     """
     # extract project name from sys.argv[0]
-    pkg_name = pkg_name_from_argv()
-    logger.debug("Registering subcommands for package: %s", pkg_name)
+    package_name = package_name_from_argv()
+    logger.debug("Registering subcommands for package: %s", package_name)
 
-    main_module_name = module_name_replacing_start_module(pyrig_main, pkg_name)
+    main_module_name = module_name_replacing_start_module(pyrig_main, package_name)
     main_module_path = ModulePath.module_name_to_relative_file_path(main_module_name)
     main_module = import_module_with_file_fallback(main_module_path)
     app.command()(main_module.main)
 
-    # replace the first parent with pkg_name
-    subcommands_module_name = module_name_replacing_start_module(subcommands, pkg_name)
+    # replace the first parent with package_name
+    subcommands_module_name = module_name_replacing_start_module(
+        subcommands, package_name
+    )
     subcommands_module_path = ModulePath.module_name_to_relative_file_path(
         subcommands_module_name
     )
@@ -201,12 +203,12 @@ def add_shared_subcommands() -> None:
         packages define the same command name, the last one registered takes
         precedence.
     """
-    package_name = pkg_name_from_argv()
+    package_name = package_name_from_argv()
     package = import_module(package_name)
     all_shared_subcommands_modules = discover_equivalent_modules_across_dependents(
         shared_subcommands,
         pyrig,
-        until_pkg=package,
+        until_package=package,
     )
     for shared_subcommands_module in all_shared_subcommands_modules:
         logger.debug(

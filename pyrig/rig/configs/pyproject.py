@@ -32,11 +32,11 @@ from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.modules.package import (
-    pkg_name_from_cwd,
-    pkg_name_from_project_name,
+    package_name_from_cwd,
+    package_name_from_project_name,
     project_name_from_cwd,
 )
-from pyrig.src.string_ import pkg_req_name_split_pattern
+from pyrig.src.string_ import package_req_name_split_pattern
 
 
 class PyprojectConfigFile(TomlConfigFile):
@@ -76,7 +76,7 @@ class PyprojectConfigFile(TomlConfigFile):
     def _configs(cls) -> dict[str, Any]:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
         repo_owner, _ = VersionController.L.repo_owner_and_name(check_repo_url=False)
-        tests_pkg_name = MirrorTestConfigFile.L.tests_package_name()
+        tests_package_name = MirrorTestConfigFile.L.tests_package_name()
 
         return {
             "project": {
@@ -122,7 +122,7 @@ class PyprojectConfigFile(TomlConfigFile):
             "tool": {
                 "uv": {
                     "build-backend": {
-                        "module-name": pkg_name_from_cwd(),
+                        "module-name": package_name_from_cwd(),
                         "module-root": "",
                     }
                 },
@@ -133,7 +133,7 @@ class PyprojectConfigFile(TomlConfigFile):
                         "ignore": ["D203", "D213", "COM812", "ANN401"],
                         "fixable": ["ALL"],
                         "per-file-ignores": {
-                            f"**/{tests_pkg_name}/**/*.py": ["S101"],
+                            f"**/{tests_package_name}/**/*.py": ["S101"],
                         },
                         "pydocstyle": {"convention": "google"},
                     },
@@ -148,8 +148,8 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 "pytest": {
                     "ini_options": {
-                        "testpaths": [tests_pkg_name],
-                        "addopts": f"--cov={pkg_name_from_cwd()} --cov-report=term-missing --cov-fail-under={ProjectTester.L.coverage_threshold()}",  # noqa: E501
+                        "testpaths": [tests_package_name],
+                        "addopts": f"--cov={package_name_from_cwd()} --cov-report=term-missing --cov-fail-under={ProjectTester.L.coverage_threshold()}",  # noqa: E501
                     }
                 },
                 "bandit": {
@@ -158,7 +158,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     ],
                     "assert_used": {
                         "skips": [
-                            f"*/{tests_pkg_name}/*.py",
+                            f"*/{tests_package_name}/*.py",
                         ],
                     },
                 },
@@ -263,7 +263,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Uses REQ_NAME_SPLIT_PATTERN from package module for consistency.
         (e.g., 'requests>=2.0' -> 'requests').
         """
-        return pkg_req_name_split_pattern().split(dep)[0]
+        return package_req_name_split_pattern().split(dep)[0]
 
     @classmethod
     def package_name(cls) -> str:
@@ -272,7 +272,7 @@ class PyprojectConfigFile(TomlConfigFile):
         (e.g., 'my-project' -> 'my_project').
         """
         project_name = cls.project_name()
-        return pkg_name_from_project_name(project_name)
+        return package_name_from_project_name(project_name)
 
     @classmethod
     def project_name(cls) -> str:

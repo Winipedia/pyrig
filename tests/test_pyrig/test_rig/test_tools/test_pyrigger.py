@@ -33,9 +33,9 @@ class TestPyrigger:
 
     def test_cmd_args(self, mocker: MockFixture) -> None:
         """Test method."""
-        # Mock the project_name_from_pkg_name function
+        # Mock the project_name_from_package_name function
         mocker.patch(
-            pyrigger.__name__ + ".project_name_from_pkg_name",
+            pyrigger.__name__ + ".project_name_from_package_name",
             return_value="my-command",
         )
 

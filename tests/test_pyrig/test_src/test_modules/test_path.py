@@ -11,17 +11,17 @@ from pyrig.src.modules.path import (
     make_dir_with_init_file,
     make_init_module,
     make_init_modules_for_package,
-    make_pkg_dir,
+    make_package_dir,
 )
 
 
 def test_make_init_modules_for_package(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        pkg_path = tmp_path / "test_package"
-        path = pkg_path / "subdir1" / "subdir2"
+        package_path = tmp_path / "test_package"
+        path = package_path / "subdir1" / "subdir2"
         path.mkdir(parents=True)
-        make_init_modules_for_package(pkg_path)
+        make_init_modules_for_package(package_path)
         assert (Path.cwd() / "test_package" / "__init__.py").exists()
         assert (Path.cwd() / "test_package" / "subdir1" / "__init__.py").exists()
         assert (
@@ -55,11 +55,11 @@ def test_make_init_module(tmp_path: Path) -> None:
         )
 
 
-def test_make_pkg_dir(tmp_path: Path) -> None:
+def test_make_package_dir(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         mpath = Path.cwd() / "test" / "package"
-        make_pkg_dir(mpath)
+        make_package_dir(mpath)
         assert (Path.cwd() / "test" / "__init__.py").exists(), (
             "Expected __init__.py file to be created"
         )
@@ -102,21 +102,24 @@ class TestModulePath:
             assert ModulePath.module_type_to_file_path(module) == module_path
             assert module.__file__ == str(module_path)
 
-    def test_pkg_type_to_dir_path(self, tmp_path: Path) -> None:
+    def test_package_type_to_dir_path(self, tmp_path: Path) -> None:
         """Test method."""
-        test_pkg_name = self.test_pkg_type_to_dir_path.__name__
+        test_package_name = self.test_package_type_to_dir_path.__name__
         with chdir(tmp_path):
-            pkg_path = tmp_path / test_pkg_name
-            pkg = create_package(pkg_path)
-            assert ModulePath.pkg_type_to_dir_path(pkg) == pkg_path
+            package_path = tmp_path / test_package_name
+            package = create_package(package_path)
+            assert ModulePath.package_type_to_dir_path(package) == package_path
 
-    def test_pkg_type_to_file_path(self, tmp_path: Path) -> None:
+    def test_package_type_to_file_path(self, tmp_path: Path) -> None:
         """Test method."""
-        test_pkg_name = self.test_pkg_type_to_file_path.__name__
+        test_package_name = self.test_package_type_to_file_path.__name__
         with chdir(tmp_path):
-            pkg_path = tmp_path / test_pkg_name
-            pkg = create_package(pkg_path)
-            assert ModulePath.pkg_type_to_file_path(pkg) == pkg_path / "__init__.py"
+            package_path = tmp_path / test_package_name
+            package = create_package(package_path)
+            assert (
+                ModulePath.package_type_to_file_path(package)
+                == package_path / "__init__.py"
+            )
 
     def test_module_name_to_relative_file_path(self) -> None:
         """Test method."""
@@ -124,16 +127,16 @@ class TestModulePath:
         path = ModulePath.module_name_to_relative_file_path(name)
         assert path == Path(name.replace(".", "/") + ".py")
 
-    def test_pkg_name_to_relative_dir_path(self) -> None:
+    def test_package_name_to_relative_dir_path(self) -> None:
         """Test method."""
-        name = self.test_pkg_name_to_relative_dir_path.__name__ + "." + "package"
-        path = ModulePath.pkg_name_to_relative_dir_path(name)
+        name = self.test_package_name_to_relative_dir_path.__name__ + "." + "package"
+        path = ModulePath.package_name_to_relative_dir_path(name)
         assert path == Path(name.replace(".", "/"))
 
-    def test_pkg_name_to_relative_file_path(self) -> None:
+    def test_package_name_to_relative_file_path(self) -> None:
         """Test method."""
-        name = self.test_pkg_name_to_relative_file_path.__name__ + "." + "package"
-        path = ModulePath.pkg_name_to_relative_file_path(name)
+        name = self.test_package_name_to_relative_file_path.__name__ + "." + "package"
+        path = ModulePath.package_name_to_relative_file_path(name)
         assert path == Path(name.replace(".", "/") + "/__init__.py")
 
     def test_relative_path_to_module_name(self) -> None:

@@ -191,17 +191,17 @@ class TestBuilderConfigFile:
         resources_path = BuilderConfigFile.resources_path()
         assert resources_path == Path.cwd() / "pyrig" / "resources"
 
-    def test_src_pkg_path(self) -> None:
+    def test_src_package_path(self) -> None:
         """Test method."""
-        src_pkg_path = BuilderConfigFile.src_pkg_path()
-        assert src_pkg_path == Path.cwd() / "pyrig"
+        src_package_path = BuilderConfigFile.src_package_path()
+        assert src_package_path == Path.cwd() / "pyrig"
 
-    def test_main_path_relative_to_src_pkg(self) -> None:
+    def test_main_path_relative_to_src_package(self) -> None:
         """Test method."""
-        main_path = BuilderConfigFile.main_path_relative_to_src_pkg()
+        main_path = BuilderConfigFile.main_path_relative_to_src_package()
         assert main_path == Path("main.py")
 
-    def test_resources_path_relative_to_src_pkg(self) -> None:
+    def test_resources_path_relative_to_src_package(self) -> None:
         """Test method."""
-        resources_path = BuilderConfigFile.resources_path_relative_to_src_pkg()
+        resources_path = BuilderConfigFile.resources_path_relative_to_src_package()
         assert resources_path == Path("resources")

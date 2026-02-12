@@ -19,7 +19,7 @@ from pyrig.rig.configs.base.base import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.packages import src_pkg_is_pyrig
+from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
 from pyrig.src.string_ import make_linked_badge_markdown
 
@@ -67,7 +67,7 @@ class LicenseConfigFile(StringConfigFile):
     @classmethod
     def is_correct(cls) -> bool:
         """Check if LICENSE exists and is non-empty."""
-        if src_pkg_is_pyrig():
+        if src_package_is_pyrig():
             # if in pyrig just run get mit licence to trigger resource update if needed
             cls.mit_license()
         return cls.path().exists() and bool(

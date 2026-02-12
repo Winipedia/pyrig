@@ -14,7 +14,7 @@ from types import ModuleType
 
 from pyrig.src.graph import DiGraph
 from pyrig.src.modules.module import import_module_with_default
-from pyrig.src.string_ import pkg_req_name_split_pattern
+from pyrig.src.string_ import package_req_name_split_pattern
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class DependencyGraph(DiGraph):
 
             requires = dist.requires or []
             for req in requires:
-                dep = self.parse_pkg_name_from_req(req)
+                dep = self.parse_package_name_from_req(req)
                 if dep:
                     self.add_edge(name, dep)  # package → dependency
         logger.debug("Dependency graph built with %d packages", len(self.nodes()))
@@ -84,7 +84,7 @@ class DependencyGraph(DiGraph):
         return name.lower().replace("-", "_").strip()
 
     @staticmethod
-    def parse_pkg_name_from_req(req: str) -> str | None:
+    def parse_package_name_from_req(req: str) -> str | None:
         """Extract package name from a requirement string.
 
         Uses pre-compiled regex for better performance when parsing many requirements.
@@ -97,7 +97,7 @@ class DependencyGraph(DiGraph):
         """
         # Split on the first non-alphanumeric character (except -, _, and .)
         # Uses module-level compiled pattern for performance
-        dep = pkg_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
+        dep = package_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
         return DependencyGraph.normalize_package_name(dep) if dep else None
 
     def all_depending_on(
