@@ -51,7 +51,7 @@ class TestGitIgnoreConfigFile:
     def test_get_filename(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
     ) -> None:
-        """Test method for get_filename."""
+        """Test method."""
         filename = my_test_gitignore_config_file.get_filename()
         assert filename == "", f"Expected empty string, got {filename}"
 
@@ -60,7 +60,7 @@ class TestGitIgnoreConfigFile:
         my_test_gitignore_config_file: type[GitIgnoreConfigFile],
         tmp_path: Path,
     ) -> None:
-        """Test method for get_parent_path."""
+        """Test method."""
         with chdir(tmp_path):
             parent_path = my_test_gitignore_config_file.get_parent_path()
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
@@ -68,6 +68,6 @@ class TestGitIgnoreConfigFile:
     def test_get_file_extension(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
     ) -> None:
-        """Test method for get_file_extension."""
+        """Test method."""
         extension = my_test_gitignore_config_file.get_file_extension()
         assert extension == "gitignore", f"Expected 'gitignore', got {extension}"

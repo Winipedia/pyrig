@@ -46,28 +46,28 @@ class TestLicenseConfigFile:
         assert "[fullname]" not in mit_license
 
     def test_get_filename(self) -> None:
-        """Test method for get_filename."""
+        """Test method."""
         # Should return LICENSE
         assert LicenseConfigFile.get_filename() == "LICENSE", "Expected 'LICENSE'"
 
     def test_get_path(self) -> None:
-        """Test method for get_path."""
+        """Test method."""
         # Should return Path("LICENSE")
         assert LicenseConfigFile.get_path() == Path("LICENSE"), (
             "Expected Path('LICENSE')"
         )
 
     def test_get_parent_path(self) -> None:
-        """Test method for get_parent_path."""
+        """Test method."""
         # Should return Path()
         assert LicenseConfigFile.get_parent_path() == Path(), "Expected Path()"
 
     def test_get_file_extension(self) -> None:
-        """Test method for get_file_extension."""
+        """Test method."""
         # Should return empty string
         assert LicenseConfigFile.get_file_extension() == "", "Expected ''"
 
     def test_get_lines(self) -> None:
-        """Test method for get_content_str."""
+        """Test method."""
         # Should return empty string
         assert isinstance(LicenseConfigFile.get_lines(), list)

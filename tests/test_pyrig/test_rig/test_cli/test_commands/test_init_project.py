@@ -67,26 +67,26 @@ def test_creating_priority_config_files() -> None:
 
 
 def test_creating_project_root() -> None:
-    """Test func for run_create_root."""
+    """Test function."""
     # mock the real underlying subprocess.run from subprocess pkg
     res = creating_project_root()
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
 def test_syncing_venv() -> None:
-    """Test func for sync_venv."""
+    """Test function."""
     res = syncing_venv()
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
 def test_creating_test_files() -> None:
-    """Test func for run_create_tests."""
+    """Test function."""
     res = creating_test_files()
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
 def test_committing_initial_changes() -> None:
-    """Test func for commit_initial_changes."""
+    """Test function."""
     res = committing_initial_changes()
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
@@ -104,13 +104,13 @@ def test_add_all_files_to_version_control() -> None:
 
 
 def test_running_pre_commit_hooks() -> None:
-    """Test func for run_all_hooks."""
+    """Test function."""
     res = running_pre_commit_hooks()
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
 def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
-    """Test func for init."""
+    """Test function."""
     # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
     # now test that in an empty folder with a pyproject.toml file

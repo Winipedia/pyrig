@@ -12,7 +12,7 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 
 
 def test_mkroot() -> None:
-    """Test func for create_root."""
+    """Test function."""
     # run --help comd to see if its available
     args = Pyrigger.L.get_cmd_args("--help", cmd=mkroot)
     stoud = args.run().stdout
@@ -22,7 +22,7 @@ def test_mkroot() -> None:
 
 
 def test_mktests() -> None:
-    """Test func for create_tests."""
+    """Test function."""
     # run --help comd to see if its available
     args = Pyrigger.L.get_cmd_args("--help", cmd=mktests)
     stoud = args.run().stdout
@@ -32,7 +32,7 @@ def test_mktests() -> None:
 
 
 def test_mkinits() -> None:
-    """Test func for mkinits."""
+    """Test function."""
     # run --help comd to see if its available
     args = Pyrigger.L.get_cmd_args("--help", cmd=mkinits)
     stoud = args.run().stdout
@@ -43,7 +43,7 @@ def test_mkinits() -> None:
 
 
 def test_init() -> None:
-    """Test func for setup."""
+    """Test function."""
     # run --help comd to see if its available
     args = Pyrigger.L.get_cmd_args("--help", cmd=init)
     stoud = args.run().stdout
@@ -51,7 +51,7 @@ def test_init() -> None:
 
 
 def test_build() -> None:
-    """Test func for build."""
+    """Test function."""
     # run --help comd to see if its available
     args = Pyrigger.L.get_cmd_args("--help", cmd=build)
     stoud = args.run().stdout
@@ -59,7 +59,7 @@ def test_build() -> None:
 
 
 def test_protect_repo() -> None:
-    """Test func for protect_repo."""
+    """Test function."""
     # run --help comd to see if its available
     args = Pyrigger.L.get_cmd_args("--help", cmd=protect_repo)
     stoud = args.run().stdout

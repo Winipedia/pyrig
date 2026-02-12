@@ -35,21 +35,21 @@ class TestBuildWorkflow:
     def test_get_workflow_triggers(
         self, my_test_build_workflow: type[BuildWorkflow]
     ) -> None:
-        """Test method for get_workflow_triggers."""
+        """Test method."""
         result = my_test_build_workflow.get_workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
         assert "pull_request" not in result
 
     def test_get_jobs(self, my_test_build_workflow: type[BuildWorkflow]) -> None:
-        """Test method for get_jobs."""
+        """Test method."""
         result = my_test_build_workflow.get_jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_build_artifacts(
         self, my_test_build_workflow: type[BuildWorkflow]
     ) -> None:
-        """Test method for job_build."""
+        """Test method."""
         result = my_test_build_workflow.job_build_artifacts()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
@@ -60,12 +60,12 @@ class TestBuildWorkflow:
     def test_steps_build_artifacts(
         self, my_test_build_workflow: type[BuildWorkflow]
     ) -> None:
-        """Test method for steps_build."""
+        """Test method."""
         result = my_test_build_workflow.steps_build_artifacts()
         assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_is_correct(self, my_test_build_workflow: type[BuildWorkflow]) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         test_workflow = my_test_build_workflow()
         workflow_path = test_workflow.get_path()
         workflow_path.write_text("")

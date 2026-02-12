@@ -31,18 +31,18 @@ class TestTypedConfigFile:
     def test_get_file_extension(
         self, my_test_typed_config_file: type[TypedConfigFile]
     ) -> None:
-        """Test method for get_file_extension."""
+        """Test method."""
         expected = "typed"
         actual = my_test_typed_config_file.get_file_extension()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__load(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
-        """Test method for load."""
+        """Test method."""
         loaded = my_test_typed_config_file.load()
         assert loaded == {}, "Expected load to return empty dict"
 
     def test__dump(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
-        """Test method for dump."""
+        """Test method."""
         # assert dumps empty dict successfully
         my_test_typed_config_file.dump({})
         assert my_test_typed_config_file.load() == {}, (
@@ -55,6 +55,6 @@ class TestTypedConfigFile:
     def test__get_configs(
         self, my_test_typed_config_file: type[TypedConfigFile]
     ) -> None:
-        """Test method for get_configs."""
+        """Test method."""
         configs = my_test_typed_config_file.get_configs()
         assert configs == {}, "Expected get_configs to return empty dict"

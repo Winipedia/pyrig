@@ -25,7 +25,7 @@ class RemoteVersionController(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -34,7 +34,7 @@ class RemoteVersionController(Tool):
         return "github"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -42,7 +42,7 @@ class RemoteVersionController(Tool):
         return ToolGroup.TOOLING
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         owner, repo = VersionController.L.get_repo_owner_and_name(
             check_repo_url=False, url_encode=True
@@ -53,7 +53,7 @@ class RemoteVersionController(Tool):
         )
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
         Returns:

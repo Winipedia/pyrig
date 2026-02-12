@@ -6,20 +6,20 @@ from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 class TestProjectCoverageTester:
     """Test class."""
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = ProjectCoverageTester.L.get_name()
+        result = ProjectCoverageTester.L.name()
         assert result == "pytest-cov"
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = ProjectCoverageTester.L.get_group()
+        result = ProjectCoverageTester.L.group()
         assert isinstance(result, str)
         assert result == "testing"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = ProjectCoverageTester.L.get_badge_urls()
+        result = ProjectCoverageTester.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 

@@ -292,7 +292,7 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def get_standard_dev_dependencies(cls) -> list[str]:
         """Get pyrig's standard dev dependencies (ruff, ty, pytest, etc.)."""
-        return sorted(Tool.get_all_tool_dev_deps())
+        return sorted(Tool.subclasses_dev_dependencies())
 
     @classmethod
     def get_dev_dependencies(cls) -> list[str]:

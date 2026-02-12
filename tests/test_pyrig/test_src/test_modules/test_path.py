@@ -16,7 +16,7 @@ from pyrig.src.modules.path import (
 
 
 def test_make_init_modules_for_package(tmp_path: Path) -> None:
-    """Test func for make_init_modules_for_package."""
+    """Test function."""
     with chdir(tmp_path):
         pkg_path = tmp_path / "test_package"
         path = pkg_path / "subdir1" / "subdir2"
@@ -30,7 +30,7 @@ def test_make_init_modules_for_package(tmp_path: Path) -> None:
 
 
 def test_make_dir_with_init_file(tmp_path: Path) -> None:
-    """Test func for make_dir_with_init_file."""
+    """Test function."""
     with chdir(tmp_path):
         test_dir = Path.cwd() / "test_package" / "subdir1" / "subdir2"
         make_dir_with_init_file(test_dir)
@@ -40,14 +40,14 @@ def test_make_dir_with_init_file(tmp_path: Path) -> None:
 
 
 def test_get_default_init_module_content() -> None:
-    """Test func for get_default_init_module_content."""
+    """Test function."""
     result = get_default_init_module_content()
     # assert is str
     assert isinstance(result, str), f"Expected str, got {type(result)}"
 
 
 def test_make_init_module(tmp_path: Path) -> None:
-    """Test func for make_init_module."""
+    """Test function."""
     with chdir(tmp_path):
         make_init_module(Path.cwd())
         assert (Path.cwd() / "__init__.py").exists(), (
@@ -56,7 +56,7 @@ def test_make_init_module(tmp_path: Path) -> None:
 
 
 def test_make_pkg_dir(tmp_path: Path) -> None:
-    """Test func for make_init_modules_for_path."""
+    """Test function."""
     with chdir(tmp_path):
         mpath = Path.cwd() / "test" / "package"
         make_pkg_dir(mpath)

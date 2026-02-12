@@ -29,7 +29,7 @@ class SecurityChecker(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -38,7 +38,7 @@ class SecurityChecker(Tool):
         return "bandit"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -46,7 +46,7 @@ class SecurityChecker(Tool):
         return ToolGroup.SECURITY
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
             "https://img.shields.io/badge/security-bandit-yellow.svg",
@@ -63,7 +63,7 @@ class SecurityChecker(Tool):
         Returns:
             Args for 'bandit'.
         """
-        return cls.get_args(*args)
+        return cls.build_args(*args)
 
     @classmethod
     def get_run_with_config_args(cls, *args: str) -> Args:

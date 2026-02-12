@@ -32,11 +32,11 @@ class ToolsInitConfigFile(InitConfigFile):
             class MyTool(Tool):
                 '''MyTool wrapper.'''
                 @classmethod
-                def get_name(cls) -> str:
+                def name(cls) -> str:
                     return "mytool"
                 @classmethod
                 def get_run_args(cls, *args: str) -> Args:
-                    return cls.get_args("run", *args)
+                    return cls.build_args("run", *args)
 
     See Also:
         pyrig.rig.tools

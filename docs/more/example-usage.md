@@ -451,12 +451,12 @@ default security checker.
 
 **Solution** (5 minutes):
 
-1. **Override `get_dev_dependencies()` on your tool in `service-base`**:
+1. **Override `dev_dependencies()` on your tool in `service-base`**:
 
    ```python
    @classmethod
-   def get_dev_dependencies(cls) -> list[str]:
-       return [*super().get_dev_dependencies(), "safety"]
+   def dev_dependencies(cls) -> list[str]:
+       return [*super().dev_dependencies(), "safety"]
    ```
 
 2. **Commit and push** → GitHub Actions releases `service-base` v1.2.0
@@ -536,7 +536,7 @@ Verify everything works if you want:
 # Verify config discovery
 uv run python -c "
 from pyrig.rig.configs.base.base import ConfigFile
-configs = ConfigFile.get_all_subclasses()
+configs = ConfigFile.subclasses()
 print(f'Found {len(configs)} config files')
 for c in configs:
     print(f'  - {c.__module__}.{c.__name__}')

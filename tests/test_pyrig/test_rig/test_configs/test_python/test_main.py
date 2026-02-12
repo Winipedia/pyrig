@@ -40,16 +40,16 @@ class TestMainConfigFile:
         spy.assert_called_once()
 
     def test_get_src_module(self) -> None:
-        """Test method for get_src_module."""
+        """Test method."""
         module = MainConfigFile.get_src_module()
         assert module == main
 
     def test_is_correct(self) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         assert MainConfigFile.is_correct()
 
     def test_delete_root_main(self, tmp_path: Path) -> None:
-        """Test method for delete_root_main."""
+        """Test method."""
         with chdir(tmp_path):
             Path("main.py").write_text("test")
             MainConfigFile.delete_root_main()

@@ -107,7 +107,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         joined_python_versions = "|".join(str(v) for v in python_versions)
         health_check_wf_name = HealthCheckWorkflow.get_filename()
         release_wf_name = ReleaseWorkflow.get_filename()
-        badge_groups = Tool.get_grouped_badges()
+        badge_groups = Tool.grouped_badges()
 
         badge_groups[ToolGroup.PROJECT_INFO].extend(
             [
@@ -126,7 +126,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             ]
         )
 
-        badge_groups[DocsBuilder.L.get_group()].extend(
+        badge_groups[DocsBuilder.L.group()].extend(
             [
                 DocsBuilder.L.get_documentation_badge(),
             ]

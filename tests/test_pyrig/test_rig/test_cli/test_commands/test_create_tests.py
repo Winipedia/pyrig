@@ -20,7 +20,7 @@ from pyrig.src.modules.package import create_package
 
 
 def test_make_test_skeletons(mocker: MockFixture) -> None:
-    """Test func for create_tests."""
+    """Test function."""
     # Mock the two main functions that create_tests calls to verify orchestration
 
     mock_create_tests_for_src_package = mocker.patch(
@@ -38,7 +38,7 @@ def test_make_test_skeletons(mocker: MockFixture) -> None:
 
 
 def test_create_tests_for_package(tmp_path: Path) -> None:
-    """Test func for create_tests_for_src_package."""
+    """Test function."""
     with chdir(tmp_path):
         # Create a source package with a module
         package_path = Path("src_package")
@@ -79,7 +79,7 @@ def test_create_tests_for_package(tmp_path: Path) -> None:
 
 
 def test_create_test_package(tmp_path: Path) -> None:
-    """Test func for create_test_package."""
+    """Test function."""
     package_name = create_test_package.__name__
     package_path = tmp_path / package_name
     with chdir(tmp_path):

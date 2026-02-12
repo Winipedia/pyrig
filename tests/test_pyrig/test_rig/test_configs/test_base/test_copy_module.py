@@ -61,7 +61,7 @@ class TestCopyModuleConfigFile:
     def test_get_src_module(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
-        """Test method for get_src_module."""
+        """Test method."""
         src_module = my_test_copy_module_config_file.get_src_module()
         assert isinstance(src_module, ModuleType), "Expected ModuleType"
         expected_name = "test_package.test_subpackage.test_module"
@@ -72,14 +72,14 @@ class TestCopyModuleConfigFile:
     def test_get_parent_path(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
-        """Test method for get_parent_path."""
+        """Test method."""
         parent_path = my_test_copy_module_config_file.get_parent_path()
         assert isinstance(parent_path, Path), "Expected Path"
 
     def test_get_lines(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
-        """Test method for get_content_str."""
+        """Test method."""
         lines = my_test_copy_module_config_file.get_lines()
         content_str = "\n".join(lines)
         assert len(content_str) > 0, "Expected non-empty string"
@@ -89,6 +89,6 @@ class TestCopyModuleConfigFile:
     def test_get_filename(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
-        """Test method for get_filename."""
+        """Test method."""
         filename = my_test_copy_module_config_file.get_filename()
         assert filename == "test_module", f"Expected 'test_module', got {filename}"

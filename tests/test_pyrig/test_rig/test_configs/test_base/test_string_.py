@@ -65,18 +65,18 @@ class TestStringConfigFile:
     def test_get_lines(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
-        """Test method for get_content_str."""
+        """Test method."""
         lines = my_test_string_config_file.get_lines()
         assert lines == ["Test content."]
 
     def test__load(self, my_test_string_config_file: type[StringConfigFile]) -> None:
-        """Test method for load."""
+        """Test method."""
         my_test_string_config_file()
         loaded = my_test_string_config_file.load()
         assert loaded == ["Test content."]
 
     def test__dump(self, my_test_string_config_file: type[StringConfigFile]) -> None:
-        """Test method for dump."""
+        """Test method."""
         my_test_string_config_file()
         # Test successful dump
         content = ["New content."]
@@ -91,7 +91,7 @@ class TestStringConfigFile:
     def test__get_configs(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
-        """Test method for get_configs."""
+        """Test method."""
         configs = my_test_string_config_file.get_configs()
         # empty line is added to the end of the file
         assert configs == ["Test content."]
@@ -99,7 +99,7 @@ class TestStringConfigFile:
     def test_is_correct(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         my_test_string_config_file()
         is_correct = my_test_string_config_file.is_correct()
         assert is_correct, "Expected config to be correct after initialization"
@@ -107,7 +107,7 @@ class TestStringConfigFile:
     def test_get_file_content(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
-        """Test method for get_file_content."""
+        """Test method."""
         my_test_string_config_file()
         file_content = my_test_string_config_file.get_file_content()
         assert file_content == "Test content.", "Expected 'Test content.'"

@@ -14,7 +14,7 @@ from pyrig.src.modules.module import make_obj_importpath
 
 
 def test_is_func_or_method() -> None:
-    """Test func for is_func_or_method."""
+    """Test function."""
 
     # Test with regular function
     def regular_function() -> None:
@@ -68,7 +68,7 @@ def test_is_func_or_method() -> None:
 
 
 def test_is_func() -> None:
-    """Test func for is_func."""
+    """Test function."""
 
     # Test with regular function
     def regular_function() -> None:
@@ -151,7 +151,7 @@ def test_is_func() -> None:
 
 
 def test_get_all_functions_from_module() -> None:
-    """Test func for get_all_functions_from_module."""
+    """Test function."""
     # Test with pyrigmodules.function module
 
     functions = get_all_functions_from_module(func_module)

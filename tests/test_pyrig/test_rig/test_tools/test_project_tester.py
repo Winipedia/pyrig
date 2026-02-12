@@ -6,21 +6,21 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = ProjectTester.L.get_group()
+        result = ProjectTester.L.group()
         assert isinstance(result, str)
         assert result == "testing"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = ProjectTester.L.get_badge_urls()
+        result = ProjectTester.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_dev_dependencies(self) -> None:
+    def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = ProjectTester.L.get_dev_dependencies()
+        result = ProjectTester.L.dev_dependencies()
         assert result == ["pytest", "pytest-mock"]
 
     def test_get_test_args(self) -> None:
@@ -34,9 +34,9 @@ class TestProjectTester:
         expected = 90
         assert result == expected
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = ProjectTester.L.get_name()
+        result = ProjectTester.L.name()
         assert result == "pytest"
 
     def test_get_run_tests_in_ci_args(self) -> None:

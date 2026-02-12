@@ -6,21 +6,21 @@ from pyrig.rig.tools.mdlinter import MDLinter
 class TestMDLinter:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = MDLinter.L.get_group()
+        result = MDLinter.L.group()
         assert isinstance(result, str)
         assert result == "code-quality"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = MDLinter.L.get_badge_urls()
+        result = MDLinter.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = MDLinter.L.get_name()
+        result = MDLinter.L.name()
         assert result == "rumdl"
 
     def test_get_check_args(self) -> None:

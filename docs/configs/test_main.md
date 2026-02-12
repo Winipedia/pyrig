@@ -72,7 +72,7 @@ When initialized via `uv run pyrig mkroot`, the file is created with:
 
 
 def test_main(main_test_fixture: None) -> None:
-    """Test func for main."""
+    """Test function."""
     assert main_test_fixture is None
 ```
 

@@ -190,7 +190,7 @@ def walk_package(
     is complete before discovery queries.
 
     Used by:
-        - ``get_all_subclasses``: Ensures subclasses are imported before querying
+        - ``subclasses``: Ensures subclasses are imported before querying
         - ``create_tests_for_package``: Generates test files for all modules
         - Session fixtures: Validates package structure and imports
 

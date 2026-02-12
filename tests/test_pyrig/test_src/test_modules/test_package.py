@@ -44,7 +44,7 @@ from tests.test_pyrig.test_src.test_modules.test_class_ import (
 
 
 def test_find_packages(mocker: MockFixture) -> None:
-    """Test func for find_packages."""
+    """Test function."""
     # Mock setuptools find_packages
     mock_find_packages = mocker.patch(
         make_obj_importpath(packages) + "._find_packages",
@@ -99,7 +99,7 @@ class TestDependencyGraph:
     """Test class."""
 
     def test_parse_distname_from_metadata(self) -> None:
-        """Test method for parse_distname_from_metadata."""
+        """Test method."""
         name = "pyrig"
         dist = importlib.metadata.distribution(name)
         result = DependencyGraph.parse_distname_from_metadata(dist)
@@ -107,14 +107,14 @@ class TestDependencyGraph:
         assert result == expected, f"Expected '{expected}', got '{result}'"
 
     def test_normalize_package_name(self) -> None:
-        """Test method for normalize_package_name."""
+        """Test method."""
         name = "pyrig"
         result = DependencyGraph.normalize_package_name(name)
         expected = "pyrig"
         assert result == expected, f"Expected '{expected}', got '{result}'"
 
     def test___init__(self) -> None:
-        """Test method for __init__."""
+        """Test method."""
         # Test it initializes without error
         graph = DependencyGraph.cached()
 
@@ -123,7 +123,7 @@ class TestDependencyGraph:
         assert num_nodes > 0, "Expected graph to have nodes after initialization"
 
     def test_build(self, mocker: MockFixture) -> None:
-        """Test method for build."""
+        """Test method."""
         # Create a mock distribution
         mock_dist1 = mocker.MagicMock()
         mock_dist1.metadata = {"Name": "test-package"}
@@ -158,12 +158,12 @@ class TestDependencyGraph:
         )
 
     def test_get_all_dependencies(self) -> None:
-        """Test method for get_all_dependencies."""
+        """Test method."""
         deps = DependencyGraph.get_all_dependencies()
         assert "setuptools" in deps, "Expected 'setuptools' to be in dependencies"
 
     def test_parse_pkg_name_from_req(self) -> None:
-        """Test method for parse_pkg_name_from_req."""
+        """Test method."""
         # Test simple package name
         result = DependencyGraph.parse_pkg_name_from_req("requests")
         assert result == "requests", f"Expected 'requests', got {result}"
@@ -190,7 +190,7 @@ class TestDependencyGraph:
         assert result == "package_name", f"Expected 'package_name', got {result}"
 
     def test_get_all_depending_on(self, mocker: MockFixture) -> None:
-        """Test method for get_all_depending_on."""
+        """Test method."""
         # Mock the build method to prevent it from running
         mocker.patch.object(DependencyGraph, "build")
 
@@ -267,7 +267,7 @@ class TestDependencyGraph:
         )
 
     def test_import_packages(self) -> None:
-        """Test method for import_packages."""
+        """Test method."""
         # Mock importlib.import_module
 
         # Test importing existing packages
@@ -320,7 +320,7 @@ def test_get_pkg_name_from_cwd() -> None:
 
 
 def test_get_objs_from_obj(tmp_path: Path) -> None:
-    """Test func for get_objs_from_obj."""
+    """Test function."""
     # Create a test module with functions and classes
     module_content = '''"""Test module."""
 

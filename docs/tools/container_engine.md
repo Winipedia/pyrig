@@ -19,7 +19,7 @@ from pyrig.rig.tools.container_engine import ContainerEngine as BaseCE
 
 class ContainerEngine(BaseCE):
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         return "docker"
 ```
 

@@ -6,7 +6,7 @@ from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 
 
 def test_adjust_version_to_level() -> None:
-    """Test method for adjust_version_to_level."""
+    """Test method."""
     version = Version("3.8.1")
     new_version = adjust_version_to_level(version, "major")
     expected = Version("3")
@@ -25,7 +25,7 @@ class TestVersionConstraint:
     """Test class."""
 
     def test___init__(self) -> None:
-        """Test method for __init__."""
+        """Test method."""
         constraint = ">=3.8, <3.12"
         version_constraint = VersionConstraint(constraint)
         assert version_constraint.constraint == constraint, (
@@ -33,7 +33,7 @@ class TestVersionConstraint:
         )
 
     def test_get_lower_inclusive(self) -> None:
-        """Test method for get_lower_inclusive."""
+        """Test method."""
         constraint = ">=3.8, <3.12"
         version_constraint = VersionConstraint(constraint)
         lower = version_constraint.get_lower_inclusive()
@@ -55,7 +55,7 @@ class TestVersionConstraint:
         assert str(lower) == expected, f"Expected {expected}, got {lower}"
 
     def test_get_upper_exclusive(self) -> None:
-        """Test method for get_upper_exclusive."""
+        """Test method."""
         constraint = ">=3.8, <3.12"
         version_constraint = VersionConstraint(constraint)
         upper = version_constraint.get_upper_exclusive()
@@ -76,7 +76,7 @@ class TestVersionConstraint:
         assert str(upper) == expected, f"Expected {expected}, got {upper}"
 
     def test_get_upper_inclusive(self) -> None:
-        """Test method for get_upper_inclusive."""
+        """Test method."""
         constraint = ">=3.8, <3.12"
         version_constraint = VersionConstraint(constraint)
         upper = version_constraint.get_upper_inclusive()
@@ -105,7 +105,7 @@ class TestVersionConstraint:
         assert str(upper) == expected, f"Expected {expected}, got {upper}"
 
     def test_get_version_range(self) -> None:
-        """Test method for get_version_range."""
+        """Test method."""
         constraint = ">=3, <3.12"
         version_constraint = VersionConstraint(constraint)
         versions = version_constraint.get_version_range(level="major")

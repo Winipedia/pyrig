@@ -13,17 +13,17 @@ class TestDotScratchConfigFile:
         assert DotScratchConfigFile().is_correct()
 
     def test_get_filename(self) -> None:
-        """Test method for get_filename."""
+        """Test method."""
         assert DotScratchConfigFile.get_filename() == ".scratch"
 
     def test_get_parent_path(
         self,
     ) -> None:
-        """Test method for get_parent_path."""
+        """Test method."""
         assert DotScratchConfigFile.get_parent_path() == Path()
 
     def test_get_lines(self) -> None:
-        """Test method for get_content_str."""
+        """Test method."""
         lines = DotScratchConfigFile.get_lines()
         assert isinstance(lines, list)
         for line in lines:

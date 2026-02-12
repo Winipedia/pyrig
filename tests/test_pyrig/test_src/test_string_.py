@@ -14,7 +14,7 @@ from pyrig.src.string_ import (
 
 
 def test_split_on_uppercase() -> None:
-    """Test func for split_on_uppercase."""
+    """Test function."""
     # Test with simple string
     result = split_on_uppercase("HelloWorld")
     assert result == ["Hello", "World"], f"Expected ['Hello', 'World'], got {result}"
@@ -48,7 +48,7 @@ def test_split_on_uppercase() -> None:
 
 
 def test_make_name_from_obj() -> None:
-    """Test func for make_project_name."""
+    """Test function."""
     # Create mock source package
     mock_src_package = ModuleType("some_package")
     mock_src_package.__name__ = "some_package"
@@ -80,7 +80,7 @@ def test_make_name_from_obj_empty_input() -> None:
 
 
 def test_re_search_excluding_docstrings() -> None:
-    """Test func for re_search_excluding_docstrings."""
+    """Test function."""
     content = '''"""Test module."""
 
 def test_function() -> str:

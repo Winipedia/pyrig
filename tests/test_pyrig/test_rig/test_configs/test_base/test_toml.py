@@ -35,7 +35,7 @@ class TestTomlConfigFile:
     """Test class."""
 
     def test_prettify_value(self) -> None:
-        """Test method for prettify_value."""
+        """Test method."""
         # scalar passthrough
         assert TomlConfigFile.prettify_value("hello") == "hello"
         assert TomlConfigFile.prettify_value(1) == 1
@@ -72,14 +72,14 @@ class TestTomlConfigFile:
         )
 
     def test__load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
-        """Test method for load."""
+        """Test method."""
         my_test_toml_config_file()
         expected = {"key": "value"}
         actual = my_test_toml_config_file.load()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
-        """Test method for dump."""
+        """Test method."""
         my_test_toml_config_file.dump({"key": "value"})
         assert my_test_toml_config_file.load() == {"key": "value"}, (
             "Expected dump to work"
@@ -88,5 +88,5 @@ class TestTomlConfigFile:
     def test_get_file_extension(
         self, my_test_toml_config_file: type[TomlConfigFile]
     ) -> None:
-        """Test method for get_file_extension."""
+        """Test method."""
         assert my_test_toml_config_file.get_file_extension() == "toml", "Expected toml"

@@ -6,21 +6,21 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = PackageManager.L.get_group()
+        result = PackageManager.L.group()
         assert isinstance(result, str)
         assert result == "tooling"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = PackageManager.L.get_badge_urls()
+        result = PackageManager.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_dev_dependencies(self) -> None:
+    def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = PackageManager.L.get_dev_dependencies()
+        result = PackageManager.L.dev_dependencies()
         assert result == []
 
     def test_get_build_system_requires(self) -> None:
@@ -48,9 +48,9 @@ class TestPackageManager:
         result = PackageManager.L.get_install_dependencies_args("--no-group", "dev")
         assert result == ("uv", "sync", "--no-group", "dev")
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = PackageManager.L.get_name()
+        result = PackageManager.L.name()
         assert result == "uv"
 
     def test_get_init_project_args(self) -> None:

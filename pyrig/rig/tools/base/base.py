@@ -68,18 +68,18 @@ class Tool(ABC):
     Example:
         >>> class MyTool(Tool):
         ...     @classmethod
-        ...     def get_name(cls) -> str:
+        ...     def name(cls) -> str:
         ...         return "mytool"
         ...     @classmethod
         ...     def get_build_args(cls, *args: str) -> Args:
-        ...         return cls.get_args("build", *args)
+        ...         return cls.build_args("build", *args)
         >>> MyTool.get_build_args("--verbose")
         Args(('mytool', 'build', '--verbose'))
     """
 
     @classmethod
     @abstractmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool command name.
 
         Returns:
@@ -88,7 +88,7 @@ class Tool(ABC):
 
     @classmethod
     @abstractmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         Used e.g. for grouping badges in the Readme.md file.
@@ -98,7 +98,7 @@ class Tool(ABC):
 
     @classmethod
     @abstractmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the url for a badge, like found in a Readme.md file.
 
         The first url is the picture, the badge, and the second the link
@@ -109,26 +109,26 @@ class Tool(ABC):
         """
 
     @classmethod
-    def get_badge(cls) -> str:
+    def badge(cls) -> str:
         """Returns the badge string for a markdown file."""
-        badge, page = cls.get_badge_urls()
+        badge, page = cls.badge_urls()
         return make_linked_badge_markdown(
             badge_url=badge,
             link_url=page,
-            alt_text=cls.get_name(),
+            alt_text=cls.name(),
         )
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
         Returns:
             List of tool dependencies. Defaults to the name of the tool.
         """
-        return [cls.get_name()]
+        return [cls.name()]
 
     @classmethod
-    def get_args(cls, *args: str) -> Args:
+    def build_args(cls, *args: str) -> Args:
         """Construct command arguments with tool name prepended.
 
         Args:
@@ -140,7 +140,7 @@ class Tool(ABC):
         Note:
             Subclasses provide higher-level methods calling this internally.
         """
-        return Args((cls.get_name(), *args))
+        return Args((cls.name(), *args))
 
     @classproperty
     def L(cls) -> type[Self]:  # noqa: N802, N805
@@ -156,7 +156,7 @@ class Tool(ABC):
         )
 
     @classmethod
-    def get_all_subclasses(cls) -> list[type[Self]]:
+    def subclasses(cls) -> list[type[Self]]:
         """Get all the tools subclasses.
 
         Finds all non abstract subclasses that are a final leave
@@ -173,23 +173,23 @@ class Tool(ABC):
                 discard_parents=True,
                 exclude_abstract=True,
             ),
-            key=lambda t: t.get_name(),
+            key=lambda t: t.name(),
         )
 
     @classmethod
-    def get_grouped_badges(cls) -> dict[str, list[str]]:
+    def grouped_badges(cls) -> dict[str, list[str]]:
         """Get a dict with all badges of tools grouped by their group."""
-        subclasses = cls.get_all_subclasses()
+        subclasses = cls.subclasses()
         groups = defaultdict(list)
         for tool in subclasses:
-            groups[tool.get_group()].append(tool.get_badge())
+            groups[tool.group()].append(tool.badge())
         return groups
 
     @classmethod
-    def get_all_tool_dev_deps(cls) -> list[str]:
+    def subclasses_dev_dependencies(cls) -> list[str]:
         """Get all dev dependencies for all tools.
 
-        This gets all subclasses of Tools and calls get_dev_dependencies() on them.
+        This gets all subclasses of Tools and calls dev_dependencies() on them.
         This way all dependencies for each tool are retrieved.
         If a user adjusts a tool, this way he can make sure that the dev dependencies
         are added to the pyproject.toml and he can remove the ones of the tool he
@@ -198,8 +198,8 @@ class Tool(ABC):
         Returns:
             List of all tool dependencies.
         """
-        subclasses = cls.get_all_subclasses()
+        subclasses = cls.subclasses()
         all_dev_deps: list[str] = []
         for subclass in subclasses:
-            all_dev_deps.extend(subclass.get_dev_dependencies())
+            all_dev_deps.extend(subclass.dev_dependencies())
         return sorted(all_dev_deps)

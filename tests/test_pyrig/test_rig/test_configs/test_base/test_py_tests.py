@@ -14,7 +14,7 @@ class TestPythonTestsConfigFile:
         self,
         tmp_path: Path,
     ) -> None:
-        """Test method for get_parent_path."""
+        """Test method."""
         with chdir(tmp_path):
             expected = Path(MirrorTestConfigFile.get_tests_package_name())
             actual = PythonTestsConfigFile.get_parent_path()

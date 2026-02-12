@@ -21,7 +21,7 @@ class TestReleaseWorkflow:
     def test_get_workflow_triggers(
         self, my_test_release_workflow: type[ReleaseWorkflow]
     ) -> None:
-        """Test method for get_workflow_triggers."""
+        """Test method."""
         result = my_test_release_workflow.get_workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "pull_request" not in result
@@ -29,7 +29,7 @@ class TestReleaseWorkflow:
     def test_get_permissions(
         self, my_test_release_workflow: type[ReleaseWorkflow]
     ) -> None:
-        """Test method for get_permissions."""
+        """Test method."""
         result = my_test_release_workflow.get_permissions()
         assert "contents" in result, "Expected 'contents' in permissions"
         assert result["contents"] == "write", "Expected 'contents' to be 'write'"
@@ -37,12 +37,12 @@ class TestReleaseWorkflow:
         assert result["actions"] == "read", "Expected 'actions' to be 'read'"
 
     def test_get_jobs(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
-        """Test method for get_jobs."""
+        """Test method."""
         result = my_test_release_workflow.get_jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_release(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
-        """Test method for job_release."""
+        """Test method."""
         result = my_test_release_workflow.job_release()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
@@ -51,12 +51,12 @@ class TestReleaseWorkflow:
     def test_steps_release(
         self, my_test_release_workflow: type[ReleaseWorkflow]
     ) -> None:
-        """Test method for steps_release."""
+        """Test method."""
         result = my_test_release_workflow.steps_release()
         assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_is_correct(self, my_test_release_workflow: type[ReleaseWorkflow]) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         test_workflow = my_test_release_workflow()
         workflow_path = test_workflow.get_path()
         workflow_path.write_text("")

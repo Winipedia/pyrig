@@ -29,7 +29,7 @@ class DocsBuilder(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -38,7 +38,7 @@ class DocsBuilder(Tool):
         return "mkdocs"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -46,7 +46,7 @@ class DocsBuilder(Tool):
         return ToolGroup.DOCUMENTATION
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
             "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white",
@@ -54,14 +54,14 @@ class DocsBuilder(Tool):
         )
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
         Returns:
             List of tool dependencies.
         """
         return [
-            *super().get_dev_dependencies(),
+            *super().dev_dependencies(),
             "mkdocs-material",
             "mkdocs-mermaid2-plugin",
             "mkdocstrings[python]",
@@ -86,7 +86,7 @@ class DocsBuilder(Tool):
         Returns:
             Args for 'mkdocs build'.
         """
-        return cls.get_args("build", *args)
+        return cls.build_args("build", *args)
 
     @classmethod
     def get_documentation_url(cls) -> str:

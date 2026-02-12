@@ -28,7 +28,7 @@ class PackageIndex(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -37,7 +37,7 @@ class PackageIndex(Tool):
         return "pypi"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -45,7 +45,7 @@ class PackageIndex(Tool):
         return ToolGroup.PROJECT_INFO
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         _, repo = VersionController.L.get_repo_owner_and_name(
             check_repo_url=False, url_encode=True
@@ -70,7 +70,7 @@ class PackageIndex(Tool):
         return f"https://pypi.org/project/{repo}"
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get development dependencies for this tool.
 
         Returns:

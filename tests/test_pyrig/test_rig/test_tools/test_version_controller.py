@@ -8,21 +8,21 @@ from pyrig.rig.tools.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = VersionController.L.get_group()
+        result = VersionController.L.group()
         assert isinstance(result, str)
         assert result == "tooling"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = VersionController.L.get_badge_urls()
+        result = VersionController.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_dev_dependencies(self) -> None:
+    def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = VersionController.L.get_dev_dependencies()
+        result = VersionController.L.dev_dependencies()
         assert result == []
 
     def test_get_config_get_user_email_args(self) -> None:
@@ -88,9 +88,9 @@ class TestVersionController:
         result = VersionController.L.get_tag_args(tag=tag)
         assert result == ("git", "tag", tag)
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = VersionController.L.get_name()
+        result = VersionController.L.name()
         assert result == "git"
 
     def test_get_init_args(self) -> None:

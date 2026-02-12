@@ -29,7 +29,7 @@ class DependencyAuditor(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -38,7 +38,7 @@ class DependencyAuditor(Tool):
         return "pip-audit"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -46,7 +46,7 @@ class DependencyAuditor(Tool):
         return ToolGroup.SECURITY
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
             "https://img.shields.io/badge/security-pip--audit-blue?logo=python",
@@ -63,4 +63,4 @@ class DependencyAuditor(Tool):
         Returns:
             Args for 'pip-audit'.
         """
-        return cls.get_args(*args)
+        return cls.build_args(*args)

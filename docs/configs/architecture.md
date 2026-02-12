@@ -289,7 +289,7 @@ group:
 - `ConfigFile.init_all_subclasses()` - Initialize all discovered config files
 - `ConfigFile.init_priority_subclasses()` - Initialize only files with
   priority > 0
-- `ConfigFile.get_all_subclasses()` - Discover all config files (sorted by
+- `ConfigFile.subclasses()` - Discover all config files (sorted by
   priority)
 - `ConfigFile.get_priority_subclasses()` - Get only config files with priority >
   0

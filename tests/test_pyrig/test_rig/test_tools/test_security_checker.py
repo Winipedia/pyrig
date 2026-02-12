@@ -6,21 +6,21 @@ from pyrig.rig.tools.security_checker import SecurityChecker
 class TestSecurityChecker:
     """Test class."""
 
-    def test_get_group(self) -> None:
+    def test_group(self) -> None:
         """Test method."""
-        result = SecurityChecker.L.get_group()
+        result = SecurityChecker.L.group()
         assert isinstance(result, str)
         assert result == "security"
 
-    def test_get_badge_urls(self) -> None:
+    def test_badge_urls(self) -> None:
         """Test method."""
-        result = SecurityChecker.L.get_badge_urls()
+        result = SecurityChecker.L.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
-    def test_get_name(self) -> None:
+    def test_name(self) -> None:
         """Test method."""
-        result = SecurityChecker.L.get_name()
+        result = SecurityChecker.L.name()
         assert result == "bandit"
 
     def test_get_run_args(self) -> None:

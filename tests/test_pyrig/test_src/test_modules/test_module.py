@@ -31,7 +31,7 @@ from pyrig.src.modules.module import (
 
 
 def test_get_module_content_as_str(tmp_path: Path) -> None:
-    """Test func for get_module_content_as_str."""
+    """Test function."""
     # Create a temporary module file with known content
     module_content = '''"""Test module."""
 
@@ -73,7 +73,7 @@ class TestClass:
 
 
 def test_create_module(tmp_path: Path) -> None:
-    """Test func for create_module."""
+    """Test function."""
     # Test creating a regular module
     with chdir(tmp_path):
         module_path = tmp_path / "test_pkg.test_module.py"
@@ -84,7 +84,7 @@ def test_create_module(tmp_path: Path) -> None:
 
 
 def test_make_obj_importpath() -> None:
-    """Test func for make_obj_importpath."""
+    """Test function."""
 
     # Test with a function
     def test_func() -> None:
@@ -113,7 +113,7 @@ def test_make_obj_importpath() -> None:
 
 
 def test_import_obj_from_importpath() -> None:
-    """Test func for import_obj_from_importpath."""
+    """Test function."""
     # Test importing a module
 
     result = import_obj_from_importpath("sys")
@@ -140,7 +140,7 @@ def test_import_obj_from_importpath() -> None:
 
 
 def test_get_isolated_obj_name() -> None:
-    """Test func for get_isolated_obj_name."""
+    """Test function."""
     # Test with a module
     result = get_isolated_obj_name(sys)
     assert result == "sys", f"Expected 'sys', got {result}"
@@ -167,7 +167,7 @@ def test_get_isolated_obj_name() -> None:
 
 
 def test_execute_all_functions_from_module(tmp_path: Path) -> None:
-    """Test func for execute_all_functions_from_module."""
+    """Test function."""
     # Create a test module with functions that return values
     module_content = '''"""Test module."""
 
@@ -225,14 +225,14 @@ def func3() -> None:
 
 
 def test_get_default_module_content() -> None:
-    """Test func for get_default_module_content."""
+    """Test function."""
     result = get_default_module_content()
     # assert is str
     assert isinstance(result, str), f"Expected str, got {type(result)}"
 
 
 def test_import_module_with_default() -> None:
-    """Test func for import_module_with_default."""
+    """Test function."""
     # Test importing a valid module
     result = import_module_with_default("sys")
     assert result.__name__ == "sys", f"Expected sys module, got {result}"

@@ -6,7 +6,7 @@ constructs command arguments that can be inspected, modified, and executed.
 ## Start Here
 
 **[Architecture](architecture.md)** - Understand the design philosophy, the
-`.L` pattern, `get_all_subclasses()`, and when customizations propagate
+`.L` pattern, `subclasses()`, and when customizations propagate
 automatically vs when they require explicit overrides.
 
 ## Tools

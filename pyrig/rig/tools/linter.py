@@ -30,7 +30,7 @@ class Linter(Tool):
     """
 
     @classmethod
-    def get_name(cls) -> str:
+    def name(cls) -> str:
         """Get tool name.
 
         Returns:
@@ -39,7 +39,7 @@ class Linter(Tool):
         return "ruff"
 
     @classmethod
-    def get_group(cls) -> str:
+    def group(cls) -> str:
         """Returns the group the tools belongs to.
 
         E.g. testing, tool, code-quality etc...
@@ -47,7 +47,7 @@ class Linter(Tool):
         return ToolGroup.CODE_QUALITY
 
     @classmethod
-    def get_badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json",
@@ -64,7 +64,7 @@ class Linter(Tool):
         Returns:
             Args for 'ruff check'.
         """
-        return cls.get_args("check", *args)
+        return cls.build_args("check", *args)
 
     @classmethod
     def get_check_fix_args(cls, *args: str) -> Args:
@@ -88,4 +88,4 @@ class Linter(Tool):
         Returns:
             Args for 'ruff format'.
         """
-        return cls.get_args("format", *args)
+        return cls.build_args("format", *args)

@@ -49,7 +49,7 @@ class TestHealthCheckWorkflow:
     def test_get_workflow_triggers(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for get_workflow_triggers."""
+        """Test method."""
         result = my_test_health_check_workflow.get_workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "pull_request" in result, "Expected 'pull_request' in triggers"
@@ -58,14 +58,14 @@ class TestHealthCheckWorkflow:
     def test_get_jobs(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for get_jobs."""
+        """Test method."""
         result = my_test_health_check_workflow.get_jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_matrix_health_checks(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for job_health_check_matrix."""
+        """Test method."""
         result = my_test_health_check_workflow.job_matrix_health_checks()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
@@ -76,7 +76,7 @@ class TestHealthCheckWorkflow:
     def test_job_health_check(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for job_health_check."""
+        """Test method."""
         result = my_test_health_check_workflow.job_health_check()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
@@ -86,21 +86,21 @@ class TestHealthCheckWorkflow:
     def test_steps_matrix_health_checks(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for steps_matrix_health_checks."""
+        """Test method."""
         result = my_test_health_check_workflow.steps_matrix_health_checks()
         assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_steps_aggregate_jobs(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for steps_aggregate_jobs."""
+        """Test method."""
         result = my_test_health_check_workflow.steps_aggregate_jobs()
         assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_is_correct(
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
-        """Test method for is_correct."""
+        """Test method."""
         test_workflow = my_test_health_check_workflow()
         workflow_path = test_workflow.get_path()
         workflow_path.write_text("")

@@ -35,14 +35,14 @@ class TestYamlConfigFile:
     """Test class."""
 
     def test__load(self, my_test_yaml_config_file: type[YamlConfigFile]) -> None:
-        """Test method for load."""
+        """Test method."""
         my_test_yaml_config_file()
         expected = {"key": "value"}
         actual = my_test_yaml_config_file.load()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__dump(self, my_test_yaml_config_file: type[YamlConfigFile]) -> None:
-        """Test method for dump."""
+        """Test method."""
         my_test_yaml_config_file.dump({"key": "value"})
         assert my_test_yaml_config_file.load() == {"key": "value"}, (
             "Expected dump to work"
@@ -51,5 +51,5 @@ class TestYamlConfigFile:
     def test_get_file_extension(
         self, my_test_yaml_config_file: type[YamlConfigFile]
     ) -> None:
-        """Test method for get_file_extension."""
+        """Test method."""
         assert my_test_yaml_config_file.get_file_extension() == "yaml", "Expected yaml"
