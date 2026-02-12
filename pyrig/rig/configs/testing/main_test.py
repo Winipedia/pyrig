@@ -44,7 +44,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
     '''
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory path for test_main.py.
 
         Returns:
@@ -73,7 +73,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
         return test_module_path.parent
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get the test filename.
 
         Returns:

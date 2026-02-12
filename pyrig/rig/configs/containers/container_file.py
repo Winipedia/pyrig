@@ -40,7 +40,7 @@ class ContainerfileConfigFile(StringConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get the Containerfile filename.
 
         Returns:
@@ -49,7 +49,7 @@ class ContainerfileConfigFile(StringConfigFile):
         return "Containerfile"
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for Containerfile.
 
         Returns:
@@ -58,7 +58,7 @@ class ContainerfileConfigFile(StringConfigFile):
         return Path()
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Get the file extension for Containerfile.
 
         Returns:
@@ -67,7 +67,7 @@ class ContainerfileConfigFile(StringConfigFile):
         return ""
 
     @classmethod
-    def get_extension_sep(cls) -> str:
+    def extension_separator(cls) -> str:
         """Get the extension separator for Containerfile.
 
         Returns:

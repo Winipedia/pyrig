@@ -41,7 +41,7 @@ graph TD
 
 **Filename**: Empty string to produce `.env` (not `env.env`).
 
-**Special filename handling**: `get_filename()` returns `""` to create a
+**Special filename handling**: `filename()` returns `""` to create a
 dotfile.
 
 ## How It Works

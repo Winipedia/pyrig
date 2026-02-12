@@ -22,10 +22,10 @@ class TestLicenseConfigFile:
             == "[![License](https://img.shields.io/github/license/Winipedia/pyrig)](https://github.com/Winipedia/pyrig/blob/main/LICENSE)"
         )
 
-    def test_get_priority(self) -> None:
+    def test_priority(self) -> None:
         """Test method."""
         # assert is bigger than PyprojectConfigFile
-        assert LicenseConfigFile.get_priority() > PyprojectConfigFile.L.get_priority()
+        assert LicenseConfigFile.priority() > PyprojectConfigFile.L.priority()
 
     def test_is_correct(self) -> None:
         """Test method."""
@@ -45,27 +45,25 @@ class TestLicenseConfigFile:
         assert "[year]" not in mit_license
         assert "[fullname]" not in mit_license
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
         # Should return LICENSE
-        assert LicenseConfigFile.get_filename() == "LICENSE", "Expected 'LICENSE'"
+        assert LicenseConfigFile.filename() == "LICENSE", "Expected 'LICENSE'"
 
-    def test_get_path(self) -> None:
+    def test_path(self) -> None:
         """Test method."""
         # Should return Path("LICENSE")
-        assert LicenseConfigFile.get_path() == Path("LICENSE"), (
-            "Expected Path('LICENSE')"
-        )
+        assert LicenseConfigFile.path() == Path("LICENSE"), "Expected Path('LICENSE')"
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
         # Should return Path()
-        assert LicenseConfigFile.get_parent_path() == Path(), "Expected Path()"
+        assert LicenseConfigFile.parent_path() == Path(), "Expected Path()"
 
-    def test_get_file_extension(self) -> None:
+    def test_extension(self) -> None:
         """Test method."""
         # Should return empty string
-        assert LicenseConfigFile.get_file_extension() == "", "Expected ''"
+        assert LicenseConfigFile.extension() == "", "Expected ''"
 
     def test_get_lines(self) -> None:
         """Test method."""

@@ -63,11 +63,11 @@ Using format-specific base classes::
         '''Manages myconfig.toml.'''
 
         @classmethod
-        def get_parent_path(cls) -> Path:
+        def parent_path(cls) -> Path:
             return Path()
 
         @classmethod
-        def _get_configs(cls) -> dict[str, Any]:
+        def _configs(cls) -> dict[str, Any]:
             return {"setting": "value"}
 
 Using specialized base classes::

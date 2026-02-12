@@ -33,7 +33,7 @@ def my_test_config_file(
         }
 
         @classmethod
-        def get_file_extension(cls) -> str:
+        def extension(cls) -> str:
             """Get the file extension of the config file."""
             return "txt"
 
@@ -48,12 +48,12 @@ def my_test_config_file(
             cls.STORAGE_DICT = config
 
         @classmethod
-        def get_parent_path(cls) -> Path:
+        def parent_path(cls) -> Path:
             """Get the path to the config file."""
             return Path("parent_dir")
 
         @classmethod
-        def _get_configs(cls) -> dict[str, Any]:
+        def _configs(cls) -> dict[str, Any]:
             """Get the config."""
             return {
                 "key1": "value1",
@@ -73,15 +73,15 @@ class TestConfigFile:
         result = ConfigFile.sorting_key(ConfigFile)
         assert isinstance(result, (float, int))
 
-    def test_get_configs(
+    def test_configs(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        configs = my_test_config_file._get_configs()  # noqa: SLF001
-        cached_configs = my_test_config_file.get_configs()
+        configs = my_test_config_file._configs()  # noqa: SLF001
+        cached_configs = my_test_config_file.configs()
         assert configs == cached_configs
         assert configs is not cached_configs
-        assert my_test_config_file.get_configs() is cached_configs
+        assert my_test_config_file.configs() is cached_configs
 
     def test_definition_package(self) -> None:
         """Test method."""
@@ -92,7 +92,7 @@ class TestConfigFile:
     ) -> None:
         """Test method."""
         my_test_config_file.create_file()
-        assert my_test_config_file.get_path().exists()
+        assert my_test_config_file.path().exists()
 
     def test__load(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
@@ -123,13 +123,13 @@ class TestConfigFile:
         my_test_config_file.dump({"key": "new_value"})
         assert my_test_config_file.load()["key"] == "new_value"
 
-    def test_get_priority(self) -> None:
+    def test_priority(self) -> None:
         """Test method."""
-        assert ConfigFile.get_priority() == 0
+        assert ConfigFile.priority() == 0
 
-    def test_get_priority_subclasses(self) -> None:
+    def test_priority_subclasses(self) -> None:
         """Test method."""
-        priority_subclasses = ConfigFile.get_priority_subclasses()
+        priority_subclasses = ConfigFile.priority_subclasses()
         assert isinstance(priority_subclasses, list)
         assert all(issubclass(cf, ConfigFile) for cf in priority_subclasses)
 
@@ -150,21 +150,21 @@ class TestConfigFile:
 
     def test_init_priority_subclasses(self, mocker: MockFixture) -> None:
         """Test method."""
-        num_priority_subclasses = ConfigFile.get_priority_subclasses()
+        num_priority_subclasses = ConfigFile.priority_subclasses()
         mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
         ConfigFile.init_priority_subclasses()
         assert mock.call_count == len(num_priority_subclasses)
 
-    def test_get_extension_sep(self) -> None:
+    def test_extension_separator(self) -> None:
         """Test method."""
-        assert ConfigFile.get_extension_sep() == "."
+        assert ConfigFile.extension_separator() == "."
 
-    def test_get_parent_path(
+    def test_parent_path(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
         expected = Path("parent_dir")
-        actual = my_test_config_file.get_parent_path()
+        actual = my_test_config_file.parent_path()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_load(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
@@ -182,27 +182,27 @@ class TestConfigFile:
         my_test_config_file.dump(dunmp_dict)
         assert my_test_config_file.load() == dunmp_dict, "Expected dump to work"
 
-    def test_get_file_extension(
+    def test_extension(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        assert my_test_config_file.get_file_extension() == "txt", "Expected txt"
+        assert my_test_config_file.extension() == "txt", "Expected txt"
 
-    def test__get_configs(
+    def test__configs(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        assert isinstance(my_test_config_file.get_configs(), dict), "Expected dict"
+        assert isinstance(my_test_config_file.configs(), dict), "Expected dict"
 
     def test___init__(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
     ) -> None:
         """Test method."""
         # create file first to not trigger dunmp in init
-        my_test_config_file.get_path().parent.mkdir(parents=True, exist_ok=True)
-        # write non-empty file to trigger add_missing_configs,
+        my_test_config_file.path().parent.mkdir(parents=True, exist_ok=True)
+        # write non-empty file to trigger merge_configs,
         # empty file triggers is_unwanted
-        my_test_config_file.get_path().write_text("test")
+        my_test_config_file.path().write_text("test")
         my_test_config_file()
         after = my_test_config_file.load()
 
@@ -219,12 +219,12 @@ class TestConfigFile:
         }, "Expected config to be correct"
 
         # remove file to trigger init dump
-        my_test_config_file.get_path().unlink()
+        my_test_config_file.path().unlink()
         my_test_config_file()
         # assert path exists
-        assert my_test_config_file.get_path().exists(), "Expected path to exist"
-        # assert config is == get_configs, not any of previous config
-        assert my_test_config_file.load() == my_test_config_file.get_configs(), (
+        assert my_test_config_file.path().exists(), "Expected path to exist"
+        # assert config is == configs, not any of previous config
+        assert my_test_config_file.load() == my_test_config_file.configs(), (
             "Expected config to be correct"
         )
 
@@ -237,29 +237,27 @@ class TestConfigFile:
         with pytest.raises(ValueError, match="not correct"):
             my_test_config_file()
 
-    def test_get_path(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
-    ) -> None:
+    def test_path(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
         # will be my.txt not my_test.txt bc the fixture factory
         # creates a runtime subclass TestConfigFile so filename will removesuffix
-        # see implementation of config_file_factory fixture and get_filename
+        # see implementation of config_file_factory fixture and filename
         expected = Path("parent_dir/my.txt")
-        actual = my_test_config_file.get_path()
+        actual = my_test_config_file.path()
         # assert actual ends with expected
         assert actual.as_posix().endswith(expected.as_posix()), (
             f"Expected {expected}, got {actual}"
         )
 
-    def test_get_filename(
+    def test_filename(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
         expected = "my"
-        actual = my_test_config_file.get_filename()
+        actual = my_test_config_file.filename()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test_add_missing_configs(
+    def test_merge_configs(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
@@ -274,7 +272,7 @@ class TestConfigFile:
             ],
             "key7": "value7",
         }
-        actual = my_test_config_file.add_missing_configs()
+        actual = my_test_config_file.merge_configs()
         assert actual == expected, "Expected config to be correct"
 
     def test_add_missing_dict_val(
@@ -306,7 +304,7 @@ class TestConfigFile:
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        my_test_config_file().get_path().write_text("")
+        my_test_config_file().path().write_text("")
         assert my_test_config_file.is_unwanted(), "Expected config to be unwanted"
 
     def test_is_correct_recursively(

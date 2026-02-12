@@ -46,7 +46,7 @@ class GitIgnoreConfigFile(StringConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get an empty filename to produce ".gitignore".
 
         Returns:
@@ -55,7 +55,7 @@ class GitIgnoreConfigFile(StringConfigFile):
         return ""
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for .gitignore.
 
         Returns:
@@ -64,7 +64,7 @@ class GitIgnoreConfigFile(StringConfigFile):
         return Path()
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Get the file extension for .gitignore.
 
         Returns:
@@ -91,8 +91,8 @@ class GitIgnoreConfigFile(StringConfigFile):
             *cls.get_github_python_gitignore_as_list(),
             "",
             f"# {pyrig.__name__} stuff",
-            DotScratchConfigFile.L.get_path().as_posix(),
-            DotEnvConfigFile.L.get_path().as_posix(),
+            DotScratchConfigFile.L.path().as_posix(),
+            DotEnvConfigFile.L.path().as_posix(),
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov
             ".pytest_cache/",  # bc of pytest cache

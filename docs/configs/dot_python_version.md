@@ -45,8 +45,8 @@ graph TD
 
 **Special filename handling**:
 
-- `get_filename()` returns `""`
-- `get_file_extension()` returns `"python-version"`
+- `filename()` returns `""`
+- `extension()` returns `"python-version"`
 - Combined: `.python-version`
 
 ## How It Works

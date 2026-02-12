@@ -18,14 +18,14 @@ class TestCodeOfConductConfigFile:
         result = CodeOfConductConfigFile.get_contact_method()
         assert len(result) > 0
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.get_filename()
+        result = CodeOfConductConfigFile.filename()
         assert result == "CODE_OF_CONDUCT"
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.get_parent_path()
+        result = CodeOfConductConfigFile.parent_path()
         assert result == Path()
 
     def test_get_lines(self) -> None:

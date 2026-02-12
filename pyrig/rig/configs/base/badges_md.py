@@ -9,11 +9,11 @@ Example:
     >>>
     >>> class ReadmeFile(BadgesMarkdownConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def get_filename(cls) -> str:
+    ...     def filename(cls) -> str:
     ...         return "README"
     >>>
     >>> ReadmeFile()  # Creates README.md with badges
@@ -39,7 +39,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
     contains required badges, project name, and description.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the Markdown file
+        - `parent_path`: Directory containing the Markdown file
 
     See Also:
         pyrig.rig.configs.base.markdown.MarkdownConfigFile: Parent class
@@ -51,7 +51,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
     def is_correct(cls) -> bool:
         """Override to replace the description if it changed in pyproject.toml.
 
-        Normally StringConfigFile.add_missing_configs prepends the expected lines to
+        Normally StringConfigFile.merge_configs prepends the expected lines to
         the actual lines. This leads to a stale description remaining in the file
         if it was changed in pyproject.toml. This override detects the old description
         block between ``---`` fences and replaces it with the current one before
@@ -105,8 +105,8 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         """
         python_versions = PyprojectConfigFile.L.get_supported_python_versions()
         joined_python_versions = "|".join(str(v) for v in python_versions)
-        health_check_wf_name = HealthCheckWorkflow.get_filename()
-        release_wf_name = ReleaseWorkflow.get_filename()
+        health_check_wf_name = HealthCheckWorkflow.filename()
+        release_wf_name = ReleaseWorkflow.filename()
         badge_groups = Tool.grouped_badges()
 
         badge_groups[ToolGroup.PROJECT_INFO].extend(

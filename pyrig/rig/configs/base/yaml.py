@@ -10,11 +10,11 @@ Example:
     >>>
     >>> class MyWorkflowFile(YamlConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path(".github/workflows")
     ...
     ...     @classmethod
-    ...     def _get_configs(cls) -> dict[str, Any]:
+    ...     def _configs(cls) -> dict[str, Any]:
     ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
 """
 
@@ -32,17 +32,17 @@ class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
     (sort_keys=False).
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the YAML file
-        - `_get_configs`: Expected YAML configuration structure
+        - `parent_path`: Directory containing the YAML file
+        - `_configs`: Expected YAML configuration structure
 
     Example:
         >>> class MyConfigFile(YamlConfigFile):
         ...     @classmethod
-        ...     def get_parent_path(cls) -> Path:
+        ...     def parent_path(cls) -> Path:
         ...         return Path()
         ...
         ...     @classmethod
-        ...     def _get_configs(cls) -> dict[str, Any]:
+        ...     def _configs(cls) -> dict[str, Any]:
         ...         return {"setting": "value"}
     """
 
@@ -53,7 +53,7 @@ class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         Returns:
             Parsed YAML content as dict or list. Empty dict if file is empty.
         """
-        return yaml.safe_load(cls.get_path().read_text(encoding="utf-8")) or {}
+        return yaml.safe_load(cls.path().read_text(encoding="utf-8")) or {}
 
     @classmethod
     def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
@@ -62,10 +62,10 @@ class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         Args:
             config: Configuration dict or list to write.
         """
-        with cls.get_path().open("w") as f:
+        with cls.path().open("w") as f:
             yaml.safe_dump(config, f, sort_keys=False)
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return "yaml"."""
         return "yaml"

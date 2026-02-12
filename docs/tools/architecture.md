@@ -205,11 +205,11 @@ from pyrig.rig.configs.base.toml import TomlConfigFile
 
 class MyAppConfigFile(TomlConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         return Path()
 
     @classmethod
-    def _get_configs(cls) -> dict:
+    def _configs(cls) -> dict:
         return {"app": {"name": "myapp"}}
 ```
 
@@ -224,8 +224,8 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyproject
 
 class PyprojectConfigFile(BasePyproject):
     @classmethod
-    def _get_configs(cls) -> dict:
-        config = super()._get_configs()
+    def _configs(cls) -> dict:
+        config = super()._configs()
         config["tool"]["myapp"] = {"custom": "setting"}
         return config
 ```

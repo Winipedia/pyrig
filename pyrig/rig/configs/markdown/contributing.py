@@ -72,7 +72,7 @@ class ContributingConfigFile(MarkdownConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Get the CONTRIBUTING filename.
 
         Returns:
@@ -81,7 +81,7 @@ class ContributingConfigFile(MarkdownConfigFile):
         return "CONTRIBUTING"
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for CONTRIBUTING.md.
 
         Returns:
@@ -105,6 +105,6 @@ class ContributingConfigFile(MarkdownConfigFile):
         Returns:
             bool: True if file exists with content, False otherwise.
         """
-        return cls.get_path().exists() and bool(
-            cls.get_path().read_text(encoding="utf-8").strip()
+        return cls.path().exists() and bool(
+            cls.path().read_text(encoding="utf-8").strip()
         )

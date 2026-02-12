@@ -55,7 +55,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get target directory by transforming source module path.
 
         Replaces leading package name (pyrig) with target project's package name.
@@ -81,7 +81,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         return [*get_module_content_as_str(src_module).splitlines()]
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Return module's isolated name (last component).
 
         Returns:

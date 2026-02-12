@@ -22,11 +22,11 @@ def my_test_zero_test_config_file(
 class TestZeroTestConfigFile:
     """Test class."""
 
-    def test_get_filename(
+    def test_filename(
         self, my_test_zero_test_config_file: type[ZeroTestConfigFile]
     ) -> None:
         """Test method."""
-        filename = my_test_zero_test_config_file.get_filename()
+        filename = my_test_zero_test_config_file.filename()
         # ZeroTestConfigFile reverses the filename
         assert filename.startswith("test_"), (
             f"Expected filename to start with 'test_', got {filename}"

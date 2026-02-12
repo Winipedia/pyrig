@@ -30,36 +30,36 @@ class DotEnvConfigFile(DictConfigFile):
     @classmethod
     def _load(cls) -> dict[str, str | None]:
         """Load environment variables from .env file."""
-        return dotenv_values(cls.get_path())
+        return dotenv_values(cls.path())
 
     @classmethod
     def _dump(cls, config: dict[str, Any]) -> None:
         """Prevent writing to .env (raises ValueError if config is non-empty)."""
         if config:
             msg = f"""
-Dumping to {cls.get_path()} is not allowed due to security reasons.
+Dumping to {cls.path()} is not allowed due to security reasons.
 This file is managed manually. Please edit it directly.
 We highly discourage managing this ConfigFile via subclassing.
 """
             raise ValueError(msg)
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return 'env' extension."""
         return "env"
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Return empty string to produce '.env' (not 'env.env')."""
         return ""
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Return project root."""
         return Path()
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Return empty dict (pyrig doesn't manage .env content)."""
         return {}
 

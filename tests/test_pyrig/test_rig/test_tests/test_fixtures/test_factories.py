@@ -19,7 +19,7 @@ def sample_config_file(
         """Sample config file for testing."""
 
         @classmethod
-        def get_parent_path(cls) -> Path:
+        def parent_path(cls) -> Path:
             """Get the parent path."""
             return Path()
 
@@ -33,12 +33,12 @@ def sample_config_file(
             """Dump the config."""
 
         @classmethod
-        def get_file_extension(cls) -> str:
+        def extension(cls) -> str:
             """Get the file extension."""
             return "test"
 
         @classmethod
-        def _get_configs(cls) -> dict[str, Any]:
+        def _configs(cls) -> dict[str, Any]:
             """Get the configs."""
             return {"key": "value"}
 
@@ -48,12 +48,12 @@ def sample_config_file(
 def test_config_file_factory(
     sample_config_file: type[ConfigFile], tmp_path: Path
 ) -> None:
-    """Test that config_file_factory wraps get_path to use tmp_path."""
+    """Test that config_file_factory wraps path to use tmp_path."""
     assert issubclass(sample_config_file, ConfigFile), (
         "Expected sample_config_file to be a class"
     )
-    # The factory should wrap the get_path method to use tmp_path
-    path = sample_config_file.get_path()
+    # The factory should wrap the path method to use tmp_path
+    path = sample_config_file.path()
 
     # The path should be inside tmp_path
     assert str(path).startswith(str(tmp_path)), (

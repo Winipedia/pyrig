@@ -8,17 +8,17 @@ from pyrig.rig.configs.dot_python_version import DotPythonVersionConfigFile
 class TestDotPythonVersionConfigFile:
     """Test class."""
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.get_filename() == ""
+        assert DotPythonVersionConfigFile.filename() == ""
 
-    def test_get_file_extension(self) -> None:
+    def test_extension(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.get_file_extension() == "python-version"
+        assert DotPythonVersionConfigFile.extension() == "python-version"
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.get_parent_path() == Path()
+        assert DotPythonVersionConfigFile.parent_path() == Path()
 
     def test_get_lines(self) -> None:
         """Test method."""

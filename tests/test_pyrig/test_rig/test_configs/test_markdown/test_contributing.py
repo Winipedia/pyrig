@@ -8,14 +8,14 @@ from pyrig.rig.configs.markdown.contributing import ContributingConfigFile
 class TestContributingConfigFile:
     """Test class."""
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
-        result = ContributingConfigFile.get_filename()
+        result = ContributingConfigFile.filename()
         assert result == "CONTRIBUTING"
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        result = ContributingConfigFile.get_parent_path()
+        result = ContributingConfigFile.parent_path()
         assert result == Path()
 
     def test_get_lines(self) -> None:

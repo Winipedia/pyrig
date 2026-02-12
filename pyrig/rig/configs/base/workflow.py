@@ -116,7 +116,7 @@ class Workflow(YmlConfigFile):
     ARTIFACTS_PATTERN = f"{ARTIFACTS_DIR_NAME}/*"
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Build the complete workflow configuration.
 
         Returns:
@@ -133,7 +133,7 @@ class Workflow(YmlConfigFile):
         }
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for workflow files.
 
         Returns:
@@ -153,8 +153,8 @@ class Workflow(YmlConfigFile):
         """
         correct = super().is_correct()
 
-        if cls.get_path().read_text(encoding="utf-8") == "":
-            config = cls.get_configs()
+        if cls.path().read_text(encoding="utf-8") == "":
+            config = cls.configs()
             jobs = config["jobs"]
             for job in jobs.values():
                 job["steps"] = [cls.step_opt_out_of_workflow()]

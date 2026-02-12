@@ -177,21 +177,21 @@ class TestWorkflow:
         result = my_test_workflow.insert_workflow_run_id()
         assert isinstance(result, str)
 
-    def test__get_configs(self, my_test_workflow: type[Workflow]) -> None:
+    def test__configs(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
-        result = my_test_workflow.get_configs()
+        result = my_test_workflow.configs()
         assert "name" in result, "Expected 'name' in configs"
         assert "on" in result, "Expected 'on' in configs"
         assert "jobs" in result, "Expected 'jobs' in configs"
 
-    def test_get_parent_path(
+    def test_parent_path(
         self,
         my_test_workflow: type[Workflow],
         tmp_path: Path,
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            result = my_test_workflow.get_parent_path()
+            result = my_test_workflow.parent_path()
             assert result == Path(".github/workflows"), (
                 f"Expected '.github/workflows', got {result}"
             )
@@ -602,12 +602,12 @@ class TestWorkflow:
         """Test method."""
         # Test that an empty file is considered correct
         test_workflow = my_test_workflow()
-        workflow_path = test_workflow.get_path()
+        workflow_path = test_workflow.path()
         workflow_path.write_text("")
         assert test_workflow.is_correct(), "Expected workflow to be correct when empty"
 
         # Test that a workflow with proper config is correct
-        proper_config = test_workflow.get_configs()
+        proper_config = test_workflow.configs()
         test_workflow.dump(proper_config)
         assert test_workflow.is_correct(), (
             "Expected workflow to be correct with proper config"

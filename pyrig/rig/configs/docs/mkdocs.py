@@ -41,7 +41,7 @@ class MkdocsConfigFile(YmlConfigFile):
     """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for mkdocs.yml.
 
         Returns:
@@ -50,7 +50,7 @@ class MkdocsConfigFile(YmlConfigFile):
         return Path()
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any] | list[Any]:
+    def _configs(cls) -> dict[str, Any] | list[Any]:
         """Get the complete mkdocs.yml configuration.
 
         Generates MkDocs configuration with Material theme, navigation (Home, API),
@@ -65,7 +65,7 @@ class MkdocsConfigFile(YmlConfigFile):
         return {
             "site_name": PyprojectConfigFile.L.get_project_name(),
             "nav": [
-                {"Home": IndexConfigFile.L.get_path().name},
+                {"Home": IndexConfigFile.L.path().name},
                 {"API": "api.md"},
             ],
             "plugins": [

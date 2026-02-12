@@ -43,7 +43,7 @@ graph TD
 **Extension**: `.gitignore` - The filename is constructed specially to produce
 the dotfile name.
 
-**Special filename handling**: `get_filename()` returns empty string so the path
+**Special filename handling**: `filename()` returns empty string so the path
 becomes `.gitignore` instead of `gitignore.gitignore`.
 
 ## How It Works

@@ -54,7 +54,7 @@ class PyprojectConfigFile(TomlConfigFile):
     """
 
     @classmethod
-    def get_priority(cls) -> float:
+    def priority(cls) -> float:
         """Return priority 20 (created early for other configs to read)."""
         return Priority.MEDIUM
 
@@ -68,12 +68,12 @@ class PyprojectConfigFile(TomlConfigFile):
         super()._dump(config)
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Return project root."""
         return Path()
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
         repo_owner, _ = VersionController.L.get_repo_owner_and_name(
             check_repo_url=False
@@ -93,7 +93,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     {"name": repo_owner},
                 ],
                 "license": cls.detect_project_license(),
-                "license-files": [LicenseConfigFile.L.get_path().name],
+                "license-files": [LicenseConfigFile.L.path().name],
                 "requires-python": cls.get_project_requires_python(),
                 "classifiers": [
                     *cls.make_python_version_classifiers(),

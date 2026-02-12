@@ -35,27 +35,27 @@ class LicenseConfigFile(StringConfigFile):
     """
 
     @classmethod
-    def get_priority(cls) -> float:
+    def priority(cls) -> float:
         """Return priority 30 (created early for pyproject.toml license detection)."""
         return Priority.HIGH
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Return 'LICENSE'."""
         return "LICENSE"
 
     @classmethod
-    def get_path(cls) -> Path:
+    def path(cls) -> Path:
         """Return path to LICENSE in project root."""
-        return Path(cls.get_filename())
+        return Path(cls.filename())
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Return project root."""
         return Path()
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return empty string (no extension)."""
         return ""
 
@@ -70,8 +70,8 @@ class LicenseConfigFile(StringConfigFile):
         if src_pkg_is_pyrig():
             # if in pyrig just run get mit licence to trigger resource update if needed
             cls.get_mit_license()
-        return cls.get_path().exists() and bool(
-            cls.get_path().read_text(encoding="utf-8").strip()
+        return cls.path().exists() and bool(
+            cls.path().read_text(encoding="utf-8").strip()
         )
 
     @classmethod
@@ -119,6 +119,6 @@ class LicenseConfigFile(StringConfigFile):
         repo_url = RemoteVersionController.L.get_repo_url()
         return make_linked_badge_markdown(
             badge_url=badge_url,
-            link_url=f"{repo_url}/blob/main/{cls.get_filename()}",
+            link_url=f"{repo_url}/blob/main/{cls.filename()}",
             alt_text="License",
         )

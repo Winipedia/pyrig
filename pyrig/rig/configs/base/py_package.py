@@ -9,7 +9,7 @@ Example:
     >>>
     >>> class MyPackageInit(PythonPackageConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path("src/mypackage/subpackage")
     ...
     ...     @classmethod
@@ -30,7 +30,7 @@ class PythonPackageConfigFile(PythonConfigFile):
     directories via make_pkg_dir() after dumping.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the package file
+        - `parent_path`: Directory containing the package file
         - `get_lines`: Required Python code as list of lines
 
     See Also:
@@ -50,4 +50,4 @@ class PythonPackageConfigFile(PythonConfigFile):
             config: List of lines to write to the file.
         """
         super()._dump(config)
-        make_pkg_dir(cls.get_path().parent)
+        make_pkg_dir(cls.path().parent)

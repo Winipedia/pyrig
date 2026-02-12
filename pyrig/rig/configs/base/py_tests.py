@@ -12,7 +12,7 @@ Example:
     ...         return ["import pytest"]
     ...
     ...     @classmethod
-    ...     def get_filename(cls) -> str:
+    ...     def filename(cls) -> str:
     ...         return "test_myclass"
     >>>
     >>> MyTestFile()  # Creates tests/test_myclass.py
@@ -31,7 +31,7 @@ class PythonTestsConfigFile(PythonConfigFile):
 
     Subclasses must implement:
         - `get_lines`: Required test code as list of lines
-        - `get_filename`: Test file name (e.g., "test_myclass")
+        - `filename`: Test file name (e.g., "test_myclass")
 
     See Also:
         pyrig.rig.configs.base.python.PythonConfigFile: Parent class
@@ -39,6 +39,6 @@ class PythonTestsConfigFile(PythonConfigFile):
     """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Return Path(TESTS_PACKAGE_NAME), typically "tests"."""
         return Path(MirrorTestConfigFile.L.get_tests_package_name())

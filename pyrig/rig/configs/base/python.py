@@ -8,7 +8,7 @@ Example:
     >>>
     >>> class MyPythonFile(PythonConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path("src")
     ...
     ...     @classmethod
@@ -25,7 +25,7 @@ class PythonConfigFile(StringConfigFile):
     Extends StringConfigFile with "py" extension. Inherits content-based validation.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the .py file
+        - `parent_path`: Directory containing the .py file
         - `get_lines`: Required Python code as list of lines
 
     See Also:
@@ -34,6 +34,6 @@ class PythonConfigFile(StringConfigFile):
     """
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return "py"."""
         return "py"

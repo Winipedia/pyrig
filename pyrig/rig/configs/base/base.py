@@ -6,18 +6,18 @@ parallel execution.
 
 Subclass Requirements:
     Must implement:
-    - `get_parent_path()`: Directory containing the file
-    - `get_file_extension()`: File extension without leading dot
-    - `_get_configs()`: Expected configuration structure (internal implementation)
+    - `parent_path()`: Directory containing the file
+    - `extension()`: File extension without leading dot
+    - `_configs()`: Expected configuration structure (internal implementation)
     - `_load()`: Load and parse the file (internal implementation)
     - `_dump(config)`: Write configuration to file (internal implementation)
 
     Optionally override:
-    - `get_priority()`: Float priority (default 0, higher = first)
-    - `get_filename()`: Filename without extension (auto-derived from class name)
+    - `priority()`: Float priority (default 0, higher = first)
+    - `filename()`: Filename without extension (auto-derived from class name)
 
     Public API (already implemented, do not override):
-    - `get_configs()`: Cached wrapper around `_get_configs()`
+    - `configs()`: Cached wrapper around `_configs()`
     - `load()`: Cached wrapper around `_load()`
     - `dump(config)`: Cache-invalidating wrapper around `_dump(config)`
 
@@ -32,12 +32,12 @@ Example:
             '''Manages myapp.toml configuration.'''
 
             @classmethod
-            def get_parent_path(cls) -> Path:
+            def parent_path(cls) -> Path:
                 '''Place in project root.'''
                 return Path()
 
             @classmethod
-            def _get_configs(cls) -> dict[str, Any]:
+            def _configs(cls) -> dict[str, Any]:
                 '''Define expected configuration.'''
                 return {
                     "app": {
@@ -47,7 +47,7 @@ Example:
                 }
 
             @classmethod
-            def get_priority(cls) -> float:
+            def priority(cls) -> float:
                 '''Initialize after pyproject.toml.'''
                 return 50
 
@@ -102,18 +102,18 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
 
     Subclass Requirements:
         Must implement (internal methods with underscore prefix):
-        - `get_parent_path()`: Directory containing the file
-        - `get_file_extension()`: File extension (e.g., "toml", "yaml")
-        - `_get_configs()`: Expected configuration (dict or list) - internal
+        - `parent_path()`: Directory containing the file
+        - `extension()`: File extension (e.g., "toml", "yaml")
+        - `_configs()`: Expected configuration (dict or list) - internal
         - `_load()`: Load and parse the file - internal implementation
         - `_dump(config)`: Write configuration to file - internal implementation
 
         Optionally override:
-        - `get_priority()`: Initialization priority (default 0)
-        - `get_filename()`: Filename without extension (auto-derived)
+        - `priority()`: Initialization priority (default 0)
+        - `filename()`: Filename without extension (auto-derived)
 
         Public API (already implemented with caching, do not override):
-        - `get_configs()`: Returns cached result of `_get_configs()`
+        - `configs()`: Returns cached result of `_configs()`
         - `load()`: Returns cached result of `_load()`
         - `dump(config)`: Invalidates cache and calls `_dump(config)`
 
@@ -126,7 +126,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
 
     @classmethod
     @abstractmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Return directory containing the config file.
 
         Returns:
@@ -154,7 +154,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
 
     @classmethod
     @abstractmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return file extension without leading dot.
 
         Returns:
@@ -163,7 +163,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
 
     @classmethod
     @abstractmethod
-    def _get_configs(cls) -> ConfigT:
+    def _configs(cls) -> ConfigT:
         """Return expected configuration structure.
 
         Returns:
@@ -186,7 +186,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
     def sorting_key(cls, subclass: type[Self]) -> float:
         """Return a numeric sort key for the given config-file subclass.
 
-        Subclasses may define priorities via `get_priority()`. This method
+        Subclasses may define priorities via `priority()`. This method
         returns a value that can be used to sort subclasses so that higher
         priority subclasses appear earlier. Implementations should return a
         float where a smaller value sorts earlier when used with Python's
@@ -201,7 +201,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         """
         # sort by priority (higher first),
         # so return negative priority for ascending sort
-        return -subclass.get_priority()
+        return -subclass.priority()
 
     def __init__(self) -> None:
         """Initialize config file, creating or updating as needed.
@@ -213,7 +213,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         Raises:
             ValueError: If file cannot be made correct.
         """
-        path = self.get_path()
+        path = self.path()
         logger.debug(
             "Initializing config file: %s at: %s",
             self.__class__.__name__,
@@ -221,10 +221,10 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         )
         if not path.exists():
             self.create_file()
-            self.dump(self.get_configs())
+            self.dump(self.configs())
 
         if not self.is_correct():
-            config = self.add_missing_configs()
+            config = self.merge_configs()
             self.dump(config)
 
         if not self.is_correct():
@@ -234,22 +234,22 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
     @classmethod
     def create_file(cls) -> None:
         """Create the config file and its parent directories."""
-        path = cls.get_path()
+        path = cls.path()
         logger.info("Creating config file %s at: %s", cls.__name__, path)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
 
     @classmethod
     @cache
-    def get_configs(cls) -> ConfigT:
+    def configs(cls) -> ConfigT:
         """Return expected configuration structure.
 
-        Cached to avoid multiple calls to _get_configs().
+        Cached to avoid multiple calls to _configs().
 
         Returns:
             Minimum required configuration as dict or list.
         """
-        return cls._get_configs()
+        return cls._configs()
 
     @classmethod
     @cache
@@ -276,13 +276,13 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         Args:
             config: Configuration to write (dict or list).
         """
-        logger.info("Updating config file %s at: %s", cls.__name__, cls.get_path())
+        logger.info("Updating config file %s at: %s", cls.__name__, cls.path())
         cls.load.cache_clear()
         cls._dump(config)
         cls.load.cache_clear()
 
     @classmethod
-    def get_priority(cls) -> float:
+    def priority(cls) -> float:
         """Return initialization priority (higher = first, default 0).
 
         Returns:
@@ -291,18 +291,18 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         return Priority.DEFAULT
 
     @classmethod
-    def get_path(cls) -> Path:
+    def path(cls) -> Path:
         """Return full path by combining parent path, filename, and extension.
 
         Returns:
             Complete path including filename and extension.
         """
-        return cls.get_parent_path() / (
-            cls.get_filename() + cls.get_extension_sep() + cls.get_file_extension()
+        return cls.parent_path() / (
+            cls.filename() + cls.extension_separator() + cls.extension()
         )
 
     @classmethod
-    def get_extension_sep(cls) -> str:
+    def extension_separator(cls) -> str:
         """Return extension separator character (always ".").
 
         Returns:
@@ -311,7 +311,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         return "."
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Derive filename from class name (auto-converts to snake_case).
 
         Returns:
@@ -326,7 +326,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         return "_".join(split_on_uppercase(name)).lower()
 
     @classmethod
-    def add_missing_configs(cls) -> ConfigT:
+    def merge_configs(cls) -> ConfigT:
         """Merge expected config into current, preserving user customizations.
 
         Returns:
@@ -336,7 +336,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
             pyrig.src.iterate.nested_structure_is_subset: Subset validation logic
         """
         current_config = cls.load()
-        expected_config = cls.get_configs()
+        expected_config = cls.configs()
         nested_structure_is_subset(
             expected_config,
             current_config,
@@ -394,9 +394,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
             is_unwanted: Check if user opted out
             is_correct_recursively: Perform subset validation
         """
-        return cls.get_path().exists() and (
-            cls.is_unwanted()
-            or cls.is_correct_recursively(cls.get_configs(), cls.load())
+        return cls.path().exists() and (
+            cls.is_unwanted() or cls.is_correct_recursively(cls.configs(), cls.load())
         )
 
     @classmethod
@@ -406,7 +405,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         Returns:
             True if file exists and is completely empty.
         """
-        return cls.get_path().exists() and cls.get_path().stat().st_size == 0
+        return cls.path().exists() and cls.path().stat().st_size == 0
 
     @staticmethod
     def is_correct_recursively(
@@ -428,7 +427,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         return nested_structure_is_subset(expected_config, actual_config)
 
     @classmethod
-    def get_priority_subclasses(cls) -> list[type[Self]]:
+    def priority_subclasses(cls) -> list[type[Self]]:
         """Get ConfigFile subclasses with priority > 0.
 
         Returns:
@@ -438,7 +437,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
             subclasses: Get all subclasses regardless of priority
             init_priority_subclasses: Initialize only priority subclasses
         """
-        return [cf for cf in cls.subclasses() if cf.get_priority() > 0]
+        return [cf for cf in cls.subclasses() if cf.priority() > 0]
 
     @classmethod
     def init_subclasses(
@@ -462,7 +461,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
             list
         )
         for cf in subclasses:
-            subclasses_by_priority[cf.get_priority()].append(cf)
+            subclasses_by_priority[cf.priority()].append(cf)
 
         biggest_group = (
             max(subclasses_by_priority.values(), key=len)
@@ -497,9 +496,9 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         """Initialize only ConfigFile subclasses with priority > 0.
 
         See Also:
-            get_priority_subclasses: Discovery mechanism
+            priority_subclasses: Discovery mechanism
             init_subclasses: Initialization mechanism
             init_all_subclasses: Initialize all files
         """
         logger.info("Creating priority config files")
-        cls.init_subclasses(*cls.get_priority_subclasses())
+        cls.init_subclasses(*cls.priority_subclasses())

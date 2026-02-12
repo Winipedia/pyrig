@@ -186,12 +186,12 @@ from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Directory containing the config file."""
         return Path("config")
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Expected configuration structure."""
         return {
             "app": {

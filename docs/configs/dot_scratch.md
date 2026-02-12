@@ -48,7 +48,7 @@ graph BT
 
 **Filename**: `.scratch` - Dotfile convention for hidden/local files.
 
-**Special filename handling**: `get_filename()` returns `".scratch"` to
+**Special filename handling**: `filename()` returns `".scratch"` to
 create a dotfile.
 
 ## How It Works
@@ -89,7 +89,7 @@ imports, or prototyping features. Run it directly with `python .scratch.py`.
 ## Validation Logic
 
 The `DotScratchConfigFile` overrides the `is_correct()` method to only check
-for file existence via `cls.get_path().exists()`. This is more permissive than
+for file existence via `cls.path().exists()`. This is more permissive than
 the standard `StringConfigFile` validation.
 
 **Required**: The file must exist.

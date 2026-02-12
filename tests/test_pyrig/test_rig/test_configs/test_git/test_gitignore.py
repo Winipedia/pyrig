@@ -48,26 +48,26 @@ class TestGitIgnoreConfigFile:
         github_gitignore = GitIgnoreConfigFile.get_github_python_gitignore_as_list()
         assert "__pycache__/" in github_gitignore
 
-    def test_get_filename(
+    def test_filename(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
     ) -> None:
         """Test method."""
-        filename = my_test_gitignore_config_file.get_filename()
+        filename = my_test_gitignore_config_file.filename()
         assert filename == "", f"Expected empty string, got {filename}"
 
-    def test_get_parent_path(
+    def test_parent_path(
         self,
         my_test_gitignore_config_file: type[GitIgnoreConfigFile],
         tmp_path: Path,
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            parent_path = my_test_gitignore_config_file.get_parent_path()
+            parent_path = my_test_gitignore_config_file.parent_path()
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
-    def test_get_file_extension(
+    def test_extension(
         self, my_test_gitignore_config_file: type[GitIgnoreConfigFile]
     ) -> None:
         """Test method."""
-        extension = my_test_gitignore_config_file.get_file_extension()
+        extension = my_test_gitignore_config_file.extension()
         assert extension == "gitignore", f"Expected 'gitignore', got {extension}"

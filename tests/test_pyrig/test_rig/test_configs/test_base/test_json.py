@@ -19,12 +19,12 @@ def my_test_json_config_file(
         """Test json config file."""
 
         @classmethod
-        def get_parent_path(cls) -> Path:
+        def parent_path(cls) -> Path:
             """Get the parent path."""
             return Path()
 
         @classmethod
-        def _get_configs(cls) -> dict[str, Any] | list[Any]:
+        def _configs(cls) -> dict[str, Any] | list[Any]:
             """Get the configs."""
             return {"key": "value"}
 
@@ -46,7 +46,7 @@ class TestJsonConfigFile:
         loaded = my_test_json_config_file.load()
         assert loaded == {"key": "value"}
 
-    def test_get_file_extension(self) -> None:
+    def test_extension(self) -> None:
         """Test method."""
-        extension = JsonConfigFile.get_file_extension()
+        extension = JsonConfigFile.extension()
         assert extension == "json"

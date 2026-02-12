@@ -39,7 +39,7 @@ class ApiConfigFile(MarkdownConfigFile):
     """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for api.md.
 
         Returns:

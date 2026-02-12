@@ -12,13 +12,13 @@ class TestMainTestConfigFile:
         """Test method."""
         assert MainTestConfigFile().is_correct()
 
-    def test_get_parent_path(self) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        assert isinstance(MainTestConfigFile.get_parent_path(), Path)
+        assert isinstance(MainTestConfigFile.parent_path(), Path)
 
-    def test_get_filename(self) -> None:
+    def test_filename(self) -> None:
         """Test method."""
-        assert MainTestConfigFile.get_filename() == "test_main"
+        assert MainTestConfigFile.filename() == "test_main"
 
     def test_get_lines(self) -> None:
         """Test method."""

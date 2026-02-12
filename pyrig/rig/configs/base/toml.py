@@ -10,11 +10,11 @@ Example:
     >>>
     >>> class MyConfigFile(TomlConfigFile):
     ...     @classmethod
-    ...     def get_parent_path(cls) -> Path:
+    ...     def parent_path(cls) -> Path:
     ...         return Path()
     ...
     ...     @classmethod
-    ...     def _get_configs(cls) -> dict[str, Any]:
+    ...     def _configs(cls) -> dict[str, Any]:
     ...         return {"tool": {"myapp": {"dependencies": ["dep1", "dep2"]}}}
 """
 
@@ -33,17 +33,17 @@ class TomlConfigFile(DictConfigFile):
     as multiline, key order preserved.
 
     Subclasses must implement:
-        - `get_parent_path`: Directory containing the TOML file
-        - `_get_configs`: Expected TOML configuration structure
+        - `parent_path`: Directory containing the TOML file
+        - `_configs`: Expected TOML configuration structure
 
     Example:
         >>> class MyConfigFile(TomlConfigFile):
         ...     @classmethod
-        ...     def get_parent_path(cls) -> Path:
+        ...     def parent_path(cls) -> Path:
         ...         return Path()
         ...
         ...     @classmethod
-        ...     def _get_configs(cls) -> dict[str, Any]:
+        ...     def _configs(cls) -> dict[str, Any]:
         ...         return {"tool": {"myapp": {"version": "1.0.0"}}}
     """
 
@@ -54,7 +54,7 @@ class TomlConfigFile(DictConfigFile):
         Returns:
             Parsed TOML as tomlkit.TOMLDocument (dict-like with formatting info).
         """
-        return tomlkit.parse(cls.get_path().read_text(encoding="utf-8"))
+        return tomlkit.parse(cls.path().read_text(encoding="utf-8"))
 
     @classmethod
     def _dump(cls, config: dict[str, Any]) -> None:
@@ -130,10 +130,10 @@ class TomlConfigFile(DictConfigFile):
         """
         # turn all lists into multiline arrays
         config = cls.prettify_dict(config)
-        with cls.get_path().open("w") as f:
+        with cls.path().open("w") as f:
             tomlkit.dump(config, f, sort_keys=False)
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return "toml"."""
         return "toml"

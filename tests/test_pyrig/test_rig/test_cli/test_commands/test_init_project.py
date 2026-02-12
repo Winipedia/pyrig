@@ -206,7 +206,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         assert expected in stdout, f"Expected {expected} in stdout, got {stdout}"
 
         # assert pyproject.toml contains not pyrig specific overrides
-        pyproject_toml = tomlkit.parse((PyprojectConfigFile.L.get_path()).read_text())
+        pyproject_toml = tomlkit.parse((PyprojectConfigFile.L.path()).read_text())
         keywords = pyproject_toml.get("project", {}).get("keywords")
         assert keywords == []
 

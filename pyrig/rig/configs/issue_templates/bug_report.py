@@ -33,7 +33,7 @@ class BugReportConfigFile(YmlConfigFile):
     """
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Get the parent directory for the bug report template.
 
         Returns:
@@ -42,7 +42,7 @@ class BugReportConfigFile(YmlConfigFile):
         return Path(".github/ISSUE_TEMPLATE")
 
     @classmethod
-    def _get_configs(cls) -> dict[str, Any]:
+    def _configs(cls) -> dict[str, Any]:
         """Get the bug report template configuration.
 
         Returns:
@@ -117,6 +117,6 @@ class BugReportConfigFile(YmlConfigFile):
         Returns:
             bool: True if file exists with content, False otherwise.
         """
-        return cls.get_path().exists() and bool(
-            cls.get_path().read_text(encoding="utf-8").strip()
+        return cls.path().exists() and bool(
+            cls.path().read_text(encoding="utf-8").strip()
         )

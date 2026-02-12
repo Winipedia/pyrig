@@ -24,17 +24,17 @@ class DotPythonVersionConfigFile(StringConfigFile):
     """
 
     @classmethod
-    def get_filename(cls) -> str:
+    def filename(cls) -> str:
         """Return empty string to produce '.python-version'."""
         return ""
 
     @classmethod
-    def get_file_extension(cls) -> str:
+    def extension(cls) -> str:
         """Return 'python-version' extension."""
         return "python-version"
 
     @classmethod
-    def get_parent_path(cls) -> Path:
+    def parent_path(cls) -> Path:
         """Return project root."""
         return Path()
 

@@ -118,7 +118,7 @@ class TestMirrorTestConfigFile:
         result = MirrorTestConfigFile.get_tests_package_name()
         assert result == "tests"
 
-    def test_add_missing_configs(
+    def test_merge_configs(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
@@ -127,8 +127,8 @@ class TestMirrorTestConfigFile:
         with chdir(tmp_path):
             my_test_mirror_test_config_file.create_file()
             assert (
-                my_test_mirror_test_config_file.add_missing_configs()
-                == my_test_mirror_test_config_file.get_configs()
+                my_test_mirror_test_config_file.merge_configs()
+                == my_test_mirror_test_config_file.configs()
             )
 
     def test_definition_package(self) -> None:
@@ -147,14 +147,14 @@ class TestMirrorTestConfigFile:
         src_module = my_test_mirror_test_config_file.get_src_module()
         assert src_module.__name__ == "mirror_test_module"
 
-    def test_get_filename(
+    def test_filename(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
-        filename = my_test_mirror_test_config_file.get_filename()
+        filename = my_test_mirror_test_config_file.filename()
         assert filename == "test_mirror_test_module"
 
-    def test_get_parent_path(
+    def test_parent_path(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
@@ -162,7 +162,7 @@ class TestMirrorTestConfigFile:
         """Test method."""
         # tmp path bc factory of pattern in config_file_factory
         with chdir(tmp_path):
-            parent_path = my_test_mirror_test_config_file.get_parent_path()
+            parent_path = my_test_mirror_test_config_file.parent_path()
             assert parent_path == Path(MirrorTestConfigFile.get_tests_package_name())
 
     def test_get_lines(
