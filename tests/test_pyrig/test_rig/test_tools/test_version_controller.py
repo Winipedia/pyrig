@@ -25,9 +25,9 @@ class TestVersionController:
         result = VersionController.L.dev_dependencies()
         assert result == []
 
-    def test_get_config_get_user_email_args(self) -> None:
+    def test_config_get_user_email_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_get_user_email_args()
+        result = VersionController.L.config_get_user_email_args()
         assert result == ("git", "config", "--get", "user.email")
 
     def test_get_email(self) -> None:
@@ -51,19 +51,19 @@ class TestVersionController:
         result = VersionController.L.get_diff_quiet_args()
         assert result == ("git", "diff", "--quiet")
 
-    def test_get_config_get_args(self) -> None:
+    def test_config_get_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_get_args()
+        result = VersionController.L.config_get_args()
         assert result == ("git", "config", "--get")
 
-    def test_get_config_get_remote_origin_url_args(self) -> None:
+    def test_config_get_remote_origin_url_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_get_remote_origin_url_args()
+        result = VersionController.L.config_get_remote_origin_url_args()
         assert result == ("git", "config", "--get", "remote.origin.url")
 
-    def test_get_config_get_user_name_args(self) -> None:
+    def test_config_get_user_name_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_get_user_name_args()
+        result = VersionController.L.config_get_user_name_args()
         assert result == ("git", "config", "--get", "user.name")
 
     def test_get_diff_args(self) -> None:
@@ -118,14 +118,14 @@ class TestVersionController:
         result = VersionController.L.add_pyproject_toml_and_lock_file_args()
         assert result == ("git", "add", "pyproject.toml", "uv.lock")
 
-    def test_get_commit_args(self) -> None:
+    def test_commit_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_commit_args("-m", "Initial commit")
+        result = VersionController.L.commit_args("-m", "Initial commit")
         assert result == ("git", "commit", "-m", "Initial commit")
 
-    def test_get_commit_no_verify_args(self) -> None:
+    def test_commit_no_verify_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_commit_no_verify_args(msg="Fix bug")
+        result = VersionController.L.commit_no_verify_args(msg="Fix bug")
         assert result == ("git", "commit", "--no-verify", "-m", "Fix bug")
 
     def test_push_args(self) -> None:
@@ -133,47 +133,45 @@ class TestVersionController:
         result = VersionController.L.push_args()
         assert result == ("git", "push")
 
-    def test_get_config_args(self) -> None:
+    def test_config_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_args("user.email", "test@example.com")
+        result = VersionController.L.config_args("user.email", "test@example.com")
         assert result == ("git", "config", "user.email", "test@example.com")
 
-    def test_get_config_global_args(self) -> None:
+    def test_config_global_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_global_args(
+        result = VersionController.L.config_global_args(
             "user.email", "test@example.com"
         )
         assert result == ("git", "config", "--global", "user.email", "test@example.com")
 
-    def test_get_config_local_args(self) -> None:
+    def test_config_local_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_local_args(
-            "user.email", "test@example.com"
-        )
+        result = VersionController.L.config_local_args("user.email", "test@example.com")
         assert result == ("git", "config", "--local", "user.email", "test@example.com")
 
-    def test_get_config_local_user_email_args(self) -> None:
+    def test_config_local_user_email_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_local_user_email_args(
+        result = VersionController.L.config_local_user_email_args(
             email="test@example.com"
         )
         assert result == ("git", "config", "--local", "user.email", "test@example.com")
 
-    def test_get_config_local_user_name_args(self) -> None:
+    def test_config_local_user_name_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_local_user_name_args(name="Test User")
+        result = VersionController.L.config_local_user_name_args(name="Test User")
         assert result == ("git", "config", "--local", "user.name", "Test User")
 
-    def test_get_config_global_user_email_args(self) -> None:
+    def test_config_global_user_email_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_global_user_email_args(
+        result = VersionController.L.config_global_user_email_args(
             email="test@example.com"
         )
         assert result == ("git", "config", "--global", "user.email", "test@example.com")
 
-    def test_get_config_global_user_name_args(self) -> None:
+    def test_config_global_user_name_args(self) -> None:
         """Test method."""
-        result = VersionController.L.get_config_global_user_name_args(name="Test User")
+        result = VersionController.L.config_global_user_name_args(name="Test User")
         assert result == ("git", "config", "--global", "user.name", "Test User")
 
     def test_get_ignore_path(self) -> None:

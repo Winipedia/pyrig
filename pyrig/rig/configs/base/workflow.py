@@ -1094,13 +1094,13 @@ class Workflow(YmlConfigFile):
         return cls.step(
             step_func=cls.step_setup_version_control,
             run=str(
-                VersionController.L.get_config_global_user_email_args(
+                VersionController.L.config_global_user_email_args(
                     email='"github-actions[bot]@users.noreply.github.com"',
                 ),
             )
             + " && "
             + str(
-                VersionController.L.get_config_global_user_name_args(
+                VersionController.L.config_global_user_name_args(
                     name='"github-actions[bot]"'
                 )
             ),
@@ -1349,9 +1349,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_protect_repository,
-            run=str(
-                PackageManager.L.run_args(*Pyrigger.L.get_cmd_args(cmd=protect_repo))
-            ),
+            run=str(PackageManager.L.run_args(*Pyrigger.L.cmd_args(cmd=protect_repo))),
             env={"REPO_TOKEN": cls.insert_repo_token()},
             step=step,
         )
@@ -1419,7 +1417,7 @@ class Workflow(YmlConfigFile):
         msg = '"[skip ci] CI/CD: Committing possible staged changes"'
         return cls.step(
             step_func=cls.step_commit_added_changes,
-            run=str(VersionController.L.get_commit_no_verify_args(msg=msg)),
+            run=str(VersionController.L.commit_no_verify_args(msg=msg)),
             step=step,
         )
 
@@ -1549,7 +1547,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_build_artifacts,
-            run=str(PackageManager.L.run_args(*Pyrigger.L.get_cmd_args(cmd=build))),
+            run=str(PackageManager.L.run_args(*Pyrigger.L.cmd_args(cmd=build))),
             step=step,
         )
 

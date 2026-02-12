@@ -170,7 +170,7 @@ class TestMirrorTestConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            # create the file first to not trigger dump in get_content_str
+            # create the file first to not trigger dump in content_str
             my_test_mirror_test_config_file.create_file()
             lines = my_test_mirror_test_config_file.lines()
             content = "\n".join(lines)

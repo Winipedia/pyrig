@@ -121,8 +121,8 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         )
         badge_groups[ToolGroup.CI_CD].extend(
             [
-                RemoteVersionController.L.get_cicd_badge(health_check_wf_name, "CI"),
-                RemoteVersionController.L.get_cicd_badge(release_wf_name, "CD"),
+                RemoteVersionController.L.cicd_badge(health_check_wf_name, "CI"),
+                RemoteVersionController.L.cicd_badge(release_wf_name, "CD"),
             ]
         )
 

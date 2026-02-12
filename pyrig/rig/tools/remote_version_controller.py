@@ -102,7 +102,7 @@ class RemoteVersionController(Tool):
         return f"{cls.get_repo_url()}/releases"
 
     @classmethod
-    def get_cicd_url(cls, workflow_name: str) -> str:
+    def cicd_url(cls, workflow_name: str) -> str:
         """Construct GitHub Actions workflow run URL.
 
         Args:
@@ -114,7 +114,7 @@ class RemoteVersionController(Tool):
         return f"{cls.get_repo_url()}/actions/workflows/{workflow_name}.yml"
 
     @classmethod
-    def get_cicd_badge_url(cls, workflow_name: str, label: str) -> str:
+    def cicd_badge_url(cls, workflow_name: str, label: str) -> str:
         """Construct GitHub Actions workflow status badge URL.
 
         Args:
@@ -132,7 +132,7 @@ class RemoteVersionController(Tool):
         return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
 
     @classmethod
-    def get_cicd_badge(cls, workflow_name: str, label: str) -> str:
+    def cicd_badge(cls, workflow_name: str, label: str) -> str:
         """Construct GitHub Actions workflow status badge Markdown string.
 
         Args:
@@ -142,8 +142,8 @@ class RemoteVersionController(Tool):
         Returns:
             Markdown string for shields.io badge showing workflow status.
         """
-        badge_url = cls.get_cicd_badge_url(workflow_name, label)
-        cicd_url = cls.get_cicd_url(workflow_name)
+        badge_url = cls.cicd_badge_url(workflow_name, label)
+        cicd_url = cls.cicd_url(workflow_name)
         return make_linked_badge_markdown(
             badge_url=badge_url,
             link_url=cicd_url,

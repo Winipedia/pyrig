@@ -49,17 +49,17 @@ class TestRemoteVersionController:
         result = RemoteVersionController.L.get_releases_url()
         assert result == "https://github.com/Winipedia/pyrig/releases"
 
-    def test_get_cicd_url(self) -> None:
+    def test_cicd_url(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_cicd_url("health_check")
+        result = RemoteVersionController.L.cicd_url("health_check")
         assert (
             result
             == "https://github.com/Winipedia/pyrig/actions/workflows/health_check.yml"
         )
 
-    def test_get_cicd_badge_url(self) -> None:
+    def test_cicd_badge_url(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_cicd_badge_url("health_check", "CI")
+        result = RemoteVersionController.L.cicd_badge_url("health_check", "CI")
         assert (
             result
             == "https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yml?label=CI&logo=github"
