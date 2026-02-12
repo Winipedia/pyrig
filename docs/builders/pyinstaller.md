@@ -30,7 +30,7 @@ import myapp.resources
 
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
-    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_pkgs(cls) -> list[ModuleType]:
         """Specify packages containing resources to bundle."""
         return [myapp.resources]
 ```
@@ -38,7 +38,7 @@ class MyAppBuilder(PyInstallerBuilder):
 A use case we had was that we needed to add the migrations folder for a database
 once as we had it not located in the resources directory. Resource modules from
 packages depending on pyrig are discovered automatically via
-`get_default_additional_resource_pkgs()`.
+`default_additional_resource_pkgs()`.
 
 ### 2. Add an Icon
 
@@ -50,7 +50,7 @@ myapp/
     └── icon.png  # 256x256 PNG recommended
 ```
 
-Note: You can also override `get_app_icon_png_path` to use a different icon at a
+Note: You can also override `app_icon_png_path` to use a different icon at a
 custom location. However, it's recommended to keep it in the resources
 directory.
 
@@ -89,7 +89,7 @@ graph TD
 Resources are automatically collected from:
 
 1. **All packages depending on pyrig** - their `resources` modules
-2. **Your additional packages** - specified in `get_additional_resource_pkgs`
+2. **Your additional packages** - specified in `additional_resource_pkgs`
 
 ```mermaid
 graph LR
@@ -138,7 +138,7 @@ executables do not support embedded icons.
 
 ### Custom Icon Location
 
-Override `get_app_icon_png_path` to use a different icon:
+Override `app_icon_png_path` to use a different icon:
 
 ```python
 from pathlib import Path
@@ -148,11 +148,11 @@ import myapp.another_resources_pkg
 
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
-    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_pkgs(cls) -> list[ModuleType]:
         return [myapp.another_resources_pkg]
 
     @classmethod
-    def get_app_icon_png_path(cls) -> Path:
+    def app_icon_png_path(cls) -> Path:
         """Use custom icon location."""
         return cls.get_root_path() / "assets" / "custom-icon.png"
 ```
@@ -177,18 +177,18 @@ The builder generates these PyInstaller options:
 
 ### Customizing Options
 
-Override `get_pyinstaller_options` for full control:
+Override `pyinstaller_options` for full control:
 
 ```python
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
-    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_pkgs(cls) -> list[ModuleType]:
         return [myapp.resources]
 
     @classmethod
-    def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
+    def pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
         """Customize PyInstaller options."""
-        options = super().get_pyinstaller_options(temp_artifacts_dir)
+        options = super().pyinstaller_options(temp_artifacts_dir)
 
         # Remove --noconsole to show console
         options.remove("--noconsole")
@@ -214,7 +214,7 @@ import myapp.data
 
 class MyAppBuilder(PyInstallerBuilder):
     @classmethod
-    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_pkgs(cls) -> list[ModuleType]:
         return [
             myapp.resources,
             myapp.templates,
@@ -229,7 +229,7 @@ class MyAppBuilder(PyInstallerBuilder):
     ARTIFACTS_DIR_NAME = "build/executables"  # Custom output directory
 
     @classmethod
-    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_pkgs(cls) -> list[ModuleType]:
         return [myapp.resources]
 ```
 

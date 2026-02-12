@@ -19,7 +19,7 @@ Resource Bundling:
     1. **Default resources** (automatic): All `resources` modules from packages
        depending on pyrig
     2. **Additional resources** (subclass-specified): Packages specified by
-       `get_additional_resource_pkgs()`
+       `additional_resource_pkgs()`
 
     All resources are bundled using PyInstaller's `--add-data` option and are
     accessible at runtime via `importlib.resources` or `pyrig.src.resource`.
@@ -40,7 +40,7 @@ Example:
 
         class MyAppBuilder(PyInstallerBuilder):
             @classmethod
-            def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+            def additional_resource_pkgs(cls) -> list[ModuleType]:
                 return [myapp.resources]
 
     Build the executable::
@@ -83,10 +83,10 @@ class PyInstallerBuilder(BuilderConfigFile):
         - Clean build (`--clean`)
 
     Resources are automatically discovered from packages depending on pyrig, plus
-    additional packages specified by `get_additional_resource_pkgs()`.
+    additional packages specified by `additional_resource_pkgs()`.
 
     Subclasses must implement:
-        get_additional_resource_pkgs: Return list of additional resource packages.
+        additional_resource_pkgs: Return list of additional resource packages.
 
     Example:
         Basic PyInstaller builder::
@@ -97,12 +97,12 @@ class PyInstallerBuilder(BuilderConfigFile):
 
             class MyAppBuilder(PyInstallerBuilder):
                 @classmethod
-                def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+                def additional_resource_pkgs(cls) -> list[ModuleType]:
                     return [myapp.resources]
 
     See Also:
         BuilderConfigFile: Base class providing build orchestration
-        get_pyinstaller_options: PyInstaller configuration
+        pyinstaller_options: PyInstaller configuration
     """
 
     @classmethod
@@ -115,12 +115,12 @@ class PyInstallerBuilder(BuilderConfigFile):
         Args:
             temp_artifacts_dir: Temporary directory where the exe will be created.
         """
-        options = cls.get_pyinstaller_options(temp_artifacts_dir)
+        options = cls.pyinstaller_options(temp_artifacts_dir)
         run(options)
 
     @classmethod
     @abstractmethod
-    def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+    def additional_resource_pkgs(cls) -> list[ModuleType]:
         """Return packages containing additional resources to bundle.
 
         Subclasses must implement this method to specify resource packages beyond
@@ -134,14 +134,14 @@ class PyInstallerBuilder(BuilderConfigFile):
             ::
 
                 @classmethod
-                def get_additional_resource_pkgs(cls) -> list[ModuleType]:
+                def additional_resource_pkgs(cls) -> list[ModuleType]:
                     import myapp.resources
                     import myapp.plugins.resources
                     return [myapp.resources, myapp.plugins.resources]
         """
 
     @classmethod
-    def get_default_additional_resource_pkgs(cls) -> list[ModuleType]:
+    def default_additional_resource_pkgs(cls) -> list[ModuleType]:
         """Get resource packages from all pyrig-dependent packages.
 
         Automatically discovers all `resources` modules from packages that depend
@@ -155,7 +155,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         return discover_equivalent_modules_across_dependents(resources, pyrig)
 
     @classmethod
-    def get_all_resource_pkgs(cls) -> list[ModuleType]:
+    def all_resource_pkgs(cls) -> list[ModuleType]:
         """Get all resource packages to bundle in the executable.
 
         Combines auto-discovered resource packages with additional packages
@@ -165,12 +165,12 @@ class PyInstallerBuilder(BuilderConfigFile):
             List of all resource packages to bundle.
         """
         return [
-            *cls.get_default_additional_resource_pkgs(),
-            *cls.get_additional_resource_pkgs(),
+            *cls.default_additional_resource_pkgs(),
+            *cls.additional_resource_pkgs(),
         ]
 
     @classmethod
-    def get_add_datas(cls) -> list[tuple[str, str]]:
+    def add_datas(cls) -> list[tuple[str, str]]:
         """Build the --add-data arguments for PyInstaller.
 
         Collects all data files from all resource packages and formats them as
@@ -181,14 +181,14 @@ class PyInstallerBuilder(BuilderConfigFile):
             --add-data argument.
         """
         add_datas: list[tuple[str, str]] = []
-        resources_pkgs = cls.get_all_resource_pkgs()
+        resources_pkgs = cls.all_resource_pkgs()
         for pkg in resources_pkgs:
             pkg_datas = collect_data_files(pkg.__name__, include_py_files=True)
             add_datas.extend(pkg_datas)
         return add_datas
 
     @classmethod
-    def get_pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
+    def pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
         """Build the complete PyInstaller command-line options.
 
         Constructs the full list of command-line arguments for PyInstaller,
@@ -211,20 +211,20 @@ class PyInstallerBuilder(BuilderConfigFile):
             "--onefile",
             "--noconsole",
             "--workpath",
-            str(cls.get_temp_workpath(temp_dir)),
+            str(cls.temp_workpath(temp_dir)),
             "--specpath",
-            str(cls.get_temp_specpath(temp_dir)),
+            str(cls.temp_specpath(temp_dir)),
             "--distpath",
-            str(cls.get_temp_distpath(temp_dir)),
+            str(cls.temp_distpath(temp_dir)),
             "--icon",
-            str(cls.get_app_icon_path(temp_dir)),
+            str(cls.app_icon_path(temp_dir)),
         ]
-        for src, dest in cls.get_add_datas():
+        for src, dest in cls.add_datas():
             options.extend(["--add-data", f"{src}{os.pathsep}{dest}"])
         return options
 
     @classmethod
-    def get_temp_distpath(cls, temp_dir: Path) -> Path:
+    def temp_distpath(cls, temp_dir: Path) -> Path:
         """Get the temporary distribution output path.
 
         Args:
@@ -236,7 +236,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         return cls.get_temp_artifacts_path(temp_dir)
 
     @classmethod
-    def get_temp_workpath(cls, temp_dir: Path) -> Path:
+    def temp_workpath(cls, temp_dir: Path) -> Path:
         """Get the temporary work directory for PyInstaller.
 
         Args:
@@ -250,7 +250,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         return path
 
     @classmethod
-    def get_temp_specpath(cls, temp_dir: Path) -> Path:
+    def temp_specpath(cls, temp_dir: Path) -> Path:
         """Get the temporary spec file directory.
 
         Args:
@@ -264,7 +264,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         return path
 
     @classmethod
-    def get_app_icon_path(cls, temp_dir: Path) -> Path:
+    def app_icon_path(cls, temp_dir: Path) -> Path:
         """Get the platform-appropriate icon path.
 
         Converts the PNG icon to the appropriate format for the current platform:
@@ -298,13 +298,13 @@ class PyInstallerBuilder(BuilderConfigFile):
             Path to the converted icon file.
         """
         output_path = temp_dir_path / f"icon.{file_format}"
-        png_path = cls.get_app_icon_png_path()
+        png_path = cls.app_icon_png_path()
         img = Image.open(png_path)
         img.save(output_path, format=file_format.upper())
         return output_path
 
     @classmethod
-    def get_app_icon_png_path(cls) -> Path:
+    def app_icon_png_path(cls) -> Path:
         """Get the path to the application icon PNG.
 
         Returns the path to the source PNG icon file. Override this method to
