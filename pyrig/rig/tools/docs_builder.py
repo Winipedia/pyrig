@@ -98,7 +98,7 @@ class DocsBuilder(Tool):
         Note:
             Site may not exist if GitHub Pages not enabled.
         """
-        owner, repo = VersionController.L.get_repo_owner_and_name(
+        owner, repo = VersionController.L.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
         )

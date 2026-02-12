@@ -34,9 +34,9 @@ class TestRemoteVersionController:
         assert isinstance(result, str), f"Expected str, got {type(result)}"
         assert result == "https://github.com"
 
-    def test_get_repo_url(self) -> None:
+    def test_repo_url(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_repo_url()
+        result = RemoteVersionController.L.repo_url()
         assert result == "https://github.com/Winipedia/pyrig"
 
     def test_get_issues_url(self) -> None:
@@ -44,9 +44,9 @@ class TestRemoteVersionController:
         result = RemoteVersionController.L.get_issues_url()
         assert result == "https://github.com/Winipedia/pyrig/issues"
 
-    def test_get_releases_url(self) -> None:
+    def test_releases_url(self) -> None:
         """Test method."""
-        result = RemoteVersionController.L.get_releases_url()
+        result = RemoteVersionController.L.releases_url()
         assert result == "https://github.com/Winipedia/pyrig/releases"
 
     def test_cicd_url(self) -> None:

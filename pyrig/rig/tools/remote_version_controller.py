@@ -6,7 +6,7 @@ Example:
     >>> from pyrig.rig.tools.remote_version_controller import (
         RemoteVersionController,
     )
-    >>> RemoteVersionController.L.get_repo_url()
+    >>> RemoteVersionController.L.repo_url()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -44,12 +44,12 @@ class RemoteVersionController(Tool):
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
-        owner, repo = VersionController.L.get_repo_owner_and_name(
+        owner, repo = VersionController.L.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
         return (
             f"https://img.shields.io/github/stars/{owner}/{repo}?style=social",
-            cls.get_repo_url(),
+            cls.repo_url(),
         )
 
     @classmethod
@@ -71,13 +71,13 @@ class RemoteVersionController(Tool):
         return "https://github.com"
 
     @classmethod
-    def get_repo_url(cls) -> str:
+    def repo_url(cls) -> str:
         """Construct HTTPS GitHub repository URL.
 
         Returns:
             URL in format: `https://github.com/{owner}/{repo}`
         """
-        owner, repo = VersionController.L.get_repo_owner_and_name(
+        owner, repo = VersionController.L.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
         )
@@ -90,16 +90,16 @@ class RemoteVersionController(Tool):
         Returns:
             URL in format: `https://github.com/{owner}/{repo}/issues`
         """
-        return f"{cls.get_repo_url()}/issues"
+        return f"{cls.repo_url()}/issues"
 
     @classmethod
-    def get_releases_url(cls) -> str:
+    def releases_url(cls) -> str:
         """Construct GitHub releases URL.
 
         Returns:
             URL in format: `https://github.com/{owner}/{repo}/releases`
         """
-        return f"{cls.get_repo_url()}/releases"
+        return f"{cls.repo_url()}/releases"
 
     @classmethod
     def cicd_url(cls, workflow_name: str) -> str:
@@ -111,7 +111,7 @@ class RemoteVersionController(Tool):
         Returns:
             URL to workflow execution history.
         """
-        return f"{cls.get_repo_url()}/actions/workflows/{workflow_name}.yml"
+        return f"{cls.repo_url()}/actions/workflows/{workflow_name}.yml"
 
     @classmethod
     def cicd_badge_url(cls, workflow_name: str, label: str) -> str:
@@ -125,7 +125,7 @@ class RemoteVersionController(Tool):
         Returns:
             shields.io badge URL showing workflow status.
         """
-        owner, repo = VersionController.L.get_repo_owner_and_name(
+        owner, repo = VersionController.L.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
         )
