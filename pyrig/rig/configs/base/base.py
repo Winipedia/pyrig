@@ -214,6 +214,18 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
             ValueError: If file cannot be made correct.
         """
         super().__init__()
+        self.validate()
+
+    def validate(self) -> None:
+        """Validate config file, creating or updating as needed.
+
+        Calls create_file() if file doesn't exist (which creates parent dirs and file),
+        validates content, and adds missing configs if needed.
+        Idempotent and preserves user customizations.
+
+        Raises:
+            ValueError: If file cannot be made correct.
+        """
         path = self.path()
         logger.debug(
             "Initializing config file: %s at: %s",
