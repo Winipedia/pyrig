@@ -13,13 +13,13 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+from pyrig.src.dependency_graph import DependencyGraph
 from pyrig.src.modules.class_ import (
     all_cls_from_module,
     all_methods_from_cls,
     discard_parent_classes,
     discover_all_subclasses,
 )
-from pyrig.src.modules.dependency_graph import DependencyGraph
 from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.imports import (
     import_package_with_dir_fallback,
