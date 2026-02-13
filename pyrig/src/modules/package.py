@@ -139,7 +139,6 @@ def all_deps_depending_on_dep(
     Returns:
         List of imported module objects for dependent packages.
     """
-    # Note we do not use cached to avoid caching the entire graph during CLI invocations
     return DependencyGraph().all_depending_on(dep, include_self=include_self)
 
 
