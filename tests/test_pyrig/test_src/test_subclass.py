@@ -36,7 +36,3 @@ class TestDependencySubclass:
     def test_L(self) -> None:  # noqa: N802
         """Test method."""
         assert MirrorTestConfigFile.L.L is MirrorTestConfigFile
-
-
-class TestSingletonDependencySubclass:
-    """Test class."""

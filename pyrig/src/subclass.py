@@ -17,7 +17,6 @@ from pyrig.src.modules.package import (
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
 )
-from pyrig.src.singleton import Singleton
 
 
 class DependencySubclass(ABC):
@@ -104,14 +103,3 @@ class DependencySubclass(ABC):
             dep=cls.base_dependency(),
             load_package_before=cls.definition_package(),
         )
-
-
-class SingletonDependencySubclass(DependencySubclass, Singleton):
-    """Convenience base class for subclasses that should also be singletons.
-
-    This class combines the subclass discovery mechanism of `DependencySubclass`
-    with the singleton behavior of `Singleton`.
-    Subclasses of `SingletonSubclass` will have only one instance across
-    the application and can discover their concrete implementations across dependent
-    packages using the same API as `DependencySubclass`.
-    """
