@@ -4,16 +4,16 @@ import pyrig
 from pyrig.rig import configs
 from pyrig.rig.configs.base.base import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.src.subclass import Subclass
+from pyrig.src.subclass import DependencySubclass
 
 
-class TestSubclass:
+class TestDependencySubclass:
     """Test class."""
 
     def test_definition_package(self) -> None:
         """Test method."""
         result = ConfigFile.definition_package()
-        assert issubclass(ConfigFile, Subclass)
+        assert issubclass(ConfigFile, DependencySubclass)
         assert result == configs
 
     def test_sorting_key(self) -> None:
@@ -38,5 +38,5 @@ class TestSubclass:
         assert MirrorTestConfigFile.L.L is MirrorTestConfigFile
 
 
-class TestSigletonSubclass:
+class TestSingletonDependencySubclass:
     """Test class."""
