@@ -8,27 +8,27 @@ class TestMDLinter:
 
     def test_group(self) -> None:
         """Test method."""
-        result = MDLinter.L.group()
+        result = MDLinter.I.group()
         assert isinstance(result, str)
         assert result == "code-quality"
 
     def test_badge_urls(self) -> None:
         """Test method."""
-        result = MDLinter.L.badge_urls()
+        result = MDLinter.I.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
     def test_name(self) -> None:
         """Test method."""
-        result = MDLinter.L.name()
+        result = MDLinter.I.name()
         assert result == "rumdl"
 
     def test_check_args(self) -> None:
         """Test method."""
-        result = MDLinter.L.check_args()
+        result = MDLinter.I.check_args()
         assert result == ("rumdl", "check")
 
     def test_check_fix_args(self) -> None:
         """Test method."""
-        result = MDLinter.L.check_fix_args()
+        result = MDLinter.I.check_fix_args()
         assert result == ("rumdl", "check", "--fix")

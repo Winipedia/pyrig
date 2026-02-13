@@ -77,7 +77,7 @@ from typing import Any, Self
 from pyrig.rig import configs
 from pyrig.src.iterate import nested_structure_is_subset
 from pyrig.src.string_ import split_on_uppercase
-from pyrig.src.subclass import DependencySubclass
+from pyrig.src.subclass import SingletonDependencySubclass
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +91,7 @@ class Priority:
     HIGH = MEDIUM + 10
 
 
-class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
+class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclass):
     """Abstract base class for declarative configuration file management.
 
     Declarative, idempotent system for managing config files. Preserves user

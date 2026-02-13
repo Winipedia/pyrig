@@ -4,9 +4,9 @@ Provides type-safe wrapper for Git commands: init, add, commit, push, tag, confi
 
 Example:
     >>> from pyrig.rig.tools.version_controller import VersionController
-    >>> VersionController.L.add_all_args().run()
-    >>> VersionController.L.commit_no_verify_args("Update docs").run()
-    >>> VersionController.L.push_args().run()
+    >>> VersionController.I.add_all_args().run()
+    >>> VersionController.I.commit_no_verify_args("Update docs").run()
+    >>> VersionController.I.push_args().run()
 """
 
 import logging
@@ -35,9 +35,9 @@ class VersionController(Tool):
         - Configuration: user name/email
 
     Example:
-        >>> VersionController.L.init_args().run()
-        >>> VersionController.L.add_all_args().run()
-        >>> VersionController.L.commit_no_verify_args("Initial commit").run()
+        >>> VersionController.I.init_args().run()
+        >>> VersionController.I.add_all_args().run()
+        >>> VersionController.I.commit_no_verify_args("Initial commit").run()
     """
 
     @classmethod

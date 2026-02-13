@@ -5,7 +5,7 @@ MkDocs is a static site generator for project documentation.
 
 Example:
     >>> from pyrig.rig.tools.docs_builder import DocsBuilder
-    >>> DocsBuilder.L.build_args().run()
+    >>> DocsBuilder.I.build_args().run()
 """
 
 from pathlib import Path
@@ -25,7 +25,7 @@ class DocsBuilder(Tool):
         - Building: Build static documentation site
 
     Example:
-        >>> DocsBuilder.L.build_args().run()
+        >>> DocsBuilder.I.build_args().run()
     """
 
     @classmethod
@@ -98,7 +98,7 @@ class DocsBuilder(Tool):
         Note:
             Site may not exist if GitHub Pages not enabled.
         """
-        owner, repo = VersionController.L.repo_owner_and_name(
+        owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
         )

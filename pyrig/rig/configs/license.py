@@ -31,7 +31,7 @@ class LicenseConfigFile(StringConfigFile):
     for pyproject.toml license detection).
 
     See Also:
-        pyrig.rig.configs.pyproject.PyprojectConfigFile.L.detect_project_license
+        pyrig.rig.configs.pyproject.PyprojectConfigFile.I.detect_project_license
     """
 
     @classmethod
@@ -91,7 +91,7 @@ class LicenseConfigFile(StringConfigFile):
         """Get MIT license with year and owner from git."""
         mit_license = cls.mit_license()
         year = datetime.now(tz=UTC).year
-        owner, _ = VersionController.L.repo_owner_and_name(check_repo_url=False)
+        owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
         mit_license = mit_license.replace("[year]", str(year))
         return mit_license.replace("[fullname]", owner)
 
@@ -102,7 +102,7 @@ class LicenseConfigFile(StringConfigFile):
         Returns:
             shields.io badge URL showing repository license.
         """
-        owner, repo = VersionController.L.repo_owner_and_name(
+        owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
         )
@@ -116,7 +116,7 @@ class LicenseConfigFile(StringConfigFile):
             Markdown string for shields.io badge showing repository license.
         """
         badge_url = cls.license_badge_url()
-        repo_url = RemoteVersionController.L.repo_url()
+        repo_url = RemoteVersionController.I.repo_url()
         return make_linked_badge_markdown(
             badge_url=badge_url,
             link_url=f"{repo_url}/blob/main/{cls.filename()}",

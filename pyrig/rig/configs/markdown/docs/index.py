@@ -42,7 +42,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         Returns:
             Path: docs directory.
         """
-        return DocsBuilder.L.docs_dir()
+        return DocsBuilder.I.docs_dir()
 
     @classmethod
     def lines(cls) -> list[str]:
@@ -55,6 +55,6 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
             Reads project name from pyproject.toml.
         """
         lines = super().lines()
-        project_name = PyprojectConfigFile.L.project_name()
+        project_name = PyprojectConfigFile.I.project_name()
         lines[0] = lines[0].replace(project_name, f"{project_name} Documentation", 1)
         return lines

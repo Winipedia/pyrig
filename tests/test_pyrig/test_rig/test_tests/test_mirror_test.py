@@ -85,7 +85,7 @@ class TestMirrorTestConfigFile:
     def test_test_prefix_for_obj(self) -> None:
         """Test method."""
         result = MirrorTestConfigFile.test_prefix_for_obj(
-            MirrorTestConfigFile.L.test_prefix_for_obj
+            MirrorTestConfigFile.I.test_prefix_for_obj
         )
         assert result == "test_"
         result = MirrorTestConfigFile.test_prefix_for_obj(MirrorTestConfigFile)
@@ -135,7 +135,7 @@ class TestMirrorTestConfigFile:
 
     def test_leaf(self) -> None:
         """Test method."""
-        leaf = MirrorTestConfigFile.L
+        leaf = MirrorTestConfigFile.I
         assert leaf is MirrorTestConfigFile
 
     def test_src_module(

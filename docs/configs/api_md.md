@@ -100,7 +100,7 @@ class ApiConfigFile(BaseApiCF):
     @classmethod
     def lines(cls) -> list[str]:
         """Document only the public API from src/."""
-        project_name = PyprojectConfigFile.L.project_name()
+        project_name = PyprojectConfigFile.I.project_name()
         return [
             "# API Reference",
             "",
