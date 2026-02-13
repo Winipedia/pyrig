@@ -1,6 +1,6 @@
 """Utilities for discovering and ordering subclasses across packages.
 
-This module provides an abstract base `Subclass` that standardizes how
+This module provides an abstract base `DependencySubclass` that standardizes how
 classes discover their concrete implementations across dependent packages.
 It centralizes the `definition_package`, `sorting_key`, and discovery helpers
 so different subsystems (tools, config files, builders) can share a
@@ -20,7 +20,7 @@ from pyrig.src.modules.package import (
 from pyrig.src.singleton import Singleton
 
 
-class Subclass(ABC):
+class DependencySubclass(ABC):
     """Abstract base providing a subclass-discovery contract.
 
     Subclasses must implement `definition_package()` to indicate the package
@@ -41,7 +41,7 @@ class Subclass(ABC):
 
     @classmethod
     @abstractmethod
-    def sorting_key[S: Subclass](cls, subclass: type[S]) -> Any:
+    def sorting_key[S: DependencySubclass](cls, subclass: type[S]) -> Any:
         """Return a sort key for the given subclass.
 
         This key is used when ordering discovered subclasses. Implementations
@@ -106,11 +106,12 @@ class Subclass(ABC):
         )
 
 
-class SigletonSubclass(Subclass, Singleton):
+class SingletonDependencySubclass(DependencySubclass, Singleton):
     """Convenience base class for subclasses that should also be singletons.
 
-    This class combines the subclass discovery mechanism of `Subclass` with the
-    singleton behavior of `Singleton`. Subclasses of `SingletonSubclass` will
-    have only one instance across the application and can discover their concrete
-    implementations across dependent packages using the same API as `Subclass`.
+    This class combines the subclass discovery mechanism of `DependencySubclass`
+    with the singleton behavior of `Singleton`.
+    Subclasses of `SingletonSubclass` will have only one instance across
+    the application and can discover their concrete implementations across dependent
+    packages using the same API as `DependencySubclass`.
     """
