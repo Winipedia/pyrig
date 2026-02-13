@@ -338,7 +338,7 @@ def discover_leaf_subclass_across_dependents[T: type](
     should have a single active implementation determined by the inheritance
     chain.
 
-    This is typically used by ``ConfigFile.L`` to find the most-derived
+    This is typically used by ``ConfigFile.I`` to find the most-derived
     version of a config file class. For example, if:
         - ``pyrig`` defines ``PyprojectConfigFile``
         - ``mylib`` extends it as ``MyLibPyprojectConfigFile``
@@ -384,7 +384,7 @@ def discover_leaf_subclass_across_dependents[T: type](
 
     See Also:
         discover_subclasses_across_dependents: General multi-subclass discovery
-        ConfigFile.L: Primary use case for this function
+        ConfigFile.I: Primary use case for this function
     """
     classes = discover_subclasses_across_dependents(
         cls=cls,

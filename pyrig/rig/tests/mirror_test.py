@@ -39,7 +39,7 @@ Example:
     Batch process multiple modules::
 
         modules = [myproject.core, myproject.utils, myproject.api]
-        MirrorTestConfigFile.L.create_test_modules(modules)
+        MirrorTestConfigFile.I.create_test_modules(modules)
 
 See Also:
     pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
@@ -107,7 +107,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
         Dynamic subclass creation::
 
-            subclass = MirrorTestConfigFile.L.make_subclass_for_module(my_module)
+            subclass = MirrorTestConfigFile.I.make_subclass_for_module(my_module)
             subclass()  # Triggers test file creation
 
     See Also:
@@ -611,7 +611,7 @@ class {test_class_name}:
             Dynamic subclass creation::
 
                 import myproject.utils
-                subclass = MirrorTestConfigFile.L.make_subclass_for_module(
+                subclass = MirrorTestConfigFile.I.make_subclass_for_module(
                     myproject.utils
                 )
                 # subclass.__name__ == "TestUtilsMirrorTestConfigFile"
@@ -654,7 +654,7 @@ class {test_class_name}:
             Generate tests for an entire package::
 
                 from myproject import core, utils, api
-                MirrorTestConfigFile.L.create_test_modules([core, utils, api])
+                MirrorTestConfigFile.I.create_test_modules([core, utils, api])
 
         See Also:
             make_subclasses_for_modules: Creates and orders subclasses

@@ -6,7 +6,7 @@ Example:
     >>> from pyrig.rig.tools.remote_version_controller import (
         RemoteVersionController,
     )
-    >>> RemoteVersionController.L.repo_url()
+    >>> RemoteVersionController.I.repo_url()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -44,7 +44,7 @@ class RemoteVersionController(Tool):
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
-        owner, repo = VersionController.L.repo_owner_and_name(
+        owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
         return (
@@ -77,7 +77,7 @@ class RemoteVersionController(Tool):
         Returns:
             URL in format: `https://github.com/{owner}/{repo}`
         """
-        owner, repo = VersionController.L.repo_owner_and_name(
+        owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
         )
@@ -125,7 +125,7 @@ class RemoteVersionController(Tool):
         Returns:
             shields.io badge URL showing workflow status.
         """
-        owner, repo = VersionController.L.repo_owner_and_name(
+        owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
         )

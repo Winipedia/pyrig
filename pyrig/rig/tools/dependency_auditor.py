@@ -9,7 +9,7 @@ This complements Bandit:
 
 Example:
     >>> from pyrig.rig.tools.dependency_auditor import DependencyAuditor
-    >>> DependencyAuditor.L.audit_args().run()
+    >>> DependencyAuditor.I.audit_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup

@@ -29,7 +29,7 @@ dist/
 *.egg-info/
 .pytest_cache/
 """
-        VersionController.L.ignore_path().write_text(content)
+        VersionController.I.ignore_path().write_text(content)
         assert path_is_in_ignore("folder/file.pyc")
         assert path_is_in_ignore("__pycache__/file.pdf")
         assert path_is_in_ignore(".venv/file.py")

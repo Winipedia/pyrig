@@ -53,12 +53,12 @@ def main_test_fixture(mocker: MockerFixture) -> None:
         pyrig.rig.configs.testing.main_test.MainTestConfigFile: Generates test.
         pyrig.rig.configs.python.main.MainConfigFile: Generates main.py.
     """
-    project_name = PyprojectConfigFile.L.project_name()
-    src_package_name = PyprojectConfigFile.L.package_name()
+    project_name = PyprojectConfigFile.I.project_name()
+    src_package_name = PyprojectConfigFile.I.package_name()
 
     cmds = [
-        PackageManager.L.run_args(project_name, "--help"),
-        PackageManager.L.run_args(project_name, main.main.__name__, "--help"),
+        PackageManager.I.run_args(project_name, "--help"),
+        PackageManager.I.run_args(project_name, main.main.__name__, "--help"),
     ]
     success = False
     for cmd in cmds:
@@ -87,8 +87,8 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     # run only if file content is the same as pyrig.main
     main_module_content = module_content_as_str(main_module).strip()
 
-    lines = MainConfigFile.L.lines()
-    config_main_module_content = MainConfigFile.L.make_string_from_lines(lines).strip()
+    lines = MainConfigFile.I.lines()
+    config_main_module_content = MainConfigFile.I.make_string_from_lines(lines).strip()
 
     if main_module_content == config_main_module_content:
         runpy.run_module(main_module_name, run_name="__main__")

@@ -5,7 +5,7 @@ Used for creating containerized builds, particularly PyInstaller executables.
 
 Example:
     >>> from pyrig.rig.tools.container_engine import ContainerEngine
-    >>> args = ContainerEngine.L.build_args(project_name="myapp")
+    >>> args = ContainerEngine.I.build_args(project_name="myapp")
     >>> args.run()
 """
 
@@ -22,8 +22,8 @@ class ContainerEngine(Tool):
 
     Example:
         >>> from pathlib import Path
-        >>> ContainerEngine.L.build_args(project_name="app:v1").run()
-        >>> ContainerEngine.L.save_args(
+        >>> ContainerEngine.I.build_args(project_name="app:v1").run()
+        >>> ContainerEngine.I.save_args(
         ...     image_file=Path("app.tar"), image_path=Path("./dist")
         ... ).run()
     """

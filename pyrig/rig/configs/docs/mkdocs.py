@@ -63,9 +63,9 @@ class MkdocsConfigFile(YmlConfigFile):
             Reads project name from pyproject.toml.
         """
         return {
-            "site_name": PyprojectConfigFile.L.project_name(),
+            "site_name": PyprojectConfigFile.I.project_name(),
             "nav": [
-                {"Home": IndexConfigFile.L.path().name},
+                {"Home": IndexConfigFile.I.path().name},
                 {"API": "api.md"},
             ],
             "plugins": [

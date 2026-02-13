@@ -10,7 +10,7 @@ class TestBadgesMarkdownConfigFile:
 
     def test_replace_description(self) -> None:
         """Test that replace_description replaces a stale description."""
-        expected_description = PyprojectConfigFile.L.project_description()
+        expected_description = PyprojectConfigFile.I.project_description()
         old_description = "Old stale project description"
         content = f"# Project\n\n---\n\n> {old_description}\n\n---\n"
         result = BadgesMarkdownConfigFile.replace_description(content)

@@ -133,7 +133,7 @@ deps = [*MyConfigFile.load()["dependencies"], "new-dep"]
 ```
 
 This is especially important for ConfigFiles that call `load()` inside
-`_configs()`. For example, `PyprojectConfigFile.L._configs()` reads
+`_configs()`. For example, `PyprojectConfigFile.I._configs()` reads
 the existing `pyproject.toml` (via calling `load()`) to preserve user-defined
 values. If `_configs()` mutates the loaded data, the cache becomes corrupted
 and subsequent calls return incorrect values.

@@ -75,7 +75,7 @@ class BuilderConfigFile(ListConfigFile):
                     # ... compile and create executable ...
 
     See Also:
-        :class:`~pyrig.rig.configs.base.list_cf.ListConfigFile`: Parent class providing
+        :class:`~pyrig.rig.configs.base.list_cf.IistConfigFile`: Parent class providing
             the list-based configuration file interface.
     """
 
@@ -280,7 +280,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Project name from pyproject.toml.
         """
-        return PyprojectConfigFile.L.project_name()
+        return PyprojectConfigFile.I.project_name()
 
     @classmethod
     def root_path(cls) -> Path:
@@ -289,7 +289,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Absolute path to the project root directory.
         """
-        src_package = import_module(PyprojectConfigFile.L.package_name())
+        src_package = import_module(PyprojectConfigFile.I.package_name())
         src_path = ModulePath.package_type_to_dir_path(src_package)
         return src_path.parent
 
@@ -318,7 +318,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Absolute path to the source package directory.
         """
-        return cls.root_path() / PyprojectConfigFile.L.package_name()
+        return cls.root_path() / PyprojectConfigFile.I.package_name()
 
     @classmethod
     def main_path_relative_to_src_package(cls) -> Path:

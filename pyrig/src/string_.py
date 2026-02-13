@@ -203,7 +203,7 @@ def package_req_name_split_pattern() -> re.Pattern[str]:
     Pre-compiled regex for parsing package names from requirement strings.
     Matches everything before the first version specifier (>, <, =, [, ;, etc.)
     Allows alphanumeric, underscore, hyphen, and period (for namespace packages).
-    Used by DependencyGraph and PyprojectConfigFile.L.
+    Used by DependencyGraph and PyprojectConfigFile.I.
 
     Returns:
         re.Pattern: The pre-compiled regex pattern.

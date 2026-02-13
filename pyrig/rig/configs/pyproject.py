@@ -75,8 +75,8 @@ class PyprojectConfigFile(TomlConfigFile):
     @classmethod
     def _configs(cls) -> dict[str, Any]:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
-        repo_owner, _ = VersionController.L.repo_owner_and_name(check_repo_url=False)
-        tests_package_name = MirrorTestConfigFile.L.tests_package_name()
+        repo_owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
+        tests_package_name = MirrorTestConfigFile.I.tests_package_name()
 
         return {
             "project": {
@@ -91,17 +91,17 @@ class PyprojectConfigFile(TomlConfigFile):
                     {"name": repo_owner},
                 ],
                 "license": cls.detect_project_license(),
-                "license-files": [LicenseConfigFile.L.path().name],
+                "license-files": [LicenseConfigFile.I.path().name],
                 "requires-python": cls.requires_python(),
                 "classifiers": [
                     *cls.make_python_version_classifiers(),
                 ],
                 "urls": {
-                    "Homepage": RemoteVersionController.L.repo_url(),
-                    "Documentation": DocsBuilder.L.documentation_url(),
-                    "Source": RemoteVersionController.L.repo_url(),
-                    "Issues": RemoteVersionController.L.issues_url(),
-                    "Changelog": RemoteVersionController.L.releases_url(),
+                    "Homepage": RemoteVersionController.I.repo_url(),
+                    "Documentation": DocsBuilder.I.documentation_url(),
+                    "Source": RemoteVersionController.I.repo_url(),
+                    "Issues": RemoteVersionController.I.issues_url(),
+                    "Changelog": RemoteVersionController.I.releases_url(),
                 },
                 "keywords": [],
                 "scripts": {
@@ -116,8 +116,8 @@ class PyprojectConfigFile(TomlConfigFile):
                 )
             },
             "build-system": {
-                "requires": PackageManager.L.build_system_requires(),
-                "build-backend": PackageManager.L.build_backend(),
+                "requires": PackageManager.I.build_system_requires(),
+                "build-backend": PackageManager.I.build_backend(),
             },
             "tool": {
                 "uv": {
@@ -149,7 +149,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "pytest": {
                     "ini_options": {
                         "testpaths": [tests_package_name],
-                        "addopts": f"--cov={package_name_from_cwd()} --cov-report=term-missing --cov-fail-under={ProjectTester.L.coverage_threshold()}",  # noqa: E501
+                        "addopts": f"--cov={package_name_from_cwd()} --cov-report=term-missing --cov-fail-under={ProjectTester.I.coverage_threshold()}",  # noqa: E501
                     }
                 },
                 "bandit": {

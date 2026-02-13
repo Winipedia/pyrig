@@ -53,7 +53,7 @@ class GitignoreConfigFile(StringConfigFile):
         Returns:
             str: The filename for .gitignore.
         """
-        return VersionController.L.ignore_filename()
+        return VersionController.I.ignore_filename()
 
     @classmethod
     def parent_path(cls) -> Path:
@@ -101,8 +101,8 @@ class GitignoreConfigFile(StringConfigFile):
             *cls.github_python_gitignore_lines(),
             "",
             f"# {pyrig.__name__} stuff",
-            DotScratchConfigFile.L.path().as_posix(),
-            DotEnvConfigFile.L.path().as_posix(),
+            DotScratchConfigFile.I.path().as_posix(),
+            DotEnvConfigFile.I.path().as_posix(),
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov
             ".pytest_cache/",  # bc of pytest cache

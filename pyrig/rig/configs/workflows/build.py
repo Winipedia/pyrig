@@ -73,7 +73,7 @@ class BuildWorkflow(Workflow):
         triggers.update(
             cls.on_workflow_run(
                 workflows=[HealthCheckWorkflow.workflow_name()],
-                branches=[VersionController.L.default_branch()],
+                branches=[VersionController.I.default_branch()],
             )
         )
         return triggers

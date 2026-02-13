@@ -25,5 +25,5 @@ class RemoteVersionController(BaseRVC):
 
 ## Related
 
-- [Architecture](architecture.md) - Design philosophy and the `.L` pattern
+- [Architecture](architecture.md) - Design philosophy and the `.I` pattern
 - [VersionController](version_controller.md) - Local git operations wrapper

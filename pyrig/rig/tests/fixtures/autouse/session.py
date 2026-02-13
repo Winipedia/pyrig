@@ -89,15 +89,15 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
     """
 
     if in_github_actions:
-        unstaged_changes = VersionController.L.has_unstaged_diff()
+        unstaged_changes = VersionController.I.has_unstaged_diff()
         assert not unstaged_changes, msg.format(
-            unstaged_changes=VersionController.L.diff()
+            unstaged_changes=VersionController.I.diff()
         )
     yield
     if in_github_actions:
-        unstaged_changes = VersionController.L.has_unstaged_diff()
+        unstaged_changes = VersionController.I.has_unstaged_diff()
         assert not unstaged_changes, msg.format(
-            unstaged_changes=VersionController.L.diff()
+            unstaged_changes=VersionController.I.diff()
         )
 
 
@@ -167,10 +167,10 @@ def assert_all_src_code_in_one_package() -> None:
         AssertionError: If unexpected packages/subpackages/submodules found.
     """
     packages = find_packages(depth=0)
-    src_package = import_module(PyprojectConfigFile.L.package_name())
+    src_package = import_module(PyprojectConfigFile.I.package_name())
     src_package_name = src_package.__name__
     expected_packages = {
-        MirrorTestConfigFile.L.tests_package_name(),
+        MirrorTestConfigFile.I.tests_package_name(),
         src_package_name,
     }
 
@@ -225,12 +225,12 @@ def assert_src_package_correctly_named() -> None:
         AssertionError: If any naming mismatch detected.
     """
     cwd_name = Path.cwd().name
-    project_name = PyprojectConfigFile.L.project_name()
+    project_name = PyprojectConfigFile.I.project_name()
     assert cwd_name == project_name, (
         f"Expected cwd name to be {project_name}, but it is {cwd_name}"
     )
 
-    src_package = import_module(PyprojectConfigFile.L.package_name())
+    src_package = import_module(PyprojectConfigFile.I.package_name())
 
     src_package_name = src_package.__name__
     src_package_name_from_cwd = package_name_from_project_name(cwd_name)
@@ -241,7 +241,7 @@ def assert_src_package_correctly_named() -> None:
     assert src_package_name == src_package_name_from_cwd, msg
 
     src_package = src_package.__name__
-    expected_package = PyprojectConfigFile.L.package_name()
+    expected_package = PyprojectConfigFile.I.package_name()
     msg = (
         f"Expected source package to be named {expected_package}, "
         f"but it is named {src_package}"
@@ -258,7 +258,7 @@ def assert_all_modules_tested() -> None:
     Raises:
         AssertionError: If any source modules lack corresponding tests.
     """
-    src_package = import_module(PyprojectConfigFile.L.package_name())
+    src_package = import_module(PyprojectConfigFile.I.package_name())
 
     # we will now go through all the modules in the src package and check
     # that there is a corresponding test module
@@ -266,7 +266,7 @@ def assert_all_modules_tested() -> None:
     for _, modules in walk_package(src_package):
         all_modules.extend(modules)
 
-    mirror_test_cls = MirrorTestConfigFile.L
+    mirror_test_cls = MirrorTestConfigFile.I
     subclasses = mirror_test_cls.make_subclasses_for_modules(all_modules)
     incorrect_subclasses = [sc for sc in subclasses if not sc.is_correct()]
 
@@ -323,7 +323,7 @@ def assert_dependencies_are_up_to_date() -> None:
         )
         return
     # update the dependencies
-    args = PackageManager.L.update_dependencies_args()
+    args = PackageManager.I.update_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr
     stdout = completed_process.stdout
@@ -340,7 +340,7 @@ def assert_dependencies_are_up_to_date() -> None:
     )
 
     # sync the dependencies
-    args = PackageManager.L.install_dependencies_args()
+    args = PackageManager.I.install_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr
     stdout = completed_process.stdout
@@ -390,12 +390,12 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             assert_src_runs_without_dev_deps.__name__,
         )
         return
-    project_name = PyprojectConfigFile.L.project_name()
+    project_name = PyprojectConfigFile.I.project_name()
     func_name = assert_src_runs_without_dev_deps.__name__
     tmp_path = tmp_path_factory.mktemp(func_name) / project_name
     # copy the project folder to a temp directory
     # run main.py from that directory
-    src_package = import_module(PyprojectConfigFile.L.package_name())
+    src_package = import_module(PyprojectConfigFile.I.package_name())
     src_package_file_str = src_package.__file__
     if src_package_file_str is None:
         msg = f"src_package.__file__ is None for {src_package}"
@@ -425,7 +425,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
 
     with chdir(tmp_path):
         # install deps
-        completed_process = PackageManager.L.install_dependencies_no_dev_args().run(
+        completed_process = PackageManager.I.install_dependencies_no_dev_args().run(
             check=False,
             env=env,
         )
@@ -441,7 +441,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
             Path(config).unlink()
 
         # run walk_package with src and import all modules to catch dev dep imports
-        src_package_name = PyprojectConfigFile.L.package_name()
+        src_package_name = PyprojectConfigFile.I.package_name()
         script_args = [
             "python",
             "-c",
@@ -462,7 +462,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
                 )
             ),
         ]
-        args = PackageManager.L.run_no_dev_args(*script_args)
+        args = PackageManager.I.run_no_dev_args(*script_args)
 
         completed_process = args.run(
             check=False,
@@ -476,7 +476,7 @@ If this fails then there is likely an import in src that depends on dev dependen
         assert "Success" in stdout, base_msg + msg
 
         # run cli without dev deps
-        args = PackageManager.L.run_no_dev_args(project_name, "--help")
+        args = PackageManager.I.run_no_dev_args(project_name, "--help")
         completed_process = args.run(
             check=False,
         )
@@ -497,7 +497,7 @@ def assert_src_does_not_use_rig() -> None:
     Raises:
         AssertionError: If any rig imports found in src code.
     """
-    src_package = import_module(PyprojectConfigFile.L.package_name())
+    src_package = import_module(PyprojectConfigFile.I.package_name())
 
     src_src_package_name = module_name_replacing_start_module(src, src_package.__name__)
 
@@ -545,7 +545,7 @@ def assert_project_mgt_is_up_to_date() -> None:
         return
     if not running_in_github_actions():
         # update project mgt
-        completed_process = PackageManager.L.update_self_args().run(check=False)
+        completed_process = PackageManager.I.update_self_args().run(check=False)
         returncode = completed_process.returncode
 
         stderr = completed_process.stderr
@@ -560,8 +560,8 @@ def assert_project_mgt_is_up_to_date() -> None:
 
         is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
 
-        msg = f"""The tool {PackageManager.L.name()} is not up to date.
-        This fixture ran `{PackageManager.L.update_self_args()}` but it failed.
+        msg = f"""The tool {PackageManager.I.name()} is not up to date.
+        This fixture ran `{PackageManager.I.update_self_args()}` but it failed.
         Output: {std_msg}
         """
         assert is_up_to_date, msg

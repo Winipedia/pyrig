@@ -101,7 +101,7 @@ documentation for details on all the autouse fixtures provided by pyrig.
 ### Multi-Project Inheritance Model
 
 pyrig allows you to override and customize almost any and all behavior in a
-project via its `.L` inheritance system. Just define a class that inherits from
+project via its `.I` inheritance system. Just define a class that inherits from
 the pyrig provided class, override the behaviour you want to change, and pyrig
 will use your implementation instead of the default one. This applies to all
 Config Files, CLI commands, tools, builders, and more. You can even define your

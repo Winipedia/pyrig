@@ -60,7 +60,7 @@ def initializing_version_control() -> Args:
     Returns:
         Args object for initializing version control.
     """
-    return VersionController.L.init_args()
+    return VersionController.I.init_args()
 
 
 def adding_dev_dependencies() -> Args:
@@ -72,7 +72,7 @@ def adding_dev_dependencies() -> Args:
     Returns:
         Args object for adding dev dependencies.
     """
-    return PackageManager.L.add_dev_dependencies_args(
+    return PackageManager.I.add_dev_dependencies_args(
         *Tool.subclasses_dev_dependencies()
     )
 
@@ -88,7 +88,7 @@ def creating_priority_config_files() -> Args:
         Args object for creating priority config files.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
-    return Pyrigger.L.cmd_args("--priority", cmd=mkroot)
+    return Pyrigger.I.cmd_args("--priority", cmd=mkroot)
 
 
 def syncing_venv() -> Args:
@@ -101,7 +101,7 @@ def syncing_venv() -> Args:
     Returns:
         Args object for syncing the virtual environment.
     """
-    return PackageManager.L.install_dependencies_args()
+    return PackageManager.I.install_dependencies_args()
 
 
 def creating_project_root() -> Args:
@@ -113,7 +113,7 @@ def creating_project_root() -> Args:
     Returns:
         Args object for creating the project root.
     """
-    return Pyrigger.L.cmd_args(cmd=mkroot)
+    return Pyrigger.I.cmd_args(cmd=mkroot)
 
 
 def creating_test_files() -> Args:
@@ -125,7 +125,7 @@ def creating_test_files() -> Args:
     Returns:
         Args object for creating test files.
     """
-    return Pyrigger.L.cmd_args(cmd=mktests)
+    return Pyrigger.I.cmd_args(cmd=mktests)
 
 
 def install_pre_commit_hooks() -> Args:
@@ -137,7 +137,7 @@ def install_pre_commit_hooks() -> Args:
     Returns:
         Args object for installing prek hooks.
     """
-    return PreCommitter.L.install_args()
+    return PreCommitter.I.install_args()
 
 
 def add_all_files_to_version_control() -> Args:
@@ -148,7 +148,7 @@ def add_all_files_to_version_control() -> Args:
     Returns:
         Args object for adding all files to version control.
     """
-    return VersionController.L.add_all_args()
+    return VersionController.I.add_all_args()
 
 
 def running_pre_commit_hooks() -> Args:
@@ -160,7 +160,7 @@ def running_pre_commit_hooks() -> Args:
     Returns:
         Args object for running prek hooks.
     """
-    return PreCommitter.L.run_all_files_args()
+    return PreCommitter.I.run_all_files_args()
 
 
 def running_tests() -> Args:
@@ -172,7 +172,7 @@ def running_tests() -> Args:
     Returns:
         Args object for running tests.
     """
-    return ProjectTester.L.test_args()
+    return ProjectTester.I.test_args()
 
 
 def committing_initial_changes() -> Args:
@@ -185,7 +185,7 @@ def committing_initial_changes() -> Args:
         Args object for committing initial changes.
     """
     # changes were added by the run prek hooks step
-    return VersionController.L.commit_no_verify_args(
+    return VersionController.I.commit_no_verify_args(
         msg=f"{Pyrigger.name()}: Initial commit"
     )
 
@@ -239,6 +239,6 @@ def init_project() -> None:
         for step in steps:
             step_name = make_name_from_obj(step, join_on=" ")
             progress.update(task, description=step_name)
-            PackageManager.L.run_args(*step()).run()
+            PackageManager.I.run_args(*step()).run()
             progress.advance(task)
         progress.update(task, description="[green]Initialization complete!")

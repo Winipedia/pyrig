@@ -35,19 +35,19 @@ to use each is essential:
 
 | Mechanism | Purpose | Used For |
 |-----------|---------|----------|
-| **`.L` (Leaf)** | Get the deepest subclass of a Tool or ConfigFile | Internal pyrig operations that should use your customizations |
+| **`.I` (Leaf)** | Get the deepest subclass of a Tool or ConfigFile | Internal pyrig operations that should use your customizations |
 | **`subclasses()`** | Discover all ConfigFile implementations | Finding all configs to generate, including new ones you define |
 
-### The `.L` Pattern: Dynamic Tool Resolution
+### The `.I` Pattern: Dynamic Tool Resolution
 
-The `.L` property resolves to the **deepest subclass** in the inheritance chain.
-pyrig uses `.L` internally so your customizations propagate automatically.
+The `.I` property resolves to the **deepest subclass** in the inheritance chain.
+pyrig uses `.I` internally so your customizations propagate automatically.
 
 ```mermaid
 graph TD
     A["pyrig.TypeChecker"] --> B["mylib.TypeChecker"]
     B --> C["myapp.TypeChecker"]
-    D["TypeChecker.L"] -.->|resolves to| C
+    D["TypeChecker.I"] -.->|resolves to| C
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -55,20 +55,20 @@ graph TD
     style D fill:#e76f51,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Example: How prek uses `.L`**
+**Example: How prek uses `.I`**
 
-The prek config file uses `.L` to reference tools:
+The prek config file uses `.I` to reference tools:
 
 ```python
 # pyrig/rig/configs/git/pre_commit.py
 hooks = [
-    cls.hook("lint-code", Linter.L.check_fix_args()),
-    cls.hook("check-types", TypeChecker.L.check_args()),
+    cls.hook("lint-code", Linter.I.check_fix_args()),
+    cls.hook("check-types", TypeChecker.I.check_args()),
     # ...
 ]
 ```
 
-Because it uses `TypeChecker.L` (not `TypeChecker` directly), if you subclass
+Because it uses `TypeChecker.I` (not `TypeChecker` directly), if you subclass
 `TypeChecker` to use mypy:
 
 ```python
@@ -121,13 +121,13 @@ Note: `pyrig.PyprojectConfigFile` is **not** in the result because
 Not everything in pyrig uses dynamic resolution. Understanding the difference
 prevents confusion:
 
-### Dynamic (Uses `.L` - Your Subclass Applies Automatically)
+### Dynamic (Uses `.I` - Your Subclass Applies Automatically)
 
 | Component | Why Dynamic |
 |-----------|-------------|
-| Prek hooks | Uses `Tool.L.*_args()` to build commands |
-| CLI commands | Uses `Tool.L` for all operations |
-| Most config file content | Generated from `Tool.L` or `ConfigFile.L` |
+| Prek hooks | Uses `Tool.I.*_args()` to build commands |
+| CLI commands | Uses `Tool.I` for all operations |
+| Most config file content | Generated from `Tool.I` or `ConfigFile.I` |
 
 **If you subclass a Tool, these automatically use your version.**
 
@@ -247,10 +247,10 @@ pyrig's default tools - they were chosen for their quality and integration.
 
 ### Why Some Replacements Need More Work
 
-- **ty → mypy**: Prek uses `TypeChecker.L`, so it's automatic
-- **Podman → Docker**: Workflow steps use hardcoded GitHub Actions, not `.L`
+- **ty → mypy**: Prek uses `TypeChecker.I`, so it's automatic
+- **Podman → Docker**: Workflow steps use hardcoded GitHub Actions, not `.I`
 
-The rule: **If pyrig uses `.L`, your subclass applies automatically. If it's
+The rule: **If pyrig uses `.I`, your subclass applies automatically. If it's
 hardcoded (like external action references), you must override.**
 
 ## See Also

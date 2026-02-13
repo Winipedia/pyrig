@@ -11,12 +11,12 @@ class TestLicenseConfigFile:
 
     def test_license_badge_url(self) -> None:
         """Test method."""
-        result = LicenseConfigFile.L.license_badge_url()
+        result = LicenseConfigFile.I.license_badge_url()
         assert result == "https://img.shields.io/github/license/Winipedia/pyrig"
 
     def test_license_badge(self) -> None:
         """Test method."""
-        result = LicenseConfigFile.L.license_badge()
+        result = LicenseConfigFile.I.license_badge()
         assert (
             result
             == "[![License](https://img.shields.io/github/license/Winipedia/pyrig)](https://github.com/Winipedia/pyrig/blob/main/LICENSE)"
@@ -25,7 +25,7 @@ class TestLicenseConfigFile:
     def test_priority(self) -> None:
         """Test method."""
         # assert is bigger than PyprojectConfigFile
-        assert LicenseConfigFile.priority() > PyprojectConfigFile.L.priority()
+        assert LicenseConfigFile.priority() > PyprojectConfigFile.I.priority()
 
     def test_is_correct(self) -> None:
         """Test method."""

@@ -88,7 +88,7 @@ def find_packages(
             >>> find_packages(exclude=['tests*'])
             ['myproject', 'myproject.utils']
     """
-    gitignore_path = VersionController.L.ignore_path()
+    gitignore_path = VersionController.I.ignore_path()
     if exclude is None:
         exclude = (
             gitignore_path.read_text(encoding="utf-8").splitlines()
@@ -161,7 +161,7 @@ def find_namespace_packages() -> list[str]:
     packages = find_packages(depth=None)
     namespace_packages = find_packages(depth=None, include_namespace_packages=True)
     namespace_packages = [
-        p for p in namespace_packages if not p.startswith(DocsBuilder.L.docs_dir().name)
+        p for p in namespace_packages if not p.startswith(DocsBuilder.I.docs_dir().name)
     ]
     # exclude all that are in .gitignore
     namespace_packages = [

@@ -5,7 +5,7 @@ Shows package version badge from PyPI.
 
 Example:
     >>> from pyrig.rig.tools.package_index import PackageIndex
-    >>> PackageIndex.L.package_index_url()
+    >>> PackageIndex.I.package_index_url()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -24,7 +24,7 @@ class PackageIndex(Tool):
         - PyPI integration
 
     Example:
-        >>> PackageIndex.L.package_index_url()
+        >>> PackageIndex.I.package_index_url()
     """
 
     @classmethod
@@ -47,7 +47,7 @@ class PackageIndex(Tool):
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
         """Returns the badge and connected page."""
-        _, repo = VersionController.L.repo_owner_and_name(
+        _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
         return (
@@ -64,7 +64,7 @@ class PackageIndex(Tool):
         Returns:
             URL in format: `https://pypi.org/project/{repo}`
         """
-        _, repo = VersionController.L.repo_owner_and_name(
+        _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
         return f"https://pypi.org/project/{repo}"

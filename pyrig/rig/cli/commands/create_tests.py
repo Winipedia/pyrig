@@ -26,7 +26,7 @@ def make_test_skeletons() -> None:
     modules, classes, and functions for all untested code.
     """
     logger.info("Creating test skeletons")
-    src_package = import_module(PyprojectConfigFile.L.package_name())
+    src_package = import_module(PyprojectConfigFile.I.package_name())
     logger.debug("Source package: %s", src_package.__name__)
     create_tests_for_package(src_package)
     logger.info("Test skeleton creation complete")
@@ -54,7 +54,7 @@ def create_tests_for_package(package: ModuleType) -> None:
         list(executor.map(create_test_package, packages_without_modules))
 
     # create test modules for all modules
-    MirrorTestConfigFile.L.create_test_modules(all_modules)
+    MirrorTestConfigFile.I.create_test_modules(all_modules)
 
 
 def create_test_package(package: ModuleType) -> None:
@@ -63,7 +63,7 @@ def create_test_package(package: ModuleType) -> None:
     Args:
         package: The source package to create a test package for.
     """
-    test_package_name = MirrorTestConfigFile.L.test_obj_importpath_from_obj(package)
+    test_package_name = MirrorTestConfigFile.I.test_obj_importpath_from_obj(package)
     test_package_path = ModulePath.package_name_to_relative_dir_path(test_package_name)
     # create package if it doesn't exist
     create_package(test_package_path)

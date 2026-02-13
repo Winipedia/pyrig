@@ -10,36 +10,36 @@ class TestContainerEngine:
 
     def test_group(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.group()
+        result = ContainerEngine.I.group()
         assert isinstance(result, str)
         assert result == "tooling"
 
     def test_badge_urls(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.badge_urls()
+        result = ContainerEngine.I.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.dev_dependencies()
+        result = ContainerEngine.I.dev_dependencies()
         assert result == []
 
     def test_name(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.name()
+        result = ContainerEngine.I.name()
         assert result == "podman"
 
     def test_build_args(self) -> None:
         """Test method."""
-        result = ContainerEngine.L.build_args(project_name="myimage")
+        result = ContainerEngine.I.build_args(project_name="myimage")
         assert result == ("podman", "build", "-t", "myimage", ".")
 
     def test_save_args(self) -> None:
         """Test method."""
         image_file = Path("image.tar")
         image_path = Path("dist") / image_file
-        result = ContainerEngine.L.save_args(
+        result = ContainerEngine.I.save_args(
             image_file=image_file,
             image_path=image_path,
         )

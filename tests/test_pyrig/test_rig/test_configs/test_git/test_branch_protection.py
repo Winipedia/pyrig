@@ -12,17 +12,17 @@ class TestRepoProtectionConfigFile:
     @skip_if_no_internet
     def test_protect_repo(self) -> None:
         """Test method."""
-        RepoProtectionConfigFile.L.protect_repo()
+        RepoProtectionConfigFile.I.protect_repo()
 
     @skip_if_no_internet
     def test_create_or_update_default_branch_ruleset(self) -> None:
         """Test method."""
-        RepoProtectionConfigFile.L.create_or_update_default_branch_ruleset()
+        RepoProtectionConfigFile.I.create_or_update_default_branch_ruleset()
 
     @skip_if_no_internet
     def test_set_secure_repo_settings(self) -> None:
         """Test method."""
-        RepoProtectionConfigFile.L.set_secure_repo_settings()
+        RepoProtectionConfigFile.I.set_secure_repo_settings()
 
     def test_parent_path(self) -> None:
         """Test method."""

@@ -65,7 +65,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         src_module = cls.src_module()
         new_module_name = module_name_replacing_start_module(
-            src_module, PyprojectConfigFile.L.package_name()
+            src_module, PyprojectConfigFile.I.package_name()
         )
         new_module_path = ModulePath.module_name_to_relative_file_path(new_module_name)
         return new_module_path.parent

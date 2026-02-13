@@ -8,40 +8,40 @@ class TestProjectTester:
 
     def test_group(self) -> None:
         """Test method."""
-        result = ProjectTester.L.group()
+        result = ProjectTester.I.group()
         assert isinstance(result, str)
         assert result == "testing"
 
     def test_badge_urls(self) -> None:
         """Test method."""
-        result = ProjectTester.L.badge_urls()
+        result = ProjectTester.I.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = ProjectTester.L.dev_dependencies()
+        result = ProjectTester.I.dev_dependencies()
         assert result == ["pytest", "pytest-mock"]
 
     def test_test_args(self) -> None:
         """Test method."""
-        result = ProjectTester.L.test_args()
+        result = ProjectTester.I.test_args()
         assert result == ("pytest",)
 
     def test_coverage_threshold(self) -> None:
         """Test method."""
-        result = ProjectTester.L.coverage_threshold()
+        result = ProjectTester.I.coverage_threshold()
         expected = 90
         assert result == expected
 
     def test_name(self) -> None:
         """Test method."""
-        result = ProjectTester.L.name()
+        result = ProjectTester.I.name()
         assert result == "pytest"
 
     def test_run_tests_in_ci_args(self) -> None:
         """Test method."""
-        result = ProjectTester.L.run_tests_in_ci_args()
+        result = ProjectTester.I.run_tests_in_ci_args()
         assert result == (
             "pytest",
             "--log-cli-level=INFO",

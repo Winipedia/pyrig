@@ -17,5 +17,5 @@ def protect_repository() -> None:
     Configures repository-level settings and branch protection rulesets.
     """
     logger.info("Protecting repository")
-    RepoProtectionConfigFile.L.protect_repo()
+    RepoProtectionConfigFile.I.protect_repo()
     logger.info("Repository protection complete")

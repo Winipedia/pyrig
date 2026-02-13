@@ -5,8 +5,8 @@ Ruff is a fast Python linter and formatter written in Rust.
 
 Example:
     >>> from pyrig.rig.tools.linter import Linter
-    >>> Linter.L.check_args().run()
-    >>> Linter.L.format_args().run()
+    >>> Linter.I.check_args().run()
+    >>> Linter.I.format_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -24,9 +24,9 @@ class Linter(Tool):
         - Auto-fix: Automatically fix linting issues
 
     Example:
-        >>> Linter.L.check_args().run()
-        >>> Linter.L.check_fix_args().run()
-        >>> Linter.L.format_args().run()
+        >>> Linter.I.check_args().run()
+        >>> Linter.I.check_fix_args().run()
+        >>> Linter.I.format_args().run()
     """
 
     @classmethod

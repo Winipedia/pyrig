@@ -41,4 +41,4 @@ class PythonTestsConfigFile(PythonConfigFile):
     @classmethod
     def parent_path(cls) -> Path:
         """Return Path(TESTS_PACKAGE_NAME), typically "tests"."""
-        return Path(MirrorTestConfigFile.L.tests_package_name())
+        return Path(MirrorTestConfigFile.I.tests_package_name())

@@ -56,7 +56,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
         )
         bypass_id = 5  # GitHubs standard id for repo owner
         return {
-            "name": VersionController.L.default_ruleset_name(),
+            "name": VersionController.I.default_ruleset_name(),
             "target": "branch",
             "enforcement": "active",
             "conditions": {"ref_name": {"exclude": [], "include": ["~DEFAULT_BRANCH"]}},
@@ -114,7 +114,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
         existing ruleset if present.
         """
         token = github_repo_token()
-        owner, repo_name = VersionController.L.repo_owner_and_name()
+        owner, repo_name = VersionController.I.repo_owner_and_name()
         create_or_update_ruleset(
             token=token,
             owner=owner,
@@ -130,17 +130,17 @@ class RepoProtectionConfigFile(JsonConfigFile):
         settings based on pyproject.toml and pyrig defaults.
         """
         logger.info("Configuring secure repository settings")
-        owner, repo_name = VersionController.L.repo_owner_and_name()
+        owner, repo_name = VersionController.I.repo_owner_and_name()
         token = github_repo_token()
         repo = repository(token, owner, repo_name)
 
-        toml_description = PyprojectConfigFile.L.project_description()
+        toml_description = PyprojectConfigFile.I.project_description()
         logger.debug("Setting repository description: %s", toml_description)
 
         repo.edit(
             name=repo_name,
             description=toml_description,
-            default_branch=VersionController.L.default_branch(),
+            default_branch=VersionController.I.default_branch(),
             delete_branch_on_merge=True,
             allow_update_branch=True,
             allow_merge_commit=False,

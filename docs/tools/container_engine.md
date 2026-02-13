@@ -9,7 +9,7 @@ executables in a reproducible Linux environment.
 ## Replacing with Docker
 
 Switching to Docker requires **two changes** because workflow steps use
-hardcoded GitHub Actions (not the `.L` pattern):
+hardcoded GitHub Actions (not the `.I` pattern):
 
 ### 1. Subclass the Tool
 
