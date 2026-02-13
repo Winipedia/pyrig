@@ -5,8 +5,8 @@ Enforces code quality standards via linters, formatters, and checks.
 
 Example:
     >>> from pyrig.rig.tools.pre_committer import PreCommitter
-    >>> PreCommitter.L.install_args().run()
-    >>> PreCommitter.L.run_all_files_args().run()
+    >>> PreCommitter.I.install_args().run()
+    >>> PreCommitter.I.run_all_files_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -24,8 +24,8 @@ class PreCommitter(Tool):
         - Verbosity: Control output detail
 
     Example:
-        >>> PreCommitter.L.install_args().run()
-        >>> PreCommitter.L.run_all_files_args().run()
+        >>> PreCommitter.I.install_args().run()
+        >>> PreCommitter.I.run_all_files_args().run()
     """
 
     @classmethod

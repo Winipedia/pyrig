@@ -59,13 +59,13 @@ def github_repo_token() -> str:
         logger.debug("Using repository token from environment variable")
         return token
 
-    dotenv = DotEnvConfigFile.L.load()
+    dotenv = DotEnvConfigFile.I.load()
     token = dotenv.get("REPO_TOKEN")
     if token:
-        logger.debug("Using repository token from %s file", DotEnvConfigFile.L.path())
+        logger.debug("Using repository token from %s file", DotEnvConfigFile.I.path())
         return token
 
-    msg = f"Expected repository token in {DotEnvConfigFile.L.path()} or as env var."
+    msg = f"Expected repository token in {DotEnvConfigFile.I.path()} or as env var."
     raise ValueError(msg)
 
 
@@ -83,7 +83,7 @@ def path_is_in_ignore(path: str | Path) -> bool:
         pathspec.PatternError: If gitignore_lines contains malformed patterns.
 
     See Also:
-        VersionController.L.loaded_ignore: Load patterns from .gitignore file.
+        VersionController.I.loaded_ignore: Load patterns from .gitignore file.
     """
     as_path = Path(path)
     if as_path.is_absolute():
@@ -97,7 +97,7 @@ def path_is_in_ignore(path: str | Path) -> bool:
 
     spec = pathspec.PathSpec.from_lines(
         "gitignore",
-        VersionController.L.loaded_ignore(),
+        VersionController.I.loaded_ignore(),
     )
 
     return spec.match_file(as_posix)

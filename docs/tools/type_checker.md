@@ -39,7 +39,7 @@ class TypeChecker(BaseTC):
         return cls.args(*args)  # mypy doesn't need 'check' subcommand
 ```
 
-Because pyrig uses `TypeChecker.L` internally (including in prek config
+Because pyrig uses `TypeChecker.I` internally (including in prek config
 generation), this override automatically applies everywhere - no need to modify
 prek config or other components.
 

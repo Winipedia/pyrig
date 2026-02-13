@@ -20,7 +20,7 @@ from pyrig.rig.utils.version_control import (
 @skip_if_no_internet
 def test_repository() -> None:
     """Test function."""
-    owner, repo_name = VersionController.L.repo_owner_and_name()
+    owner, repo_name = VersionController.I.repo_owner_and_name()
     repo = repository(
         github_repo_token(),
         owner,
@@ -35,7 +35,7 @@ def test_all_rulesets() -> None:
     """Test function."""
     rulesets = all_rulesets(
         github_repo_token(),
-        *VersionController.L.repo_owner_and_name(),
+        *VersionController.I.repo_owner_and_name(),
     )
     assert isinstance(rulesets, list), "Expected rulesets to be a list"
 
@@ -43,12 +43,12 @@ def test_all_rulesets() -> None:
 @skip_if_no_internet
 def test_ruleset_exists() -> None:
     """Test function."""
-    owner, repo_name = VersionController.L.repo_owner_and_name()
+    owner, repo_name = VersionController.I.repo_owner_and_name()
     ruleset_id = ruleset_exists(
         github_repo_token(),
         owner,
         repo_name,
-        VersionController.L.default_ruleset_name(),
+        VersionController.I.default_ruleset_name(),
     )
     assert ruleset_id > 0, f"Expected ruleset id > 0, got {ruleset_id}"
 
@@ -57,7 +57,7 @@ def test_ruleset_exists() -> None:
 def test_create_or_update_ruleset() -> None:
     """Test function."""
     token = github_repo_token()
-    owner, repo_name = VersionController.L.repo_owner_and_name()
+    owner, repo_name = VersionController.I.repo_owner_and_name()
     create_or_update_ruleset(
         token=token,
         owner=owner,
@@ -69,7 +69,7 @@ def test_create_or_update_ruleset() -> None:
 @skip_if_no_internet
 def test_github_api_request() -> None:
     """Test function."""
-    owner, repo_name = VersionController.L.repo_owner_and_name()
+    owner, repo_name = VersionController.I.repo_owner_and_name()
     github_api_request(
         github_repo_token(),
         owner,

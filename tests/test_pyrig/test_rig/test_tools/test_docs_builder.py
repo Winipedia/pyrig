@@ -10,33 +10,33 @@ class TestDocsBuilder:
 
     def test_documentation_url(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.documentation_url()
+        result = DocsBuilder.I.documentation_url()
         assert isinstance(result, str)
         assert result.startswith("https://")
         assert "github.io" in result
 
     def test_documentation_badge(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.documentation_badge()
+        result = DocsBuilder.I.documentation_badge()
         assert isinstance(result, str)
         assert "[![" in result
         assert "Documentation" in result
 
     def test_group(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.group()
+        result = DocsBuilder.I.group()
         assert isinstance(result, str)
         assert result == "documentation"
 
     def test_badge_urls(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.badge_urls()
+        result = DocsBuilder.I.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.dev_dependencies()
+        result = DocsBuilder.I.dev_dependencies()
         assert result == [
             "mkdocs",
             "mkdocs-material",
@@ -46,15 +46,15 @@ class TestDocsBuilder:
 
     def test_docs_dir(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.docs_dir()
+        result = DocsBuilder.I.docs_dir()
         assert result == Path("docs")
 
     def test_name(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.name()
+        result = DocsBuilder.I.name()
         assert result == "mkdocs"
 
     def test_build_args(self) -> None:
         """Test method."""
-        result = DocsBuilder.L.build_args()
+        result = DocsBuilder.I.build_args()
         assert result == ("mkdocs", "build")

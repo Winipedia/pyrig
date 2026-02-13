@@ -6,7 +6,7 @@ constructs command arguments that can be inspected, modified, and executed.
 ## Start Here
 
 **[Architecture](architecture.md)** - Understand the design philosophy, the
-`.L` pattern, `subclasses()`, and when customizations propagate
+`.I` pattern, `subclasses()`, and when customizations propagate
 automatically vs when they require explicit overrides.
 
 ## Tools
@@ -36,7 +36,7 @@ docstrings.
 from pyrig.rig.tools.linter import Linter
 
 # Get command arguments
-args = Linter.L.check_args()
+args = Linter.I.check_args()
 print(args)  # ruff check
 
 # Execute

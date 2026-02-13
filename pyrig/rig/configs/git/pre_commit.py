@@ -111,23 +111,23 @@ class PrekConfigFile(TomlConfigFile):
         hooks: list[dict[str, Any]] = [
             cls.hook(
                 "format-code",
-                Linter.L.format_args(),
+                Linter.I.format_args(),
             ),
             cls.hook(
                 "lint-code",
-                Linter.L.check_fix_args(),
+                Linter.I.check_fix_args(),
             ),
             cls.hook(
                 "check-types",
-                TypeChecker.L.check_args(),
+                TypeChecker.I.check_args(),
             ),
             cls.hook(
                 "check-security",
-                SecurityChecker.L.run_with_config_args(),
+                SecurityChecker.I.run_with_config_args(),
             ),
             cls.hook(
                 "check-markdown",
-                MDLinter.L.check_fix_args(),
+                MDLinter.I.check_fix_args(),
             ),
         ]
         return {

@@ -5,8 +5,8 @@ UV is pyrig's primary package manager (Rust-based, replaces pip/virtualenv).
 
 Example:
     >>> from pyrig.rig.tools.package_manager import PackageManager
-    >>> PackageManager.L.install_dependencies_args().run()
-    >>> PackageManager.L.add_dependencies_args("requests").run()
+    >>> PackageManager.I.install_dependencies_args().run()
+    >>> PackageManager.I.add_dependencies_args("requests").run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -26,8 +26,8 @@ class PackageManager(Tool):
         - Execution: run commands
 
     Example:
-        >>> PackageManager.L.install_dependencies_args().run()
-        >>> PackageManager.L.add_dev_dependencies_args("ruff", "pytest").run()
+        >>> PackageManager.I.install_dependencies_args().run()
+        >>> PackageManager.I.add_dev_dependencies_args("ruff", "pytest").run()
     """
 
     @classmethod

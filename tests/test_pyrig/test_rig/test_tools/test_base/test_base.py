@@ -16,25 +16,25 @@ class TestTool:
 
     def test_sorting_key(self) -> None:
         """Test method."""
-        result = Tool.sorting_key(PackageManager.L)
+        result = Tool.sorting_key(PackageManager.I)
         assert isinstance(result, str)
 
     def test_group(self) -> None:
         """Test method."""
-        result = PackageManager.L.group()
+        result = PackageManager.I.group()
         assert isinstance(result, str)
         assert result == "tooling"
 
     def test_badge_urls(self) -> None:
         """Test method."""
-        result = PackageManager.L.badge_urls()
+        result = PackageManager.I.badge_urls()
         assert isinstance(result, tuple)
 
         assert all(isinstance(url, str) for url in result)
 
     def test_badge(self) -> None:
         """Test method."""
-        result = PackageManager.L.badge()
+        result = PackageManager.I.badge()
         assert isinstance(result, str)
         assert "uv" in result
         assert "[![" in result
@@ -50,7 +50,7 @@ class TestTool:
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = PackageManager.L.dev_dependencies()
+        result = PackageManager.I.dev_dependencies()
         assert result == []
 
     def test_subclasses_dev_dependencies(self) -> None:
@@ -66,12 +66,12 @@ class TestTool:
     def test_name(self) -> None:
         """Test method."""
         # Tool is abstract, test through concrete implementation
-        assert PackageManager.L.name() == "uv"
+        assert PackageManager.I.name() == "uv"
 
     def test_args(self) -> None:
         """Test method."""
         # Tool is abstract, test through concrete implementation
-        result = PackageManager.L.args("run", "pytest")
+        result = PackageManager.I.args("run", "pytest")
         assert result == ("uv", "run", "pytest")
 
 

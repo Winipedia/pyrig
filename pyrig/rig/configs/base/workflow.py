@@ -229,7 +229,7 @@ class Workflow(YmlConfigFile):
         """
         return {
             "PYTHONDONTWRITEBYTECODE": 1,
-            PackageManager.L.no_auto_install_env_var(): 1,
+            PackageManager.I.no_auto_install_env_var(): 1,
         }
 
     # Workflow Conventions
@@ -360,7 +360,7 @@ class Workflow(YmlConfigFile):
             Trigger configuration for push events.
         """
         if branches is None:
-            branches = [VersionController.L.default_branch()]
+            branches = [VersionController.I.default_branch()]
         return {"push": {"branches": branches}}
 
     @classmethod
@@ -649,7 +649,7 @@ class Workflow(YmlConfigFile):
         """
         if python_version is None:
             python_version = [
-                str(v) for v in PyprojectConfigFile.L.supported_python_versions()
+                str(v) for v in PyprojectConfigFile.I.supported_python_versions()
             ]
         if matrix is None:
             matrix = {}
@@ -691,7 +691,7 @@ class Workflow(YmlConfigFile):
         """
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.L.latest_possible_python_version(level="minor")
+                PyprojectConfigFile.I.latest_possible_python_version(level="minor")
             )
         core = [
             cls.step_checkout_repository(repo_token=repo_token),
@@ -868,8 +868,8 @@ class Workflow(YmlConfigFile):
         return cls.step(
             step_func=cls.step_build_container_image,
             run=str(
-                ContainerEngine.L.build_args(
-                    project_name=PyprojectConfigFile.L.project_name()
+                ContainerEngine.I.build_args(
+                    project_name=PyprojectConfigFile.I.project_name()
                 )
             ),
             step=step,
@@ -889,12 +889,12 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that saves the container image.
         """
-        image_file = Path(f"{PyprojectConfigFile.L.project_name()}.tar")
+        image_file = Path(f"{PyprojectConfigFile.I.project_name()}.tar")
         image_path = Path(cls.ARTIFACTS_DIR_NAME) / image_file
         return cls.step(
             step_func=cls.step_save_container_image,
             run=str(
-                ContainerEngine.L.save_args(
+                ContainerEngine.I.save_args(
                     image_file=image_file,
                     image_path=image_path,
                 )
@@ -942,7 +942,7 @@ class Workflow(YmlConfigFile):
             step = {}
         if src_package_is_pyrig():
             step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
-        run = str(PackageManager.L.run_args(*ProjectTester.L.run_tests_in_ci_args()))
+        run = str(PackageManager.I.run_args(*ProjectTester.I.run_tests_in_ci_args()))
         return cls.step(
             step_func=cls.step_run_tests,
             run=run,
@@ -1003,7 +1003,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_patch_version,
-            run=str(PackageManager.L.patch_version_args()),
+            run=str(PackageManager.I.patch_version_args()),
             step=step,
         )
 
@@ -1023,7 +1023,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_add_version_bump_to_version_control,
-            run=str(VersionController.L.add_pyproject_toml_and_lock_file_args()),
+            run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
 
@@ -1043,7 +1043,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_add_dependency_updates_to_version_control,
-            run=str(VersionController.L.add_pyproject_toml_and_lock_file_args()),
+            run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
 
@@ -1094,13 +1094,13 @@ class Workflow(YmlConfigFile):
         return cls.step(
             step_func=cls.step_setup_version_control,
             run=str(
-                VersionController.L.config_global_user_email_args(
+                VersionController.I.config_global_user_email_args(
                     email='"github-actions[bot]@users.noreply.github.com"',
                 ),
             )
             + " && "
             + str(
-                VersionController.L.config_global_user_name_args(
+                VersionController.I.config_global_user_name_args(
                     name='"github-actions[bot]"'
                 )
             ),
@@ -1127,7 +1127,7 @@ class Workflow(YmlConfigFile):
             step = {}
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.L.latest_possible_python_version(level="minor")
+                PyprojectConfigFile.I.latest_possible_python_version(level="minor")
             )
 
         step.setdefault("with", {})["python-version"] = python_version
@@ -1176,7 +1176,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_build_wheel,
-            run=str(PackageManager.L.build_args()),
+            run=str(PackageManager.I.build_args()),
             step=step,
         )
 
@@ -1196,7 +1196,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv publish with PYPI_TOKEN.
         """
-        run = str(PackageManager.L.publish_args(token=cls.insert_pypi_token()))
+        run = str(PackageManager.I.publish_args(token=cls.insert_pypi_token()))
         run_if = cls.run_if_condition(run, cls.insert_pypi_token())
         return cls.step(
             step_func=cls.step_publish_to_pypi,
@@ -1220,7 +1220,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_build_documentation,
-            run=str(PackageManager.L.run_args(*DocsBuilder.L.build_args())),
+            run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
             step=step,
         )
 
@@ -1302,7 +1302,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_update_dependencies,
-            run=str(PackageManager.L.update_dependencies_args()),
+            run=str(PackageManager.I.update_dependencies_args()),
             step=step,
         )
 
@@ -1322,7 +1322,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv sync.
         """
-        install = str(PackageManager.L.install_dependencies_args())
+        install = str(PackageManager.I.install_dependencies_args())
         if no_dev:
             install += " --no-group dev"
         run = install
@@ -1349,7 +1349,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_protect_repository,
-            run=str(PackageManager.L.run_args(*Pyrigger.L.cmd_args(cmd=protect_repo))),
+            run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=protect_repo))),
             env={"REPO_TOKEN": cls.insert_repo_token()},
             step=step,
         )
@@ -1373,7 +1373,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_run_pre_commit_hooks,
-            run=str(PackageManager.L.run_args(*PreCommitter.L.run_all_files_args())),
+            run=str(PackageManager.I.run_args(*PreCommitter.I.run_all_files_args())),
             step=step,
         )
 
@@ -1396,7 +1396,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_run_dependency_audit,
-            run=str(PackageManager.L.run_args(*DependencyAuditor.L.audit_args())),
+            run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
             step=step,
         )
 
@@ -1417,7 +1417,7 @@ class Workflow(YmlConfigFile):
         msg = '"[skip ci] CI/CD: Committing possible staged changes"'
         return cls.step(
             step_func=cls.step_commit_added_changes,
-            run=str(VersionController.L.commit_no_verify_args(msg=msg)),
+            run=str(VersionController.I.commit_no_verify_args(msg=msg)),
             step=step,
         )
 
@@ -1437,7 +1437,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_push_commits,
-            run=str(VersionController.L.push_args()),
+            run=str(VersionController.I.push_args()),
             step=step,
         )
 
@@ -1457,9 +1457,9 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_create_and_push_tag,
-            run=str(VersionController.L.tag_args(tag=cls.insert_version()))
+            run=str(VersionController.I.tag_args(tag=cls.insert_version()))
             + " && "
-            + str(VersionController.L.push_origin_tag_args(tag=cls.insert_version())),
+            + str(VersionController.I.push_origin_tag_args(tag=cls.insert_version())),
             step=step,
         )
 
@@ -1547,7 +1547,7 @@ class Workflow(YmlConfigFile):
         """
         return cls.step(
             step_func=cls.step_build_artifacts,
-            run=str(PackageManager.L.run_args(*Pyrigger.L.cmd_args(cmd=build))),
+            run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=build))),
             step=step,
         )
 
@@ -1728,7 +1728,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Shell command that outputs the version with v prefix.
         """
-        script = str(PackageManager.L.version_short_args())
+        script = str(PackageManager.I.version_short_args())
         return f"v$({script})"
 
     @classmethod
@@ -1845,7 +1845,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Artifact name in format: package-os.
         """
-        return f"{PyprojectConfigFile.L.project_name()}-{cls.insert_os()}"
+        return f"{PyprojectConfigFile.I.project_name()}-{cls.insert_os()}"
 
     # ifs
     # ----------------------------------------------------------------------------

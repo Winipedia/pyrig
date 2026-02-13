@@ -5,8 +5,8 @@ Rumdl is a fast markdown linter written in Rust.
 
 Example:
     >>> from pyrig.rig.tools.mdlinter import MDLinter
-    >>> MDLinter.L.check_args().run()
-    >>> MDLinter.L.check_fix_args().run()
+    >>> MDLinter.I.check_args().run()
+    >>> MDLinter.I.check_fix_args().run()
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -23,8 +23,8 @@ class MDLinter(Tool):
         - Auto-fix: Automatically fix markdown issues
 
     Example:
-        >>> MDLinter.L.check_args().run()
-        >>> MDLinter.L.check_fix_args().run()
+        >>> MDLinter.I.check_args().run()
+        >>> MDLinter.I.check_fix_args().run()
     """
 
     @classmethod

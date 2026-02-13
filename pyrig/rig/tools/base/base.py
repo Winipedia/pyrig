@@ -16,7 +16,7 @@ Benefits:
 
 Example:
     >>> from pyrig.rig.tools.package_manager import PackageManager
-    >>> args = PackageManager.L.install_dependencies_args()
+    >>> args = PackageManager.I.install_dependencies_args()
     >>> print(args)
     uv sync
     >>> args.run()
@@ -32,7 +32,7 @@ from typing import Self
 from pyrig.rig import tools
 from pyrig.src.processes import Args
 from pyrig.src.string_ import make_linked_badge_markdown
-from pyrig.src.subclass import DependencySubclass
+from pyrig.src.subclass import SingletonDependencySubclass
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class ToolGroup:
     TESTING = "testing"
 
 
-class Tool(DependencySubclass):
+class Tool(SingletonDependencySubclass):
     """Abstract base for tool command argument construction.
 
     Provides consistent interface for constructing command-line arguments.
