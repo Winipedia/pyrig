@@ -264,20 +264,12 @@ Define autouse fixtures in your package's fixtures module:
 ```python
 from pyrig.rig.utils.testing import autouse_session_fixture
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def my_custom_validation() -> None:
     """Custom validation that runs automatically."""
     # Your validation logic
     assert some_condition, "Validation failed"
 ```
-
-Available decorators:
-
-- `@autouse_session_fixture` - Runs once per test session
-- `@autouse_package_fixture` - Runs once per test package
-- `@autouse_module_fixture` - Runs once per test module
-- `@autouse_class_fixture` - Runs once per test class
-- `@autouse_function_fixture` - Runs for every test function
 
 Custom autouse fixtures automatically run in all packages that depend on your
 package.

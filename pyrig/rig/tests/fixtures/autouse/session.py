@@ -47,7 +47,6 @@ from pyrig.rig.utils.packages import (
     find_namespace_packages,
     find_packages,
 )
-from pyrig.rig.utils.testing import autouse_session_fixture
 from pyrig.src.git import (
     running_in_github_actions,
 )
@@ -71,7 +70,7 @@ from pyrig.src.string_ import make_summary_error_msg, re_search_excluding_docstr
 logger = logging.getLogger(__name__)
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_no_unstaged_changes() -> Generator[None, None, None]:
     """Verify no unstaged git changes before and after tests (CI only).
 
@@ -102,7 +101,7 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
         )
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_root_is_correct() -> None:
     """Verify project root structure is correct, auto-fixing incorrect config files.
 
@@ -134,7 +133,7 @@ def assert_root_is_correct() -> None:
     assert not incorrect_cfs, msg
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_no_namespace_packages() -> None:
     """Verify all packages have __init__.py, auto-creating missing ones.
 
@@ -157,7 +156,7 @@ def assert_no_namespace_packages() -> None:
     assert not any_namespace_packages, msg
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_all_src_code_in_one_package() -> None:
     """Verify source code is in a single package with expected structure.
 
@@ -216,7 +215,7 @@ def assert_all_src_code_in_one_package() -> None:
         """
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_src_package_correctly_named() -> None:
     """Verify source package name matches project naming conventions.
 
@@ -250,7 +249,7 @@ def assert_src_package_correctly_named() -> None:
     assert src_package == expected_package, msg
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_all_modules_tested() -> None:
     """Verify every source module has a corresponding test module.
 
@@ -281,7 +280,7 @@ def assert_all_modules_tested() -> None:
     assert not incorrect_subclasses, msg
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_no_unit_test_package_usage() -> None:
     """Verify unittest is not used in the project (pytest only).
 
@@ -308,7 +307,7 @@ def assert_no_unit_test_package_usage() -> None:
     assert not usages, msg
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_dependencies_are_up_to_date() -> None:
     """Verify dependencies are up to date via ``uv lock --upgrade`` and ``uv sync``.
 
@@ -320,7 +319,7 @@ def assert_dependencies_are_up_to_date() -> None:
     if not internet_is_available():
         logger.warning(
             "No internet, skipping %s",
-            assert_dependencies_are_up_to_date.__name__,  # ty:ignore[possibly-missing-attribute]
+            assert_dependencies_are_up_to_date.__name__,
         )
         return
     # update the dependencies
@@ -367,7 +366,7 @@ def assert_dependencies_are_up_to_date() -> None:
     assert successful, msg
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -> None:
     """Verify source code runs in isolated environment without dev dependencies.
 
@@ -388,11 +387,11 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
     if not internet_is_available():
         logger.warning(
             "No internet, skipping %s",
-            assert_src_runs_without_dev_deps.__name__,  # ty:ignore[possibly-missing-attribute]
+            assert_src_runs_without_dev_deps.__name__,
         )
         return
     project_name = PyprojectConfigFile.L.project_name()
-    func_name = assert_src_runs_without_dev_deps.__name__  # ty:ignore[possibly-missing-attribute]
+    func_name = assert_src_runs_without_dev_deps.__name__
     tmp_path = tmp_path_factory.mktemp(func_name) / project_name
     # copy the project folder to a temp directory
     # run main.py from that directory
@@ -488,7 +487,7 @@ If this fails then there is likely an import in src that depends on dev dependen
         assert successful, base_msg + f"Expected {args} to succeed, got {std_msg}"
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_src_does_not_use_rig() -> None:
     """Verify source code does not import any rig code.
 
@@ -531,7 +530,7 @@ def assert_src_does_not_use_rig() -> None:
     assert not usages, msg
 
 
-@autouse_session_fixture
+@pytest.fixture(scope="session", autouse=True)
 def assert_project_mgt_is_up_to_date() -> None:
     """Verify uv is up to date via ``uv self update`` (skipped in CI).
 
@@ -541,7 +540,7 @@ def assert_project_mgt_is_up_to_date() -> None:
     if not internet_is_available():
         logger.warning(
             "No internet, skipping %s",
-            assert_project_mgt_is_up_to_date.__name__,  # ty:ignore[possibly-missing-attribute]
+            assert_project_mgt_is_up_to_date.__name__,
         )
         return
     if not running_in_github_actions():
