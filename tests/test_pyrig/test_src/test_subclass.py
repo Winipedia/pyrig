@@ -4,7 +4,7 @@ import pyrig
 from pyrig.rig import configs
 from pyrig.rig.configs.base.base import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.src.modules.subclass import Subclass
+from pyrig.src.subclass import Subclass
 
 
 class TestSubclass:

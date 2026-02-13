@@ -76,8 +76,8 @@ from typing import Any, Self
 
 from pyrig.rig import configs
 from pyrig.src.iterate import nested_structure_is_subset
-from pyrig.src.modules.subclass import Subclass
 from pyrig.src.string_ import split_on_uppercase
+from pyrig.src.subclass import Subclass
 
 logger = logging.getLogger(__name__)
 

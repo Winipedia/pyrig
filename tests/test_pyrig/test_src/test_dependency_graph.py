@@ -7,7 +7,7 @@ from types import ModuleType
 
 from pytest_mock import MockFixture
 
-from pyrig.src.modules.dependency_graph import DependencyGraph
+from pyrig.src.dependency_graph import DependencyGraph
 
 
 class TestDependencyGraph:
