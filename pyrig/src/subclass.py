@@ -17,6 +17,7 @@ from pyrig.src.modules.package import (
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
 )
+from pyrig.src.singleton import Singleton
 
 
 class DependencySubclass(ABC):
@@ -103,3 +104,16 @@ class DependencySubclass(ABC):
             dep=cls.base_dependency(),
             load_package_before=cls.definition_package(),
         )
+
+    @classproperty
+    def I(cls) -> Self:  # noqa: E743, N802, N805
+        """Get an instance of the final leaf subclass."""
+        return cls.L()
+
+
+class SingletonDependencySubclass(Singleton, DependencySubclass):
+    """Convenience subclass of DependencySubclass for singleton subclasses.
+
+    This class assumes that all leaf subclasses are singletons and provides an
+    `I` property that returns the singleton instance of the leaf subclass.
+    """
