@@ -216,7 +216,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         super().__init__()
         self.validate()
 
-    def validate(self) -> None:
+    @classmethod
+    def validate(cls) -> None:
         """Validate config file, creating or updating as needed.
 
         Calls create_file() if file doesn't exist (which creates parent dirs and file),
@@ -226,21 +227,21 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         Raises:
             ValueError: If file cannot be made correct.
         """
-        path = self.path()
+        path = cls.path()
         logger.debug(
             "Initializing config file: %s at: %s",
-            self.__class__.__name__,
+            cls.__name__,
             path,
         )
         if not path.exists():
-            self.create_file()
-            self.dump(self.configs())
+            cls.create_file()
+            cls.dump(cls.configs())
 
-        if not self.is_correct():
-            config = self.merge_configs()
-            self.dump(config)
+        if not cls.is_correct():
+            config = cls.merge_configs()
+            cls.dump(config)
 
-        if not self.is_correct():
+        if not cls.is_correct():
             msg = f"Config file {path} is not correct after adding missing configs."
             raise ValueError(msg)
 
