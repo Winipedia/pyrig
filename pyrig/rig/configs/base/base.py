@@ -213,6 +213,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](Subclass):
         Raises:
             ValueError: If file cannot be made correct.
         """
+        super().__init__()
         path = self.path()
         logger.debug(
             "Initializing config file: %s at: %s",
