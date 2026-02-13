@@ -3,12 +3,21 @@
 import pyrig
 from pyrig.rig import configs
 from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.subclass import DependencySubclass
 
 
 class TestDependencySubclass:
     """Test class."""
+
+    def test_I(self) -> None:  # noqa: N802
+        """Test method."""
+        result = GitignoreConfigFile.I
+        assert isinstance(result, GitignoreConfigFile)
+        assert result is GitignoreConfigFile.I
+        assert result is GitignoreConfigFile.L()
+        assert result is GitignoreConfigFile()
 
     def test_definition_package(self) -> None:
         """Test method."""
@@ -36,3 +45,7 @@ class TestDependencySubclass:
     def test_L(self) -> None:  # noqa: N802
         """Test method."""
         assert MirrorTestConfigFile.L.L is MirrorTestConfigFile
+
+
+class TestSingletonDependencySubclass:
+    """Test class."""
