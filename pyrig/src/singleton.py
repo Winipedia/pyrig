@@ -20,9 +20,9 @@ class SingletonMeta(ABCMeta):
         _instances: A dictionary mapping singleton classes to their sole instances.
     """
 
-    _instances: ClassVar[dict["SingletonMeta", "Singleton"]] = {}
+    _instances: ClassVar[dict[type, Any]] = {}
 
-    def __call__(cls, *args: Any, **kwargs: Any) -> "Singleton":
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
         """Create or retrieve the singleton instance.
 
         If this is the first call for the given class, a new instance is created
@@ -38,10 +38,10 @@ class SingletonMeta(ABCMeta):
         Returns:
             The singleton instance of the class.
         """
-        if cls not in cls._instances:
+        if cls not in SingletonMeta._instances:
             instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
+            SingletonMeta._instances[cls] = instance
+        return SingletonMeta._instances[cls]
 
     def clear(cls) -> None:
         """Remove the singleton instance for the given class.

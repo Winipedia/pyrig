@@ -113,7 +113,7 @@ class HealthCheckWorkflow(Workflow):
         Returns:
             Number of hours to offset from base cron hour.
         """
-        graph = DependencyGraph.cached()
+        graph = DependencyGraph()
         src_package = import_module(PyprojectConfigFile.L.package_name())
         return graph.shortest_path_length(src_package.__name__, pyrig.__name__)
 
