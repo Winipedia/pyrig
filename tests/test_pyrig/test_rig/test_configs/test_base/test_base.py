@@ -198,6 +198,18 @@ class TestConfigFile:
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
     ) -> None:
         """Test method."""
+        # mock validate to not do anything
+        mock_validate = mocker.patch.object(
+            my_test_config_file, "validate", return_value=None
+        )
+        my_test_config_file()
+        # assert validate called once
+        mock_validate.assert_called_once()
+
+    def test_validate(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
+    ) -> None:
+        """Test method."""
         # create file first to not trigger dunmp in init
         my_test_config_file.path().parent.mkdir(parents=True, exist_ok=True)
         # write non-empty file to trigger merge_configs,
