@@ -32,7 +32,7 @@ from typing import Self
 from pyrig.rig import tools
 from pyrig.src.processes import Args
 from pyrig.src.string_ import make_linked_badge_markdown
-from pyrig.src.subclass import Subclass
+from pyrig.src.subclass import DependencySubclass
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class ToolGroup:
     TESTING = "testing"
 
 
-class Tool(Subclass):
+class Tool(DependencySubclass):
     """Abstract base for tool command argument construction.
 
     Provides consistent interface for constructing command-line arguments.
