@@ -11,7 +11,6 @@ from typing import Any, ClassVar
 from pyrig.src.modules.class_ import (
     all_cls_from_module,
     all_methods_from_cls,
-    cached_instance,
     classproperty,
     discard_parent_classes,
     discover_all_subclasses,
@@ -225,17 +224,6 @@ def test_discard_parent_classes() -> None:
     classes = discard_parent_classes([ParentClass, TestClass])
     assert ParentClass not in classes, f"Expected ParentClass not in {classes}"
     assert TestClass in classes, f"Expected TestClass in {classes}"
-
-
-def test_cached_instance() -> None:
-    """Test function."""
-
-    class TestClass:
-        """Test class."""
-
-    instance1 = cached_instance(TestClass)
-    instance2 = cached_instance(TestClass)
-    assert instance1 is instance2
 
 
 class Testclassproperty:

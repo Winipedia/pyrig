@@ -14,12 +14,13 @@ from types import ModuleType
 
 from pyrig.src.graph import DiGraph
 from pyrig.src.modules.module import import_module_with_default
+from pyrig.src.singleton import Singleton
 from pyrig.src.string_ import package_req_name_split_pattern
 
 logger = logging.getLogger(__name__)
 
 
-class DependencyGraph(DiGraph):
+class DependencyGraph(DiGraph, Singleton):
     """Directed graph of installed Python package dependencies.
 
     Nodes are package names, edges represent dependency relationships.

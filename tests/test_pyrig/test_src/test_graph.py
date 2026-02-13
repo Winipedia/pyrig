@@ -8,12 +8,6 @@ from pyrig.src.graph import DiGraph
 class TestDiGraph:
     """Test class."""
 
-    def test_cached(self) -> None:
-        """Test cached method."""
-        graph1 = DiGraph.cached()
-        graph2 = DiGraph.cached()
-        assert graph1 is graph2
-
     def test___init__(self) -> None:
         """Test DiGraph initialization creates empty graph."""
         graph = DiGraph()

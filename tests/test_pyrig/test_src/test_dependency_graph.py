@@ -31,11 +31,17 @@ class TestDependencyGraph:
     def test___init__(self) -> None:
         """Test method."""
         # Test it initializes without error
-        graph = DependencyGraph.cached()
+        graph = DependencyGraph()
 
         # Verify it has nodes (should have installed packages)
         num_nodes = len(graph.nodes())
         assert num_nodes > 0, "Expected graph to have nodes after initialization"
+
+        g1 = DependencyGraph()
+        g2 = DependencyGraph()
+        assert g1 is g2, (
+            "Expected DependencyGraph to be a singleton, got different instances"
+        )
 
     def test_build(self, mocker: MockFixture) -> None:
         """Test method."""
@@ -54,6 +60,7 @@ class TestDependencyGraph:
             return_value=[mock_dist1, mock_dist2],
         )
 
+        DependencyGraph.clear()  # Clear singleton instance to force rebuild
         graph = DependencyGraph()
 
         # Verify nodes were added
@@ -110,7 +117,7 @@ class TestDependencyGraph:
         mocker.patch.object(DependencyGraph, "build")
 
         # Create a simple dependency graph
-        graph = DependencyGraph.cached()
+        graph = DependencyGraph()
 
         # Add nodes and edges manually
         # Structure: package_a -> package_b -> package_c

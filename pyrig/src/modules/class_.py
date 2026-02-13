@@ -8,7 +8,6 @@ implementations and BuilderConfigFile subclasses.
 import inspect
 import logging
 from collections.abc import Callable
-from functools import cache
 from importlib import import_module
 from types import ModuleType
 from typing import Any, overload
@@ -198,31 +197,6 @@ def discard_parent_classes[T: type](
         if any(child in classes for child in cls.__subclasses__()):
             classes.remove(cls)
     return classes
-
-
-@cache
-def cached_instance[T](cls: type[T]) -> T:
-    """Get or create a cached singleton instance of a class.
-
-    Uses ``functools.cache`` to memoize class instantiation. The first call
-    creates the instance, subsequent calls return the same cached instance.
-    Enables singleton-like patterns without explicit singleton implementation.
-
-    Args:
-        cls: Class to instantiate. Must be callable with no arguments.
-
-    Returns:
-        Cached instance of the class. Same instance is returned on repeated calls.
-
-    Example:
-        >>> class ExpensiveResource:
-        ...     def __init__(self):
-        ...         print("Creating resource...")
-        ...
-        >>> cached_instance(ExpensiveResource)  # prints "Creating resource..."
-        >>> cached_instance(ExpensiveResource)  # returns cached, no print
-    """
-    return cls()
 
 
 class classproperty[T]:  # noqa: N801
