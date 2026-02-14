@@ -16,8 +16,7 @@ from pyrig.rig.tools.type_checker import TypeChecker as BaseTC
 from pyrig.src.processes import Args
 
 class TypeChecker(BaseTC):
-    @classmethod
-    def check_args(cls, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         return super().check_args("--verbose", *args)
 ```
 
@@ -29,14 +28,12 @@ from pyrig.rig.tools.type_checker import TypeChecker as BaseTC
 from pyrig.src.processes import Args
 
 class TypeChecker(BaseTC):
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         return "mypy"
 
-    @classmethod
-    def check_args(cls, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         # mypy uses different command syntax than ty
-        return cls.args(*args)  # mypy doesn't need 'check' subcommand
+        return self.args(*args)  # mypy doesn't need 'check' subcommand
 ```
 
 Because pyrig uses `TypeChecker.I` internally (including in prek config

@@ -18,8 +18,7 @@ hardcoded GitHub Actions (not the `.I` pattern):
 from pyrig.rig.tools.container_engine import ContainerEngine as BaseCE
 
 class ContainerEngine(BaseCE):
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         return "docker"
 ```
 

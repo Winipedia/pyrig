@@ -14,8 +14,7 @@ from pyrig.rig.tools.package_manager import PackageManager as BasePM
 from pyrig.src.processes import Args
 
 class PackageManager(BasePM):
-    @classmethod
-    def install_dependencies_args(cls, *args: str) -> Args:
+    def install_dependencies_args(self, *args: str) -> Args:
         return super().install_dependencies_args("--frozen", *args)
 ```
 

@@ -16,8 +16,7 @@ from pyrig.rig.tools.project_coverage_tester import (
 )
 
 class ProjectCoverageTester(BasePCT):
-    @classmethod
-    def remote_coverage_url(cls) -> str:
+    def remote_coverage_url(self) -> str:
         # Use Coveralls instead of Codecov
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True

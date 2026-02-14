@@ -13,8 +13,7 @@ from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger
 from pyrig.src.processes import Args
 
 class Pyrigger(BasePyrigger):
-    @classmethod
-    def cmd_args(cls, *args: str, cmd: Callable[..., Any]) -> Args:
+    def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
         return super().cmd_args("--verbose", *args, cmd=cmd)
 ```
 

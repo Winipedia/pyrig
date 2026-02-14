@@ -454,8 +454,7 @@ default security checker.
 1. **Override `dev_dependencies()` on your tool in `service-base`**:
 
    ```python
-   @classmethod
-   def dev_dependencies(cls) -> list[str]:
+   def dev_dependencies(self) -> list[str]:
        return [*super().dev_dependencies(), "safety"]
    ```
 

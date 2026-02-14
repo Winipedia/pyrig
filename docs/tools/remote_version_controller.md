@@ -16,10 +16,9 @@ from pyrig.rig.tools.remote_version_controller import (
 )
 
 class RemoteVersionController(BaseRVC):
-    @classmethod
-    def issues_url(cls) -> str:
+    def issues_url(self) -> str:
         # Use custom issues domain instead of GitHub
-        return f"https://issues.example.com/{cls.name()}"
+        return f"https://issues.example.com/{self.name()}"
 ```
 
 ## Related

@@ -14,8 +14,7 @@ from pyrig.rig.tools.mdlinter import MDLinter as BaseMDL
 from pyrig.src.processes import Args
 
 class MDLinter(BaseMDL):
-    @classmethod
-    def check_args(cls, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         return super().check_args("--verbose", *args)
 ```
 
