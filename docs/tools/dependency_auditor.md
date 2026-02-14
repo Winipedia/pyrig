@@ -17,8 +17,7 @@ from pyrig.src.processes import Args
 
 
 class DependencyAuditor(BaseDA):
-    @classmethod
-    def audit_args(cls, *args: str) -> Args:
+    def audit_args(self, *args: str) -> Args:
         # Example: enforce a stable machine-readable output format
         return super().audit_args("--format", "json", *args)
 ```
