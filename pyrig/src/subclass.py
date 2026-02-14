@@ -33,7 +33,7 @@ class DependencySubclass(ABC):
     def definition_package(cls) -> ModuleType:
         """Get the package where this class's subclasses are defined.
 
-        Should be overridden by subclasses to specify their own package.
+        Must be overridden by each subclass to specify its own package.
 
         Returns:
             Package module containing the concrete subclass definitions.
@@ -49,15 +49,15 @@ class DependencySubclass(ABC):
         (for example, by priority or by name).
 
         Args:
-            subclass (type[S]): The subclass to compute a key for.
+            subclass: The subclass to compute a key for.
 
         Returns:
-            Any: A value suitable for use as a sort key.
+            A value suitable for use as a sort key.
         """
 
     @classmethod
     def base_dependency(cls) -> ModuleType:
-        """Returns the base dependency module for this subclass.
+        """Return the base dependency module for this subclass.
 
         This is used to discover subclasses across dependent packages.
 
@@ -70,9 +70,8 @@ class DependencySubclass(ABC):
     def subclasses(cls) -> list[type[Self]]:
         """Discover all non-abstract subclasses.
 
-        Discovers all non-abstract subclasses of this class across dependent
-        packages of the base dependency, scoped to the definition package,
-        and returns them sorted by ``sorting_key``.
+        Search all dependent packages of the base dependency, scoped to the
+        definition package, and return the results sorted by `sorting_key`.
 
         Returns:
             Sorted list of concrete subclass types.
@@ -96,7 +95,7 @@ class DependencySubclass(ABC):
             Final leaf subclass type. Can be abstract.
 
         See Also:
-            subclasses: Get all subclasses regardless of priority
+            subclasses: Discover all concrete subclasses, sorted by sorting key.
         """
         return discover_leaf_subclass_across_dependents(
             cls=cls,
@@ -113,7 +112,7 @@ class DependencySubclass(ABC):
 class SingletonDependencySubclass(Singleton, DependencySubclass):
     """Convenience base combining `Singleton` with `DependencySubclass`.
 
-    By inheriting from `Singleton`, the inherited ``I`` property returns a
+    By inheriting from `Singleton`, the inherited `I` property returns a
     cached singleton instance of the leaf subclass instead of creating a new
     one on every access.
     """

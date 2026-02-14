@@ -45,7 +45,7 @@ class TypeChecker(Tool):
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Return the badge and linked page URLs."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json",
             "https://github.com/astral-sh/ty",

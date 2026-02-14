@@ -5,7 +5,7 @@ Used by pyrig's resource fetching decorators to determine if remote resources
 can be retrieved before falling back to local cached versions.
 
 Functions:
-    internet_is_available: Quick connectivity check via Cloudflare DNS
+    internet_is_available: Quick connectivity check via Cloudflare DNS.
 
 Example:
     >>> from pyrig.src.requests import internet_is_available

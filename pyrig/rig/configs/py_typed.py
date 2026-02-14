@@ -1,4 +1,4 @@
-"""Manages py.typed marker files for PEP 561 compliance.
+"""Manage py.typed marker files for PEP 561 compliance.
 
 Creates empty py.typed in package directory to indicate type checking support.
 Used by mypy, pyright, ty.
@@ -15,7 +15,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class PyTypedConfigFile(TypedConfigFile):
-    """Manages py.typed marker files for PEP 561 compliance.
+    """Manage py.typed marker files for PEP 561 compliance.
 
     Creates empty py.typed in package directory to indicate type checking support.
 

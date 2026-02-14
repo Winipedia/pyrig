@@ -44,10 +44,10 @@ class Pyrigger(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Get tool group.
+        """Get badge group.
 
         Returns:
-            'tooling'
+            `ToolGroup.TOOLING`
         """
         return ToolGroup.TOOLING
 

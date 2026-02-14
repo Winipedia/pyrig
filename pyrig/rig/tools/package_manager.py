@@ -52,7 +52,7 @@ class PackageManager(Tool):
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the uv badge and project page URLs."""
+        """Return the uv badge and project page URLs."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json",
             "https://github.com/astral-sh/uv",
@@ -60,10 +60,13 @@ class PackageManager(Tool):
 
     @classmethod
     def dev_dependencies(cls) -> list[str]:
-        """Get tool dependencies.
+        """Get development dependencies for this tool.
+
+        UV is a system-level dependency installed outside the Python
+        environment, so no dev dependencies are required.
 
         Returns:
-            List of tool dependencies.
+            Empty list.
         """
         # uv is a system dependency, so we don't have a dev dependency for it
         return []

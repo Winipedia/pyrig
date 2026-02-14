@@ -31,7 +31,7 @@ class RepoProtectionConfigFile(JsonConfigFile):
 
     See Also:
         pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow
-        pyrig.rig.utils.version_control.DEFAULT_RULESET_NAME
+        pyrig.rig.tools.version_controller.VersionController.default_ruleset_name
     """
 
     @classmethod

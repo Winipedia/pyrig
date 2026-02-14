@@ -1,7 +1,7 @@
-"""__init__.py file creation for namespace packages.
+"""`__init__.py` file creation for namespace packages.
 
-Automatically creates __init__.py files for namespace packages (PEP 420
-packages without __init__.py) to ensure proper importability.
+Automatically creates `__init__.py` files for namespace packages (PEP 420
+packages without `__init__.py`) to ensure proper importability.
 """
 
 import logging
@@ -14,15 +14,15 @@ logger = logging.getLogger(__name__)
 
 
 def make_init_files() -> None:
-    """Create __init__.py files for all namespace packages.
+    """Create `__init__.py` files for all namespace packages.
 
     Scans the project for namespace packages (directories with Python files
-    but no __init__.py) and creates minimal __init__.py files for them.
+    but no `__init__.py`) and creates minimal `__init__.py` files for them.
 
     Idempotent. Uses parallel execution for performance.
 
     Note:
-        Created __init__.py files contain a minimal docstring. The docs
+        Created `__init__.py` files contain a minimal docstring. The docs
         directory is excluded from scanning.
     """
     logger.info("Starting __init__.py file creation")

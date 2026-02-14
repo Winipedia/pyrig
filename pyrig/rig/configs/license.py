@@ -1,4 +1,4 @@
-"""Manages LICENSE files.
+"""Manage LICENSE files.
 
 Creates LICENSE with MIT license (current year + repo owner from git).
 Fetches from GitHub SPDX API with fallback template. Users can replace with
@@ -25,9 +25,9 @@ from pyrig.src.string_ import make_linked_badge_markdown
 
 
 class LicenseConfigFile(StringConfigFile):
-    """Manages LICENSE files with MIT license (year + owner from git).
+    """Manage LICENSE files with MIT license (year + owner from git).
 
-    Fetches from GitHub SPDX API with fallback. Priority 30 (created early
+    Fetch from GitHub SPDX API with fallback. `Priority.HIGH` (created early
     for pyproject.toml license detection).
 
     See Also:
@@ -36,7 +36,10 @@ class LicenseConfigFile(StringConfigFile):
 
     @classmethod
     def priority(cls) -> float:
-        """Return priority 30 (created early for pyproject.toml license detection)."""
+        """Return `Priority.HIGH`.
+
+        Is created early for pyproject.toml license detection.
+        """
         return Priority.HIGH
 
     @classmethod
@@ -97,11 +100,7 @@ class LicenseConfigFile(StringConfigFile):
 
     @classmethod
     def license_badge_url(cls) -> str:
-        """Construct GitHub license badge URL.
-
-        Returns:
-            shields.io badge URL showing repository license.
-        """
+        """Construct a shields.io badge URL for the repository license."""
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
@@ -110,11 +109,7 @@ class LicenseConfigFile(StringConfigFile):
 
     @classmethod
     def license_badge(cls) -> str:
-        """Construct GitHub license badge Markdown string.
-
-        Returns:
-            Markdown string for shields.io badge showing repository license.
-        """
+        """Construct a shields.io license badge as a Markdown image link."""
         badge_url = cls.license_badge_url()
         repo_url = RemoteVersionController.I.repo_url()
         return make_linked_badge_markdown(

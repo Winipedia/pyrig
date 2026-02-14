@@ -52,13 +52,13 @@ class TomlConfigFile(DictConfigFile):
         """Load and parse TOML file using tomlkit.parse.
 
         Returns:
-            Parsed TOML as tomlkit.TOMLDocument (dict-like with formatting info).
+            Parsed TOML as `tomlkit.TOMLDocument` (dict-like with formatting info).
         """
         return tomlkit.parse(cls.path().read_text(encoding="utf-8"))
 
     @classmethod
     def _dump(cls, config: dict[str, Any]) -> None:
-        """Write configuration to TOML with pretty formatting.
+        """Validate and write configuration to TOML file.
 
         Args:
             config: Configuration dict to write.
@@ -122,7 +122,7 @@ class TomlConfigFile(DictConfigFile):
     def pretty_dump(cls, config: dict[str, Any]) -> None:
         """Write configuration to TOML with pretty formatting.
 
-        Converts config to prettified tomlkit table via prettify_dict(), then writes
+        Convert config to prettified tomlkit table via `prettify_dict()`, then write
         with multiline arrays and preserved key order.
 
         Args:

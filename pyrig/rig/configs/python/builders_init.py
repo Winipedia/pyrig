@@ -43,7 +43,7 @@ class BuildersInitConfigFile(InitConfigFile):
         """Get the source module to copy docstring from.
 
         Returns:
-            ModuleType: pyrig.rig.builders module.
+            The `pyrig.rig.builders` module.
 
         Note:
             Only docstring is copied, no code.

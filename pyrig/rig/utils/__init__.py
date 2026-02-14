@@ -9,7 +9,6 @@ Modules:
     packages: Package discovery utilities
     resources: Resource fallback decorators for network operations
     testing: Pytest fixture decorators and test utilities
-    urls: URL construction utilities for GitHub, PyPI, Codecov
     version_control: Git utilities for repository configuration
     versions: Version constraint parsing and range generation
 

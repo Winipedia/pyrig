@@ -2,7 +2,8 @@
 
 Provides foundational utilities for inspecting Python objects, unwrapping decorated
 methods, and accessing object metadata. Handles properties, staticmethods, classmethods,
-and decorator chains. Used by higher-level modules (`class_`, `function`, `module`)
+and decorator chains.
+Used by higher-level modules (``class_``, ``function``, ``module``)
 for method extraction, subclass discovery, and test generation throughout pyrig.
 """
 
@@ -16,12 +17,12 @@ from typing import Any, cast
 def obj_members(obj: Any, *, include_annotate: bool = False) -> list[tuple[str, Any]]:
     """Get all members of an object as name-value pairs using static introspection.
 
-    Uses `inspect.getmembers_static` to retrieve members without invoking descriptors,
+    Uses ``inspect.getmembers_static`` to retrieve members without invoking descriptors,
     making it safe for introspecting classes with properties that have side effects.
 
     Args:
         obj: Object to inspect (class, module, or any Python object).
-        include_annotate: If False, excludes `__annotate__` and `__annotate_func__`
+        include_annotate: If False, excludes ``__annotate__`` and ``__annotate_func__``
             attributes added in Python 3.14+ for deferred annotation evaluation.
 
     Returns:
@@ -76,9 +77,9 @@ def unwrapped_obj(obj: Any) -> Any:
     """Unwrap a method-like object to its underlying function.
 
     Iteratively unwraps layers of wrapping until reaching the original function:
-        1. Extracts `__func__` from bound methods and classmethod/staticmethod
-        2. Extracts `fget` from property objects
-        3. Uses `inspect.unwrap` to traverse `functools.wraps` decorator chains
+        1. Extracts ``__func__`` from bound methods and classmethod/staticmethod
+        2. Extracts ``fget`` from property objects
+        3. Uses ``inspect.unwrap`` to traverse ``functools.wraps`` decorator chains
 
     Continues until no further unwrapping is possible.
 
@@ -119,7 +120,7 @@ def module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
     """Return the module where a method-like object is defined.
 
     Unwraps the object first to handle decorated functions, then uses
-    `inspect.getmodule` to determine the defining module. Essential for filtering
+    ``inspect.getmodule`` to determine the defining module. Essential for filtering
     functions/classes to only those defined directly in a module (excluding imports).
 
     Args:

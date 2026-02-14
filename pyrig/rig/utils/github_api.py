@@ -142,7 +142,7 @@ def repository(token: str, owner: str, repo_name: str) -> Repository:
 
             >>> repo = repository(token="ghp_...", owner="myorg", repo_name="myrepo")
             >>> print(repo.full_name)
-            'myorg/myrepo'
+            myorg/myrepo
     """
     auth = Token(token)
     github = Github(auth=auth)

@@ -1,4 +1,4 @@
-"""Manages pyproject.toml (PEP 518, 621, 660).
+"""Manage pyproject.toml (PEP 518, 621, 660).
 
 Handles metadata, dependencies, build config (uv), tool configs (ruff, ty, pytest,
 bandit, rumdl). Enforces opinionated defaults: all ruff rules (except D203, D213,
@@ -40,7 +40,7 @@ from pyrig.src.string_ import package_req_name_split_pattern
 
 
 class PyprojectConfigFile(TomlConfigFile):
-    """Manages pyproject.toml with metadata, dependencies, build config, tool settings.
+    """Manage pyproject.toml with metadata, dependencies, configs, and tool settings.
 
     Generates structure with metadata from git/filesystem, dependency normalization,
     uv build config, tool configs, CLI entry points. Priority 20 (created early).
@@ -50,7 +50,6 @@ class PyprojectConfigFile(TomlConfigFile):
 
     See Also:
         pyrig.rig.configs.base.toml.TomlConfigFile
-        pyrig.src.consts.STANDARD_DEV_DEPS
     """
 
     @classmethod
@@ -60,7 +59,11 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
-        """Write config with dependency normalization (modifies in-place)."""
+        """Write config with dependency normalization (modifies in-place).
+
+        Raises:
+            TypeError: If ``config`` is not a dict.
+        """
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to pyproject.toml file."
             raise TypeError(msg)
@@ -173,7 +176,7 @@ class PyprojectConfigFile(TomlConfigFile):
         type and return its SPDX identifier.
 
         Returns:
-            str: SPDX license identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
+            SPDX license identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
 
         Raises:
             FileNotFoundError: If LICENSE file doesn't exist.
@@ -262,15 +265,15 @@ class PyprojectConfigFile(TomlConfigFile):
 
         Uses ``package_req_name_split_pattern`` from ``pyrig.src.string_``
         for consistency (e.g., 'requests>=2.0' -> 'requests').
+
+        Args:
+            dep: Dependency string, optionally with version specifier.
         """
         return package_req_name_split_pattern().split(dep)[0]
 
     @classmethod
     def package_name(cls) -> str:
-        """Get Python package name with underscores.
-
-        (e.g., 'my-project' -> 'my_project').
-        """
+        """Get the Python package name (e.g., 'my-project' -> 'my_project')."""
         project_name = cls.project_name()
         return package_name_from_project_name(project_name)
 
@@ -300,6 +303,9 @@ class PyprojectConfigFile(TomlConfigFile):
         """Fetch latest stable Python version.
 
         Fetches from endoflife.date API (cached, with fallback).
+
+        Args:
+            level: Precision level for the version string.
         """
         url = "https://endoflife.date/api/python.json"
         resp = requests.get(url, timeout=10)
@@ -331,7 +337,11 @@ class PyprojectConfigFile(TomlConfigFile):
 
     @classmethod
     def first_supported_python_version(cls) -> Version:
-        """Get minimum supported Python version from requires-python."""
+        """Get minimum supported Python version from requires-python.
+
+        Raises:
+            ValueError: If requires-python has no lower bound.
+        """
         constraint = cls.requires_python()
         version_constraint = VersionConstraint(constraint)
         lower = version_constraint.find_lower_inclusive()

@@ -25,15 +25,8 @@ class MkdocsConfigFile(YmlConfigFile):
     (Home, API), search, mermaid diagrams, and mkdocstrings for Google-style
     docstring API documentation.
 
-    Examples:
-        Generate mkdocs.yml::
-
-            MkdocsConfigFile.validate()
-
-        Build and serve::
-
-            mkdocs build
-            mkdocs serve
+    Example:
+        >>> MkdocsConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.pyproject.PyprojectConfigFile
@@ -42,25 +35,18 @@ class MkdocsConfigFile(YmlConfigFile):
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for mkdocs.yml.
-
-        Returns:
-            Path: Project root.
-        """
+        """Return the project root directory."""
         return Path()
 
     @classmethod
     def _configs(cls) -> dict[str, Any] | list[Any]:
-        """Get the complete mkdocs.yml configuration.
+        """Build the complete mkdocs.yml configuration.
 
-        Generates MkDocs configuration with Material theme, navigation (Home, API),
-        plugins (search, mermaid2, mkdocstrings), and dark/light mode toggle.
-
-        Returns:
-            dict[str, Any]: Complete mkdocs.yml configuration.
+        Include Material theme, navigation (Home, API), plugins (search,
+        mermaid2, mkdocstrings), and dark/light mode toggle.
 
         Note:
-            Reads project name from pyproject.toml.
+            The project name is read from pyproject.toml.
         """
         return {
             "site_name": PyprojectConfigFile.I.project_name(),

@@ -40,7 +40,7 @@ def all_methods_from_cls(
         include_annotate: If False, excludes `__annotate__` (Python 3.14+).
 
     Returns:
-        List of method objects (Callable) sorted by line number.
+        List of method objects sorted by definition order.
     """
     methods = [
         (method, name)
@@ -129,6 +129,7 @@ def discover_all_subclasses[T: type](
 
     Example:
         >>> # Discover all ConfigFile subclasses in pyrig.rig.configs
+        >>> from pyrig.rig.configs.base.base import ConfigFile
         >>> from pyrig.rig import configs
         >>> discovered = discover_all_subclasses(
         ...     ConfigFile,
@@ -143,8 +144,9 @@ def discover_all_subclasses[T: type](
         discovering deeply nested subclasses.
 
     See Also:
-        discard_parent_classes: Logic for filtering to leaf classes only
-        walk_package: Package traversal that triggers imports
+        `discard_parent_classes`: Logic for filtering to leaf classes only.
+        `pyrig.src.modules.imports.walk_package`: Package traversal that
+            triggers imports.
     """
     logger.debug("Discovering subclasses of %s", cls.__name__)
     if load_package_before:

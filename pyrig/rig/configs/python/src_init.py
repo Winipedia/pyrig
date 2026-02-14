@@ -38,12 +38,5 @@ class SrcInitConfigFile(InitConfigFile):
 
     @classmethod
     def src_module(cls) -> ModuleType:
-        """Get the source module to copy docstring from.
-
-        Returns:
-            ModuleType: pyrig.src module.
-
-        Note:
-            Only docstring is copied, no code.
-        """
+        """Return the `pyrig.src` module."""
         return src

@@ -34,7 +34,7 @@ def module_is_package(obj: ModuleType) -> bool:
 
     Packages in Python have a ``__path__`` attribute that lists the directories
     containing the package's submodules. This attribute exists for both regular
-    packages (with ``__init__.py``) and namespace packages (PEP 420).
+    packages (with ``__init__.py``) and namespace packages.
 
     Args:
         obj: Module object to check.
@@ -140,12 +140,11 @@ def modules_and_packages_from_package(
     then imports each one. Subpackages and modules are returned in separate lists,
     sorted alphabetically by their fully qualified names.
 
-    Important:
-        This function imports all discovered modules as a side effect. This is
-        intentional—it enables pyrig's class discovery mechanisms to find
-        subclasses defined in those modules (e.g., ConfigFile implementations).
-
     Note:
+        This function imports all discovered modules as a side effect. This is
+        intentional — it enables pyrig's class discovery mechanisms to find
+        subclasses defined in those modules (e.g., ``ConfigFile`` implementations).
+
         Only includes direct children, not recursive descendants. For full
         package tree traversal, use ``walk_package``.
 
@@ -190,10 +189,10 @@ def walk_package(
     modules are imported so that subclass registration (via ``__subclasses__()``)
     is complete before discovery queries.
 
-    Used by:
-        - ``subclasses``: Ensures subclasses are imported before querying
-        - ``create_tests_for_package``: Generates test files for all modules
-        - Session fixtures: Validates package structure and imports
+    See Also:
+        `pyrig.src.modules.class_.discover_all_subclasses`: Subclass discovery.
+        `pyrig.rig.cli.commands.create_tests.create_tests_for_package`: Test
+            generation.
 
     Args:
         package: Root package module to start traversal from.

@@ -5,11 +5,12 @@ configuration, and development.
 
 Subpackages:
     src: Runtime utilities available in production environments.
-        Includes project name extraction (cli), Git utilities (git),
-        directed graph (graph), nested structure validation (iterate),
-        resource access (resource), string manipulation (string_),
-        module introspection (modules), subprocess execution (processes),
-        and network connectivity checking (requests).
+        Includes CLI utilities (cli), Git utilities (git),
+        directed graph (graph), package dependency graph (dependency_graph),
+        nested structure validation (iterate), subprocess execution (processes),
+        network connectivity checking (requests), resource access (resource),
+        singleton pattern (singleton), string manipulation (string_),
+        subclass discovery (subclass), and module introspection (modules).
     rig: Development-time tools requiring dev dependencies.
         Includes artifact builders (builders), CLI framework and commands (cli),
         configuration file system (configs), tool wrappers (tools),
