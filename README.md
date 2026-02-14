@@ -30,7 +30,7 @@
 
 ---
 
-> pyrig is python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintanence <!-- rumdl-disable-line MD013 -->
+> pyrig is a python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintenance <!-- rumdl-disable-line MD013 -->
 
 ---
 
@@ -64,9 +64,9 @@ for the full layout.
 
 ### Config File System
 
-pyrig generated Files are modeled as Python classes in pyrig. They validate, and
+pyrig generated files are modeled as Python classes in pyrig. They validate and
 merge automatically. Extend or override configurations by subclassing. You can
-create your onw Config File classes as well and pyrig will handle them for you,
+create your own Config File classes as well and pyrig will handle them for you,
 you just need to define behaviour. See the
 [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/)
 documentation for details.
