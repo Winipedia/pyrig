@@ -15,8 +15,7 @@ populate `[project.urls]` in pyproject.toml and badge links in README files.
 from pyrig.rig.tools.package_index import PackageIndex as BasePI
 
 class PackageIndex(BasePI):
-    @classmethod
-    def package_index_url(cls) -> str:
+    def package_index_url(self) -> str:
         # Use a private registry instead of PyPI
         _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True

@@ -77,8 +77,7 @@ Because it uses `TypeChecker.I` (not `TypeChecker` directly), if you subclass
 from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         return "mypy"
 ```
 
@@ -179,8 +178,7 @@ from pyrig.rig.tools.linter import Linter as BaseLinter
 from pyrig.src.processes import Args
 
 class Linter(BaseLinter):
-    @classmethod
-    def check_args(cls, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         # Always include --show-source
         return super().check_args("--show-source", *args)
 ```
@@ -192,8 +190,7 @@ class Linter(BaseLinter):
 from pyrig.rig.tools.type_checker import TypeChecker as BaseTypeChecker
 
 class TypeChecker(BaseTypeChecker):
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         return "mypy"  # Use mypy instead of ty
 ```
 
