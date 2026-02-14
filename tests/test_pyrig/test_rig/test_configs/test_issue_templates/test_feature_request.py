@@ -20,4 +20,4 @@ class TestFeatureRequestConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert FeatureRequestConfigFile().is_correct()
+        assert FeatureRequestConfigFile.is_correct()

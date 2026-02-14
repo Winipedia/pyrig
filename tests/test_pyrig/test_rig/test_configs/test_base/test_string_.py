@@ -46,7 +46,7 @@ class TestStringConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            my_test_string_config_file()
+            my_test_string_config_file.validate()
 
             my_test_string_config_file.dump(["New content."])
             added_configs = my_test_string_config_file.merge_configs()
@@ -69,13 +69,13 @@ class TestStringConfigFile:
 
     def test__load(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
-        my_test_string_config_file()
+        my_test_string_config_file.validate()
         loaded = my_test_string_config_file.load()
         assert loaded == ["Test content."]
 
     def test__dump(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
-        my_test_string_config_file()
+        my_test_string_config_file.validate()
         # Test successful dump
         content = ["New content."]
         my_test_string_config_file.dump(content)
@@ -96,14 +96,14 @@ class TestStringConfigFile:
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
         """Test method."""
-        my_test_string_config_file()
+        my_test_string_config_file.validate()
         is_correct = my_test_string_config_file.is_correct()
-        assert is_correct, "Expected config to be correct after initialization"
+        assert is_correct, "Expected config to be correct after validation"
 
     def test_file_content(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
         """Test method."""
-        my_test_string_config_file()
+        my_test_string_config_file.validate()
         file_content = my_test_string_config_file.file_content()
         assert file_content == "Test content.", "Expected 'Test content.'"

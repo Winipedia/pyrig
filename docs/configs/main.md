@@ -72,8 +72,8 @@ When initialized via `uv run pyrig mkroot`, the `main.py` file is created with:
    structure
 3. **Package creation**: Parent directory becomes a valid Python package with
    `__init__.py`
-4. **Legacy cleanup**: Any root-level `main.py` is deleted (uv creates one at
-   initialization when doing uv init)
+4. **Legacy cleanup**: Any root-level `main.py` is deleted
+(uv creates one when doing uv init)
 
 ### Source Module
 
@@ -109,7 +109,7 @@ When running `uv run pyrig mkroot` (or commands that invoke it, such as
 `uv run pyrig init`), any root-level `main.py` file is automatically deleted.
 
 **Why this is needed**: uv creates a `main.py` at the project root during
-initialization. This cleanup ensures the file is only in `{package_name}/`.
+validation. This cleanup ensures the file is only in `{package_name}/`.
 
 ## Dynamic Configuration
 
@@ -180,7 +180,7 @@ You can modify the implementation while keeping required elements:
 
 def main() -> None:
     """Main entry point for the CLI."""
-    print("Custom initialization")
+    print("Custom CLI logic goes here")
 
 if __name__ == "__main__":
     main()

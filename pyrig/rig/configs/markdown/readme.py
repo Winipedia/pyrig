@@ -21,7 +21,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
     Examples:
         Generate README.md::
 
-            ReadmeConfigFile()
+            ReadmeConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile

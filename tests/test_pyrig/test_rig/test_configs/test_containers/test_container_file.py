@@ -33,7 +33,7 @@ class TestContainerfileConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile().is_correct()
+        assert ContainerfileConfigFile.is_correct()
 
     def test_layers(self) -> None:
         """Test method."""

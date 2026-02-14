@@ -27,7 +27,7 @@ class ContainerfileConfigFile(StringConfigFile):
     Examples:
         Generate Containerfile::
 
-            ContainerfileConfigFile()
+            ContainerfileConfigFile.validate()
 
         Build and run::
 

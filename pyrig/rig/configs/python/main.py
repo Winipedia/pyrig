@@ -25,12 +25,12 @@ class MainConfigFile(CopyModuleConfigFile):
 
     Generates {package_name}/main.py by copying pyrig.main module. Provides empty
     main() function template that gets auto-discovered and registered as CLI command.
-    Automatically deletes root-level main.py files on initialization.
+    Automatically deletes root-level main.py files on validation.
 
     Examples:
         Generate {package_name}/main.py::
 
-            MainConfigFile()
+            MainConfigFile.validate()
 
         Generated file structure::
 
@@ -50,14 +50,15 @@ class MainConfigFile(CopyModuleConfigFile):
         pyrig.rig.configs.base.copy_module.CopyModuleConfigFile
     """
 
-    def __init__(self) -> None:
-        """Initialize and clean up legacy files.
+    @classmethod
+    def create_file(cls) -> None:
+        """Create the main.py file by copying pyrig.main module.
 
-        Side Effects:
-            Creates {package_name}/main.py and deletes ./main.py if exists.
+        Creates {package_name}/main.py with content from pyrig.main.
+        Deletes root-level main.py if it exists to clean up legacy files from uv init.
         """
-        super().__init__()
-        self.__class__.delete_root_main()
+        super().create_file()
+        cls.delete_root_main()
 
     @classmethod
     def src_module(cls) -> ModuleType:

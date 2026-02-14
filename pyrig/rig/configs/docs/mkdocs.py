@@ -28,7 +28,7 @@ class MkdocsConfigFile(YmlConfigFile):
     Examples:
         Generate mkdocs.yml::
 
-            MkdocsConfigFile()
+            MkdocsConfigFile.validate()
 
         Build and serve::
 

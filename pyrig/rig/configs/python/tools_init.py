@@ -24,7 +24,7 @@ class ToolsInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/rig/tools/__init__.py::
 
-            ToolsInitConfigFile()
+            ToolsInitConfigFile.validate()
 
         Add tool wrappers::
 

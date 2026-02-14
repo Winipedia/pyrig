@@ -104,7 +104,7 @@ def test_find_namespace_packages(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         # make package in gitignore
-        GitignoreConfigFile()
+        GitignoreConfigFile.validate()
 
         (Path.cwd() / "docs").mkdir()
         assert find_namespace_packages() == []

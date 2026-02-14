@@ -11,6 +11,8 @@ from pyrig.rig.configs.base.base import ConfigFile
 def test_make_project_root(mocker: MockFixture) -> None:
     """Test function."""
     num_config_file = ConfigFile.subclasses()
-    mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
+    mock = mocker.patch.object(
+        ConfigFile, ConfigFile.validate.__name__, return_value=None
+    )
     make_project_root()
     assert mock.call_count == len(num_config_file)

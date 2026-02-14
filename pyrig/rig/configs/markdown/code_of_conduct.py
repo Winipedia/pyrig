@@ -34,7 +34,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     Examples:
         Generate CODE_OF_CONDUCT.md::
 
-            CodeOfConductConfigFile()
+            CodeOfConductConfigFile.validate()
 
     See Also:
         https://www.contributor-covenant.org/

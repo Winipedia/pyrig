@@ -36,7 +36,7 @@ class PrekConfigFile(TomlConfigFile):
     Examples:
         Generate prek.toml::
 
-            PrekConfigFile()
+            PrekConfigFile.validate()
 
         Install hooks::
 

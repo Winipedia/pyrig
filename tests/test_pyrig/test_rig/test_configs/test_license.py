@@ -29,7 +29,7 @@ class TestLicenseConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert LicenseConfigFile().is_correct()
+        assert LicenseConfigFile.is_correct()
 
     def test_mit_license(self) -> None:
         """Test method."""

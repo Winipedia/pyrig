@@ -1,7 +1,7 @@
 """Project structure and configuration file creation.
 
 Generates all configuration files and directory structure by discovering
-and initializing ConfigFile subclasses.
+and validating ConfigFile subclasses.
 """
 
 import logging
@@ -23,7 +23,7 @@ def make_project_root(*, priority: bool = False) -> None:
     """
     logger.info("Creating project root")
     if priority:
-        ConfigFile.init_priority_subclasses()
+        ConfigFile.validate_priority_subclasses()
         return
-    ConfigFile.init_all_subclasses()
+    ConfigFile.validate_all_subclasses()
     logger.info("Project root creation complete")

@@ -66,7 +66,7 @@ Pyrig prevents accidental writes to `.env` files. If you attempt to dump
 a non-empty configuration to this file, it will raise a `ValueError`. This is
 intentional - the `.env` file is user-managed and should be edited manually.
 Dumping an empty dict `{}` is allowed (which is what pyrig does during
-initialization).
+validation).
 
 ## Usage
 

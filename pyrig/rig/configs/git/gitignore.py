@@ -30,9 +30,9 @@ class GitignoreConfigFile(StringConfigFile):
     patterns and only adds missing ones.
 
     Examples:
-        Initialize .gitignore::
+        validate .gitignore::
 
-            GitignoreConfigFile()
+            GitignoreConfigFile.validate()
 
         Load patterns::
 
