@@ -352,8 +352,9 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         """Merge dict value during config merging (modifies actual_dict in place).
 
         First calls setdefault to add key if missing. Then:
-        - For dict values: merges expected into actual (preserves actual values,
-          adds expected values)
+        - For dict values: updates actual with expected (overwrites overlapping
+          keys with expected values, preserves actual-only keys, adds
+          expected-only keys)
         - For non-dict values: replaces actual value with expected value
 
         Args:
