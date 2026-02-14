@@ -114,7 +114,7 @@ class VersionConstraint:
     """
 
     def __init__(self, constraint: str) -> None:
-        """Validate a VersionConstraint from a PEP 440 specifier string.
+        """Initialize a VersionConstraint from a PEP 440 specifier string.
 
         Parses constraint and computes all inclusive and exclusive bounds.
         Supports multiple specifiers separated by commas (e.g., ">=3.8,<3.12").
