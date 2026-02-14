@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "10.0.0"
+version = "10.0.1"
 description = "pyrig is a python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintenance"
 readme = "README.md"
 license = "MIT"
