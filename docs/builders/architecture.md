@@ -9,7 +9,7 @@ creation.
 ```mermaid
 graph TD
     A[uv run pyrig build] --> B[build_artifacts command]
-    B --> C[BuilderConfigFile.init_all_subclasses]
+    B --> C[BuilderConfigFile.validate_all_subclasses]
     C --> D[Discover all BuilderConfigFile subclasses]
     D --> E[Instantiate each builder]
     E --> F[build method triggered]

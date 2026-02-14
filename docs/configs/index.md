@@ -155,8 +155,8 @@ The configuration system provides:
 - **Smart merging** of missing configuration without overwriting user changes
 - **Multi-format support** for YAML, TOML, Python, Markdown, JSON, and plain
   text
-- **Priority-based initialization** for dependency ordering
-- **Parallel initialization** for performance
+- **Priority-based validation** for dependency ordering
+- **Parallel validation** for performance
 - **Opt-out mechanism** via empty files
 
 See [Architecture](architecture.md) for complete technical details on how the
@@ -206,7 +206,7 @@ discovered and create `config/my_config.yaml`.
 
 See [Architecture](architecture.md) for:
 
-- Setting priority for initialization order
+- Setting priority for validation order
 - Format-specific subclasses (YAML, TOML, JSON, etc.)
 - Custom validation logic
 - Filename derivation rules

@@ -112,15 +112,15 @@ def assert_root_is_correct() -> None:
     # as they are not pushed to the repository
     running_in_ci = running_in_github_actions()
     if running_in_ci:
-        DotScratchConfigFile()
-        DotEnvConfigFile()
+        DotScratchConfigFile.validate()
+        DotEnvConfigFile.validate()
 
     subclasses = ConfigFile.subclasses()
     incorrect_cfs = [cf for cf in subclasses if not cf.is_correct()]
 
     if incorrect_cfs:
         # init all per test run
-        ConfigFile.init_subclasses(*incorrect_cfs)
+        ConfigFile.validate_subclasses(*incorrect_cfs)
 
     msg = f"""Found {len(incorrect_cfs)} incorrect ConfigFiles.
     Attempted correcting them automatically.
@@ -271,7 +271,7 @@ def assert_all_modules_tested() -> None:
     incorrect_subclasses = [sc for sc in subclasses if not sc.is_correct()]
 
     if incorrect_subclasses:
-        mirror_test_cls.init_subclasses(*incorrect_subclasses)
+        mirror_test_cls.validate_subclasses(*incorrect_subclasses)
 
     msg = f"""Found incorrect test modules.
     Test skeletons were automatically created for:

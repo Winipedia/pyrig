@@ -133,11 +133,6 @@ class TestMirrorTestConfigFile:
         """Test method."""
         assert MirrorTestConfigFile.definition_package() is tests
 
-    def test_leaf(self) -> None:
-        """Test method."""
-        leaf = MirrorTestConfigFile.I
-        assert leaf is MirrorTestConfigFile
-
     def test_src_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:

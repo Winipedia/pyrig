@@ -19,7 +19,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
     Examples:
         Generate test_zero.py::
 
-            ZeroTestConfigFile()
+            ZeroTestConfigFile.validate()
 
         Generated test::
 

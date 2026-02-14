@@ -22,7 +22,7 @@ class BuildersInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/rig/builders/__init__.py::
 
-            BuildersInitConfigFile()
+            BuildersInitConfigFile.validate()
 
         Add custom builders::
 

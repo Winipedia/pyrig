@@ -65,7 +65,7 @@ class HealthCheckWorkflow(Workflow):
             from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
 
             # Creates .github/workflows/health_check.yml
-            HealthCheckWorkflow()
+            HealthCheckWorkflow.validate()
 
     See Also:
         pyrig.rig.configs.workflows.build.BuildWorkflow

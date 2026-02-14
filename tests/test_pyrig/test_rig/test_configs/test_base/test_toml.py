@@ -73,7 +73,7 @@ class TestTomlConfigFile:
 
     def test__load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method."""
-        my_test_toml_config_file()
+        my_test_toml_config_file.validate()
         expected = {"key": "value"}
         actual = my_test_toml_config_file.load()
         assert actual == expected, f"Expected {expected}, got {actual}"

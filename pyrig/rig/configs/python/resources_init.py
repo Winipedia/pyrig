@@ -23,7 +23,7 @@ class ResourcesInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/resources/__init__.py::
 
-            ResourcesInitConfigFile()
+            ResourcesInitConfigFile.validate()
 
         Add resources::
 

@@ -25,7 +25,7 @@ class ApiConfigFile(MarkdownConfigFile):
     Examples:
         Generate docs/api.md::
 
-            ApiConfigFile()
+            ApiConfigFile.validate()
 
         Generated file::
 

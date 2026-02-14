@@ -26,17 +26,13 @@ def my_test_main_config_file(
 class TestMainConfigFile:
     """Test class."""
 
-    def test___init__(
-        self,
-        mocker: MockFixture,
-    ) -> None:
+    def test_create_file(self, mocker: MockFixture) -> None:
         """Test method."""
-        # spy on delete_root_main
         spy = mocker.spy(
             MainConfigFile,
             MainConfigFile.delete_root_main.__name__,
         )
-        MainConfigFile()
+        MainConfigFile.create_file()
         spy.assert_called_once()
 
     def test_src_module(self) -> None:

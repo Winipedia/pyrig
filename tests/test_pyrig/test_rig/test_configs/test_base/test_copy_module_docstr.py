@@ -82,7 +82,7 @@ class TestCopyModuleOnlyDocstringConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            LicenseConfigFile()
-            PyprojectConfigFile()
-            my_test_copy_module_only_docstring_config_file()
+            LicenseConfigFile.validate()
+            PyprojectConfigFile.validate()
+            my_test_copy_module_only_docstring_config_file.validate()
             assert my_test_copy_module_only_docstring_config_file.is_correct()

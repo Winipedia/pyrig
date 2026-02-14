@@ -109,7 +109,7 @@ The `.gitignore` file is automatically updated when:
 
 - Running `uv run pyrig mkroot`
 - New pyrig patterns are added in updates
-- GitHub's Python.gitignore is updated (on next initialization)
+- GitHub's Python.gitignore is updated (on next validation)
 
 ### Adding Custom Patterns
 

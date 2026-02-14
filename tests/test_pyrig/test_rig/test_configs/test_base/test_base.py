@@ -68,6 +68,18 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
+    def test_validate_config_file(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
+    ) -> None:
+        """Test method."""
+        mock_validate = mocker.patch.object(
+            ConfigFile,
+            ConfigFile.validate.__name__,
+            return_value=None,
+        )
+        my_test_config_file.validate()
+        mock_validate.assert_called_once()
+
     def test_sorting_key(self) -> None:
         """Test method."""
         result = ConfigFile.sorting_key(ConfigFile)
@@ -133,26 +145,32 @@ class TestConfigFile:
         assert isinstance(priority_subclasses, list)
         assert all(issubclass(cf, ConfigFile) for cf in priority_subclasses)
 
-    def test_init_subclasses(
+    def test_validate_subclasses(
         self, mocker: MockFixture, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
-        ConfigFile.init_subclasses(my_test_config_file)
+        mock = mocker.patch.object(
+            ConfigFile, ConfigFile.validate.__name__, return_value=None
+        )
+        ConfigFile.validate_subclasses(my_test_config_file)
         mock.assert_called_once()
 
-    def test_init_all_subclasses(self, mocker: MockFixture) -> None:
+    def test_validate_all_subclasses(self, mocker: MockFixture) -> None:
         """Test method."""
         num_subclasses = ConfigFile.subclasses()
-        mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
-        ConfigFile.init_all_subclasses()
+        mock = mocker.patch.object(
+            ConfigFile, ConfigFile.validate.__name__, return_value=None
+        )
+        ConfigFile.validate_all_subclasses()
         assert mock.call_count == len(num_subclasses)
 
-    def test_init_priority_subclasses(self, mocker: MockFixture) -> None:
+    def test_validate_priority_subclasses(self, mocker: MockFixture) -> None:
         """Test method."""
         num_priority_subclasses = ConfigFile.priority_subclasses()
-        mock = mocker.patch.object(ConfigFile, "__init__", return_value=None)
-        ConfigFile.init_priority_subclasses()
+        mock = mocker.patch.object(
+            ConfigFile, ConfigFile.validate.__name__, return_value=None
+        )
+        ConfigFile.validate_priority_subclasses()
         assert mock.call_count == len(num_priority_subclasses)
 
     def test_extension_separator(self) -> None:
@@ -194,18 +212,6 @@ class TestConfigFile:
         """Test method."""
         assert isinstance(my_test_config_file.configs(), dict), "Expected dict"
 
-    def test___init__(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
-    ) -> None:
-        """Test method."""
-        # mock validate to not do anything
-        mock_validate = mocker.patch.object(
-            my_test_config_file, "validate", return_value=None
-        )
-        my_test_config_file()
-        # assert validate called once
-        mock_validate.assert_called_once()
-
     def test_validate(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
     ) -> None:
@@ -215,7 +221,7 @@ class TestConfigFile:
         # write non-empty file to trigger merge_configs,
         # empty file triggers is_unwanted
         my_test_config_file.path().write_text("test")
-        my_test_config_file()
+        my_test_config_file.validate()
         after = my_test_config_file.load()
 
         # assert config is correct
@@ -232,7 +238,7 @@ class TestConfigFile:
 
         # remove file to trigger init dump
         my_test_config_file.path().unlink()
-        my_test_config_file()
+        my_test_config_file.validate()
         # assert path exists
         assert my_test_config_file.path().exists(), "Expected path to exist"
         # assert config is == configs, not any of previous config
@@ -247,7 +253,7 @@ class TestConfigFile:
             return_value=False,
         )
         with pytest.raises(ValueError, match="not correct"):
-            my_test_config_file()
+            my_test_config_file.validate()
 
     def test_path(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
@@ -310,13 +316,15 @@ class TestConfigFile:
     ) -> None:
         """Test method."""
         assert not my_test_config_file.is_correct(), "Expected config to be correct"
-        assert my_test_config_file().is_correct(), "Expected config to be correct"
+        my_test_config_file.validate()
+        assert my_test_config_file.is_correct(), "Expected config to be correct"
 
     def test_is_unwanted(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        my_test_config_file().path().write_text("")
+        my_test_config_file.validate()
+        my_test_config_file.path().write_text("")
         assert my_test_config_file.is_unwanted(), "Expected config to be unwanted"
 
     def test_is_correct_recursively(

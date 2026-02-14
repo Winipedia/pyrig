@@ -64,7 +64,7 @@ class ContributingConfigFile(MarkdownConfigFile):
     Examples:
         Generate CONTRIBUTING.md::
 
-            ContributingConfigFile()
+            ContributingConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.base.markdown.MarkdownConfigFile

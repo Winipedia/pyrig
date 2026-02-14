@@ -47,7 +47,7 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
     Examples:
         Generate pull_request_template.md::
 
-            PullRequestTemplateConfigFile()
+            PullRequestTemplateConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.base.markdown.MarkdownConfigFile
