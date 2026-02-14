@@ -28,8 +28,7 @@ class PreCommitter(Tool):
         >>> PreCommitter.I.run_all_files_args().run()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -37,8 +36,7 @@ class PreCommitter(Tool):
         """
         return "prek"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get tool group.
 
         Returns:
@@ -46,16 +44,14 @@ class PreCommitter(Tool):
         """
         return ToolGroup.CODE_QUALITY
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Get prek badge image URL and project page URL."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json",
             "https://github.com/j178/prek",
         )
 
-    @classmethod
-    def install_args(cls, *args: str) -> Args:
+    def install_args(self, *args: str) -> Args:
         """Construct prek install arguments.
 
         Args:
@@ -64,10 +60,9 @@ class PreCommitter(Tool):
         Returns:
             Args for 'prek install'.
         """
-        return cls.args("install", *args)
+        return self.args("install", *args)
 
-    @classmethod
-    def run_args(cls, *args: str) -> Args:
+    def run_args(self, *args: str) -> Args:
         """Construct prek run arguments.
 
         Args:
@@ -76,10 +71,9 @@ class PreCommitter(Tool):
         Returns:
             Args for 'prek run'.
         """
-        return cls.args("run", *args)
+        return self.args("run", *args)
 
-    @classmethod
-    def run_all_files_args(cls, *args: str) -> Args:
+    def run_all_files_args(self, *args: str) -> Args:
         """Construct prek run arguments for all files.
 
         Args:
@@ -88,4 +82,4 @@ class PreCommitter(Tool):
         Returns:
             Args for 'prek run --all-files'.
         """
-        return cls.run_args("--all-files", *args)
+        return self.run_args("--all-files", *args)

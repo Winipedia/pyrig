@@ -28,8 +28,7 @@ class DependencyAuditor(Tool):
         ``audit_args`` to add flags.
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -37,8 +36,7 @@ class DependencyAuditor(Tool):
         """
         return "pip-audit"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get tool group.
 
         Returns:
@@ -46,16 +44,14 @@ class DependencyAuditor(Tool):
         """
         return ToolGroup.SECURITY
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Return the badge and link URLs."""
         return (
             "https://img.shields.io/badge/security-pip--audit-blue?logo=python",
             "https://github.com/pypa/pip-audit",
         )
 
-    @classmethod
-    def audit_args(cls, *args: str) -> Args:
+    def audit_args(self, *args: str) -> Args:
         """Construct pip-audit arguments.
 
         Args:
@@ -64,4 +60,4 @@ class DependencyAuditor(Tool):
         Returns:
             Args for 'pip-audit'.
         """
-        return cls.args(*args)
+        return self.args(*args)

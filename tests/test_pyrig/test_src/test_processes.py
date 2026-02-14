@@ -2,7 +2,7 @@
 
 from pytest_mock import MockFixture
 
-from pyrig.src.processes import Args, run_subprocess
+from pyrig.src.processes import Args, run_subprocess, run_subprocess_cached
 
 
 def test_run_subprocess() -> None:
@@ -16,6 +16,18 @@ def test_run_subprocess() -> None:
 
 class TestArgs:
     """Test class."""
+
+    def test_run_cached(self) -> None:
+        """Test method."""
+        args = Args(("echo", "hello"))
+        result1 = args.run_cached()
+        result2 = args.run_cached()
+        assert result1 == result2, "Expected cached result to be the same"
+        assert result1.returncode == 0, "Expected returncode 0"
+        assert result1.stdout == "hello\n", (
+            f"Expected stdout 'hello\n', got {result1.stdout}"
+        )
+        assert result1.stderr == "", f"Expected stderr '', got {result1.stderr}"
 
     def test___repr__(self) -> None:
         """Test method."""
@@ -36,3 +48,15 @@ class TestArgs:
         args = Args(("uv", "--version"))
         args.run()
         mock_run_subprocess.assert_called_once()
+
+
+def test_run_subprocess_cached() -> None:
+    """Test function."""
+    result1 = run_subprocess_cached(("echo", "hello"))
+    result2 = run_subprocess_cached(("echo", "hello"))
+    assert result1 == result2, "Expected cached result to be the same"
+    assert result1.returncode == 0, "Expected returncode 0"
+    assert result1.stdout == "hello\n", (
+        f"Expected stdout 'hello\n', got {result1.stdout}"
+    )
+    assert result1.stderr == "", f"Expected stderr '', got {result1.stderr}"

@@ -17,6 +17,7 @@ Example:
 import logging
 import subprocess  # nosec: B404
 from collections.abc import Sequence
+from functools import cache
 from pathlib import Path
 from typing import Any
 
@@ -98,6 +99,25 @@ def run_subprocess(  # noqa: PLR0913
         return result
 
 
+@cache
+def run_subprocess_cached(
+    args: tuple[str, ...], **kwargs: Any
+) -> subprocess.CompletedProcess[Any]:
+    """Cached version of run_subprocess.
+
+    Caches results of subprocess calls based on arguments. Useful for commands
+    that are called multiple times with the same arguments during a run,
+    as setting up and running a subprocess always has some overhead.
+
+    args is a tuple to ensure immutability and hashability for caching.
+
+    Args:
+        args: Command and arguments as tuple (e.g., ("git", "status")).
+        **kwargs: Additional arguments passed to `run_subprocess()`.
+    """
+    return run_subprocess(args, **kwargs)
+
+
 class Args(tuple[str, ...]):
     """Immutable command-line arguments container with execution capabilities.
 
@@ -152,3 +172,21 @@ class Args(tuple[str, ...]):
             subprocess.CalledProcessError: If `check=True` and command fails.
         """
         return run_subprocess((*self, *args), **kwargs)
+
+    def run_cached(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
+        """Execute command via cached subprocess.
+
+        Uses `run_subprocess_cached` to cache results based on command arguments.
+
+        Args:
+            *args: Additional arguments appended to command.
+            **kwargs: Keyword arguments passed to run_subprocess_cached
+                (check, capture_output, cwd, etc.).
+
+        Returns:
+            CompletedProcess from subprocess execution.
+
+        Raises:
+            subprocess.CalledProcessError: If `check=True` and command fails.
+        """
+        return run_subprocess_cached((*self, *args), **kwargs)

@@ -28,8 +28,7 @@ class ContainerEngine(Tool):
         ... ).run()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -37,21 +36,18 @@ class ContainerEngine(Tool):
         """
         return "podman"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Return the badge group for this tool."""
         return ToolGroup.TOOLING
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Return the badge and link URLs."""
         return (
             "https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6",
             "https://podman.io",
         )
 
-    @classmethod
-    def dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(self) -> list[str]:
         """Get tool dependencies.
 
         Podman is a system package (not a Python dependency), so this
@@ -62,8 +58,7 @@ class ContainerEngine(Tool):
         """
         return []
 
-    @classmethod
-    def build_args(cls, *args: str, project_name: str) -> Args:
+    def build_args(self, *args: str, project_name: str) -> Args:
         """Construct podman build arguments.
 
         Args:
@@ -73,10 +68,9 @@ class ContainerEngine(Tool):
         Returns:
             Args for 'podman build'.
         """
-        return cls.args("build", "-t", project_name, ".", *args)
+        return self.args("build", "-t", project_name, ".", *args)
 
-    @classmethod
-    def save_args(cls, *args: str, image_file: Path, image_path: Path) -> Args:
+    def save_args(self, *args: str, image_file: Path, image_path: Path) -> Args:
         """Construct podman save arguments.
 
         Args:
@@ -88,7 +82,7 @@ class ContainerEngine(Tool):
         Returns:
             Args for 'podman save'.
         """
-        return cls.args(
+        return self.args(
             "save",
             "-o",
             image_path.as_posix(),
