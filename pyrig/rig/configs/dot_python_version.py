@@ -45,5 +45,5 @@ class DotPythonVersionConfigFile(StringConfigFile):
 
     @classmethod
     def should_override_content(cls) -> bool:
-        """Overriding content bc only one .python-version needed."""
+        """Override content; only one .python-version is needed."""
         return True

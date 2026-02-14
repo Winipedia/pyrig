@@ -24,7 +24,9 @@ class DependencyGraph(DiGraph, Singleton):
     """Directed graph of installed Python package dependencies.
 
     Nodes are package names, edges represent dependency relationships.
-    Built automatically on instantiation by scanning installed distributions.
+    Built automatically on first instantiation by scanning installed distributions.
+    As a ``Singleton``, the graph is constructed once and shared across the
+    application for the lifetime of the process.
     Central to pyrig's multi-package discovery system.
     """
 

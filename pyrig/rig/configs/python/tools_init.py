@@ -18,25 +18,13 @@ from pyrig.rig.configs.base.init import InitConfigFile
 class ToolsInitConfigFile(InitConfigFile):
     """Manages {package_name}/rig/tools/__init__.py.
 
-    Generates __init__.py with pyrig.rig.tools docstring for tool wrapper
-    modules that provide Python interfaces to CLI tools.
+    Generates __init__.py for the rig/tools package, copying the docstring
+    from pyrig.rig.tools.
 
     Examples:
         Generate {package_name}/rig/tools/__init__.py::
 
             ToolsInitConfigFile.validate()
-
-        Add tool wrappers::
-
-            # {package_name}/rig/tools/mytool.py
-            class MyTool(Tool):
-                '''MyTool wrapper.'''
-                @classmethod
-                def name(cls) -> str:
-                    return "mytool"
-                @classmethod
-                def run_args(cls, *args: str) -> Args:
-                    return cls.args("run", *args)
 
     See Also:
         pyrig.rig.tools

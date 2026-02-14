@@ -13,8 +13,10 @@ class SingletonMeta(ABCMeta):
     """Metaclass that enforces the Singleton pattern.
 
     This metaclass ensures that only one instance of a class using this metaclass
-    is created. Subsequent instantiation attempts return the same instance. It also
-    provides a mechanism to clear cached instances when needed.
+    is created. Subsequent instantiation attempts return the same instance. It
+    extends ``ABCMeta``, allowing singleton classes to also define and enforce
+    abstract methods. It also provides a mechanism to clear cached instances
+    when needed.
 
     Attributes:
         _instances: A dictionary mapping singleton classes to their sole instances.
@@ -56,9 +58,12 @@ class SingletonMeta(ABCMeta):
 class Singleton(metaclass=SingletonMeta):
     """Base class for creating singleton classes.
 
-    Classes that inherit from Singleton will automatically have the Singleton
-    pattern applied via the SingletonMeta metaclass. Subclasses will only have
-    one instance throughout the application lifecycle.
+    Classes that inherit from ``Singleton`` will automatically have the Singleton
+    pattern applied via the ``SingletonMeta`` metaclass. Only one instance of each
+    subclass will exist throughout the application lifecycle.
+
+    Call ``clear()`` on any singleton subclass to remove its cached instance,
+    allowing a fresh instance to be created on the next instantiation.
 
     Example:
         >>> class MyService(Singleton):

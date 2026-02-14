@@ -138,7 +138,7 @@ def re_search_excluding_docstrings(
 def make_summary_error_msg(
     errors_locations: Iterable[str],
 ) -> str:
-    """Create indented error message summarizing multiple error locations.
+    """Create formatted error message summarizing multiple error locations.
 
     Used by pyrig's test fixtures to format assertion error messages when
     multiple validation failures are detected across the codebase.
@@ -148,14 +148,14 @@ def make_summary_error_msg(
             test identifiers, or descriptive location strings).
 
     Returns:
-        Multiline string with "Found errors at:" header and indented bulleted
-        list. The output includes leading and trailing whitespace for embedding
+        Multiline string with "Found errors at:" header followed by a bulleted
+        list. The output includes leading and trailing newlines for embedding
         in larger error messages.
 
     Note:
         The output format is designed for use in assertion messages and includes
-        indentation suitable for multiline f-strings. Each location appears on
-        its own line with a "- " prefix.
+        leading and trailing newlines suitable for multiline f-strings. Each
+        location appears on its own line with a "- " prefix.
     """
     msg = """
 Found errors at:
@@ -198,15 +198,17 @@ def make_linked_badge_markdown(
 
 
 def package_req_name_split_pattern() -> re.Pattern[str]:
-    """Helper function to access the regex pattern for parsing package names.
+    """Return compiled regex pattern for splitting package names from requirements.
 
-    Pre-compiled regex for parsing package names from requirement strings.
-    Matches everything before the first version specifier (>, <, =, [, ;, etc.)
-    Allows alphanumeric, underscore, hyphen, and period (for namespace packages).
-    Used by DependencyGraph and PyprojectConfigFile.I.
+    Matches any character that is not part of a valid package name (i.e., not
+    alphanumeric, underscore, hyphen, period, or bracket). When used with
+    ``re.Pattern.split``, the first element of the result is the package name
+    stripped of version specifiers and extras.
+
+    Used by ``DependencyGraph`` and ``PyprojectConfigFile``.
 
     Returns:
-        re.Pattern: The pre-compiled regex pattern.
+        Compiled regex pattern matching non-package-name characters.
     """
     # re.compile is already internally cached by Python
     return re.compile(r"[^a-zA-Z0-9_.\[\]-]")

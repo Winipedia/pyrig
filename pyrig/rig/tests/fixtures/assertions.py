@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def main_test_fixture(mocker: MockerFixture) -> None:
-    """Fixture that verifies the project's main entry point configuration.
+    """Verify the project's main entry point configuration.
 
     Validates that:
         1. The CLI entry point is callable via ``uv run <project>`` commands

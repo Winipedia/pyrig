@@ -1,8 +1,8 @@
-"""Main entrypoint for the project."""
+"""Main entrypoint module for pyrig."""
 
 
 def main() -> None:
-    """Main entrypoint for the project."""
+    """Run the main entrypoint for the project."""
 
 
 if __name__ == "__main__":

@@ -120,7 +120,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
         This abstract method must be implemented by subclasses to specify which
         module's structure should be analyzed and mirrored in the test file.
-        It is not as an abstract method implemented to allow the .I property
+        It is not implemented as an abstract method to allow the .I property
         to work on the base class for dynamic subclass creation.
 
         Returns:
@@ -225,10 +225,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
     @classmethod
     def definition_package(cls) -> ModuleType:
-        """Get the package where the ConfigFile subclasses are supposed to be defined.
+        """Get the package where ConfigFile subclasses are defined.
 
-        Default is pyrig.rig.tests. which overrides the default of pyrig.rig.configs.
-        But can be overridden by subclasses to define their own package.
+        Defaults to ``pyrig.rig.tests``, which overrides the default of
+        ``pyrig.rig.configs``. Can be overridden by subclasses to define
+        their own package.
 
         Returns:
             Package module where the ConfigFile subclass is defined.
@@ -761,7 +762,7 @@ class {test_class_name}:
 
         Example:
             >>> from myapp.utils import calculate_sum
-            >>> make_test_obj_importpath_from_obj(calculate_sum)
+            >>> test_obj_importpath_from_obj(calculate_sum)
             'tests.test_myapp.test_utils.test_calculate_sum'
         """
         parts = make_obj_importpath(obj).split(".")
@@ -866,7 +867,11 @@ class {test_class_name}:
 
     @classmethod
     def test_prefixes(cls) -> tuple[str, ...]:
-        """Get all test prefixes."""
+        """Get all test prefixes.
+
+        Returns:
+            Tuple of all test prefixes (function, class, and module).
+        """
         return (
             cls.test_func_prefix(),
             cls.test_class_prefix(),
@@ -875,20 +880,36 @@ class {test_class_name}:
 
     @classmethod
     def test_func_prefix(cls) -> str:
-        """Get test function prefix."""
+        """Get test function prefix.
+
+        Returns:
+            The ``"test_"`` prefix string.
+        """
         return "test_"
 
     @classmethod
     def test_class_prefix(cls) -> str:
-        """Get test class prefix."""
+        """Get test class prefix.
+
+        Returns:
+            The ``"Test"`` prefix string.
+        """
         return "Test"
 
     @classmethod
     def test_module_prefix(cls) -> str:
-        """Get test module prefix."""
+        """Get test module prefix.
+
+        Returns:
+            The ``"test_"`` prefix string.
+        """
         return "test_"
 
     @classmethod
     def tests_package_name(cls) -> str:
-        """Get tests package name."""
+        """Get tests package name.
+
+        Returns:
+            The ``"tests"`` package name string.
+        """
         return "tests"

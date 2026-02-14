@@ -39,7 +39,7 @@ class ContainerEngine(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Returns the group the tool belongs to.
 
         E.g. testing, tool, code-quality etc...
         """
@@ -57,10 +57,12 @@ class ContainerEngine(Tool):
     def dev_dependencies(cls) -> list[str]:
         """Get tool dependencies.
 
+        Podman is a system package (not a Python dependency), so this
+        returns an empty list.
+
         Returns:
-            List of tool dependencies.
+            Empty list — podman must be installed at the OS level.
         """
-        # podman is not a python package, so we don't have a dev dependency for it
         return []
 
     @classmethod

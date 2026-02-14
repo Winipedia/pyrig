@@ -49,7 +49,6 @@ class SecurityConfigFile(MarkdownConfigFile):
         - How to report vulnerabilities (email, not public issues)
         - What information to include in reports
         - Response timeline expectations
-        - Supported versions table
 
     Examples:
         Generate SECURITY.md::
@@ -114,6 +113,6 @@ class SecurityConfigFile(MarkdownConfigFile):
         """Get the contact method for security reports.
 
         Returns:
-            str: The email in the version control, e.g. the email in git config
+            str: Email address from version control config (e.g. git).
         """
         return f"<{VersionController.I.email()}>"

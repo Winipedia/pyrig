@@ -39,7 +39,7 @@ class DocsBuilder(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Returns the group the tool belongs to.
 
         E.g. testing, tool, code-quality etc...
         """
@@ -106,9 +106,11 @@ class DocsBuilder(Tool):
 
     @classmethod
     def documentation_badge(cls) -> str:
-        """Returns the badge for a markdown file.
+        """Construct a GitHub Pages documentation badge in Markdown.
 
-        Shows github pages for github.
+        Returns:
+            Markdown string with a linked badge pointing to the project's
+            GitHub Pages URL (see `documentation_url`).
         """
         return make_linked_badge_markdown(
             badge_url="https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white",

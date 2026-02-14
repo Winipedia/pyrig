@@ -5,8 +5,8 @@ Shows coverage badge from Codecov.io.
 
 Example:
     >>> from pyrig.rig.tools.project_coverage_tester import (
-        ProjectCoverageTester,
-    )
+    ...     ProjectCoverageTester,
+    ... )
     >>> ProjectCoverageTester.I.remote_coverage_url()
 """
 
@@ -40,15 +40,16 @@ class ProjectCoverageTester(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get tool group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            'testing'
         """
         return ToolGroup.TESTING
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Get Codecov coverage badge image URL and dashboard URL."""
         return (
             f"{cls.remote_coverage_url()}/branch/{VersionController.I.default_branch()}/graph/badge.svg",
             cls.remote_coverage_url(),

@@ -53,24 +53,20 @@ from pyrig.src.string_ import make_name_from_obj
 
 
 def initializing_version_control() -> Args:
-    """Get args to initialize version control.
-
-    Returns Args for initializing a git repository via `git init`.
+    """Return args for initializing a git repository via `git init`.
 
     Returns:
-        Args object for initializing version control.
+        Args for initializing version control.
     """
     return VersionController.I.init_args()
 
 
 def adding_dev_dependencies() -> Args:
-    """Get args to install development dependencies.
-
-    Returns Args for adding pyrig's standard dev dependencies to pyproject.toml
-    via `uv add --group dev`.
+    """Return args for adding dev dependencies via `uv add --group dev`.
 
     Returns:
-        Args object for adding dev dependencies.
+        Args for adding pyrig's standard dev dependencies to
+        `pyproject.toml`.
     """
     return PackageManager.I.add_dev_dependencies_args(
         *Tool.subclasses_dev_dependencies()
@@ -78,111 +74,106 @@ def adding_dev_dependencies() -> Args:
 
 
 def creating_priority_config_files() -> Args:
-    """Get args to create essential configuration files.
+    """Return args for creating priority config files.
 
-    Returns Args for creating high-priority config files (pyproject.toml,
-    .gitignore, LICENSE) that other initialization steps depend on via
+    Creates high-priority config files (`pyproject.toml`, `.gitignore`,
+    `LICENSE`) that other initialization steps depend on via
     `pyrig mkroot --priority`.
 
     Returns:
-        Args object for creating priority config files.
+        Args for creating priority config files.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
     return Pyrigger.I.cmd_args("--priority", cmd=mkroot)
 
 
 def syncing_venv() -> Args:
-    """Get args to sync virtual environment with dependencies.
+    """Return args for syncing the virtual environment via `uv sync`.
 
-    Returns Args for installing all dependencies from pyproject.toml via
-    `uv sync`. Run twice during initialization: after adding dev dependencies
-    and after creating priority config files.
+    Installs all dependencies from `pyproject.toml`. Run twice during
+    initialization: after adding dev dependencies and after creating
+    priority config files.
 
     Returns:
-        Args object for syncing the virtual environment.
+        Args for syncing the virtual environment.
     """
     return PackageManager.I.install_dependencies_args()
 
 
 def creating_project_root() -> Args:
-    """Get args to create complete project structure and config files.
+    """Return args for creating project structure and config files.
 
-    Returns Args for generating all remaining configuration files and directory
-    structure via `pyrig mkroot`.
+    Generates all remaining configuration files and directory structure
+    via `pyrig mkroot`.
 
     Returns:
-        Args object for creating the project root.
+        Args for creating the project root.
     """
     return Pyrigger.I.cmd_args(cmd=mkroot)
 
 
 def creating_test_files() -> Args:
-    """Get args to generate test skeleton files for all source code.
+    """Return args for generating test skeletons via `pyrig mktests`.
 
-    Returns Args for creating test files mirroring the source package structure
-    with NotImplementedError placeholders via `pyrig mktests`.
+    Creates test files mirroring the source package structure with
+    `NotImplementedError` placeholders.
 
     Returns:
-        Args object for creating test files.
+        Args for creating test files.
     """
     return Pyrigger.I.cmd_args(cmd=mktests)
 
 
 def install_pre_commit_hooks() -> Args:
-    """Get args to install prek hooks.
-
-    Returns Args for installing prek hooks into the git repository via
-    `prek install`.
+    """Return args for installing prek hooks via `prek install`.
 
     Returns:
-        Args object for installing prek hooks.
+        Args for installing prek hooks into the git repository.
     """
     return PreCommitter.I.install_args()
 
 
 def add_all_files_to_version_control() -> Args:
-    """Get args to add all files to version control.
-
-    Returns Args for staging all files for commit via `git add .`.
+    """Return args for staging all files via `git add .`.
 
     Returns:
-        Args object for adding all files to version control.
+        Args for adding all files to version control.
     """
     return VersionController.I.add_all_args()
 
 
 def running_pre_commit_hooks() -> Args:
-    """Get args to run prek hooks on all files.
+    """Return args for running prek hooks via `prek run --all-files`.
 
-    Returns Args for running formatters/linters on all files to ensure the
-    codebase follows style guidelines via `prek run --all-files`.
+    Runs formatters and linters on all files to ensure the codebase follows
+    style guidelines.
 
     Returns:
-        Args object for running prek hooks.
+        Args for running prek hooks.
     """
     return PreCommitter.I.run_all_files_args()
 
 
 def running_tests() -> Args:
-    """Get args to run the complete test suite.
+    """Return args for running the test suite via `pytest`.
 
-    Returns Args for validating that all generated code is syntactically correct
-    and the project is properly configured via `pytest`.
+    Validates that all generated code is syntactically correct and the project
+    is properly configured.
 
     Returns:
-        Args object for running tests.
+        Args for running tests.
     """
     return ProjectTester.I.test_args()
 
 
 def committing_initial_changes() -> Args:
-    """Get args to create initial git commit with all changes.
+    """Return args for creating the initial git commit.
 
-    Returns Args for committing all configuration files, test skeletons, and
-    formatting changes with the message "pyrig: Initial commit".
+    Commits all configuration files, test skeletons, and formatting changes
+    with the message "pyrig: Initial commit".
 
     Returns:
-        Args object for committing initial changes.
+        Args for committing initial changes.
     """
     # changes were added by the run prek hooks step
     return VersionController.I.commit_no_verify_args(

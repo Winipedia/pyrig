@@ -9,14 +9,14 @@ The workflow runs:
     - **On Pushes to Main**: Ensures main branch stays healthy
     - **On Schedule**: Daily checks with staggered timing based on dependency depth
 
-    Checks Performed:
-        - **Linting**: ruff check for code quality
-        - **Formatting**: ruff format for code style
-        - **Type Checking**: ty check for type safety
-        - **Security (code)**: bandit for vulnerability scanning
-        - **Security (dependencies)**: pip-audit for dependency vulnerability scanning
-        - **Markdown**: rumdl for documentation quality
-        - **Tests**: pytest with coverage reporting
+Checks Performed:
+    - **Linting**: ruff check for code quality
+    - **Formatting**: ruff format for code style
+    - **Type Checking**: ty check for type safety
+    - **Security (code)**: bandit for vulnerability scanning
+    - **Security (dependencies)**: pip-audit for dependency vulnerability scanning
+    - **Markdown**: rumdl for documentation quality
+    - **Tests**: pytest with coverage reporting
 
 The workflow uses a matrix strategy to test across:
     - Multiple OS (Ubuntu, macOS, Windows)

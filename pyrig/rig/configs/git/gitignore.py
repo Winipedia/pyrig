@@ -66,10 +66,10 @@ class GitignoreConfigFile(StringConfigFile):
 
     @classmethod
     def extension_separator(cls) -> str:
-        """Get the file extension for .gitignore.
+        """Get the extension separator for .gitignore.
 
         Returns:
-            str: empty string (no extension or separator).
+            str: Empty string (no separator; filename has no extension).
         """
         return ""
 
@@ -144,10 +144,6 @@ class GitignoreConfigFile(StringConfigFile):
 
         Returns:
             list[str]: Python.gitignore patterns (one per line).
-
-        Raises:
-            requests.HTTPError: If HTTP request fails.
-            RuntimeError: If fetch fails and no fallback exists.
         """
         gitignore_str = cls.github_python_gitignore()
         return gitignore_str.splitlines()

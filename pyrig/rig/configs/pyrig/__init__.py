@@ -5,10 +5,8 @@ project being configured. Uses conditional class definition based on
 ``src_package_is_pyrig()`` to prevent pyrig-specific configs from leaking into
 dependent projects.
 
-Architecture
-------------
-
-This package contains configuration overrides that only apply to pyrig itself:
+Architecture:
+    This package contains configuration overrides that only apply to pyrig itself:
 
 - **PyprojectConfigFile**: Adds pyrig-specific PyPI classifiers and keywords
   (development status, intended audience, topics, project-setup keywords)

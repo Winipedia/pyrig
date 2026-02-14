@@ -4,7 +4,7 @@ Runtime utilities for working with Python module and package paths. This module
 provides bidirectional conversions between dotted module names and filesystem paths,
 support for frozen environments (PyInstaller), and package structure creation.
 
-Part of pyrig's src utilities for production use.
+Part of the ``pyrig.src.modules`` subpackage.
 
 Key Components:
     ModulePath: Static utility class for path/module name conversions.
@@ -145,7 +145,7 @@ class ModulePath:
         """Convert a dotted module name to a relative file path.
 
         Replaces dots with path separators and appends ``.py`` extension.
-        Used by pyrig's CLI system to locate module files for dynamic import.
+        Used across pyrig's subsystems (CLI, configs, tests) to locate module files.
 
         Args:
             module_name: Dotted Python module name
@@ -206,7 +206,7 @@ class ModulePath:
 
     @staticmethod
     def absolute_path_to_module_name(path: Path) -> str:
-        """Convert a file path to a dotted module name.
+        """Convert an absolute or relative file path to a dotted module name.
 
         For relative paths, converts directly to a module name (e.g.,
         ``Path('package/mod.py')`` → ``'package.mod'``).

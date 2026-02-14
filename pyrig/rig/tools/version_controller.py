@@ -51,9 +51,10 @@ class VersionController(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get badge group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            `ToolGroup.TOOLING`
         """
         return ToolGroup.TOOLING
 
@@ -406,6 +407,15 @@ class VersionController(Tool):
         url_encode: bool = False,
     ) -> tuple[str, str]:
         """Get the repository owner and name.
+
+        Parses the git remote origin URL to extract owner and repo name.
+        Falls back to the git username and current working directory name
+        if no remote is configured.
+
+        Args:
+            check_repo_url: Whether to raise on missing remote. Defaults to True.
+            url_encode: Whether to percent-encode the returned strings.
+                Defaults to False.
 
         Returns:
             Tuple of (owner, repository_name).

@@ -2,7 +2,7 @@
 
 Provides a generic DiGraph data structure with bidirectional traversal optimized
 for analyzing dependency relationships. This is the base class for ``DependencyGraph``
-in ``pyrig.src.modules.package``, which builds a graph of installed Python packages
+in ``pyrig.src.dependency_graph``, which builds a graph of installed Python packages
 to enable pyrig's multi-package discovery system.
 
 The graph maintains both forward and reverse edges, enabling efficient traversal

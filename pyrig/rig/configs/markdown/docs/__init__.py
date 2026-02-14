@@ -4,8 +4,8 @@ Provides MkDocs documentation pages: docs/index.md (home page with badges) and
 docs/api.md (API reference with mkdocstrings).
 
 Modules:
-    index: docs/index.md configuration management
-    api: docs/api.md configuration management
+    index: docs/index.md home page configuration.
+    api: docs/api.md API reference configuration.
 
 See Also:
     pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile

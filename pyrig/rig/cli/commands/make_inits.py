@@ -19,7 +19,7 @@ def make_init_files() -> None:
     Scans the project for namespace packages (directories with Python files
     but no __init__.py) and creates minimal __init__.py files for them.
 
-    The function is idempotent and uses parallel execution for performance.
+    Idempotent. Uses parallel execution for performance.
 
     Note:
         Created __init__.py files contain a minimal docstring. The docs

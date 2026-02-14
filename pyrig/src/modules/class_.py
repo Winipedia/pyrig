@@ -128,9 +128,9 @@ def discover_all_subclasses[T: type](
         filtered out by other options).
 
     Example:
-        >>> # Discover all ConfigFile subclasses in myapp.rig.configs
-        >>> from myapp.rig import configs
-        >>> subclasses = subclasses(
+        >>> # Discover all ConfigFile subclasses in pyrig.rig.configs
+        >>> from pyrig.rig import configs
+        >>> discovered = discover_all_subclasses(
         ...     ConfigFile,
         ...     load_package_before=configs,
         ...     discard_parents=True,

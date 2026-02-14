@@ -27,7 +27,7 @@ class PythonPackageConfigFile(PythonConfigFile):
     """Base class for Python package files.
 
     Extends PythonConfigFile to automatically create __init__.py files in all parent
-    directories via make_package_dir() after dumping.
+    directories via make_package_dir() after writing the file.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the package file
@@ -43,8 +43,8 @@ class PythonPackageConfigFile(PythonConfigFile):
     def _dump(cls, config: list[str]) -> None:
         """Write config file and create parent __init__.py files.
 
-        Calls super()._dump() then make_package_dir() to ensure parent directories are
-        valid packages.
+        Writes the file then creates __init__.py files in parent directories to ensure
+        they are valid Python packages.
 
         Args:
             config: List of lines to write to the file.

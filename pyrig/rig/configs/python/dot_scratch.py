@@ -62,7 +62,7 @@ class DotScratchConfigFile(PythonConfigFile):
         """Get the .scratch.py file content.
 
         Returns:
-            List of lines with Python docstring.
+            list[str]: Content lines for the scratch file.
         """
         return ['"""This file is for scratch work and is ignored by git."""']
 
@@ -71,6 +71,6 @@ class DotScratchConfigFile(PythonConfigFile):
         """Check if the .scratch.py file is valid.
 
         Returns:
-            True if the file exists.
+            bool: True if the file exists.
         """
         return cls.path().exists()

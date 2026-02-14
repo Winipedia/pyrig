@@ -1,6 +1,6 @@
-"""Configuration management for bug report issue template.
+"""Manages bug report issue template.
 
-Manages .github/ISSUE_TEMPLATE/bug_report.yml with a minimal bug report template.
+Creates .github/ISSUE_TEMPLATE/bug_report.yml with a minimal bug report template.
 
 See Also:
     pyrig.rig.configs.base.yml.YmlConfigFile
@@ -13,9 +13,9 @@ from pyrig.rig.configs.base.yml import YmlConfigFile
 
 
 class BugReportConfigFile(YmlConfigFile):
-    """Bug report issue template configuration manager.
+    """Manages .github/ISSUE_TEMPLATE/bug_report.yml.
 
-    Generates .github/ISSUE_TEMPLATE/bug_report.yml with fields for:
+    Bug report template with fields for:
     - Description (required)
     - Steps to Reproduce (required)
     - Expected Behavior (required)
@@ -23,10 +23,8 @@ class BugReportConfigFile(YmlConfigFile):
     - Environment (optional)
     - Logs (optional)
 
-    Examples:
-        Generate bug_report.yml::
-
-            BugReportConfigFile.validate()
+    Example:
+        >>> BugReportConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.base.yml.YmlConfigFile
@@ -34,20 +32,12 @@ class BugReportConfigFile(YmlConfigFile):
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for the bug report template.
-
-        Returns:
-            Path: .github/ISSUE_TEMPLATE/.
-        """
+        """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
     @classmethod
     def _configs(cls) -> dict[str, Any]:
-        """Get the bug report template configuration.
-
-        Returns:
-            dict[str, Any]: Bug report template YAML structure.
-        """
+        """Return bug report template YAML structure."""
         return {
             "name": "Bug Report",
             "description": "Report a bug",
@@ -112,11 +102,7 @@ class BugReportConfigFile(YmlConfigFile):
 
     @classmethod
     def is_correct(cls) -> bool:
-        """Check if bug_report.yml exists and is non-empty.
-
-        Returns:
-            bool: True if file exists with content, False otherwise.
-        """
+        """Return True if bug_report.yml exists with content."""
         return cls.path().exists() and bool(
             cls.path().read_text(encoding="utf-8").strip()
         )

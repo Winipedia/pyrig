@@ -52,7 +52,8 @@ class ApiConfigFile(MarkdownConfigFile):
         """Get the api.md file content.
 
         Returns:
-            List of lines with "# API Reference" and `::: project_name` directive.
+            list[str]: Lines with "# API Reference" header and
+                `::: project_name` mkdocstrings directive.
 
         Note:
             Reads project name from pyproject.toml.

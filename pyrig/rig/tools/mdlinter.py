@@ -1,6 +1,6 @@
 """Rumdl markdown linter wrapper.
 
-Provides type-safe wrapper for rumdl commands: check.
+Provides type-safe wrapper for rumdl commands: check, check --fix.
 Rumdl is a fast markdown linter written in Rust.
 
 Example:
@@ -38,9 +38,10 @@ class MDLinter(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get tool group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            `ToolGroup.CODE_QUALITY`
         """
         return ToolGroup.CODE_QUALITY
 

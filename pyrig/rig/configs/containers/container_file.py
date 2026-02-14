@@ -1,6 +1,6 @@
-"""Configuration management for Containerfile files.
+"""Manages Containerfile configuration.
 
-Manages Docker-compatible Containerfile generation with best practices: Python slim
+Generates Docker-compatible Containerfile with best practices: Python slim
 base, uv package manager, non-root user (appuser), optimized layer caching, and
 proper permissions. Compatible with Docker, Podman, and OCI-compliant runtimes.
 
@@ -18,21 +18,14 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class ContainerfileConfigFile(StringConfigFile):
-    """Containerfile configuration manager.
+    """Manages Containerfile generation.
 
-    Generates production-ready Containerfile with Python slim base, uv package
+    Produces production-ready Containerfile with Python slim base, uv package
     manager, non-root user (appuser, UID 1000), optimized layer caching, and
     configurable entrypoint. Compatible with Docker, Podman, and buildah.
 
-    Examples:
-        Generate Containerfile::
-
-            ContainerfileConfigFile.validate()
-
-        Build and run::
-
-            docker build -t myproject .
-            docker run myproject
+    Example:
+        >>> ContainerfileConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.pyproject.PyprojectConfigFile
@@ -41,66 +34,39 @@ class ContainerfileConfigFile(StringConfigFile):
 
     @classmethod
     def filename(cls) -> str:
-        """Get the Containerfile filename.
-
-        Returns:
-            "Containerfile".
-        """
+        """Return 'Containerfile'."""
         return "Containerfile"
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for Containerfile.
-
-        Returns:
-            Project root.
-        """
+        """Return project root."""
         return Path()
 
     @classmethod
     def extension(cls) -> str:
-        """Get the file extension for Containerfile.
-
-        Returns:
-            Empty string (no extension).
-        """
+        """Return empty string (no extension)."""
         return ""
 
     @classmethod
     def extension_separator(cls) -> str:
-        """Get the extension separator for Containerfile.
-
-        Returns:
-            Empty string (no separator).
-        """
+        """Return empty string (no separator)."""
         return ""
 
     @classmethod
     def lines(cls) -> list[str]:
-        """Get Containerfile build instructions.
-
-        Generates optimized layer sequence: base image, workdir, uv install,
-        dependency copy (for caching), user creation, source copy, dependency
-        install, cleanup, entrypoint/command.
-
-        Returns:
-            list[str]: Containerfile instructions (FROM, WORKDIR, COPY, RUN, etc.).
-
-        Note:
-            Reads from pyproject.toml and may make API calls for Python version.
-        """
+        """Return Containerfile build instructions via layers()."""
         return cls.layers()
 
     @classmethod
     def layers(cls) -> list[str]:
-        """Get Containerfile build instructions.
+        """Generate Containerfile build instructions.
 
-        Generates optimized layer sequence: base image, workdir, uv install,
+        Builds optimized layer sequence: base image, workdir, uv install,
         dependency copy (for caching), user creation, source copy, dependency
         install, cleanup, entrypoint/command.
 
         Returns:
-            list[str]: Containerfile instructions (FROM, WORKDIR, COPY, RUN, etc.).
+            Containerfile instructions (FROM, WORKDIR, COPY, RUN, etc.).
 
         Note:
             Reads from pyproject.toml and may make API calls for Python version.

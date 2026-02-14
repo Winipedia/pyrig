@@ -1,6 +1,7 @@
 """UV package manager wrapper.
 
-Provides type-safe wrapper for UV commands: init, sync, add, build, publish, version.
+Provides type-safe wrapper for UV commands: init, sync, add, lock, build,
+publish, run, version, self update.
 UV is pyrig's primary package manager (Rust-based, replaces pip/virtualenv).
 
 Example:
@@ -20,10 +21,11 @@ class PackageManager(Tool):
 
     Operations:
         - Project setup: init, sync
-        - Dependencies: add, update
+        - Dependencies: add, lock --upgrade
         - Building: build, publish
-        - Versioning: version bumping
-        - Execution: run commands
+        - Versioning: version, version --bump patch
+        - Execution: run, run --no-group dev
+        - Self-maintenance: self update
 
     Example:
         >>> PackageManager.I.install_dependencies_args().run()
@@ -41,15 +43,16 @@ class PackageManager(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get tool group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            `ToolGroup.TOOLING`
         """
         return ToolGroup.TOOLING
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge urls for uv."""
+        """Returns the uv badge and project page URLs."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json",
             "https://github.com/astral-sh/uv",
@@ -236,12 +239,12 @@ class PackageManager(Tool):
 
     @classmethod
     def no_auto_install_env_var(cls) -> str:
-        """Get environment variable name for disabling auto-install.
+        """Get environment variable name for disabling automatic dependency syncing.
 
-        E.g. uv sync automatically if the venv is not in sync with the lock file
-        if you do uv run or uv version --bump or similar.
-        We do not want that in some cases so we can set this environment variable
-        to disable that behaviour globally for the shell session.
+        UV normally runs ``uv sync`` implicitly before commands like
+        ``uv run`` or ``uv version --bump`` when the venv is out of date.
+        Setting the returned env var to ``1`` disables that behaviour for
+        the shell session.
 
         Returns:
             'UV_NO_SYNC'

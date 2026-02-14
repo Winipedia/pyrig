@@ -1,6 +1,6 @@
-"""Configuration management for feature request issue template.
+"""Manages feature request issue template.
 
-Manages .github/ISSUE_TEMPLATE/feature_request.yml with a minimal template.
+Creates .github/ISSUE_TEMPLATE/feature_request.yml with a minimal template.
 
 See Also:
     pyrig.rig.configs.base.yml.YmlConfigFile
@@ -13,18 +13,16 @@ from pyrig.rig.configs.base.yml import YmlConfigFile
 
 
 class FeatureRequestConfigFile(YmlConfigFile):
-    """Feature request issue template configuration manager.
+    """Manages .github/ISSUE_TEMPLATE/feature_request.yml.
 
-    Generates .github/ISSUE_TEMPLATE/feature_request.yml with fields for:
+    Feature request template with fields for:
     - Summary (required)
     - Use Case (required)
     - Proposed Solution (optional)
     - Alternatives Considered (optional)
 
-    Examples:
-        Generate feature_request.yml::
-
-            FeatureRequestConfigFile.validate()
+    Example:
+        >>> FeatureRequestConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.base.yml.YmlConfigFile
@@ -32,20 +30,12 @@ class FeatureRequestConfigFile(YmlConfigFile):
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for the feature request template.
-
-        Returns:
-            Path: .github/ISSUE_TEMPLATE/.
-        """
+        """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
     @classmethod
     def _configs(cls) -> dict[str, Any]:
-        """Get the feature request template configuration.
-
-        Returns:
-            dict[str, Any]: Feature request template YAML structure.
-        """
+        """Return feature request template YAML structure."""
         return {
             "name": "Feature Request",
             "description": "Suggest a new feature",
@@ -93,11 +83,7 @@ class FeatureRequestConfigFile(YmlConfigFile):
 
     @classmethod
     def is_correct(cls) -> bool:
-        """Check if feature_request.yml exists and is non-empty.
-
-        Returns:
-            bool: True if file exists with content, False otherwise.
-        """
+        """Return True if feature_request.yml exists with content."""
         return cls.path().exists() and bool(
             cls.path().read_text(encoding="utf-8").strip()
         )

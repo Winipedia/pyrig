@@ -10,7 +10,7 @@ Subpackages:
         resource access (resource), string manipulation (string_),
         module introspection (modules), subprocess execution (processes),
         and network connectivity checking (requests).
-    dev: Development-time tools requiring dev dependencies.
+    rig: Development-time tools requiring dev dependencies.
         Includes artifact builders (builders), CLI framework and commands (cli),
         configuration file system (configs), tool wrappers (tools),
         test infrastructure (tests), and development utilities (utils).

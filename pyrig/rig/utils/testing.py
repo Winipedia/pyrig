@@ -1,36 +1,19 @@
-"""Pytest fixture decorators and skip markers.
+"""Pytest skip markers for conditional test execution.
 
-Convenience decorators and markers for pytest testing. Simplifies common patterns
-like creating fixtures with specific scopes, autouse fixtures, and conditional
-test skipping.
+Convenience skip markers for pytest testing. Simplifies common patterns for
+conditional test skipping based on environment (CI, network availability) or
+test type (fixture tests).
 
-All decorators are partial applications of pytest.fixture with pre-configured
-scope and autouse parameters.
+All markers are partial applications of pytest.mark.skip or pytest.mark.skipif
+with pre-configured conditions.
 
-Module Attributes:
-    skip_fixture_test: Skip marker for fixture tests
-    skip_in_github_actions: Skip marker for tests that can't run in CI
-    skip_if_no_internet: Skip marker for tests that require internet connection
-
-Fixture Decorators (by scope):
-    function_fixture, class_fixture, module_fixture, package_fixture,
-    session_fixture
-
-Autouse Fixture Decorators:
-    autouse_function_fixture, autouse_class_fixture, autouse_module_fixture,
-    autouse_package_fixture, autouse_session_fixture
+Attributes:
+    skip_fixture_test: Skip marker for fixture tests.
+    skip_in_github_actions: Skip marker for tests that can't run in CI.
+    skip_if_no_internet: Skip marker for tests that require internet connection.
 
 Examples:
-    Create a session-scoped fixture::
-
-        >>> from pyrig.rig.utils.testing import session_fixture
-        >>> @session_fixture
-        ... def database_connection():
-        ...     conn = create_connection()
-        ...     yield conn
-        ...     conn.close()
-
-    Skip tests in GitHub Actions::
+    Skip tests in GitHub Actions:
 
         >>> from pyrig.rig.utils.testing import skip_in_github_actions
         >>> @skip_in_github_actions
@@ -38,7 +21,8 @@ Examples:
         ...     assert local_resource_exists()
 
 See Also:
-    pytest.fixture: Underlying pytest fixture decorator
+    pytest.mark.skip: Underlying pytest skip marker.
+    pytest.mark.skipif: Underlying pytest conditional skip marker.
 """
 
 import functools
@@ -58,11 +42,8 @@ Pytest fixtures cannot be invoked as regular functions; they are called by pytes
 dependency injection system. Use this marker to skip placeholder tests that exist
 to satisfy test coverage requirements for fixture definitions.
 
-Type:
-    pytest.MarkDecorator
-
 Examples:
-    Skip a test for a fixture function::
+    Skip a test for a fixture function:
 
         >>> @skip_fixture_test
         ... def test_my_fixture_function():
@@ -80,11 +61,8 @@ skip_in_github_actions: pytest.MarkDecorator = functools.partial(
 Automatically skips tests requiring local resources, interactive input, or
 specific system configurations not available in CI.
 
-Type:
-    pytest.MarkDecorator
-
 Examples:
-    Skip a test requiring local resources::
+    Skip a test requiring local resources:
 
         >>> @skip_in_github_actions
         ... def test_local_database():
@@ -101,11 +79,8 @@ skip_if_no_internet: pytest.MarkDecorator = functools.partial(
 Automatically skips tests when no internet connectivity is detected. Uses a quick
 socket connection check to Cloudflare DNS (1.1.1.1) to determine availability.
 
-Type:
-    pytest.MarkDecorator
-
 Examples:
-    Skip a test requiring network access::
+    Skip a test requiring network access:
 
         >>> @skip_if_no_internet
         ... def test_api_integration():

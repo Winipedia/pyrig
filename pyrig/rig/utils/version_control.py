@@ -1,19 +1,14 @@
 """Git utilities for repository configuration and gitignore management.
 
-Utilities for GitHub token retrieval, gitignore file handling, and repository
-configuration constants.
+Utilities for GitHub token retrieval and gitignore file handling.
 
 Functions:
-    github_repo_token: Retrieve GitHub token from environment or .env
-    path_is_in_ignore: Check if a path matches any pattern in .gitignore
-
-Module Attributes:
-    DEFAULT_BRANCH (str): Default branch name ("main")
-    DEFAULT_RULESET_NAME (str): Default protection ruleset name
+    github_repo_token: Retrieve GitHub token from environment or .env.
+    path_is_in_ignore: Check if a path matches any pattern in .gitignore.
 
 See Also:
-    pyrig.rig.utils.github_api: GitHub API utilities for rulesets and repos
-    pyrig.rig.cli.commands.protect_repo: High-level repository protection
+    pyrig.rig.utils.github_api: GitHub API utilities for rulesets and repos.
+    pyrig.rig.cli.commands.protect_repo: High-level repository protection.
 """
 
 import logging
@@ -41,17 +36,15 @@ def github_repo_token() -> str:
             or if REPO_TOKEN not found in .env.
 
     Examples:
-        Get the token::
+        Get the token:
 
             >>> token = github_repo_token()
             >>> print(token[:7])
             'ghp_...'
 
     Note:
-        For ruleset management, token needs `repo` scope.
-
-    Security:
-        Never commit tokens. Use environment variables or .env (gitignored).
+        For ruleset management, token needs `repo` scope. Never commit tokens.
+        Use environment variables or .env (gitignored).
     """
     # try os env first
     token = os.getenv("REPO_TOKEN")
@@ -70,17 +63,23 @@ def github_repo_token() -> str:
 
 
 def path_is_in_ignore(path: str | Path) -> bool:
-    """Check if a path matches any pattern in a list of gitignore lines.
+    """Check if a path matches any pattern in the .gitignore file.
 
     Args:
-        path: Path to check (string or Path). Absolute paths converted
-            to relative. Directories can have optional trailing slash.
+        path: Path to check (string or Path). Absolute paths are converted
+            to relative. Directories can have an optional trailing slash.
 
     Returns:
         True if path matches any pattern and would be ignored by Git.
 
     Raises:
-        pathspec.PatternError: If gitignore_lines contains malformed patterns.
+        pathspec.PatternError: If .gitignore contains malformed patterns.
+
+    Examples:
+        Check if a directory is ignored:
+
+            >>> path_is_in_ignore("build/")
+            True
 
     See Also:
         VersionController.I.loaded_ignore: Load patterns from .gitignore file.

@@ -1,11 +1,12 @@
 """PyPI package index wrapper.
 
-Provides type-safe wrapper for PyPI package information and badges.
-Shows package version badge from PyPI.
+Provides PyPI package URL generation and version badge integration.
+Assumes the PyPI package name matches the Git repository name.
 
 Example:
     >>> from pyrig.rig.tools.package_index import PackageIndex
     >>> PackageIndex.I.package_index_url()
+    'https://pypi.org/project/pyrig'
 """
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
@@ -16,15 +17,12 @@ class PackageIndex(Tool):
     """PyPI package index wrapper.
 
     Constructs PyPI URLs and badge information for package distribution.
-    Integrates with PyPI for package version tracking and badges.
-
-    Operations:
-        - Package URL generation
-        - Version badge generation
-        - PyPI integration
+    Uses `pyrig.rig.tools.version_controller.VersionController` to derive
+    the package name from the Git repository name.
 
     Example:
         >>> PackageIndex.I.package_index_url()
+        'https://pypi.org/project/pyrig'
     """
 
     @classmethod
@@ -38,15 +36,16 @@ class PackageIndex(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get tool group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            `ToolGroup.PROJECT_INFO`
         """
         return ToolGroup.PROJECT_INFO
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Returns the PyPI version badge and project page URLs."""
         _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
@@ -73,9 +72,10 @@ class PackageIndex(Tool):
     def dev_dependencies(cls) -> list[str]:
         """Get development dependencies for this tool.
 
+        PyPI integration requires no dev dependencies; the package manager
+        (e.g. uv) handles publishing via pyproject.toml.
+
         Returns:
-            List of package names required for development (e.g. API clients).
+            Empty list.
         """
-        # No dev dependencies needed for PyPI integration,
-        # the package manager like uv handles this via the pyproject.toml file.
         return []
