@@ -50,7 +50,7 @@ class Linter(Tool):
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Return the badge and link URLs."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json",
             "https://github.com/astral-sh/ruff",

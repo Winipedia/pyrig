@@ -52,20 +52,12 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for pull_request_template.md.
-
-        Returns:
-            Path: .github directory.
-        """
+        """Return `.github` as parent directory."""
         return Path(".github")
 
     @classmethod
     def lines(cls) -> list[str]:
-        """Get the pull request template content.
-
-        Returns:
-            list[str]: Pull request template lines.
-        """
+        """Return the pull request template content as lines."""
         return [*PULL_REQUEST_TEMPLATE.strip().splitlines()]
 
     @classmethod
@@ -73,7 +65,7 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         """Check if pull_request_template.md exists and is non-empty.
 
         Returns:
-            bool: True if file exists with content, False otherwise.
+            True if file exists with content, False otherwise.
         """
         return cls.path().exists() and bool(
             cls.path().read_text(encoding="utf-8").strip()

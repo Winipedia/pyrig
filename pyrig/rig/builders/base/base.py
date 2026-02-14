@@ -4,7 +4,7 @@ This module provides the abstract base class for all builders in the pyrig frame
 Builders are specialized configuration file handlers that create build artifacts
 (executables, documentation, packages, etc.) rather than configuration files.
 
-`BuilderConfigFile` extends `ConfigFile` but repurposes its interface for build
+`BuilderConfigFile` extends `ListConfigFile` but repurposes its interface for build
 operations:
 
 - `load()` returns existing artifacts from the output directory
@@ -55,12 +55,12 @@ class BuilderConfigFile(ListConfigFile):
     The build lifecycle:
 
     1. A temporary directory is created
-    2. :meth:`create_artifacts` is called (implemented by subclasses)
+    2. `create_artifacts` is called (implemented by subclasses)
     3. Artifacts are collected from the temporary directory
     4. Artifacts are renamed with platform suffixes (e.g., ``-Linux``, ``-Windows``)
     5. Artifacts are moved to the final output directory (default: ``dist/``)
 
-    Subclasses must implement :meth:`create_artifacts` to define their build logic.
+    Subclasses must implement `create_artifacts` to define their build logic.
 
     Attributes:
         ARTIFACTS_DIR_NAME: Default output directory name (`"dist"`).
@@ -154,20 +154,17 @@ class BuilderConfigFile(ListConfigFile):
     def create_file(cls) -> None:
         """Create the parent directory for artifacts.
 
-        Not creating the file itself, as the file creation is handled by the
-        create_artifacts() method.
+        Does not create a file itself; file creation is handled by
+        `create_artifacts`.
         """
         cls.parent_path().mkdir(parents=True, exist_ok=True)
 
     @classmethod
     def definition_package(cls) -> ModuleType:
-        """Get the package where the BuilderConfigFile subclasses are to be defined.
+        """Get the package containing builder subclass definitions.
 
-        Default is pyrig.rig.builders, which overrides the default pyrig.rig.configs.
-        But can be overridden by subclasses to define their own package.
-
-        Returns:
-            Package module where the BuilderConfigFile subclass is defined.
+        Default is `pyrig.rig.builders`, overriding the base default of
+        `pyrig.rig.configs`. Can be overridden by subclasses.
         """
         return builders
 
@@ -205,10 +202,10 @@ class BuilderConfigFile(ListConfigFile):
 
     @classmethod
     def rename_artifact(cls, artifact: Path) -> None:
-        """Rename a single artifact with platform-specific suffix.
+        """Move a single artifact to the output directory with a platform-specific name.
 
         Args:
-            artifact: Path to the artifact.
+            artifact: Path to the artifact in the temporary build directory.
         """
         platform_specific_path = cls.platform_specific_path(artifact)
         logger.debug("Moving artifact: %s to: %s", artifact, platform_specific_path)
@@ -217,25 +214,19 @@ class BuilderConfigFile(ListConfigFile):
 
     @classmethod
     def platform_specific_path(cls, artifact: Path) -> Path:
-        """Get the platform-specific path for an artifact.
+        """Get the platform-specific output path for an artifact.
 
         Args:
             artifact: Path to the artifact.
-
-        Returns:
-            Platform-specific path for the artifact.
         """
         return cls.parent_path() / cls.platform_specific_name(artifact)
 
     @classmethod
     def platform_specific_name(cls, artifact: Path) -> str:
-        """Get the platform-specific name for an artifact.
+        """Generate a platform-specific filename (e.g., ``myapp-Linux.exe``).
 
         Args:
             artifact: Path to the artifact.
-
-        Returns:
-            Platform-specific name for the artifact.
         """
         return f"{artifact.stem}-{platform.system()}{artifact.suffix}"
 
@@ -268,69 +259,41 @@ class BuilderConfigFile(ListConfigFile):
 
     @classmethod
     def app_name(cls) -> str:
-        """Get the application name from pyproject.toml.
-
-        Returns:
-            Project name from pyproject.toml.
-        """
+        """Return the application name from pyproject.toml."""
         return PyprojectConfigFile.I.project_name()
 
     @classmethod
     def root_path(cls) -> Path:
-        """Get the project root directory path.
-
-        Returns:
-            Absolute path to the project root directory.
-        """
+        """Return the absolute path to the project root directory."""
         src_package = import_module(PyprojectConfigFile.I.package_name())
         src_path = ModulePath.package_type_to_dir_path(src_package)
         return src_path.parent
 
     @classmethod
     def main_path(cls) -> Path:
-        """Get the absolute path to the main.py entry point.
-
-        Returns:
-            Absolute path to main.py.
-        """
+        """Return the absolute path to the main.py entry point."""
         return cls.src_package_path() / cls.main_path_relative_to_src_package()
 
     @classmethod
     def resources_path(cls) -> Path:
-        """Get the absolute path to the resources directory.
-
-        Returns:
-            Absolute path to the resources directory.
-        """
+        """Return the absolute path to the resources directory."""
         return cls.src_package_path() / cls.resources_path_relative_to_src_package()
 
     @classmethod
     def src_package_path(cls) -> Path:
-        """Get the absolute path to the source package.
-
-        Returns:
-            Absolute path to the source package directory.
-        """
+        """Return the absolute path to the source package directory."""
         return cls.root_path() / PyprojectConfigFile.I.package_name()
 
     @classmethod
     def main_path_relative_to_src_package(cls) -> Path:
-        """Get the relative path to main.py from the source package.
-
-        Returns:
-            Relative path from source package to main.py.
-        """
+        """Return the relative path to main.py from the source package."""
         project_main_file = ModulePath.module_name_to_relative_file_path(main.__name__)
         pyrig_package_dir = ModulePath.package_name_to_relative_dir_path(pyrig.__name__)
         return project_main_file.relative_to(pyrig_package_dir)
 
     @classmethod
     def resources_path_relative_to_src_package(cls) -> Path:
-        """Get the relative path to resources from the source package.
-
-        Returns:
-            Relative path from source package to resources directory.
-        """
+        """Return the relative path to the resources directory from the src package."""
         resources_path = ModulePath.package_name_to_relative_dir_path(
             resources.__name__
         )

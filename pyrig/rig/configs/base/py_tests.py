@@ -1,7 +1,7 @@
 """Python test file configuration management.
 
-Provides PythonTestsConfigFile base class for test .py files with parent path
-automatically set to the tests/ directory.
+Provide `PythonTestsConfigFile` base class for test `.py` files with parent path
+automatically set to the `tests/` directory.
 
 Example:
     >>> from pyrig.rig.configs.base.py_tests import PythonTestsConfigFile
@@ -27,8 +27,8 @@ from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 class PythonTestsConfigFile(PythonConfigFile):
     """Base class for Python test (.py) files.
 
-    Extends PythonConfigFile with parent path automatically set to tests/.
-    Inherits "py" extension from PythonConfigFile.
+    Extends `PythonConfigFile` with parent path automatically set to `tests/`.
+    Inherits `"py"` extension from `PythonConfigFile`.
 
     Subclasses must implement:
         - `lines`: Required test code as list of lines
@@ -41,5 +41,5 @@ class PythonTestsConfigFile(PythonConfigFile):
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Return the tests package directory path, typically Path("tests")."""
+        """Return the tests package directory path, typically `Path("tests")`."""
         return Path(MirrorTestConfigFile.I.tests_package_name())

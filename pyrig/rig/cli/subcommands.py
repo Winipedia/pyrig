@@ -17,7 +17,7 @@ def mkroot(
     """Create or update project configuration files and directory structure.
 
     Discovers all ConfigFile subclasses across the project and its dependencies,
-    then initializes each one to create or update configuration files. Generates
+    then validates each one to create or update configuration files. Generates
     the complete project structure including pyproject.toml, .gitignore, GitHub
     workflows, prek hooks, and other configuration files.
 
@@ -144,20 +144,21 @@ def build() -> None:
 
     Build Process:
         1. Discovers all non-abstract BuilderConfigFile subclasses
-        2. Instantiates each builder (triggers build via ``dump()``)
+        2. Validates each builder (triggers build via ``dump()``)
         3. Creates artifacts in temporary directories
         4. Renames with platform-specific suffixes (e.g., ``-Linux``, ``-Windows``)
         5. Moves artifacts to ``dist/`` directory
 
-    Builders execute sequentially. Each builder runs independently; if one fails,
-    others are not affected.
+    Builders within the same priority group execute in parallel. Priority groups
+    are processed sequentially (highest first).
 
     Example:
         $ uv run pyrig build
 
     Note:
         Artifacts are placed in ``dist/`` by default. Platform-specific naming
-        uses ``platform.system()``. Only leaf BuilderConfigFile classes are executed.
+        uses ``platform.system()``. Only non-abstract BuilderConfigFile subclasses
+        are executed.
     """
     from pyrig.rig.cli.commands.build_artifacts import build_artifacts  # noqa: PLC0415
 

@@ -5,7 +5,7 @@ Provides type-safe wrapper for Git commands: init, add, commit, push, tag, confi
 Example:
     >>> from pyrig.rig.tools.version_controller import VersionController
     >>> VersionController.I.add_all_args().run()
-    >>> VersionController.I.commit_no_verify_args("Update docs").run()
+    >>> VersionController.I.commit_no_verify_args(msg="Update docs").run()
     >>> VersionController.I.push_args().run()
 """
 
@@ -37,7 +37,7 @@ class VersionController(Tool):
     Example:
         >>> VersionController.I.init_args().run()
         >>> VersionController.I.add_all_args().run()
-        >>> VersionController.I.commit_no_verify_args("Initial commit").run()
+        >>> VersionController.I.commit_no_verify_args(msg="Initial commit").run()
     """
 
     @classmethod
@@ -60,7 +60,7 @@ class VersionController(Tool):
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Return the badge and linked page URLs."""
         return (
             "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white",
             "https://git-scm.com",
@@ -68,10 +68,10 @@ class VersionController(Tool):
 
     @classmethod
     def dev_dependencies(cls) -> list[str]:
-        """Get tool dependencies.
+        """Get development dependencies.
 
         Returns:
-            List of tool dependencies.
+            Empty list (git is a system dependency).
         """
         # git is a system dependency, so we don't have a dev dependency for it
         return []
@@ -322,7 +322,7 @@ class VersionController(Tool):
             tag: Tag name.
 
         Returns:
-            Args for 'git tag'.
+            Args for 'git tag <tag>'.
         """
         return cls.args("tag", tag, *args)
 
@@ -463,10 +463,10 @@ class VersionController(Tool):
     @classmethod
     @cache
     def username(cls) -> str:
-        """Get git username from local config.
+        """Get git username from config.
 
         Returns:
-            Configured git username (cached).
+            Configured git username.
 
         Raises:
             subprocess.CalledProcessError: If user.name not configured.

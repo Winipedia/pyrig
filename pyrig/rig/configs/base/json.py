@@ -35,27 +35,27 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         - `_configs`: Expected JSON configuration structure
 
     Example:
-        Dict configuration::
+        Dict configuration:
 
-            >>> class MyConfigFile(JsonConfigFile):
-            ...     @classmethod
-            ...     def parent_path(cls) -> Path:
-            ...         return Path()
-            ...
-            ...     @classmethod
-            ...     def _configs(cls) -> dict[str, Any]:
-            ...         return {"setting": "value", "nested": {"key": "value"}}
+        >>> class MyConfigFile(JsonConfigFile):
+        ...     @classmethod
+        ...     def parent_path(cls) -> Path:
+        ...         return Path()
+        ...
+        ...     @classmethod
+        ...     def _configs(cls) -> dict[str, Any]:
+        ...         return {"setting": "value", "nested": {"key": "value"}}
 
-        List configuration::
+        List configuration:
 
-            >>> class MyListConfigFile(JsonConfigFile):
-            ...     @classmethod
-            ...     def parent_path(cls) -> Path:
-            ...         return Path()
-            ...
-            ...     @classmethod
-            ...     def _configs(cls) -> list[Any]:
-            ...         return ["item1", "item2", {"key": "value"}]
+        >>> class MyListConfigFile(JsonConfigFile):
+        ...     @classmethod
+        ...     def parent_path(cls) -> Path:
+        ...         return Path()
+        ...
+        ...     @classmethod
+        ...     def _configs(cls) -> list[Any]:
+        ...         return ["item1", "item2", {"key": "value"}]
     """
 
     @classmethod

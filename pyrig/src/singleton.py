@@ -1,9 +1,4 @@
-"""Singleton pattern implementation using metaclasses.
-
-This module provides a metaclass-based approach to implementing the Singleton
-pattern in Python, ensuring that only one instance of a class exists throughout
-the application lifecycle.
-"""
+"""Singleton pattern implementation using metaclasses."""
 
 from abc import ABCMeta
 from typing import Any, ClassVar

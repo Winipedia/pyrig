@@ -1,7 +1,7 @@
 """Project structure and configuration file creation.
 
 Generates all configuration files and directory structure by discovering
-and validating ConfigFile subclasses.
+and validating `ConfigFile` subclasses.
 """
 
 import logging
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def make_project_root(*, priority: bool = False) -> None:
     """Create project configuration files and directory structure.
 
-    Discovers and validates all ConfigFile subclasses to create the complete
+    Discovers and validates all `ConfigFile` subclasses to create the complete
     project structure.
 
     Args:

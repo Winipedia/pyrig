@@ -37,7 +37,8 @@ class ConfigsInitConfigFile(InitConfigFile):
         """Get the priority for this config file.
 
         Returns:
-            float: 10.0 (ensures configs directory exists before other files use it).
+            `Priority.LOW` (10), ensuring the configs directory exists before
+            other config files use it.
         """
         return Priority.LOW
 
@@ -46,7 +47,7 @@ class ConfigsInitConfigFile(InitConfigFile):
         """Get the source module to copy docstring from.
 
         Returns:
-            ModuleType: pyrig.rig.configs module.
+            The `pyrig.rig.configs` module.
 
         Note:
             Only docstring is copied, no code.

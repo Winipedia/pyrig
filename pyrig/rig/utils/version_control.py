@@ -32,15 +32,11 @@ def github_repo_token() -> str:
         GitHub API token string.
 
     Raises:
-        ValueError: If .env doesn't exist when REPO_TOKEN not in environment,
-            or if REPO_TOKEN not found in .env.
+        ValueError: If REPO_TOKEN not found in environment variables or .env
+            file.
 
-    Examples:
-        Get the token:
-
-            >>> token = github_repo_token()
-            >>> print(token[:7])
-            'ghp_...'
+    Example:
+        >>> token = github_repo_token()
 
     Note:
         For ruleset management, token needs `repo` scope. Never commit tokens.

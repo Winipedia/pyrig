@@ -48,38 +48,22 @@ class GitignoreConfigFile(StringConfigFile):
 
     @classmethod
     def filename(cls) -> str:
-        """Get the filename for .gitignore.
-
-        Returns:
-            str: The filename for .gitignore.
-        """
+        """Get the filename for .gitignore."""
         return VersionController.I.ignore_filename()
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for .gitignore.
-
-        Returns:
-            Path: Project root.
-        """
+        """Get parent directory (project root)."""
         return Path()
 
     @classmethod
     def extension_separator(cls) -> str:
-        """Get the extension separator for .gitignore.
-
-        Returns:
-            str: Empty string (no separator; filename has no extension).
-        """
+        """Get extension separator (empty; .gitignore has no extension)."""
         return ""
 
     @classmethod
     def extension(cls) -> str:
-        """Get the file extension for .gitignore.
-
-        Returns:
-            str: empty string (no extension).
-        """
+        """Get file extension (empty; .gitignore has no extension)."""
         return ""
 
     @classmethod
@@ -125,10 +109,6 @@ class GitignoreConfigFile(StringConfigFile):
 
         Returns:
             str: Python.gitignore content from GitHub.
-
-        Raises:
-            requests.HTTPError: If HTTP request fails (caught by decorator).
-            RuntimeError: If fetch fails and no fallback exists.
 
         Note:
             Makes HTTP request with 10s timeout. Decorator provides fallback.

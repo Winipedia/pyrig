@@ -49,13 +49,11 @@ class ReleaseWorkflow(Workflow):
         6. Download build artifacts from the triggering workflow run
         7. Generate changelog and create the GitHub release
 
-    Examples:
-        Generate release.yml workflow::
+    Example:
+        Generate release.yml workflow:
 
-            from pyrig.rig.configs.workflows.release import ReleaseWorkflow
-
-            # Creates .github/workflows/release.yml
-            ReleaseWorkflow.validate()
+        >>> from pyrig.rig.configs.workflows.release import ReleaseWorkflow
+        >>> ReleaseWorkflow.validate()
 
     See Also:
         pyrig.rig.configs.workflows.build.BuildWorkflow

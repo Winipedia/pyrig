@@ -52,10 +52,10 @@ class MainConfigFile(CopyModuleConfigFile):
 
     @classmethod
     def create_file(cls) -> None:
-        """Create the main.py file by copying pyrig.main module.
+        """Create main.py by copying the `pyrig.main` module.
 
-        Creates {package_name}/main.py with content from pyrig.main.
-        Deletes root-level main.py if it exists to clean up legacy files from uv init.
+        Also delete root-level main.py if it exists to clean up legacy
+        files from ``uv init``.
         """
         super().create_file()
         cls.delete_root_main()
@@ -77,7 +77,8 @@ class MainConfigFile(CopyModuleConfigFile):
         """Check if the main.py file is valid.
 
         Returns:
-            bool: True if file contains "def main" and __main__ guard.
+            bool: True if the parent check passes or the file contains
+                ``def main`` and an ``__main__`` guard.
 
         Note:
             Reads file from disk to check content.
@@ -89,14 +90,11 @@ class MainConfigFile(CopyModuleConfigFile):
 
     @classmethod
     def delete_root_main(cls) -> None:
-        """Delete root-level main.py file.
-
-        Side Effects:
-            Deletes ./main.py if exists and logs info message.
+        """Delete root-level main.py if it exists.
 
         Note:
-            Called automatically during create_file()
-            to clean up legacy files from uv init.
+            Called automatically during `create_file` to clean up legacy
+            files from ``uv init``.
         """
         root_main_path = Path("main.py")
         if root_main_path.exists():

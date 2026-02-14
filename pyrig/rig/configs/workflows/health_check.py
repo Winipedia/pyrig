@@ -122,7 +122,7 @@ class HealthCheckWorkflow(Workflow):
         """Get the workflow jobs.
 
         Returns:
-            Dict with protect, matrix, and aggregation jobs.
+            Dict with health check, matrix health check, and aggregation jobs.
         """
         jobs: dict[str, Any] = {}
         jobs.update(cls.job_health_checks())
@@ -165,7 +165,7 @@ class HealthCheckWorkflow(Workflow):
     def job_health_checks(cls) -> dict[str, Any]:
         """Get the job that runs health checks.
 
-        This is for non matrix checks.
+        This is for non-matrix checks.
 
         Returns:
             Job configuration for health checks.
@@ -206,7 +206,8 @@ class HealthCheckWorkflow(Workflow):
         """Get the steps for the health check job.
 
         Returns:
-            List of steps for setup, linting, and testing.
+            List of steps for setup, pre-commit hooks, dependency audit,
+            and repository protection.
         """
         return [
             *cls.steps_core_installed_setup(),

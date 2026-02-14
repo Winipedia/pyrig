@@ -1,11 +1,11 @@
-"""Documentation configuration file management.
+"""Manage documentation configuration files.
 
-Provides MkDocs configuration with Material theme, dark/light mode toggle,
+Provide MkDocs configuration with Material theme, dark/light mode toggle,
 navigation (Home, API), search, mermaid diagrams, and mkdocstrings for
 Google-style docstring API documentation.
 
 Modules:
-    mkdocs: mkdocs.yml configuration management
+    `mkdocs`: `mkdocs.yml` configuration management.
 
 See Also:
     MkDocs: https://www.mkdocs.org/

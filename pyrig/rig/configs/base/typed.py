@@ -44,16 +44,12 @@ class TypedConfigFile(DictConfigFile):
 
     @classmethod
     def _load(cls) -> dict[str, Any]:
-        """Load py.typed content as empty dict.
-
-        Returns:
-            Empty dict.
-        """
+        """Load py.typed content as empty dict."""
         return {}
 
     @classmethod
     def _dump(cls, config: dict[str, Any]) -> None:
-        """No-op; py.typed marker files have no writable content.
+        """Reject non-empty config; py.typed marker files have no writable content.
 
         Args:
             config: Configuration dict. Must be empty.
@@ -67,9 +63,5 @@ class TypedConfigFile(DictConfigFile):
 
     @classmethod
     def _configs(cls) -> dict[str, Any]:
-        """Return expected configuration as empty dict.
-
-        Returns:
-            Empty dict.
-        """
+        """Return expected configuration as empty dict."""
         return {}

@@ -1,6 +1,6 @@
-"""Manages bug report issue template.
+"""Manage bug report issue template.
 
-Creates .github/ISSUE_TEMPLATE/bug_report.yml with a minimal bug report template.
+Create .github/ISSUE_TEMPLATE/bug_report.yml with a minimal bug report template.
 
 See Also:
     pyrig.rig.configs.base.yml.YmlConfigFile
@@ -13,7 +13,7 @@ from pyrig.rig.configs.base.yml import YmlConfigFile
 
 
 class BugReportConfigFile(YmlConfigFile):
-    """Manages .github/ISSUE_TEMPLATE/bug_report.yml.
+    """Manage .github/ISSUE_TEMPLATE/bug_report.yml.
 
     Bug report template with fields for:
     - Description (required)

@@ -37,10 +37,10 @@ class ProjectTester(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Get tool group.
+        """Get badge group.
 
         Returns:
-            'testing'
+            `ToolGroup.TESTING`
         """
         return ToolGroup.TESTING
 

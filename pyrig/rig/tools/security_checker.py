@@ -48,7 +48,7 @@ class SecurityChecker(Tool):
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Return the badge image URL and project page URL."""
         return (
             "https://img.shields.io/badge/security-bandit-yellow.svg",
             "https://github.com/PyCQA/bandit",

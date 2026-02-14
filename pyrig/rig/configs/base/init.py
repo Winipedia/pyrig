@@ -12,7 +12,7 @@ Example:
     ...     def src_module(cls) -> ModuleType:
     ...         return pyrig.src
     >>>
-    >>> SrcPackageInit()  # Creates myproject/src/__init__.py
+    >>> SrcPackageInit()  # Creates <project>/src/__init__.py
 """
 
 from pathlib import Path

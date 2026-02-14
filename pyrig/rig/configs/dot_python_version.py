@@ -1,4 +1,4 @@
-"""Manages .python-version files for pyenv/asdf.
+"""Manage .python-version files for pyenv/asdf.
 
 Creates .python-version with minimum supported Python version from pyproject.toml.
 Used by pyenv/asdf to auto-select Python version.
@@ -15,9 +15,9 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class DotPythonVersionConfigFile(StringConfigFile):
-    """Manages .python-version files for pyenv/asdf.
+    """Manage .python-version files for pyenv/asdf.
 
-    Creates .python-version with minimum supported Python version from pyproject.toml.
+    Create .python-version with minimum supported Python version from pyproject.toml.
 
     See Also:
         pyrig.rig.configs.pyproject.PyprojectConfigFile.I.first_supported_python_version

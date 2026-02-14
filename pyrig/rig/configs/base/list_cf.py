@@ -1,7 +1,7 @@
 """List-based configuration file base class.
 
-Provides ListConfigFile as an intermediate abstract class for configuration files
-that use list[Any] as their configuration type.
+Provide `ListConfigFile` as an intermediate abstract class for configuration files
+that use `list[Any]` as their configuration type.
 
 Example:
     >>> from pathlib import Path
@@ -38,8 +38,8 @@ from pyrig.rig.configs.base.base import ConfigFile
 class ListConfigFile(ConfigFile[list[Any]]):
     """Abstract base class for list-based configuration files.
 
-    Specifies list[Any] as the configuration type. Subclasses inherit
-    proper typing for load(), dump(), configs(), etc.
+    Specifies `list[Any]` as the configuration type. Subclasses inherit
+    proper typing for `load()`, `dump()`, `configs()`, etc.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the config file

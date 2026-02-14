@@ -31,7 +31,7 @@ class ApiConfigFile(MarkdownConfigFile):
 
             # API Reference
 
-            ::: myproject
+            ::: pyrig
 
     See Also:
         pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile

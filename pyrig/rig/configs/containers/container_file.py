@@ -1,6 +1,6 @@
-"""Manages Containerfile configuration.
+"""Manage Containerfile configuration.
 
-Generates Docker-compatible Containerfile with best practices: Python slim
+Generate Docker-compatible Containerfile with best practices: Python slim
 base, uv package manager, non-root user (appuser), optimized layer caching, and
 proper permissions. Compatible with Docker, Podman, and OCI-compliant runtimes.
 
@@ -18,9 +18,9 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class ContainerfileConfigFile(StringConfigFile):
-    """Manages Containerfile generation.
+    """Manage Containerfile generation.
 
-    Produces production-ready Containerfile with Python slim base, uv package
+    Produce production-ready Containerfile with Python slim base, uv package
     manager, non-root user (appuser, UID 1000), optimized layer caching, and
     configurable entrypoint. Compatible with Docker, Podman, and buildah.
 
@@ -28,8 +28,8 @@ class ContainerfileConfigFile(StringConfigFile):
         >>> ContainerfileConfigFile.validate()
 
     See Also:
-        pyrig.rig.configs.pyproject.PyprojectConfigFile
-        pyrig.rig.tools.package_manager.PackageManager
+        `pyrig.rig.configs.pyproject.PyprojectConfigFile`
+        `pyrig.rig.tools.package_manager.PackageManager`
     """
 
     @classmethod
@@ -54,7 +54,7 @@ class ContainerfileConfigFile(StringConfigFile):
 
     @classmethod
     def lines(cls) -> list[str]:
-        """Return Containerfile build instructions via layers()."""
+        """Return Containerfile build instructions via `layers()`."""
         return cls.layers()
 
     @classmethod
@@ -69,7 +69,8 @@ class ContainerfileConfigFile(StringConfigFile):
             Containerfile instructions (FROM, WORKDIR, COPY, RUN, etc.).
 
         Note:
-            Reads from pyproject.toml and may make API calls for Python version.
+            Reads from `pyproject.toml` and may make API calls to resolve the
+            Python version.
         """
         latest_python_version = PyprojectConfigFile.I.latest_possible_python_version()
         project_name = PyprojectConfigFile.I.project_name()

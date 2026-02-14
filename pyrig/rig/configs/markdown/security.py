@@ -80,10 +80,10 @@ class SecurityConfigFile(MarkdownConfigFile):
 
     @classmethod
     def lines(cls) -> list[str]:
-        """Get the security template content with email inserted.
+        """Return the security policy as individual lines.
 
         Returns:
-            list[str]: Security template lines.
+            list[str]: Security template lines with contact method inserted.
         """
         return [*cls.template_with_contact_method().splitlines()]
 

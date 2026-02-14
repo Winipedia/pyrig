@@ -34,8 +34,7 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
             # In {package_name}/rig/cli/shared_subcommands.py
             def my_shared_command() -> None:
                 \"\"\"Shared command available in all projects.\"\"\"
-                from myproject.utils import shared_functionality
-                shared_functionality()
+                ...
 
         Functions are auto-discovered and registered as Typer commands.
 

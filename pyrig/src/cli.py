@@ -5,11 +5,11 @@ from `sys.argv[0]`. This is the foundation for pyrig's dynamic command discovery
 system, allowing shared commands to adapt behavior based on the invoking project.
 
 These utilities are used internally by pyrig's CLI infrastructure
-(``pyrig.rig.cli.cli``) and are available for shared commands that need to know
+(`pyrig.rig.cli.cli`) and are available for shared commands that need to know
 which project invoked them.
 
 Example:
-    A shared ``version`` command that displays the invoking project's version::
+    A shared `version` command that displays the invoking project's version:
 
         from importlib.metadata import version
         from pyrig.src.cli import project_name_from_argv
@@ -34,7 +34,7 @@ def project_name_from_argv() -> str:
 
     Returns:
         Project name extracted from the console script entry point.
-        For ``uv run my-project cmd``, returns ``"my-project"``.
+        For `uv run my-project cmd`, returns `"my-project"`.
 
     Example:
         >>> # When invoked as: uv run my-project build
@@ -56,7 +56,7 @@ def package_name_from_argv() -> str:
 
     Returns:
         Python package name corresponding to the invoked project.
-        For ``uv run my-project cmd``, returns ``"my_project"``.
+        For `uv run my-project cmd`, returns `"my_project"`.
 
     Example:
         >>> # When invoked as: uv run my-project build

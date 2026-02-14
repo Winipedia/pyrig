@@ -24,7 +24,7 @@ class ContainerEngine(Tool):
         >>> from pathlib import Path
         >>> ContainerEngine.I.build_args(project_name="app:v1").run()
         >>> ContainerEngine.I.save_args(
-        ...     image_file=Path("app.tar"), image_path=Path("./dist")
+        ...     image_file=Path("app.tar"), image_path=Path("dist/app.tar")
         ... ).run()
     """
 
@@ -39,15 +39,12 @@ class ContainerEngine(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tool belongs to.
-
-        E.g. testing, tool, code-quality etc...
-        """
+        """Return the badge group for this tool."""
         return ToolGroup.TOOLING
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Return the badge and link URLs."""
         return (
             "https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6",
             "https://podman.io",

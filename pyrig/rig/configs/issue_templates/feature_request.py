@@ -1,6 +1,6 @@
-"""Manages feature request issue template.
+"""Manage feature request issue template.
 
-Creates .github/ISSUE_TEMPLATE/feature_request.yml with a minimal template.
+Create .github/ISSUE_TEMPLATE/feature_request.yml with a minimal template.
 
 See Also:
     pyrig.rig.configs.base.yml.YmlConfigFile
@@ -13,7 +13,7 @@ from pyrig.rig.configs.base.yml import YmlConfigFile
 
 
 class FeatureRequestConfigFile(YmlConfigFile):
-    """Manages .github/ISSUE_TEMPLATE/feature_request.yml.
+    """Manage .github/ISSUE_TEMPLATE/feature_request.yml.
 
     Feature request template with fields for:
     - Summary (required)

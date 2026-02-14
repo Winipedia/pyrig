@@ -72,7 +72,7 @@ class StringConfigFile(ListConfigFile):
             config: List of lines to write to the file.
 
         Note:
-            User additions are preserved via merge_configs(), not here.
+            User additions are preserved via `merge_configs()`, not here.
         """
         # add empty line at end if not already empty
         if config and config[-1].strip():
@@ -84,8 +84,8 @@ class StringConfigFile(ListConfigFile):
     def merge_configs(cls) -> list[Any]:
         """Merge expected config lines with existing file content.
 
-        Places expected lines first, followed by existing content. If
-        should_override_content() is True, existing content is discarded.
+        Place expected lines first, followed by existing content. If
+        `should_override_content()` is ``True``, existing content is discarded.
 
         Returns:
             Merged list of lines (expected lines first, then existing lines).
@@ -97,13 +97,13 @@ class StringConfigFile(ListConfigFile):
 
     @classmethod
     def should_override_content(cls) -> bool:
-        """Override file content even if it exists.
+        """Return whether existing content should be replaced entirely.
 
-        If True the expected content replaces the existing content entirely.
-        If False the existing content is appended after the expected content.
+        If ``True``, the expected content replaces the existing content entirely.
+        If ``False``, the existing content is appended after the expected content.
 
         Returns:
-            True if content should be overridden, False if not.
+            ``True`` if content should be overridden, ``False`` if not.
         """
         return False
 
@@ -112,7 +112,7 @@ class StringConfigFile(ListConfigFile):
         r"""Return required content as list of lines.
 
         Returns:
-            List of lines from lines().
+            List of lines from `lines()`.
         """
         return cls.lines()
 
@@ -121,7 +121,7 @@ class StringConfigFile(ListConfigFile):
         r"""Check if file contains required content via substring matching.
 
         Returns:
-            True if parent validation passes or all required lines found
+            ``True`` if parent validation passes or all required lines found
             in file content.
         """
         all_lines_in_file = all(line in cls.file_content() for line in cls.lines())
@@ -129,24 +129,7 @@ class StringConfigFile(ListConfigFile):
 
     @classmethod
     def file_content(cls) -> str:
-        r"""Get the current file content.
-
-        Convenience method to get the file content as a string by joining
-        the lines from load().
-
-        Returns:
-            The full content of the file as a string.
-
-        Example:
-            Get file content::
-
-                # myfile.txt contains:
-                # Line 1
-                # Line 2
-
-                content = MyStringConfigFile.file_content()
-                # Returns: "Line 1\nLine 2"
-        """
+        r"""Return file content as a single string by joining lines from `load()`."""
         return cls.make_string_from_lines(cls.load())
 
     @classmethod

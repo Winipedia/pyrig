@@ -1,7 +1,7 @@
 """Development-time infrastructure for pyrig projects.
 
 Provides development tools, configuration management, CLI commands, artifact builders,
-and testing infrastructure. For development and CI/CD only, not runtime use.
+and testing infrastructure.
 
 Subpackages:
     builders: Artifact building (PyInstaller executables, distributions)

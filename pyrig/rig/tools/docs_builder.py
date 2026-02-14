@@ -39,15 +39,16 @@ class DocsBuilder(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tool belongs to.
+        """Get tool group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            `ToolGroup.DOCUMENTATION`
         """
         return ToolGroup.DOCUMENTATION
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Return the badge and link URLs."""
         return (
             "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white",
             "https://www.mkdocs.org",

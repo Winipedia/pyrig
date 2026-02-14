@@ -11,9 +11,6 @@ The workflow builds:
 Artifacts are uploaded and made available for the release workflow to create
 GitHub releases.
 
-The deploy workflow runs after a successful release and handles publishing to
-PyPI and deploying to GitHub Pages.
-
 See Also:
     pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow
         Must complete successfully before this workflow runs
@@ -132,7 +129,7 @@ class BuildWorkflow(Workflow):
         """Get the steps for building artifacts.
 
         Returns:
-            List of build steps, or placeholder if no builders defined.
+            List of build steps.
         """
         return [
             *cls.steps_core_matrix_setup(patch_version=True),

@@ -33,21 +33,10 @@ class ToolsInitConfigFile(InitConfigFile):
 
     @classmethod
     def priority(cls) -> float:
-        """Get the priority for this config file.
-
-        Returns:
-            float: 10.0 (ensures tools directory exists before other files use it).
-        """
+        """Return `Priority.LOW` to trigger validation earlier than default."""
         return Priority.LOW
 
     @classmethod
     def src_module(cls) -> ModuleType:
-        """Get the source module to copy docstring from.
-
-        Returns:
-            ModuleType: pyrig.rig.tools module.
-
-        Note:
-            Only docstring is copied, no code.
-        """
+        """Return the `pyrig.rig.tools` module."""
         return tools

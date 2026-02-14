@@ -43,37 +43,29 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
 
     @classmethod
     def filename(cls) -> str:
-        """Get the CODE_OF_CONDUCT filename.
-
-        Returns:
-            str: "CODE_OF_CONDUCT" (extension added by parent).
-        """
+        """Return "CODE_OF_CONDUCT" as the filename."""
         return "CODE_OF_CONDUCT"
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for CODE_OF_CONDUCT.md.
-
-        Returns:
-            Path: Project root.
-        """
+        """Return project root as parent directory."""
         return Path()
 
     @classmethod
     def lines(cls) -> list[str]:
-        """Get the Contributor Covenant Code of Conduct content.
-
-        Returns:
-            list[str]: Contributor Covenant 2.1 lines.
-        """
+        """Return Contributor Covenant Code of Conduct content as lines."""
         return [*cls.contributor_covenant_with_contact_method().splitlines()]
 
     @classmethod
     def is_correct(cls) -> bool:
         """Check if CODE_OF_CONDUCT.md exists and is non-empty.
 
+        Note:
+            When running inside pyrig itself, this also triggers
+            `contributor_covenant()` to update the bundled resource if needed.
+
         Returns:
-            bool: True if file exists with content, False otherwise.
+            True if file exists with content, False otherwise.
         """
         if src_package_is_pyrig():
             # if in pyrig just run get contributor covenant
@@ -85,11 +77,11 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
 
     @classmethod
     def contributor_covenant_with_contact_method(cls) -> str:
-        """Get the Contributor Covenant with the contact method.
+        """Return the Contributor Covenant with the contact method inserted.
 
         Returns:
-            str: Contributor Covenant 2.1 content with contact method inserted
-                in place of [INSERT CONTACT METHOD].
+            Contributor Covenant 2.1 content with the contact method in place
+            of ``[INSERT CONTACT METHOD]``.
         """
         contact_method = cls.contact_method()
         return cls.contributor_covenant().replace(
@@ -104,10 +96,10 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     def contributor_covenant(cls) -> str:
         """Fetch the Contributor Covenant from GitHub's MVG repository.
 
-        Falls back to a bundled resource template on fetch error.
+        Fall back to a bundled resource template on fetch error.
 
         Returns:
-            str: Contributor Covenant 2.1 content.
+            Contributor Covenant 2.1 content.
         """
         resp = requests.get(
             "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md",
@@ -118,10 +110,10 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
 
     @classmethod
     def contact_method(cls) -> str:
-        """Get the contact method for the code of conduct.
+        """Return the contact method for the code of conduct.
 
         Returns:
-            str: Version control email wrapped in angle brackets,
-                e.g., ``<user@example.com>``.
+            Version control email wrapped in angle brackets,
+            e.g., ``<user@example.com>``.
         """
         return f"<{VersionController.I.email()}>"

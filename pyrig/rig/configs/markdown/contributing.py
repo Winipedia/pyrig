@@ -73,29 +73,17 @@ class ContributingConfigFile(MarkdownConfigFile):
 
     @classmethod
     def filename(cls) -> str:
-        """Get the CONTRIBUTING filename.
-
-        Returns:
-            str: "CONTRIBUTING" (extension added by parent).
-        """
+        """Return "CONTRIBUTING" as the filename."""
         return "CONTRIBUTING"
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for CONTRIBUTING.md.
-
-        Returns:
-            Path: Project root.
-        """
+        """Return project root as parent directory."""
         return Path()
 
     @classmethod
     def lines(cls) -> list[str]:
-        """Get the contributing template content.
-
-        Returns:
-            list[str]: Contributing template lines.
-        """
+        """Return the contributing template content as lines."""
         return [*CONTRIBUTING_TEMPLATE.splitlines()]
 
     @classmethod
@@ -103,7 +91,7 @@ class ContributingConfigFile(MarkdownConfigFile):
         """Check if CONTRIBUTING.md exists and is non-empty.
 
         Returns:
-            bool: True if file exists with content, False otherwise.
+            True if file exists with content, False otherwise.
         """
         return cls.path().exists() and bool(
             cls.path().read_text(encoding="utf-8").strip()

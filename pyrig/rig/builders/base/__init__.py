@@ -1,4 +1,4 @@
-"""Base classes for artifact builders.
+"""Base class for artifact builders.
 
 Provides the abstract `BuilderConfigFile` base class that defines the interface
 and orchestration logic for all artifact builders. The `BuilderConfigFile` class

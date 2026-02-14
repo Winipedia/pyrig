@@ -62,12 +62,12 @@ def return_resource_file_content_on_exceptions(
     Uses tenacity but does not retry - catches exception once and returns fallback.
 
     Args:
-        resource_name: Resource file name (without path). E.g., "LATEST_VERSION"
-            refers to `pyrig/resources/LATEST_VERSION`. Must exist.
+        resource_name: Resource file name (without path). E.g., "LATEST_PYTHON_VERSION"
+            refers to `pyrig/resources/LATEST_PYTHON_VERSION`. Must exist.
         exceptions: Tuple of exception types that trigger fallback. Subclasses
             also trigger fallback.
         overwrite_resource: If True and in pyrig dev mode, write successful results
-            back to resource file and stage in git. Defaults to True.
+            back to resource file. Defaults to True.
         **tenacity_kwargs: Additional tenacity retry decorator arguments. Note that
             stop and retry_error_callback are already configured.
 
@@ -140,7 +140,7 @@ def return_resource_content_on_fetch_error(
             E.g., "LATEST_PYTHON_VERSION" refers to
             `pyrig/resources/LATEST_PYTHON_VERSION`.
         overwrite_resource: If True and in pyrig dev mode, write successful results
-            back to resource file and stage in git. Defaults to True.
+            back to resource file. Defaults to True.
 
     Returns:
         Decorator function for HTTP request functions returning strings.

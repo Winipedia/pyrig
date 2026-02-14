@@ -74,8 +74,8 @@ def configure_logging(
 ) -> None:
     """Configure logging based on verbosity flags.
 
-    Typer callback that runs before any command executes. Configures the Python
-    logging system based on user-provided verbosity flags.
+    Typer callback that runs before any command executes. Configures the
+    Python logging system based on user-provided verbosity flags.
 
     Logging Levels:
         - Default: INFO level, clean formatting (just messages)
@@ -222,17 +222,15 @@ def add_shared_subcommands() -> None:
 
 
 def main() -> None:
-    """Main entry point for the pyrig CLI.
+    """Run the pyrig CLI.
 
-    Primary entry point called when the CLI is invoked (e.g., `uv run pyrig <command>`).
-    Orchestrates command discovery and registration before invoking the Typer app.
+    Orchestrate command discovery and registration before invoking the Typer app.
+    Registered as a console script entry point in `pyproject.toml`.
 
     Steps:
         1. Discovers and registers project-specific commands
         2. Discovers and registers shared commands
         3. Invokes Typer app to parse arguments and execute command
-
-    Registered as a console script entry point in pyproject.toml.
 
     Example:
         $ uv run pyrig mkroot

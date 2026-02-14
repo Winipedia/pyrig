@@ -42,7 +42,7 @@ class RemoteVersionController(Tool):
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Return the badge image URL and repository page URL."""
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )

@@ -70,7 +70,7 @@ class Tool(SingletonDependencySubclass):
         ...     def build_args(cls, *args: str) -> Args:
         ...         return cls.args("build", *args)
         >>> MyTool.build_args("--verbose")
-        Args(('mytool', 'build', '--verbose'))
+        mytool build --verbose
     """
 
     @classmethod
@@ -128,10 +128,10 @@ class Tool(SingletonDependencySubclass):
         other criteria.
 
         Args:
-            subclass (type[Self]): The subclass to compute a key for.
+            subclass: The subclass to compute a key for.
 
         Returns:
-            str: A value suitable for use as a sort key.
+            A value suitable for use as a sort key.
         """
         return subclass.name()
 
@@ -191,16 +191,15 @@ class Tool(SingletonDependencySubclass):
 
     @classmethod
     def subclasses_dev_dependencies(cls) -> list[str]:
-        """Get all dev dependencies for all tools.
+        """Collect dev dependencies from all `Tool` subclasses.
 
-        This gets all subclasses of Tools and calls dev_dependencies() on them.
-        This way all dependencies for each tool are retrieved.
-        If a user adjusts a tool, this way he can make sure that the dev dependencies
-        are added to the pyproject.toml and he can remove the ones of the tool he
-        replaced.
+        Discover every concrete `Tool` subclass and aggregate the values
+        returned by each subclass's `dev_dependencies` method. When a tool
+        is replaced by a custom subclass, update its `dev_dependencies` to
+        keep the generated ``pyproject.toml`` in sync.
 
         Returns:
-            List of all tool dependencies.
+            Sorted list of all tool dependencies.
         """
         subclasses = cls.subclasses()
         all_dev_deps: list[str] = []

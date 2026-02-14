@@ -23,12 +23,12 @@ Example:
 
         from types import ModuleType
         from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
-        import myapp.resources
+        from pyrig import resources
 
-        class MyAppBuilder(PyInstallerBuilder):
+        class AppBuilder(PyInstallerBuilder):
             @classmethod
             def additional_resource_packages(cls) -> list[ModuleType]:
-                return [myapp.resources]
+                return [resources]
 
     Build the executable:
 
@@ -76,12 +76,12 @@ class PyInstallerBuilder(BuilderConfigFile):
 
             from types import ModuleType
             from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
-            import myapp.resources
+            from pyrig import resources
 
-            class MyAppBuilder(PyInstallerBuilder):
+            class AppBuilder(PyInstallerBuilder):
                 @classmethod
                 def additional_resource_packages(cls) -> list[ModuleType]:
-                    return [myapp.resources]
+                    return [resources]
     """
 
     @classmethod
@@ -114,9 +114,8 @@ class PyInstallerBuilder(BuilderConfigFile):
 
                 @classmethod
                 def additional_resource_packages(cls) -> list[ModuleType]:
-                    import myapp.resources
-                    import myapp.plugins.resources
-                    return [myapp.resources, myapp.plugins.resources]
+                    from pyrig import resources
+                    return [resources]
         """
 
     @classmethod
