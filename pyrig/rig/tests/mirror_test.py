@@ -459,15 +459,15 @@ def {test_func_name}() -> None:
 
         Returns:
             Dictionary mapping test class names to tuples of missing test method
-            names. If a test class is entirely missing, it maps to an empty tuple.
-            Returns empty dict if all classes and methods have tests.
+            names. If a test class is entirely missing, it maps to a tuple of
+            all its expected test method names. Returns empty dict if all
+            classes and methods have tests.
 
         Example:
             Return value structure::
 
                 {
                     "TestMyClass": ("test_method_one", "test_method_two"),
-                    "TestAnotherClass": (),  # class itself is missing
                 }
 
         Note:
@@ -575,20 +575,21 @@ class {test_class_name}:
 
     @classmethod
     def make_subclasses_for_modules(cls, modules: list[ModuleType]) -> list[type[Self]]:
-        """Create config subclasses for multiple modules and order by priority.
+        """Create config subclasses for multiple modules.
 
         Convenience method for batch processing: creates a subclass for each
-        module, then orders them according to the parent class priority system.
+        module in input order. Priority-based ordering is handled later by
+        ``validate_subclasses``.
 
         Args:
             modules: List of source modules to create test configs for.
 
         Returns:
-            List of dynamically created subclasses, ordered by priority.
+            List of dynamically created subclasses, in input order.
 
         See Also:
             make_subclass_for_module: Creates individual subclasses
-            subclasses_ordered_by_priority: Inherited ordering method
+            validate_subclasses: Orders by priority and validates
         """
         return list(map(cls.make_subclass_for_module, modules))
 

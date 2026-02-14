@@ -147,7 +147,9 @@ class Workflow(YmlConfigFile):
         """Check if the workflow configuration is correct.
 
         Handles the special case where workflow files cannot be empty.
-        If empty, writes a minimal valid workflow that never triggers.
+        If empty, writes the full workflow config with job steps replaced
+        by opt-out echo messages, allowing the workflow to be disabled
+        while remaining valid YAML.
 
         Returns:
             True if configuration matches expected state.
