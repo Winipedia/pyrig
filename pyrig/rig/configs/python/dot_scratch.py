@@ -23,15 +23,6 @@ class DotScratchConfigFile(PythonConfigFile):
 
             DotScratchConfigFile.validate()
 
-        Use for experimentation::
-
-            # In .scratch.py
-            from myproject import some_module
-
-            # Test code here - won't be committed
-            result = some_module.test_function()
-            print(result)
-
     Note:
         Automatically added to .gitignore by GitignoreConfigFile.
 

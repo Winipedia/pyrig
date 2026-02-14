@@ -22,11 +22,11 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
     status badges. Referenced as "Home" page in mkdocs.yml navigation.
 
     Examples:
-        Generate docs/index.md::
+        Generate docs/index.md:
 
-            IndexConfigFile.validate()
+            >>> IndexConfigFile.validate()
 
-        Header for "myproject"::
+        Header for "myproject":
 
             # myproject Documentation
 
@@ -37,11 +37,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for index.md.
-
-        Returns:
-            Path: docs directory.
-        """
+        """Return the docs directory path."""
         return DocsBuilder.I.docs_dir()
 
     @classmethod
@@ -49,8 +45,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         """Get the index.md file content.
 
         Returns:
-            list[str]: Lines with "# {project_name} Documentation" header
-                and badges.
+            Lines with "# {project_name} Documentation" header and badges.
 
         Note:
             Reads project name from pyproject.toml.

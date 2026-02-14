@@ -29,7 +29,7 @@ Architecture:
        - ``CopyModuleOnlyDocstringConfigFile``: Copy only docstrings
        - ``InitConfigFile``: __init__.py with copied docstrings
        - ``BadgesMarkdownConfigFile``: Markdown with project badges
-       - ``WorkflowConfigFile``: GitHub Actions workflow files
+       - ``Workflow``: GitHub Actions workflow files
 
 Format Features:
     - **TOML**: tomlkit for format-preserving parsing, multiline arrays, inline tables
@@ -70,14 +70,14 @@ Example:
 
         from types import ModuleType
         from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
-        import my_module
+        import pyrig.src.string_
 
-        class MyModuleCopy(CopyModuleConfigFile):
-            '''Copies my_module to the target project.'''
+        class StringModuleCopy(CopyModuleConfigFile):
+            '''Copy pyrig.src.string_ to the target project.'''
 
             @classmethod
             def src_module(cls) -> ModuleType:
-                return my_module
+                return pyrig.src.string_
 
 See Also:
     pyrig.rig.configs: Package-level documentation

@@ -44,18 +44,22 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
     See Also:
         pyrig.rig.configs.base.markdown.MarkdownConfigFile: Parent class
         pyrig.rig.configs.pyproject.PyprojectConfigFile: Project metadata
-        pyrig.src.git: Git repository utilities
+        pyrig.rig.tools.remote_version_controller.RemoteVersionController:
+            Repository related badges and more
     """
 
     @classmethod
     def is_correct(cls) -> bool:
-        """Override to replace the description if it changed in pyproject.toml.
+        """Check correctness, replacing a stale description if needed.
 
-        Normally StringConfigFile.merge_configs prepends the expected lines to
+        Normally `StringConfigFile.merge_configs` prepends the expected lines to
         the actual lines. This leads to a stale description remaining in the file
         if it was changed in pyproject.toml. This override detects the old description
-        block between ``---`` fences and replaces it with the current one before
+        block between `---` fences and replaces it with the current one before
         the normal merge runs.
+
+        Returns:
+            True if the file contains all expected content.
         """
         if super().is_correct():
             return True
@@ -97,7 +101,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
     @classmethod
     def badges(cls) -> dict[str, list[str]]:
-        """Get categorized badges from project metadata and Git info.
+        """Return categorized badges from project metadata and CI/CD configurations.
 
         Returns:
             Dict mapping category names (tooling, code-quality, package-info, ci/cd,
@@ -135,7 +139,14 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
     @classmethod
     def replace_description(cls, content: str) -> str:
-        """Replace the description between ``---`` fences with the current one."""
+        """Replace the description between `---` fences with the current one.
+
+        Args:
+            content: Markdown file content to update.
+
+        Returns:
+            Updated content with the current description from pyproject.toml.
+        """
         expected_description = PyprojectConfigFile.I.project_description()
         pattern = r"---\s*\n(.*?)\n---"
         replacement = f"---\n\n> {expected_description}\n\n---"

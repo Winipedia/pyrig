@@ -1,4 +1,4 @@
-"""Manages .env files for environment variables.
+"""Manage .env files for environment variables.
 
 Creates empty .env file for local environment variables and secrets.
 Users manage content manually. Automatically added to .gitignore.
@@ -18,7 +18,7 @@ from pyrig.rig.configs.base.dict_cf import DictConfigFile
 
 
 class DotEnvConfigFile(DictConfigFile):
-    """Manages .env files (read-only from pyrig's perspective).
+    """Manage .env files (read-only from pyrig's perspective).
 
     Creates empty .env if missing. Users edit manually. Included in .gitignore.
     dump() raises ValueError if config is non-empty.

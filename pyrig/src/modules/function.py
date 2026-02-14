@@ -57,7 +57,7 @@ def all_functions_from_module(
 ) -> list[Callable[..., Any]]:
     """Extract all functions defined directly in a module.
 
-    Excludes imported functions. Returns functions sorted by definition order.
+    Excludes imported functions.
 
     Args:
         module: Module to extract from (object or name string).

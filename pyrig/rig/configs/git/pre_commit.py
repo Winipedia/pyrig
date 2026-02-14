@@ -46,17 +46,13 @@ class PrekConfigFile(TomlConfigFile):
         Must run `prek install` after generating config.
 
     See Also:
-        pyrig.rig.tools.base.base.Args
+        pyrig.src.processes.Args
         prek documentation: https://github.com/j178/prek
     """
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for prek.toml.
-
-        Returns:
-            Path: Project root.
-        """
+        """Get parent directory (project root)."""
         return Path()
 
     @classmethod

@@ -1,7 +1,7 @@
 """Module content copying configuration management.
 
-Provides CopyModuleConfigFile for replicating module content with path transformation
-(pyrig.X -> tarproject.X).
+Provides `CopyModuleConfigFile` for replicating module content with path
+transformation (e.g. `pyrig.src.X` -> `<project>.src.X`).
 
 Example:
     >>> from types import ModuleType
@@ -13,7 +13,7 @@ Example:
     ...     def src_module(cls) -> ModuleType:
     ...         return pyrig.src.string_
     >>>
-    >>> StringModuleCopy()  # Copies pyrig/src/string.py -> myproject/src/string.py
+    >>> StringModuleCopy()  # Copies pyrig/src/string_.py -> <project>/src/string_.py
 """
 
 from abc import abstractmethod
@@ -33,8 +33,8 @@ from pyrig.src.modules.path import ModulePath
 class CopyModuleConfigFile(PythonPackageConfigFile):
     """Base class for copying module content with path transformation.
 
-    Copies source module content to target location, transforming paths
-    (pyrig.X -> tarproject.X).
+    Copy source module content to target location, transforming import paths
+    (e.g. `pyrig.src.X` -> `<project>.src.X`).
 
     Subclasses must implement:
         - `src_module`: Return the source module to copy
@@ -85,7 +85,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """Return module's isolated name (last component).
 
         Returns:
-            Module name without package prefix or extension.
+            Last component of the module's dotted name.
         """
         src_module = cls.src_module()
         return isolated_obj_name(src_module)

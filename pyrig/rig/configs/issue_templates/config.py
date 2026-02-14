@@ -1,6 +1,6 @@
-"""Manages issue template chooser config.
+"""Manage issue template chooser config.
 
-Creates .github/ISSUE_TEMPLATE/config.yml which controls the issue template
+Create .github/ISSUE_TEMPLATE/config.yml to control the issue template
 chooser behavior on GitHub.
 
 See Also:
@@ -15,9 +15,9 @@ from pyrig.rig.configs.base.yml import YmlConfigFile
 
 
 class ConfigConfigFile(YmlConfigFile):
-    """Manages .github/ISSUE_TEMPLATE/config.yml.
+    """Manage .github/ISSUE_TEMPLATE/config.yml.
 
-    Controls the issue template chooser:
+    Control the issue template chooser:
     - Whether blank issues are allowed (blank_issues_enabled)
 
     Example:

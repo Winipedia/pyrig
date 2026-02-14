@@ -42,9 +42,9 @@ def resource_path(name: str, package: ModuleType) -> Path:
 
     Note:
         The returned path is not validated for existence. If the named resource does
-        not exist, the caller will encounter ``FileNotFoundError`` when accessing it.
+        not exist, the caller will encounter `FileNotFoundError` when accessing it.
 
-        This function exits the ``as_file`` context manager before returning, which
+        This function exits the `as_file` context manager before returning, which
         works reliably for file-based packages but may cause path invalidation for
         zip-imported packages. This is acceptable for pyrig's use cases where
         packages are always file-based.

@@ -1,7 +1,7 @@
 '''Python package file configuration management.
 
-Provides PythonPackageConfigFile for managing package files with automatic parent
-package creation. Ensures entire directory tree is a valid Python package.
+Provide `PythonPackageConfigFile` for managing package files with automatic parent
+package creation. Ensures the entire directory tree is a valid Python package.
 
 Example:
     >>> from pathlib import Path
@@ -26,8 +26,8 @@ from pyrig.src.modules.path import make_package_dir
 class PythonPackageConfigFile(PythonConfigFile):
     """Base class for Python package files.
 
-    Extends PythonConfigFile to automatically create __init__.py files in all parent
-    directories via make_package_dir() after writing the file.
+    Extends `PythonConfigFile` to automatically create `__init__.py` files in all
+    parent directories via `make_package_dir()` after writing the file.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the package file
@@ -41,10 +41,7 @@ class PythonPackageConfigFile(PythonConfigFile):
 
     @classmethod
     def _dump(cls, config: list[str]) -> None:
-        """Write config file and create parent __init__.py files.
-
-        Writes the file then creates __init__.py files in parent directories to ensure
-        they are valid Python packages.
+        """Write the configuration file and create parent `__init__.py` files.
 
         Args:
             config: List of lines to write to the file.

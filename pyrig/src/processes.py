@@ -37,29 +37,30 @@ def run_subprocess(  # noqa: PLR0913
 ) -> subprocess.CompletedProcess[Any]:
     """Execute subprocess with enhanced error logging.
 
-    Wrapper around subprocess.run() that logs command, exit code, stdout, and stderr
-    when CalledProcessError is raised, before re-raising the exception. Used as the
-    underlying execution mechanism for all Tool command wrappers (PackageManager,
-    Linter, ContainerEngine, etc.).
+    Wrapper around `subprocess.run()` that logs command, exit code, stdout, and stderr
+    when `CalledProcessError` is raised, before re-raising the exception. Used as the
+    underlying execution mechanism for all `Tool` command wrappers (`PackageManager`,
+    `Linter`, `ContainerEngine`, etc.).
 
     Args:
         args: Command and arguments as sequence (e.g., ["git", "status"]).
         input_: Data to send to stdin (string or bytes). Defaults to None.
         capture_output: If True (default), captures stdout/stderr.
         timeout: Maximum seconds to wait. None (default) means no timeout.
-        check: If True (default), raises CalledProcessError on non-zero exit.
+        check: If True (default), raises `CalledProcessError` on non-zero exit.
         cwd: Working directory. Defaults to current directory.
-        shell: Must be False. Raises ValueError if True (shell mode is
+        shell: Must be False. Raises `ValueError` if True (shell mode is
             forbidden in pyrig for security reasons).
         text: If True (default), stdout and stderr are decoded as text.
-        **kwargs: Additional arguments passed to subprocess.run().
+        **kwargs: Additional arguments passed to `subprocess.run()`.
 
     Returns:
-        CompletedProcess with args, returncode, stdout, stderr.
+        `CompletedProcess` with args, returncode, stdout, stderr.
 
     Raises:
-        ValueError: If shell=True is passed.
-        subprocess.CalledProcessError: If process returns non-zero exit and check=True.
+        ValueError: If `shell=True` is passed.
+        subprocess.CalledProcessError:
+            If process returns non-zero exit and `check=True`.
             Error details are logged before re-raising.
         subprocess.TimeoutExpired: If process exceeds timeout.
 
@@ -101,8 +102,9 @@ class Args(tuple[str, ...]):
     """Immutable command-line arguments container with execution capabilities.
 
     Tuple subclass representing a complete command ready for execution.
-    Returned by all Tool.*_args methods (e.g., PackageManager.install_dependencies_args,
-    Linter.check_args) to provide a consistent interface for building, inspecting,
+    Returned by all `Tool.*_args` methods
+    (e.g., `PackageManager.install_dependencies_args`, `Linter.check_args`)
+    to provide a consistent interface for building, inspecting,
     and executing subprocess commands.
 
     The class enables a fluent API pattern where commands can be built incrementally
@@ -147,6 +149,6 @@ class Args(tuple[str, ...]):
             CompletedProcess from subprocess execution.
 
         Raises:
-            subprocess.CalledProcessError: If check=True and command fails.
+            subprocess.CalledProcessError: If `check=True` and command fails.
         """
         return run_subprocess((*self, *args), **kwargs)

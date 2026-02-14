@@ -32,9 +32,9 @@ class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
             # In {package_name}/rig/cli/subcommands.py
             def my_command() -> None:
                 \"\"\"Project-specific command.\"\"\"
-                from myproject.core import do_something
-                do_something()
+                ...
 
+    Note:
         Functions are auto-discovered and registered as Typer commands.
 
     See Also:
@@ -45,12 +45,5 @@ class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
 
     @classmethod
     def src_module(cls) -> ModuleType:
-        """Get the source module to copy docstring from.
-
-        Returns:
-            ModuleType: pyrig.rig.cli.subcommands module.
-
-        Note:
-            Only docstring is copied, no code.
-        """
+        """Return the `pyrig.rig.cli.subcommands` module."""
         return subcommands

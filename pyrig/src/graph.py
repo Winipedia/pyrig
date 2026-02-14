@@ -1,9 +1,10 @@
 """Directed graph implementation for package dependency analysis.
 
-Provides a generic DiGraph data structure with bidirectional traversal optimized
-for analyzing dependency relationships. This is the base class for ``DependencyGraph``
-in ``pyrig.src.dependency_graph``, which builds a graph of installed Python packages
-to enable pyrig's multi-package discovery system.
+Provides the ``DiGraph`` class, a generic directed graph with bidirectional
+traversal optimized for analyzing dependency relationships. ``DiGraph`` is the
+base class for ``pyrig.src.dependency_graph.DependencyGraph``, which builds a
+graph of installed Python packages to enable pyrig's multi-package discovery
+system.
 
 The graph maintains both forward and reverse edges, enabling efficient traversal
 in both directions: finding what a node depends on, and finding what depends on
@@ -42,7 +43,7 @@ class DiGraph(ABC):
 
     @abstractmethod
     def build(self) -> None:
-        """Abstract method to build the graph structure."""
+        """Build the graph structure."""
 
     def add_node(self, node: str) -> None:
         """Add a node to the graph. Idempotent if node already exists.
@@ -137,9 +138,9 @@ class DiGraph(ABC):
         source to target. In dependency graph context, this represents the
         dependency depth between packages.
 
-        Used by ``HealthCheckWorkflow`` to calculate cron schedule offsets based
-        on dependency depth to pyrig, ensuring dependent packages run health
-        checks after their dependencies.
+        Used by ``pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow``
+        to calculate cron schedule offsets based on dependency depth to pyrig,
+        ensuring dependent packages run health checks after their dependencies.
 
         Args:
             source: Starting node.

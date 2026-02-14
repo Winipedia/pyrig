@@ -82,24 +82,25 @@ class Workflow(YmlConfigFile):
         ARTIFACTS_DIR_NAME (str): Directory name for build artifacts
         ARTIFACTS_PATTERN (str): Glob pattern for artifact files
 
-    Examples:
-        Create a custom workflow::
-
-            from pyrig.rig.configs.base.workflow import Workflow
-
-            class MyWorkflow(Workflow):
-                @classmethod
-                def jobs(cls) -> dict[str, Any]:
-                    return {
-                        "test": cls.job_test(),
-                        "build": cls.job_build_artifacts(),
-                    }
-
-                @classmethod
-                def workflow_triggers(cls) -> dict[str, Any]:
-                    triggers = super().workflow_triggers()
-                    triggers.update(cls.on_push())
-                    return triggers
+    Example:
+        >>> from pyrig.rig.configs.base.workflow import Workflow
+        >>>
+        >>> class MyWorkflow(Workflow):
+        ...     @classmethod
+        ...     def jobs(cls) -> dict[str, Any]:
+        ...         return cls.job(
+        ...             job_func=cls.jobs,
+        ...             steps=[
+        ...                 *cls.steps_core_installed_setup(),
+        ...                 cls.step_run_tests(),
+        ...             ],
+        ...         )
+        ...
+        ...     @classmethod
+        ...     def workflow_triggers(cls) -> dict[str, Any]:
+        ...         triggers = super().workflow_triggers()
+        ...         triggers.update(cls.on_push())
+        ...         return triggers
 
     See Also:
         pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow

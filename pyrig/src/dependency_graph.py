@@ -1,10 +1,9 @@
 """Dependency graph of installed Python packages.
 
-This module defines the DependencyGraph class,
-which builds a directed graph of installed Python packages
-and their dependencies using importlib.metadata.
-It provides methods to query which packages depend on a given package,
-facilitating pyrig's multi-package discovery system.
+Defines the ``DependencyGraph`` class, which builds a directed graph of
+installed Python packages and their dependencies using
+``importlib.metadata``. Provides methods to query which packages depend
+on a given package, facilitating pyrig's multi-package discovery system.
 """
 
 import importlib.metadata
@@ -85,7 +84,8 @@ class DependencyGraph(DiGraph, Singleton):
     def parse_package_name_from_req(req: str) -> str | None:
         """Extract package name from a requirement string.
 
-        Uses pre-compiled regex for better performance when parsing many requirements.
+        Uses ``pyrig.src.string_.package_req_name_split_pattern`` to split the
+        requirement string at the first non-name character.
 
         Args:
             req: Requirement string (e.g., "requests>=2.0,<3.0").

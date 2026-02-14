@@ -1,6 +1,6 @@
 r"""Markdown configuration file management.
 
-Provides MarkdownConfigFile base class for .md files with required content.
+Provide `MarkdownConfigFile` base class for `.md` files with required content.
 
 Example:
     >>> from pathlib import Path
@@ -22,7 +22,7 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 class MarkdownConfigFile(StringConfigFile):
     """Base class for Markdown (.md) files.
 
-    Extends StringConfigFile with "md" extension. Inherits content-based validation.
+    Extends `StringConfigFile` with `"md"` extension. Inherits content-based validation.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the .md file

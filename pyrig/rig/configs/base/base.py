@@ -48,7 +48,7 @@ Example:
 
             @classmethod
             def priority(cls) -> float:
-                '''validate after pyproject.toml.'''
+                '''Validate after pyproject.toml.'''
                 return 50
 
     The system will automatically:
@@ -83,7 +83,7 @@ logger = logging.getLogger(__name__)
 
 
 class Priority:
-    """A class to represent priority levels for config file initialization."""
+    """Priority levels for config file validation ordering."""
 
     DEFAULT = 0
     LOW = DEFAULT + 10
@@ -172,13 +172,13 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
 
     @classmethod
     def definition_package(cls) -> ModuleType:
-        """Get the package where the ConfigFile subclasses are supposed to be defined.
+        """Return the package containing ConfigFile subclass definitions.
 
-        Default is pyrig.rig.configs.
-        But can be overridden by subclasses to define their own package.
+        Default is `pyrig.rig.configs`. Can be overridden by subclasses to
+        define their own package.
 
         Returns:
-            Package module where the ConfigFile subclass is defined.
+            Package module where ConfigFile subclasses are defined.
         """
         return configs
 
@@ -295,31 +295,19 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
 
     @classmethod
     def priority(cls) -> float:
-        """Return validation priority (higher = first, default 0).
-
-        Returns:
-            Priority as float. Higher numbers processed first.
-        """
+        """Return validation priority (higher = first, default 0)."""
         return Priority.DEFAULT
 
     @classmethod
     def path(cls) -> Path:
-        """Return full path by combining parent path, filename, and extension.
-
-        Returns:
-            Complete path including filename and extension.
-        """
+        """Return full path by combining parent path, filename, and extension."""
         return cls.parent_path() / (
             cls.filename() + cls.extension_separator() + cls.extension()
         )
 
     @classmethod
     def extension_separator(cls) -> str:
-        """Return extension separator character (always ".").
-
-        Returns:
-            "." (dot character).
-        """
+        """Return extension separator character (always ".")."""
         return "."
 
     @classmethod
@@ -458,8 +446,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
     ) -> None:
         """Validate specific ConfigFile subclasses with priority-based ordering.
 
-        Groups by priority, initializes in the order given, parallel within groups.
-        Order by priority is defined in subclasses_ordered_by_priority.
+        Group by priority, validate in the given order, parallel within groups.
 
         Args:
             subclasses: ConfigFile subclasses to validate.

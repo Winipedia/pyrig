@@ -45,7 +45,7 @@ class PackageIndex(Tool):
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the PyPI version badge and project page URLs."""
+        """Return the PyPI version badge and project page URLs."""
         _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )

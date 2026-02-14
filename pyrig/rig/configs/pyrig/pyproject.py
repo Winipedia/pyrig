@@ -3,8 +3,8 @@
 Extends the base PyprojectConfigFile with pyrig-specific PyPI classifiers and
 keywords. Only active when pyrig itself is the project being configured.
 
-The conditional class definition uses ``src_package_is_pyrig()`` to ensure this
-class is only discoverable via ``__subclasses__()`` when running within pyrig's
+The conditional class definition uses `src_package_is_pyrig()` to ensure this
+class is only discoverable via `__subclasses__()` when running within pyrig's
 repository. Other projects depending on pyrig will not inherit these settings.
 
 Example:
