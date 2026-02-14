@@ -11,10 +11,11 @@ a node (ancestors).
 """
 
 import heapq
+from abc import ABC, abstractmethod
 from collections import deque
 
 
-class DiGraph:
+class DiGraph(ABC):
     """Directed graph data structure with bidirectional edge traversal.
 
     A generic directed graph implementation optimized for dependency analysis.
@@ -33,10 +34,15 @@ class DiGraph:
     """
 
     def __init__(self) -> None:
-        """Initialize an empty directed graph with no nodes or edges."""
+        """Initialize and build the graph structure."""
         self._nodes: set[str] = set()
         self._edges: dict[str, set[str]] = {}  # node -> outgoing neighbors
         self._reverse_edges: dict[str, set[str]] = {}  # node -> incoming neighbors
+        self.build()
+
+    @abstractmethod
+    def build(self) -> None:
+        """Abstract method to build the graph structure."""
 
     def add_node(self, node: str) -> None:
         """Add a node to the graph. Idempotent if node already exists.

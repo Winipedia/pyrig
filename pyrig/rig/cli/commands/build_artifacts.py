@@ -18,5 +18,5 @@ def build_artifacts() -> None:
     distributable artifacts.
     """
     logger.info("Building all artifacts")
-    BuilderConfigFile.init_all_subclasses()
+    BuilderConfigFile.validate_all_subclasses()
     logger.info("Artifact build complete")

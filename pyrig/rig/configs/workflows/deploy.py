@@ -47,7 +47,7 @@ class DeployWorkflow(Workflow):
             from pyrig.rig.configs.workflows.deploy import DeployWorkflow
 
             # Creates .github/workflows/deploy.yml
-            DeployWorkflow()
+            DeployWorkflow.validate()
 
     Note:
         Publishing to PyPI is token-based by default (via the `PYPI_TOKEN` secret).

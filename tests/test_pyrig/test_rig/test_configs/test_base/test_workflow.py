@@ -601,14 +601,16 @@ class TestWorkflow:
     def test_is_correct(self, my_test_workflow: type[Workflow]) -> None:
         """Test method."""
         # Test that an empty file is considered correct
-        test_workflow = my_test_workflow()
-        workflow_path = test_workflow.path()
+        my_test_workflow.validate()
+        workflow_path = my_test_workflow.path()
         workflow_path.write_text("")
-        assert test_workflow.is_correct(), "Expected workflow to be correct when empty"
+        assert my_test_workflow.is_correct(), (
+            "Expected workflow to be correct when empty"
+        )
 
         # Test that a workflow with proper config is correct
-        proper_config = test_workflow.configs()
-        test_workflow.dump(proper_config)
-        assert test_workflow.is_correct(), (
+        proper_config = my_test_workflow.configs()
+        my_test_workflow.dump(proper_config)
+        assert my_test_workflow.is_correct(), (
             "Expected workflow to be correct with proper config"
         )

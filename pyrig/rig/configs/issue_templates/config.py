@@ -23,7 +23,7 @@ class ConfigConfigFile(YmlConfigFile):
     Examples:
         Generate config.yml::
 
-            ConfigConfigFile()
+            ConfigConfigFile.validate()
 
     See Also:
         https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository

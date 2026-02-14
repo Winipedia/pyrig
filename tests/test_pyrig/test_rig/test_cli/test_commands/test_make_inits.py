@@ -11,7 +11,7 @@ from pyrig.rig.utils.packages import find_namespace_packages
 def test_make_init_files(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        GitignoreConfigFile()
+        GitignoreConfigFile.validate()
         (Path.cwd() / "docs").mkdir()
         (Path.cwd() / "src").mkdir()
         assert find_namespace_packages() == ["src"]

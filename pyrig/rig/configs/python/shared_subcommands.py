@@ -27,7 +27,7 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     Examples:
         Generate shared_subcommands.py::
 
-            SharedSubcommandsConfigFile()
+            SharedSubcommandsConfigFile.validate()
 
         Add shared subcommands::
 

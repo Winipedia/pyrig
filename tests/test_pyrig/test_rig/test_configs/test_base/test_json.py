@@ -36,7 +36,7 @@ class TestJsonConfigFile:
 
     def test__load(self, my_test_json_config_file: type[JsonConfigFile]) -> None:
         """Test method."""
-        my_test_json_config_file()
+        my_test_json_config_file.validate()
         loaded = my_test_json_config_file.load()
         assert loaded == {"key": "value"}
 

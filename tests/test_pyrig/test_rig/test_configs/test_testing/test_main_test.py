@@ -10,7 +10,7 @@ class TestMainTestConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert MainTestConfigFile().is_correct()
+        assert MainTestConfigFile.is_correct()
 
     def test_parent_path(self) -> None:
         """Test method."""

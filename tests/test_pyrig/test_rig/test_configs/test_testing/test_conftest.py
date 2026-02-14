@@ -24,7 +24,7 @@ class TestConftestConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert ConftestConfigFile().is_correct()
+        assert ConftestConfigFile.is_correct()
 
     def test_lines(
         self, my_test_conftest_config_file: type[ConftestConfigFile]

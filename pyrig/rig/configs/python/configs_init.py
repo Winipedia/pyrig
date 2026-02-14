@@ -25,7 +25,7 @@ class ConfigsInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/rig/configs/__init__.py::
 
-            ConfigsInitConfigFile()
+            ConfigsInitConfigFile.validate()
 
     See Also:
         pyrig.rig.configs

@@ -22,7 +22,7 @@ class SrcInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/src/__init__.py::
 
-            SrcInitConfigFile()
+            SrcInitConfigFile.validate()
 
         Add utilities::
 

@@ -141,7 +141,7 @@ and subsequent calls return incorrect values.
 **Rule**: Always treat `load()` and `configs()` results as read-only. Return
 new structures instead of modifying in place.
 
-## Initialization Process
+## Validation Process
 
 When a ConfigFile is instantiated, it follows this process:
 
@@ -234,14 +234,14 @@ time and it will not overwrite your changes. Also this way packages that will
 later depend on your package will automatically get your config file adjustments
 as well.
 
-### Initialization Order
+### Validation Order
 
 Config files are initialized during `pyrig mkroot` or `pyrig init` using a
 priority-based system that balances correctness with performance.
 
 #### Priority System
 
-Each ConfigFile subclass can override `priority()` to specify initialization
+Each ConfigFile subclass can override `priority()` to specify Validation
 order:
 
 ```python
@@ -265,9 +265,9 @@ def priority(cls) -> float:
 - `ToolsInitConfigFile`: 10 (creates tools package structure)
 - All others: 0 (no specific order required)
 
-#### How Initialization Works
+#### How Validation Works
 
-The initialization process groups config files by priority and processes each
+The validation process groups config files by priority and processes each
 group:
 
 1. **Grouping**: All config files are grouped by their priority value
@@ -286,15 +286,15 @@ group:
 
 **Key methods**:
 
-- `ConfigFile.init_all_subclasses()` - Initialize all discovered config files
-- `ConfigFile.init_priority_subclasses()` - Initialize only files with
+- `ConfigFile.validate_all_subclasses()` - validate all discovered config files
+- `ConfigFile.validate_priority_subclasses()` - validate only files with
   priority > 0
 - `ConfigFile.subclasses()` - Discover all config files (sorted by
   priority)
 - `ConfigFile.priority_subclasses()` - Get only config files with priority >
   0
 
-**Priority-only initialization**:
+**Priority-only validation**:
 
 ```bash
 uv run pyrig mkroot --priority
@@ -308,7 +308,7 @@ setup, useful when you need core files before installing dependencies.
 The hybrid priority-based approach provides:
 
 - **Correctness** - Dependencies are respected through priority ordering
-- **Performance** - Files without dependencies initialize concurrently
+- **Performance** - Files without dependencies validate concurrently
 - **Flexibility** - Same priority = can run in parallel, different priority =
   guaranteed order
 

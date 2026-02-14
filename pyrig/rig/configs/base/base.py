@@ -1,7 +1,7 @@
 """Abstract base class for declarative configuration file management.
 
 Provides ConfigFile for automated config management with automatic discovery,
-subset validation, intelligent merging, priority-based initialization, and
+subset validation, intelligent merging, priority-based validation, and
 parallel execution.
 
 Subclass Requirements:
@@ -48,7 +48,7 @@ Example:
 
             @classmethod
             def priority(cls) -> float:
-                '''Initialize after pyproject.toml.'''
+                '''validate after pyproject.toml.'''
                 return 50
 
     The system will automatically:
@@ -109,7 +109,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         - `_dump(config)`: Write configuration to file - internal implementation
 
         Optionally override:
-        - `priority()`: Initialization priority (default 0)
+        - `priority()`: validation priority (default 0)
         - `filename()`: Filename without extension (auto-derived)
 
         Public API (already implemented with caching, do not override):
@@ -203,18 +203,16 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         # so return negative priority for ascending sort
         return -subclass.priority()
 
-    def __init__(self) -> None:
-        """Initialize config file, creating or updating as needed.
+    @staticmethod
+    def validate_config_file(
+        config_file_cls: type["ConfigFile[ConfigT]"],
+    ) -> None:
+        """Validate a single config file class.
 
-        Calls create_file() if file doesn't exist (which creates parent dirs and file),
-        validates content, and adds missing configs if needed.
-        Idempotent and preserves user customizations.
-
-        Raises:
-            ValueError: If file cannot be made correct.
+        Args:
+            config_file_cls: The ConfigFile subclass to validate.
         """
-        super().__init__()
-        self.validate()
+        config_file_cls.validate()
 
     @classmethod
     def validate(cls) -> None:
@@ -229,7 +227,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         """
         path = cls.path()
         logger.debug(
-            "Initializing config file: %s at: %s",
+            "Validating config file: %s at: %s",
             cls.__name__,
             path,
         )
@@ -297,7 +295,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
 
     @classmethod
     def priority(cls) -> float:
-        """Return initialization priority (higher = first, default 0).
+        """Return validation priority (higher = first, default 0).
 
         Returns:
             Priority as float. Higher numbers processed first.
@@ -449,26 +447,26 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
 
         See Also:
             subclasses: Get all subclasses regardless of priority
-            init_priority_subclasses: Initialize only priority subclasses
+            validate_priority_subclasses: validate only priority subclasses
         """
         return [cf for cf in cls.subclasses() if cf.priority() > 0]
 
     @classmethod
-    def init_subclasses(
+    def validate_subclasses(
         cls,
         *subclasses: type[Self],
     ) -> None:
-        """Initialize specific ConfigFile subclasses with priority-based ordering.
+        """Validate specific ConfigFile subclasses with priority-based ordering.
 
         Groups by priority, initializes in the order given, parallel within groups.
         Order by priority is defined in subclasses_ordered_by_priority.
 
         Args:
-            subclasses: ConfigFile subclasses to initialize.
+            subclasses: ConfigFile subclasses to validate.
 
         See Also:
-            init_all_subclasses: Initialize all discovered subclasses
-            init_priority_subclasses: Initialize only priority subclasses
+            validate_all_subclasses: validate all discovered subclasses
+            validate_priority_subclasses: validate only priority subclasses
         """
         # order by priority
         subclasses_by_priority: dict[float, list[type[ConfigFile[Any]]]] = defaultdict(
@@ -487,32 +485,32 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
             for priority in sorted(subclasses_by_priority.keys(), reverse=True):
                 cf_group = subclasses_by_priority[priority]
                 logger.debug(
-                    "Initializing %d config files with priority: %s",
+                    "Validating %d config files with priority: %s",
                     len(cf_group),
                     priority,
                 )
-                list(executor.map(lambda cf: cf(), cf_group))
+                list(executor.map(cls.validate_config_file, cf_group))
 
     @classmethod
-    def init_all_subclasses(cls) -> None:
-        """Initialize all discovered ConfigFile subclasses in priority order.
+    def validate_all_subclasses(cls) -> None:
+        """Validate all discovered ConfigFile subclasses in priority order.
 
         See Also:
             subclasses: Discovery mechanism
-            init_subclasses: Initialization mechanism
-            init_priority_subclasses: Initialize only priority files
+            validate_subclasses: validation mechanism
+            validate_priority_subclasses: validate only priority files
         """
         logger.info("Creating all config files")
-        cls.init_subclasses(*cls.subclasses())
+        cls.validate_subclasses(*cls.subclasses())
 
     @classmethod
-    def init_priority_subclasses(cls) -> None:
-        """Initialize only ConfigFile subclasses with priority > 0.
+    def validate_priority_subclasses(cls) -> None:
+        """Validate only ConfigFile subclasses with priority > 0.
 
         See Also:
             priority_subclasses: Discovery mechanism
-            init_subclasses: Initialization mechanism
-            init_all_subclasses: Initialize all files
+            validate_subclasses: validation mechanism
+            validate_all_subclasses: validate all files
         """
         logger.info("Creating priority config files")
-        cls.init_subclasses(*cls.priority_subclasses())
+        cls.validate_subclasses(*cls.priority_subclasses())

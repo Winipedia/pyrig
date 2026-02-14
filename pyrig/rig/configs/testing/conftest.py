@@ -22,7 +22,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
     Examples:
         Generate tests/conftest.py::
 
-            ConftestConfigFile()
+            ConftestConfigFile.validate()
 
         Generated file::
 

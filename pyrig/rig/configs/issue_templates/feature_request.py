@@ -24,7 +24,7 @@ class FeatureRequestConfigFile(YmlConfigFile):
     Examples:
         Generate feature_request.yml::
 
-            FeatureRequestConfigFile()
+            FeatureRequestConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.base.yml.YmlConfigFile

@@ -25,7 +25,7 @@ class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     Examples:
         Generate subcommands.py::
 
-            SubcommandsConfigFile()
+            SubcommandsConfigFile.validate()
 
         Add project-specific subcommands::
 

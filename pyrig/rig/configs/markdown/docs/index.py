@@ -24,7 +24,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
     Examples:
         Generate docs/index.md::
 
-            IndexConfigFile()
+            IndexConfigFile.validate()
 
         Header for "myproject"::
 

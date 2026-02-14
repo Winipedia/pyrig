@@ -10,7 +10,7 @@ class TestDotScratchConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert DotScratchConfigFile().is_correct()
+        assert DotScratchConfigFile.is_correct()
 
     def test_filename(self) -> None:
         """Test method."""

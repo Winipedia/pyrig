@@ -41,7 +41,7 @@ class TestBuilderConfigFile:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        my_test_builder_config_file()
+        my_test_builder_config_file.validate()
         with chdir(tmp_path):
             platform_file = my_test_builder_config_file.platform_specific_path(
                 Path(my_test_builder_config_file.filename())
@@ -56,7 +56,7 @@ class TestBuilderConfigFile:
 
     def test__load(self, my_test_builder_config_file: type[BuilderConfigFile]) -> None:
         """Test method."""
-        my_test_builder_config_file()
+        my_test_builder_config_file.validate()
         loaded = my_test_builder_config_file.load()
         assert isinstance(loaded, list)
         assert len(loaded) == 1
@@ -93,7 +93,7 @@ class TestBuilderConfigFile:
             return_value=None,
         )
         with pytest.raises(ValueError, match="not correct"):
-            my_test_builder_config_file()
+            my_test_builder_config_file.validate()
 
     def test_create_file(
         self,
@@ -117,7 +117,7 @@ class TestBuilderConfigFile:
         spy = mocker.spy(
             my_test_builder_config_file, my_test_builder_config_file.build.__name__
         )
-        my_test_builder_config_file()
+        my_test_builder_config_file.validate()
         spy.assert_called_once()
 
     def test_rename_artifacts(self, tmp_path: Path) -> None:

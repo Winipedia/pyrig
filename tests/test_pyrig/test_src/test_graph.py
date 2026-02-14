@@ -5,17 +5,30 @@ import pytest
 from pyrig.src.graph import DiGraph
 
 
+class MyTestDiGraph(DiGraph):
+    """Test DiGraph."""
+
+    def build(self) -> None:
+        """Simple build method for testing."""
+
+
 class TestDiGraph:
     """Test class."""
 
+    def test_build(self) -> None:
+        """Test method."""
+        graph = MyTestDiGraph()
+        # assert all empty
+        assert len(graph.nodes()) == 0
+
     def test___init__(self) -> None:
         """Test DiGraph initialization creates empty graph."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         assert len(graph.nodes()) == 0
 
     def test_add_node(self) -> None:
         """Test adding nodes to the graph."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         graph.add_node("a")
         graph.add_node("b")
 
@@ -29,7 +42,7 @@ class TestDiGraph:
 
     def test_add_edge(self) -> None:
         """Test adding edges to the graph."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         graph.add_edge("a", "b")
 
         # Nodes should be created automatically
@@ -42,7 +55,7 @@ class TestDiGraph:
 
     def test___contains__(self) -> None:
         """Test node membership check."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         graph.add_node("a")
 
         assert "a" in graph
@@ -50,7 +63,7 @@ class TestDiGraph:
 
     def test___getitem__(self) -> None:
         """Test getting outgoing neighbors of a node."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         graph.add_edge("a", "b")
         graph.add_edge("a", "c")
         graph.add_edge("b", "c")
@@ -62,7 +75,7 @@ class TestDiGraph:
 
     def test_nodes(self) -> None:
         """Test getting all nodes from the graph."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         graph.add_node("a")
         graph.add_node("b")
         graph.add_edge("c", "d")
@@ -71,7 +84,7 @@ class TestDiGraph:
 
     def test_has_edge(self) -> None:
         """Test checking if edge exists."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         graph.add_edge("a", "b")
 
         assert graph.has_edge("a", "b")
@@ -81,7 +94,7 @@ class TestDiGraph:
 
     def test_ancestors(self) -> None:
         """Test finding all ancestors of a node."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         # Build graph: a -> b -> c -> d
         #              e -> c
         graph.add_edge("a", "b")
@@ -103,7 +116,7 @@ class TestDiGraph:
 
     def test_shortest_path_length(self) -> None:
         """Test finding shortest path length between nodes."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         # Build graph: a -> b -> c -> d
         #              a -> c (shortcut)
         graph.add_edge("a", "b")
@@ -133,7 +146,7 @@ class TestDiGraph:
 
     def test_topological_sort_subgraph(self) -> None:
         """Test topological sorting of a subgraph."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         # Build graph: pyrig <- package1 <- package2
         # (package2 depends on package1, package1 depends on pyrig)
         graph.add_edge("package2", "package1")
@@ -144,7 +157,7 @@ class TestDiGraph:
         assert result == ["pyrig", "package1", "package2"]
 
         # Test with more complex graph
-        graph2 = DiGraph()
+        graph2 = MyTestDiGraph()
         # a <- b <- d
         # a <- c <- d
         # (d depends on both b and c, both depend on a)
@@ -163,7 +176,7 @@ class TestDiGraph:
 
     def test_topological_sort_subgraph_with_cycle(self) -> None:
         """Test that topological sort raises error on cycles."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         # Create a cycle: a -> b -> c -> a
         graph.add_edge("a", "b")
         graph.add_edge("b", "c")
@@ -174,7 +187,7 @@ class TestDiGraph:
 
     def test_topological_sort_subgraph_empty(self) -> None:
         """Test topological sort with empty set."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         graph.add_edge("a", "b")
 
         result = graph.topological_sort_subgraph(set())
@@ -182,7 +195,7 @@ class TestDiGraph:
 
     def test_topological_sort_subgraph_single_node(self) -> None:
         """Test topological sort with single node."""
-        graph = DiGraph()
+        graph = MyTestDiGraph()
         graph.add_node("a")
 
         result = graph.topological_sort_subgraph({"a"})

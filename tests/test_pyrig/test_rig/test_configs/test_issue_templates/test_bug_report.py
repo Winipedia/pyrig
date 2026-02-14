@@ -20,4 +20,4 @@ class TestBugReportConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert BugReportConfigFile().is_correct()
+        assert BugReportConfigFile.is_correct()

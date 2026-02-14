@@ -51,7 +51,7 @@ class BuildWorkflow(Workflow):
             from pyrig.rig.configs.workflows.build import BuildWorkflow
 
             # Creates .github/workflows/build.yml
-            BuildWorkflow()
+            BuildWorkflow.validate()
 
     See Also:
         pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow

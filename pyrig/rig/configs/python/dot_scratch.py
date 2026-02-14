@@ -21,7 +21,7 @@ class DotScratchConfigFile(PythonConfigFile):
     Examples:
         Generate .scratch.py::
 
-            DotScratchConfigFile()
+            DotScratchConfigFile.validate()
 
         Use for experimentation::
 

@@ -54,7 +54,7 @@ class SecurityConfigFile(MarkdownConfigFile):
     Examples:
         Generate SECURITY.md::
 
-            SecurityConfigFile()
+            SecurityConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.base.markdown.MarkdownConfigFile

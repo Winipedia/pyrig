@@ -39,7 +39,7 @@ class TestPythonPackageConfigFile:
         self, my_test_python_package_config_file: type[PythonPackageConfigFile]
     ) -> None:
         """Test method."""
-        my_test_python_package_config_file()
+        my_test_python_package_config_file.validate()
         assert (
             my_test_python_package_config_file.path().parent / "__init__.py"
         ).exists(), "Expected __init__.py to be created"

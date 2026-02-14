@@ -55,7 +55,7 @@ class ReleaseWorkflow(Workflow):
             from pyrig.rig.configs.workflows.release import ReleaseWorkflow
 
             # Creates .github/workflows/release.yml
-            ReleaseWorkflow()
+            ReleaseWorkflow.validate()
 
     See Also:
         pyrig.rig.configs.workflows.build.BuildWorkflow

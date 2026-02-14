@@ -24,7 +24,7 @@ class FixturesInitConfigFile(InitConfigFile):
     Examples:
         Generate tests/fixtures/__init__.py::
 
-            FixturesInitConfigFile()
+            FixturesInitConfigFile.validate()
 
         Add custom fixtures::
 

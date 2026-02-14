@@ -101,13 +101,15 @@ class TestHealthCheckWorkflow:
         self, my_test_health_check_workflow: type[HealthCheckWorkflow]
     ) -> None:
         """Test method."""
-        test_workflow = my_test_health_check_workflow()
-        workflow_path = test_workflow.path()
+        my_test_health_check_workflow.validate()
+        workflow_path = my_test_health_check_workflow.path()
         workflow_path.write_text("")
-        assert test_workflow.is_correct(), "Expected workflow to be correct when empty"
+        assert my_test_health_check_workflow.is_correct(), (
+            "Expected workflow to be correct when empty"
+        )
 
-        proper_config = test_workflow.configs()
-        test_workflow.dump(proper_config)
-        assert test_workflow.is_correct(), (
+        proper_config = my_test_health_check_workflow.configs()
+        my_test_health_check_workflow.dump(proper_config)
+        assert my_test_health_check_workflow.is_correct(), (
             "Expected workflow to be correct with proper config"
         )

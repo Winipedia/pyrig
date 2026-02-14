@@ -28,11 +28,6 @@ class DependencyGraph(DiGraph, Singleton):
     Central to pyrig's multi-package discovery system.
     """
 
-    def __init__(self) -> None:
-        """Initialize and build the dependency graph from installed distributions."""
-        super().__init__()
-        self.build()
-
     def build(self) -> None:
         """Build the graph from installed Python distributions."""
         logger.debug("Building dependency graph from installed distributions")

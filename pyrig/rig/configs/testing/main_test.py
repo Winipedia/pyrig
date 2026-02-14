@@ -27,7 +27,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
     Examples:
         Generate test_main.py::
 
-            MainTestConfigFile()
+            MainTestConfigFile.validate()
 
         Generated test::
 

@@ -26,7 +26,7 @@ class BugReportConfigFile(YmlConfigFile):
     Examples:
         Generate bug_report.yml::
 
-            BugReportConfigFile()
+            BugReportConfigFile.validate()
 
     See Also:
         pyrig.rig.configs.base.yml.YmlConfigFile

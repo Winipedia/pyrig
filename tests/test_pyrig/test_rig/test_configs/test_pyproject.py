@@ -83,9 +83,9 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file()
+        my_test_pyproject_config_file.validate()
         is_correct = my_test_pyproject_config_file.is_correct()
-        assert is_correct, "Expected config to be correct after initialization"
+        assert is_correct, "Expected config to be correct after validation"
 
     def test__dump(
         self,
@@ -93,7 +93,7 @@ class TestPyprojectConfigFile:
         mocker: MockFixture,
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file()
+        my_test_pyproject_config_file.validate()
         # spy on remove_wrong_dependencies
         spy = mocker.spy(
             my_test_pyproject_config_file,
@@ -147,7 +147,7 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file()
+        my_test_pyproject_config_file.validate()
         config = my_test_pyproject_config_file.configs()
         # add wrong dependencies to config
         config["project"]["dependencies"] = [
@@ -173,7 +173,7 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file()
+        my_test_pyproject_config_file.validate()
         config = my_test_pyproject_config_file.load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
         my_test_pyproject_config_file.dump(config)
@@ -210,7 +210,7 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file()
+        my_test_pyproject_config_file.validate()
         config = my_test_pyproject_config_file.load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
         my_test_pyproject_config_file.dump(config)
@@ -241,7 +241,7 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file()
+        my_test_pyproject_config_file.validate()
         config = my_test_pyproject_config_file.load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
         my_test_pyproject_config_file.dump(config)

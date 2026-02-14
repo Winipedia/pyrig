@@ -47,7 +47,6 @@ See Also:
 """
 
 import logging
-from abc import abstractmethod
 from collections.abc import Callable
 from functools import cache
 from pathlib import Path
@@ -116,17 +115,20 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
     """
 
     @classmethod
-    @abstractmethod
     def src_module(cls) -> ModuleType:
         """Return the source module to mirror with tests.
 
         This abstract method must be implemented by subclasses to specify which
         module's structure should be analyzed and mirrored in the test file.
+        It is not as an abstract method implemented to allow the .I property
+        to work on the base class for dynamic subclass creation.
 
         Returns:
             The source module whose functions, classes, and methods will have
             corresponding test skeletons generated.
         """
+        msg = "Subclasses must implement src_module()"
+        raise NotImplementedError(msg)
 
     @classmethod
     def filename(cls) -> str:
@@ -336,7 +338,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         module. For each source function, checks if a test function with the
         expected name (test_<function_name>) exists.
 
-        Cached for performance - called multiple times during initialization.
+        Cached for performance - called multiple times during validation.
 
         Returns:
             Tuple of test function names that need to be created, using the
@@ -452,7 +454,7 @@ def {test_func_name}() -> None:
         4. Identifies missing test classes and missing test methods within
            existing test classes
 
-        Cached for performance - called multiple times during initialization.
+        Cached for performance - called multiple times during validation.
 
         Returns:
             Dictionary mapping test class names to tuples of missing test method
@@ -658,10 +660,10 @@ class {test_class_name}:
 
         See Also:
             make_subclasses_for_modules: Creates and orders subclasses
-            init_subclasses: Inherited method that instantiates config subclasses
+            validate_subclasses: Inherited method that instantiates config subclasses
         """
         subclasses = cls.make_subclasses_for_modules(modules)
-        cls.init_subclasses(*subclasses)
+        cls.validate_subclasses(*subclasses)
 
     @overload
     @classmethod
