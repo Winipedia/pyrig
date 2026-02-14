@@ -59,7 +59,8 @@ def def_line(obj: Any) -> int:
             or decorated callable).
 
     Returns:
-        1-based source line number, or 0 if running inside a PyInstaller frozen
+        1-based source line number. Returns 0 only if the object has no
+        ``__code__`` attribute and is running inside a PyInstaller frozen
         bundle where source introspection is unavailable.
     """
     if isinstance(obj, property):

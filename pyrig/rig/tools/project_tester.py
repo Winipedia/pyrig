@@ -1,7 +1,6 @@
 """Pytest test runner wrapper.
 
-Provides type-safe wrapper for pytest commands executed through UV (uv run pytest).
-Ensures tests run in correct virtual environment.
+Provides type-safe wrapper for pytest command argument construction.
 
 Example:
     >>> from pyrig.rig.tools.project_tester import ProjectTester
@@ -15,7 +14,7 @@ from pyrig.src.processes import Args
 class ProjectTester(Tool):
     """Pytest test runner wrapper.
 
-    Constructs pytest command arguments executed through UV.
+    Constructs pytest command arguments.
 
     Operations:
         - Basic testing: Run pytest with custom arguments
@@ -72,24 +71,24 @@ class ProjectTester(Tool):
 
     @classmethod
     def test_args(cls, *args: str) -> Args:
-        """Construct uv run pytest arguments.
+        """Construct pytest arguments.
 
         Args:
             *args: Pytest command arguments.
 
         Returns:
-            Args for 'uv run pytest'.
+            Args for 'pytest'.
         """
         return cls.args(*args)
 
     @classmethod
     def run_tests_in_ci_args(cls, *args: str) -> Args:
-        """Construct uv run pytest arguments for CI.
+        """Construct pytest arguments for CI.
 
         Args:
             *args: Pytest command arguments.
 
         Returns:
-            Args for 'uv run pytest' with CI flags (log level INFO, XML coverage).
+            Args for 'pytest' with CI flags (log level INFO, XML coverage).
         """
         return cls.test_args("--log-cli-level=INFO", "--cov-report=xml", *args)
