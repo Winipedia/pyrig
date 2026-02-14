@@ -237,11 +237,6 @@ def main() -> None:
     Example:
         $ uv run pyrig mkroot
 
-        This function:
-        1. Discovers pyrig's main() and subcommands
-        2. Discovers shared commands (version, etc.)
-        3. Invokes Typer to parse and execute mkroot
-
     Note:
         Called automatically by console script entry point. Takes no arguments;
         all CLI arguments are parsed by Typer. Logging is configured by the

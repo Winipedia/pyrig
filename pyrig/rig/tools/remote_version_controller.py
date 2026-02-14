@@ -4,8 +4,8 @@ Provides type-safe wrapper for GitHub remote version control operations.
 
 Example:
     >>> from pyrig.rig.tools.remote_version_controller import (
-        RemoteVersionController,
-    )
+    ...     RemoteVersionController,
+    ... )
     >>> RemoteVersionController.I.repo_url()
 """
 
@@ -17,11 +17,9 @@ from pyrig.src.string_ import make_linked_badge_markdown
 class RemoteVersionController(Tool):
     """GitHub remote version control wrapper.
 
-    Constructs GitHub things for repository, documentation, CI/CD, and badges.
-    E.g. It constructs URLs and badge URLs for GitHub repository,
-    documentation, CI/CD, and badges.
-    Poetentially it could be extended to other remote version control systems.
-    or to do more complex things.
+    Constructs URLs and badge URLs for GitHub repository, documentation,
+    CI/CD, and badges. Potentially extensible to other remote version
+    control systems.
     """
 
     @classmethod
@@ -35,9 +33,10 @@ class RemoteVersionController(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get badge group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            `ToolGroup.TOOLING`
         """
         return ToolGroup.TOOLING
 
@@ -120,7 +119,6 @@ class RemoteVersionController(Tool):
         Args:
             workflow_name: Workflow file name without `.yml` extension.
             label: Badge text label (e.g., "CI", "Build").
-            logo: shields.io logo identifier (e.g., "github", "python").
 
         Returns:
             shields.io badge URL showing workflow status.

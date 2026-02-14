@@ -11,10 +11,10 @@ which project invoked them.
 Example:
     A shared ``version`` command that displays the invoking project's version::
 
+        from importlib.metadata import version
         from pyrig.src.cli import project_name_from_argv
-        from importlib.metadata import version as version
 
-        def version() -> None:
+        def show_version() -> None:
             project_name = project_name_from_argv()
             print(f"{project_name} version {version(project_name)}")
 """
@@ -65,7 +65,8 @@ def package_name_from_argv() -> str:
 
     See Also:
         project_name_from_argv: Returns the raw project name without conversion.
-        pyrig.src.modules.package.package_name_from_project_name: conversion function.
+        pyrig.src.modules.package.package_name_from_project_name: The underlying
+            conversion function.
     """
     project_name = project_name_from_argv()
     return package_name_from_project_name(project_name)

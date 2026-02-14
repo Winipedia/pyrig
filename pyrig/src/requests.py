@@ -31,7 +31,7 @@ def internet_is_available() -> bool:
         True if connection succeeds, False otherwise.
 
     Note:
-        Uses a 2-second timeout. Logs INFO on success, WARNING on failure.
+        Uses a 2-second timeout. Logs DEBUG on success, WARNING on failure.
         Does not raise exceptions; all connection errors return False.
     """
     try:

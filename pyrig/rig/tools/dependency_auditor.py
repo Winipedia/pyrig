@@ -39,7 +39,7 @@ class DependencyAuditor(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Returns the group the tool belongs to.
 
         E.g. testing, tool, code-quality etc...
         """

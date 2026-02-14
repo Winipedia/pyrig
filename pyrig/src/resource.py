@@ -28,12 +28,11 @@ def resource_path(name: str, package: ModuleType) -> Path:
 
     Raises:
         TypeError: If package is not a valid module object.
-        FileNotFoundError: If the resource file does not exist in the package.
 
     Example:
-        >>> from myapp import resources
-        >>> config_path = resource_path("config.json", resources)
-        >>> config_data = config_path.read_text()
+        >>> from pyrig import resources
+        >>> path = resource_path("GITIGNORE", resources)
+        >>> content = path.read_text()
 
     Warning:
         For file-based packages (typical development and PyInstaller builds), the
@@ -42,7 +41,10 @@ def resource_path(name: str, package: ModuleType) -> Path:
         if persistence beyond the current call is needed.
 
     Note:
-        This function exits the `as_file` context manager before returning, which
+        The returned path is not validated for existence. If the named resource does
+        not exist, the caller will encounter ``FileNotFoundError`` when accessing it.
+
+        This function exits the ``as_file`` context manager before returning, which
         works reliably for file-based packages but may cause path invalidation for
         zip-imported packages. This is acceptable for pyrig's use cases where
         packages are always file-based.

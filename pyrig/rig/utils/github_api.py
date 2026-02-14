@@ -49,7 +49,7 @@ def create_or_update_ruleset(
         github.GithubException: If API request fails.
 
     Examples:
-        Create a new ruleset::
+        Create a new ruleset:
 
             >>> create_or_update_ruleset(
             ...     token="ghp_...", owner="myorg", repo_name="myrepo",
@@ -107,7 +107,7 @@ def all_rulesets(token: str, owner: str, repo_name: str) -> Any:
         github.GithubException: If API request fails.
 
     Examples:
-        Get all rulesets::
+        Get all rulesets:
 
             >>> rulesets = all_rulesets(
             ...     token="ghp_...", owner="myorg", repo_name="myrepo"
@@ -138,7 +138,7 @@ def repository(token: str, owner: str, repo_name: str) -> Repository:
         github.BadCredentialsException: If token is invalid or expired.
 
     Examples:
-        Get a repository object::
+        Get a repository object:
 
             >>> repo = repository(token="ghp_...", owner="myorg", repo_name="myrepo")
             >>> print(repo.full_name)
@@ -167,7 +167,7 @@ def ruleset_exists(token: str, owner: str, repo_name: str, ruleset_name: str) ->
         github.GithubException: If API request fails.
 
     Examples:
-        Check if a ruleset exists::
+        Check if a ruleset exists:
 
             >>> ruleset_id = ruleset_exists(
             ...     token="ghp_...", owner="myorg", repo_name="myrepo",
@@ -214,7 +214,7 @@ def github_api_request(  # noqa: PLR0913
         github.GithubException: If API request fails.
 
     Examples:
-        Get all rulesets::
+        Get all rulesets:
 
             >>> rulesets = github_api_request(
             ...     token="ghp_...", owner="myorg", repo_name="myrepo",

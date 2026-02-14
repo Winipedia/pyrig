@@ -101,7 +101,7 @@ class Args(tuple[str, ...]):
     """Immutable command-line arguments container with execution capabilities.
 
     Tuple subclass representing a complete command ready for execution.
-    Returned by all Tool.*_args methods (e.g., PackageManager.sync_args,
+    Returned by all Tool.*_args methods (e.g., PackageManager.install_dependencies_args,
     Linter.check_args) to provide a consistent interface for building, inspecting,
     and executing subprocess commands.
 

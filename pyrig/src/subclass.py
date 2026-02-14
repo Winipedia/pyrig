@@ -31,12 +31,12 @@ class DependencySubclass(ABC):
     @classmethod
     @abstractmethod
     def definition_package(cls) -> ModuleType:
-        """Get the package where the base classes subclasses are supposed to be defined.
+        """Get the package where this class's subclasses are defined.
 
-        Should be overridden by subclasses to define their own package.
+        Should be overridden by subclasses to specify their own package.
 
         Returns:
-            Package module where the ConfigFile subclass is defined.
+            Package module containing the concrete subclass definitions.
         """
 
     @classmethod
@@ -70,13 +70,12 @@ class DependencySubclass(ABC):
     def subclasses(cls) -> list[type[Self]]:
         """Discover all non-abstract subclasses.
 
-        This discovers all non-abstract subclasses
-        of the class across dependent packages of the base dependency,
-        defined in the definition package, and sorts them
-        using the base dependency and definition package defined by the subclass.
+        Discovers all non-abstract subclasses of this class across dependent
+        packages of the base dependency, scoped to the definition package,
+        and returns them sorted by ``sorting_key``.
 
         Returns:
-            List of subclass types.
+            Sorted list of concrete subclass types.
         """
         return sorted(
             discover_subclasses_across_dependents(
@@ -112,8 +111,9 @@ class DependencySubclass(ABC):
 
 
 class SingletonDependencySubclass(Singleton, DependencySubclass):
-    """Convenience subclass of DependencySubclass for singleton subclasses.
+    """Convenience base combining `Singleton` with `DependencySubclass`.
 
-    This class assumes that all leaf subclasses are singletons and provides an
-    `I` property that returns the singleton instance of the leaf subclass.
+    By inheriting from `Singleton`, the inherited ``I`` property returns a
+    cached singleton instance of the leaf subclass instead of creating a new
+    one on every access.
     """

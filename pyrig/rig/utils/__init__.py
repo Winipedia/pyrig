@@ -14,13 +14,13 @@ Modules:
     versions: Version constraint parsing and range generation
 
 Examples:
-    Discover packages with depth limit::
+    Discover packages with depth limit:
 
         >>> from pyrig.rig.utils.packages import find_packages
         >>> find_packages(depth=0)
         ['myproject', 'tests']
 
-    Parse version constraints::
+    Parse version constraints:
 
         >>> from pyrig.rig.utils.versions import VersionConstraint
         >>> vc = VersionConstraint(">=3.8,<3.12")

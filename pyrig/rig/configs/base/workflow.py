@@ -104,8 +104,8 @@ class Workflow(YmlConfigFile):
     See Also:
         pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow
             Example concrete workflow implementation
-        pyrig.rig.configs.base.yaml.YamlConfigFile
-            Base class for YAML configuration files
+        pyrig.rig.configs.base.yml.YmlConfigFile
+            Parent class for .yml configuration files
     """
 
     UBUNTU_LATEST = "ubuntu-latest"
@@ -718,9 +718,9 @@ class Workflow(YmlConfigFile):
         """Get core setup steps with dependency update and installation.
 
         Args:
+            no_dev: Whether to skip dev dependencies.
             python_version: Python version to use. Defaults to latest supported.
             repo_token: Whether to use REPO_TOKEN for checkout.
-            no_dev: Whether to install dev dependencies.
             patch_version: Whether to patch the version.
 
         Returns:
@@ -1210,13 +1210,13 @@ class Workflow(YmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that builds the documentation.
+        """Create a step that builds the project documentation.
 
         Args:
             step: Existing step dict to update.
 
         Returns:
-            Step that runs uv build-docs.
+            Step that builds the project documentation.
         """
         return cls.step(
             step_func=cls.step_build_documentation,
@@ -1898,10 +1898,10 @@ class Workflow(YmlConfigFile):
 
     @classmethod
     def if_workflow_run_is_not_cron_triggered(cls) -> str:
-        """Create a condition for not being triggered by cron.
+        """Create a condition for the triggering workflow run not being cron.
 
         Returns:
-            GitHub Actions expression checking event name.
+            GitHub Actions expression checking workflow_run event name.
         """
         return cls.insert_var("github.event.workflow_run.event != 'schedule'")
 
@@ -1927,14 +1927,14 @@ class Workflow(YmlConfigFile):
     # ----------------------------------------------------------------------------
     @classmethod
     def run_if_condition(cls, run: str, condition: str) -> str:
-        """Returns a run command that only runs if condition is true.
+        """Return a run command that only runs if condition is true.
 
         Args:
             run: Command to run.
             condition: Condition expression.
 
         Returns:
-            GitHub Actions expression checking for condition.
+            Shell script that runs the command conditionally.
         """
         condition_check = cls.insert_var(condition)
         # make a script that runs the command if the token is configured

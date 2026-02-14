@@ -1,8 +1,9 @@
-"""Module loading, path conversion, and cross-package discovery utilities.
+"""Module loading, creation, and import path resolution utilities.
 
-Provides utilities for loading modules from files, converting between module names and
-file paths, reading module source code, and executing functions within modules. Used
-throughout pyrig for dynamic module loading with fallback strategies.
+Provides utilities for importing modules with fallback strategies, creating new
+module files, reading module source code, constructing and resolving fully qualified
+import paths for objects, and executing functions within modules. Used throughout
+pyrig for dynamic module loading when standard import mechanisms may not suffice.
 """
 
 import importlib.util

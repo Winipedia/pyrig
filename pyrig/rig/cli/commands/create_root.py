@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def make_project_root(*, priority: bool = False) -> None:
     """Create project configuration files and directory structure.
 
-    Discovers and initializes all ConfigFile subclasses to create the complete
+    Discovers and validates all ConfigFile subclasses to create the complete
     project structure.
 
     Args:

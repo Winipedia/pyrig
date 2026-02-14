@@ -1,6 +1,6 @@
-"""Configuration management for issue template chooser config.
+"""Manages issue template chooser config.
 
-Manages .github/ISSUE_TEMPLATE/config.yml which controls the issue template
+Creates .github/ISSUE_TEMPLATE/config.yml which controls the issue template
 chooser behavior on GitHub.
 
 See Also:
@@ -15,15 +15,13 @@ from pyrig.rig.configs.base.yml import YmlConfigFile
 
 
 class ConfigConfigFile(YmlConfigFile):
-    """Issue template chooser configuration manager.
+    """Manages .github/ISSUE_TEMPLATE/config.yml.
 
-    Generates .github/ISSUE_TEMPLATE/config.yml which controls:
+    Controls the issue template chooser:
     - Whether blank issues are allowed (blank_issues_enabled)
 
-    Examples:
-        Generate config.yml::
-
-            ConfigConfigFile.validate()
+    Example:
+        >>> ConfigConfigFile.validate()
 
     See Also:
         https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
@@ -32,29 +30,17 @@ class ConfigConfigFile(YmlConfigFile):
 
     @classmethod
     def parent_path(cls) -> Path:
-        """Get the parent directory for the config.
-
-        Returns:
-            Path: .github/ISSUE_TEMPLATE/.
-        """
+        """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
     @classmethod
     def _configs(cls) -> dict[str, Any]:
-        """Get the issue template config.
-
-        Returns:
-            dict[str, Any]: Issue template config YAML structure.
-        """
+        """Return issue template config YAML structure."""
         return {"blank_issues_enabled": False}
 
     @classmethod
     def is_correct(cls) -> bool:
-        """Check if config.yml exists and is non-empty.
-
-        Returns:
-            bool: True if file exists with content, False otherwise.
-        """
+        """Return True if config.yml exists with content."""
         return cls.path().exists() and bool(
             cls.path().read_text(encoding="utf-8").strip()
         )

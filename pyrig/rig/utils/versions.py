@@ -15,13 +15,13 @@ Classes:
     VersionConstraint: Parser and analyzer for PEP 440 version constraints
 
 Examples:
-    Parse and extract bounds::
+    Parse and extract bounds:
 
         >>> vc = VersionConstraint(">=3.8,<3.12")
         >>> vc.find_lower_inclusive()
         <Version('3.8')>
 
-    Generate version range::
+    Generate version range:
 
         >>> vc.version_range(level="minor")
         [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
@@ -97,13 +97,13 @@ class VersionConstraint:
         upper_exclusive (Version | None): Effective upper bound (min of all uppers).
 
     Examples:
-        Parse and extract bounds::
+        Parse and extract bounds:
 
             >>> vc = VersionConstraint(">=3.8,<3.12")
             >>> vc.find_lower_inclusive()
             <Version('3.8')>
 
-        Generate version range::
+        Generate version range:
 
             >>> vc.version_range(level="minor")
             [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]

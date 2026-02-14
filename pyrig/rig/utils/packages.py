@@ -9,13 +9,13 @@ Functions:
     find_namespace_packages: Find all PEP 420 namespace packages
 
 Examples:
-    Find packages with depth limit::
+    Find packages with depth limit:
 
         >>> from pyrig.rig.utils.packages import find_packages
         >>> find_packages(depth=0)
         ['myproject', 'tests']
 
-    Check if current project is pyrig::
+    Check if current project is pyrig:
 
         >>> from pyrig.rig.utils.packages import src_package_is_pyrig
         >>> src_package_is_pyrig()
@@ -73,17 +73,17 @@ def find_packages(
         list if no packages found.
 
     Examples:
-        Find only top-level packages::
+        Find only top-level packages:
 
             >>> find_packages(depth=0)
             ['myproject', 'tests']
 
-        Find all packages including namespace packages::
+        Find all packages including namespace packages:
 
             >>> find_packages(include_namespace_packages=True)
             ['myproject', 'myproject.utils', 'myproject.core']
 
-        Find packages excluding tests::
+        Find packages excluding tests:
 
             >>> find_packages(exclude=['tests*'])
             ['myproject', 'myproject.utils']
@@ -124,7 +124,7 @@ def src_package_is_pyrig() -> bool:
         True if "pyrig" is a top-level package in the current directory.
 
     Examples:
-        Conditional logic for pyrig development::
+        Conditional logic for pyrig development:
 
             >>> if src_package_is_pyrig():
             ...     print("Running in pyrig development mode")
@@ -148,7 +148,7 @@ def find_namespace_packages() -> list[str]:
         none found.
 
     Examples:
-        Find all namespace packages::
+        Find all namespace packages:
 
             >>> ns_packages = find_namespace_packages()
             >>> print(ns_packages)
