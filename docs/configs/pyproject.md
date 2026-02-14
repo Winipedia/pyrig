@@ -81,7 +81,7 @@ classifiers = [                   # PyPI classifiers
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     # continues up to the latest Python version allowed 
-    # by requires-python and found on python.org
+    # by requires-python (fetched from endoflife.date API)
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
@@ -297,10 +297,10 @@ Several values are determined automatically:
 
 ### Normalization
 
-When dumping, pyrig normalizes dependencies:
+When generating and dumping, pyrig normalizes dependencies:
 
 - Removes version specifiers for comparison
-- Merges user deps with standard dev deps
+- Merges user deps with tool dev deps (during config generation)
 - Sorts and deduplicates
 - Preserves user-specified versions
 

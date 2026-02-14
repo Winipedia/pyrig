@@ -10,11 +10,11 @@ Complete guide to setting up a new pyrig project from scratch:
 - **Prerequisites**: Git, uv, Podman (optional)
 - **Required Tokens**: GitHub (REPO_TOKEN), PyPI (optional), Codecov account
   (recommended), CODECOV_TOKEN (recommended)
-- **Setup Steps**: Create repo, clone, uv init, add pyrig, configure .env, run
-  init
+- **Setup Steps**: Create repo, clone, uv init, add pyrig, run init, add
+  secrets, push
 - **What You Get**: Complete project structure, configs, CI/CD workflows, dev
   tools
-- **Next Steps**: Start coding, make changes, release
+- **Next Steps**: Start coding, write tests, build artifacts
 
 Step-by-step instructions from zero to fully configured project.
 
@@ -42,7 +42,7 @@ Understand pyrig's philosophy and what you sacrifice and what you gain:
   project needs
 - **Opinionated Tooling**: Sacrifice tool choice → Gain zero-config,
   best-in-class tools
-- **Runtime Dev Folder**: Sacrifice a few KB → Gain multi-package architecture
+- **Runtime Rig Folder**: Sacrifice a few KB → Gain multi-package architecture
   and CLI extensibility
 - **Strict Requirements**: Sacrifice flexibility → Gain guaranteed code quality
 - **Python >=3.12**: Sacrifice legacy compatibility → Gain modern features and

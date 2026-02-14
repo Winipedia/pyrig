@@ -7,7 +7,7 @@ GitHub Actions workflow configuration files for CI/CD automation.
 Pyrig generates GitHub Actions workflows that automate:
 
 - Continuous integration (linting, type checking, testing)
-- Building artifacts (wheels, container images)
+- Building artifacts (executables, container images)
 - Creating releases (versioning, changelogs, GitHub releases)
 - Deploying (PyPI, GitHub Pages documentation)
 

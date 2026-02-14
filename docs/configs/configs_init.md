@@ -15,15 +15,15 @@ Creates a configs package that:
 ## Inheritance
 
 ```mermaid
-graph BT
-    I[ConfigsInitConfigFile] --> H[InitConfigFile]
-    H --> G[CopyModuleOnlyDocstringConfigFile]
-    G --> F[CopyModuleConfigFile]
-    F --> E[PythonPackageConfigFile]
-    E --> D[PythonConfigFile]
-    D --> C[StringConfigFile]
-    C --> B[ListConfigFile]
-    B --> A[ConfigFile]
+graph TD
+    A[ConfigFile] --> B[ListConfigFile]
+    B --> C[StringConfigFile]
+    C --> D[PythonConfigFile]
+    D --> E[PythonPackageConfigFile]
+    E --> F[CopyModuleConfigFile]
+    F --> G[CopyModuleOnlyDocstringConfigFile]
+    G --> H[InitConfigFile]
+    H --> I[ConfigsInitConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff

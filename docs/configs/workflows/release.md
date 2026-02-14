@@ -105,7 +105,7 @@ graph TD
 
 3. **Setup Package Manager** (`astral-sh/setup-uv@main`)
    - Installs uv package manager
-   - Uses the default Python version (latest supported)
+   - Pins Python 3.14
 
 4. **Patch Version**
    - Bumps patch version: `uv version --bump patch`

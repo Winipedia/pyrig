@@ -26,4 +26,4 @@ class DependencyAuditor(BaseDA):
 ## Related
 
 - [Architecture](architecture.md) - Design philosophy and extension mechanisms
-- [Tooling](../more/tooling.md) - Why pyrig chose each tool
+- [Tooling - pip-audit](../more/tooling.md#pip-audit) - Why pyrig uses pip-audit

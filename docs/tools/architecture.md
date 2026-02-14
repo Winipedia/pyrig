@@ -35,13 +35,14 @@ to use each is essential:
 
 | Mechanism | Purpose | Used For |
 |-----------|---------|----------|
-| **`.I` (Leaf)** | Get the deepest subclass of a Tool or ConfigFile | Internal pyrig operations that should use your customizations |
+| **`.I`** | Get an instance of the deepest subclass of a Tool or ConfigFile | Internal pyrig operations that should use your customizations |
 | **`subclasses()`** | Discover all ConfigFile implementations | Finding all configs to generate, including new ones you define |
 
 ### The `.I` Pattern: Dynamic Tool Resolution
 
-The `.I` property resolves to the **deepest subclass** in the inheritance chain.
-pyrig uses `.I` internally so your customizations propagate automatically.
+The `.I` property resolves to an **instance of the deepest subclass** in the
+inheritance chain. pyrig uses `.I` internally so your customizations propagate
+automatically.
 
 ```mermaid
 graph TD

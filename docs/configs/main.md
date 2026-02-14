@@ -84,11 +84,11 @@ The entire content of `pyrig/main.py` is copied to your project.
 The copied `main.py` includes an empty `main()` function template:
 
 ```python
-"""Main entrypoint for the project."""
+"""Main entrypoint module for pyrig."""
 
 
 def main() -> None:
-    """Main entrypoint for the project."""
+    """Run the main entrypoint for the project."""
 
 
 if __name__ == "__main__":

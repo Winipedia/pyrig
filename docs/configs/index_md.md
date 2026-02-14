@@ -8,8 +8,8 @@ homepage for your MkDocs documentation site.
 Creates a documentation index file that:
 
 - Uses the project name with "Documentation" suffix as the header
-- Includes all standard badges (tooling, code quality, package info, CI/CD,
-  documentation)
+- Includes all standard badges (tooling, code quality, testing, project info,
+  security, CI/CD, documentation)
 - Displays the project description from `pyproject.toml`
 - Provides a professional starting point for documentation
 - Allows users to add custom content below the header
@@ -60,8 +60,8 @@ with:
 
 1. **Project name header**: Uses project name from `pyproject.toml` with "
    Documentation" suffix
-2. **Badge sections**: Five categories of badges (tooling, code quality, package
-   info, CI/CD, documentation)
+2. **Badge sections**: Seven categories of badges (tooling, code quality,
+   testing, project info, security, CI/CD, documentation)
 3. **Project description**: Quoted description from `pyproject.toml`
 4. **Horizontal rules**: Visual separators for clean layout
 
@@ -110,32 +110,41 @@ the Python badge (e.g., `3.10|3.11|3.12`).
 
 - **pyrig**: Built with pyrig
 - **uv**: Package manager
-- **Container**: Podman containerization
-- **prek**: Prek hooks enabled
-- **MkDocs**: Documentation generator
+- **podman**: Container engine
+- **git**: Version control
+- **github**: Remote repository and stars
 
 ### 2. Code Quality Badges
 
+- **prek**: Pre-commit hooks
 - **ruff**: Linting and formatting
 - **ty**: Strict type checking
-- **bandit**: Security scanning
-- **pytest**: Testing framework
-- **codecov**: Code coverage
 - **rumdl**: Markdown linting
 
-### 3. Package Info Badges
+### 3. Testing Badges
+
+- **pytest**: Testing framework
+- **pytest-cov**: Code coverage (Codecov)
+
+### 4. Security Badges
+
+- **bandit**: Security scanning
+- **pip-audit**: Dependency auditing
+
+### 5. Project Info Badges
 
 - **PyPI**: Package version and link
 - **Python**: Supported Python versions
 - **License**: Project license
 
-### 4. CI/CD Badges
+### 6. CI/CD Badges
 
 - **CI**: Health check workflow status
 - **CD**: Release workflow status
 
-### 5. Documentation Badge
+### 7. Documentation Badges
 
+- **MkDocs**: Documentation generator
 - **Documentation**: Link to GitHub Pages docs
 
 ## Usage

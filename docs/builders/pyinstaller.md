@@ -3,7 +3,7 @@
 pyrig provides `PyInstallerBuilder`, an abstract builder for creating standalone
 executables from Python projects using PyInstaller.
 
-Note: The entire reason your main.py file is generated with a
+Note: The entire reason your main.py file is generated with an
 `if __name__ == "__main__":` guard is so that it can be used as an executable
 entry point. PyInstaller needs to execute that file to create a proper
 executable. We also kept it because it is a Python standard. However, we prefer
@@ -60,13 +60,13 @@ directory.
 uv run pyrig build
 ```
 
-Output: `dist/myapp-Linux` (or `myapp-Darwin`, `myapp-Windows`)
+Output: `dist/myapp-Linux` (or `myapp-Darwin`, `myapp-Windows.exe`)
 
 ## How It Works
 
 ```mermaid
 graph TD
-    A[PyInstallerBuilder instantiated] --> B[Collect resource packages]
+    A[PyInstallerBuilder.build called] --> B[Collect resource packages]
     B --> C[Build PyInstaller options]
     C --> D[Convert icon to platform format]
     D --> E[Run PyInstaller]
@@ -171,7 +171,7 @@ The builder generates these PyInstaller options:
 | `--noconfirm` | Enabled                          | Replace output directory without confirmation |
 | `--icon`      | Platform-specific icon           | Application icon                              |
 | `--add-data`  | All resource packages            | Bundle resources                              |
-| `--workpath`  | Temp directory                   | Build artifacts location                      |
+| `--workpath`  | Temp directory                   | Build work directory                          |
 | `--specpath`  | Temp directory                   | Spec file location                            |
 | `--distpath`  | Temp directory                   | Output location                               |
 

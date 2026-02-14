@@ -1,6 +1,6 @@
 # mkinits
 
-Creates `__init__.py` files for all packages and modules that are missing them.
+Creates `__init__.py` files for all packages that are missing them.
 
 ## Usage
 
@@ -43,7 +43,7 @@ consistency and reliability.
 
 Use `mkinits` when:
 
-- Creating new packages or modules
+- Creating new packages
 - Converting namespace packages to regular packages
 - Ensuring all packages have `__init__.py` files
 

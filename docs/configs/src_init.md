@@ -6,8 +6,7 @@ The `SrcInitConfigFile` manages the `{package_name}/src/__init__.py` file.
 
 Creates a src package that:
 
-- Mirrors the structure of `pyrig.src`
-- Copies only the docstring from the source module
+- Copies only the docstring from `pyrig.src`
 - Ensures the src directory exists with proper package structure
 - Provides a place for application source code
 
