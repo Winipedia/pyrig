@@ -94,5 +94,6 @@ infrastructure.
 ## Best Practices
 
 1. **Keep it simple**: Don't add logic to this test
-2. **Delete when ready**: Remove this file once you have real tests
+2. **Empty to opt out**: Emptying the file opts out of regeneration; deleting
+   it will cause `mkroot` to recreate it
 3. **Don't rely on it**: This is a placeholder, not a real test

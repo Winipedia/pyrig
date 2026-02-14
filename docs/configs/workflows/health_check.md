@@ -86,7 +86,7 @@ graph TD
     P3 --> P4[4. Update Dependencies]
     P4 --> P5[5. Install Dependencies]
     P5 --> P6[6. Add Dependency Updates To Version Control]
-    P6 --> P7[7. Run Prek Hooks]
+    P6 --> P7[7. Run Pre Commit Hooks]
     P7 --> P8[8. Run Dependency Audit]
     P8 --> P9[9. Protect Repository]
 
@@ -127,10 +127,10 @@ graph TD
 6. **Add Dependency Updates To Version Control**
    - Stages `pyproject.toml` and `uv.lock`
 
-7. **Run Prek Hooks**
+7. **Run Pre Commit Hooks**
    - Runs `uv run prek run --all-files`
-   - Executes: ruff (linting), ty (type checking), bandit (security), rumdl
-     (markdown linting)
+   - Executes: ruff (formatting + linting), ty (type checking), bandit
+     (security), rumdl (markdown linting)
    - Fails if any hook fails
 
 8. **Run Dependency Audit**

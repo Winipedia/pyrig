@@ -100,7 +100,7 @@ class LoggingConfigFile(YamlConfigFile):
 
 **What happens**:
 
-- File created at `config/logging_config.yaml` when you run
+- File created at `config/logging.yaml` when you run
   `uv run pyrig mkroot`
 - **Automatically discovered** via pyrig's ConfigFile discovery system
 - **Inherited by all services** that depend on `service-base`
@@ -241,7 +241,7 @@ then you can use uv add like usual
 ```text
 auth-service/
 ├── config/
-│   └── logging_config.yaml        # ✓ From service-base
+│   └── logging.yaml               # ✓ From service-base
 ├── mkdocs.yml                      # ✓ Custom-branded theme
 ├── pyproject.toml                  # ✓ With shared dependencies
 ├── auth_service/
@@ -318,7 +318,7 @@ workflow failed. Then you just need to open your repo in your IDE, run
 
 1. **`assert_root_is_correct` fixture runs** (session-level autouse)
 2. **Detects** `pyproject.toml` is missing `cryptography>=42.0.0`
-3. **Calls** `make_project_root()` to fix it
+3. **Calls** `ConfigFile.validate_subclasses()` to fix it
 4. **Adds** the missing dependency to the file
 5. **Tests fails** pytest will raise with a descriptive error message of which
    Config Files were not correct. Then you can check the git diff of what
@@ -369,8 +369,8 @@ class AuthConfigFile(YamlConfigFile):
 
 **Result**: `auth-service` has both:
 
-- ✓ Shared `logging_config.yaml` (from `service-base`)
-- ✓ Service-specific `auth_config.yaml` (from `auth-service`)
+- ✓ Shared `logging.yaml` (from `service-base`)
+- ✓ Service-specific `auth.yaml` (from `auth-service`)
 
 ## Step 8: Create More Services
 
@@ -411,8 +411,8 @@ configurations across package dependencies. For complete technical details, see:
 1. Build dependency graph: `pyrig → service-base → auth-service`
 2. Find all `<package>.rig.configs` modules
 3. Discover all ConfigFile subclasses
-4. Keep only leaf classes (classes with no subclasses sharing the same name)
-5. Initialize all leaf classes
+4. Keep only leaf classes (classes with no child subclasses in the result set)
+5. Validate all leaf classes
 
 **Autouse Fixture Healing**:
 
@@ -421,8 +421,8 @@ configurations across package dependencies. For complete technical details, see:
 3. `assert_root_is_correct` runs on every test session
 4. Validates all ConfigFiles are correct
 5. Raises descriptive error if validation fails (prompting you to review the
-   changes from `make_project_root` that the autouse fixture did to fix the
-   issue)
+   changes from `ConfigFile.validate_subclasses` that the autouse fixture did
+   to fix the issue)
 
 ## Propagation Flow
 
@@ -434,8 +434,8 @@ dependent services:
 3. **Services update dependency** - Run `uv add service-base --upgrade`
 4. **Run pytest or pyrig mkroot** - Triggers validation
 5. **assert_root_is_correct runs** - Autouse fixture validates all configs
-6. **If incorrect** - `make_project_root()` discovers and initializes all
-   ConfigFiles
+6. **If incorrect** - `ConfigFile.validate_subclasses()` validates all
+   incorrect ConfigFiles
 7. **Files created/updated** - Missing configs added, incorrect values fixed
 8. **Tests continue** - Or fail with descriptive error showing what changed
 

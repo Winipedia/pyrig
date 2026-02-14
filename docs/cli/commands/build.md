@@ -1,6 +1,6 @@
 # build
 
-Builds all project artifacts by discovering and invoking all registered
+Builds all project artifacts by discovering and invoking all discovered
 `BuilderConfigFile` subclasses.
 
 ## Usage
@@ -19,8 +19,8 @@ uv run pyrig -vv build
 
 The `build` command:
 
-1. **Discovers all `BuilderConfigFile` subclasses** across the project and its
-   dependencies
+1. **Discovers all non-abstract `BuilderConfigFile` subclasses** across the project
+   and its dependencies
 2. **Invokes each BuilderConfigFile** to create its artifacts
 3. **Outputs artifacts** to the `dist/` directory with platform-specific naming
 

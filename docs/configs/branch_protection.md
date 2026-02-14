@@ -33,7 +33,7 @@ graph TD
 
 - Uses JSON format for configuration
 - Loads/dumps with Python's `json` module
-- Validation checks if configuration matches GitHub's ruleset schema
+- Validation ensures expected configuration is present in the actual file
 - File can be manually uploaded to GitHub
 - Configuration is passed directly to GitHub's REST API
 

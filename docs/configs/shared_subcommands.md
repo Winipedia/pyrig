@@ -81,8 +81,8 @@ uv run pyrig mkroot
 This file is where you define CLI subcommands that should be available across
 all your pyrig-based projects. Commands defined here are shared and reusable.
 
-See the [CLI Subcommands documentation](../cli/subcommands.md) for details on
-creating custom commands.
+See the [CLI Shared Subcommands documentation](../cli/shared-subcommands.md)
+for details on creating custom commands.
 
 ## Best Practices
 

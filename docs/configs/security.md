@@ -53,7 +53,8 @@ recognized by GitHub and other platforms.
 When initialized via `uv run pyrig mkroot`, the file is created by:
 
 1. **Load template**: Uses embedded minimal template
-2. **Insert email**: Replaces `{email}` with user's email from git config
+2. **Insert email**: Replaces `[INSERT CONTACT METHOD]`
+with user's email from git config
 3. **Write file**: Creates SECURITY.md with content
 
 ### Template Content

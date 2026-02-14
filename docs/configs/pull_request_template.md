@@ -8,7 +8,7 @@ The `PullRequestTemplateConfigFile` manages the
 Creates a pull request template that:
 
 - Uses a minimal template inspired by React's PR template
-- Contains Summary and Test Plan sections
+- Contains Summary and Testing sections
 - Includes reminder comments for best practices
 - Located in `.github/` directory
 
@@ -39,8 +39,9 @@ graph TD
 | Section | Purpose |
 |---------|---------|
 | Header Comment | Reminders for summary, title, and issue references |
+| Change Overview | Top-level heading for the PR description |
 | Summary | Purpose of the change and why |
-| Test Plan | How the change was tested |
+| Testing | How the change was tested |
 
 ## Automatic Creation
 
@@ -56,7 +57,7 @@ File must exist and contain text. Users can customize the template.
 
 The template follows a minimal approach:
 
-- **2 sections only**: Summary and Test Plan
+- **2 sections only**: Summary and Testing
 - **Short enough to fill out**: Developers actually complete it
 - **Universal**: Works for any project type
 - **Best practice reminders**: Comment header prompts for title and issue refs

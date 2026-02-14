@@ -28,7 +28,7 @@ Understand how fixtures are shared across packages:
 Explore fixtures that run automatically in all packages:
 
 - Session-level validation fixtures
-- Module and class-level test coverage fixtures
+- Test coverage enforcement at module, class, and method levels
 - Project health checks
 - Dependency verification
 

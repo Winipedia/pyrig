@@ -19,3 +19,4 @@ class VersionController(BaseVC):
 ## Related
 
 - [Architecture](architecture.md) - Design philosophy and extension mechanisms
+- [Tooling - Git](../more/tooling.md#git) - Why pyrig uses Git

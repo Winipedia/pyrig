@@ -23,7 +23,7 @@ uv run pyrig -v mkroot
 
 ## What It Does
 
-The `mkroot` command discovers and initializes all `ConfigFile` subclasses
+The `mkroot` command discovers and validates all `ConfigFile` subclasses
 across the project and its dependencies. Config files are processed in priority
 order to ensure dependencies between files are respected.
 
