@@ -13,7 +13,7 @@ Functions:
     return_resource_content_on_fetch_error: HTTP request error fallback decorator
 
 Examples:
-    Fetch with fallback to resource file::
+    Fetch with fallback to resource file:
 
         >>> from pyrig.rig.utils.resources import (
         ...     return_resource_content_on_fetch_error
@@ -78,7 +78,7 @@ def return_resource_file_content_on_exceptions(
         FileNotFoundError: If resource file doesn't exist at decorator creation time.
 
     Examples:
-        Fallback to resource file on network errors::
+        Fallback to resource file on network errors:
 
             >>> @return_resource_file_content_on_exceptions(
             ...     "GITIGNORE",
@@ -146,7 +146,7 @@ def return_resource_content_on_fetch_error(
         Decorator function for HTTP request functions returning strings.
 
     Examples:
-        Fetch with fallback to resource file::
+        Fetch with fallback to resource file:
 
             >>> @return_resource_content_on_fetch_error("LATEST_PYTHON_VERSION")
             ... def fetch_latest_python_version() -> str:

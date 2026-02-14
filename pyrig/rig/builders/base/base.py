@@ -4,19 +4,19 @@ This module provides the abstract base class for all builders in the pyrig frame
 Builders are specialized configuration file handlers that create build artifacts
 (executables, documentation, packages, etc.) rather than configuration files.
 
-The :class:`BuilderConfigFile` extends :class:`ConfigFile` but repurposes its
-interface for build operations:
+`BuilderConfigFile` extends `ConfigFile` but repurposes its interface for build
+operations:
 
-- ``load()`` returns existing artifacts from the output directory
-- ``dump()`` triggers the build process
-- ``create_file()`` creates the output directory structure
+- `load()` returns existing artifacts from the output directory
+- `dump()` triggers the build process
+- `create_file()` creates the output directory structure
 
-Subclasses implement :meth:`~BuilderConfigFile.create_artifacts` to define their
-specific build logic. The framework handles temporary directory management,
-artifact collection, and platform-specific naming.
+Subclasses implement `create_artifacts()` to define their specific build logic.
+The framework handles temporary directory management, artifact collection, and
+platform-specific naming.
 
 Example:
-    ::
+    Basic builder implementation:
 
         class MyBuilder(BuilderConfigFile):
             @classmethod
@@ -63,20 +63,16 @@ class BuilderConfigFile(ListConfigFile):
     Subclasses must implement :meth:`create_artifacts` to define their build logic.
 
     Attributes:
-        ARTIFACTS_DIR_NAME: Default output directory name (``"dist"``).
+        ARTIFACTS_DIR_NAME: Default output directory name (`"dist"`).
 
     Example:
-        ::
+        Basic builder subclass:
 
             class ExecutableBuilder(BuilderConfigFile):
                 @classmethod
                 def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
                     exe_path = temp_artifacts_dir / f"{cls.app_name()}.exe"
                     # ... compile and create executable ...
-
-    See Also:
-        :class:`~pyrig.rig.configs.base.list_cf.ListConfigFile`: Parent class providing
-            the list-based configuration file interface.
     """
 
     ARTIFACTS_DIR_NAME = "dist"
@@ -97,7 +93,7 @@ class BuilderConfigFile(ListConfigFile):
                 with platform-specific naming.
 
         Example:
-            ::
+            Subclass implementation:
 
                 @classmethod
                 def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
@@ -182,11 +178,8 @@ class BuilderConfigFile(ListConfigFile):
         Main orchestration method that manages the build lifecycle: creates a
         temporary directory, invokes `create_artifacts`, collects artifacts,
         renames them with platform-specific suffixes, and moves them to the
-        final output directory.
-
-        See Also:
-            create_artifacts: Subclass-implemented method that creates artifacts
-            rename_artifacts: Adds platform suffixes and moves to output
+        final output directory. Delegates to `create_artifacts` for the actual
+        build and `rename_artifacts` for platform-specific output naming.
         """
         logger.debug("Building artifacts with %s", cls.__name__)
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -102,7 +102,9 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         resource_name="CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT.md"
     )
     def contributor_covenant(cls) -> str:
-        """Fetch Contributor Covenant from GitHub MVG (with fallback).
+        """Fetch the Contributor Covenant from GitHub's MVG repository.
+
+        Falls back to a bundled resource template on fetch error.
 
         Returns:
             str: Contributor Covenant 2.1 content.
@@ -119,6 +121,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         """Get the contact method for the code of conduct.
 
         Returns:
-            str: The email in the version control, e.g. the email in git config
+            str: Version control email wrapped in angle brackets,
+                e.g., ``<user@example.com>``.
         """
         return f"<{VersionController.I.email()}>"

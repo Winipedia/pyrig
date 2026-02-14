@@ -1,9 +1,10 @@
-"""Package discovery, traversal, and dependency graph analysis.
+"""Package discovery, traversal, and cross-dependency subclass discovery.
 
-Provides utilities for package discovery, recursive traversal, and dependency graph
-analysis. The `DependencyGraph` class enables automatic discovery of all packages
-that depend on pyrig, allowing discovery of ConfigFile implementations and
-BuilderConfigFile subclasses across the ecosystem.
+Provides utilities for package creation, name conversion, recursive traversal,
+and cross-dependency discovery. Uses ``DependencyGraph`` from
+``pyrig.src.dependency_graph`` to find all packages that depend on a given
+dependency, enabling automatic discovery of ``ConfigFile`` implementations and
+``BuilderConfigFile`` subclasses across the ecosystem.
 """
 
 import logging
@@ -134,7 +135,11 @@ def objs_from_obj(
 def all_deps_depending_on_dep(
     dep: ModuleType, *, include_self: bool = False
 ) -> list[ModuleType]:
-    """Get all packages that depend on pyrig.
+    """Get all packages that depend on the given dependency.
+
+    Args:
+        dep: The dependency package to query dependents of.
+        include_self: If True, includes ``dep`` itself in the result.
 
     Returns:
         List of imported module objects for dependent packages.
@@ -233,8 +238,8 @@ def discover_subclasses_across_dependents[T: type](
 
     Primary discovery function for pyrig's multi-package plugin architecture.
     Combines ``discover_equivalent_modules_across_dependents`` with
-    ``subclasses`` to find subclass implementations across all packages
-    that depend on a base dependency.
+    ``discover_all_subclasses`` to find subclass implementations across all
+    packages that depend on a base dependency.
 
     This is the main mechanism that enables:
         - ConfigFile subclasses to be discovered across all dependent packages
@@ -244,9 +249,9 @@ def discover_subclasses_across_dependents[T: type](
     The discovery process:
         1. Finds all equivalent modules across dependent packages using
            ``discover_equivalent_modules_across_dependents``
-        2. For each module, calls ``subclasses`` to discover subclasses
-           of ``cls`` defined in that module (applying ``discard_parents`` and
-           ``exclude_abstract`` filters per-module)
+        2. For each module, calls ``discover_all_subclasses`` to discover
+           subclasses of ``cls`` defined in that module
+           (applying ``discard_parents`` and ``exclude_abstract`` filters per-module)
         3. Aggregates all discovered subclasses into a single list
         4. If ``discard_parents=True``, performs a second pass to remove any
            parent classes across the aggregated list (necessary because a class
@@ -288,14 +293,14 @@ def discover_subclasses_across_dependents[T: type](
 
     Note:
         When ``discard_parents=True``, the filtering is performed twice: once
-        within each ``subclasses`` call (per-module) and once after
+        within each ``discover_all_subclasses`` call (per-module) and once after
         aggregation (cross-module). The second pass is essential because a
         parent class from module A and its child from module B would both
         survive the per-module filtering.
 
     See Also:
         discover_equivalent_modules_across_dependents: Module discovery
-        subclasses: Per-module subclass discovery
+        discover_all_subclasses: Per-module subclass discovery
         discover_leaf_subclass_across_dependents: When exactly one leaf expected
     """
     logger.debug(
@@ -338,8 +343,8 @@ def discover_leaf_subclass_across_dependents[T: type](
     should have a single active implementation determined by the inheritance
     chain.
 
-    This is typically used by ``ConfigFile.I`` to find the most-derived
-    version of a config file class. For example, if:
+    This is typically invoked via ``DependencySubclass.L`` to find the
+    most-derived version of a class. For example, if:
         - ``pyrig`` defines ``PyprojectConfigFile``
         - ``mylib`` extends it as ``MyLibPyprojectConfigFile``
         - ``myapp`` extends that as ``MyAppPyprojectConfigFile``
@@ -384,7 +389,7 @@ def discover_leaf_subclass_across_dependents[T: type](
 
     See Also:
         discover_subclasses_across_dependents: General multi-subclass discovery
-        ConfigFile.I: Primary use case for this function
+        DependencySubclass.L: Direct caller of this function
     """
     classes = discover_subclasses_across_dependents(
         cls=cls,

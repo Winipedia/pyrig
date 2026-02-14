@@ -177,7 +177,7 @@ class PyprojectConfigFile(TomlConfigFile):
 
         Raises:
             FileNotFoundError: If LICENSE file doesn't exist.
-            StopIteration: If no license is detected (empty licenses dict).
+            ValueError: If no license is detected in the LICENSE file.
 
         Note:
             This method reads from the LICENSE file in the project root.
@@ -260,8 +260,8 @@ class PyprojectConfigFile(TomlConfigFile):
     def remove_version_from_dep(cls, dep: str) -> str:
         """Strip version specifier from dependency.
 
-        Uses REQ_NAME_SPLIT_PATTERN from package module for consistency.
-        (e.g., 'requests>=2.0' -> 'requests').
+        Uses ``package_req_name_split_pattern`` from ``pyrig.src.string_``
+        for consistency (e.g., 'requests>=2.0' -> 'requests').
         """
         return package_req_name_split_pattern().split(dep)[0]
 
@@ -299,7 +299,7 @@ class PyprojectConfigFile(TomlConfigFile):
     ) -> str:
         """Fetch latest stable Python version.
 
-        Is fetched from endoflife.date API (cached, with fallback).
+        Fetches from endoflife.date API (cached, with fallback).
         """
         url = "https://endoflife.date/api/python.json"
         resp = requests.get(url, timeout=10)

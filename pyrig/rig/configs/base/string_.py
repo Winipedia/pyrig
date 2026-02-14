@@ -1,7 +1,7 @@
-r"""Plain text file configuration management.
+r"""String-based configuration file management.
 
-Provides StringConfigFile for managing text files with required content and user
-extensions. Validates via substring matching, preserves user additions.
+Provides StringConfigFile for managing text-format config files with required
+content. Validates via substring matching, preserves user additions.
 
 Example:
     >>> from pathlib import Path
@@ -99,9 +99,8 @@ class StringConfigFile(ListConfigFile):
     def should_override_content(cls) -> bool:
         """Override file content even if it exists.
 
-        If True the content of the StringConfigFile subclass will replace the
-        existing content. If False the content will be appended to the existing
-        content.
+        If True the expected content replaces the existing content entirely.
+        If False the existing content is appended after the expected content.
 
         Returns:
             True if content should be overridden, False if not.
@@ -122,7 +121,8 @@ class StringConfigFile(ListConfigFile):
         r"""Check if file contains required content via substring matching.
 
         Returns:
-            True if empty, exact match, or required content present anywhere.
+            True if parent validation passes or all required lines found
+            in file content.
         """
         all_lines_in_file = all(line in cls.file_content() for line in cls.lines())
         return super().is_correct() or all_lines_in_file

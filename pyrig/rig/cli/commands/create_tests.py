@@ -1,7 +1,7 @@
 """Automatic test skeleton generation for source code.
 
 Generates test files mirroring the source package structure, creating skeleton
-test functions and classes with NotImplementedError placeholders for all
+test functions and classes with `NotImplementedError` placeholders for all
 untested code.
 """
 

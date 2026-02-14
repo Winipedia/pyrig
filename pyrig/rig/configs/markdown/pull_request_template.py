@@ -37,12 +37,8 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
     Generates .github/pull_request_template.md using a minimal template
     inspired by React's PR template. Contains only two sections:
 
-    - Summary: What changed and why (with issue reference)
-    - How was this tested: Verification method
-
-    This minimal approach follows best practices from major open source
-    projects like React, which use concise templates that developers
-    actually fill out.
+    - Summary: What changed and why
+    - Testing: How the change was verified
 
     Examples:
         Generate pull_request_template.md::

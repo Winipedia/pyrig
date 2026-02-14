@@ -36,9 +36,10 @@ class TypeChecker(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get badge group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            `ToolGroup.CODE_QUALITY`
         """
         return ToolGroup.CODE_QUALITY
 

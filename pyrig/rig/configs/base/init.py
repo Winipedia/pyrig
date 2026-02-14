@@ -32,8 +32,10 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         - `src_module`: Return the source package to copy docstring from
 
     See Also:
-        pyrig.rig.configs.base.copy_module_docstr: Parent class
-        pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Package files
+        pyrig.rig.configs.base.copy_module_docstr.CopyModuleOnlyDocstringConfigFile:
+            Parent class that copies only the docstring from the source module
+        pyrig.rig.configs.base.py_package.PythonPackageConfigFile:
+            For creating __init__.py files that also ensure parent dirs are packages
     """
 
     @classmethod

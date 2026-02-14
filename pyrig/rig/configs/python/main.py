@@ -95,7 +95,7 @@ class MainConfigFile(CopyModuleConfigFile):
             Deletes ./main.py if exists and logs info message.
 
         Note:
-            Called automatically during __init__()
+            Called automatically during create_file()
             to clean up legacy files from uv init.
         """
         root_main_path = Path("main.py")

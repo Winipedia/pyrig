@@ -17,21 +17,13 @@ from pyrig.rig.configs.base.init import InitConfigFile
 class ResourcesInitConfigFile(InitConfigFile):
     """Manages {package_name}/resources/__init__.py.
 
-    Generates __init__.py with pyrig.resources docstring for project resource files
-    (data files, templates, configs, etc.).
+    Generates __init__.py for the resources package, copying the docstring
+    from pyrig.resources.
 
     Examples:
         Generate {package_name}/resources/__init__.py::
 
             ResourcesInitConfigFile.validate()
-
-        Add resources::
-
-            # {package_name}/resources/data.json
-            {{"key": "value"}}
-
-            # {package_name}/resources/template.txt
-            Hello {{name}}!
 
     See Also:
         pyrig.resources

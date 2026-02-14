@@ -3,36 +3,23 @@
 Provides the `PyInstallerBuilder` abstract base class for creating platform-specific
 standalone executables from pyrig projects using PyInstaller.
 
-Extends the BuilderConfigFile base class with PyInstaller-specific functionality
+Extends the `BuilderConfigFile` base class with PyInstaller-specific functionality
 including resource bundling, icon conversion, and PyInstaller configuration.
+Features include single-file executables (`--onefile`), automatic resource bundling
+from multiple packages, platform-specific icon conversion (PNG to ICO/ICNS),
+multi-package resource discovery, and no console window (`--noconsole`).
 
-Key Features:
-    - Single-file executables (`--onefile`)
-    - Automatic resource bundling from multiple packages
-    - Platform-specific icon conversion (PNG → ICO/ICNS)
-    - Multi-package resource discovery
-    - No console window (`--noconsole`)
+Resources are collected from two sources: default resources (all `resources` modules
+from packages depending on pyrig, discovered automatically) and additional resources
+(packages specified by `additional_resource_packages()`). All resources are bundled
+using PyInstaller's `--add-data` option and are accessible at runtime via
+`importlib.resources` or `pyrig.src.resource`.
 
-Resource Bundling:
-    Resources are collected from two sources:
-
-    1. **Default resources** (automatic): All `resources` modules from packages
-       depending on pyrig
-    2. **Additional resources** (subclass-specified): Packages specified by
-       `additional_resource_packages()`
-
-    All resources are bundled using PyInstaller's `--add-data` option and are
-    accessible at runtime via `importlib.resources` or `pyrig.src.resource`.
-
-Icon Conversion:
-    Expects an `icon.png` file in the resources directory and converts it to
-    the appropriate format:
-    - Windows: PNG → ICO
-    - macOS: PNG → ICNS
-    - Linux: PNG (no conversion)
+Icon conversion expects an `icon.png` file in the resources directory and converts
+it to the appropriate format per platform (Windows: ICO, macOS: ICNS, Linux: PNG).
 
 Example:
-    Create a builder for your application::
+    Create a builder for your application:
 
         from types import ModuleType
         from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
@@ -43,13 +30,9 @@ Example:
             def additional_resource_packages(cls) -> list[ModuleType]:
                 return [myapp.resources]
 
-    Build the executable::
+    Build the executable:
 
         $ uv run pyrig build
-
-See Also:
-    pyrig.rig.builders.base.base.BuilderConfigFile: Base builder class
-    pyrig.src.resource: Runtime resource access utilities
 """
 
 import os
@@ -71,25 +54,25 @@ from pyrig.src.modules.package import discover_equivalent_modules_across_depende
 class PyInstallerBuilder(BuilderConfigFile):
     """Abstract builder for creating PyInstaller standalone executables.
 
-    Extends the BuilderConfigFile base class to provide PyInstaller-specific
-    functionality for creating single-file executables. Handles PyInstaller
-    configuration, resource bundling, and icon conversion.
+    Extends `BuilderConfigFile` to provide PyInstaller-specific functionality for
+    creating single-file executables. Handles PyInstaller configuration, resource
+    bundling, and icon conversion.
 
     Creates executables with:
-        - Single-file executable (`--onefile`)
-        - No console window (`--noconsole`)
-        - Platform-specific icon (ICO/ICNS/PNG)
-        - All resources bundled and accessible at runtime
-        - Clean build (`--clean`)
+
+    - Single-file executable (`--onefile`)
+    - No console window (`--noconsole`)
+    - Platform-specific icon (ICO/ICNS/PNG)
+    - All resources bundled and accessible at runtime
+    - Clean build (`--clean`)
 
     Resources are automatically discovered from packages depending on pyrig, plus
-    additional packages specified by `additional_resource_packages()`.
-
-    Subclasses must implement:
-        additional_resource_packages: Return list of additional resource packages.
+    additional packages specified by `additional_resource_packages()`. Subclasses
+    must implement `additional_resource_packages()` to return a list of additional
+    resource packages.
 
     Example:
-        Basic PyInstaller builder::
+        Basic PyInstaller builder:
 
             from types import ModuleType
             from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
@@ -99,10 +82,6 @@ class PyInstallerBuilder(BuilderConfigFile):
                 @classmethod
                 def additional_resource_packages(cls) -> list[ModuleType]:
                     return [myapp.resources]
-
-    See Also:
-        BuilderConfigFile: Base class providing build orchestration
-        pyinstaller_options: PyInstaller configuration
     """
 
     @classmethod
@@ -131,7 +110,7 @@ class PyInstallerBuilder(BuilderConfigFile):
             List of module objects representing resource packages.
 
         Example:
-            ::
+            Subclass implementation:
 
                 @classmethod
                 def additional_resource_packages(cls) -> list[ModuleType]:

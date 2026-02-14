@@ -1,7 +1,7 @@
 """PEP 561 py.typed marker file management.
 
-Provides TypedConfigFile for creating empty py.typed files that indicate a package
-has inline type annotations.
+Provides TypedConfigFile base class for empty py.typed files that indicate a package
+supports type checking.
 
 Example:
     >>> from pathlib import Path
@@ -33,6 +33,7 @@ class TypedConfigFile(DictConfigFile):
         - `parent_path`: Package directory containing the py.typed file
 
     See Also:
+        pyrig.rig.configs.base.dict_cf.DictConfigFile: Parent class
         PEP 561: https://peps.python.org/pep-0561/
     """
 
@@ -43,7 +44,7 @@ class TypedConfigFile(DictConfigFile):
 
     @classmethod
     def _load(cls) -> dict[str, Any]:
-        """Return empty dict (marker file has no meaningful content).
+        """Load py.typed content as empty dict.
 
         Returns:
             Empty dict.
@@ -52,10 +53,10 @@ class TypedConfigFile(DictConfigFile):
 
     @classmethod
     def _dump(cls, config: dict[str, Any]) -> None:
-        """Validate config is empty and do nothing (marker file has no content).
+        """No-op; py.typed marker files have no writable content.
 
         Args:
-            config: Must be empty dict.
+            config: Configuration dict. Must be empty.
 
         Raises:
             ValueError: If config is not empty.
@@ -66,7 +67,7 @@ class TypedConfigFile(DictConfigFile):
 
     @classmethod
     def _configs(cls) -> dict[str, Any]:
-        """Return empty dict (marker file has no meaningful content).
+        """Return expected configuration as empty dict.
 
         Returns:
             Empty dict.

@@ -85,28 +85,37 @@ class Tool(SingletonDependencySubclass):
     @classmethod
     @abstractmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get the badge group this tool belongs to.
 
-        Used e.g. for grouping badges in the Readme.md file.
+        Used to group badges in the generated README. Values should be one of
+        the constants defined in `ToolGroup` (e.g. ``"testing"``,
+        ``"code-quality"``).
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            Badge group identifier string.
         """
 
     @classmethod
     @abstractmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the url for a badge, like found in a Readme.md file.
+        """Get the badge image URL and link URL for this tool.
 
-        The first url is the picture, the badge, and the second the link
-        where you are led when clicking on the badge.
+        Used to generate shield-style badges in the project README.
 
         Returns:
-            a tuple of two str that are urls.
+            A ``(badge_image_url, badge_link_url)`` tuple.
         """
 
     @classmethod
     def definition_package(cls) -> ModuleType:
-        """Get the package where the tool subclasses are supposed to be defined."""
+        """Get the package where tool subclasses are defined.
+
+        Returns ``pyrig.rig.tools`` so that subclass discovery scans all
+        modules in that package.
+
+        Returns:
+            The ``pyrig.rig.tools`` package module.
+        """
         return tools
 
     @classmethod
@@ -128,7 +137,14 @@ class Tool(SingletonDependencySubclass):
 
     @classmethod
     def badge(cls) -> str:
-        """Returns the badge string for a markdown file."""
+        """Build a Markdown badge string for this tool.
+
+        Delegates to `pyrig.src.string_.make_linked_badge_markdown` using
+        the URLs from `badge_urls` and the tool `name` as alt text.
+
+        Returns:
+            A Markdown image-link string.
+        """
         badge, page = cls.badge_urls()
         return make_linked_badge_markdown(
             badge_url=badge,
@@ -162,7 +178,11 @@ class Tool(SingletonDependencySubclass):
 
     @classmethod
     def grouped_badges(cls) -> dict[str, list[str]]:
-        """Get a dict with all badges of tools grouped by their group."""
+        """Get all tool badges grouped by their `ToolGroup` category.
+
+        Returns:
+            Mapping of group names to lists of Markdown badge strings.
+        """
         subclasses = cls.subclasses()
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:

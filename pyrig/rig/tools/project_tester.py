@@ -37,15 +37,16 @@ class ProjectTester(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get tool group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            'testing'
         """
         return ToolGroup.TESTING
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Get pytest badge image URL and project page URL."""
         return (
             "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest",
             "https://pytest.org",
@@ -62,7 +63,11 @@ class ProjectTester(Tool):
 
     @classmethod
     def coverage_threshold(cls) -> int:
-        """Minimum test coverage percentage threshold."""
+        """Get minimum test coverage percentage threshold.
+
+        Returns:
+            Coverage percentage (90).
+        """
         return 90
 
     @classmethod

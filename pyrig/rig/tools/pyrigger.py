@@ -44,15 +44,16 @@ class Pyrigger(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get tool group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            'tooling'
         """
         return ToolGroup.TOOLING
 
     @classmethod
     def badge_urls(cls) -> tuple[str, str]:
-        """Returns the badge and connected page."""
+        """Get pyrig badge image URL and GitHub page URL."""
         return (
             f"https://img.shields.io/badge/built%20with-{cls.name()}-3776AB?logo=buildkite&logoColor=black",
             f"https://github.com/Winipedia/{cls.name()}",

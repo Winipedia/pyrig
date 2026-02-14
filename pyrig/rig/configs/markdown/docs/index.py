@@ -49,7 +49,8 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         """Get the index.md file content.
 
         Returns:
-            List of lines with "# {project_name} Documentation" and badges.
+            list[str]: Lines with "# {project_name} Documentation" header
+                and badges.
 
         Note:
             Reads project name from pyproject.toml.

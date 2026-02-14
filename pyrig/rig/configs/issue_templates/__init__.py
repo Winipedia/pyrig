@@ -2,8 +2,8 @@
 
 Manages GitHub issue templates in `.github/ISSUE_TEMPLATE/` directory:
 
-- Bug report template (BUG-REPORT.yml)
-- Feature request template (FEATURE-REQUEST.yml)
+- Bug report template (bug_report.yml)
+- Feature request template (feature_request.yml)
 - Template chooser config (config.yml)
 
 Templates are fetched from stevemao/github-issue-templates with fallback

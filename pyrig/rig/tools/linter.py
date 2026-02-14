@@ -1,11 +1,12 @@
 """Ruff linter and formatter wrapper.
 
-Provides type-safe wrapper for Ruff commands: check, format.
+Provides type-safe wrapper for Ruff commands: check, check --fix, format.
 Ruff is a fast Python linter and formatter written in Rust.
 
 Example:
     >>> from pyrig.rig.tools.linter import Linter
     >>> Linter.I.check_args().run()
+    >>> Linter.I.check_fix_args().run()
     >>> Linter.I.format_args().run()
 """
 
@@ -40,9 +41,10 @@ class Linter(Tool):
 
     @classmethod
     def group(cls) -> str:
-        """Returns the group the tools belongs to.
+        """Get tool group.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            `ToolGroup.CODE_QUALITY`
         """
         return ToolGroup.CODE_QUALITY
 
