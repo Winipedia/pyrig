@@ -86,7 +86,7 @@ Running `uv run myplugin version` discovers shared commands from:
 
 Shared commands can adapt to the calling package using
 `project_name_from_argv()` from `pyrig.src.cli`. This utility extracts the
-package name from `sys.argv[0]`, enabling commands to behave differently based
+project name from `sys.argv[0]`, enabling commands to behave differently based
 on which project invoked them.
 
 ## Adding Shared Commands

@@ -62,7 +62,8 @@ This approach provides:
 
 ## Environment Variables
 
-Requires `REPO_TOKEN` environment variable with GitHub personal access token.
+Requires `REPO_TOKEN` with a GitHub personal access token, set as an
+environment variable or in the `.env` file.
 
 ### Required Token Permissions
 

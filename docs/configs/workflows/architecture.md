@@ -85,7 +85,7 @@ class MyWorkflow(Workflow):
     @classmethod
     def jobs(cls) -> dict[str, Any]:
         return cls.job(
-            job_func=cls.my_job,
+            job_func=cls.jobs,
             runs_on=cls.UBUNTU_LATEST,
             steps=[
                 cls.step_checkout_repository(),
@@ -99,8 +99,8 @@ class MyWorkflow(Workflow):
 
 - **Workflow name**: Generated from class name (e.g., `HealthCheckWorkflow` →
   `"Health Check"`)
-- **Job IDs**: Generated from method names (e.g., `job_health_check_matrix` →
-  `"health_check_matrix"`)
+- **Job IDs**: Generated from method names (e.g., `job_matrix_health_checks` →
+  `"matrix_health_checks"`)
 - **Step IDs**: Generated from method names (e.g., `step_run_tests` →
   `"run_tests"`)
 
@@ -238,13 +238,13 @@ from typing import Any
 from pyrig.rig.configs.base.workflow import Workflow
 
 class CustomWorkflow(Workflow):
-    """Custom workflow that runs on manual trigger."""
+    """Custom workflow that runs on push and manual trigger."""
 
     @classmethod
     def workflow_triggers(cls) -> dict[str, Any]:
-        """Trigger manually via workflow_dispatch."""
+        """Trigger on push and manual dispatch."""
         triggers = super().workflow_triggers()
-        triggers.update(cls.on_workflow_dispatch())
+        triggers.update(cls.on_push())
         return triggers
 
     @classmethod

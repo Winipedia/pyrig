@@ -61,6 +61,7 @@ plugins:
 - `members: true` - Shows all class/module members
 - `show_source: true` - Includes source code links
 - `inherited_members: true` - Shows inherited methods
+- `filters: []` - No filters applied, all members (including private) are shown
 - `show_submodules: true` - Includes submodules in documentation
 
 ## What Gets Documented

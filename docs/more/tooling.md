@@ -56,7 +56,7 @@ graph LR
 uv sync              # Install dependencies
 uv add package       # Add dependency
 uv run pytest        # Run command in venv
-uv version --bump    # Bump version
+uv version --bump patch  # Bump version
 ```
 
 ## Code Quality
@@ -202,7 +202,7 @@ setup instructions
 **Why**:
 
 - Required by PyInstaller
-- Provides package_resources utilities
+- Provides pkg_resources utilities
 - Industry standard (though being replaced by uv)
 
 ## Version Control
@@ -290,7 +290,7 @@ pyrig's tooling choices prioritize:
 3. **Simplicity**: Fewer tools that do more (ruff replaces 5+ tools)
 4. **Security**: Podman over Docker, bandit scanning,
 dependency auditing, signed commits
-5. **Automation**: Prek hooks, autouse fixtures, CI/CD workflows
+5. **Automation**: prek hooks, autouse fixtures, CI/CD workflows
 6. **Modern**: Latest Python versions, modern build backends, current best
    practices
 
@@ -299,7 +299,7 @@ Python projects.
 
 **Tool Evolution**: pyrig will switch tools when better alternatives emerge. For
 example, we migrated from poetry to uv when uv proved to be significantly faster
-and more capable, and from mypy to ty for faster, runtime type checking. We
+and more capable, and from mypy to ty for faster, static type checking. We
 continuously evaluate the ecosystem and adopt superior tools as they mature.
 
 **Replacing Tools**: While not recommended, you can replace any tool by

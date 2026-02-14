@@ -156,5 +156,5 @@ As long as all required layers are present, validation passes.
 1. **Keep required layers**: Don't remove pyrig's generated layers
 2. **Add custom layers after**: Append your customizations at the end
 3. **Do not use .containerignore**: Should not be necessary as we only copy the
-   package folder and not the entire project. All copied config file are deleted
-   in the last layer.
+   package folder and not the entire project. All copied config files are deleted
+   in a cleanup layer.

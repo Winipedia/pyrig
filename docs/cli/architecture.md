@@ -141,8 +141,8 @@ The system uses a fallback import strategy for robustness:
 2. **Fall back to file-based import** if the module isn't in `sys.path`
 
 This handles edge cases where modules may not be properly installed or are in
-development mode. Mainly can be important when files are created during init and
-are not seen by normal imports yet.
+development mode. This is mainly important when files are created during init
+and are not yet seen by normal imports.
 
 ## Command Execution
 

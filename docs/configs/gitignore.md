@@ -40,11 +40,11 @@ graph TD
 
 **Path**: `.gitignore` (project root)
 
-**Extension**: `.gitignore` - The filename is constructed specially to produce
-the dotfile name.
+**Extension**: Empty string — `.gitignore` has no file extension.
 
-**Special filename handling**: `filename()` returns empty string so the path
-becomes `.gitignore` instead of `gitignore.gitignore`.
+**Special filename handling**: `filename()` returns `".gitignore"` (via
+`VersionController.I.ignore_filename()`), and both `extension_separator()` and
+`extension()` return empty strings, so the path is simply `.gitignore`.
 
 ## How It Works
 
@@ -69,7 +69,8 @@ The `.gitignore` file combines patterns from multiple sources:
 2. **Pyrig-specific patterns** - `.scratch.py`, `.env`
 3. **Tool caches** - `.pytest_cache/`, `.ruff_cache/`, `.rumdl_cache/`
 4. **Coverage reports** - `.coverage`, `coverage.xml`
-5. **Build artifacts** - `.venv/`, `dist/`, `/site/`
+5. **Virtual environments** - `.venv/`
+6. **Build artifacts** - `dist/`, `/site/`
 
 ### Validation Logic
 

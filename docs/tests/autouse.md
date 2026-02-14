@@ -37,7 +37,7 @@ Run once per test session before any tests execute.
 **Assertion**: Checks `git status` before and after test session for unstaged
 changes.
 
-**Scope**: Session (CI only, will not run on local development)
+**Scope**: Session (runs everywhere, assertions only in CI)
 
 **Why**: Ensures clean state in CI/CD pipelines.
 
@@ -49,10 +49,10 @@ changes.
 
 **Assertion**:
 
+- Validates `DotScratchConfigFile` and `DotEnvConfigFile` in CI (these are
+  gitignored and not present in the repository)
 - Checks all `ConfigFile` subclasses with `is_correct()`
-- Runs `make_project_root()` if any incorrect
-- Creates `.scratch.py` in CI (needed so the `ConfigFile` system does not
-  complain that is_correct() is False)
+- Runs `ConfigFile.validate_subclasses()` on any incorrect config files
 
 **Scope**: Session
 
@@ -160,9 +160,10 @@ the `ProjectTester` tool.
 
 **Assertion**:
 
-- Runs `uv lock --upgrade` to check for available updates
-- Runs `uv sync` to check for missing installations
-- Fails if either command makes changes
+- Runs `uv lock --upgrade` to update the lock file
+- Runs `uv sync` to install dependencies
+- Fails if either command returns a non-zero exit code
+- Skipped if no internet connection is available
 
 **Scope**: Session
 
@@ -181,9 +182,10 @@ specified with `>=` constraints.
 
 - Copies project to temp directory
 - Installs dependencies with `uv sync --no-group dev`
-- Verifies pytest is not installed or importable
+- Verifies no dev dependencies appear in install output
 - Imports all modules in `src/` to catch dev dependency imports
 - Runs `uv run --no-group dev <project> --help` to verify CLI works
+- Skipped if no internet connection is available
 
 **Scope**: Session
 
@@ -212,10 +214,10 @@ false positives from documentation.
 
 **Assertion**: Runs `uv self update` and expects either:
 
-- Success message indicating already on latest version
-- Acceptable failure (GitHub rate limit, network issues)
+- Zero exit code (success)
+- Acceptable failure (GitHub API rate limit exceeded)
 
-**Scope**: Session (local only, skipped in CI)
+**Scope**: Session (local only, skipped in CI and when no internet)
 
 **Why**: Keeps the package manager tooling current for development. Unlike
 dependency updates, this actively updates `uv` if a new version is available.
@@ -262,7 +264,8 @@ graph TD
 Define autouse fixtures in your package's fixtures module:
 
 ```python
-from pyrig.rig.utils.testing import autouse_session_fixture
+import pytest
+
 
 @pytest.fixture(scope="session", autouse=True)
 def my_custom_validation() -> None:

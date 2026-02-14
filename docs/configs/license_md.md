@@ -10,7 +10,7 @@ Creates a LICENSE file that:
 - Fetches license text from GitHub's SPDX API
 - Falls back to bundled template if API fails
 - Located at the project root
-- Automatically fills in year and owner from git
+- Automatically fills in current year and repo owner from git remote
 
 ## Inheritance
 
@@ -65,7 +65,7 @@ MIT license template from `pyrig/resources/MIT_LICENSE_TEMPLATE`.
 The license text contains placeholders that are automatically filled in:
 
 - `[year]` → Current year (e.g., `2025`)
-- `[fullname]` → Git repo owner extracted from git config (e.g., `Winipedia`)
+- `[fullname]` → Repo owner extracted from git remote URL (e.g., `Winipedia`)
 
 ## Usage
 

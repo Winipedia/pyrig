@@ -35,14 +35,14 @@ The discovery process happens automatically in `tests/conftest.py`:
 sequenceDiagram
     participant T as tests/conftest.py
     participant P as pyrig.rig.tests.conftest
-    participant D as DependencyGraph
+    participant D as discover_equivalent_modules_across_dependents
     participant F as Fixture Modules
 
     T->>P: Import as pytest plugin
-    P->>D: Find all packages depending on pyrig
-    D-->>P: [pyrig, package_a, package_b, ...]
-    P->>F: Find fixtures modules in each package
-    F-->>P: [pyrig.rig.tests.fixtures, package_a.rig.tests.fixtures, ...]
+    P->>D: Discover fixtures modules across dependents
+    D-->>P: [pyrig.rig.tests.fixtures, package_a.rig.tests.fixtures, ...]
+    P->>F: Find all .py files in each fixtures module
+    F-->>P: [pyrig.rig.tests.fixtures.__init__, ...]
     P->>P: Register all Python files as pytest plugins
     P-->>T: All fixtures available
 
@@ -54,11 +54,11 @@ sequenceDiagram
 ```mermaid
 graph TD
     A[Start: tests/conftest.py] --> B[Import pyrig.rig.tests.conftest]
-    B --> C[Use cached DependencyGraph]
-    C --> D[Find all packages depending on pyrig]
-    D --> E[For each package...]
+    B --> C[Call cached discover_equivalent_modules_across_dependents]
+    C --> D[Find equivalent fixtures modules across dependents]
+    D --> E[For each fixtures module...]
 
-    E --> F[Get package's fixtures module path]
+    E --> F[Get module's absolute path]
     F --> G{Module exists?}
     G -->|Yes| H[Find all .py files in module]
     G -->|No| E
@@ -85,13 +85,14 @@ graph TD
 
 **Detailed Steps:**
 
-1. **Find dependent packages**: Uses dependency graph to find all packages
-   depending on pyrig
-2. **Locate fixtures modules**: Finds equivalent of `pyrig.rig.tests.fixtures`
-   in each package
-3. **Collect Python files**: Recursively finds all `.py` files in fixtures
-   modules
-4. **Register as plugins**: Adds all files to `pytest_plugins` list
+1. **Discover equivalent fixtures modules**: Uses
+   `discover_equivalent_modules_across_dependents` (which internally uses
+   `DependencyGraph`) to find `rig.tests.fixtures` in pyrig and all dependent
+   packages
+2. **Collect Python files**: Recursively finds all `.py` files in each
+   discovered fixtures module
+3. **Convert to module names**: Converts file paths to dotted module names
+4. **Register as plugins**: Adds all module names to `pytest_plugins` list
 
 ## Integration
 
@@ -126,11 +127,8 @@ myapp/
 ```
 
 **Important**: Unlike the CLI framework (which auto-decorates functions as Typer
-commands), fixtures must be explicitly decorated with:
-
-- `@pytest.fixture` from pytest, or
-- Scope-specific decorators from `pyrig.rig.utils.testing` (`@session_fixture`,
-  `@module_fixture`, etc.)
+commands), fixtures must be explicitly decorated with `@pytest.fixture` from
+pytest (or its scoped variants like `@pytest.fixture(scope="session")`).
 
 Pyrig does not auto-decorate fixture functions.
 
@@ -190,26 +188,27 @@ def test_main(main_test_fixture: None) -> None:
 
 ## Fixture Scopes
 
-Use pyrig's scope decorators for custom fixtures:
+Use pytest's built-in `scope` parameter for custom fixtures:
 
 ```python
-from pyrig.rig.utils.testing import (
-    session_fixture,
-    module_fixture,
-    class_fixture,
-    function_fixture,
-)
+import pytest
 
-@session_fixture
+@pytest.fixture(scope="session")
 def database_connection():
     """Shared across entire test session."""
     return create_connection()
 
-@module_fixture
+@pytest.fixture(scope="module")
 def module_setup():
     """Shared across test module."""
     return setup_module()
 ```
+
+`pyrig.rig.utils.testing` provides skip markers for conditional test execution:
+
+- `skip_fixture_test` — skip placeholder tests for fixture functions
+- `skip_in_github_actions` — skip tests that cannot run in CI
+- `skip_if_no_internet` — skip tests requiring internet connectivity
 
 ## Multi-Package Example
 

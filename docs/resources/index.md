@@ -20,7 +20,7 @@ Learn how to manage and access static resources:
 
 The resource system provides:
 
-- **Unified access** to static files in development and production
+- **Unified access** to static files in development and PyInstaller executables
 - **Automatic PyInstaller support** via `importlib.resources`
 - **Cross-package access** - resources from any dependency are accessible
 - **Type-safe access** with Path objects

@@ -17,11 +17,13 @@ docstrings.
 | Tool | Wraps | Purpose |
 |------|-------|---------|
 | [PackageManager](package_manager.md) | uv | Dependencies, building, publishing |
+| [PackageIndex](package_index.md) | pypi | Package URLs and version badges |
 | [VersionController](version_controller.md) | git | Version control |
 | [RemoteVersionController](remote_version_controller.md) | GitHub | Repository URLs and badges |
 | [Linter](linter.md) | ruff | Linting and formatting |
 | [TypeChecker](type_checker.md) | ty | Type checking |
 | [ProjectTester](project_tester.md) | pytest | Running tests |
+| [ProjectCoverageTester](project_coverage_tester.md) | pytest-cov | Code coverage analysis |
 | [PreCommitter](pre_committer.md) | prek | Git hooks |
 | [SecurityChecker](security_checker.md) | bandit | Security scanning |
 | [DependencyAuditor](dependency_auditor.md) | pip-audit | Dependency vulnerability scanning |

@@ -1,6 +1,6 @@
 # RemoteVersionController (GitHub)
 
-Constructs GitHub-related URLs for repository, documentation, CI/CD, and badges.
+Constructs GitHub-related URLs and badge Markdown for repository, CI/CD, and badges.
 
 Unlike other Tool wrappers that wrap external CLI tools, RemoteVersionController
 generates URLs dynamically from your git remote configuration. It's used
@@ -14,16 +14,15 @@ links in README files.
 from pyrig.rig.tools.remote_version_controller import (
     RemoteVersionController as BaseRVC,
 )
-from pyrig.rig.tools.version_controller import VersionController
 
 class RemoteVersionController(BaseRVC):
     @classmethod
     def issues_url(cls) -> str:
         # Use custom issues domain instead of GitHub
-        return f"https://issues.example.com
+        return f"https://issues.example.com/{cls.name()}"
 ```
 
 ## Related
 
-- [Architecture](architecture.md) - Design philosophy and the `.I` pattern
+- [Architecture](architecture.md) - Design philosophy and extension mechanisms
 - [VersionController](version_controller.md) - Local git operations wrapper

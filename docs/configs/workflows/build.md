@@ -142,7 +142,7 @@ EXE, macOS Mach-O).
 ### 2. build_container_image
 
 **Runs on**: Ubuntu latest **Condition**:
-`github.event.workflow_run.conclusion == 'success'`
+Health check succeeded and not cron-triggered
 
 **Step Flow**:
 

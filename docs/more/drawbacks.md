@@ -30,7 +30,7 @@ gain.
 continuous improvement.
 
 **Note**: While not recommended, it is technically possible to replace any tool
-by subclassing the Tool wrapper classes. pyrig uses the `.I` (leaf) property
+by subclassing the Tool wrapper classes. pyrig uses the `.I` (instance) property
 internally, so your subclasses automatically apply everywhere. However, this
 requires significant additional work as tools are interconnected with configs,
 workflows, and CI/CD pipelines. See
@@ -130,7 +130,7 @@ performance.
 
 - **Transferable knowledge** - Same patterns across all pyrig projects
 - **Comprehensive docs** - Every feature documented with examples
-- **Automatic discovery** - ConfigFiles, CLI commands, tests auto-discovered
+- **Automatic discovery** - config files, CLI commands, tests auto-discovered
 - **Consistent patterns** - Once learned, applies everywhere
 - **Less decision-making** - Clear conventions reduce cognitive load
 - **Faster onboarding** - New team members learn once, apply everywhere

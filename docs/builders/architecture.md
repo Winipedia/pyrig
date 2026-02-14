@@ -11,7 +11,7 @@ graph TD
     A[uv run pyrig build] --> B[build_artifacts command]
     B --> C[BuilderConfigFile.validate_all_subclasses]
     C --> D[Discover all BuilderConfigFile subclasses]
-    D --> E[Instantiate each builder]
+    D --> E[Validate each builder]
     E --> F[build method triggered]
     F --> G[Create temp directory]
     G --> H[create_artifacts in temp dir]
@@ -59,7 +59,7 @@ graph LR
 3. **Find all BuilderConfigFile subclasses** in those modules
 4. **Filter non-abstract classes** (discard parent classes, keep leaf
    implementations)
-5. **Instantiate each builder** to trigger the build process
+5. **Validate each builder** to trigger the build process
 
 This means only the most specific (leaf) implementations are executed. If you
 have a non-abstract BuilderConfigFile in package A and then subclass that class
@@ -81,7 +81,7 @@ All builders must:
 - Implement the `create_artifacts` method
 - Be placed in a `rig/builders/` module
 
-When instantiated, the builder automatically triggers the build process. Builds
+When validated, the builder automatically triggers the build process. Builds
 happen in isolated temporary directories to avoid polluting the workspace.
 Artifacts are moved to `dist/` with platform suffixes (e.g., `my-app-Linux`,
 `my-app-Darwin`, `my-app-Windows`).
@@ -131,7 +131,7 @@ When you run `uv run pyrig build`, pyrig:
 
 1. Finds `myapp.rig.builders` module
 2. Discovers `DocumentationBuilder` class
-3. Instantiates it, triggering the build
+3. Validates it, triggering the build
 4. Outputs `dist/docs-Linux.zip` (or platform-specific name)
 
 ## Multi-Package Example

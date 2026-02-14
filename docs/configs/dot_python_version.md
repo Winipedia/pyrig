@@ -95,7 +95,6 @@ python --version  # Uses version from .python-version
 
 - **asdf**: Reads `.python-version`
 - **mise**: Reads `.python-version`
-- **rtx**: Reads `.python-version`
 
 ## Dynamic Configuration
 

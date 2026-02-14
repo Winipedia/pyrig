@@ -20,8 +20,8 @@ Tests mirror the source package structure with prefixed names:
 Source:                          Tests:
 myapp/                          tests/
 ├── src/                        └── test_myapp/
-│   ├── modules/                    └── test_src/
-│   │   ├── __init__.py                 └── test_modules/
+│   ├── modules/                    ├── test_src/
+│   │   ├── __init__.py                 ├── test_modules/
 │   │   ├── parser.py                       ├── __init__.py
 │   │   └── utils.py                        ├── test_parser.py
 │   └── api/                                └── test_utils.py

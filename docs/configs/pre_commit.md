@@ -19,15 +19,17 @@ Creates a prek configuration that:
 
 ```mermaid
 graph TD
-    A[ConfigFile] --> B[TomlConfigFile]
-    B --> C[PrekConfigFile]
+    A[ConfigFile] --> B[DictConfigFile]
+    B --> C[TomlConfigFile]
+    C --> D[PrekConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
-    style C fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `TomlConfigFile`
+**Inherits from**: `TomlConfigFile` (which extends `DictConfigFile`)
 
 **What this means**:
 
@@ -120,8 +122,8 @@ This ensures comprehensive quality checks on every commit.
 
 | Hook             | Command                     | Purpose                                      |
 | ---------------- | --------------------------- | -------------------------------------------- |
-| `lint-code`      | `ruff check --fix`          | Linting with auto-fix                        |
 | `format-code`    | `ruff format`               | Code formatting                              |
+| `lint-code`      | `ruff check --fix`          | Linting with auto-fix                        |
 | `check-types`    | `ty check`                  | Type checking                                |
 | `check-security` | `bandit -c pyproject.toml -r .` | Security vulnerability scanning          |
 | `check-markdown` | `rumdl check --fix`         | Markdown linting with auto-fix               |
@@ -138,12 +140,6 @@ Prek hooks are automatically installed when you run:
 
 ```bash
 uv run pyrig init
-```
-
-Or when running tests
-
-```bash
-uv run pytest
 ```
 
 This runs `prek install` to set up the Git hooks.

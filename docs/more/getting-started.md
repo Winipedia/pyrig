@@ -69,8 +69,8 @@ graph TD
 
     C --> C2[Used by:
     protect-repo
-    codecov upload
     release
+    deploy
     ]
     D --> D2[Used by: Deploy workflow<br/>to publish to PyPI]
     E --> E2[Used by: Health Check workflow<br/>to upload coverage]
