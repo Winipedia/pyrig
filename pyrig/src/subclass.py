@@ -9,7 +9,7 @@ consistent discovery API.
 
 from abc import ABC, abstractmethod
 from types import ModuleType
-from typing import Any, Self
+from typing import Any, Self, TypeVar
 
 import pyrig
 from pyrig.src.modules.class_ import classproperty
@@ -18,6 +18,8 @@ from pyrig.src.modules.package import (
     discover_subclasses_across_dependents,
 )
 from pyrig.src.singleton import Singleton
+
+T = TypeVar("T", bound="DependencySubclass")
 
 
 class DependencySubclass(ABC):
@@ -41,7 +43,7 @@ class DependencySubclass(ABC):
 
     @classmethod
     @abstractmethod
-    def sorting_key[S: DependencySubclass](cls, subclass: type[S]) -> Any:
+    def sorting_key(cls, subclass: type[T]) -> Any:
         """Return a sort key for the given subclass.
 
         This key is used when ordering discovered subclasses. Implementations

@@ -28,8 +28,7 @@ class SecurityChecker(Tool):
         >>> SecurityChecker.I.run_with_config_args().run()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -37,8 +36,7 @@ class SecurityChecker(Tool):
         """
         return "bandit"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get badge group.
 
         Returns:
@@ -46,16 +44,14 @@ class SecurityChecker(Tool):
         """
         return ToolGroup.SECURITY
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Return the badge image URL and project page URL."""
         return (
             "https://img.shields.io/badge/security-bandit-yellow.svg",
             "https://github.com/PyCQA/bandit",
         )
 
-    @classmethod
-    def run_args(cls, *args: str) -> Args:
+    def run_args(self, *args: str) -> Args:
         """Construct bandit arguments.
 
         Args:
@@ -64,10 +60,9 @@ class SecurityChecker(Tool):
         Returns:
             Args for 'bandit'.
         """
-        return cls.args(*args)
+        return self.args(*args)
 
-    @classmethod
-    def run_with_config_args(cls, *args: str) -> Args:
+    def run_with_config_args(self, *args: str) -> Args:
         """Construct bandit arguments with pyproject.toml config.
 
         Args:
@@ -76,4 +71,4 @@ class SecurityChecker(Tool):
         Returns:
             Args for 'bandit -c pyproject.toml -r .'.
         """
-        return cls.run_args("-c", "pyproject.toml", "-r", ".", *args)
+        return self.run_args("-c", "pyproject.toml", "-r", ".", *args)

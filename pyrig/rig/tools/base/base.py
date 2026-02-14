@@ -63,59 +63,47 @@ class Tool(SingletonDependencySubclass):
 
     Example:
         >>> class MyTool(Tool):
-        ...     @classmethod
-        ...     def name(cls) -> str:
+        ...
+        ...     def name(self) -> str:
         ...         return "mytool"
-        ...     @classmethod
-        ...     def build_args(cls, *args: str) -> Args:
-        ...         return cls.args("build", *args)
-        >>> MyTool.build_args("--verbose")
-        mytool build --verbose
+        ...
+        ...     def build_args(self, *args: str) -> Args:
+        ...         return self.args("build", *args)
+        >>> MyTool.I.build_args("--verbose")
+        Args(('mytool', 'build', '--verbose'))
     """
 
-    @classmethod
     @abstractmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool command name.
 
         Returns:
             Tool command name (e.g., "git", "uv", "pytest").
         """
 
-    @classmethod
     @abstractmethod
-    def group(cls) -> str:
-        """Get the badge group this tool belongs to.
+    def group(self) -> str:
+        """Returns the group the tools belongs to.
 
-        Used to group badges in the generated README. Values should be one of
-        the constants defined in `ToolGroup` (e.g. ``"testing"``,
-        ``"code-quality"``).
+        Used e.g. for grouping badges in the Readme.md file.
 
-        Returns:
-            Badge group identifier string.
+        E.g. testing, tool, code-quality etc...
         """
 
-    @classmethod
     @abstractmethod
-    def badge_urls(cls) -> tuple[str, str]:
-        """Get the badge image URL and link URL for this tool.
+    def badge_urls(self) -> tuple[str, str]:
+        """Returns the url for a badge, like found in a Readme.md file.
 
-        Used to generate shield-style badges in the project README.
+        The first url is the picture, the badge, and the second the link
+        where you are led when clicking on the badge.
 
         Returns:
-            A ``(badge_image_url, badge_link_url)`` tuple.
+            a tuple of two str that are urls.
         """
 
     @classmethod
     def definition_package(cls) -> ModuleType:
-        """Get the package where tool subclasses are defined.
-
-        Returns ``pyrig.rig.tools`` so that subclass discovery scans all
-        modules in that package.
-
-        Returns:
-            The ``pyrig.rig.tools`` package module.
-        """
+        """Get the package where the tool subclasses are supposed to be defined."""
         return tools
 
     @classmethod
@@ -131,38 +119,28 @@ class Tool(SingletonDependencySubclass):
             subclass: The subclass to compute a key for.
 
         Returns:
-            A value suitable for use as a sort key.
+            str: A value suitable for use as a sort key.
         """
-        return subclass.name()
+        return subclass().name()
 
-    @classmethod
-    def badge(cls) -> str:
-        """Build a Markdown badge string for this tool.
-
-        Delegates to `pyrig.src.string_.make_linked_badge_markdown` using
-        the URLs from `badge_urls` and the tool `name` as alt text.
-
-        Returns:
-            A Markdown image-link string.
-        """
-        badge, page = cls.badge_urls()
+    def badge(self) -> str:
+        """Returns the badge string for a markdown file."""
+        badge, page = self.badge_urls()
         return make_linked_badge_markdown(
             badge_url=badge,
             link_url=page,
-            alt_text=cls.name(),
+            alt_text=self.name(),
         )
 
-    @classmethod
-    def dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(self) -> list[str]:
         """Get tool dependencies.
 
         Returns:
             List of tool dependencies. Defaults to the name of the tool.
         """
-        return [cls.name()]
+        return [self.name()]
 
-    @classmethod
-    def args(cls, *args: str) -> Args:
+    def args(self, *args: str) -> Args:
         """Construct command arguments with tool name prepended.
 
         Args:
@@ -174,35 +152,33 @@ class Tool(SingletonDependencySubclass):
         Note:
             Subclasses provide higher-level methods calling this internally.
         """
-        return Args((cls.name(), *args))
+        return Args((self.name(), *args))
 
     @classmethod
     def grouped_badges(cls) -> dict[str, list[str]]:
-        """Get all tool badges grouped by their `ToolGroup` category.
-
-        Returns:
-            Mapping of group names to lists of Markdown badge strings.
-        """
+        """Get a dict with all badges of tools grouped by their group."""
         subclasses = cls.subclasses()
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:
-            groups[tool.group()].append(tool.badge())
+            t = tool()
+            groups[t.group()].append(t.badge())
         return groups
 
     @classmethod
     def subclasses_dev_dependencies(cls) -> list[str]:
-        """Collect dev dependencies from all `Tool` subclasses.
+        """Get all dev dependencies for all tools.
 
-        Discover every concrete `Tool` subclass and aggregate the values
-        returned by each subclass's `dev_dependencies` method. When a tool
-        is replaced by a custom subclass, update its `dev_dependencies` to
-        keep the generated ``pyproject.toml`` in sync.
+        This gets all subclasses of Tools and calls dev_dependencies() on them.
+        This way all dependencies for each tool are retrieved.
+        If a user adjusts a tool, this way he can make sure that the dev dependencies
+        are added to the pyproject.toml and he can remove the ones of the tool he
+        replaced.
 
         Returns:
-            Sorted list of all tool dependencies.
+            List of all tool dependencies.
         """
         subclasses = cls.subclasses()
         all_dev_deps: list[str] = []
         for subclass in subclasses:
-            all_dev_deps.extend(subclass.dev_dependencies())
+            all_dev_deps.extend(subclass().dev_dependencies())
         return sorted(all_dev_deps)

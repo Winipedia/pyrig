@@ -30,8 +30,7 @@ class Linter(Tool):
         >>> Linter.I.format_args().run()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -39,8 +38,7 @@ class Linter(Tool):
         """
         return "ruff"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get tool group.
 
         Returns:
@@ -48,16 +46,14 @@ class Linter(Tool):
         """
         return ToolGroup.CODE_QUALITY
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Return the badge and link URLs."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json",
             "https://github.com/astral-sh/ruff",
         )
 
-    @classmethod
-    def check_args(cls, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         """Construct ruff check arguments.
 
         Args:
@@ -66,10 +62,9 @@ class Linter(Tool):
         Returns:
             Args for 'ruff check'.
         """
-        return cls.args("check", *args)
+        return self.args("check", *args)
 
-    @classmethod
-    def check_fix_args(cls, *args: str) -> Args:
+    def check_fix_args(self, *args: str) -> Args:
         """Construct ruff check arguments with auto-fix.
 
         Args:
@@ -78,10 +73,9 @@ class Linter(Tool):
         Returns:
             Args for 'ruff check --fix'.
         """
-        return cls.check_args("--fix", *args)
+        return self.check_args("--fix", *args)
 
-    @classmethod
-    def format_args(cls, *args: str) -> Args:
+    def format_args(self, *args: str) -> Args:
         """Construct ruff format arguments.
 
         Args:
@@ -90,4 +84,4 @@ class Linter(Tool):
         Returns:
             Args for 'ruff format'.
         """
-        return cls.args("format", *args)
+        return self.args("format", *args)

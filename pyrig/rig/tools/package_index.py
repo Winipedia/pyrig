@@ -25,8 +25,7 @@ class PackageIndex(Tool):
         'https://pypi.org/project/pyrig'
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -34,8 +33,7 @@ class PackageIndex(Tool):
         """
         return "pypi"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get tool group.
 
         Returns:
@@ -43,19 +41,17 @@ class PackageIndex(Tool):
         """
         return ToolGroup.PROJECT_INFO
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Return the PyPI version badge and project page URLs."""
         _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
         return (
             f"https://img.shields.io/pypi/v/{repo}?logo=pypi&logoColor=white",
-            cls.package_index_url(),
+            self.package_index_url(),
         )
 
-    @classmethod
-    def package_index_url(cls) -> str:
+    def package_index_url(self) -> str:
         """Construct PyPI package URL.
 
         Assumes package name matches repository name.
@@ -68,8 +64,7 @@ class PackageIndex(Tool):
         )
         return f"https://pypi.org/project/{repo}"
 
-    @classmethod
-    def dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(self) -> list[str]:
         """Get development dependencies for this tool.
 
         PyPI integration requires no dev dependencies; the package manager

@@ -27,8 +27,7 @@ class MDLinter(Tool):
         >>> MDLinter.I.check_fix_args().run()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -36,8 +35,7 @@ class MDLinter(Tool):
         """
         return "rumdl"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get tool group.
 
         Returns:
@@ -45,16 +43,14 @@ class MDLinter(Tool):
         """
         return ToolGroup.CODE_QUALITY
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Return the badge and link URLs."""
         return (
             "https://img.shields.io/badge/markdown-rumdl-darkgreen",
             "https://github.com/rvben/rumdl",
         )
 
-    @classmethod
-    def check_args(cls, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         """Construct rumdl check arguments.
 
         Args:
@@ -63,10 +59,9 @@ class MDLinter(Tool):
         Returns:
             Args for 'rumdl check'.
         """
-        return cls.args("check", *args)
+        return self.args("check", *args)
 
-    @classmethod
-    def check_fix_args(cls, *args: str) -> Args:
+    def check_fix_args(self, *args: str) -> Args:
         """Construct rumdl check arguments with auto-fix.
 
         Args:
@@ -75,4 +70,4 @@ class MDLinter(Tool):
         Returns:
             Args for 'rumdl check --fix'.
         """
-        return cls.check_args("--fix", *args)
+        return self.check_args("--fix", *args)

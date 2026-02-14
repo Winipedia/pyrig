@@ -25,8 +25,7 @@ class ProjectTester(Tool):
         >>> ProjectTester.I.run_tests_in_ci_args("tests/test_module.py").run()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -34,8 +33,7 @@ class ProjectTester(Tool):
         """
         return "pytest"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get badge group.
 
         Returns:
@@ -43,16 +41,14 @@ class ProjectTester(Tool):
         """
         return ToolGroup.TESTING
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Get pytest badge image URL and project page URL."""
         return (
             "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest",
             "https://pytest.org",
         )
 
-    @classmethod
-    def dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(self) -> list[str]:
         """Get tool dependencies.
 
         Returns:
@@ -60,8 +56,7 @@ class ProjectTester(Tool):
         """
         return [*super().dev_dependencies(), "pytest-mock"]
 
-    @classmethod
-    def coverage_threshold(cls) -> int:
+    def coverage_threshold(self) -> int:
         """Get minimum test coverage percentage threshold.
 
         Returns:
@@ -69,8 +64,7 @@ class ProjectTester(Tool):
         """
         return 90
 
-    @classmethod
-    def test_args(cls, *args: str) -> Args:
+    def test_args(self, *args: str) -> Args:
         """Construct pytest arguments.
 
         Args:
@@ -79,10 +73,9 @@ class ProjectTester(Tool):
         Returns:
             Args for 'pytest'.
         """
-        return cls.args(*args)
+        return self.args(*args)
 
-    @classmethod
-    def run_tests_in_ci_args(cls, *args: str) -> Args:
+    def run_tests_in_ci_args(self, *args: str) -> Args:
         """Construct pytest arguments for CI.
 
         Args:
@@ -91,4 +84,4 @@ class ProjectTester(Tool):
         Returns:
             Args for 'pytest' with CI flags (log level INFO, XML coverage).
         """
-        return cls.test_args("--log-cli-level=INFO", "--cov-report=xml", *args)
+        return self.test_args("--log-cli-level=INFO", "--cov-report=xml", *args)
