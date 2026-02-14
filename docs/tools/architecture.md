@@ -234,8 +234,8 @@ The parent class is automatically excluded from discovery.
 
 | Replacement | Complexity | What's Needed |
 |-------------|------------|---------------|
-| ty → mypy | **Low** | Just subclass `TypeChecker.name()` |
-| ruff → black | **Low** | Subclass `Linter.name()` and adjust methods |
+| ty → mypy | **Low** | Just override `name()` in a `TypeChecker` subclass |
+| ruff → black | **Low** | Override `name()` in a `Linter` subclass and adjust methods |
 | Podman → Docker | **Medium** | Subclass Tool + override workflow steps |
 | uv → pip | **High** | Affects nearly everything |
 
