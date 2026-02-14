@@ -8,6 +8,14 @@ from pyrig.rig.tools.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test__repo_owner_and_name(self) -> None:
+        """Test method."""
+        result = VersionController._repo_owner_and_name(  # noqa: SLF001
+            check_repo_url=False, url_encode=False
+        )
+        assert isinstance(result, tuple)
+        assert all(isinstance(item, str) for item in result)
+
     def test_ignore_filename(self) -> None:
         """Test method."""
         result = VersionController.I.ignore_filename()

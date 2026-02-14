@@ -10,6 +10,7 @@ Example:
 """
 
 import logging
+from functools import cache
 from pathlib import Path
 from urllib.parse import quote
 
@@ -366,8 +367,10 @@ class VersionController(Tool):
         """
         return self.diff_args("--quiet", *args)
 
-    def repo_owner_and_name(
-        self,
+    @classmethod
+    @cache
+    def _repo_owner_and_name(
+        cls,
         *,
         check_repo_url: bool = True,
         url_encode: bool = False,
@@ -386,6 +389,7 @@ class VersionController(Tool):
         Returns:
             Tuple of (owner, repository_name).
         """
+        self = cls()
         url = self.repo_remote(check=check_repo_url)
         if not url:
             # we default to git username and repo name from cwd
@@ -406,6 +410,25 @@ class VersionController(Tool):
             owner = quote(owner)
             repo = quote(repo)
         return owner, repo
+
+    def repo_owner_and_name(
+        self, *, check_repo_url: bool = True, url_encode: bool = False
+    ) -> tuple[str, str]:
+        """Get the repository owner and name.
+
+        Wrapper around cached version to allow non-cached access if needed.
+
+        Args:
+            check_repo_url: Whether to raise on missing remote. Defaults to True.
+            url_encode: Whether to percent-encode the returned strings.
+                Defaults to False.
+
+        Returns:
+            Tuple of (owner, repository_name).
+        """
+        return self._repo_owner_and_name(
+            check_repo_url=check_repo_url, url_encode=url_encode
+        )
 
     def repo_remote(self, *, check: bool = True) -> str:
         """Get the remote origin URL from git config.
