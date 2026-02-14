@@ -25,8 +25,7 @@ class TypeChecker(Tool):
         >>> TypeChecker.I.check_args("src/").run()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -34,8 +33,7 @@ class TypeChecker(Tool):
         """
         return "ty"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get badge group.
 
         Returns:
@@ -43,16 +41,14 @@ class TypeChecker(Tool):
         """
         return ToolGroup.CODE_QUALITY
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Return the badge and linked page URLs."""
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json",
             "https://github.com/astral-sh/ty",
         )
 
-    @classmethod
-    def check_args(cls, *args: str) -> Args:
+    def check_args(self, *args: str) -> Args:
         """Construct ty check arguments.
 
         Args:
@@ -61,4 +57,4 @@ class TypeChecker(Tool):
         Returns:
             Args for 'ty check'.
         """
-        return cls.args("check", *args)
+        return self.args("check", *args)

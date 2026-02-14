@@ -29,8 +29,7 @@ class ProjectCoverageTester(Tool):
         >>> ProjectCoverageTester.I.remote_coverage_url()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -38,8 +37,7 @@ class ProjectCoverageTester(Tool):
         """
         return "pytest-cov"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get tool group.
 
         Returns:
@@ -47,16 +45,14 @@ class ProjectCoverageTester(Tool):
         """
         return ToolGroup.TESTING
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Get Codecov coverage badge image URL and dashboard URL."""
         return (
-            f"{cls.remote_coverage_url()}/branch/{VersionController.I.default_branch()}/graph/badge.svg",
-            cls.remote_coverage_url(),
+            f"{self.remote_coverage_url()}/branch/{VersionController.I.default_branch()}/graph/badge.svg",
+            self.remote_coverage_url(),
         )
 
-    @classmethod
-    def remote_coverage_url(cls) -> str:
+    def remote_coverage_url(self) -> str:
         """Construct Codecov dashboard URL.
 
         Returns:

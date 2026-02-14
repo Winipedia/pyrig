@@ -22,8 +22,7 @@ class RemoteVersionController(Tool):
     control systems.
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -31,8 +30,7 @@ class RemoteVersionController(Tool):
         """
         return "github"
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get badge group.
 
         Returns:
@@ -40,19 +38,17 @@ class RemoteVersionController(Tool):
         """
         return ToolGroup.TOOLING
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Return the badge image URL and repository page URL."""
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
         return (
             f"https://img.shields.io/github/stars/{owner}/{repo}?style=social",
-            cls.repo_url(),
+            self.repo_url(),
         )
 
-    @classmethod
-    def dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(self) -> list[str]:
         """Get tool dependencies.
 
         Returns:
@@ -60,8 +56,7 @@ class RemoteVersionController(Tool):
         """
         return ["pygithub"]
 
-    @classmethod
-    def url_base(cls) -> str:
+    def url_base(self) -> str:
         """Get the base URL for GitHub.
 
         Returns:
@@ -69,8 +64,7 @@ class RemoteVersionController(Tool):
         """
         return "https://github.com"
 
-    @classmethod
-    def repo_url(cls) -> str:
+    def repo_url(self) -> str:
         """Construct HTTPS GitHub repository URL.
 
         Returns:
@@ -80,28 +74,25 @@ class RemoteVersionController(Tool):
             check_repo_url=False,
             url_encode=True,
         )
-        return f"{cls.url_base()}/{owner}/{repo}"
+        return f"{self.url_base()}/{owner}/{repo}"
 
-    @classmethod
-    def issues_url(cls) -> str:
+    def issues_url(self) -> str:
         """Construct GitHub issues URL.
 
         Returns:
             URL in format: `https://github.com/{owner}/{repo}/issues`
         """
-        return f"{cls.repo_url()}/issues"
+        return f"{self.repo_url()}/issues"
 
-    @classmethod
-    def releases_url(cls) -> str:
+    def releases_url(self) -> str:
         """Construct GitHub releases URL.
 
         Returns:
             URL in format: `https://github.com/{owner}/{repo}/releases`
         """
-        return f"{cls.repo_url()}/releases"
+        return f"{self.repo_url()}/releases"
 
-    @classmethod
-    def cicd_url(cls, workflow_name: str) -> str:
+    def cicd_url(self, workflow_name: str) -> str:
         """Construct GitHub Actions workflow run URL.
 
         Args:
@@ -110,10 +101,9 @@ class RemoteVersionController(Tool):
         Returns:
             URL to workflow execution history.
         """
-        return f"{cls.repo_url()}/actions/workflows/{workflow_name}.yml"
+        return f"{self.repo_url()}/actions/workflows/{workflow_name}.yml"
 
-    @classmethod
-    def cicd_badge_url(cls, workflow_name: str, label: str) -> str:
+    def cicd_badge_url(self, workflow_name: str, label: str) -> str:
         """Construct GitHub Actions workflow status badge URL.
 
         Args:
@@ -129,8 +119,7 @@ class RemoteVersionController(Tool):
         )
         return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
 
-    @classmethod
-    def cicd_badge(cls, workflow_name: str, label: str) -> str:
+    def cicd_badge(self, workflow_name: str, label: str) -> str:
         """Construct GitHub Actions workflow status badge Markdown string.
 
         Args:
@@ -140,8 +129,8 @@ class RemoteVersionController(Tool):
         Returns:
             Markdown string for shields.io badge showing workflow status.
         """
-        badge_url = cls.cicd_badge_url(workflow_name, label)
-        cicd_url = cls.cicd_url(workflow_name)
+        badge_url = self.cicd_badge_url(workflow_name, label)
+        cicd_url = self.cicd_url(workflow_name)
         return make_linked_badge_markdown(
             badge_url=badge_url,
             link_url=cicd_url,

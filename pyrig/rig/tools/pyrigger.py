@@ -33,8 +33,7 @@ class Pyrigger(Tool):
         >>> Pyrigger.I.cmd_args(cmd=build).run()
     """
 
-    @classmethod
-    def name(cls) -> str:
+    def name(self) -> str:
         """Get tool name.
 
         Returns:
@@ -42,8 +41,7 @@ class Pyrigger(Tool):
         """
         return pyrig.__name__
 
-    @classmethod
-    def group(cls) -> str:
+    def group(self) -> str:
         """Get badge group.
 
         Returns:
@@ -51,16 +49,14 @@ class Pyrigger(Tool):
         """
         return ToolGroup.TOOLING
 
-    @classmethod
-    def badge_urls(cls) -> tuple[str, str]:
+    def badge_urls(self) -> tuple[str, str]:
         """Get pyrig badge image URL and GitHub page URL."""
         return (
-            f"https://img.shields.io/badge/built%20with-{cls.name()}-3776AB?logo=buildkite&logoColor=black",
-            f"https://github.com/Winipedia/{cls.name()}",
+            f"https://img.shields.io/badge/built%20with-{self.name()}-3776AB?logo=buildkite&logoColor=black",
+            f"https://github.com/Winipedia/{self.name()}",
         )
 
-    @classmethod
-    def dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(self) -> list[str]:
         """Get tool dependencies.
 
         Returns:
@@ -69,8 +65,7 @@ class Pyrigger(Tool):
         # only pyrig-dev not pyrig because pyrig is already installed as dependency
         return ["pyrig-dev"]
 
-    @classmethod
-    def cmd_args(cls, *args: str, cmd: Callable[..., Any]) -> Args:
+    def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments from callable.
 
         Args:
@@ -81,4 +76,4 @@ class Pyrigger(Tool):
             Args for 'pyrig <cmd_name>'.
         """
         cmd_name = project_name_from_package_name(cmd.__name__)  # ty:ignore[unresolved-attribute]
-        return cls.args(cmd_name, *args)
+        return self.args(cmd_name, *args)
