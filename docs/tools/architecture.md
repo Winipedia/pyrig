@@ -63,8 +63,8 @@ The prek config file uses `.I` to reference tools:
 ```python
 # pyrig/rig/configs/git/pre_commit.py
 hooks = [
-    cls.hook("lint-code", Linter.I.check_fix_args()),
-    cls.hook("check-types", TypeChecker.I.check_args()),
+    self.hook("lint-code", Linter.I.check_fix_args()),
+    self.hook("check-types", TypeChecker.I.check_args()),
     # ...
 ]
 ```
@@ -144,8 +144,8 @@ The workflow uses a hardcoded GitHub Action for Podman:
 
 ```python
 # pyrig/rig/configs/base/workflow.py
-def step_install_container_engine(cls, ...):
-    return cls.step(
+def step_install_container_engine(self, ...):
+    return self.step(
         uses="redhat-actions/podman-install@main",  # Hardcoded!
         ...
     )
@@ -159,10 +159,10 @@ installs Podman. You must **also** subclass the workflow:
 from pyrig.rig.configs.workflows.build import BuildWorkflowConfigFile as BaseBuildWorkflowConfigFile
 
 class BuildWorkflowConfigFile(BaseBuildWorkflowConfigFile):
-    @classmethod
-    def step_install_container_engine(cls, *, step=None):
-        return cls.step(
-            step_func=cls.step_install_container_engine,
+
+    def step_install_container_engine(self, *, step=None):
+        return self.step(
+            step_func=self.step_install_container_engine,
             uses="docker/setup-buildx-action@v3",
             step=step,
         )
@@ -202,12 +202,12 @@ from pathlib import Path
 from pyrig.rig.configs.base.toml import TomlConfigFile
 
 class MyAppConfigFile(TomlConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+
+    def parent_path(self) -> Path:
         return Path()
 
-    @classmethod
-    def _configs(cls) -> dict:
+
+    def _configs(self) -> dict:
         return {"app": {"name": "myapp"}}
 ```
 
@@ -221,8 +221,8 @@ runs.
 from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyproject
 
 class PyprojectConfigFile(BasePyproject):
-    @classmethod
-    def _configs(cls) -> dict:
+
+    def _configs(self) -> dict:
         config = super()._configs()
         config["tool"]["myapp"] = {"custom": "setting"}
         return config
