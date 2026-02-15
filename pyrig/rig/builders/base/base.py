@@ -161,8 +161,8 @@ class BuilderConfigFile(ListConfigFile):
 
         Default is "dist", but can be overridden by subclasses.
         Is a classmethod unlike the rest of the interface
-        because it's used in Workflows and BuilderConfigFile itself is abstract,
-        so it can't be instantiated to call instance methods.
+        because it's used in WorkflowConfigFile subclasses and BuilderConfigFile
+        itself is abstract, so it can't be instantiated to call instance methods.
 
         Returns:
             Name of the artifacts directory (e.g., "dist").

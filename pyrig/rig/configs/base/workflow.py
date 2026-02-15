@@ -1538,7 +1538,6 @@ class WorkflowConfigFile(YmlConfigFile):
 
         Args:
             step: Existing step dict to update.
-            artifacts_pattern: Glob pattern for release artifacts.
 
         Returns:
             Step using ncipollo/release-action.
