@@ -107,7 +107,7 @@ Extracts repository owner and name from Git remote URL for badge links.
 ### Python Versions
 
 Shows supported Python versions from `pyproject.toml` `requires-python` field in
-the Python badge (e.g., `3.10|3.11|3.12`).
+the Python badge (e.g., `3.12|3.13|3.14`).
 
 ## Badge Categories
 
