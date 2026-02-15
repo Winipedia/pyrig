@@ -53,7 +53,11 @@ from pyrig.src.string_ import make_name_from_obj
 
 
 def initializing_version_control() -> Args:
-    """Return args for initializing a git repository via `git init`."""
+    """Return args for initializing a git repository via `git init`.
+
+    Returns:
+        Args object for git initialization command.
+    """
     return VersionController.I.init_args()
 
 
@@ -75,6 +79,9 @@ def creating_priority_config_files() -> Args:
     Creates high-priority config files (`pyproject.toml`, `.gitignore`,
     `LICENSE`) that other initialization steps depend on via
     `pyrig mkroot --priority`.
+
+    Returns:
+        Args object for creating priority config files.
     """
     # local imports to avoid failure on init when dev deps are not installed yet.
     return Pyrigger.I.cmd_args("--priority", cmd=mkroot)
@@ -86,6 +93,9 @@ def syncing_venv() -> Args:
     Installs all dependencies from `pyproject.toml`. Called twice during
     initialization: after adding dev dependencies and after creating
     priority config files.
+
+    Returns:
+        Args object for syncing virtual environment.
     """
     return PackageManager.I.install_dependencies_args()
 
@@ -95,6 +105,9 @@ def creating_project_root() -> Args:
 
     Generates all remaining configuration files and directory structure
     via `pyrig mkroot`.
+
+    Returns:
+        Args object for creating project root structure.
     """
     return Pyrigger.I.cmd_args(cmd=mkroot)
 
@@ -104,17 +117,28 @@ def creating_test_files() -> Args:
 
     Creates test files mirroring the source package structure with
     `NotImplementedError` placeholders.
+
+    Returns:
+        Args object for creating test files.
     """
     return Pyrigger.I.cmd_args(cmd=mktests)
 
 
 def install_pre_commit_hooks() -> Args:
-    """Return args for installing prek hooks via `prek install`."""
+    """Return args for installing prek hooks via `prek install`.
+
+    Returns:
+        Args object for installing pre-commit hooks.
+    """
     return PreCommitter.I.install_args()
 
 
 def add_all_files_to_version_control() -> Args:
-    """Return args for staging all files via `git add .`."""
+    """Return args for staging all files via `git add .`.
+
+    Returns:
+        Args object for staging all files.
+    """
     return VersionController.I.add_all_args()
 
 
@@ -123,6 +147,9 @@ def running_pre_commit_hooks() -> Args:
 
     Runs formatters and linters on all files to ensure the codebase follows
     style guidelines.
+
+    Returns:
+        Args object for running pre-commit hooks.
     """
     return PreCommitter.I.run_all_files_args()
 
@@ -132,6 +159,9 @@ def running_tests() -> Args:
 
     Validates that all generated code is syntactically correct and the project
     is properly configured.
+
+    Returns:
+        Args object for running tests.
     """
     return ProjectTester.I.test_args()
 
@@ -141,6 +171,9 @@ def committing_initial_changes() -> Args:
 
     Commits all configuration files, test skeletons, and formatting changes
     with the message "pyrig: Initial commit".
+
+    Returns:
+        Args object for creating initial commit.
     """
     # changes were added by the run prek hooks step
     return VersionController.I.commit_no_verify_args(
@@ -153,6 +186,10 @@ def setup_steps() -> list[Callable[..., Any]]:
 
     Each function in the returned list takes no arguments and returns an `Args`
     object that can be executed via `PackageManager`.
+
+    Returns:
+        List of callable setup step functions in execution order.
+    """
     """
     return [
         initializing_version_control,

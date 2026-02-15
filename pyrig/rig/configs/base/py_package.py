@@ -10,7 +10,7 @@ Example:
     >>> class MyPackageInit(PythonPackageConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path("src/mypackage/subpackage")
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def lines(self) -> list[str]:
@@ -24,6 +24,9 @@ from pyrig.src.modules.path import make_package_dir
 
 
 class PythonPackageConfigFile(PythonConfigFile):
+
+        Returns:
+            List of file content lines.
     """Base class for Python package files.
 
     Extends `PythonConfigFile` to automatically create `__init__.py` files in all

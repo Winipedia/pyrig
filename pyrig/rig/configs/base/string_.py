@@ -10,19 +10,19 @@ Example:
     >>> class LicenseFile(StringConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path()
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def lines(self) -> list[str]:
-    ...         return ["MIT License", "", "Copyright (c) 2024"]
+    ...     def lines(self) -> list[str]:
     ...
     ...
     ...     def filename(self) -> str:
-    ...         return "LICENSE"
+    ...     def filename(self) -> str:
     ...
     ...
     ...     def extension(self) -> str:
-    ...         return ""
+    ...     def extension(self) -> str:
 """
 
 from abc import abstractmethod
@@ -52,7 +52,7 @@ class StringConfigFile(ListConfigFile):
 
         Returns:
             List of lines validated via substring matching.
-        """
+    def lines(self) -> list[str]:
 
     def _load(self) -> list[str]:
         r"""Load file content as UTF-8 text.
@@ -116,14 +116,25 @@ class StringConfigFile(ListConfigFile):
         Returns:
             ``True`` if parent validation passes or all required lines found
             in file content.
-        """
+    def is_correct(self) -> bool:
         all_lines_in_file = all(line in self.file_content() for line in self.lines())
         return super().is_correct() or all_lines_in_file
 
     def file_content(self) -> str:
-        r"""Return file content as a single string by joining lines from `load()`."""
+        r"""Return file content as a single string by joining lines from `load()`.
+
+        Returns:
+            File content as a single string with lines joined by newlines.
+        """
         return self.make_string_from_lines(self.load())
 
     def make_string_from_lines(self, lines: list[str]) -> str:
-        """Join lines with newline."""
+        """Join lines with newline.
+
+        Args:
+            lines: List of strings to join.
+
+        Returns:
+            Single string with lines joined by newline characters.
+        """
         return "\n".join(lines)

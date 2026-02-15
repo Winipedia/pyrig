@@ -51,6 +51,9 @@ class GitignoreConfigFile(StringConfigFile):
         return VersionController.I.ignore_filename()
 
     def parent_path(self) -> Path:
+    def parent_path(self) -> Path:
+        Returns:
+            Filename without extension or path.
         """Get parent directory (project root)."""
         return Path()
 
@@ -63,6 +66,9 @@ class GitignoreConfigFile(StringConfigFile):
         return ""
 
     def lines(self) -> list[str]:
+    def lines(self) -> list[str]:
+        Returns:
+            File extension without separator.
         """Get complete .gitignore patterns with intelligent merging.
 
         Combines GitHub's Python patterns with pyrig-specific patterns

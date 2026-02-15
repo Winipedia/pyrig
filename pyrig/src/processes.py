@@ -114,6 +114,9 @@ def run_subprocess_cached(
     Args:
         args: Command and arguments as tuple (e.g., ("git", "status")).
         **kwargs: Additional arguments passed to `run_subprocess()`.
+
+    Returns:
+        Completed process result with returncode, stdout, and stderr.
     """
     return run_subprocess(args, **kwargs)
 

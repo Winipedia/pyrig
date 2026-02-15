@@ -46,3 +46,5 @@ class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     def src_module(self) -> ModuleType:
         """Return the `pyrig.rig.cli.subcommands` module."""
         return subcommands
+
+    def src_module(self) -> ModuleType:

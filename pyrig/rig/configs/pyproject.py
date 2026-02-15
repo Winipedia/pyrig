@@ -59,6 +59,9 @@ class PyprojectConfigFile(TomlConfigFile):
         return Priority.MEDIUM
 
     def _dump(self, config: dict[str, Any] | list[Any]) -> None:
+
+        Returns:
+            Priority value for config file creation order.
         """Write config with dependency normalization (modifies in-place).
 
         Raises:
@@ -75,6 +78,9 @@ class PyprojectConfigFile(TomlConfigFile):
         return Path()
 
     def _configs(self) -> dict[str, Any]:
+
+        Returns:
+            Parent directory path.
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
         repo_owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
         tests_package_name = MirrorTestConfigFile.I.tests_package_name()
@@ -194,7 +200,11 @@ class PyprojectConfigFile(TomlConfigFile):
         return next(iter(licenses))
 
     def remove_wrong_dependencies(self, config: dict[str, Any]) -> None:
-        """Normalize dependency versions (modifies in-place)."""
+        """Normalize dependency versions (modifies in-place).
+
+        Args:
+            config: Configuration dictionary to modify.
+        """
         config["project"]["dependencies"] = self.make_dependency_versions(
             config["project"]["dependencies"]
         )
@@ -203,15 +213,27 @@ class PyprojectConfigFile(TomlConfigFile):
         )
 
     def project_description(self) -> str:
-        """Get project description from pyproject.toml."""
+        """Get project description from pyproject.toml.
+
+        Returns:
+            Project description string.
+        """
         return str(self.load().get("project", {}).get("description", ""))
 
     def project_version(self) -> str:
-        """Get project version from pyproject.toml."""
+        """Get project version from pyproject.toml.
+
+        Returns:
+            Project version string.
+        """
         return str(self.load().get("project", {}).get("version", ""))
 
     def make_python_version_classifiers(self) -> list[str]:
-        """Generate PyPI classifiers (Python versions, OS Independent, Typed)."""
+        """Generate PyPI classifiers (Python versions, OS Independent, Typed).
+
+        Returns:
+            List of PyPI classifier strings.
+        """
         versions = self.supported_python_versions()
         python_version_classifiers = [
             f"Programming Language :: Python :: {v.major}.{v.minor}" for v in versions
@@ -226,7 +248,14 @@ class PyprojectConfigFile(TomlConfigFile):
         return [*python_version_classifiers, *os_classifiers, *typing_classifiers]
 
     def requires_python(self, default: str = ">=3.12") -> str:
-        """Get requires-python constraint from pyproject.toml."""
+        """Get requires-python constraint from pyproject.toml.
+
+        Args:
+            default: Default version constraint if not found in config.
+
+        Returns:
+            Python version constraint string (e.g., ">=3.12").
+        """
         return str(self.load().get("project", {}).get("requires-python", default))
 
     def make_dependency_versions(
@@ -234,7 +263,15 @@ class PyprojectConfigFile(TomlConfigFile):
         dependencies: list[str],
         additional: list[str] | None = None,
     ) -> list[str]:
-        """Normalize and merge dependency lists (sorted, deduplicated)."""
+        """Normalize and merge dependency lists (sorted, deduplicated).
+
+        Args:
+            dependencies: Base list of dependencies.
+            additional: Optional additional dependencies to merge.
+
+        Returns:
+            Sorted, deduplicated list of dependencies.
+        """
         if additional is None:
             additional = []
         stripped_dependencies = {
@@ -258,25 +295,44 @@ class PyprojectConfigFile(TomlConfigFile):
 
         Args:
             dep: Dependency string, optionally with version specifier.
+
+        Returns:
+            Package name without version specifier.
         """
         return package_req_name_split_pattern().split(dep)[0]
 
     def package_name(self) -> str:
-        """Get the Python package name (e.g., 'my-project' -> 'my_project')."""
+        """Get the Python package name (e.g., 'my-project' -> 'my_project').
+
+        Returns:
+            Package name with underscores.
+        """
         project_name = self.project_name()
         return package_name_from_project_name(project_name)
 
     def project_name(self) -> str:
-        """Get project name from pyproject.toml."""
+        """Get project name from pyproject.toml.
+
+        Returns:
+            Project name string (e.g., "my-project").
+        """
         return str(self.load().get("project", {}).get("name", ""))
 
     def dev_dependencies(self) -> list[str]:
-        """Get dev dependencies from pyproject.toml."""
+        """Get dev dependencies from pyproject.toml.
+
+        Returns:
+            List of development dependency strings.
+        """
         dev_deps: list[str] = self.load().get("dependency-groups", {}).get("dev", [])
         return dev_deps
 
     def dependencies(self) -> list[str]:
-        """Get runtime dependencies from pyproject.toml."""
+        """Get runtime dependencies from pyproject.toml.
+
+        Returns:
+            List of runtime dependency strings.
+        """
         deps: list[str] = self.load().get("project", {}).get("dependencies", [])
         return deps
 
@@ -290,6 +346,9 @@ class PyprojectConfigFile(TomlConfigFile):
 
         Args:
             level: Precision level for the version string.
+
+        Returns:
+            Latest Python version string at specified precision level.
         """
         url = "https://endoflife.date/api/python.json"
         data: list[dict[str, str]] = json.loads(requests_get_text_cached(url))
@@ -299,14 +358,28 @@ class PyprojectConfigFile(TomlConfigFile):
     def latest_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"
     ) -> Version:
-        """Get latest stable Python version at precision level (major/minor/micro)."""
+        """Get latest stable Python version at precision level (major/minor/micro).
+
+        Args:
+            level: Precision level for the version.
+
+        Returns:
+            Latest Python version object at specified precision.
+        """
         latest_version = Version(self.fetch_latest_python_version())
         return adjust_version_to_level(latest_version, level)
 
     def latest_possible_python_version(
         self, level: Literal["major", "minor", "micro"] = "micro"
     ) -> Version:
-        """Get latest Python version allowed by requires-python constraint."""
+        """Get latest Python version allowed by requires-python constraint.
+
+        Args:
+            level: Precision level for the version.
+
+        Returns:
+            Latest Python version allowed by the project's requires-python constraint.
+        """
         constraint = self.load()["project"]["requires-python"]
         version_constraint = VersionConstraint(constraint)
         version = version_constraint.upper_inclusive()
@@ -317,6 +390,9 @@ class PyprojectConfigFile(TomlConfigFile):
 
     def first_supported_python_version(self) -> Version:
         """Get minimum supported Python version from requires-python.
+
+        Returns:
+            Minimum supported Python version.
 
         Raises:
             ValueError: If requires-python has no lower bound.
@@ -330,7 +406,11 @@ class PyprojectConfigFile(TomlConfigFile):
         return lower
 
     def supported_python_versions(self) -> list[Version]:
-        """Get all supported Python minor versions within requires-python constraint."""
+        """Get all supported Python minor versions within requires-python constraint.
+
+        Returns:
+            List of Python versions supported by the project.
+        """
         constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)
         return version_constraint.version_range(

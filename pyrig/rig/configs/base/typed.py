@@ -10,7 +10,7 @@ Example:
     >>> class MyPackageTypedFile(TypedConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path("src/mypackage")
+    ...     def parent_path(self) -> Path:
     >>>
     >>> MyPackageTypedFile()  # Creates src/mypackage/py.typed (empty file)
 
@@ -42,6 +42,9 @@ class TypedConfigFile(DictConfigFile):
         return "typed"
 
     def _load(self) -> dict[str, Any]:
+
+        Returns:
+            File extension without separator.
         """Load py.typed content as empty dict."""
         return {}
 

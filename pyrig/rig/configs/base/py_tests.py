@@ -9,11 +9,11 @@ Example:
     >>> class MyTestFile(PythonTestsConfigFile):
     ...
     ...     def lines(self) -> list[str]:
-    ...         return ["import pytest"]
+    ...     def lines(self) -> list[str]:
     ...
     ...
     ...     def filename(self) -> str:
-    ...         return "test_myclass"
+    ...     def filename(self) -> str:
     >>>
     >>> MyTestFile()  # Creates tests/test_myclass.py
 """
@@ -42,3 +42,5 @@ class PythonTestsConfigFile(PythonConfigFile):
     def parent_path(self) -> Path:
         """Return the tests package directory path, typically `Path("tests")`."""
         return Path(MirrorTestConfigFile.I.tests_package_name())
+
+    def parent_path(self) -> Path:

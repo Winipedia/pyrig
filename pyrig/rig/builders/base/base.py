@@ -101,6 +101,9 @@ class BuilderConfigFile(ListConfigFile):
 
         Default is `pyrig.rig.builders`, overriding the base default of
         `pyrig.rig.configs`. Can be overridden by subclasses.
+
+        Returns:
+            Module where builder subclasses are defined (pyrig.rig.builders).
         """
         return builders
 
@@ -132,7 +135,11 @@ class BuilderConfigFile(ListConfigFile):
         self.build()
 
     def extension(self) -> str:
-        """Return empty string (builders don't use file extensions)."""
+        """Return empty string (builders don't use file extensions).
+
+        Returns:
+            Empty string.
+        """
         return ""
 
     def _configs(self) -> list[Path]:
@@ -219,6 +226,9 @@ class BuilderConfigFile(ListConfigFile):
 
         Args:
             artifact: Path to the artifact.
+
+        Returns:
+            Platform-specific path for the artifact.
         """
         return self.parent_path() / self.platform_specific_name(artifact)
 
@@ -227,6 +237,9 @@ class BuilderConfigFile(ListConfigFile):
 
         Args:
             artifact: Path to the artifact.
+
+        Returns:
+            Platform-specific filename string.
         """
         return f"{artifact.stem}-{platform.system()}{artifact.suffix}"
 
@@ -256,35 +269,63 @@ class BuilderConfigFile(ListConfigFile):
         return path
 
     def app_name(self) -> str:
-        """Return the application name from pyproject.toml."""
+        """Return the application name from pyproject.toml.
+
+        Returns:
+            Application/project name string.
+        """
         return PyprojectConfigFile.I.project_name()
 
     def root_path(self) -> Path:
-        """Return the absolute path to the project root directory."""
+        """Return the absolute path to the project root directory.
+
+        Returns:
+            Absolute path to project root.
+        """
         src_package = import_module(PyprojectConfigFile.I.package_name())
         src_path = ModulePath.package_type_to_dir_path(src_package)
         return src_path.parent
 
     def main_path(self) -> Path:
-        """Return the absolute path to the main.py entry point."""
+        """Return the absolute path to the main.py entry point.
+
+        Returns:
+            Absolute path to main.py file.
+        """
         return self.src_package_path() / self.main_path_relative_to_src_package()
 
     def resources_path(self) -> Path:
-        """Return the absolute path to the resources directory."""
+        """Return the absolute path to the resources directory.
+
+        Returns:
+            Absolute path to resources directory.
+        """
         return self.src_package_path() / self.resources_path_relative_to_src_package()
 
     def src_package_path(self) -> Path:
-        """Return the absolute path to the source package directory."""
+        """Return the absolute path to the source package directory.
+
+        Returns:
+            Absolute path to source package.
+        """
         return self.root_path() / PyprojectConfigFile.I.package_name()
 
     def main_path_relative_to_src_package(self) -> Path:
-        """Return the relative path to main.py from the source package."""
+        """Return the relative path to main.py from the source package.
+
+        Returns:
+            Relative path from source package to main.py.
+        """
         project_main_file = ModulePath.module_name_to_relative_file_path(main.__name__)
         pyrig_package_dir = ModulePath.package_name_to_relative_dir_path(pyrig.__name__)
         return project_main_file.relative_to(pyrig_package_dir)
 
     def resources_path_relative_to_src_package(self) -> Path:
-        """Return the relative path to the resources directory from the src package."""
+        """Return the relative path to the resources directory from the src package.
+
+        Returns:
+            Relative path from source package to resources directory.
+        """
         resources_path = ModulePath.package_name_to_relative_dir_path(
             resources.__name__
         )

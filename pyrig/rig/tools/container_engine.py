@@ -45,6 +45,10 @@ class ContainerEngine(Tool):
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
+        
+
+        Returns:
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """Return the badge and link URLs."""
         return (
             "https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6",

@@ -45,6 +45,10 @@ class DependencyAuditor(Tool):
         return ToolGroup.SECURITY
 
     def badge_urls(self) -> tuple[str, str]:
+        
+
+        Returns:
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """Return the badge and link URLs."""
         return (
             "https://img.shields.io/badge/security-pip--audit-blue?logo=python",

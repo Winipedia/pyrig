@@ -11,7 +11,7 @@ Example:
     >>> class MkDocsConfigFile(YmlConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path()
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def _configs(self) -> dict[str, Any]:
@@ -37,3 +37,5 @@ class YmlConfigFile(YamlConfigFile):
     def extension(self) -> str:
         """Return "yml"."""
         return "yml"
+
+    def extension(self) -> str:

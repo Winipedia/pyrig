@@ -9,11 +9,11 @@ Example:
     >>> class ReadmeFile(MarkdownConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path()
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def lines(self) -> list[str]:
-    ...         return ["# My Project", "", "Description here."]
+    ...     def lines(self) -> list[str]:
 """
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -36,3 +36,5 @@ class MarkdownConfigFile(StringConfigFile):
     def extension(self) -> str:
         """Return "md"."""
         return "md"
+
+    def extension(self) -> str:

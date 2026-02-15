@@ -33,7 +33,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
 
         Returns:
             str: "README" (extension added by parent).
-        """
+    def filename(self) -> str:
         return "README"
 
     def parent_path(self) -> Path:
@@ -41,7 +41,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
 
         Returns:
             Path: Project root.
-        """
+    def parent_path(self) -> Path:
         return Path()
 
     def is_unwanted(self) -> bool:

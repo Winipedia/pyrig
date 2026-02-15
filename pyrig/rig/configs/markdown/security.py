@@ -65,7 +65,7 @@ class SecurityConfigFile(MarkdownConfigFile):
 
         Returns:
             str: "SECURITY" (extension added by parent).
-        """
+    def filename(self) -> str:
         return "SECURITY"
 
     def parent_path(self) -> Path:
@@ -73,7 +73,7 @@ class SecurityConfigFile(MarkdownConfigFile):
 
         Returns:
             Path: Project root.
-        """
+    def parent_path(self) -> Path:
         return Path()
 
     def lines(self) -> list[str]:
@@ -81,7 +81,7 @@ class SecurityConfigFile(MarkdownConfigFile):
 
         Returns:
             list[str]: Security template lines with contact method inserted.
-        """
+    def lines(self) -> list[str]:
         return [*self.template_with_contact_method().splitlines()]
 
     def is_correct(self) -> bool:
@@ -89,7 +89,7 @@ class SecurityConfigFile(MarkdownConfigFile):
 
         Returns:
             bool: True if file exists with content, False otherwise.
-        """
+    def is_correct(self) -> bool:
         return self.path().exists() and bool(
             self.path().read_text(encoding="utf-8").strip()
         )

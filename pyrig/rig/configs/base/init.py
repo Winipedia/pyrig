@@ -10,7 +10,7 @@ Example:
     >>> class SrcPackageInit(InitConfigFile):
     ...
     ...     def src_module(self) -> ModuleType:
-    ...         return pyrig.src
+    ...     def src_module(self) -> ModuleType:
     >>>
     >>> SrcPackageInit()  # Creates <project>/src/__init__.py
 """
@@ -43,7 +43,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
 
         Returns:
             "__init__" (without extension).
-        """
+    def filename(self) -> str:
         return "__init__"
 
     def parent_path(self) -> Path:
@@ -51,7 +51,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
 
         Returns:
             Package directory path where __init__.py will be created.
-        """
+    def parent_path(self) -> Path:
         path = super().parent_path()
         # this path will be parent of the init file
         return path / isolated_obj_name(self.src_module())

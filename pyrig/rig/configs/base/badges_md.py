@@ -10,11 +10,11 @@ Example:
     >>> class ReadmeFile(BadgesMarkdownConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path()
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def filename(self) -> str:
-    ...         return "README"
+    ...     def filename(self) -> str:
     >>>
     >>> ReadmeFile()  # Creates README.md with badges
 """
@@ -59,7 +59,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
         Returns:
             True if the file contains all expected content.
-        """
+    def is_correct(self) -> bool:
         if super().is_correct():
             return True
         file_content = self.file_content()
@@ -76,7 +76,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
         Returns:
             Formatted Markdown with H1 header, badge categories, and description.
-        """
+    def lines(self) -> list[str]:
         project_name = PyprojectConfigFile.I.project_name()
         badges = self.badges()
         badges_lines: list[str] = []

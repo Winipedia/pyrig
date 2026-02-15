@@ -67,7 +67,7 @@ class MainConfigFile(CopyModuleConfigFile):
 
         Note:
             Entire module is copied, not just docstring.
-        """
+    def src_module(self) -> ModuleType:
         return main
 
     def is_correct(self) -> bool:
@@ -79,7 +79,7 @@ class MainConfigFile(CopyModuleConfigFile):
 
         Note:
             Reads file from disk to check content.
-        """
+    def is_correct(self) -> bool:
         return super().is_correct() or (
             "def main" in self.file_content()
             and 'if __name__ == "__main__":' in self.file_content()

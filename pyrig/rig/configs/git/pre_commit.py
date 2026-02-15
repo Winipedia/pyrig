@@ -64,6 +64,9 @@ class PrekConfigFile(TomlConfigFile):
         always_run: bool = True,
         **kwargs: Any,
     ) -> dict[str, Any]:
+
+        Returns:
+            Parent directory path.
         """Create a prek hook configuration.
 
         Args:

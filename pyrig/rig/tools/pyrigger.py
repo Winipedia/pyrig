@@ -50,6 +50,10 @@ class Pyrigger(Tool):
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
+        
+
+        Returns:
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """Get pyrig badge image URL and GitHub page URL."""
         return (
             f"https://img.shields.io/badge/built%20with-{self.name()}-3776AB?logo=buildkite&logoColor=black",

@@ -35,7 +35,7 @@ class DotScratchConfigFile(PythonConfigFile):
 
         Returns:
             str: ".scratch" (extension .py added by parent class).
-        """
+    def filename(self) -> str:
         return ".scratch"
 
     def parent_path(self) -> Path:
@@ -43,7 +43,7 @@ class DotScratchConfigFile(PythonConfigFile):
 
         Returns:
             Path: Empty Path() (project root).
-        """
+    def parent_path(self) -> Path:
         return Path()
 
     def lines(self) -> list[str]:
@@ -51,7 +51,7 @@ class DotScratchConfigFile(PythonConfigFile):
 
         Returns:
             list[str]: Content lines for the scratch file.
-        """
+    def lines(self) -> list[str]:
         return ['"""This file is for scratch work and is ignored by git."""']
 
     def is_correct(self) -> bool:
@@ -59,5 +59,5 @@ class DotScratchConfigFile(PythonConfigFile):
 
         Returns:
             bool: True if the file exists.
-        """
+    def is_correct(self) -> bool:
         return self.path().exists()

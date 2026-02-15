@@ -46,6 +46,9 @@ We highly discourage managing this ConfigFile via subclassing.
         return "env"
 
     def filename(self) -> str:
+    def filename(self) -> str:
+        Returns:
+            File extension without separator.
         """Return empty string to produce '.env' (not 'env.env')."""
         return ""
 
@@ -54,9 +57,14 @@ We highly discourage managing this ConfigFile via subclassing.
         return Path()
 
     def _configs(self) -> dict[str, Any]:
+
+        Returns:
+            Parent directory path.
         """Return empty dict (pyrig doesn't manage .env content)."""
         return {}
 
     def is_correct(self) -> bool:
         """Check if .env file exists."""
         return super().is_correct()
+
+    def is_correct(self) -> bool:

@@ -45,7 +45,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
 
         Note:
             Reverses class name parts to convert "zero_test" to "test_zero".
-        """
+    def filename(self) -> str:
         filename = super().filename()
         return "_".join(reversed(filename.split("_")))
 
@@ -54,7 +54,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
 
         Returns:
             List of lines with empty test function.
-        """
+    def lines(self) -> list[str]:
         return [
             '"""Contains an empty test."""',
             "",

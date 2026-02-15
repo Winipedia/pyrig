@@ -38,7 +38,7 @@ class ConfigsInitConfigFile(InitConfigFile):
         Returns:
             `Priority.LOW` (10), ensuring the configs directory exists before
             other config files use it.
-        """
+    def priority(self) -> float:
         return Priority.LOW
 
     def src_module(self) -> ModuleType:
@@ -49,5 +49,5 @@ class ConfigsInitConfigFile(InitConfigFile):
 
         Note:
             Only docstring is copied, no code.
-        """
+    def src_module(self) -> ModuleType:
         return configs

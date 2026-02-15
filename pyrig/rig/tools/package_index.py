@@ -42,6 +42,10 @@ class PackageIndex(Tool):
         return ToolGroup.PROJECT_INFO
 
     def badge_urls(self) -> tuple[str, str]:
+        
+
+        Returns:
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """Return the PyPI version badge and project page URLs."""
         _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True

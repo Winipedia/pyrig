@@ -45,6 +45,10 @@ class SecurityChecker(Tool):
         return ToolGroup.SECURITY
 
     def badge_urls(self) -> tuple[str, str]:
+        
+
+        Returns:
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """Return the badge image URL and project page URL."""
         return (
             "https://img.shields.io/badge/security-bandit-yellow.svg",

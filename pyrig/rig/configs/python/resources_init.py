@@ -38,5 +38,5 @@ class ResourcesInitConfigFile(InitConfigFile):
 
         Note:
             Only docstring is copied, no code.
-        """
+    def src_module(self) -> ModuleType:
         return resources

@@ -11,7 +11,7 @@ Example:
     >>> class MyConfigFile(TomlConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path()
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def _configs(self) -> dict[str, Any]:
@@ -40,7 +40,7 @@ class TomlConfigFile(DictConfigFile):
         >>> class MyConfigFile(TomlConfigFile):
         ...
         ...     def parent_path(self) -> Path:
-        ...         return Path()
+        ...     def parent_path(self) -> Path:
         ...
         ...
         ...     def _configs(self) -> dict[str, Any]:
@@ -131,3 +131,5 @@ class TomlConfigFile(DictConfigFile):
     def extension(self) -> str:
         """Return "toml"."""
         return "toml"
+
+    def extension(self) -> str:

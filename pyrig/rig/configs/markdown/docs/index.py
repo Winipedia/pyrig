@@ -40,6 +40,9 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         return DocsBuilder.I.docs_dir()
 
     def lines(self) -> list[str]:
+    def lines(self) -> list[str]:
+        Returns:
+            Parent directory path.
         """Get the index.md file content.
 
         Returns:

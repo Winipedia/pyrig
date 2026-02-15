@@ -45,7 +45,7 @@ class FixturesInitConfigFile(InitConfigFile):
 
         Returns:
             float: 10.0 (ensures fixtures directory exists before conftest.py uses it).
-        """
+    def priority(self) -> float:
         return Priority.LOW
 
     def src_module(self) -> ModuleType:
@@ -56,5 +56,5 @@ class FixturesInitConfigFile(InitConfigFile):
 
         Note:
             Only docstring is copied, no code.
-        """
+    def src_module(self) -> ModuleType:
         return fixtures

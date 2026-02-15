@@ -55,6 +55,9 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         return Path(".github")
 
     def lines(self) -> list[str]:
+    def lines(self) -> list[str]:
+        Returns:
+            Parent directory path.
         """Return the pull request template content as lines."""
         return [*PULL_REQUEST_TEMPLATE.strip().splitlines()]
 
@@ -63,7 +66,7 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
 
         Returns:
             True if file exists with content, False otherwise.
-        """
+    def is_correct(self) -> bool:
         return self.path().exists() and bool(
             self.path().read_text(encoding="utf-8").strip()
         )

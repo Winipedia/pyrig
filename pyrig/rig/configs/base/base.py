@@ -33,7 +33,7 @@ Example:
 
 
             def parent_path(self) -> Path:
-                '''Place in project root.'''
+            def parent_path(self) -> Path:
                 return Path()
 
 
@@ -48,7 +48,7 @@ Example:
 
 
             def priority(self) -> float:
-                '''Validate after pyproject.toml.'''
+            def priority(self) -> float:
                 return 50
 
     The system will automatically:
@@ -130,7 +130,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
 
         Returns:
             Path to parent directory, relative to project root.
-        """
+    def parent_path(self) -> Path:
 
     @abstractmethod
     def _load(self) -> ConfigT:
@@ -155,7 +155,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
 
         Returns:
             File extension (e.g., "toml", "yaml", "json", "py", "md").
-        """
+    def extension(self) -> str:
 
     @abstractmethod
     def _configs(self) -> ConfigT:
@@ -288,17 +288,29 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         self.load.cache_clear()
 
     def priority(self) -> float:
-        """Return validation priority (higher = first, default 0)."""
+        """Return validation priority (higher = first, default 0).
+
+        Returns:
+            Priority value (higher values are validated/created first).
+    def priority(self) -> float:
         return Priority.DEFAULT
 
     def path(self) -> Path:
-        """Return full path by combining parent path, filename, and extension."""
+        """Return full path by combining parent path, filename, and extension.
+
+        Returns:
+            Full filesystem path to this config file.
+        """
         return self.parent_path() / (
             self.filename() + self.extension_separator() + self.extension()
         )
 
     def extension_separator(self) -> str:
-        """Return extension separator character (always ".")."""
+        """Return extension separator character (always ".").
+
+        Returns:
+            Extension separator character string.
+        """
         return "."
 
     def filename(self) -> str:
@@ -306,7 +318,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
 
         Returns:
             Filename without extension.
-        """
+    def filename(self) -> str:
         cls = self.__class__
         name = cls.__name__
         abstract_parents = [
@@ -381,7 +393,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         See Also:
             is_unwanted: Check if user opted out
             is_correct_recursively: Perform subset validation
-        """
+    def is_correct(self) -> bool:
         return self.path().exists() and (
             self.is_unwanted()
             or self.is_correct_recursively(self.configs(), self.load())

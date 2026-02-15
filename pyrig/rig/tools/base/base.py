@@ -88,6 +88,9 @@ class Tool(SingletonDependencySubclass):
         Used e.g. for grouping badges in the Readme.md file.
 
         E.g. testing, tool, code-quality etc...
+
+        Returns:
+            Tool group identifier string (e.g., "testing", "code-quality").
         """
 
     @abstractmethod
@@ -98,12 +101,16 @@ class Tool(SingletonDependencySubclass):
         where you are led when clicking on the badge.
 
         Returns:
-            a tuple of two str that are urls.
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """
 
     @classmethod
     def definition_package(cls) -> ModuleType:
-        """Get the package where the tool subclasses are supposed to be defined."""
+        """Get the package where the tool subclasses are supposed to be defined.
+
+        Returns:
+            Module where tool subclasses are defined (pyrig.rig.tools).
+        """
         return tools
 
     @classmethod
@@ -124,7 +131,11 @@ class Tool(SingletonDependencySubclass):
         return subclass().name()
 
     def badge(self) -> str:
-        """Returns the badge string for a markdown file."""
+        """Returns the badge string for a markdown file.
+
+        Returns:
+            Markdown string with linked badge image.
+        """
         badge, page = self.badge_urls()
         return make_linked_badge_markdown(
             badge_url=badge,
@@ -156,7 +167,11 @@ class Tool(SingletonDependencySubclass):
 
     @classmethod
     def grouped_badges(cls) -> dict[str, list[str]]:
-        """Get a dict with all badges of tools grouped by their group."""
+        """Get a dict with all badges of tools grouped by their group.
+
+        Returns:
+            Dictionary mapping group names to lists of badge markdown strings.
+        """
         subclasses = cls.subclasses()
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:

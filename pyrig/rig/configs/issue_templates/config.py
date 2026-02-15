@@ -33,6 +33,9 @@ class ConfigConfigFile(YmlConfigFile):
         return Path(".github/ISSUE_TEMPLATE")
 
     def _configs(self) -> dict[str, Any]:
+
+        Returns:
+            Parent directory path.
         """Return issue template config YAML structure."""
         return {"blank_issues_enabled": False}
 
@@ -41,3 +44,5 @@ class ConfigConfigFile(YmlConfigFile):
         return self.path().exists() and bool(
             self.path().read_text(encoding="utf-8").strip()
         )
+
+    def is_correct(self) -> bool:

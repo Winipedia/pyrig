@@ -39,10 +39,16 @@ class RepoProtectionConfigFile(JsonConfigFile):
         return Path()
 
     def filename(self) -> str:
+
+        Returns:
+            Parent directory path.
         """Get filename with hyphens (branch-protection)."""
         return "branch-protection"
 
     def _configs(self) -> dict[str, Any]:
+
+        Returns:
+            Filename without extension or path.
         """Get GitHub ruleset config.
 
         Returns:

@@ -38,6 +38,9 @@ class MkdocsConfigFile(YmlConfigFile):
         return Path()
 
     def _configs(self) -> dict[str, Any] | list[Any]:
+
+        Returns:
+            Parent directory path.
         """Build the complete mkdocs.yml configuration.
 
         Include Material theme, navigation (Home, API), plugins (search,

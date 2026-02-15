@@ -39,3 +39,5 @@ class SrcInitConfigFile(InitConfigFile):
     def src_module(self) -> ModuleType:
         """Return the `pyrig.src` module."""
         return src
+
+    def src_module(self) -> ModuleType:

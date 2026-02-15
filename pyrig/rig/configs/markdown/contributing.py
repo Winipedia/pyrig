@@ -76,6 +76,9 @@ class ContributingConfigFile(MarkdownConfigFile):
         return "CONTRIBUTING"
 
     def parent_path(self) -> Path:
+    def parent_path(self) -> Path:
+        Returns:
+            Filename without extension or path.
         """Return project root as parent directory."""
         return Path()
 
@@ -84,6 +87,9 @@ class ContributingConfigFile(MarkdownConfigFile):
         return [*CONTRIBUTING_TEMPLATE.splitlines()]
 
     def is_correct(self) -> bool:
+    def is_correct(self) -> bool:
+        Returns:
+            List of file content lines.
         """Check if CONTRIBUTING.md exists and is non-empty.
 
         Returns:

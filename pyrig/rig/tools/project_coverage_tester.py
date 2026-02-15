@@ -46,6 +46,10 @@ class ProjectCoverageTester(Tool):
         return ToolGroup.TESTING
 
     def badge_urls(self) -> tuple[str, str]:
+        
+
+        Returns:
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """Get Codecov coverage badge image URL and dashboard URL."""
         return (
             f"{self.remote_coverage_url()}/branch/{VersionController.I.default_branch()}/graph/badge.svg",

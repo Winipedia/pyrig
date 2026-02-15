@@ -42,6 +42,10 @@ class ProjectTester(Tool):
         return ToolGroup.TESTING
 
     def badge_urls(self) -> tuple[str, str]:
+        
+
+        Returns:
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """Get pytest badge image URL and project page URL."""
         return (
             "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest",

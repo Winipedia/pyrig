@@ -36,5 +36,8 @@ class ToolsInitConfigFile(InitConfigFile):
         return Priority.LOW
 
     def src_module(self) -> ModuleType:
+    def src_module(self) -> ModuleType:
+        Returns:
+            Priority value for config file creation order.
         """Return the `pyrig.rig.tools` module."""
         return tools

@@ -55,6 +55,17 @@ def requests_get_text_cached(
 
     Returns only the response text to avoid caching the full Response object.
     Calls raise_for_status() before returning.
+
+    Args:
+        *args: Positional arguments passed to requests.get.
+        timeout: Connection and read timeout tuple (connect, read) in seconds.
+        **kwargs: Additional keyword arguments passed to requests.get.
+
+    Returns:
+        Response body text content.
+
+    Raises:
+        requests.HTTPError: If the response status code indicates an error.
     """
     response = requests.get(*args, timeout=timeout, **kwargs)
     response.raise_for_status()
@@ -114,6 +125,14 @@ def return_resource_file_content_on_exceptions_or_in_dep(
     content = path.read_text(encoding="utf-8")
 
     def decorator(func: Callable[P, str]) -> Callable[P, str]:
+        """Decorate a function to use resource content as fallback.
+
+        Args:
+            func: Function to decorate that returns a string.
+
+        Returns:
+            Decorated function that uses resource content on errors or when not in pyrig.
+        """
         tenacity_decorator = retry(
             retry=retry_if_exception_type(exception_types=exceptions),
             stop=stop_after_attempt(
@@ -129,6 +148,11 @@ def return_resource_file_content_on_exceptions_or_in_dep(
 
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
+            """Wrapper that returns resource content or calls decorated function.
+
+            Returns:
+                Resource content if not in pyrig, otherwise result from decorated function.
+            """
             if not src_package_is_pyrig():
                 # If not in pyrig, return resource content without calling the function
                 return content

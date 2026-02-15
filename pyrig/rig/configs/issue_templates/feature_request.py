@@ -33,6 +33,9 @@ class FeatureRequestConfigFile(YmlConfigFile):
         return Path(".github/ISSUE_TEMPLATE")
 
     def _configs(self) -> dict[str, Any]:
+
+        Returns:
+            Parent directory path.
         """Return feature request template YAML structure."""
         return {
             "name": "Feature Request",
@@ -84,3 +87,5 @@ class FeatureRequestConfigFile(YmlConfigFile):
         return self.path().exists() and bool(
             self.path().read_text(encoding="utf-8").strip()
         )
+
+    def is_correct(self) -> bool:

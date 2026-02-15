@@ -132,7 +132,7 @@ class WorkflowConfigFile(YmlConfigFile):
 
         Returns:
             Path to .github/workflows directory.
-        """
+    def parent_path(self) -> Path:
         return Path(".github/workflows")
 
     def is_correct(self) -> bool:
@@ -145,7 +145,7 @@ class WorkflowConfigFile(YmlConfigFile):
 
         Returns:
             True if configuration matches expected state.
-        """
+    def is_correct(self) -> bool:
         correct = super().is_correct()
 
         if self.path().read_text(encoding="utf-8") == "":

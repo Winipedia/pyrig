@@ -39,6 +39,9 @@ class LicenseConfigFile(StringConfigFile):
         """Return `Priority.HIGH`.
 
         Is created early for pyproject.toml license detection.
+
+        Returns:
+            Priority value for config file creation order.
         """
         return Priority.HIGH
 
@@ -47,6 +50,9 @@ class LicenseConfigFile(StringConfigFile):
         return "LICENSE"
 
     def path(self) -> Path:
+
+        Returns:
+            Filename without extension or path.
         """Return path to LICENSE in project root."""
         return Path(self.filename())
 
@@ -55,10 +61,16 @@ class LicenseConfigFile(StringConfigFile):
         return Path()
 
     def extension(self) -> str:
+
+        Returns:
+            Parent directory path.
         """Return empty string (no extension)."""
         return ""
 
     def lines(self) -> list[str]:
+    def lines(self) -> list[str]:
+        Returns:
+            File extension without separator.
         """Get MIT license with year and owner."""
         return self.mit_license_with_year_and_owner().splitlines()
 
@@ -73,14 +85,22 @@ class LicenseConfigFile(StringConfigFile):
 
     @return_resource_content_on_fetch_error(resource_name="MIT_LICENSE_TEMPLATE")
     def mit_license(self) -> str:
-        """Fetch MIT license from GitHub SPDX API (with fallback)."""
+        """Fetch MIT license from GitHub SPDX API (with fallback).
+
+        Returns:
+            MIT license text template with placeholders.
+        """
         url = "https://api.github.com/licenses/mit"
         data = json.loads(requests_get_text_cached(url))
         mit_license: str = data["body"]
         return mit_license
 
     def mit_license_with_year_and_owner(self) -> str:
-        """Get MIT license with year and owner from git."""
+        """Get MIT license with year and owner from git.
+
+        Returns:
+            MIT license text with current year and repository owner filled in.
+        """
         mit_license = self.mit_license()
         year = datetime.now(tz=UTC).year
         owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
@@ -88,7 +108,11 @@ class LicenseConfigFile(StringConfigFile):
         return mit_license.replace("[fullname]", owner)
 
     def license_badge_url(self) -> str:
-        """Construct a shields.io badge URL for the repository license."""
+        """Construct a shields.io badge URL for the repository license.
+
+        Returns:
+            Shield.io badge URL string for the LICENSE file.
+        """
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False,
             url_encode=True,
@@ -96,7 +120,11 @@ class LicenseConfigFile(StringConfigFile):
         return f"https://img.shields.io/github/license/{owner}/{repo}"
 
     def license_badge(self) -> str:
-        """Construct a shields.io license badge as a Markdown image link."""
+        """Construct a shields.io license badge as a Markdown image link.
+
+        Returns:
+            Markdown badge string with license badge image and repository link.
+        """
         badge_url = self.license_badge_url()
         repo_url = RemoteVersionController.I.repo_url()
         return make_linked_badge_markdown(

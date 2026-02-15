@@ -37,6 +37,9 @@ class ContainerfileConfigFile(StringConfigFile):
         return "Containerfile"
 
     def parent_path(self) -> Path:
+    def parent_path(self) -> Path:
+        Returns:
+            Filename without extension or path.
         """Return project root."""
         return Path()
 
@@ -45,6 +48,9 @@ class ContainerfileConfigFile(StringConfigFile):
         return ""
 
     def extension_separator(self) -> str:
+
+        Returns:
+            File extension without separator.
         """Return empty string (no separator)."""
         return ""
 
@@ -53,6 +59,9 @@ class ContainerfileConfigFile(StringConfigFile):
         return self.layers()
 
     def layers(self) -> list[str]:
+
+        Returns:
+            List of file content lines.
         """Generate Containerfile build instructions.
 
         Builds optimized layer sequence: base image, workdir, uv install,

@@ -11,7 +11,7 @@ Example:
     >>> class PackageJsonFile(JsonConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path()
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def _configs(self) -> dict[str, Any]:
@@ -40,7 +40,7 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         >>> class MyConfigFile(JsonConfigFile):
         ...
         ...     def parent_path(self) -> Path:
-        ...         return Path()
+        ...     def parent_path(self) -> Path:
         ...
         ...
         ...     def _configs(self) -> dict[str, Any]:
@@ -51,7 +51,7 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         >>> class MyListConfigFile(JsonConfigFile):
         ...
         ...     def parent_path(self) -> Path:
-        ...         return Path()
+        ...     def parent_path(self) -> Path:
         ...
         ...
         ...     def _configs(self) -> list[Any]:
@@ -80,3 +80,5 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
     def extension(self) -> str:
         """Return "json"."""
         return "json"
+
+    def extension(self) -> str:

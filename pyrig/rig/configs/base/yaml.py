@@ -11,7 +11,7 @@ Example:
     >>> class MyWorkflowConfigFile(YamlConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path(".github/workflows")
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def _configs(self) -> dict[str, Any]:
@@ -39,7 +39,7 @@ class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         >>> class MyConfigFile(YamlConfigFile):
         ...
         ...     def parent_path(self) -> Path:
-        ...         return Path()
+        ...     def parent_path(self) -> Path:
         ...
         ...
         ...     def _configs(self) -> dict[str, Any]:
@@ -66,3 +66,5 @@ class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
     def extension(self) -> str:
         """Return "yaml"."""
         return "yaml"
+
+    def extension(self) -> str:

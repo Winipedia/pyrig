@@ -28,10 +28,16 @@ class DotPythonVersionConfigFile(StringConfigFile):
         return ""
 
     def extension(self) -> str:
+
+        Returns:
+            Filename without extension or path.
         """Return 'python-version' extension."""
         return "python-version"
 
     def parent_path(self) -> Path:
+    def parent_path(self) -> Path:
+        Returns:
+            File extension without separator.
         """Return project root."""
         return Path()
 
@@ -40,5 +46,8 @@ class DotPythonVersionConfigFile(StringConfigFile):
         return [str(PyprojectConfigFile.I.first_supported_python_version())]
 
     def should_override_content(self) -> bool:
+
+        Returns:
+            List of file content lines.
         """Override content; only one .python-version is needed."""
         return True

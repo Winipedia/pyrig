@@ -51,7 +51,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
 
         Note:
             Converts pyrig.main test path to project-specific test path.
-        """
+    def parent_path(self) -> Path:
         test_obj_importpath = MirrorTestConfigFile.I.test_obj_importpath_from_obj(main)
         # this is now tests.test_pyrig.test_main
         test_module_prefix = MirrorTestConfigFile.I.test_module_prefix()
@@ -72,7 +72,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
 
         Returns:
             str: "test_main" (extension .py added by parent class).
-        """
+    def filename(self) -> str:
         return "test_main"
 
     def lines(self) -> list[str]:
@@ -80,7 +80,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
 
         Returns:
             List of lines with test_main() function.
-        """
+    def lines(self) -> list[str]:
         return [
             '"""test module."""',
             "",
@@ -99,5 +99,5 @@ class MainTestConfigFile(PythonPackageConfigFile):
 
         Note:
             Reads file from disk to check content.
-        """
+    def is_correct(self) -> bool:
         return super().is_correct() or "def test_main" in self.file_content()

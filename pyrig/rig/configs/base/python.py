@@ -9,11 +9,11 @@ Example:
     >>> class MyPythonFile(PythonConfigFile):
     ...
     ...     def parent_path(self) -> Path:
-    ...         return Path("src")
+    ...     def parent_path(self) -> Path:
     ...
     ...
     ...     def lines(self) -> list[str]:
-    ...         return ["from typing import Any", "import sys"]
+    ...     def lines(self) -> list[str]:
 """
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -36,3 +36,5 @@ class PythonConfigFile(StringConfigFile):
     def extension(self) -> str:
         """Return "py"."""
         return "py"
+
+    def extension(self) -> str:

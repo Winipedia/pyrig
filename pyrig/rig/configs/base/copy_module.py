@@ -11,7 +11,7 @@ Example:
     >>> class StringModuleCopy(CopyModuleConfigFile):
     ...
     ...     def src_module(self) -> ModuleType:
-    ...         return pyrig.src.string_
+    ...     def src_module(self) -> ModuleType:
     >>>
     >>> StringModuleCopy()  # Copies pyrig/src/string_.py -> <project>/src/string_.py
 """
@@ -51,7 +51,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
 
         Returns:
             Module whose content will be copied.
-        """
+    def src_module(self) -> ModuleType:
 
     def parent_path(self) -> Path:
         """Get target directory by transforming source module path.
@@ -60,7 +60,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
 
         Returns:
             Target directory path for copied module.
-        """
+    def parent_path(self) -> Path:
         src_module = self.src_module()
         new_module_name = module_name_replacing_start_module(
             src_module, PyprojectConfigFile.I.package_name()
@@ -73,7 +73,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
 
         Returns:
             Full source code of the module as list of lines.
-        """
+    def lines(self) -> list[str]:
         src_module = self.src_module()
         return [*module_content_as_str(src_module).splitlines()]
 
@@ -82,6 +82,6 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
 
         Returns:
             Last component of the module's dotted name.
-        """
+    def filename(self) -> str:
         src_module = self.src_module()
         return isolated_obj_name(src_module)

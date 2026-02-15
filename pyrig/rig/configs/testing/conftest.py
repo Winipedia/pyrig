@@ -43,7 +43,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
 
         Returns:
             List of lines with docstring and pytest_plugins list.
-        """
+    def lines(self) -> list[str]:
         return [
             '"""Pytest configuration for tests.',
             "",
@@ -63,7 +63,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
 
         Note:
             Reads file from disk to check content.
-        """
+    def is_correct(self) -> bool:
         return super().is_correct() or (
             f'pytest_plugins = ["{make_obj_importpath(conftest)}"]'
             in self.file_content()

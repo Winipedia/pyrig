@@ -35,6 +35,9 @@ class BugReportConfigFile(YmlConfigFile):
         return Path(".github/ISSUE_TEMPLATE")
 
     def _configs(self) -> dict[str, Any]:
+
+        Returns:
+            Parent directory path.
         """Return bug report template YAML structure."""
         return {
             "name": "Bug Report",
@@ -103,3 +106,5 @@ class BugReportConfigFile(YmlConfigFile):
         return self.path().exists() and bool(
             self.path().read_text(encoding="utf-8").strip()
         )
+
+    def is_correct(self) -> bool:

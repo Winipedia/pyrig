@@ -13,7 +13,7 @@ Example:
     >>> class StringDocstringCopy(CopyModuleOnlyDocstringConfigFile):
     ...
     ...     def src_module(self) -> ModuleType:
-    ...         return pyrig.src.string_
+    ...     def src_module(self) -> ModuleType:
     >>>
     >>> StringDocstringCopy()  # Creates file with only docstring
 """
@@ -43,7 +43,7 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
 
         Raises:
             ValueError: If source module has no docstring.
-        """
+    def lines(self) -> list[str]:
         docstring = self.src_module().__doc__
         if docstring is None:
             msg = f"Source module {self.src_module()} has no docstring"
@@ -55,5 +55,5 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
 
         Returns:
             True if the source module has a docstring.
-        """
+    def is_correct(self) -> bool:
         return module_has_docstring(self.src_module())

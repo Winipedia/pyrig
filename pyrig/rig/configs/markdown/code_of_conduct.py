@@ -46,6 +46,9 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return "CODE_OF_CONDUCT"
 
     def parent_path(self) -> Path:
+    def parent_path(self) -> Path:
+        Returns:
+            Filename without extension or path.
         """Return project root as parent directory."""
         return Path()
 
@@ -54,6 +57,9 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return [*self.contributor_covenant_with_contact_method().splitlines()]
 
     def is_correct(self) -> bool:
+    def is_correct(self) -> bool:
+        Returns:
+            List of file content lines.
         """Check if CODE_OF_CONDUCT.md exists and is non-empty.
 
         Note:

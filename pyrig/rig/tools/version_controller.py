@@ -57,6 +57,10 @@ class VersionController(Tool):
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
+        
+
+        Returns:
+            Tuple of two strings: (badge_image_url, badge_link_url).
         """Return the badge and linked page URLs."""
         return (
             "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white",
