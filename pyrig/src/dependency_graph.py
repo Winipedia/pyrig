@@ -32,7 +32,7 @@ class DependencyGraph(DiGraph, Singleton):
         """Build the graph from installed Python distributions."""
         logger.debug("Building dependency graph from installed distributions")
         for dist in importlib.metadata.distributions():
-            name, deps = self.parse_name_and_deps_from_raw_metadata(dist)
+            name, deps = self.parse_name_and_deps(dist)
             if name:
                 self.add_node(name)
                 for dep in deps:
@@ -40,23 +40,13 @@ class DependencyGraph(DiGraph, Singleton):
         logger.debug("Dependency graph built with %d packages", len(self.nodes()))
 
     @staticmethod
-    def parse_name_and_deps_from_raw_metadata(
+    def parse_name_and_deps(
         dist: importlib.metadata.Distribution,
     ) -> tuple[str, list[str]]:
-        """Extract package name and dependencies from raw distribution metadata.
+        """Extract package name and dependencies from a distribution.
 
-        Parses the ``METADATA`` file directly as plain text instead of using
-        ``dist.metadata`` or ``dist.requires``, which internally delegate to
-        Python's ``email.message_from_string()``. The ``email.parser`` module
-        implements full RFC 2822 header parsing — designed for email messages —
-        and is significantly slower than the simple line-based extraction needed
-        here, where we only care about ``Name:`` and ``Requires-Dist:`` headers.
-
-        The ``METADATA`` file follows the
-        `Core Metadata specification <https://packaging.python.org/en/latest/specifications/core-metadata/>`_
-        with a simple ``Key: Value`` format (one header per line). ``Name``
-        always appears exactly once. ``Requires-Dist`` appears zero or more
-        times, each listing one dependency requirement string.
+        Uses the public ``importlib.metadata`` API (``dist.metadata`` and
+        ``dist.requires``) to read the package name and dependency list.
 
         Args:
             dist: Distribution object to extract metadata from.
@@ -65,17 +55,33 @@ class DependencyGraph(DiGraph, Singleton):
             Tuple of (normalized_name, list_of_normalized_dependency_names).
             Name is empty string if not found. Dependencies list may be empty.
         """
-        text = dist.read_text("METADATA") or ""
-        name = ""
-        deps: list[str] = []
-        for line in text.splitlines():
-            if line.startswith("Name: "):
-                name = DependencyGraph.normalize_package_name(line[6:])
-            elif line.startswith("Requires-Dist: "):
-                dep = DependencyGraph.parse_package_name_from_req(line[15:])
-                if dep:
-                    deps.append(dep)
+        raw_name = dist.name
+        name = DependencyGraph.normalize_package_name(raw_name) if raw_name else ""
+
+        deps = [
+            DependencyGraph.parse_package_name_from_req(req)
+            for req in (dist.requires or [])
+        ]
+
         return name, deps
+
+    @staticmethod
+    def parse_package_name_from_req(req: str) -> str:
+        """Extract package name from a requirement string.
+
+        Uses ``pyrig.src.string_.package_req_name_split_pattern`` to split the
+        requirement string at the first non-name character.
+
+        Args:
+            req: Requirement string (e.g., "requests>=2.0,<3.0").
+
+        Returns:
+            Normalized package name
+        """
+        # Split on the first non-alphanumeric character (except -, _, and .)
+        # Uses module-level compiled pattern for performance
+        dep = package_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
+        return DependencyGraph.normalize_package_name(dep)
 
     @staticmethod
     def normalize_package_name(name: str) -> str:
@@ -88,24 +94,6 @@ class DependencyGraph(DiGraph, Singleton):
             Normalized package name.
         """
         return name.lower().replace("-", "_").strip()
-
-    @staticmethod
-    def parse_package_name_from_req(req: str) -> str | None:
-        """Extract package name from a requirement string.
-
-        Uses ``pyrig.src.string_.package_req_name_split_pattern`` to split the
-        requirement string at the first non-name character.
-
-        Args:
-            req: Requirement string (e.g., "requests>=2.0,<3.0").
-
-        Returns:
-            Normalized package name, or None if parsing fails.
-        """
-        # Split on the first non-alphanumeric character (except -, _, and .)
-        # Uses module-level compiled pattern for performance
-        dep = package_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
-        return DependencyGraph.normalize_package_name(dep) if dep else None
 
     def all_depending_on(
         self, package: ModuleType | str, *, include_self: bool = False
