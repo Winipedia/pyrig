@@ -98,8 +98,8 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 class ApiConfigFile(BaseApiCF):
     """Custom API reference for public API only."""
 
-    @classmethod
-    def lines(cls) -> list[str]:
+
+    def lines(self) -> list[str]:
         """Document only the public API from src/."""
         project_name = PyprojectConfigFile.I.project_name()
         return [

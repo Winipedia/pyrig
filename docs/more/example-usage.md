@@ -66,13 +66,13 @@ from pyrig.rig.configs.base.yaml import YamlConfigFile
 class LoggingConfigFile(YamlConfigFile):
     """Logging configuration for all microservices."""
 
-    @classmethod
-    def parent_path(cls) -> Path:
+
+    def parent_path(self) -> Path:
         """Place in config/ directory."""
         return Path("config")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+
+    def _configs(self) -> dict[str, Any]:
         """Required logging configuration."""
         return {
             "logging": {
@@ -122,8 +122,8 @@ from pyrig.rig.configs.docs.mkdocs import MkdocsConfigFile as BaseMkdocsCF
 class MkdocsConfigFile(BaseMkdocsCF):
     """Custom-branded documentation theme."""
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+
+    def _configs(self) -> dict[str, Any]:
         """Override theme with custom colors."""
         config = super()._configs()
 
@@ -180,8 +180,8 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyprojectCF
 class PyprojectConfigFile(BasePyprojectCF):
     """Base pyproject with monitoring and logging."""
 
-    @classmethod
-    def dependencies(cls) -> list[str]:
+
+    def dependencies(self) -> list[str]:
         """Add shared runtime dependencies."""
         deps = super().dependencies()
         return [
@@ -191,8 +191,8 @@ class PyprojectConfigFile(BasePyprojectCF):
             "sentry-sdk>=1.40.0",          # Error tracking
         ]
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+
+    def _configs(self) -> dict[str, Any]:
         """Add shared tool configs."""
         config = super()._configs()
 
@@ -270,8 +270,8 @@ In `service-base`, add a security requirement:
 **Update**: `service_base/rig/configs/pyproject.py`
 
 ```python
-@classmethod
-def dependencies(cls) -> list[str]:
+
+def dependencies(self) -> list[str]:
     """Add shared runtime dependencies."""
     deps = super().dependencies()
     return [
@@ -352,12 +352,12 @@ from pyrig.rig.configs.base.yaml import YamlConfigFile
 class AuthConfigFile(YamlConfigFile):
     """JWT and OAuth configuration."""
 
-    @classmethod
-    def parent_path(cls) -> Path:
+
+    def parent_path(self) -> Path:
         return Path("config")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+
+    def _configs(self) -> dict[str, Any]:
         return {
             "auth": {
                 "jwt_algorithm": "RS256",

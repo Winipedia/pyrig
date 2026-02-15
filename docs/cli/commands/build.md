@@ -48,8 +48,8 @@ from pyrig.rig.builders.base.base import BuilderConfigFile
 class MyBuilder(BuilderConfigFile):
     """Custom artifact builder."""
 
-    @classmethod
-    def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
+
+    def create_artifacts(self, temp_artifacts_dir: Path) -> None:
         """Create custom artifacts."""
         # Your build logic here
         output_file = temp_artifacts_dir / "my-artifact"
