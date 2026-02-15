@@ -36,6 +36,7 @@ from typing import Any
 
 from pyrig.rig.builders.base.base import BuilderConfigFile
 from pyrig.rig.cli.subcommands import build, protect_repo
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.container_engine import (
@@ -85,7 +86,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         >>>
         >>> class MyWorkflowConfigFile(WorkflowConfigFile):
         ...
-        ...     def jobs(self) -> dict[str, Any]:
+        ...     def jobs(self) -> ConfigDict:
         ...         return self.job(
         ...             job_func=self.jobs,
         ...             steps=[
@@ -95,7 +96,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         ...         )
         ...
         ...
-        ...     def workflow_triggers(self) -> dict[str, Any]:
+        ...     def workflow_triggers(self) -> ConfigDict:
         ...         triggers = super().workflow_triggers()
         ...         triggers.update(self.on_push())
         ...         return triggers
@@ -111,7 +112,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
     WINDOWS_LATEST = "windows-latest"
     MACOS_LATEST = "macos-latest"
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Build the complete workflow configuration.
 
         Returns:
@@ -167,7 +168,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
     # ----------------------------------------------------------------------------
 
     @abstractmethod
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> ConfigDict:
         """Get the workflow jobs.
 
         Subclasses must implement this to define their jobs.
@@ -176,7 +177,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             Dict mapping job IDs to job configurations.
         """
 
-    def workflow_triggers(self) -> dict[str, Any]:
+    def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 
         Override to customize when the workflow runs.
@@ -187,7 +188,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.on_workflow_dispatch()
 
-    def permissions(self) -> dict[str, Any]:
+    def permissions(self) -> ConfigDict:
         """Get the workflow permissions.
 
         Override to request additional permissions.
@@ -198,7 +199,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return {}
 
-    def defaults(self) -> dict[str, Any]:
+    def defaults(self) -> ConfigDict:
         """Get the workflow defaults.
 
         Override to customize default settings.
@@ -209,7 +210,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return {"run": {"shell": "bash"}}
 
-    def global_env(self) -> dict[str, Any]:
+    def global_env(self) -> ConfigDict:
         """Get the global environment variables.
 
         Override to add environment variables.

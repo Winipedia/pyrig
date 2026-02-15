@@ -34,6 +34,7 @@ from importlib import import_module
 from typing import Any
 
 import pyrig
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.src.dependency_graph import DependencyGraph
@@ -79,7 +80,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
 
     BASE_CRON_HOUR = 0
 
-    def workflow_triggers(self) -> dict[str, Any]:
+    def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 
         Returns:
@@ -117,19 +118,19 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         src_package = import_module(PyprojectConfigFile.I.package_name())
         return graph.shortest_path_length(src_package.__name__, pyrig.__name__)
 
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> ConfigDict:
         """Get the workflow jobs.
 
         Returns:
             Dict with health check, matrix health check, and aggregation jobs.
         """
-        jobs: dict[str, Any] = {}
+        jobs: ConfigDict = {}
         jobs.update(self.job_health_checks())
         jobs.update(self.job_matrix_health_checks())
         jobs.update(self.job_health_check())
         return jobs
 
-    def job_health_check(self) -> dict[str, Any]:
+    def job_health_check(self) -> ConfigDict:
         """Get the aggregation job that depends on matrix completion.
 
         Returns:
@@ -145,7 +146,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_aggregate_jobs(),
         )
 
-    def job_matrix_health_checks(self) -> dict[str, Any]:
+    def job_matrix_health_checks(self) -> ConfigDict:
         """Get the matrix job that runs across OS and Python versions.
 
         Returns:
@@ -158,7 +159,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_matrix_health_checks(),
         )
 
-    def job_health_checks(self) -> dict[str, Any]:
+    def job_health_checks(self) -> ConfigDict:
         """Get the job that runs health checks.
 
         This is for non-matrix checks.

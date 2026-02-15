@@ -14,7 +14,7 @@ Example:
     ...         return Path()
     ...
     ...
-    ...     def _configs(self) -> dict[str, Any]:
+    ...     def _configs(self) -> ConfigDict:
     ...         return {"tool": {"myapp": {"dependencies": ["dep1", "dep2"]}}}
 """
 
@@ -23,6 +23,7 @@ from typing import Any
 import tomlkit
 from tomlkit.items import Table
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.dict_cf import DictConfigFile
 
 
@@ -43,11 +44,11 @@ class TomlConfigFile(DictConfigFile):
         ...         return Path()
         ...
         ...
-        ...     def _configs(self) -> dict[str, Any]:
+        ...     def _configs(self) -> ConfigDict:
         ...         return {"tool": {"myapp": {"version": "1.0.0"}}}
     """
 
-    def _load(self) -> dict[str, Any]:
+    def _load(self) -> ConfigDict:
         """Load and parse TOML file using tomlkit.parse.
 
         Returns:
@@ -55,7 +56,7 @@ class TomlConfigFile(DictConfigFile):
         """
         return tomlkit.parse(self.path().read_text(encoding="utf-8"))
 
-    def _dump(self, config: dict[str, Any]) -> None:
+    def _dump(self, config: ConfigDict) -> None:
         """Validate and write configuration to TOML file.
 
         Args:
@@ -96,7 +97,7 @@ class TomlConfigFile(DictConfigFile):
             return self.prettify_dict(value)
         return value
 
-    def prettify_dict(self, config: dict[str, Any]) -> Table:
+    def prettify_dict(self, config: ConfigDict) -> Table:
         """Convert dict to tomlkit table with multiline arrays.
 
         Recursively processes config: lists of dicts become arrays of tables
@@ -114,7 +115,7 @@ class TomlConfigFile(DictConfigFile):
             t.add(k, self.prettify_value(v))
         return t
 
-    def pretty_dump(self, config: dict[str, Any]) -> None:
+    def pretty_dump(self, config: ConfigDict) -> None:
         """Write configuration to TOML with pretty formatting.
 
         Convert config to prettified tomlkit table via `prettify_dict()`, then write

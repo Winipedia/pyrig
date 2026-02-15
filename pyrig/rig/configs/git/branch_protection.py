@@ -10,8 +10,8 @@ See Also:
 
 import logging
 from pathlib import Path
-from typing import Any
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.json import DictJsonConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
@@ -42,7 +42,7 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
         """Get filename with hyphens (branch-protection)."""
         return "branch-protection"
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Get GitHub ruleset config.
 
         Returns:

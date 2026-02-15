@@ -10,10 +10,10 @@ See Also:
 """
 
 from pathlib import Path
-from typing import Any
 
 from dotenv import dotenv_values
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.dict_cf import DictConfigFile
 
 
@@ -31,7 +31,7 @@ class DotEnvConfigFile(DictConfigFile):
         """Load environment variables from .env file."""
         return dotenv_values(self.path())
 
-    def _dump(self, config: dict[str, Any]) -> None:
+    def _dump(self, config: ConfigDict) -> None:
         """Prevent writing to .env (raises ValueError if config is non-empty)."""
         if config:
             msg = f"""
@@ -53,7 +53,7 @@ We highly discourage managing this ConfigFile via subclassing.
         """Return project root."""
         return Path()
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Return empty dict (pyrig doesn't manage .env content)."""
         return {}
 

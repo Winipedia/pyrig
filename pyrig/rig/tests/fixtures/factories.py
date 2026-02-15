@@ -12,15 +12,14 @@ Fixtures:
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-from typing import Any
 
 import pytest
 
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.base import ConfigData, ConfigFile
 
 
 @pytest.fixture
-def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
+def config_file_factory[T: ConfigFile[ConfigData]](
     tmp_path: Path,
 ) -> Callable[[type[T]], type[T]]:
     """Provide a factory for creating test-safe ConfigFile subclasses.
@@ -64,12 +63,12 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
                     path = tmp_path / path
                 return path
 
-            def _dump(self, config: dict[str, Any] | list[Any]) -> None:
+            def _dump(self, config: ConfigData) -> None:
                 """Write config to tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
                     super()._dump(config)
 
-            def _load(self) -> dict[str, Any] | list[Any]:
+            def _load(self) -> ConfigData:
                 """Load config from tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
                     return super()._load()

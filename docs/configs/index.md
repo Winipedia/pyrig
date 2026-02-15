@@ -181,7 +181,7 @@ dependencies (LICENSE, pyproject.toml, `__init__.py` files).
 
 ```python
 from pathlib import Path
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
@@ -189,7 +189,7 @@ class MyConfigFile(YamlConfigFile):
         """Directory containing the config file."""
         return Path("config")
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Expected configuration structure."""
         return {
             "app": {

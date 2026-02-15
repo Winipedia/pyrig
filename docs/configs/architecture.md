@@ -79,11 +79,14 @@ Every ConfigFile subclass must implement:
 | `_load(self)`              | Parse file content (internal)              | `ConfigT`          |
 | `_dump(self, config)`        | Write configuration to file (internal)     | `None`             |
 
-**Note**: `ConfigT` is the type parameter - `dict[str, Any]` for
-`DictConfigFile`, `list[Any]` for `ListConfigFile`, or
-`dict[str, Any] | list[Any]` for base classes like `YamlConfigFile` and
-`JsonConfigFile`. Format-specific subclasses provide implementations for
-`_load()`, `_dump()`, and `extension()`.
+**Note**: `ConfigT` is the type parameter - `ConfigDict` for `DictConfigFile`,
+`ConfigList` for `ListConfigFile`, or `ConfigData` for base classes like
+`YamlConfigFile` and `JsonConfigFile`. Format-specific subclasses provide
+implementations for `_load()`, `_dump()`, and `extension()`. `ConfigDict` and
+`ConfigList` are type aliases for nested dicts and lists with string keys (just
+`dict[str, Any]` and `list[Any]`), so you can simply use dicts and lists to
+define your configuration structure in `_configs()` or when overriding other
+methods.
 
 Subclasses implement `_load()` and `_dump()` (internal methods). Users call
 `load()` and `dump()` (public API with caching).
@@ -327,7 +330,7 @@ use this as their base (directly or indirectly via format-specific subclasses).
 
 ```python
 from pathlib import Path
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.dict_cf import DictConfigFile
 
 class MyConfigFile(DictConfigFile):
@@ -337,19 +340,19 @@ class MyConfigFile(DictConfigFile):
     def extension(self) -> str:
         return "conf"
 
-    def _load(self) -> dict[str, Any]:
+    def _load(self) -> ConfigDict:
         # Custom loading logic
         return {}
 
-    def _dump(self, config: dict[str, Any]) -> None:
+    def _dump(self, config: ConfigDict) -> None:
         # Custom dumping logic
         pass
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         return {"key": "value"}
 ```
 
-**Inherits from**: `ConfigFile[dict[str, Any]]`
+**Inherits from**: `ConfigFile[ConfigDict]`
 
 **Use when**: Creating custom dict-based formats not covered by existing
 subclasses like `TomlConfigFile`, `JsonConfigFile`, etc.
@@ -360,7 +363,7 @@ Intermediate base class for list-based configuration files (e.g., `.gitignore`).
 
 ```python
 from pathlib import Path
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigList
 from pyrig.rig.configs.base.list_cf import ListConfigFile
 
 class MyListConfigFile(ListConfigFile):
@@ -370,19 +373,19 @@ class MyListConfigFile(ListConfigFile):
     def extension(self) -> str:
         return "list"
 
-    def _load(self) -> list[Any]:
+    def _load(self) -> ConfigList:
         # Custom loading logic
         return []
 
-    def _dump(self, config: list[Any]) -> None:
+    def _dump(self, config: ConfigList) -> None:
         # Custom dumping logic
         pass
 
-    def _configs(self) -> list[Any]:
+    def _configs(self) -> ConfigList:
         return ["item1", "item2"]
 ```
 
-**Inherits from**: `ConfigFile[list[Any]]`
+**Inherits from**: `ConfigFile[ConfigList]`
 
 **Use when**: Creating config files where the top-level structure is a list
 rather than a dict (e.g., ignore files, line-based configs).
@@ -393,14 +396,14 @@ For JSON configuration files using Python's json module:
 
 ```python
 from pathlib import Path
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.json import JsonConfigFile
 
 class MyConfigFile(JsonConfigFile):
     def parent_path(self) -> Path:
         return Path("config")
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         return {"key": "value"}
 ```
 
@@ -412,14 +415,14 @@ For YAML configuration files using PyYAML:
 
 ```python
 from pathlib import Path
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
     def parent_path(self) -> Path:
         return Path("config")
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         return {"key": "value"}
 ```
 
@@ -431,14 +434,14 @@ For TOML files using tomlkit (preserves formatting):
 
 ```python
 from pathlib import Path
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.toml import TomlConfigFile
 
 class MyConfigFile(TomlConfigFile):
     def parent_path(self) -> Path:
         return Path(".")
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         return {"tool": {"myapp": {"setting": "value"}}}
 ```
 
@@ -495,17 +498,17 @@ Creates `myapp/src/my_config.py`.
 For GitHub Actions workflow files in `.github/workflows/`:
 
 ```python
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 
 class MyWorkflowConfigFile(WorkflowConfigFile):
-    def workflow_triggers(self) -> dict[str, Any]:
+    def workflow_triggers(self) -> ConfigDict:
         """Define when the workflow runs."""
         triggers = super().workflow_triggers()
         triggers.update(self.on_push())  # Trigger on push
         return triggers
 
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> ConfigDict:
         """Define the workflow jobs."""
         return {
             "my-job": {
@@ -677,7 +680,7 @@ def is_correct(self) -> bool:
 
 ```python
 from pathlib import Path
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class DatabaseConfigFile(YamlConfigFile):
@@ -687,7 +690,7 @@ class DatabaseConfigFile(YamlConfigFile):
         """Place in config/ directory."""
         return Path("config")
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Required database configuration."""
         return {
             "database": {

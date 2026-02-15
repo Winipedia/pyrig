@@ -14,7 +14,7 @@ Example:
     ...         return Path(".github/workflows")
     ...
     ...
-    ...     def _configs(self) -> dict[str, Any]:
+    ...     def _configs(self) -> ConfigDict:
     ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
 """
 
@@ -40,7 +40,7 @@ class YamlConfigFile(ConfigFile[ConfigT]):
         ...         return Path()
         ...
         ...
-        ...     def _configs(self) -> dict[str, Any]:
+        ...     def _configs(self) -> ConfigDict:
         ...         return {"setting": "value"}
     """
 

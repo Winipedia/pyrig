@@ -18,8 +18,7 @@ See Also:
     PEP 561: https://peps.python.org/pep-0561/
 """
 
-from typing import Any
-
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.dict_cf import DictConfigFile
 
 
@@ -41,11 +40,11 @@ class TypedConfigFile(DictConfigFile):
         """Return "typed"."""
         return "typed"
 
-    def _load(self) -> dict[str, Any]:
+    def _load(self) -> ConfigDict:
         """Load py.typed content as empty dict."""
         return {}
 
-    def _dump(self, config: dict[str, Any]) -> None:
+    def _dump(self, config: ConfigDict) -> None:
         """Reject non-empty config; py.typed marker files have no writable content.
 
         Args:
@@ -58,6 +57,6 @@ class TypedConfigFile(DictConfigFile):
             msg = "Cannot dump to py.typed file."
             raise ValueError(msg)
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Return expected configuration as empty dict."""
         return {}

@@ -21,6 +21,7 @@ See Also:
 
 from typing import Any
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.workflows.build import BuildWorkflowConfigFile
 
@@ -64,7 +65,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             Provides version information for tagging
     """
 
-    def workflow_triggers(self) -> dict[str, Any]:
+    def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 
         Returns:
@@ -78,7 +79,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
         return triggers
 
-    def permissions(self) -> dict[str, Any]:
+    def permissions(self) -> ConfigDict:
         """Get the workflow permissions.
 
         Returns:
@@ -89,17 +90,17 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         permissions["actions"] = "read"
         return permissions
 
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> ConfigDict:
         """Get the workflow jobs.
 
         Returns:
             Dict with release job.
         """
-        jobs: dict[str, Any] = {}
+        jobs: ConfigDict = {}
         jobs.update(self.job_release())
         return jobs
 
-    def job_release(self) -> dict[str, Any]:
+    def job_release(self) -> ConfigDict:
         """Get the release job that creates the GitHub release.
 
         Returns:
