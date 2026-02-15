@@ -19,12 +19,11 @@ Example:
 """
 
 import json
-from typing import Any
 
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.base import ConfigDict, ConfigFile, ConfigT
 
 
-class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
+class JsonConfigFile(ConfigFile[ConfigT]):
     """Base class for JSON configuration files.
 
     Uses Python's json module with 4-space indentation. Supports both dict and
@@ -58,17 +57,17 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         ...         return ["item1", "item2", {"key": "value"}]
     """
 
-    def _load(self) -> dict[str, Any] | list[Any]:
+    def _load(self) -> ConfigT:
         """Load and parse the JSON file.
 
         Returns:
             Parsed JSON content as dict or list.
         """
         path = self.path()
-        data: dict[str, Any] | list[Any] = json.loads(path.read_text(encoding="utf-8"))
+        data: ConfigT = json.loads(path.read_text(encoding="utf-8"))
         return data
 
-    def _dump(self, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(self, config: ConfigT) -> None:
         """Write configuration to JSON file with 4-space indentation.
 
         Args:
@@ -80,3 +79,7 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
     def extension(self) -> str:
         """Return "json"."""
         return "json"
+
+
+class DictJsonConfigFile(JsonConfigFile[ConfigDict]):
+    """JsonConfigFile subclass for dict-based JSON configurations."""
