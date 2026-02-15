@@ -29,7 +29,7 @@ class TypeChecker(Tool):
         """Get tool name.
 
         Returns:
-            'ty'
+            str: The tool name 'ty'.
         """
         return "ty"
 
@@ -37,12 +37,16 @@ class TypeChecker(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            `ToolGroup.CODE_QUALITY`
+            str: The tool group ToolGroup.CODE_QUALITY.
         """
         return ToolGroup.CODE_QUALITY
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and linked page URLs."""
+        """Return the badge image URL and project page URL.
+
+        Returns:
+            tuple[str, str]: Badge image URL and project page URL.
+        """
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json",
             "https://github.com/astral-sh/ty",
@@ -55,6 +59,6 @@ class TypeChecker(Tool):
             *args: Check command arguments.
 
         Returns:
-            Args for 'ty check'.
+            Args: Args object for 'ty check' command.
         """
         return self.args("check", *args)

@@ -39,7 +39,11 @@ class RemoteVersionController(Tool):
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and repository page URL."""
+        """Return the badge image URL and repository page URL.
+
+        Returns:
+            Tuple containing badge image URL and repository page URL.
+        """
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
@@ -60,7 +64,7 @@ class RemoteVersionController(Tool):
         """Get the base URL for GitHub.
 
         Returns:
-            Base URL: https://github.com
+            https://github.com
         """
         return "https://github.com"
 
@@ -68,7 +72,7 @@ class RemoteVersionController(Tool):
         """Construct HTTPS GitHub repository URL.
 
         Returns:
-            URL in format: `https://github.com/{owner}/{repo}`
+            URL in format: https://github.com/{owner}/{repo}
         """
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False,
@@ -80,7 +84,7 @@ class RemoteVersionController(Tool):
         """Construct GitHub issues URL.
 
         Returns:
-            URL in format: `https://github.com/{owner}/{repo}/issues`
+            URL in format: https://github.com/{owner}/{repo}/issues
         """
         return f"{self.repo_url()}/issues"
 
@@ -88,7 +92,7 @@ class RemoteVersionController(Tool):
         """Construct GitHub releases URL.
 
         Returns:
-            URL in format: `https://github.com/{owner}/{repo}/releases`
+            URL in format: https://github.com/{owner}/{repo}/releases
         """
         return f"{self.repo_url()}/releases"
 

@@ -49,7 +49,11 @@ class PackageManager(Tool):
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the uv badge and project page URLs."""
+        """Return the uv badge and project page URLs.
+
+        Returns:
+            Tuple of (badge_url, project_url).
+        """
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json",
             "https://github.com/astral-sh/uv",

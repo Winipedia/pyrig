@@ -50,7 +50,11 @@ class Pyrigger(Tool):
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Get pyrig badge image URL and GitHub page URL."""
+        """Get pyrig badge image URL and GitHub page URL.
+
+        Returns:
+            Tuple of badge image URL and GitHub page URL.
+        """
         return (
             f"https://img.shields.io/badge/built%20with-{self.name()}-3776AB?logo=buildkite&logoColor=black",
             f"https://github.com/Winipedia/{self.name()}",
@@ -75,5 +79,5 @@ class Pyrigger(Tool):
         Returns:
             Args for 'pyrig <cmd_name>'.
         """
-        cmd_name = project_name_from_package_name(cmd.__name__)  # ty:ignore[unresolved-attribute]
+        cmd_name = project_name_from_package_name(cmd.__name__)  # type: ignore[attr-defined]
         return self.args(cmd_name, *args)

@@ -29,7 +29,7 @@ class PackageIndex(Tool):
         """Get tool name.
 
         Returns:
-            'pypi'
+            str: 'pypi'
         """
         return "pypi"
 
@@ -37,12 +37,16 @@ class PackageIndex(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            `ToolGroup.PROJECT_INFO`
+            str: ToolGroup.PROJECT_INFO
         """
         return ToolGroup.PROJECT_INFO
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the PyPI version badge and project page URLs."""
+        """Return the PyPI version badge and project page URLs.
+
+        Returns:
+            tuple[str, str]: Badge URL and package index URL.
+        """
         _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
@@ -71,6 +75,6 @@ class PackageIndex(Tool):
         (e.g. uv) handles publishing via pyproject.toml.
 
         Returns:
-            Empty list.
+            list[str]: Empty list.
         """
         return []

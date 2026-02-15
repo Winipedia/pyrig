@@ -29,7 +29,7 @@ class ProjectTester(Tool):
         """Get tool name.
 
         Returns:
-            'pytest'
+            The name of the pytest tool.
         """
         return "pytest"
 
@@ -37,12 +37,16 @@ class ProjectTester(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            `ToolGroup.TESTING`
+            The testing tool group.
         """
         return ToolGroup.TESTING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Get pytest badge image URL and project page URL."""
+        """Get pytest badge image URL and project page URL.
+
+        Returns:
+            A tuple of badge image URL and project page URL.
+        """
         return (
             "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest",
             "https://pytest.org",
@@ -60,7 +64,7 @@ class ProjectTester(Tool):
         """Get minimum test coverage percentage threshold.
 
         Returns:
-            Coverage percentage (90).
+            Minimum coverage percentage threshold.
         """
         return 90
 

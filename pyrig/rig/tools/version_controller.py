@@ -57,7 +57,11 @@ class VersionController(Tool):
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and linked page URLs."""
+        """Return the badge and linked page URLs.
+
+        Returns:
+            Tuple of (badge_url, link_url) for Git.
+        """
         return (
             "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white",
             "https://git-scm.com",
@@ -258,7 +262,7 @@ class VersionController(Tool):
 
         Args:
             *args: Config command arguments.
-            name: Name.
+            name: User name.
 
         Returns:
             Args for 'git config --local user.name <name>'.
@@ -282,7 +286,7 @@ class VersionController(Tool):
 
         Args:
             *args: Config command arguments.
-            name: Name.
+            name: User name.
 
         Returns:
             Args for 'git config --global user.name <name>'.
@@ -504,7 +508,7 @@ class VersionController(Tool):
         """Get the email from git config.
 
         Returns:
-            Email.
+            Configured git user email.
         """
         args = self.config_get_user_email_args()
         stdout = args.run_cached().stdout

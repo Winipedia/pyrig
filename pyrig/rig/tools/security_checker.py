@@ -32,7 +32,7 @@ class SecurityChecker(Tool):
         """Get tool name.
 
         Returns:
-            'bandit'
+            str: The tool name 'bandit'.
         """
         return "bandit"
 
@@ -40,12 +40,16 @@ class SecurityChecker(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            `ToolGroup.SECURITY`
+            str: The tool group ToolGroup.SECURITY.
         """
         return ToolGroup.SECURITY
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and project page URL."""
+        """Return the badge image URL and project page URL.
+
+        Returns:
+            tuple[str, str]: A tuple containing the badge image URL and project page URL.
+        """
         return (
             "https://img.shields.io/badge/security-bandit-yellow.svg",
             "https://github.com/PyCQA/bandit",
@@ -58,7 +62,7 @@ class SecurityChecker(Tool):
             *args: Bandit command arguments.
 
         Returns:
-            Args for 'bandit'.
+            Args: Args object for 'bandit' command.
         """
         return self.args(*args)
 
@@ -69,6 +73,6 @@ class SecurityChecker(Tool):
             *args: Bandit command arguments.
 
         Returns:
-            Args for 'bandit -c pyproject.toml -r .'.
+            Args: Args object for 'bandit -c pyproject.toml -r .' command.
         """
         return self.run_args("-c", "pyproject.toml", "-r", ".", *args)

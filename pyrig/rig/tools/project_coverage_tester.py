@@ -33,7 +33,7 @@ class ProjectCoverageTester(Tool):
         """Get tool name.
 
         Returns:
-            'pytest-cov'
+            The name of the tool: 'pytest-cov'.
         """
         return "pytest-cov"
 
@@ -41,12 +41,16 @@ class ProjectCoverageTester(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            'testing'
+            The tool group: 'testing'.
         """
         return ToolGroup.TESTING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Get Codecov coverage badge image URL and dashboard URL."""
+        """Get Codecov coverage badge image URL and dashboard URL.
+
+        Returns:
+            A tuple containing the badge image URL and dashboard URL.
+        """
         return (
             f"{self.remote_coverage_url()}/branch/{VersionController.I.default_branch()}/graph/badge.svg",
             self.remote_coverage_url(),
@@ -56,7 +60,7 @@ class ProjectCoverageTester(Tool):
         """Construct Codecov dashboard URL.
 
         Returns:
-            URL in format: `https://codecov.io/gh/{owner}/{repo}`
+            URL in format: `https://codecov.io/gh/{owner}/{repo}`.
         """
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True

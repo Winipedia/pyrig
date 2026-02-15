@@ -45,7 +45,11 @@ class PreCommitter(Tool):
         return ToolGroup.CODE_QUALITY
 
     def badge_urls(self) -> tuple[str, str]:
-        """Get prek badge image URL and project page URL."""
+        """Get prek badge image URL and project page URL.
+
+        Returns:
+            Tuple of (badge_url, project_url).
+        """
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json",
             "https://github.com/j178/prek",
