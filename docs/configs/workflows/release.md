@@ -15,16 +15,16 @@ GitHub releases with all artifacts attached.
 
 ## Triggers
 
-### WorkflowConfigFile Run
+### Workflow Run
 
-- **WorkflowConfigFile**: `Build`
+- **Workflow**: `Build`
 - **Event**: `completed`
 - **Condition**: Only runs if build succeeded
 
 **Why workflow_run?** Ensures releases are only created after artifacts are
 successfully built.
 
-### WorkflowConfigFile Dispatch
+### Workflow Dispatch
 
 - **Purpose**: Manual trigger for testing
 
@@ -146,7 +146,7 @@ graph TD
     - Sets `version=v{version}` in `$GITHUB_OUTPUT`
     - Used by later steps
 
-13. **Download Artifacts From WorkflowConfigFile Run** (`actions/download-artifact@main`)
+13. **Download Artifacts From Workflow Run** (`actions/download-artifact@main`)
     - Downloads all artifacts from build workflow
     - Uses `run-id` from triggering workflow
     - `merge-multiple: true`: Combines all artifacts into `dist/`
