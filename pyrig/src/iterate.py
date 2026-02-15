@@ -78,7 +78,14 @@ def nested_structure_is_subset(  # noqa: C901
         on_false_action: Callable[[Any, Any, Any], Any] | None = on_dict_mismatch
 
         def get_actual(key_or_index: Any) -> Any:
-            """Get actual value from superset."""
+            """Get actual value from superset.
+
+            Args:
+                key_or_index: The key to look up in the superset dict.
+
+            Returns:
+                The value associated with the key, or None if not found.
+            """
             return superset.get(key_or_index)
 
     elif isinstance(subset, list) and isinstance(superset, list):
@@ -91,6 +98,13 @@ def nested_structure_is_subset(  # noqa: C901
             Searches superset for an element that contains subset_val as a subset.
             Falls back to index-based lookup if no match found, or None if out of
             bounds.
+
+            Args:
+                key_or_index: The index of the element to find in the subset list.
+
+            Returns:
+                The matching element from superset, the element at the same index,
+                or None if not found.
             """
             subset_val = subset[key_or_index]
             for superset_val in superset:

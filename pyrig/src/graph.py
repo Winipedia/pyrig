@@ -73,7 +73,14 @@ class DiGraph(ABC):
         self._reverse_edges[target].add(source)
 
     def __contains__(self, node: str) -> bool:
-        """Check if a node exists in the graph."""
+        """Check if a node exists in the graph.
+
+        Args:
+            node: Node identifier to check.
+
+        Returns:
+            True if the node exists in the graph, False otherwise.
+        """
         return node in self._nodes
 
     def __getitem__(self, node: str) -> set[str]:
@@ -88,11 +95,23 @@ class DiGraph(ABC):
         return self._edges.get(node, set())
 
     def nodes(self) -> set[str]:
-        """Return all node identifiers in the graph."""
+        """Return all node identifiers in the graph.
+
+        Returns:
+            Set of all node identifiers in the graph.
+        """
         return self._nodes
 
     def has_edge(self, source: str, target: str) -> bool:
-        """Check if a directed edge exists from source to target."""
+        """Check if a directed edge exists from source to target.
+
+        Args:
+            source: Edge origin node.
+            target: Edge destination node.
+
+        Returns:
+            True if a directed edge exists from source to target, False otherwise.
+        """
         return target in self._edges.get(source, set())
 
     def ancestors(self, target: str) -> set[str]:
