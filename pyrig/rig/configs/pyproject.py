@@ -10,6 +10,7 @@ Utility methods: project info, dependencies, Python versions, license detection,
 classifiers.
 """
 
+import json
 from pathlib import Path
 from typing import Any, Literal
 
@@ -28,7 +29,7 @@ from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import (
-    requests_get_cached,
+    requests_get_text_cached,
     return_resource_content_on_fetch_error,
 )
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
@@ -291,9 +292,7 @@ class PyprojectConfigFile(TomlConfigFile):
             level: Precision level for the version string.
         """
         url = "https://endoflife.date/api/python.json"
-        resp = requests_get_cached(url)
-        resp.raise_for_status()
-        data: list[dict[str, str]] = resp.json()
+        data: list[dict[str, str]] = json.loads(requests_get_text_cached(url))
         latest_version = data[0]["latest"]
         return str(adjust_version_to_level(Version(latest_version), level))
 

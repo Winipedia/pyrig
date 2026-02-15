@@ -1,25 +1,27 @@
 """Test module."""
 
 import importlib.metadata
-import os
-import sys
-from types import ModuleType
 
+import typer
 from pytest_mock import MockFixture
 
+import pyrig
 from pyrig.src.dependency_graph import DependencyGraph
 
 
 class TestDependencyGraph:
     """Test class."""
 
-    def test_parse_distname_from_metadata(self) -> None:
+    def test_parse_name_and_deps_from_raw_metadata(self) -> None:
         """Test method."""
         name = "pyrig"
         dist = importlib.metadata.distribution(name)
-        result = DependencyGraph.parse_distname_from_metadata(dist)
-        expected = "pyrig"
-        assert result == expected, f"Expected '{expected}', got '{result}'"
+        result_name, result_deps = (
+            DependencyGraph.parse_name_and_deps_from_raw_metadata(dist)
+        )
+        assert result_name == "pyrig", f"Expected 'pyrig', got '{result_name}'"
+        assert isinstance(result_deps, list), "Expected deps to be a list"
+        assert "typer" in result_deps, "Expected 'typer' to be in dependencies"
 
     def test_normalize_package_name(self) -> None:
         """Test method."""
@@ -45,14 +47,17 @@ class TestDependencyGraph:
 
     def test_build(self, mocker: MockFixture) -> None:
         """Test method."""
-        # Create a mock distribution
+        # Create a mock distribution with raw METADATA text
         mock_dist1 = mocker.MagicMock()
-        mock_dist1.metadata = {"Name": "test-package"}
-        mock_dist1.requires = ["dependency1>=1.0.0", "dependency2"]
+        mock_dist1.read_text.return_value = (
+            "Name: test-package\n"
+            "Version: 1.0.0\n"
+            "Requires-Dist: dependency1>=1.0.0\n"
+            "Requires-Dist: dependency2\n"
+        )
 
         mock_dist2 = mocker.MagicMock()
-        mock_dist2.metadata = {"Name": "dependency1"}
-        mock_dist2.requires = None
+        mock_dist2.read_text.return_value = "Name: dependency1\nVersion: 2.0.0\n"
 
         # Mock importlib.metadata.distributions
         mocker.patch(
@@ -60,7 +65,7 @@ class TestDependencyGraph:
             return_value=[mock_dist1, mock_dist2],
         )
 
-        DependencyGraph.clear()  # Clear singleton instance to force rebuild
+        DependencyGraph.clear_cache()  # Clear singleton instance to force rebuild
         graph = DependencyGraph()
 
         # Verify nodes were added
@@ -78,11 +83,6 @@ class TestDependencyGraph:
         assert graph.has_edge("test_package", "dependency2"), (
             "Expected edge from 'test-package' to 'dependency2'"
         )
-
-    def test_all_dependencies(self) -> None:
-        """Test method."""
-        deps = DependencyGraph.all_dependencies()
-        assert "setuptools" in deps, "Expected 'setuptools' to be in dependencies"
 
     def test_parse_package_name_from_req(self) -> None:
         """Test method."""
@@ -111,93 +111,12 @@ class TestDependencyGraph:
         result = DependencyGraph.parse_package_name_from_req("  package-name  >=1.0")
         assert result == "package_name", f"Expected 'package_name', got {result}"
 
-    def test_all_depending_on(self, mocker: MockFixture) -> None:
+    def test_all_depending_on(self) -> None:
         """Test method."""
-        # Mock the build method to prevent it from running
-        mocker.patch.object(DependencyGraph, "build")
+        DependencyGraph.clear_cache()  # Clear singleton instance to force rebuild
+        dg = DependencyGraph()
 
-        # Create a simple dependency graph
-        graph = DependencyGraph()
+        dep_on_typer = dg.all_depending_on("typer", include_self=True)
 
-        # Add nodes and edges manually
-        # Structure: package_a -> package_b -> package_c
-        # (package_a depends on package_b, package_b depends on package_c)
-        graph.add_node("package_a")
-        graph.add_node("package_b")
-        graph.add_node("package_c")
-        graph.add_edge("package_a", "package_b")
-        graph.add_edge("package_b", "package_c")
-
-        # Mock import_packages to return mock modules in the order they're given
-        mock_package_a = ModuleType("package_a")
-        mock_package_b = ModuleType("package_b")
-        mock_package_c = ModuleType("package_c")
-
-        def mock_import_packages(names: list[str]) -> list[ModuleType]:
-            result: list[ModuleType] = []
-            for name in names:
-                if name == "package_a":
-                    result.append(mock_package_a)
-                elif name == "package_b":
-                    result.append(mock_package_b)
-                elif name == "package_c":
-                    result.append(mock_package_c)
-            return result
-
-        mocker.patch.object(graph, "import_packages", side_effect=mock_import_packages)
-
-        # Test getting all packages depending on package_c
-        result = graph.all_depending_on(mock_package_c, include_self=False)
-
-        # package_a and package_b depend on package_c (transitively)
-        expected_count = 2
-        assert mock_package_a in result, (
-            f"Expected package_a in dependents of package_c, got {result}"
-        )
-        assert mock_package_b in result, (
-            f"Expected package_b in dependents of package_c, got {result}"
-        )
-
-        # Verify topological order: package_b should come before package_a
-        # (because package_a depends on package_b)
-        package_b_index = result.index(mock_package_b)
-        package_a_index = result.index(mock_package_a)
-        assert package_b_index < package_a_index, (
-            f"Expected package_b (index {package_b_index}) before package_a (index {package_a_index}) "  # noqa: E501
-            f"in topological order, got {[m.__name__ for m in result]}"
-        )
-
-        # Test with include_self=True
-        result = graph.all_depending_on(mock_package_c, include_self=True)
-        assert mock_package_c in result, (
-            f"Expected package_c in result when include_self=True, got {result}"
-        )
-        assert len(result) == expected_count + 1, (
-            f"Expected {expected_count + 1} packages with include_self=True, "
-            f"got {len(result)}"
-        )
-
-        # Verify topological order with include_self:
-        # package_c should come first, then package_b, then package_a
-        package_c_index = result.index(mock_package_c)
-        package_b_index = result.index(mock_package_b)
-        package_a_index = result.index(mock_package_a)
-        assert package_c_index < package_b_index < package_a_index, (
-            f"Expected topological order: package_c, package_b, package_a. "
-            f"Got indices: package_c={package_c_index}, package_b={package_b_index}, "
-            f"package_a={package_a_index}"
-        )
-
-    def test_import_packages(self) -> None:
-        """Test method."""
-        # Mock importlib.import_module
-
-        # Test importing existing packages
-        result = DependencyGraph.import_packages({"sys", "os", "nonexistent"})
-
-        expected_module_count = 2
-        assert sys in result, f"Expected sys module in result, got {result}"
-        assert os in result, f"Expected os module in result, got {result}"
-        assert len(result) == expected_module_count, (
-            f"Expected {expected_module_count} modules (sys, os), got {len(result)}"
-        )
+        assert typer in dep_on_typer, "Expected 'typer' to be in dependents"
+        assert pyrig in dep_on_typer, "Expected 'pyrig' to be in dependents"

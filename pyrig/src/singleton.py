@@ -40,7 +40,7 @@ class SingletonMeta(ABCMeta):
             SingletonMeta._instances[cls] = instance
         return SingletonMeta._instances[cls]
 
-    def clear(cls) -> None:
+    def clear_cache(cls) -> None:
         """Remove the singleton instance for the given class.
 
         This method clears the cached instance, allowing a new instance to be
@@ -57,7 +57,7 @@ class Singleton(metaclass=SingletonMeta):
     pattern applied via the ``SingletonMeta`` metaclass. Only one instance of each
     subclass will exist throughout the application lifecycle.
 
-    Call ``clear()`` on any singleton subclass to remove its cached instance,
+    Call ``clear_cache()`` on any singleton subclass to remove its cached instance,
     allowing a fresh instance to be created on the next instantiation.
 
     Example:

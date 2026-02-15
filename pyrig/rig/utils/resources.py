@@ -48,11 +48,17 @@ P = ParamSpec("P")
 
 
 @cache
-def requests_get_cached(
+def requests_get_text_cached(
     *args: Any, timeout: tuple[float, float] = (3, 10), **kwargs: Any
-) -> requests.Response:
-    """Cached wrapper around requests.get with default timeouts."""
-    return requests.get(*args, timeout=timeout, **kwargs)
+) -> str:
+    """Cached wrapper around requests.get with default timeouts.
+
+    Returns only the response text to avoid caching the full Response object.
+    Calls raise_for_status() before returning.
+    """
+    response = requests.get(*args, timeout=timeout, **kwargs)
+    response.raise_for_status()
+    return response.text
 
 
 def return_resource_file_content_on_exceptions_or_in_dep(

@@ -16,10 +16,10 @@ class TestSingletonMeta:
         s2 = MyTestSingleton()
         assert s1 is s2, "Expected both instances to be the same"
 
-    def test_clear(self) -> None:
+    def test_clear_cache(self) -> None:
         """Test method."""
         s1 = MyTestSingleton()
-        s1.__class__.clear()
+        s1.__class__.clear_cache()
         s2 = MyTestSingleton()
         assert s1 is not s2, "Expected cleared instance to be different"
 

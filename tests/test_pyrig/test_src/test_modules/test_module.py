@@ -21,6 +21,7 @@ from pyrig.src.modules.module import (
     import_module_with_default,
     import_module_with_file_fallback,
     import_module_with_file_fallback_with_default,
+    import_modules,
     import_obj_from_importpath,
     isolated_obj_name,
     make_obj_importpath,
@@ -319,3 +320,14 @@ def test_module_has_docstring(tmp_path: Path) -> None:
         module_path_no_docstring.write_text("def test_function() -> str:\n    pass\n")
         module_no_docstring = create_module(module_path_no_docstring)
         assert not module_has_docstring(module_no_docstring)
+
+
+def test_import_modules() -> None:
+    """Test function."""
+    names = ["sys", "os"]
+    modules = import_modules(names)
+    assert len(modules) == len(names), (
+        f"Expected {len(names)} modules, got {len(modules)}"
+    )
+    assert modules[0].__name__ == "sys", f"Expected sys module, got {modules[0]}"
+    assert modules[1].__name__ == "os", f"Expected os module, got {modules[1]}"

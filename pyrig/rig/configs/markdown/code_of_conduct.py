@@ -15,7 +15,7 @@ from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.rig.utils.resources import (
-    requests_get_cached,
+    requests_get_text_cached,
     return_resource_content_on_fetch_error,
 )
 
@@ -95,9 +95,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             Contributor Covenant 2.1 content.
         """
         url = "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md"
-        resp = requests_get_cached(url)
-        resp.raise_for_status()
-        return resp.text
+        return requests_get_text_cached(url)
 
     def contact_method(self) -> str:
         """Return the contact method for the code of conduct.

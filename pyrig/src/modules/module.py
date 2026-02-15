@@ -9,7 +9,7 @@ pyrig for dynamic module loading when standard import mechanisms may not suffice
 import importlib.util
 import logging
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
@@ -338,3 +338,15 @@ def module_has_docstring(module: ModuleType) -> bool:
         True if module has a docstring, False otherwise.
     """
     return module.__doc__ is not None
+
+
+def import_modules(module_names: Iterable[str]) -> list[ModuleType]:
+    """Import multiple modules by name.
+
+    Args:
+        module_names: List of dotted module names to import.
+
+    Returns:
+        List of imported module objects corresponding to the input names.
+    """
+    return list(map(import_module, module_names))
