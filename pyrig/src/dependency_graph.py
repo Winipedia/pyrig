@@ -76,7 +76,7 @@ class DependencyGraph(DiGraph, Singleton):
             req: Requirement string (e.g., "requests>=2.0,<3.0").
 
         Returns:
-            Normalized package name
+            Normalized package name.
         """
         # Split on the first non-alphanumeric character (except -, _, and .)
         # Uses module-level compiled pattern for performance
