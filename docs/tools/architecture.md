@@ -138,7 +138,7 @@ prevents confusion:
 | GitHub Actions workflow steps | External action references can't be dynamic | Subclass the `WorkflowConfigFile` and override `step_*` methods |
 | External tool versions | Pinned for reproducibility | Subclass and override version constants |
 
-#### Example: Container Engine in WorkflowConfigFiles
+#### Example: Container Engine in Workflows
 
 The workflow uses a hardcoded GitHub Action for Podman:
 
