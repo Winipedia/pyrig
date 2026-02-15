@@ -148,7 +148,6 @@ def discover_all_subclasses[T: type](
         `pyrig.src.modules.imports.walk_package`: Package traversal that
             triggers imports.
     """
-    logger.debug("Discovering subclasses of %s", cls.__name__)
     if load_package_before:
         _ = list(walk_package(load_package_before))
     subclasses_set: set[T] = {cls}
