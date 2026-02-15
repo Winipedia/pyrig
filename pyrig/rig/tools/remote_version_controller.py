@@ -31,7 +31,7 @@ class RemoteVersionController(Tool):
         return "github"
 
     def group(self) -> str:
-        """Get badge group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.TOOLING`

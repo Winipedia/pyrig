@@ -37,7 +37,7 @@ class DocsBuilder(Tool):
         return "mkdocs"
 
     def group(self) -> str:
-        """Get tool group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.DOCUMENTATION`

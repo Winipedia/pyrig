@@ -44,8 +44,8 @@ class SingletonMeta(ABCMeta):
         """Remove the singleton instance for the given class.
 
         This method clears the cached instance, allowing a new instance to be
-        created on the next instantiation. Useful for testing or when resetting
-        the application state.
+        created on the next instantiation. If no instance exists, this is a no-op.
+        Useful for testing or when resetting the application state.
         """
         cls._instances.pop(cls, None)
 

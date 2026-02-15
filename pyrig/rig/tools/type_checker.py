@@ -34,7 +34,7 @@ class TypeChecker(Tool):
         return "ty"
 
     def group(self) -> str:
-        """Get badge group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.CODE_QUALITY`

@@ -41,7 +41,7 @@ class PackageManager(Tool):
         return "uv"
 
     def group(self) -> str:
-        """Get tool group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.TOOLING`
