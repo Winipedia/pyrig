@@ -91,7 +91,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
     Subclasses must implement:
         - `src_module`: Return the source module to mirror
 
-    Class Methods for Batch Processing:
+    Methods for Batch Processing:
         - `make_subclasses_for_modules`: Create config subclasses for multiple modules
         - `make_subclass_for_module`: Create a config subclass for a single module
         - `create_test_modules`: Generate test files for multiple modules at once
@@ -511,8 +511,6 @@ def {test_func_name}() -> None:
         3. Maps source class/method names to expected test names
         4. Identifies missing test classes and missing test methods within
            existing test classes
-
-        Cached for performance - called multiple times during validation.
 
         Returns:
             Dictionary mapping test class names to tuples of missing test method
