@@ -42,12 +42,16 @@ class Linter(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            `ToolGroup.CODE_QUALITY`
+            ToolGroup.CODE_QUALITY
         """
         return ToolGroup.CODE_QUALITY
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and link URLs."""
+        """Return the badge and link URLs.
+
+        Returns:
+            A tuple of (badge_url, link_url) where both are URL strings.
+        """
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json",
             "https://github.com/astral-sh/ruff",
