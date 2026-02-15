@@ -12,14 +12,15 @@ See Also:
 from datetime import UTC, datetime
 from pathlib import Path
 
-import requests
-
 from pyrig.rig.configs.base.base import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import src_package_is_pyrig
-from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
+from pyrig.rig.utils.resources import (
+    requests_get_cached,
+    return_resource_content_on_fetch_error,
+)
 from pyrig.src.string_ import make_linked_badge_markdown
 
 
@@ -73,7 +74,7 @@ class LicenseConfigFile(StringConfigFile):
     def mit_license(self) -> str:
         """Fetch MIT license from GitHub SPDX API (with fallback)."""
         url = "https://api.github.com/licenses/mit"
-        resp = requests.get(url, timeout=10)
+        resp = requests_get_cached(url)
         resp.raise_for_status()
         data = resp.json()
         mit_license: str = data["body"]

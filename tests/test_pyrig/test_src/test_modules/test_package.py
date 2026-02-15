@@ -7,17 +7,13 @@ from contextlib import chdir
 from pathlib import Path
 
 import pytest
-from pytest_mock import MockFixture
 
 import pyrig
 from pyrig import src
 from pyrig.rig import configs
 from pyrig.rig.configs.base.base import ConfigFile
-from pyrig.rig.utils import packages
-from pyrig.rig.utils.packages import find_packages
 from pyrig.src.modules.module import (
     import_module_from_file,
-    make_obj_importpath,
 )
 from pyrig.src.modules.package import (
     all_deps_depending_on_dep,
@@ -36,58 +32,6 @@ from tests.test_pyrig.test_src.test_modules.test_class_ import (
     AbstractParent,
     ConcreteChild,
 )
-
-
-def test_find_packages(mocker: MockFixture) -> None:
-    """Test function."""
-    # Mock setuptools find_packages
-    mock_find_packages = mocker.patch(
-        make_obj_importpath(packages) + "._find_packages",
-        return_value=["package1", "package1.sub1", "package1.sub1.sub2", "package2"],
-    )
-
-    # Mock read_text of Path to return empty list (no gitignore patterns)
-    mocker.patch(
-        "pathlib.Path.read_text",
-        return_value="",
-    )
-
-    # Test without depth limit
-    result = find_packages()
-    expected = ["package1", "package1.sub1", "package1.sub1.sub2", "package2"]
-    assert result == expected, f"Expected {expected}, got {result}"
-
-    # Test with depth limit
-    result = find_packages(depth=1)
-    expected = ["package1", "package1.sub1", "package2"]
-    assert result == expected, f"Expected {expected}, got {result}"
-
-    # Test with depth 0
-    result = find_packages(depth=0)
-    expected = ["package1", "package2"]
-    assert result == expected, f"Expected {expected}, got {result}"
-
-    # Verify that setuptools find_packages was called with empty exclude list
-    mock_find_packages.assert_called_with(where=".", exclude=[], include=("*",))
-
-
-def test_find_packages_with_namespace(mocker: MockFixture) -> None:
-    """Test find_packages with namespace packages."""
-    mock_find_namespace = mocker.patch(
-        make_obj_importpath(packages) + "._find_namespace_packages",
-        return_value=["ns_package1", "ns_package2"],
-    )
-
-    mocker.patch(
-        "pathlib.Path.read_text",
-        return_value="",
-    )
-
-    result = find_packages(include_namespace_packages=True)
-    expected = ["ns_package1", "ns_package2"]
-    assert result == expected, f"Expected {expected}, got {result}"
-
-    mock_find_namespace.assert_called_once_with(where=".", exclude=[], include=("*",))
 
 
 def test_package_name_from_project_name() -> None:

@@ -11,12 +11,13 @@ See Also:
 
 from pathlib import Path
 
-import requests
-
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import src_package_is_pyrig
-from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
+from pyrig.rig.utils.resources import (
+    requests_get_cached,
+    return_resource_content_on_fetch_error,
+)
 
 
 class CodeOfConductConfigFile(MarkdownConfigFile):
@@ -93,10 +94,8 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         Returns:
             Contributor Covenant 2.1 content.
         """
-        resp = requests.get(
-            "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md",
-            timeout=10,
-        )
+        url = "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md"
+        resp = requests_get_cached(url)
         resp.raise_for_status()
         return resp.text
 

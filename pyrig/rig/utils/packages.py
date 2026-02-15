@@ -27,7 +27,7 @@ See Also:
 """
 
 import logging
-from collections.abc import Iterable
+from functools import cache
 
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
@@ -41,13 +41,14 @@ from pyrig.src.modules.path import ModulePath
 logger = logging.getLogger(__name__)
 
 
+@cache
 def find_packages(
     *,
     depth: int | None = None,
     include_namespace_packages: bool = False,
     where: str = ".",
-    exclude: Iterable[str] | None = None,
-    include: Iterable[str] = ("*",),
+    exclude: tuple[str, ...] | None = None,
+    include: tuple[str, ...] = ("*",),
 ) -> list[str]:
     """Discover Python packages in the specified directory.
 
@@ -91,13 +92,13 @@ def find_packages(
     gitignore_path = VersionController.I.ignore_path()
     if exclude is None:
         exclude = (
-            gitignore_path.read_text(encoding="utf-8").splitlines()
+            tuple(gitignore_path.read_text(encoding="utf-8").splitlines())
             if gitignore_path.exists()
-            else []
+            else ()
         )
-        exclude = [
+        exclude = tuple(
             p.replace("/", ".").removesuffix(".") for p in exclude if p.endswith("/")
-        ]
+        )
     if include_namespace_packages:
         package_names = _find_namespace_packages(
             where=where, exclude=exclude, include=include

@@ -9,9 +9,11 @@ from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.utils import resources
 from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.rig.utils.resources import (
+    requests_get_cached,
     return_resource_content_on_fetch_error,
     return_resource_file_content_on_exceptions_or_in_dep,
 )
+from pyrig.rig.utils.testing import skip_if_no_internet
 from pyrig.src.resource import resource_path
 
 
@@ -40,6 +42,7 @@ def test_return_resource_file_content_on_exceptions_or_in_dep(
     assert test_func() == "Hello World!"
 
 
+@skip_if_no_internet
 def test_return_resource_content_on_fetch_error(
     tmp_path: Path, mocker: MockFixture
 ) -> None:
@@ -73,3 +76,10 @@ def test_return_resource_content_on_fetch_error(
     request_get_mock.assert_not_called()
     # should have called src_package_is_pyrig
     mock.assert_called_once()
+
+
+def test_requests_get_cached() -> None:
+    """Test function."""
+    expected = 200
+    response = requests_get_cached("https://httpbin.org/get")
+    assert response.status_code == expected

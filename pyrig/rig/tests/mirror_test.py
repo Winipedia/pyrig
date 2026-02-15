@@ -201,9 +201,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             for m in ms
             if ("def " + m + "(") not in test_module_content
         ]
-        return super().is_correct() or not (
-            untested_funcs or untested_classes or untested_methods
-        )
+        return not (untested_funcs or untested_classes or untested_methods)
 
     def merge_configs(self) -> list[Any]:
         """Return test configurations without merging.

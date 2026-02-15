@@ -13,7 +13,6 @@ classifiers.
 from pathlib import Path
 from typing import Any, Literal
 
-import requests
 import spdx_matcher
 from packaging.version import Version
 
@@ -28,7 +27,10 @@ from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
+from pyrig.rig.utils.resources import (
+    requests_get_cached,
+    return_resource_content_on_fetch_error,
+)
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.modules.package import (
     package_name_from_cwd,
@@ -289,7 +291,7 @@ class PyprojectConfigFile(TomlConfigFile):
             level: Precision level for the version string.
         """
         url = "https://endoflife.date/api/python.json"
-        resp = requests.get(url, timeout=10)
+        resp = requests_get_cached(url)
         resp.raise_for_status()
         data: list[dict[str, str]] = resp.json()
         latest_version = data[0]["latest"]
