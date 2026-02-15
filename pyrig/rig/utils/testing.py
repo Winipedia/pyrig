@@ -88,5 +88,5 @@ Examples:
         ...     assert response.status_code == 200
 
 See Also:
-    pyrig.src.requests.internet_is_available: Underlying connectivity check
+    pyrig.src.requests.internet_is_available: Underlying connectivity check.
 """

@@ -35,7 +35,7 @@ def github_repo_token() -> str:
         ValueError: If REPO_TOKEN not found in environment variables or .env
             file.
 
-    Example:
+    Examples:
         >>> token = github_repo_token()
 
     Note:
@@ -72,10 +72,8 @@ def path_is_in_ignore(path: str | Path) -> bool:
         pathspec.PatternError: If .gitignore contains malformed patterns.
 
     Examples:
-        Check if a directory is ignored:
-
-            >>> path_is_in_ignore("build/")
-            True
+        >>> path_is_in_ignore("build/")
+        True
 
     See Also:
         VersionController.I.loaded_ignore: Load patterns from .gitignore file.

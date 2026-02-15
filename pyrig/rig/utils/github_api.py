@@ -3,16 +3,16 @@
 Utilities for interacting with the GitHub API, specifically for repository rulesets.
 Uses PyGithub for authentication and API calls.
 
-Functions:
-    create_or_update_ruleset: Create or update a GitHub repository ruleset
-    all_rulesets: Retrieve all rulesets defined for a repository
-    repository: Get a PyGithub Repository object for API operations
-    ruleset_exists: Check if a ruleset with the given name exists
-    github_api_request: Make a generic GitHub API request for a repository
+This module provides the following functions:
+    create_or_update_ruleset: Create or update a GitHub repository ruleset.
+    all_rulesets: Retrieve all rulesets defined for a repository.
+    repository: Get a PyGithub Repository object for API operations.
+    ruleset_exists: Check if a ruleset with the given name exists.
+    github_api_request: Make a generic GitHub API request for a repository.
 
 See Also:
-    pyrig.rig.cli.commands.protect_repo: CLI command using these utilities
-    pyrig.rig.utils.version_control: GitHub token retrieval and related constants
+    pyrig.rig.cli.commands.protect_repo: CLI command using these utilities.
+    pyrig.rig.utils.version_control: GitHub token retrieval and related constants.
 """
 
 import logging
@@ -42,7 +42,7 @@ def create_or_update_ruleset(
             rules (list), conditions (dict), bypass_actors (list).
 
     Returns:
-        API response dictionary with ruleset data (ID, name, rules, etc.).
+        dict: API response dictionary with ruleset data (ID, name, rules, etc.).
 
     Raises:
         KeyError: If "name" not in ruleset_params.
@@ -100,8 +100,8 @@ def all_rulesets(token: str, owner: str, repo_name: str) -> Any:
         repo_name: Repository name (without owner prefix).
 
     Returns:
-        List of ruleset dictionaries with metadata (id, name, target, enforcement,
-        rules, etc.). Empty list if no rulesets defined.
+        list: List of ruleset dictionaries with metadata (id, name, target,
+            enforcement, rules, etc.). Empty list if no rulesets defined.
 
     Raises:
         github.GithubException: If API request fails.
@@ -131,7 +131,7 @@ def repository(token: str, owner: str, repo_name: str) -> Repository:
         repo_name: Repository name (without owner prefix).
 
     Returns:
-        github.Repository.Repository object for API operations.
+        Repository: github.Repository.Repository object for API operations.
 
     Raises:
         github.UnknownObjectException: If repository doesn't exist or no access.
@@ -161,7 +161,7 @@ def ruleset_exists(token: str, owner: str, repo_name: str, ruleset_name: str) ->
         ruleset_name: Name of the ruleset (case-sensitive exact match).
 
     Returns:
-        Ruleset ID (positive integer) if found, or 0 if not found.
+        int: Ruleset ID (positive integer) if found, or 0 if not found.
 
     Raises:
         github.GithubException: If API request fails.
@@ -208,7 +208,7 @@ def github_api_request(  # noqa: PLR0913
         payload: Optional dict to send as JSON. Used for POST, PUT, PATCH.
 
     Returns:
-        Parsed JSON response as dict or list.
+        dict | list: Parsed JSON response as dict or list.
 
     Raises:
         github.GithubException: If API request fails.

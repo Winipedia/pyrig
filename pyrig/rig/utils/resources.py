@@ -55,6 +55,18 @@ def requests_get_text_cached(
 
     Returns only the response text to avoid caching the full Response object.
     Calls raise_for_status() before returning.
+
+    Args:
+        *args: Positional arguments passed to requests.get().
+        timeout: Connection and read timeout in seconds (connect, read).
+            Defaults to (3, 10).
+        **kwargs: Additional keyword arguments passed to requests.get().
+
+    Returns:
+        Response text content.
+
+    Raises:
+        requests.HTTPError: If the HTTP request returned an unsuccessful status code.
     """
     response = requests.get(*args, timeout=timeout, **kwargs)
     response.raise_for_status()
