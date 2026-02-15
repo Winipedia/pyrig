@@ -83,27 +83,32 @@ class Tool(SingletonDependencySubclass):
 
     @abstractmethod
     def group(self) -> str:
-        """Returns the group the tools belongs to.
+        """Returns the group the tool belongs to.
 
         Used e.g. for grouping badges in the Readme.md file.
 
-        E.g. testing, tool, code-quality etc...
+        Returns:
+            Group name (e.g., "testing", "tooling", "code-quality").
         """
 
     @abstractmethod
     def badge_urls(self) -> tuple[str, str]:
-        """Returns the url for a badge, like found in a Readme.md file.
+        """Returns the URLs for a badge, like found in a Readme.md file.
 
-        The first url is the picture, the badge, and the second the link
+        The first URL is the picture, the badge, and the second is the link
         where you are led when clicking on the badge.
 
         Returns:
-            a tuple of two str that are urls.
+            A tuple of (badge_url, link_url) where both are URL strings.
         """
 
     @classmethod
     def definition_package(cls) -> ModuleType:
-        """Get the package where the tool subclasses are supposed to be defined."""
+        """Get the package where the tool subclasses are supposed to be defined.
+
+        Returns:
+            The module where tool subclasses should be defined.
+        """
         return tools
 
     @classmethod
@@ -124,7 +129,11 @@ class Tool(SingletonDependencySubclass):
         return subclass().name()
 
     def badge(self) -> str:
-        """Returns the badge string for a markdown file."""
+        """Returns the badge string for a markdown file.
+
+        Returns:
+            Markdown-formatted badge string with link.
+        """
         badge, page = self.badge_urls()
         return make_linked_badge_markdown(
             badge_url=badge,
@@ -156,7 +165,11 @@ class Tool(SingletonDependencySubclass):
 
     @classmethod
     def grouped_badges(cls) -> dict[str, list[str]]:
-        """Get a dict with all badges of tools grouped by their group."""
+        """Get a dict with all badges of tools grouped by their group.
+
+        Returns:
+            Dictionary mapping group names to lists of badge strings.
+        """
         subclasses = cls.subclasses()
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:
