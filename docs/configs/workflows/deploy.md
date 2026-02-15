@@ -15,16 +15,16 @@ to GitHub Pages. These jobs run in parallel.
 
 ## Triggers
 
-### WorkflowConfigFile Run
+### Workflow Run
 
-- **WorkflowConfigFile**: `Release`
+- **Workflow**: `Release`
 - **Event**: `completed`
 - **Condition**: Only runs if release succeeded
 
 **Why workflow_run?** Ensures deployment only happens after version is tagged
 and release is created.
 
-### WorkflowConfigFile Dispatch
+### Workflow Dispatch
 
 - **Purpose**: Manual trigger for testing
 

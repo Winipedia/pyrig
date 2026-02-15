@@ -185,13 +185,11 @@ from typing import Any
 from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Directory containing the config file."""
         return Path("config")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         """Expected configuration structure."""
         return {
             "app": {

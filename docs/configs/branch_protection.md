@@ -248,8 +248,7 @@ from typing import Any
 from pyrig.rig.configs.git.branch_protection import RepoProtectionConfigFile
 
 class MyRepoProtectionConfigFile(RepoProtectionConfigFile):
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         """Custom branch protection configuration."""
         config = super()._configs()
         # Require 2 approvals instead of 1

@@ -29,8 +29,7 @@ from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
 import myapp.resources
 
 class MyAppBuilder(PyInstallerBuilder):
-    @classmethod
-    def additional_resource_packages(cls) -> list[ModuleType]:
+    def additional_resource_packages(self) -> list[ModuleType]:
         """Specify packages containing resources to bundle."""
         return [myapp.resources]
 ```
@@ -147,14 +146,12 @@ from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
 import myapp.another_resources_package
 
 class MyAppBuilder(PyInstallerBuilder):
-    @classmethod
-    def additional_resource_packages(cls) -> list[ModuleType]:
+    def additional_resource_packages(self) -> list[ModuleType]:
         return [myapp.another_resources_package]
 
-    @classmethod
-    def app_icon_png_path(cls) -> Path:
+    def app_icon_png_path(self) -> Path:
         """Use custom icon location."""
-        return cls.root_path() / "assets" / "custom-icon.png"
+        return self.root_path() / "assets" / "custom-icon.png"
 ```
 
 ## PyInstaller Options
@@ -163,7 +160,7 @@ The builder generates these PyInstaller options:
 
 | Option        | Value                            | Purpose                                       |
 | ------------- | -------------------------------- | --------------------------------------------- |
-| (positional)  | `cls.main_path()`            | Entry point script (main.py)                  |
+| (positional)  | `self.main_path()`           | Entry point script (main.py)                  |
 | `--name`      | Project name from pyproject.toml | Executable name                               |
 | `--onefile`   | Enabled                          | Single executable file                        |
 | `--noconsole` | Enabled                          | No console window (GUI mode)                  |
@@ -181,12 +178,10 @@ Override `pyinstaller_options` for full control:
 
 ```python
 class MyAppBuilder(PyInstallerBuilder):
-    @classmethod
-    def additional_resource_packages(cls) -> list[ModuleType]:
+    def additional_resource_packages(self) -> list[ModuleType]:
         return [myapp.resources]
 
-    @classmethod
-    def pyinstaller_options(cls, temp_artifacts_dir: Path) -> list[str]:
+    def pyinstaller_options(self, temp_artifacts_dir: Path) -> list[str]:
         """Customize PyInstaller options."""
         options = super().pyinstaller_options(temp_artifacts_dir)
 
@@ -213,8 +208,7 @@ import myapp.templates
 import myapp.data
 
 class MyAppBuilder(PyInstallerBuilder):
-    @classmethod
-    def additional_resource_packages(cls) -> list[ModuleType]:
+    def additional_resource_packages(self) -> list[ModuleType]:
         return [
             myapp.resources,
             myapp.templates,
@@ -227,8 +221,7 @@ class MyAppBuilder(PyInstallerBuilder):
 ```python
 class MyAppBuilder(PyInstallerBuilder):
 
-    @classmethod
-    def additional_resource_packages(cls) -> list[ModuleType]:
+    def additional_resource_packages(self) -> list[ModuleType]:
         return [myapp.resources]
 ```
 

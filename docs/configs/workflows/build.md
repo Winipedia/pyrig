@@ -16,9 +16,9 @@ to create releases.
 
 ## Triggers
 
-### WorkflowConfigFile Run
+### Workflow Run
 
-- **WorkflowConfigFile**: `Health Check`
+- **Workflow**: `Health Check`
 - **Event**: `completed`
 - **Branches**: `main`
 - **Condition**: Only runs if health check succeeded and was not cron-triggered
@@ -30,7 +30,7 @@ main branch.
 shouldn't trigger releases. Only actual code changes (push) should create new
 releases.
 
-### WorkflowConfigFile Dispatch
+### Workflow Dispatch
 
 - **Purpose**: Manual trigger for testing
 

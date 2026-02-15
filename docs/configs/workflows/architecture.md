@@ -82,15 +82,14 @@ Instead of writing YAML manually, you define workflows in Python:
 
 ```python
 class MyWorkflowConfigFile(WorkflowConfigFile):
-    @classmethod
-    def jobs(cls) -> dict[str, Any]:
-        return cls.job(
-            job_func=cls.jobs,
-            runs_on=cls.UBUNTU_LATEST,
+    def jobs(self) -> dict[str, Any]:
+        return self.job(
+            job_func=self.jobs,
+            runs_on=self.UBUNTU_LATEST,
             steps=[
-                cls.step_checkout_repository(),
-                cls.step_setup_package_manager(python_version="3.12"),
-                cls.step_run_tests(),
+                self.step_checkout_repository(),
+                self.step_setup_package_manager(python_version="3.12"),
+                self.step_run_tests(),
             ]
         )
 ```
@@ -240,31 +239,28 @@ from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 class CustomWorkflowConfigFile(WorkflowConfigFile):
     """Custom workflow that runs on push and manual trigger."""
 
-    @classmethod
-    def workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(self) -> dict[str, Any]:
         """Trigger on push and manual dispatch."""
         triggers = super().workflow_triggers()
-        triggers.update(cls.on_push())
+        triggers.update(self.on_push())
         return triggers
 
-    @classmethod
-    def jobs(cls) -> dict[str, Any]:
+    def jobs(self) -> dict[str, Any]:
         """Define the workflow jobs."""
         jobs: dict[str, Any] = {}
-        jobs.update(cls.job_custom_task())
+        jobs.update(self.job_custom_task())
         return jobs
 
-    @classmethod
-    def job_custom_task(cls) -> dict[str, Any]:
+    def job_custom_task(self) -> dict[str, Any]:
         """Custom job that runs a script."""
-        return cls.job(
-            job_func=cls.job_custom_task,
-            runs_on=cls.UBUNTU_LATEST,
+        return self.job(
+            job_func=self.job_custom_task,
+            runs_on=self.UBUNTU_LATEST,
             steps=[
-                cls.step_checkout_repository(),
-                cls.step_setup_version_control(),
-                cls.step_setup_package_manager(python_version="3.12"),
-                cls.step_install_dependencies(),
+                self.step_checkout_repository(),
+                self.step_setup_version_control(),
+                self.step_setup_package_manager(python_version="3.12"),
+                self.step_install_dependencies(),
                 {
                     "name": "Run custom script",
                     "run": "uv run python scripts/custom_task.py",

@@ -98,11 +98,10 @@ from pathlib import Path
 from pyrig.rig.builders.base.base import BuilderConfigFile
 
 class DocumentationBuilder(BuilderConfigFile):
-    @classmethod
-    def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
+    def create_artifacts(self, temp_artifacts_dir: Path) -> None:
         """Build documentation as a zip file."""
 
-        docs_dir = cls.root_path() / "docs"
+        docs_dir = self.root_path() / "docs"
         output_zip = temp_artifacts_dir / "docs"
 
         shutil.make_archive(str(output_zip), 'zip', docs_dir)
