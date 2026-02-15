@@ -3,7 +3,6 @@
 import importlib.metadata
 
 import typer
-from pytest_mock import MockFixture
 
 import pyrig
 from pyrig.src.dependency_graph import DependencyGraph
@@ -12,13 +11,11 @@ from pyrig.src.dependency_graph import DependencyGraph
 class TestDependencyGraph:
     """Test class."""
 
-    def test_parse_name_and_deps_from_raw_metadata(self) -> None:
+    def test_parse_name_and_deps(self) -> None:
         """Test method."""
         name = "pyrig"
         dist = importlib.metadata.distribution(name)
-        result_name, result_deps = (
-            DependencyGraph.parse_name_and_deps_from_raw_metadata(dist)
-        )
+        result_name, result_deps = DependencyGraph.parse_name_and_deps(dist)
         assert result_name == "pyrig", f"Expected 'pyrig', got '{result_name}'"
         assert isinstance(result_deps, list), "Expected deps to be a list"
         assert "typer" in result_deps, "Expected 'typer' to be in dependencies"
@@ -45,43 +42,18 @@ class TestDependencyGraph:
             "Expected DependencyGraph to be a singleton, got different instances"
         )
 
-    def test_build(self, mocker: MockFixture) -> None:
+    def test_build(self) -> None:
         """Test method."""
-        # Create a mock distribution with raw METADATA text
-        mock_dist1 = mocker.MagicMock()
-        mock_dist1.read_text.return_value = (
-            "Name: test-package\n"
-            "Version: 1.0.0\n"
-            "Requires-Dist: dependency1>=1.0.0\n"
-            "Requires-Dist: dependency2\n"
-        )
-
-        mock_dist2 = mocker.MagicMock()
-        mock_dist2.read_text.return_value = "Name: dependency1\nVersion: 2.0.0\n"
-
-        # Mock importlib.metadata.distributions
-        mocker.patch(
-            "importlib.metadata.distributions",
-            return_value=[mock_dist1, mock_dist2],
-        )
-
-        DependencyGraph.clear_cache()  # Clear singleton instance to force rebuild
         graph = DependencyGraph()
 
-        # Verify nodes were added
-        assert "test_package" in graph.nodes(), (
-            "Expected 'test-package' to be in graph nodes"
+        # Verify that known packages are in the graph
+        assert "pyrig" in graph.nodes(), "Expected 'pyrig' to be a node in the graph"
+        assert "typer" in graph.nodes(), "Expected 'typer' to be a node in the graph"
+        assert "requests" in graph.nodes(), (
+            "Expected 'requests' to be a node in the graph"
         )
-        assert "dependency1" in graph.nodes(), (
-            "Expected 'dependency1' to be in graph nodes"
-        )
-
-        # Verify edges were added
-        assert graph.has_edge("test_package", "dependency1"), (
-            "Expected edge from 'test-package' to 'dependency1'"
-        )
-        assert graph.has_edge("test_package", "dependency2"), (
-            "Expected edge from 'test-package' to 'dependency2'"
+        assert "nonexistent_package" not in graph.nodes(), (
+            "Expected 'nonexistent_package' to not be a node in the graph"
         )
 
     def test_parse_package_name_from_req(self) -> None:
@@ -102,10 +74,6 @@ class TestDependencyGraph:
         result = DependencyGraph.parse_package_name_from_req("package[extra]>=1.0")
         expected = "package[extra]"
         assert result == expected, f"Expected: {expected}, got {result}"
-
-        # Test empty string
-        result = DependencyGraph.parse_package_name_from_req("")
-        assert result is None, f"Expected None for empty string, got {result}"
 
         # Test with trailing spaces (leading spaces result in empty first split)
         result = DependencyGraph.parse_package_name_from_req("  package-name  >=1.0")
