@@ -56,6 +56,7 @@ def requests_get_text_cached(
     Returns only the response text to avoid caching the full Response object.
     Calls raise_for_status() before returning.
     """
+    logger.debug("Making HTTP GET request with args=%s, kwargs=%s", args, kwargs)
     response = requests.get(*args, timeout=timeout, **kwargs)
     response.raise_for_status()
     return response.text
