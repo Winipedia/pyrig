@@ -22,8 +22,7 @@ See Also:
     pyrig.rig.utils.packages.src_package_is_pyrig: Package detection utility
 """
 
-from typing import Any
-
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyprojectConfigFile
 from pyrig.rig.utils.packages import src_package_is_pyrig
 
@@ -68,7 +67,7 @@ if src_package_is_pyrig():
             )
             return [*dev_statuses, *intended_audiences, *topics, *classifiers]
 
-        def _configs(self) -> dict[str, Any]:
+        def _configs(self) -> ConfigDict:
             """Generate complete pyproject.toml config with pyrig-specific keywords.
 
             Extends base configuration by adding keywords relevant to pyrig's

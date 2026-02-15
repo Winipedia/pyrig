@@ -244,11 +244,11 @@ you via the `protect-repo` command.
 To customize branch protection rules, subclass `RepoProtectionConfigFile`:
 
 ```python
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.git.branch_protection import RepoProtectionConfigFile
 
 class MyRepoProtectionConfigFile(RepoProtectionConfigFile):
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Custom branch protection configuration."""
         config = super()._configs()
         # Require 2 approvals instead of 1

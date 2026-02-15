@@ -9,8 +9,8 @@ See Also:
 """
 
 from pathlib import Path
-from typing import Any
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 
 
@@ -32,7 +32,7 @@ class ConfigConfigFile(DictYmlConfigFile):
         """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Return issue template config YAML structure."""
         return {"blank_issues_enabled": False}
 

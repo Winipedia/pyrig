@@ -20,6 +20,7 @@ See Also:
 
 from typing import Any
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
 from pyrig.rig.tools.version_controller import VersionController
@@ -59,7 +60,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             Generates the Containerfile used for image builds
     """
 
-    def workflow_triggers(self) -> dict[str, Any]:
+    def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 
         Returns:
@@ -74,18 +75,18 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         )
         return triggers
 
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> ConfigDict:
         """Get the workflow jobs.
 
         Returns:
             Dict with build job.
         """
-        jobs: dict[str, Any] = {}
+        jobs: ConfigDict = {}
         jobs.update(self.job_build_artifacts())
         jobs.update(self.job_build_container_image())
         return jobs
 
-    def job_build_artifacts(self) -> dict[str, Any]:
+    def job_build_artifacts(self) -> ConfigDict:
         """Get the build job that runs across OS matrix.
 
         Returns:
@@ -103,7 +104,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_build_artifacts(),
         )
 
-    def job_build_container_image(self) -> dict[str, Any]:
+    def job_build_container_image(self) -> ConfigDict:
         """Get the build job that builds the container image.
 
         Returns:

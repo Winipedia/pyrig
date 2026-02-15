@@ -26,8 +26,8 @@ Example:
 """
 
 from abc import abstractmethod
-from typing import Any
 
+from pyrig.rig.configs.base.base import ConfigList
 from pyrig.rig.configs.base.list_cf import ListConfigFile
 
 
@@ -77,7 +77,7 @@ class StringConfigFile(ListConfigFile):
         string = self.make_string_from_lines(config)
         self.path().write_text(string, encoding="utf-8")
 
-    def merge_configs(self) -> list[Any]:
+    def merge_configs(self) -> ConfigList:
         """Merge expected config lines with existing file content.
 
         Place expected lines first, followed by existing content. If

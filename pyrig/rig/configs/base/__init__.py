@@ -51,7 +51,7 @@ Example:
     Using format-specific base classes::
 
         from pathlib import Path
-        from typing import Any
+        from pyrig.rig.configs.base.base import ConfigDict
         from pyrig.rig.configs.base.toml import TomlConfigFile
 
         class MyConfigFile(TomlConfigFile):
@@ -62,7 +62,7 @@ Example:
                 return Path()
 
 
-            def _configs(self) -> dict[str, Any]:
+            def _configs(self) -> ConfigDict:
                 return {"setting": "value"}
 
     Using specialized base classes::

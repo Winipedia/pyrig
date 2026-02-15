@@ -11,8 +11,8 @@ See Also:
 """
 
 from pathlib import Path
-from typing import Any
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -37,7 +37,7 @@ class MkdocsConfigFile(DictYmlConfigFile):
         """Return the project root directory."""
         return Path()
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Build the complete mkdocs.yml configuration.
 
         Include Material theme, navigation (Home, API), plugins (search,

@@ -29,7 +29,7 @@ def my_test_json_config_file(
     return MyTestDictJsonConfigFile
 
 
-class TestDictJsonConfigFile:
+class TestJsonConfigFile:
     """Test class."""
 
     def test__load(self, my_test_json_config_file: type[DictJsonConfigFile]) -> None:
@@ -52,5 +52,5 @@ class TestDictJsonConfigFile:
         assert extension == "json"
 
 
-class TestDictDictJsonConfigFile:
+class TestDictJsonConfigFile:
     """Test class."""

@@ -1,7 +1,7 @@
 """Dict-based configuration file base class.
 
 Provides DictConfigFile as an intermediate abstract class for configuration files
-that use dict[str, Any] as their configuration type.
+that use ConfigDict as their configuration type.
 
 Example:
     >>> from pathlib import Path
@@ -18,27 +18,25 @@ Example:
     ...         return "conf"
     ...
     ...
-    ...     def _load(self) -> dict[str, Any]:
+    ...     def _load(self) -> ConfigDict:
     ...         return {}
     ...
     ...
-    ...     def _dump(self, config: dict[str, Any]) -> None:
+    ...     def _dump(self, config: ConfigDict) -> None:
     ...         pass
     ...
     ...
-    ...     def _configs(self) -> dict[str, Any]:
+    ...     def _configs(self) -> ConfigDict:
     ...         return {"key": "value"}
 """
 
-from typing import Any
-
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.base import ConfigDict, ConfigFile
 
 
-class DictConfigFile(ConfigFile[dict[str, Any]]):
+class DictConfigFile(ConfigFile[ConfigDict]):
     """Abstract base class for dict-based configuration files.
 
-    Specifies dict[str, Any] as the configuration type. Subclasses inherit
+    Specifies ConfigDict as the configuration type. Subclasses inherit
     proper typing for load(), dump(), configs(), etc.
 
     Subclasses must implement:

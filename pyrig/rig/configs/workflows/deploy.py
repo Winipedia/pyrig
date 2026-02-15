@@ -19,6 +19,7 @@ See Also:
 
 from typing import Any
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.workflows.release import ReleaseWorkflowConfigFile
 
@@ -61,7 +62,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         PyPI API tokens: https://pypi.org/help/#apitoken
     """
 
-    def workflow_triggers(self) -> dict[str, Any]:
+    def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 
         Returns:
@@ -75,18 +76,18 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         )
         return triggers
 
-    def jobs(self) -> dict[str, Any]:
+    def jobs(self) -> ConfigDict:
         """Get the workflow jobs.
 
         Returns:
             Dict with the publish and deploy jobs.
         """
-        jobs: dict[str, Any] = {}
+        jobs: ConfigDict = {}
         jobs.update(self.job_publish_package())
         jobs.update(self.job_deploy_documentation())
         return jobs
 
-    def job_publish_package(self) -> dict[str, Any]:
+    def job_publish_package(self) -> ConfigDict:
         """Get the publish job configuration.
 
         Returns:
@@ -98,7 +99,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             if_condition=self.if_workflow_run_is_success(),
         )
 
-    def job_deploy_documentation(self) -> dict[str, Any]:
+    def job_deploy_documentation(self) -> ConfigDict:
         """Get the deploy documentation job configuration.
 
         Returns:

@@ -37,7 +37,7 @@ Example:
                 return Path()
 
 
-            def _configs(self) -> dict[str, Any]:
+            def _configs(self) -> ConfigDict:
                 '''Define expected configuration.'''
                 return {
                     "app": {
@@ -104,7 +104,7 @@ class ConfigFile[ConfigT: ConfigData](SingletonDependencySubclass):
     customizations while ensuring required configuration is present.
 
     Type Parameters:
-        ConfigT: The configuration type (dict[str, Any] or list[Any]).
+        ConfigT: The configuration type (ConfigDict or ConfigList).
 
     Subclass Requirements:
         Must implement (internal methods with underscore prefix):
@@ -342,7 +342,7 @@ class ConfigFile[ConfigT: ConfigData](SingletonDependencySubclass):
         return current_config
 
     def add_missing_dict_val(
-        self, expected_dict: dict[str, Any], actual_dict: dict[str, Any], key: str
+        self, expected_dict: ConfigDict, actual_dict: ConfigDict, key: str
     ) -> None:
         """Merge dict value during config merging (modifies actual_dict in place).
 
@@ -367,7 +367,7 @@ class ConfigFile[ConfigT: ConfigData](SingletonDependencySubclass):
             actual_dict[key] = expected_val
 
     def insert_missing_list_val(
-        self, expected_list: list[Any], actual_list: list[Any], index: int
+        self, expected_list: ConfigList, actual_list: ConfigList, index: int
     ) -> None:
         """Insert missing list value during config merging (modifies in place).
 

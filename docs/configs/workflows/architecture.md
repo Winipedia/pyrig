@@ -81,8 +81,11 @@ stateDiagram-v2
 Instead of writing YAML manually, you define workflows in Python:
 
 ```python
+from pyrig.rig.configs.base.base import ConfigDict
+from pyrig.rig.configs.base.workflow import WorkflowConfigFile
+
 class MyWorkflowConfigFile(WorkflowConfigFile):
-    def jobs(self) -> dict[str, Any]:
+  def jobs(self) -> ConfigDict:
         return self.job(
             job_func=self.jobs,
             runs_on=self.UBUNTU_LATEST,
@@ -233,25 +236,25 @@ To create your own workflow, subclass `WorkflowConfigFile` and implement `jobs()
 
 ```python
 # myapp/rig/configs/workflows/custom.py
-from typing import Any
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 
 class CustomWorkflowConfigFile(WorkflowConfigFile):
     """Custom workflow that runs on push and manual trigger."""
 
-    def workflow_triggers(self) -> dict[str, Any]:
+  def workflow_triggers(self) -> ConfigDict:
         """Trigger on push and manual dispatch."""
         triggers = super().workflow_triggers()
         triggers.update(self.on_push())
         return triggers
 
-    def jobs(self) -> dict[str, Any]:
+  def jobs(self) -> ConfigDict:
         """Define the workflow jobs."""
-        jobs: dict[str, Any] = {}
+    jobs: ConfigDict = {}
         jobs.update(self.job_custom_task())
         return jobs
 
-    def job_custom_task(self) -> dict[str, Any]:
+  def job_custom_task(self) -> ConfigDict:
         """Custom job that runs a script."""
         return self.job(
             job_func=self.job_custom_task,

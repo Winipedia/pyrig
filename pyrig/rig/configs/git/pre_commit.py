@@ -14,6 +14,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.mdlinter import MDLinter
@@ -63,7 +64,7 @@ class PrekConfigFile(TomlConfigFile):
         pass_filenames: bool = False,
         always_run: bool = True,
         **kwargs: Any,
-    ) -> dict[str, Any]:
+    ) -> ConfigDict:
         """Create a prek hook configuration.
 
         Args:
@@ -75,9 +76,9 @@ class PrekConfigFile(TomlConfigFile):
             **kwargs (Any): Additional hook options (files, exclude, stages).
 
         Returns:
-            dict[str, Any]: Hook configuration for prek.toml.
+            ConfigDict: Hook configuration for prek.toml.
         """
-        hook: dict[str, Any] = {
+        hook: ConfigDict = {
             "id": name,
             "name": name,
             "entry": str(args),
@@ -88,7 +89,7 @@ class PrekConfigFile(TomlConfigFile):
         }
         return hook
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         """Get the complete prek configuration.
 
         Generates prek.toml with local hooks: format-code (ruff format),
@@ -96,12 +97,12 @@ class PrekConfigFile(TomlConfigFile):
         (bandit), check-markdown (rumdl check).
 
         Returns:
-            dict[str, Any]: Complete prek configuration.
+            ConfigDict: Complete prek configuration.
 
         Note:
             All hooks use system-installed tools (no remote repos).
         """
-        hooks: list[dict[str, Any]] = [
+        hooks: list[ConfigDict] = [
             self.hook(
                 "format-code",
                 Linter.I.format_args(),

@@ -14,7 +14,7 @@ Example:
     ...         return Path()
     ...
     ...
-    ...     def _configs(self) -> dict[str, Any]:
+    ...     def _configs(self) -> ConfigDict:
     ...         return {"site_name": "My Project", "theme": {"name": "material"}}
 """
 
