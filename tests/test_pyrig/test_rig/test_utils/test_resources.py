@@ -9,7 +9,7 @@ from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.utils import resources
 from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.rig.utils.resources import (
-    requests_get_cached,
+    requests_get_text_cached,
     return_resource_content_on_fetch_error,
     return_resource_file_content_on_exceptions_or_in_dep,
 )
@@ -78,8 +78,8 @@ def test_return_resource_content_on_fetch_error(
     mock.assert_called_once()
 
 
-def test_requests_get_cached() -> None:
+def test_requests_get_text_cached() -> None:
     """Test function."""
-    expected = 200
-    response = requests_get_cached("https://httpbin.org/get")
-    assert response.status_code == expected
+    response_text = requests_get_text_cached("https://httpbin.org/get")
+    assert isinstance(response_text, str)
+    assert len(response_text) > 0

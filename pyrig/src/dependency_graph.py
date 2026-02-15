@@ -8,11 +8,10 @@ on a given package, facilitating pyrig's multi-package discovery system.
 
 import importlib.metadata
 import logging
-from collections.abc import Iterable
 from types import ModuleType
 
 from pyrig.src.graph import DiGraph
-from pyrig.src.modules.module import import_module_with_default
+from pyrig.src.modules.module import import_modules
 from pyrig.src.singleton import Singleton
 from pyrig.src.string_ import package_req_name_split_pattern
 
@@ -33,40 +32,50 @@ class DependencyGraph(DiGraph, Singleton):
         """Build the graph from installed Python distributions."""
         logger.debug("Building dependency graph from installed distributions")
         for dist in importlib.metadata.distributions():
-            name = self.parse_distname_from_metadata(dist)
-            self.add_node(name)
-
-            requires = dist.requires or []
-            for req in requires:
-                dep = self.parse_package_name_from_req(req)
-                if dep:
+            name, deps = self.parse_name_and_deps_from_raw_metadata(dist)
+            if name:
+                self.add_node(name)
+                for dep in deps:
                     self.add_edge(name, dep)  # package → dependency
         logger.debug("Dependency graph built with %d packages", len(self.nodes()))
 
     @staticmethod
-    def parse_distname_from_metadata(dist: importlib.metadata.Distribution) -> str:
-        """Extract and normalize distribution name from metadata.
+    def parse_name_and_deps_from_raw_metadata(
+        dist: importlib.metadata.Distribution,
+    ) -> tuple[str, list[str]]:
+        """Extract package name and dependencies from raw distribution metadata.
+
+        Parses the ``METADATA`` file directly as plain text instead of using
+        ``dist.metadata`` or ``dist.requires``, which internally delegate to
+        Python's ``email.message_from_string()``. The ``email.parser`` module
+        implements full RFC 2822 header parsing — designed for email messages —
+        and is significantly slower than the simple line-based extraction needed
+        here, where we only care about ``Name:`` and ``Requires-Dist:`` headers.
+
+        The ``METADATA`` file follows the
+        `Core Metadata specification <https://packaging.python.org/en/latest/specifications/core-metadata/>`_
+        with a simple ``Key: Value`` format (one header per line). ``Name``
+        always appears exactly once. ``Requires-Dist`` appears zero or more
+        times, each listing one dependency requirement string.
 
         Args:
-            dist: Distribution object.
+            dist: Distribution object to extract metadata from.
 
         Returns:
-            Normalized package name (lowercase, underscores).
+            Tuple of (normalized_name, list_of_normalized_dependency_names).
+            Name is empty string if not found. Dependencies list may be empty.
         """
-        # replace - with _ to handle packages like pyrig
-        name: str = dist.metadata["Name"]
-        return DependencyGraph.normalize_package_name(name)
-
-    @staticmethod
-    def all_dependencies() -> list[str]:
-        """Get all installed package names.
-
-        Returns:
-            List of normalized package names.
-        """
-        dists = importlib.metadata.distributions()
-        # extract the name from the metadata
-        return [DependencyGraph.parse_distname_from_metadata(dist) for dist in dists]
+        text = dist.read_text("METADATA") or ""
+        name = ""
+        deps: list[str] = []
+        for line in text.splitlines():
+            if line.startswith("Name: "):
+                name = DependencyGraph.normalize_package_name(line[6:])
+            elif line.startswith("Requires-Dist: "):
+                dep = DependencyGraph.parse_package_name_from_req(line[15:])
+                if dep:
+                    deps.append(dep)
+        return name, deps
 
     @staticmethod
     def normalize_package_name(name: str) -> str:
@@ -136,21 +145,4 @@ class DependencyGraph(DiGraph, Singleton):
 
         logger.debug("Found packages depending on %s: %s", package, dependents)
 
-        return self.import_packages(dependents)
-
-    @staticmethod
-    def import_packages(names: Iterable[str]) -> list[ModuleType]:
-        """Import packages by name, skipping import failures.
-
-        Args:
-            names: Package names to import.
-
-        Returns:
-            List of successfully imported modules.
-        """
-        modules: list[ModuleType] = []
-        for name in names:
-            module = import_module_with_default(name)
-            if module is not None:
-                modules.append(module)
-        return modules
+        return import_modules(dependents)

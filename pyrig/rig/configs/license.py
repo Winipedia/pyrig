@@ -9,6 +9,7 @@ See Also:
     https://spdx.org/licenses/
 """
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -18,7 +19,7 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.rig.utils.resources import (
-    requests_get_cached,
+    requests_get_text_cached,
     return_resource_content_on_fetch_error,
 )
 from pyrig.src.string_ import make_linked_badge_markdown
@@ -74,9 +75,7 @@ class LicenseConfigFile(StringConfigFile):
     def mit_license(self) -> str:
         """Fetch MIT license from GitHub SPDX API (with fallback)."""
         url = "https://api.github.com/licenses/mit"
-        resp = requests_get_cached(url)
-        resp.raise_for_status()
-        data = resp.json()
+        data = json.loads(requests_get_text_cached(url))
         mit_license: str = data["body"]
         return mit_license
 

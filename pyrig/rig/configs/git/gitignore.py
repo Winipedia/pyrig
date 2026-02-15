@@ -17,7 +17,7 @@ from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import (
-    requests_get_cached,
+    requests_get_text_cached,
     return_resource_content_on_fetch_error,
 )
 
@@ -107,9 +107,7 @@ class GitignoreConfigFile(StringConfigFile):
             Makes HTTP request with 10s timeout. Decorator provides fallback.
         """
         url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
-        res = requests_get_cached(url)
-        res.raise_for_status()
-        return res.text
+        return requests_get_text_cached(url)
 
     def github_python_gitignore_lines(self) -> list[str]:
         """Fetch GitHub's standard Python gitignore patterns as a list.
