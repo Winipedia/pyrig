@@ -37,7 +37,7 @@ class PreCommitter(Tool):
         return "prek"
 
     def group(self) -> str:
-        """Get tool group.
+        """Returns the group the tool belongs to.
 
         Returns:
             'code-quality'
