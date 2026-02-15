@@ -225,9 +225,22 @@ class classproperty[T]:  # noqa: N801
     __slots__ = ("fget",)
 
     def __init__(self, fget: Callable[..., T]) -> None:
-        """Initialize with the getter method."""
+        """Initialize with the getter method.
+
+        Args:
+            fget: The method to wrap as a class property.
+        """
         self.fget = fget
 
     def __get__(self, obj: object, owner: type) -> T:
-        """Return the property value by invoking the getter with the owner class."""
+        """Return the property value by invoking the getter with the owner class.
+
+        Args:
+            obj: The instance that the property is accessed from (unused for
+                class properties).
+            owner: The owner class that the property is accessed from.
+
+        Returns:
+            The property value computed by the getter method.
+        """
         return self.fget(owner)

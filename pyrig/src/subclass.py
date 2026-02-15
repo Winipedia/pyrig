@@ -107,7 +107,11 @@ class DependencySubclass(ABC):
 
     @classproperty
     def I(cls) -> Self:  # noqa: E743, N802, N805
-        """Get an instance of the final leaf subclass."""
+        """Get an instance of the final leaf subclass.
+
+        Returns:
+            An instance of the final leaf subclass.
+        """
         return cls.L()
 
 
