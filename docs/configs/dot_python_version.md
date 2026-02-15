@@ -65,7 +65,7 @@ The version is automatically determined from the `requires-python` field in
 `pyproject.toml`. Pyrig extracts the first (minimum) supported Python version
 and writes it to the file.
 
-Example: If `requires-python = ">=3.10"`, the file contains `3.10`.
+Example: If `requires-python = ">=3.12"`, the file contains `3.12`.
 
 ## Usage
 
@@ -78,7 +78,7 @@ uv run pyrig mkroot
 ### File Content
 
 ```text
-3.10
+3.12
 ```
 
 Just the version number, nothing else.
