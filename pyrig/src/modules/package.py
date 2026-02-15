@@ -330,7 +330,7 @@ def discover_subclasses_across_dependents[T: type](
         logger.debug("Discarding parent classes. Only keeping leaf classes...")
         subclasses = discard_parent_classes(subclasses)
     logger.debug(
-        "Found final leaf subclasses of %s: %s",
+        "Found subclasses of %s: %s",
         cls.__name__,
         [c.__name__ for c in subclasses],
     )
