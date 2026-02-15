@@ -45,7 +45,11 @@ class DocsBuilder(Tool):
         return ToolGroup.DOCUMENTATION
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and link URLs."""
+        """Return the badge and link URLs.
+
+        Returns:
+            Tuple containing badge image URL and tool homepage URL.
+        """
         return (
             "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white",
             "https://www.mkdocs.org",
