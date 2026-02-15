@@ -6,8 +6,8 @@ GitHub Pages.
 ## Overview
 
 **File**: `.github/workflows/deploy.yml`
-**Class**: `DeployWorkflow` in `pyrig.rig.configs.workflows.deploy`
-**Inherits**: `Workflow`
+**Class**: `DeployWorkflowConfigFile` in `pyrig.rig.configs.workflows.deploy`
+**Inherits**: `WorkflowConfigFile`
 
 The deploy workflow is the final step in the CI/CD pipeline. It runs after
 successful releases and publishes the package to PyPI and deploys documentation
@@ -15,16 +15,16 @@ to GitHub Pages. These jobs run in parallel.
 
 ## Triggers
 
-### Workflow Run
+### WorkflowConfigFile Run
 
-- **Workflow**: `Release`
+- **WorkflowConfigFile**: `Release`
 - **Event**: `completed`
 - **Condition**: Only runs if release succeeded
 
 **Why workflow_run?** Ensures deployment only happens after version is tagged
 and release is created.
 
-### Workflow Dispatch
+### WorkflowConfigFile Dispatch
 
 - **Purpose**: Manual trigger for testing
 

@@ -18,18 +18,15 @@ def my_test_string_config_file(
     class MyTestStringConfigFile(config_file_factory(StringConfigFile)):  # type: ignore [misc]
         """Test text config file with tmp_path override."""
 
-        @classmethod
-        def parent_path(cls) -> Path:
+        def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
 
-        @classmethod
-        def lines(cls) -> list[str]:
+        def lines(self) -> list[str]:
             """Get the content string."""
             return ["Test content."]
 
-        @classmethod
-        def extension(cls) -> str:
+        def extension(self) -> str:
             """Get the file extension."""
             return "txt"
 
@@ -46,41 +43,47 @@ class TestStringConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            my_test_string_config_file.validate()
+            my_test_string_config_file().validate()
 
-            my_test_string_config_file.dump(["New content."])
-            added_configs = my_test_string_config_file.merge_configs()
+            my_test_string_config_file().dump(["New content."])
+            added_configs = my_test_string_config_file().merge_configs()
             assert added_configs == ["Test content.", "", "New content."]
 
-    def test_make_string_from_lines(self) -> None:
+    def test_make_string_from_lines(
+        self, my_test_string_config_file: type[StringConfigFile]
+    ) -> None:
         """Test method."""
         lines = ["Test content.", "Second line."]
-        string = StringConfigFile.make_string_from_lines(lines)
+        string = my_test_string_config_file().make_string_from_lines(lines)
         assert string == "Test content.\nSecond line."
 
-    def test_should_override_content(self) -> None:
+    def test_should_override_content(
+        self, my_test_string_config_file: type[StringConfigFile]
+    ) -> None:
         """Test method."""
-        assert not StringConfigFile.should_override_content(), "Expected False"
+        assert not my_test_string_config_file().should_override_content(), (
+            "Expected False"
+        )
 
     def test_lines(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
-        lines = my_test_string_config_file.lines()
+        lines = my_test_string_config_file().lines()
         assert lines == ["Test content."]
 
     def test__load(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
-        my_test_string_config_file.validate()
-        loaded = my_test_string_config_file.load()
+        my_test_string_config_file().validate()
+        loaded = my_test_string_config_file().load()
         assert loaded == ["Test content."]
 
     def test__dump(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
-        my_test_string_config_file.validate()
+        my_test_string_config_file().validate()
         # Test successful dump
         content = ["New content."]
-        my_test_string_config_file.dump(content)
-        loaded = my_test_string_config_file.load()
-        content = my_test_string_config_file.path().read_text()
+        my_test_string_config_file().dump(content)
+        loaded = my_test_string_config_file().load()
+        content = my_test_string_config_file().path().read_text()
         # assert has empyt line at the end
         assert content.endswith("\n")
         # load doesnt preserve the last "\n" as an "" in list bc of splitlines()
@@ -88,7 +91,7 @@ class TestStringConfigFile:
 
     def test__configs(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
-        configs = my_test_string_config_file.configs()
+        configs = my_test_string_config_file().configs()
         # empty line is added to the end of the file
         assert configs == ["Test content."]
 
@@ -96,14 +99,14 @@ class TestStringConfigFile:
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
         """Test method."""
-        my_test_string_config_file.validate()
-        is_correct = my_test_string_config_file.is_correct()
+        my_test_string_config_file().validate()
+        is_correct = my_test_string_config_file().is_correct()
         assert is_correct, "Expected config to be correct after validation"
 
     def test_file_content(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
         """Test method."""
-        my_test_string_config_file.validate()
-        file_content = my_test_string_config_file.file_content()
+        my_test_string_config_file().validate()
+        file_content = my_test_string_config_file().file_content()
         assert file_content == "Test content.", "Expected 'Test content.'"

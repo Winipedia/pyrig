@@ -1,6 +1,6 @@
 """GitHub Actions workflow for creating releases.
 
-This module provides the ReleaseWorkflow class for creating a GitHub Actions
+This module provides the ReleaseWorkflowConfigFile class for creating a GitHub Actions
 workflow that creates GitHub releases with version tags and changelogs after
 successful artifact builds.
 
@@ -13,26 +13,26 @@ The workflow:
 This enables automated semantic versioning and release management.
 
 See Also:
-    pyrig.rig.configs.workflows.build.BuildWorkflow
+    pyrig.rig.configs.workflows.build.BuildWorkflowConfigFile
         Must complete successfully before this workflow runs
-    pyrig.rig.configs.workflows.deploy.DeployWorkflow
+    pyrig.rig.configs.workflows.deploy.DeployWorkflowConfigFile
         Runs after this workflow to deploy to PyPI and GitHub Pages
 """
 
 from typing import Any
 
-from pyrig.rig.configs.base.workflow import Workflow
-from pyrig.rig.configs.workflows.build import BuildWorkflow
+from pyrig.rig.configs.base.workflow import WorkflowConfigFile
+from pyrig.rig.configs.workflows.build import BuildWorkflowConfigFile
 
 
-class ReleaseWorkflow(Workflow):
+class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     """GitHub Actions workflow for creating GitHub releases.
 
     Generates a .github/workflows/release.yml file that creates GitHub releases
     with version tags and changelogs after successful builds.
 
     The workflow:
-        - Triggers after BuildWorkflow completes successfully
+        - Triggers after BuildWorkflowConfigFile completes successfully
         - Updates the project version, pushes commits, and creates/pushes a git tag
         - Downloads artifacts (wheels, container images)
           from the triggering build workflow run
@@ -52,20 +52,19 @@ class ReleaseWorkflow(Workflow):
     Example:
         Generate release.yml workflow:
 
-        >>> from pyrig.rig.configs.workflows.release import ReleaseWorkflow
-        >>> ReleaseWorkflow.validate()
+        >>> from pyrig.rig.configs.workflows.release import ReleaseWorkflowConfigFile
+        >>> ReleaseWorkflowConfigFile.I.validate()
 
     See Also:
-        pyrig.rig.configs.workflows.build.BuildWorkflow
+        pyrig.rig.configs.workflows.build.BuildWorkflowConfigFile
             Triggers this workflow on completion
-        pyrig.rig.configs.workflows.deploy.DeployWorkflow
+        pyrig.rig.configs.workflows.deploy.DeployWorkflowConfigFile
             Runs after this workflow completes
         pyrig.rig.configs.pyproject.PyprojectConfigFile
             Provides version information for tagging
     """
 
-    @classmethod
-    def workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(self) -> dict[str, Any]:
         """Get the workflow triggers.
 
         Returns:
@@ -73,14 +72,13 @@ class ReleaseWorkflow(Workflow):
         """
         triggers = super().workflow_triggers()
         triggers.update(
-            cls.on_workflow_run(
-                workflows=[BuildWorkflow.workflow_name()],
+            self.on_workflow_run(
+                workflows=[BuildWorkflowConfigFile.I.workflow_name()],
             )
         )
         return triggers
 
-    @classmethod
-    def permissions(cls) -> dict[str, Any]:
+    def permissions(self) -> dict[str, Any]:
         """Get the workflow permissions.
 
         Returns:
@@ -91,44 +89,41 @@ class ReleaseWorkflow(Workflow):
         permissions["actions"] = "read"
         return permissions
 
-    @classmethod
-    def jobs(cls) -> dict[str, Any]:
+    def jobs(self) -> dict[str, Any]:
         """Get the workflow jobs.
 
         Returns:
             Dict with release job.
         """
         jobs: dict[str, Any] = {}
-        jobs.update(cls.job_release())
+        jobs.update(self.job_release())
         return jobs
 
-    @classmethod
-    def job_release(cls) -> dict[str, Any]:
+    def job_release(self) -> dict[str, Any]:
         """Get the release job that creates the GitHub release.
 
         Returns:
             Job configuration for creating releases.
         """
-        return cls.job(
-            job_func=cls.job_release,
-            if_condition=cls.if_workflow_run_is_success(),
-            steps=cls.steps_release(),
+        return self.job(
+            job_func=self.job_release,
+            if_condition=self.if_workflow_run_is_success(),
+            steps=self.steps_release(),
         )
 
-    @classmethod
-    def steps_release(cls) -> list[dict[str, Any]]:
+    def steps_release(self) -> list[dict[str, Any]]:
         """Get the steps for creating the release.
 
         Returns:
             List of steps for tagging, changelog, and release creation.
         """
         return [
-            *cls.steps_core_installed_setup(repo_token=True, patch_version=True),
-            cls.step_commit_added_changes(),
-            cls.step_push_commits(),
-            cls.step_create_and_push_tag(),
-            cls.step_extract_version(),
-            cls.step_download_artifacts_from_workflow_run(),
-            cls.step_build_changelog(),
-            cls.step_create_release(),
+            *self.steps_core_installed_setup(repo_token=True, patch_version=True),
+            self.step_commit_added_changes(),
+            self.step_push_commits(),
+            self.step_create_and_push_tag(),
+            self.step_extract_version(),
+            self.step_download_artifacts_from_workflow_run(),
+            self.step_build_changelog(),
+            self.step_create_release(),
         ]

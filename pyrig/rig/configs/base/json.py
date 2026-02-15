@@ -9,12 +9,12 @@ Example:
     >>> from pyrig.rig.configs.base.json import JsonConfigFile
     >>>
     >>> class PackageJsonFile(JsonConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path()
     ...
-    ...     @classmethod
-    ...     def _configs(cls) -> dict[str, Any]:
+    ...
+    ...     def _configs(self) -> dict[str, Any]:
     ...         return {"name": "my-package", "version": "1.0.0"}
 """
 
@@ -38,48 +38,45 @@ class JsonConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         Dict configuration:
 
         >>> class MyConfigFile(JsonConfigFile):
-        ...     @classmethod
-        ...     def parent_path(cls) -> Path:
+        ...
+        ...     def parent_path(self) -> Path:
         ...         return Path()
         ...
-        ...     @classmethod
-        ...     def _configs(cls) -> dict[str, Any]:
+        ...
+        ...     def _configs(self) -> dict[str, Any]:
         ...         return {"setting": "value", "nested": {"key": "value"}}
 
         List configuration:
 
         >>> class MyListConfigFile(JsonConfigFile):
-        ...     @classmethod
-        ...     def parent_path(cls) -> Path:
+        ...
+        ...     def parent_path(self) -> Path:
         ...         return Path()
         ...
-        ...     @classmethod
-        ...     def _configs(cls) -> list[Any]:
+        ...
+        ...     def _configs(self) -> list[Any]:
         ...         return ["item1", "item2", {"key": "value"}]
     """
 
-    @classmethod
-    def _load(cls) -> dict[str, Any] | list[Any]:
+    def _load(self) -> dict[str, Any] | list[Any]:
         """Load and parse the JSON file.
 
         Returns:
             Parsed JSON content as dict or list.
         """
-        path = cls.path()
+        path = self.path()
         data: dict[str, Any] | list[Any] = json.loads(path.read_text(encoding="utf-8"))
         return data
 
-    @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(self, config: dict[str, Any] | list[Any]) -> None:
         """Write configuration to JSON file with 4-space indentation.
 
         Args:
             config: Configuration dict or list to write.
         """
-        with cls.path().open("w") as f:
+        with self.path().open("w") as f:
             json.dump(config, f, indent=4)
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return "json"."""
         return "json"

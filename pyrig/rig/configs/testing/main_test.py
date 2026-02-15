@@ -27,7 +27,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
     Examples:
         Generate test_main.py::
 
-            MainTestConfigFile.validate()
+            MainTestConfigFile.I.validate()
 
         Generated test::
 
@@ -43,8 +43,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
         pyrig.rig.tests.mirror_test.MirrorTestConfigFile
     '''
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Get the parent directory path for test_main.py.
 
         Returns:
@@ -68,8 +67,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
         )
         return test_module_path.parent
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Get the test filename.
 
         Returns:
@@ -77,8 +75,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
         """
         return "test_main"
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Get the test file content.
 
         Returns:
@@ -94,8 +91,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
             "",
         ]
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Check if the test file is valid.
 
         Returns:
@@ -104,4 +100,4 @@ class MainTestConfigFile(PythonPackageConfigFile):
         Note:
             Reads file from disk to check content.
         """
-        return super().is_correct() or "def test_main" in cls.file_content()
+        return super().is_correct() or "def test_main" in self.file_content()

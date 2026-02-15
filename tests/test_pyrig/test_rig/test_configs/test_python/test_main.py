@@ -30,23 +30,23 @@ class TestMainConfigFile:
         """Test method."""
         spy = mocker.spy(
             MainConfigFile,
-            MainConfigFile.delete_root_main.__name__,
+            MainConfigFile.I.delete_root_main.__name__,
         )
-        MainConfigFile.create_file()
+        MainConfigFile.I.create_file()
         spy.assert_called_once()
 
     def test_src_module(self) -> None:
         """Test method."""
-        module = MainConfigFile.src_module()
+        module = MainConfigFile.I.src_module()
         assert module == main
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert MainConfigFile.is_correct()
+        assert MainConfigFile.I.is_correct()
 
     def test_delete_root_main(self, tmp_path: Path) -> None:
         """Test method."""
         with chdir(tmp_path):
             Path("main.py").write_text("test")
-            MainConfigFile.delete_root_main()
+            MainConfigFile.I.delete_root_main()
             assert not Path("main.py").exists(), "Expected main.py to be deleted"

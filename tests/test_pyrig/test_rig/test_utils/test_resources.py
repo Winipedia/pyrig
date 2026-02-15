@@ -5,15 +5,17 @@ from pathlib import Path
 from pytest_mock import MockFixture
 from requests import RequestException
 
+from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.utils import resources
+from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.rig.utils.resources import (
     return_resource_content_on_fetch_error,
-    return_resource_file_content_on_exceptions,
+    return_resource_file_content_on_exceptions_or_in_dep,
 )
 from pyrig.src.resource import resource_path
 
 
-def test_return_resource_file_content_on_exceptions(
+def test_return_resource_file_content_on_exceptions_or_in_dep(
     tmp_path: Path, mocker: MockFixture
 ) -> None:
     """Test function."""
@@ -27,7 +29,9 @@ def test_return_resource_file_content_on_exceptions(
     # create resource file
     path.write_text("Hello World!")
 
-    @return_resource_file_content_on_exceptions("test_resource.txt", (ValueError,))
+    @return_resource_file_content_on_exceptions_or_in_dep(
+        "test_resource.txt", (ValueError,)
+    )
     def test_func() -> str:
         msg = "Test exception"
         raise ValueError(msg)
@@ -56,3 +60,16 @@ def test_return_resource_content_on_fetch_error(
 
     # now test_func should return "Hello World!" instead of raising ValueError
     assert test_func() == "Hello World!"
+
+    # patch src_package_is_pyrig to return False
+    mock = mocker.patch(
+        resources.__name__ + "." + src_package_is_pyrig.__name__, return_value=False
+    )
+    request_get_mock = mocker.patch("requests.get")
+    # now call a func that uses the decorator without raising an exception
+    # - should return resource content directly
+    LicenseConfigFile().mit_license()
+    # should not have called requests.get
+    request_get_mock.assert_not_called()
+    # should have called src_package_is_pyrig
+    mock.assert_called_once()

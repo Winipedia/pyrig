@@ -8,8 +8,8 @@ Example:
     >>> from pyrig.rig.configs.base.typed import TypedConfigFile
     >>>
     >>> class MyPackageTypedFile(TypedConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path("src/mypackage")
     >>>
     >>> MyPackageTypedFile()  # Creates src/mypackage/py.typed (empty file)
@@ -37,18 +37,15 @@ class TypedConfigFile(DictConfigFile):
         PEP 561: https://peps.python.org/pep-0561/
     """
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return "typed"."""
         return "typed"
 
-    @classmethod
-    def _load(cls) -> dict[str, Any]:
+    def _load(self) -> dict[str, Any]:
         """Load py.typed content as empty dict."""
         return {}
 
-    @classmethod
-    def _dump(cls, config: dict[str, Any]) -> None:
+    def _dump(self, config: dict[str, Any]) -> None:
         """Reject non-empty config; py.typed marker files have no writable content.
 
         Args:
@@ -61,7 +58,6 @@ class TypedConfigFile(DictConfigFile):
             msg = "Cannot dump to py.typed file."
             raise ValueError(msg)
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         """Return expected configuration as empty dict."""
         return {}

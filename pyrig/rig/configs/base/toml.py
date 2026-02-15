@@ -9,12 +9,12 @@ Example:
     >>> from pyrig.rig.configs.base.toml import TomlConfigFile
     >>>
     >>> class MyConfigFile(TomlConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path()
     ...
-    ...     @classmethod
-    ...     def _configs(cls) -> dict[str, Any]:
+    ...
+    ...     def _configs(self) -> dict[str, Any]:
     ...         return {"tool": {"myapp": {"dependencies": ["dep1", "dep2"]}}}
 """
 
@@ -38,26 +38,24 @@ class TomlConfigFile(DictConfigFile):
 
     Example:
         >>> class MyConfigFile(TomlConfigFile):
-        ...     @classmethod
-        ...     def parent_path(cls) -> Path:
+        ...
+        ...     def parent_path(self) -> Path:
         ...         return Path()
         ...
-        ...     @classmethod
-        ...     def _configs(cls) -> dict[str, Any]:
+        ...
+        ...     def _configs(self) -> dict[str, Any]:
         ...         return {"tool": {"myapp": {"version": "1.0.0"}}}
     """
 
-    @classmethod
-    def _load(cls) -> dict[str, Any]:
+    def _load(self) -> dict[str, Any]:
         """Load and parse TOML file using tomlkit.parse.
 
         Returns:
             Parsed TOML as `tomlkit.TOMLDocument` (dict-like with formatting info).
         """
-        return tomlkit.parse(cls.path().read_text(encoding="utf-8"))
+        return tomlkit.parse(self.path().read_text(encoding="utf-8"))
 
-    @classmethod
-    def _dump(cls, config: dict[str, Any]) -> None:
+    def _dump(self, config: dict[str, Any]) -> None:
         """Validate and write configuration to TOML file.
 
         Args:
@@ -69,10 +67,9 @@ class TomlConfigFile(DictConfigFile):
         if not isinstance(config, dict):
             msg = f"Cannot dump {config} to toml file."
             raise TypeError(msg)
-        cls.pretty_dump(config)
+        self.pretty_dump(config)
 
-    @classmethod
-    def prettify_value(cls, value: Any) -> Any:
+    def prettify_value(self, value: Any) -> Any:
         """Recursively prettify a value for TOML output.
 
         Lists of dicts become arrays of tables (``[[section]]`` syntax).
@@ -89,18 +86,17 @@ class TomlConfigFile(DictConfigFile):
             if value and all(isinstance(item, dict) for item in value):
                 aot = tomlkit.aot()
                 for item in value:
-                    aot.append(cls.prettify_dict(item))
+                    aot.append(self.prettify_dict(item))
                 return aot
             arr = tomlkit.array().multiline(multiline=True)
             for item in value:
-                arr.append(cls.prettify_value(item))
+                arr.append(self.prettify_value(item))
             return arr
         if isinstance(value, dict):
-            return cls.prettify_dict(value)
+            return self.prettify_dict(value)
         return value
 
-    @classmethod
-    def prettify_dict(cls, config: dict[str, Any]) -> Table:
+    def prettify_dict(self, config: dict[str, Any]) -> Table:
         """Convert dict to tomlkit table with multiline arrays.
 
         Recursively processes config: lists of dicts become arrays of tables
@@ -115,11 +111,10 @@ class TomlConfigFile(DictConfigFile):
         """
         t = tomlkit.table()
         for k, v in config.items():
-            t.add(k, cls.prettify_value(v))
+            t.add(k, self.prettify_value(v))
         return t
 
-    @classmethod
-    def pretty_dump(cls, config: dict[str, Any]) -> None:
+    def pretty_dump(self, config: dict[str, Any]) -> None:
         """Write configuration to TOML with pretty formatting.
 
         Convert config to prettified tomlkit table via `prettify_dict()`, then write
@@ -129,11 +124,10 @@ class TomlConfigFile(DictConfigFile):
             config: Configuration dict to write.
         """
         # turn all lists into multiline arrays
-        config = cls.prettify_dict(config)
-        with cls.path().open("w") as f:
+        config = self.prettify_dict(config)
+        with self.path().open("w") as f:
             tomlkit.dump(config, f, sort_keys=False)
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return "toml"."""
         return "toml"

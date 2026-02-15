@@ -10,21 +10,21 @@ class TestDotPythonVersionConfigFile:
 
     def test_filename(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.filename() == ""
+        assert DotPythonVersionConfigFile.I.filename() == ""
 
     def test_extension(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.extension() == "python-version"
+        assert DotPythonVersionConfigFile.I.extension() == "python-version"
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.parent_path() == Path()
+        assert DotPythonVersionConfigFile.I.parent_path() == Path()
 
     def test_lines(self) -> None:
         """Test method."""
-        lines = DotPythonVersionConfigFile.lines()
+        lines = DotPythonVersionConfigFile.I.lines()
         assert len(lines) == 1
 
     def test_should_override_content(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.should_override_content()
+        assert DotPythonVersionConfigFile.I.should_override_content()

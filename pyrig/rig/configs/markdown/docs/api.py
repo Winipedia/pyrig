@@ -25,7 +25,7 @@ class ApiConfigFile(MarkdownConfigFile):
     Examples:
         Generate docs/api.md::
 
-            ApiConfigFile.validate()
+            ApiConfigFile.I.validate()
 
         Generated file::
 
@@ -38,8 +38,7 @@ class ApiConfigFile(MarkdownConfigFile):
         pyrig.rig.configs.pyproject.PyprojectConfigFile
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Get the parent directory for api.md.
 
         Returns:
@@ -47,8 +46,7 @@ class ApiConfigFile(MarkdownConfigFile):
         """
         return DocsBuilder.I.docs_dir()
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Get the api.md file content.
 
         Returns:

@@ -10,19 +10,19 @@ class TestMainTestConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert MainTestConfigFile.is_correct()
+        assert MainTestConfigFile.I.is_correct()
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert isinstance(MainTestConfigFile.parent_path(), Path)
+        assert isinstance(MainTestConfigFile.I.parent_path(), Path)
 
     def test_filename(self) -> None:
         """Test method."""
-        assert MainTestConfigFile.filename() == "test_main"
+        assert MainTestConfigFile.I.filename() == "test_main"
 
     def test_lines(self) -> None:
         """Test method."""
-        lines = MainTestConfigFile.lines()
+        lines = MainTestConfigFile.I.lines()
         content_str = "\n".join(lines)
         assert len(content_str) > 0
         assert "def test_main" in content_str

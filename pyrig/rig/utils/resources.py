@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 P = ParamSpec("P")
 
 
-def return_resource_file_content_on_exceptions(
+def return_resource_file_content_on_exceptions_or_in_dep(
     resource_name: str,
     exceptions: tuple[type[Exception], ...],
     *,
@@ -55,6 +55,9 @@ def return_resource_file_content_on_exceptions(
 ) -> Callable[[Callable[P, str]], Callable[P, str]]:
     """Create a decorator that falls back to resource file content on exceptions.
 
+    Also returns resource content if not running in pyrig, but in a dependent project.
+    In pyrig development mode, successful results are written back to resource
+    files to keep them fresh and updated to recent changes in the external resource.
     Wraps a function returning a string. If the function raises specified exceptions,
     returns resource file content instead. In pyrig development mode, successful
     results are written back to keep resource files fresh.
@@ -111,6 +114,9 @@ def return_resource_file_content_on_exceptions(
 
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
+            if not src_package_is_pyrig():
+                # If not in pyrig, return resource content without calling the function
+                return content
             result = decorated_func(*args, **kwargs)
             if src_package_is_pyrig() and overwrite_resource and result != content:
                 path.write_text(result, encoding="utf-8")
@@ -162,7 +168,7 @@ def return_resource_content_on_fetch_error(
         return_resource_file_content_on_exceptions: For custom exception types.
     """
     exceptions = (RequestException,)
-    return return_resource_file_content_on_exceptions(
+    return return_resource_file_content_on_exceptions_or_in_dep(
         resource_name,
         exceptions,
         overwrite_resource=overwrite_resource,

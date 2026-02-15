@@ -25,40 +25,34 @@ class ContainerfileConfigFile(StringConfigFile):
     configurable entrypoint. Compatible with Docker, Podman, and buildah.
 
     Example:
-        >>> ContainerfileConfigFile.validate()
+        >>> ContainerfileConfigFile.I.validate()
 
     See Also:
         `pyrig.rig.configs.pyproject.PyprojectConfigFile`
         `pyrig.rig.tools.package_manager.PackageManager`
     """
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Return 'Containerfile'."""
         return "Containerfile"
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return project root."""
         return Path()
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return empty string (no extension)."""
         return ""
 
-    @classmethod
-    def extension_separator(cls) -> str:
+    def extension_separator(self) -> str:
         """Return empty string (no separator)."""
         return ""
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Return Containerfile build instructions via `layers()`."""
-        return cls.layers()
+        return self.layers()
 
-    @classmethod
-    def layers(cls) -> list[str]:
+    def layers(self) -> list[str]:
         """Generate Containerfile build instructions.
 
         Builds optimized layer sequence: base image, workdir, uv install,

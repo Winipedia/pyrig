@@ -7,12 +7,12 @@ Example:
     >>> from pyrig.rig.configs.base.py_tests import PythonTestsConfigFile
     >>>
     >>> class MyTestFile(PythonTestsConfigFile):
-    ...     @classmethod
-    ...     def lines(cls) -> list[str]:
+    ...
+    ...     def lines(self) -> list[str]:
     ...         return ["import pytest"]
     ...
-    ...     @classmethod
-    ...     def filename(cls) -> str:
+    ...
+    ...     def filename(self) -> str:
     ...         return "test_myclass"
     >>>
     >>> MyTestFile()  # Creates tests/test_myclass.py
@@ -39,7 +39,6 @@ class PythonTestsConfigFile(PythonConfigFile):
         pyrig.rig.tests.mirror_test.MirrorTestConfigFile: Test naming conventions
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return the tests package directory path, typically `Path("tests")`."""
         return Path(MirrorTestConfigFile.I.tests_package_name())

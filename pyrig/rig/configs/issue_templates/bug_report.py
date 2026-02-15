@@ -24,19 +24,17 @@ class BugReportConfigFile(YmlConfigFile):
     - Logs (optional)
 
     Example:
-        >>> BugReportConfigFile.validate()
+        >>> BugReportConfigFile.I.validate()
 
     See Also:
         pyrig.rig.configs.base.yml.YmlConfigFile
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         """Return bug report template YAML structure."""
         return {
             "name": "Bug Report",
@@ -100,9 +98,8 @@ class BugReportConfigFile(YmlConfigFile):
             ],
         }
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Return True if bug_report.yml exists with content."""
-        return cls.path().exists() and bool(
-            cls.path().read_text(encoding="utf-8").strip()
+        return self.path().exists() and bool(
+            self.path().read_text(encoding="utf-8").strip()
         )

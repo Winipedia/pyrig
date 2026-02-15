@@ -18,13 +18,11 @@ def my_test_json_config_file(
     class MyTestJsonConfigFile(config_file_factory(JsonConfigFile)):  # type: ignore [misc]
         """Test json config file."""
 
-        @classmethod
-        def parent_path(cls) -> Path:
+        def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
 
-        @classmethod
-        def _configs(cls) -> dict[str, Any] | list[Any]:
+        def _configs(self) -> dict[str, Any] | list[Any]:
             """Get the configs."""
             return {"key": "value"}
 
@@ -36,17 +34,17 @@ class TestJsonConfigFile:
 
     def test__load(self, my_test_json_config_file: type[JsonConfigFile]) -> None:
         """Test method."""
-        my_test_json_config_file.validate()
-        loaded = my_test_json_config_file.load()
+        my_test_json_config_file().validate()
+        loaded = my_test_json_config_file().load()
         assert loaded == {"key": "value"}
 
     def test__dump(self, my_test_json_config_file: type[JsonConfigFile]) -> None:
         """Test method."""
-        my_test_json_config_file.dump({"key": "value"})
-        loaded = my_test_json_config_file.load()
+        my_test_json_config_file().dump({"key": "value"})
+        loaded = my_test_json_config_file().load()
         assert loaded == {"key": "value"}
 
-    def test_extension(self) -> None:
+    def test_extension(self, my_test_json_config_file: type[JsonConfigFile]) -> None:
         """Test method."""
-        extension = JsonConfigFile.extension()
+        extension = my_test_json_config_file().extension()
         assert extension == "json"

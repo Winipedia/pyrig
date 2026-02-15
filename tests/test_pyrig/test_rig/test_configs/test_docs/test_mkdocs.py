@@ -10,12 +10,12 @@ class TestMkdocsConfigFile:
 
     def test_parent_path(self) -> None:
         """Test method."""
-        parent_path = MkdocsConfigFile.parent_path()
+        parent_path = MkdocsConfigFile.I.parent_path()
         assert parent_path == Path()
 
     def test__configs(self) -> None:
         """Test method."""
-        configs = MkdocsConfigFile.configs()
+        configs = MkdocsConfigFile.I.configs()
         assert isinstance(configs, dict)
         assert "site_name" in configs
         assert "nav" in configs

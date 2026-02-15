@@ -10,30 +10,30 @@ class TestSecurityConfigFile:
 
     def test_filename(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.filename()
+        result = SecurityConfigFile.I.filename()
         assert result == "SECURITY"
 
     def test_parent_path(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.parent_path()
+        result = SecurityConfigFile.I.parent_path()
         assert result == Path()
 
     def test_lines(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.lines()
+        result = SecurityConfigFile.I.lines()
         assert len(result) > 0
 
     def test_is_correct(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.is_correct()
+        result = SecurityConfigFile.I.is_correct()
         assert result
 
     def test_template_with_contact_method(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.template_with_contact_method()
+        result = SecurityConfigFile.I.template_with_contact_method()
         assert len(result) > 0
 
     def test_contact_method(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.contact_method()
+        result = SecurityConfigFile.I.contact_method()
         assert len(result) > 0
