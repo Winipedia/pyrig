@@ -59,9 +59,9 @@ def def_line(obj: Any) -> int:
             or decorated callable).
 
     Returns:
-        1-based source line number. Returns 0 only if the object has no
-        ``__code__`` attribute and is running inside a PyInstaller frozen
-        bundle where source introspection is unavailable.
+        1-based source line number, or 0 if the object has no ``__code__``
+        attribute and is running inside a PyInstaller frozen bundle where
+        source introspection is unavailable.
     """
     if isinstance(obj, property):
         obj = obj.fget
@@ -130,7 +130,8 @@ def module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
         default: Fallback module to return if the module cannot be determined.
 
     Returns:
-        The module object where the callable is defined.
+        The module object where the callable is defined, or the default module
+        if provided and the module cannot be determined.
 
     Raises:
         ValueError: If module cannot be determined and no default is provided.
