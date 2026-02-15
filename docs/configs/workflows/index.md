@@ -16,7 +16,7 @@ automatically generated as YAML files in `.github/workflows/`.
 
 ## Architecture
 
-See [WorkflowConfigFile Architecture](architecture.md) for details on:
+See [Workflow Architecture](architecture.md) for details on:
 
 - WorkflowConfigFile base class and declarative API
 - Inheritance hierarchy

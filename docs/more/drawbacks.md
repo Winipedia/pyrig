@@ -305,7 +305,7 @@ automation features.
 - No automatic config regeneration
 - No automatic test generation
 
-**WorkflowConfigFile Automation**:
+**Workflow Automation**:
 
 - Remove `pyrig` commands from GitHub Actions workflows
 - Remove `pyrig protect-repo` from health check
@@ -381,7 +381,7 @@ This approach works well if you:
 - Autouse fixture validation (missing tests, namespace packages, etc.)
 - Automatic test skeleton generation
 - Config consistency across pyrig updates
-- WorkflowConfigFile automation benefits
+- Workflow automation benefits
 
 **You maintain**:
 

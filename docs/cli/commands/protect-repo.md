@@ -89,7 +89,7 @@ But in case you want to run it manually you can use `protect-repo` when:
 ## Automatic Execution
 
 This command **runs automatically** in the Health Check workflow during CI/CD.
-See [Health Check WorkflowConfigFile](../../configs/workflows/health_check.md) for
+See [Health Check Workflow](../../configs/workflows/health_check.md) for
 details.
 
 The command is called in the "Protect Repository" step to ensure protection
@@ -99,7 +99,7 @@ rules are always up to date.
 
 - [branch-protection.json](../../configs/branch_protection.md) - Configuration
   file used by this command
-- [Health Check WorkflowConfigFile](../../configs/workflows/health_check.md) - Calls
+- [Health Check Workflow](../../configs/workflows/health_check.md) - Calls
   protect-repo in CI/CD
 - [GitHub Rulesets API](https://docs.github.com/en/rest/repos/rules) - GitHub
   API documentation
