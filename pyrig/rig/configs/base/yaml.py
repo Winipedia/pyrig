@@ -8,14 +8,14 @@ Example:
     >>> from typing import Any
     >>> from pyrig.rig.configs.base.yaml import YamlConfigFile
     >>>
-    >>> class MyWorkflowConfigFileFile(YamlConfigFile):
+    >>> class MyWorkflowConfigFile(YamlConfigFile):
     ...
     ...     def parent_path(self) -> Path:
     ...         return Path(".github/workflows")
     ...
     ...
     ...     def _configs(self) -> dict[str, Any]:
-    ...         return {"name": "My WorkflowConfigFile", "on": ["push", "pull_request"]}
+    ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
 """
 
 from typing import Any

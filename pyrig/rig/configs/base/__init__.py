@@ -45,7 +45,7 @@ Specialized Classes:
     - **CopyModuleOnlyDocstringConfigFile**: Extracts docstrings, creates stubs
     - **InitConfigFile**: Creates __init__.py with copied docstrings
     - **BadgesMarkdownConfigFile**: Generates Markdown with badges from pyproject.toml
-    - **WorkflowConfigFileConfigFile**: Base class for GitHub Actions workflow configs
+    - **WorkflowConfigFile**: Base class for GitHub Actions workflow configs
 
 Example:
     Using format-specific base classes::
