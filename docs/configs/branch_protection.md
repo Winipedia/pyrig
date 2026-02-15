@@ -290,7 +290,7 @@ Or export the current ruleset from GitHub and compare with your local file.
 
 - [protect-repo Command](../cli/commands/protect-repo.md) - Uses this file to
   apply protection
-- [Health Check WorkflowConfigFile](workflows/health_check.md) - Runs protect-repo
+- [Health Check Workflow](workflows/health_check.md) - Runs protect-repo
   automatically
 - [JsonConfigFile](architecture.md#jsonconfigfile) - Base class for JSON
   configuration files
