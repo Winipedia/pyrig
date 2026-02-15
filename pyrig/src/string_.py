@@ -174,6 +174,7 @@ def make_linked_badge_markdown(
 ) -> str:
     """Return Markdown for a clickable badge image.
 
+    Used by pyrig for generating linked badges in README files and documentation.
     The generated Markdown has the following structure:
 
         [![alt_text](badge_url)](link_url)
@@ -205,10 +206,20 @@ def package_req_name_split_pattern() -> re.Pattern[str]:
     `re.Pattern.split`, the first element of the result is the package name
     stripped of version specifiers and extras.
 
-    Used by `DependencyGraph` and `PyprojectConfigFile`.
+    Used by `DependencyGraph` and `PyprojectConfigFile` to extract package names
+    from dependency specifications.
 
     Returns:
-        Compiled regex pattern matching non-package-name characters.
+        Compiled regex pattern matching non-package-name characters. Valid
+        package name characters are: a-z, A-Z, 0-9, underscore, hyphen, period,
+        and square brackets.
+
+    Example:
+        >>> pattern = package_req_name_split_pattern()
+        >>> pattern.split("requests>=2.28.0")[0]
+        'requests'
+        >>> pattern.split("package[extra]>=1.0")[0]
+        'package[extra]'
     """
     # re.compile is already internally cached by Python
     return re.compile(r"[^a-zA-Z0-9_.\[\]-]")
