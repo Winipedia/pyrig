@@ -227,9 +227,11 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
             self.create_file()
             self.dump(self.configs())
 
-        if not self.is_correct():
-            config = self.merge_configs()
-            self.dump(config)
+        if self.is_correct():
+            return
+
+        config = self.merge_configs()
+        self.dump(config)
 
         if not self.is_correct():
             msg = f"Config file {path} is not correct after adding missing configs."

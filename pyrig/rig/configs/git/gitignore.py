@@ -11,14 +11,15 @@ See Also:
 
 from pathlib import Path
 
-import requests
-
 import pyrig
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.resources import return_resource_content_on_fetch_error
+from pyrig.rig.utils.resources import (
+    requests_get_cached,
+    return_resource_content_on_fetch_error,
+)
 
 
 class GitignoreConfigFile(StringConfigFile):
@@ -106,7 +107,7 @@ class GitignoreConfigFile(StringConfigFile):
             Makes HTTP request with 10s timeout. Decorator provides fallback.
         """
         url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
-        res = requests.get(url, timeout=10)
+        res = requests_get_cached(url)
         res.raise_for_status()
         return res.text
 

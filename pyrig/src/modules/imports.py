@@ -16,6 +16,7 @@ import importlib.util
 import logging
 import pkgutil
 from collections.abc import Generator
+from functools import cache
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -131,6 +132,7 @@ def import_package_with_dir_fallback_with_default(
         return default
 
 
+@cache
 def modules_and_packages_from_package(
     package: ModuleType,
 ) -> tuple[list[ModuleType], list[ModuleType]]:
