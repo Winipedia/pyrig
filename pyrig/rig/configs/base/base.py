@@ -456,13 +456,7 @@ class ConfigFile[ConfigT: ConfigData](SingletonDependencySubclass):
         for cf in subclasses:
             subclasses_by_priority[cf().priority()].append(cf)
 
-        biggest_group = (
-            max(subclasses_by_priority.values(), key=len)
-            if subclasses_by_priority
-            else []
-        )
-        max_workers = len(biggest_group) or 1
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        with ThreadPoolExecutor() as executor:
             for priority in sorted(subclasses_by_priority.keys(), reverse=True):
                 cf_group = subclasses_by_priority[priority]
                 logger.debug(
