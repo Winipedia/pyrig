@@ -8,8 +8,8 @@ Example:
     >>> import pyrig.src
     >>>
     >>> class SrcPackageInit(InitConfigFile):
-    ...     @classmethod
-    ...     def src_module(cls) -> ModuleType:
+    ...
+    ...     def src_module(self) -> ModuleType:
     ...         return pyrig.src
     >>>
     >>> SrcPackageInit()  # Creates <project>/src/__init__.py
@@ -38,8 +38,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
             For creating __init__.py files that also ensure parent dirs are packages
     """
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Return "__init__" for __init__.py files.
 
         Returns:
@@ -47,8 +46,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         """
         return "__init__"
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return package directory by appending module's isolated name to base path.
 
         Returns:
@@ -56,4 +54,4 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         """
         path = super().parent_path()
         # this path will be parent of the init file
-        return path / isolated_obj_name(cls.src_module())
+        return path / isolated_obj_name(self.src_module())

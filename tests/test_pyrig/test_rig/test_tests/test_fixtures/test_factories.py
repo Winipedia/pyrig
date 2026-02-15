@@ -11,34 +11,31 @@ from pyrig.rig.configs.base.base import ConfigFile
 
 @pytest.fixture
 def sample_config_file(
-    config_file_factory: Callable[[type[ConfigFile]], type[ConfigFile]],
-) -> type[ConfigFile]:
+    config_file_factory: Callable[
+        [type[ConfigFile[dict[str, Any]]]], type[ConfigFile[dict[str, Any]]]
+    ],
+) -> type[ConfigFile[dict[str, Any]]]:
     """Create a sample config file class for testing the factory."""
 
     class SampleConfigFile(config_file_factory(ConfigFile)):  # type: ignore [misc]
         """Sample config file for testing."""
 
-        @classmethod
-        def parent_path(cls) -> Path:
+        def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
 
-        @classmethod
-        def _load(cls) -> dict[str, Any]:
+        def _load(self) -> dict[str, Any]:
             """Load the config."""
             return {}
 
-        @classmethod
-        def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(self, config: dict[str, Any] | list[Any]) -> None:
             """Dump the config."""
 
-        @classmethod
-        def extension(cls) -> str:
+        def extension(self) -> str:
             """Get the file extension."""
             return "test"
 
-        @classmethod
-        def _configs(cls) -> dict[str, Any]:
+        def _configs(self) -> dict[str, Any]:
             """Get the configs."""
             return {"key": "value"}
 
@@ -46,14 +43,14 @@ def sample_config_file(
 
 
 def test_config_file_factory(
-    sample_config_file: type[ConfigFile], tmp_path: Path
+    sample_config_file: type[ConfigFile[dict[str, Any]]], tmp_path: Path
 ) -> None:
     """Test that config_file_factory wraps path to use tmp_path."""
     assert issubclass(sample_config_file, ConfigFile), (
         "Expected sample_config_file to be a class"
     )
     # The factory should wrap the path method to use tmp_path
-    path = sample_config_file.path()
+    path = sample_config_file().path()
 
     # The path should be inside tmp_path
     assert str(path).startswith(str(tmp_path)), (

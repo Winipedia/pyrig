@@ -4,7 +4,7 @@ from contextlib import chdir
 from pathlib import Path
 
 from pyrig.rig.configs.base.py_tests import PythonTestsConfigFile
-from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.configs.testing.zero_test import ZeroTestConfigFile
 
 
 class TestPythonTestsConfigFile:
@@ -16,6 +16,9 @@ class TestPythonTestsConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            expected = Path(MirrorTestConfigFile.tests_package_name())
-            actual = PythonTestsConfigFile.parent_path()
+            expected = Path("tests")
+            assert issubclass(ZeroTestConfigFile, PythonTestsConfigFile), (
+                "ZeroTestConfigFile should inherit from PythonTestsConfigFile"
+            )
+            actual = ZeroTestConfigFile().parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"

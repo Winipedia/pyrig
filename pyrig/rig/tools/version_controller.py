@@ -367,10 +367,8 @@ class VersionController(Tool):
         """
         return self.diff_args("--quiet", *args)
 
-    @classmethod
-    @cache
     def _repo_owner_and_name(
-        cls,
+        self,
         *,
         check_repo_url: bool = True,
         url_encode: bool = False,
@@ -389,7 +387,6 @@ class VersionController(Tool):
         Returns:
             Tuple of (owner, repository_name).
         """
-        self = cls()
         url = self.repo_remote(check=check_repo_url)
         if not url:
             # we default to git username and repo name from cwd
@@ -411,12 +408,19 @@ class VersionController(Tool):
             repo = quote(repo)
         return owner, repo
 
+    @classmethod
+    @cache
     def repo_owner_and_name(
-        self, *, check_repo_url: bool = True, url_encode: bool = False
+        cls, *, check_repo_url: bool = True, url_encode: bool = False
     ) -> tuple[str, str]:
         """Get the repository owner and name.
 
-        Wrapper around cached version to allow non-cached access if needed.
+        Wrapper around the instance method _repo_owner_and_name
+        to allow caching at the class level.
+
+        The user should override the instance method _repo_owner_and_name
+        for the actual logic, and this class method will handle caching and
+        provide a convenient interface.
 
         Args:
             check_repo_url: Whether to raise on missing remote. Defaults to True.
@@ -426,7 +430,7 @@ class VersionController(Tool):
         Returns:
             Tuple of (owner, repository_name).
         """
-        return self._repo_owner_and_name(
+        return cls()._repo_owner_and_name(  # noqa: SLF001
             check_repo_url=check_repo_url, url_encode=url_encode
         )
 

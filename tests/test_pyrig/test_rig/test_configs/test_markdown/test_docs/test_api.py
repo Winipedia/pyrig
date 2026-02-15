@@ -10,10 +10,10 @@ class TestApiConfigFile:
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert ApiConfigFile.parent_path() == Path("docs")
+        assert ApiConfigFile.I.parent_path() == Path("docs")
 
     def test_lines(self) -> None:
         """Test method."""
-        lines = ApiConfigFile.lines()
+        lines = ApiConfigFile.I.lines()
         content_str = "\n".join(lines)
         assert ":::" in content_str

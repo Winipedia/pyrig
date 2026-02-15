@@ -250,7 +250,7 @@ On GitHub.com, go to your repository:
 git push -u origin main
 ```
 
-### 8. Verify Workflows
+### 8. Verify WorkflowConfigFiles
 
 On GitHub.com:
 
@@ -378,8 +378,8 @@ Execute your code with `uv run my-project main`.
 ... and more config files detailed in
 [Configs Documentation](../configs/index.md)
 
-**CI/CD Workflows**: See
-[Workflows Documentation](../configs/workflows/index.md) for details on health
+**CI/CD WorkflowConfigFiles**: See
+[WorkflowConfigFiles Documentation](../configs/workflows/index.md) for details on health
 check, build, release, and deploy workflows.
 
 **Development Tools**: See [Tooling Documentation](tooling.md) for complete tool

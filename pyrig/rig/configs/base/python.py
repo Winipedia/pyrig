@@ -7,12 +7,12 @@ Example:
     >>> from pyrig.rig.configs.base.python import PythonConfigFile
     >>>
     >>> class MyPythonFile(PythonConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path("src")
     ...
-    ...     @classmethod
-    ...     def lines(cls) -> list[str]:
+    ...
+    ...     def lines(self) -> list[str]:
     ...         return ["from typing import Any", "import sys"]
 """
 
@@ -33,7 +33,6 @@ class PythonConfigFile(StringConfigFile):
         pyrig.rig.configs.base.py_package.PythonPackageConfigFile: For package files
     """
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return "py"."""
         return "py"

@@ -10,32 +10,32 @@ class TestContainerfileConfigFile:
 
     def test_filename(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.filename() == "Containerfile"
+        assert ContainerfileConfigFile.I.filename() == "Containerfile"
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.parent_path() == Path()
+        assert ContainerfileConfigFile.I.parent_path() == Path()
 
     def test_extension(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.extension() == ""
+        assert ContainerfileConfigFile.I.extension() == ""
 
     def test_extension_separator(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.extension_separator() == ""
+        assert ContainerfileConfigFile.I.extension_separator() == ""
 
     def test_lines(self) -> None:
         """Test method."""
-        layers = ContainerfileConfigFile.layers()
-        lines = ContainerfileConfigFile.lines()
+        layers = ContainerfileConfigFile.I.layers()
+        lines = ContainerfileConfigFile.I.lines()
         content = "\n".join(lines)
         assert all(layer in content for layer in layers)
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.is_correct()
+        assert ContainerfileConfigFile.I.is_correct()
 
     def test_layers(self) -> None:
         """Test method."""
-        layers = ContainerfileConfigFile.layers()
+        layers = ContainerfileConfigFile.I.layers()
         assert len(layers) > 0

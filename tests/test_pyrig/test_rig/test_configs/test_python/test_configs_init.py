@@ -9,9 +9,9 @@ class TestConfigsInitConfigFile:
 
     def test_priority(self) -> None:
         """Test method."""
-        assert ConfigsInitConfigFile.priority() > 0
+        assert ConfigsInitConfigFile.I.priority() > 0
 
     def test_src_module(self) -> None:
         """Test method."""
-        module = ConfigsInitConfigFile.src_module()
+        module = ConfigsInitConfigFile.I.src_module()
         assert module == configs

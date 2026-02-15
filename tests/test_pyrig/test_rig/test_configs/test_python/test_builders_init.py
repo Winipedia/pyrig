@@ -9,5 +9,5 @@ class TestBuildersInitConfigFile:
 
     def test_src_module(self) -> None:
         """Test method."""
-        module = BuildersInitConfigFile.src_module()
+        module = BuildersInitConfigFile.I.src_module()
         assert module == builders

@@ -127,7 +127,7 @@ prevents confusion:
 |-----------|-------------|
 | Prek hooks | Uses `Tool.I.*_args()` to build commands |
 | CLI commands | Uses `Tool.I` for all operations |
-| Most config file content | Generated from `Tool.I` or `ConfigFile.I` |
+| Most config file content | Generated from `Tool.I` or `ConfigFile.` |
 
 **If you subclass a Tool, these automatically use your version.**
 
@@ -135,10 +135,10 @@ prevents confusion:
 
 | Component | Why Static | What To Override |
 |-----------|------------|------------------|
-| GitHub Actions workflow steps | External action references can't be dynamic | Subclass the `Workflow` and override `step_*` methods |
+| GitHub Actions workflow steps | External action references can't be dynamic | Subclass the `WorkflowConfigFile` and override `step_*` methods |
 | External tool versions | Pinned for reproducibility | Subclass and override version constants |
 
-#### Example: Container Engine in Workflows
+#### Example: Container Engine in WorkflowConfigFiles
 
 The workflow uses a hardcoded GitHub Action for Podman:
 
@@ -156,9 +156,9 @@ installs Podman. You must **also** subclass the workflow:
 
 ```python
 # myapp/rig/configs/workflows/build.py
-from pyrig.rig.configs.workflows.build import BuildWorkflow as BaseBuildWorkflow
+from pyrig.rig.configs.workflows.build import BuildWorkflowConfigFile as BaseBuildWorkflowConfigFile
 
-class BuildWorkflow(BaseBuildWorkflow):
+class BuildWorkflowConfigFile(BaseBuildWorkflowConfigFile):
     @classmethod
     def step_install_container_engine(cls, *, step=None):
         return cls.step(
@@ -246,7 +246,8 @@ pyrig's default tools - they were chosen for their quality and integration.
 ### Why Some Replacements Need More Work
 
 - **ty → mypy**: Prek uses `TypeChecker.I`, so it's automatic
-- **Podman → Docker**: Workflow steps use hardcoded GitHub Actions, not `.I`
+- **Podman → Docker**: WorkflowConfigFile steps use
+hardcoded GitHub Actions, not `.I`
 
 The rule: **If pyrig uses `.I`, your subclass applies automatically. If it's
 hardcoded (like external action references), you must override.**

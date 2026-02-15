@@ -7,12 +7,12 @@ Example:
     >>> from pyrig.rig.configs.base.markdown import MarkdownConfigFile
     >>>
     >>> class ReadmeFile(MarkdownConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path()
     ...
-    ...     @classmethod
-    ...     def lines(cls) -> list[str]:
+    ...
+    ...     def lines(self) -> list[str]:
     ...         return ["# My Project", "", "Description here."]
 """
 
@@ -33,7 +33,6 @@ class MarkdownConfigFile(StringConfigFile):
         pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile: For badge files
     """
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return "md"."""
         return "md"

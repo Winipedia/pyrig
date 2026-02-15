@@ -1,8 +1,11 @@
 """GitHub Actions workflow configuration management.
 
-Manages GitHub Actions workflows for CI/CD: HealthCheckWorkflow (quality checks),
-BuildWorkflow (artifacts/images), ReleaseWorkflow (GitHub releases), DeployWorkflow
-(PyPI/docs). Pipeline: Health Check → Build → Release → Deploy.
+Manages GitHub Actions workflows for CI/CD:
+    HealthCheckWorkflowConfigFile (quality checks),
+    BuildWorkflowConfigFile (artifacts/images),
+    ReleaseWorkflowConfigFile (GitHub releases),
+    DeployWorkflowConfigFile (PyPI/docs).
+    Pipeline: Health Check → Build → Release → Deploy.
 
 See Also:
     GitHub Actions: https://docs.github.com/en/actions

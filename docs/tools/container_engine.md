@@ -22,16 +22,16 @@ class ContainerEngine(BaseCE):
         return "docker"
 ```
 
-### 2. Override Workflow Steps
+### 2. Override WorkflowConfigFile Steps
 
 The workflow uses a hardcoded GitHub Action to install Podman. You must also
 override this:
 
 ```python
 # myapp/rig/configs/base/workflow.py
-from pyrig.rig.configs.base.workflow import Workflow as BaseWorkflow
+from pyrig.rig.configs.base.workflow import WorkflowConfigFile as BaseWorkflowConfigFile
 
-class Workflow(BaseWorkflow):
+class WorkflowConfigFile(BaseWorkflowConfigFile):
     @classmethod
     def step_install_container_engine(cls, *, step=None):
         return cls.step(

@@ -20,7 +20,7 @@ from pyrig.rig.configs.base.base import ConfigFile
 
 
 @pytest.fixture
-def config_file_factory[T: ConfigFile](
+def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
     tmp_path: Path,
 ) -> Callable[[type[T]], type[T]]:
     """Provide a factory for creating test-safe ConfigFile subclasses.
@@ -52,8 +52,7 @@ def config_file_factory[T: ConfigFile](
         class TestConfigFile(base_class):  # type: ignore [misc, valid-type]
             """Test config file with tmp_path override."""
 
-            @classmethod
-            def path(cls) -> Path:
+            def path(self) -> Path:
                 """Get the file path redirected to tmp_path.
 
                 Returns:
@@ -65,20 +64,17 @@ def config_file_factory[T: ConfigFile](
                     path = tmp_path / path
                 return path
 
-            @classmethod
-            def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+            def _dump(self, config: dict[str, Any] | list[Any]) -> None:
                 """Write config to tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
                     super()._dump(config)
 
-            @classmethod
-            def _load(cls) -> dict[str, Any] | list[Any]:
+            def _load(self) -> dict[str, Any] | list[Any]:
                 """Load config from tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
                     return super()._load()
 
-            @classmethod
-            def parent_path(cls) -> Path:
+            def parent_path(self) -> Path:
                 """Get parent path redirected to tmp_path for test isolation."""
                 # append tmp_path to path if not already in tmp_path
                 path = super().parent_path()
@@ -86,8 +82,7 @@ def config_file_factory[T: ConfigFile](
                     path = tmp_path / path
                 return path
 
-            @classmethod
-            def create_file(cls) -> None:
+            def create_file(self) -> None:
                 """Create file in tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
                     super().create_file()

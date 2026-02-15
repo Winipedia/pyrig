@@ -9,5 +9,5 @@ class TestSharedSubcommandsConfigFile:
 
     def test_src_module(self) -> None:
         """Test method."""
-        module = SharedSubcommandsConfigFile.src_module()
+        module = SharedSubcommandsConfigFile.I.src_module()
         assert module == shared_subcommands

@@ -9,24 +9,24 @@ Example:
     >>> from pyrig.rig.configs.base.dict_cf import DictConfigFile
     >>>
     >>> class MyDictConfigFile(DictConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path()
     ...
-    ...     @classmethod
-    ...     def extension(cls) -> str:
+    ...
+    ...     def extension(self) -> str:
     ...         return "conf"
     ...
-    ...     @classmethod
-    ...     def _load(cls) -> dict[str, Any]:
+    ...
+    ...     def _load(self) -> dict[str, Any]:
     ...         return {}
     ...
-    ...     @classmethod
-    ...     def _dump(cls, config: dict[str, Any]) -> None:
+    ...
+    ...     def _dump(self, config: dict[str, Any]) -> None:
     ...         pass
     ...
-    ...     @classmethod
-    ...     def _configs(cls) -> dict[str, Any]:
+    ...
+    ...     def _configs(self) -> dict[str, Any]:
     ...         return {"key": "value"}
 """
 
