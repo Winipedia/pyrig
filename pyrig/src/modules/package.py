@@ -112,12 +112,14 @@ def objs_from_obj(
     - Modules: all functions and classes
     - Packages: all direct module files (excludes subpackages)
     - Classes: all methods (excluding inherited)
+    - Other types: returns empty list
 
     Args:
-        obj: Container object.
+        obj: Container object (module, package, class, or other).
 
     Returns:
-        Sequence of contained objects.
+        Sequence of contained objects. Returns empty list if obj is not
+        a module, package, or class type.
     """
     if isinstance(obj, ModuleType):
         if module_is_package(obj):
@@ -185,6 +187,11 @@ def discover_equivalent_modules_across_dependents(
     Returns:
         List of imported module objects from all dependent packages, in
         topological order (base dependency first, then dependents in order).
+
+    Raises:
+        ImportError: If a module cannot be imported due to missing dependencies
+            or import errors.
+        ModuleNotFoundError: If a required module path does not exist.
 
     Example:
         >>> # Find all rig.configs modules across pyrig ecosystem
@@ -282,6 +289,10 @@ def discover_subclasses_across_dependents[T: type](
     Returns:
         List of discovered subclass types. Order is based on topological
         dependency order (base package classes first, then dependents).
+
+    Raises:
+        ImportError: If modules cannot be imported during discovery.
+        ModuleNotFoundError: If required module paths do not exist.
 
     Example:
         >>> # Discover all ConfigFile implementations across ecosystem
