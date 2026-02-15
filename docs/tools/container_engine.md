@@ -32,10 +32,10 @@ override this:
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile as BaseWorkflowConfigFile
 
 class WorkflowConfigFile(BaseWorkflowConfigFile):
-    @classmethod
-    def step_install_container_engine(cls, *, step=None):
-        return cls.step(
-            step_func=cls.step_install_container_engine,
+
+    def step_install_container_engine(self, *, step=None):
+        return self.step(
+            step_func=self.step_install_container_engine,
             uses="docker/setup-buildx-action@v3",
             step=step,
         )
