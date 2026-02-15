@@ -256,10 +256,13 @@ def execute_all_functions_from_module(module: ModuleType) -> list[Any]:
     Returns:
         List of return values from all executed functions, in definition order.
 
+    Raises:
+        TypeError: If a function requires arguments without default values.
+
     Note:
         Only executes functions defined directly in the module (not imported).
         All functions must accept zero arguments or have default values for all
-        parameters. Raises ``TypeError`` if a function requires arguments.
+        parameters.
     """
     return [f() for f in all_functions_from_module(module)]
 
@@ -348,5 +351,8 @@ def import_modules(module_names: Iterable[str]) -> list[ModuleType]:
 
     Returns:
         List of imported module objects corresponding to the input names.
+
+    Raises:
+        ImportError: If any module cannot be imported.
     """
     return list(map(import_module, module_names))
