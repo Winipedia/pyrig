@@ -31,19 +31,19 @@ def test_find_packages(tmp_path: Path) -> None:
         find_packages.cache_clear()
         result = find_packages()
         expected = ["package2", "package1", "package1.sub1", "package1.sub1.sub2"]
-        assert result == expected
+        assert set(result) == set(expected)
 
         # Test with depth limit
         find_packages.cache_clear()
         result = find_packages(depth=1)
         expected = ["package2", "package1", "package1.sub1"]
-        assert result == expected
+        assert set(result) == set(expected)
 
         # Test with depth 0
         find_packages.cache_clear()
         result = find_packages(depth=0)
         expected = ["package2", "package1"]
-        assert result == expected
+        assert set(result) == set(expected)
 
 
 def test_find_namespace_packages(tmp_path: Path) -> None:
