@@ -39,7 +39,7 @@ class Linter(Tool):
         return "ruff"
 
     def group(self) -> str:
-        """Get tool group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.CODE_QUALITY`

@@ -148,13 +148,14 @@ def make_summary_error_msg(
 
     Returns:
         Multiline string with "Found errors at:" header followed by a bulleted
-        list. The output includes leading and trailing newlines for embedding
-        in larger error messages.
+        list. The output includes a leading newline and trailing newlines after
+        each location item.
 
     Note:
-        The output format is designed for use in assertion messages and includes
-        leading and trailing newlines suitable for multiline f-strings. Each
-        location appears on its own line with a "- " prefix.
+        The output format is designed for use in assertion messages. It starts
+        with a newline, then "Found errors at:" on its own line, followed by
+        each location on a separate line with "- " prefix, each with a trailing
+        newline (creating blank lines between items).
     """
     msg = """
 Found errors at:

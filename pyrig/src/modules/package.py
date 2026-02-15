@@ -263,9 +263,10 @@ def discover_subclasses_across_dependents[T: type](
             subclasses of this type (or the class itself).
         dep: The base dependency package (e.g., ``pyrig``). The function will
             search all packages that depend on this for subclass implementations.
-        load_package_before: Template module path to replicate across dependents.
-            For example, ``pyrig.rig.configs`` would search for subclasses in
-            ``myapp.rig.configs`` for each dependent package ``myapp``.
+        load_package_before: The template module (as a ModuleType object) to replicate
+            across dependent packages. For example, passing the ``pyrig.rig.configs``
+            module would search for subclasses in ``myapp.rig.configs`` for each
+            dependent package ``myapp``.
         discard_parents: If True, removes classes that have subclasses also
             in the result set. Essential for override patterns where a package
             extends a config from another package - only the leaf (most derived)

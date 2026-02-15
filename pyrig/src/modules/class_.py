@@ -190,7 +190,8 @@ def discard_parent_classes[T: type](
 
     Args:
         classes: List or set of class types to filter. The collection is modified
-            in place (elements are removed from the original collection).
+            in place (elements are removed from the original collection) by iterating
+            over a copy and removing parent classes from the original.
 
     Returns:
         The same collection instance with parent classes removed.

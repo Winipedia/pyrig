@@ -37,7 +37,11 @@ class ContainerEngine(Tool):
         return "podman"
 
     def group(self) -> str:
-        """Return the badge group for this tool."""
+        """Returns the group the tool belongs to.
+
+        Returns:
+            `ToolGroup.TOOLING`
+        """
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:

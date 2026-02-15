@@ -38,7 +38,7 @@ class ProjectCoverageTester(Tool):
         return "pytest-cov"
 
     def group(self) -> str:
-        """Get tool group.
+        """Returns the group the tool belongs to.
 
         Returns:
             'testing'

@@ -37,7 +37,7 @@ class DependencyAuditor(Tool):
         return "pip-audit"
 
     def group(self) -> str:
-        """Get tool group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.SECURITY`

@@ -36,7 +36,7 @@ class MDLinter(Tool):
         return "rumdl"
 
     def group(self) -> str:
-        """Get tool group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.CODE_QUALITY`

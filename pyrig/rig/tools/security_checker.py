@@ -37,7 +37,7 @@ class SecurityChecker(Tool):
         return "bandit"
 
     def group(self) -> str:
-        """Get badge group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.SECURITY`

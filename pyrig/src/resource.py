@@ -36,18 +36,19 @@ def resource_path(name: str, package: ModuleType) -> Path:
 
     Warning:
         For file-based packages (typical development and PyInstaller builds), the
-        returned path points to the actual file. For zip-imported packages, the path
-        may point to a temporary extraction. Use the path immediately or copy contents
-        if persistence beyond the current call is needed.
+        returned path points to the actual file and remains valid after the function
+        returns. For zip-imported packages, the path may point to a temporary
+        extraction that could be cleaned up after the context manager exits, though
+        the path is returned while still within the context. Use the path immediately
+        or copy contents if persistence is critical.
 
     Note:
         The returned path is not validated for existence. If the named resource does
         not exist, the caller will encounter `FileNotFoundError` when accessing it.
 
-        This function exits the `as_file` context manager before returning, which
-        works reliably for file-based packages but may cause path invalidation for
-        zip-imported packages. This is acceptable for pyrig's use cases where
-        packages are always file-based.
+        The function returns the path from within the `as_file` context manager.
+        For file-based packages, the path remains valid. For zip-imported packages,
+        this is acceptable for pyrig's use cases where packages are always file-based.
     """
     resource_path = files(package) / name
     with as_file(resource_path) as path:
