@@ -34,7 +34,7 @@ class PackageIndex(Tool):
         return "pypi"
 
     def group(self) -> str:
-        """Get tool group.
+        """Returns the group the tool belongs to.
 
         Returns:
             `ToolGroup.PROJECT_INFO`

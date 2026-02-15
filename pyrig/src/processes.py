@@ -161,7 +161,8 @@ class Args(tuple[str, ...]):
         """Execute command via subprocess.
 
         Args:
-            *args: Additional arguments appended to command.
+            *args: Additional arguments to append to the command. These are
+                concatenated with the Args instance to form the complete command.
             **kwargs: Keyword arguments passed to run_subprocess
                 (check, capture_output, cwd, etc.).
 
