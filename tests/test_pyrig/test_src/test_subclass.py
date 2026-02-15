@@ -4,6 +4,7 @@ import pyrig
 from pyrig.rig import configs
 from pyrig.rig.configs.base.base import ConfigFile
 from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.subclass import DependencySubclass
 
@@ -16,7 +17,7 @@ class TestDependencySubclass:
         result = GitignoreConfigFile.I
         assert isinstance(result, GitignoreConfigFile)
         assert result is GitignoreConfigFile.I.I
-        assert result is GitignoreConfigFile.L()
+        assert result is GitignoreConfigFile.I.L()
 
     def test_definition_package(self) -> None:
         """Test method."""
@@ -26,7 +27,7 @@ class TestDependencySubclass:
 
     def test_sorting_key(self) -> None:
         """Test method."""
-        result = ConfigFile.sorting_key(ConfigFile)
+        result = ConfigFile.sorting_key(PyprojectConfigFile)
         assert isinstance(result, (float, int))
 
     def test_base_dependency(self) -> None:
@@ -43,7 +44,7 @@ class TestDependencySubclass:
 
     def test_L(self) -> None:  # noqa: N802
         """Test method."""
-        assert MirrorTestConfigFile.L.L is MirrorTestConfigFile
+        assert MirrorTestConfigFile.I.L.L is MirrorTestConfigFile
 
 
 class TestSingletonDependencySubclass:

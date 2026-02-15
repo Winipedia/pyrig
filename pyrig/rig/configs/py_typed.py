@@ -24,7 +24,6 @@ class PyTypedConfigFile(TypedConfigFile):
         pyrig.rig.configs.pyproject.PyprojectConfigFile
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return package directory path."""
         return Path(PyprojectConfigFile.I.package_name())

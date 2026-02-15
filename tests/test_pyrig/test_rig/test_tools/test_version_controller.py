@@ -10,7 +10,7 @@ class TestVersionController:
 
     def test__repo_owner_and_name(self) -> None:
         """Test method."""
-        result = VersionController._repo_owner_and_name(  # noqa: SLF001
+        result = VersionController()._repo_owner_and_name(  # noqa: SLF001
             check_repo_url=False, url_encode=False
         )
         assert isinstance(result, tuple)

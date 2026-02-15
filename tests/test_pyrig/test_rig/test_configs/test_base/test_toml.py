@@ -18,13 +18,11 @@ def my_test_toml_config_file(
     class MyTestTomlConfigFile(config_file_factory(TomlConfigFile)):  # type: ignore [misc]
         """Test toml config file with tmp_path override."""
 
-        @classmethod
-        def parent_path(cls) -> Path:
+        def parent_path(self) -> Path:
             """Get the path to the config file."""
             return Path()
 
-        @classmethod
-        def _configs(cls) -> dict[str, Any]:
+        def _configs(self) -> dict[str, Any]:
             """Get the config."""
             return {"key": "value"}
 
@@ -34,23 +32,25 @@ def my_test_toml_config_file(
 class TestTomlConfigFile:
     """Test class."""
 
-    def test_prettify_value(self) -> None:
+    def test_prettify_value(
+        self, my_test_toml_config_file: type[TomlConfigFile]
+    ) -> None:
         """Test method."""
         # scalar passthrough
-        assert TomlConfigFile.prettify_value("hello") == "hello"
-        assert TomlConfigFile.prettify_value(1) == 1
-        assert TomlConfigFile.prettify_value(value=True) is True
+        assert my_test_toml_config_file().prettify_value("hello") == "hello"
+        assert my_test_toml_config_file().prettify_value(1) == 1
+        assert my_test_toml_config_file().prettify_value(value=True) is True
 
         # list of scalars becomes multiline array
-        result = TomlConfigFile.prettify_value(["a", "b"])
+        result = my_test_toml_config_file().prettify_value(["a", "b"])
         assert list(result) == ["a", "b"]
 
         # dict becomes inline table
-        result = TomlConfigFile.prettify_value({"k": "v"})
+        result = my_test_toml_config_file().prettify_value({"k": "v"})
         assert result["k"] == "v"
 
         # nested: list of dicts with nested lists
-        result = TomlConfigFile.prettify_value(
+        result = my_test_toml_config_file().prettify_value(
             [{"repo": "local", "hooks": [{"id": "test"}]}]
         )
         assert result[0]["repo"] == "local"
@@ -61,30 +61,30 @@ class TestTomlConfigFile:
     ) -> None:
         """Test method."""
         expected = {"key": ["value"]}
-        actual = my_test_toml_config_file.prettify_dict({"key": ["value"]})
+        actual = my_test_toml_config_file().prettify_dict({"key": ["value"]})
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_pretty_dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method."""
-        my_test_toml_config_file.pretty_dump({"key": ["value"]})
-        assert my_test_toml_config_file.load() == {"key": ["value"]}, (
+        my_test_toml_config_file().pretty_dump({"key": ["value"]})
+        assert my_test_toml_config_file().load() == {"key": ["value"]}, (
             "Expected dump to work"
         )
 
     def test__load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method."""
-        my_test_toml_config_file.validate()
+        my_test_toml_config_file().validate()
         expected = {"key": "value"}
-        actual = my_test_toml_config_file.load()
+        actual = my_test_toml_config_file().load()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method."""
-        my_test_toml_config_file.dump({"key": "value"})
-        assert my_test_toml_config_file.load() == {"key": "value"}, (
+        my_test_toml_config_file().dump({"key": "value"})
+        assert my_test_toml_config_file().load() == {"key": "value"}, (
             "Expected dump to work"
         )
 
     def test_extension(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
         """Test method."""
-        assert my_test_toml_config_file.extension() == "toml", "Expected toml"
+        assert my_test_toml_config_file().extension() == "toml", "Expected toml"

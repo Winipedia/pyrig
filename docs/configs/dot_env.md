@@ -108,7 +108,7 @@ debug = os.getenv("DEBUG", "false").lower() == "true"
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 
 # Load all variables
-env_vars = DotEnvConfigFile.load()
+env_vars = DotEnvConfigFile.I.load()
 print(env_vars["DATABASE_URL"])
 ```
 

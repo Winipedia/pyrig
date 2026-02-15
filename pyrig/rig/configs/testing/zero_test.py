@@ -19,7 +19,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
     Examples:
         Generate test_zero.py::
 
-            ZeroTestConfigFile.validate()
+            ZeroTestConfigFile.I.validate()
 
         Generated test::
 
@@ -37,8 +37,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
         pyrig.rig.configs.testing.main_test.MainTestConfigFile
     '''
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Get the test filename with reversed prefix.
 
         Returns:
@@ -50,8 +49,7 @@ class ZeroTestConfigFile(PythonTestsConfigFile):
         filename = super().filename()
         return "_".join(reversed(filename.split("_")))
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Get the placeholder test content.
 
         Returns:

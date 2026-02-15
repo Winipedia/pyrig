@@ -9,7 +9,6 @@ See Also:
     Git documentation: https://git-scm.com/docs/gitignore
 """
 
-from functools import cache
 from pathlib import Path
 
 import requests
@@ -32,11 +31,11 @@ class GitignoreConfigFile(StringConfigFile):
     Examples:
         validate .gitignore::
 
-            GitignoreConfigFile.validate()
+            GitignoreConfigFile.I.validate()
 
         Load patterns::
 
-            patterns = GitignoreConfigFile.load()
+            patterns = GitignoreConfigFile.I.load()
 
     Note:
         Makes HTTP request to GitHub for Python.gitignore. Uses fallback on failure.
@@ -46,28 +45,23 @@ class GitignoreConfigFile(StringConfigFile):
         pyrig.rig.configs.dot_env.DotEnvConfigFile
     """
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Get the filename for .gitignore."""
         return VersionController.I.ignore_filename()
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Get parent directory (project root)."""
         return Path()
 
-    @classmethod
-    def extension_separator(cls) -> str:
+    def extension_separator(self) -> str:
         """Get extension separator (empty; .gitignore has no extension)."""
         return ""
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Get file extension (empty; .gitignore has no extension)."""
         return ""
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Get complete .gitignore patterns with intelligent merging.
 
         Combines GitHub's Python patterns with pyrig-specific patterns
@@ -82,7 +76,7 @@ class GitignoreConfigFile(StringConfigFile):
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
         needed = [
-            *cls.github_python_gitignore_lines(),
+            *self.github_python_gitignore_lines(),
             "",
             f"# {pyrig.__name__} stuff",
             DotScratchConfigFile.I.path().as_posix(),
@@ -97,14 +91,12 @@ class GitignoreConfigFile(StringConfigFile):
             "/site/",  # bc of mkdocs
         ]
 
-        existing = cls.load()
+        existing = self.load()
         needed = [p for p in needed if p not in set(existing)]
         return existing + needed
 
-    @classmethod
-    @cache
     @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
-    def github_python_gitignore(cls) -> str:
+    def github_python_gitignore(self) -> str:
         """Fetch GitHub's standard Python gitignore patterns.
 
         Returns:
@@ -118,12 +110,11 @@ class GitignoreConfigFile(StringConfigFile):
         res.raise_for_status()
         return res.text
 
-    @classmethod
-    def github_python_gitignore_lines(cls) -> list[str]:
+    def github_python_gitignore_lines(self) -> list[str]:
         """Fetch GitHub's standard Python gitignore patterns as a list.
 
         Returns:
             list[str]: Python.gitignore patterns (one per line).
         """
-        gitignore_str = cls.github_python_gitignore()
+        gitignore_str = self.github_python_gitignore()
         return gitignore_str.splitlines()

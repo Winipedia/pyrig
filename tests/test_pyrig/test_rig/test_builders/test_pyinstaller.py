@@ -24,13 +24,11 @@ def my_test_pyinstaller_builder(
     class MyTestPyInstallerBuilder(config_file_factory(PyInstallerBuilder)):  # type: ignore [misc]
         """Test PyInstaller builder class."""
 
-        @classmethod
-        def additional_resource_packages(cls) -> list[ModuleType]:
+        def additional_resource_packages(self) -> list[ModuleType]:
             """Get the resource packages."""
             return []
 
-        @classmethod
-        def app_icon_png_path(cls) -> Path:
+        def app_icon_png_path(self) -> Path:
             """Get the app icon path."""
             path = tmp_path / "icon.png"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -48,10 +46,12 @@ def my_test_pyinstaller_builder(
 class TestPyInstallerBuilder:
     """Test class."""
 
-    def test_default_additional_resource_packages(self) -> None:
+    def test_default_additional_resource_packages(
+        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
         """Test method."""
         # Test that default additional resource packages are discovered
-        result = PyInstallerBuilder.default_additional_resource_packages()
+        result = my_test_pyinstaller_builder().default_additional_resource_packages()
         # Should return a list of modules
         assert isinstance(result, list), f"Expected list, got {type(result)}"
         # All items should be modules
@@ -63,7 +63,7 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method."""
         # Test that all resource packages includes both default and resources
-        result = my_test_pyinstaller_builder.all_resource_packages()
+        result = my_test_pyinstaller_builder().all_resource_packages()
         # Should return a list of modules
         assert isinstance(result, list), f"Expected list, got {type(result)}"
         # Should include at least the resources package
@@ -73,29 +73,37 @@ class TestPyInstallerBuilder:
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
-        additional_packages = my_test_pyinstaller_builder.additional_resource_packages()
+        additional_packages = (
+            my_test_pyinstaller_builder().additional_resource_packages()
+        )
         assert len(additional_packages) == 0, "Expected no additional packages"
 
-    def test_temp_distpath(self, tmp_path: Path) -> None:
+    def test_temp_distpath(
+        self, tmp_path: Path, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
         """Test method."""
-        result = PyInstallerBuilder.temp_distpath(tmp_path)
+        result = my_test_pyinstaller_builder().temp_distpath(tmp_path)
         assert result.exists(), "Expected path to exist"
 
-    def test_temp_workpath(self, tmp_path: Path) -> None:
+    def test_temp_workpath(
+        self, tmp_path: Path, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
         """Test method."""
-        result = PyInstallerBuilder.temp_workpath(tmp_path)
+        result = my_test_pyinstaller_builder().temp_workpath(tmp_path)
         assert result.exists(), "Expected path to exist"
 
-    def test_temp_specpath(self, tmp_path: Path) -> None:
+    def test_temp_specpath(
+        self, tmp_path: Path, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
         """Test method."""
-        result = PyInstallerBuilder.temp_specpath(tmp_path)
+        result = my_test_pyinstaller_builder().temp_specpath(tmp_path)
         assert result.exists(), "Expected path to exist"
 
     def test_add_datas(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
-        result = my_test_pyinstaller_builder.add_datas()
+        result = my_test_pyinstaller_builder().add_datas()
         # should contain the resource.py and __init__.py from the resources package
         assert len(result) > 1, f"Expected at least two files, got {result}"
 
@@ -105,14 +113,14 @@ class TestPyInstallerBuilder:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        options = my_test_pyinstaller_builder.pyinstaller_options(tmp_path)
+        options = my_test_pyinstaller_builder().pyinstaller_options(tmp_path)
         assert "--name" in options, "Expected --name option"
 
     def test_app_icon_png_path(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
-        result = my_test_pyinstaller_builder.app_icon_png_path()
+        result = my_test_pyinstaller_builder().app_icon_png_path()
         assert result.name == "icon.png", "Expected icon.ico"
 
     def test_create_artifacts(
@@ -123,7 +131,7 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method."""
         mock_run = mocker.patch(make_obj_importpath(pyinstaller) + ".run")
-        my_test_pyinstaller_builder.create_artifacts(tmp_path)
+        my_test_pyinstaller_builder().create_artifacts(tmp_path)
         mock_run.assert_called_once()
 
     def test_convert_png_to_format(
@@ -132,7 +140,7 @@ class TestPyInstallerBuilder:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        result = my_test_pyinstaller_builder.convert_png_to_format("ico", tmp_path)
+        result = my_test_pyinstaller_builder().convert_png_to_format("ico", tmp_path)
         assert result.name == "icon.ico", "Expected icon.ico"
 
     def test_app_icon_path(
@@ -141,5 +149,5 @@ class TestPyInstallerBuilder:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        result = my_test_pyinstaller_builder.app_icon_path(tmp_path)
+        result = my_test_pyinstaller_builder().app_icon_path(tmp_path)
         assert result.stem == "icon", "Expected icon"

@@ -24,7 +24,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
     Examples:
         Generate docs/index.md:
 
-            >>> IndexConfigFile.validate()
+            >>> IndexConfigFile.I.validate()
 
         Header for "myproject":
 
@@ -35,13 +35,11 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return the docs directory path."""
         return DocsBuilder.I.docs_dir()
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Get the index.md file content.
 
         Returns:

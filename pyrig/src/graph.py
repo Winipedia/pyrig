@@ -138,7 +138,7 @@ class DiGraph(ABC):
         source to target. In dependency graph context, this represents the
         dependency depth between packages.
 
-        Used by ``pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow``
+        Used by `pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile`
         to calculate cron schedule offsets based on dependency depth to pyrig,
         ensuring dependent packages run health checks after their dependencies.
 

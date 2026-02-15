@@ -25,15 +25,14 @@ class ConfigsInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/rig/configs/__init__.py::
 
-            ConfigsInitConfigFile.validate()
+            ConfigsInitConfigFile.I.validate()
 
     See Also:
         pyrig.rig.configs
         pyrig.rig.configs.base.base.ConfigFile
     """
 
-    @classmethod
-    def priority(cls) -> float:
+    def priority(self) -> float:
         """Get the priority for this config file.
 
         Returns:
@@ -42,8 +41,7 @@ class ConfigsInitConfigFile(InitConfigFile):
         """
         return Priority.LOW
 
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         """Get the source module to copy docstring from.
 
         Returns:

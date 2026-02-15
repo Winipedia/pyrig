@@ -1,12 +1,12 @@
-# Workflow Architecture
+# WorkflowConfigFile Architecture
 
 GitHub Actions workflows for CI/CD automation in pyrig projects.
 
 ## Overview
 
 Pyrig provides a declarative API for building GitHub Actions workflows through
-the `Workflow` base class. All workflow config files inherit from this class and
-generate YAML files in `.github/workflows/`.
+the `WorkflowConfigFile` base class. All workflow config files inherit from this
+class and generate YAML files in `.github/workflows/`.
 
 ## Inheritance Hierarchy
 
@@ -14,11 +14,11 @@ generate YAML files in `.github/workflows/`.
 graph TD
     A[ConfigFile] --> B[YamlConfigFile]
     B --> B1[YmlConfigFile]
-    B1 --> C[Workflow]
-    C --> D[HealthCheckWorkflow]
-    C --> E[BuildWorkflow]
-    C --> F[ReleaseWorkflow]
-    C --> G[DeployWorkflow]
+    B1 --> C[WorkflowConfigFile]
+    C --> D[HealthCheckWorkflowConfigFile]
+    C --> E[BuildWorkflowConfigFile]
+    C --> F[ReleaseWorkflowConfigFile]
+    C --> G[DeployWorkflowConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -30,9 +30,9 @@ graph TD
     style G fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-## Workflow Base Class
+## WorkflowConfigFile Base Class
 
-The `Workflow` class provides:
+The `WorkflowConfigFile` class provides:
 
 ### Core Structure
 
@@ -43,7 +43,7 @@ The `Workflow` class provides:
 - **Permissions**: GitHub token permissions for the workflow
 - **Matrix Strategies**: Run jobs across OS and Python version combinations
 
-### Workflow Lifecycle
+### WorkflowConfigFile Lifecycle
 
 ```mermaid
 stateDiagram-v2
@@ -57,11 +57,11 @@ stateDiagram-v2
     StepsExecuting --> StepFailure: Step fails
     StepFailure --> JobFailure
     JobSuccess --> ArtifactsUploaded: Has artifacts
-    ArtifactsUploaded --> WorkflowComplete: All jobs done
-    JobSuccess --> WorkflowComplete: No artifacts
-    JobFailure --> WorkflowFailed
-    WorkflowComplete --> [*]
-    WorkflowFailed --> [*]
+    ArtifactsUploaded --> WorkflowConfigFileComplete: All jobs done
+    JobSuccess --> WorkflowConfigFileComplete: No artifacts
+    JobFailure --> WorkflowConfigFileFailed
+    WorkflowConfigFileComplete --> [*]
+    WorkflowConfigFileFailed --> [*]
 
     note right of Triggered
         Triggers: push, pull_request,
@@ -81,7 +81,7 @@ stateDiagram-v2
 Instead of writing YAML manually, you define workflows in Python:
 
 ```python
-class MyWorkflow(Workflow):
+class MyWorkflowConfigFile(WorkflowConfigFile):
     @classmethod
     def jobs(cls) -> dict[str, Any]:
         return cls.job(
@@ -97,8 +97,8 @@ class MyWorkflow(Workflow):
 
 ### Naming Conventions
 
-- **Workflow name**: Generated from class name (e.g., `HealthCheckWorkflow` →
-  `"Health Check"`)
+- **WorkflowConfigFile name**: Generated from class name
+(e.g., `HealthCheckWorkflowConfigFile` → `"Health Check"`)
 - **Job IDs**: Generated from method names (e.g., `job_matrix_health_checks` →
   `"matrix_health_checks"`)
 - **Step IDs**: Generated from method names (e.g., `step_run_tests` →
@@ -106,13 +106,13 @@ class MyWorkflow(Workflow):
 
 ### Opt-Out Mechanism
 
-Workflows can be opted out by replacing all steps with
+WorkflowConfigFiles can be opted out by replacing all steps with
 `step_opt_out_of_workflow()`. This creates a valid workflow that never runs,
 allowing users to disable workflows without deleting files. Or if you empty the
 file it will be regenerated on next `uv run pyrig mkroot` with the opt-out steps
 for you. So just empty the file and run `uv run pyrig mkroot` to opt out.
 
-## Concrete Workflows
+## Concrete WorkflowConfigFiles
 
 Pyrig provides four workflows that form a complete CI/CD pipeline:
 
@@ -145,7 +145,7 @@ graph LR
     style E2 fill:#90be6d,stroke:#333,stroke-width:1px,color:#000
 ```
 
-### 1. Health Check Workflow
+### 1. Health Check WorkflowConfigFile
 
 **File**: `.github/workflows/health_check.yml`
 
@@ -169,7 +169,7 @@ graph LR
 
 **Purpose**: Continuous integration - ensures code quality on every change.
 
-### 2. Build Workflow
+### 2. Build WorkflowConfigFile
 
 **File**: `.github/workflows/build.yml`
 
@@ -185,7 +185,7 @@ graph LR
 
 **Purpose**: Creates distributable artifacts after CI passes.
 
-### 3. Release Workflow
+### 3. Release WorkflowConfigFile
 
 **File**: `.github/workflows/release.yml`
 
@@ -207,7 +207,7 @@ graph LR
 
 **Purpose**: Automates versioning and GitHub releases.
 
-### 4. Deploy Workflow
+### 4. Deploy WorkflowConfigFile
 
 **File**: `.github/workflows/deploy.yml`
 
@@ -228,16 +228,16 @@ graph LR
 
 **Purpose**: Distributes package and documentation.
 
-## Creating Custom Workflows
+## Creating Custom WorkflowConfigFiles
 
-To create your own workflow, subclass `Workflow` and implement `jobs()`:
+To create your own workflow, subclass `WorkflowConfigFile` and implement `jobs()`:
 
 ```python
 # myapp/rig/configs/workflows/custom.py
 from typing import Any
-from pyrig.rig.configs.base.workflow import Workflow
+from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 
-class CustomWorkflow(Workflow):
+class CustomWorkflowConfigFile(WorkflowConfigFile):
     """Custom workflow that runs on push and manual trigger."""
 
     @classmethod

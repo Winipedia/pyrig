@@ -9,5 +9,5 @@ class TestResourcesInitConfigFile:
 
     def test_src_module(self) -> None:
         """Test method."""
-        module = ResourcesInitConfigFile.src_module()
+        module = ResourcesInitConfigFile.I.src_module()
         assert module == resources

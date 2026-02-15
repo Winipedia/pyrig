@@ -96,7 +96,7 @@ class RemoteVersionController(Tool):
         """Construct GitHub Actions workflow run URL.
 
         Args:
-            workflow_name: Workflow file name without `.yml` extension.
+            workflow_name: WorkflowConfigFile file name without `.yml` extension.
 
         Returns:
             URL to workflow execution history.
@@ -107,7 +107,7 @@ class RemoteVersionController(Tool):
         """Construct GitHub Actions workflow status badge URL.
 
         Args:
-            workflow_name: Workflow file name without `.yml` extension.
+            workflow_name: WorkflowConfigFile file name without `.yml` extension.
             label: Badge text label (e.g., "CI", "Build").
 
         Returns:
@@ -123,7 +123,7 @@ class RemoteVersionController(Tool):
         """Construct GitHub Actions workflow status badge Markdown string.
 
         Args:
-            workflow_name: Workflow file name without `.yml` extension.
+            workflow_name: WorkflowConfigFile file name without `.yml` extension.
             label: Badge text label (e.g., "CI", "Build").
 
         Returns:

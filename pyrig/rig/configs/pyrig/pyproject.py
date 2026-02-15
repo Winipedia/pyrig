@@ -44,8 +44,7 @@ if src_package_is_pyrig():
             pyrig.rig.configs.pyproject.PyprojectConfigFile: Parent class
         """
 
-        @classmethod
-        def make_python_version_classifiers(cls) -> list[str]:
+        def make_python_version_classifiers(self) -> list[str]:
             """Generate PyPI classifiers with pyrig-specific metadata.
 
             Prepends pyrig-specific classifiers to the base classifiers:
@@ -69,8 +68,7 @@ if src_package_is_pyrig():
             )
             return [*dev_statuses, *intended_audiences, *topics, *classifiers]
 
-        @classmethod
-        def _configs(cls) -> dict[str, Any]:
+        def _configs(self) -> dict[str, Any]:
             """Generate complete pyproject.toml config with pyrig-specific keywords.
 
             Extends base configuration by adding keywords relevant to pyrig's

@@ -23,27 +23,22 @@ class DotPythonVersionConfigFile(StringConfigFile):
         pyrig.rig.configs.pyproject.PyprojectConfigFile.I.first_supported_python_version
     """
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Return empty string to produce '.python-version'."""
         return ""
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return 'python-version' extension."""
         return "python-version"
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return project root."""
         return Path()
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Get minimum supported Python version from pyproject.toml."""
         return [str(PyprojectConfigFile.I.first_supported_python_version())]
 
-    @classmethod
-    def should_override_content(cls) -> bool:
+    def should_override_content(self) -> bool:
         """Override content; only one .python-version is needed."""
         return True

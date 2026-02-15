@@ -24,7 +24,7 @@ class FixturesInitConfigFile(InitConfigFile):
     Examples:
         Generate tests/fixtures/__init__.py::
 
-            FixturesInitConfigFile.validate()
+            FixturesInitConfigFile.I.validate()
 
         Add custom fixtures::
 
@@ -40,8 +40,7 @@ class FixturesInitConfigFile(InitConfigFile):
         pyrig.rig.configs.testing.conftest.ConftestConfigFile
     """
 
-    @classmethod
-    def priority(cls) -> float:
+    def priority(self) -> float:
         """Get the priority for this config file.
 
         Returns:
@@ -49,8 +48,7 @@ class FixturesInitConfigFile(InitConfigFile):
         """
         return Priority.LOW
 
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         """Get the source module to copy docstring from.
 
         Returns:

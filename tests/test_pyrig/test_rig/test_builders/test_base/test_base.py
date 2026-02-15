@@ -23,11 +23,10 @@ def my_test_builder_config_file(
     ):
         """Test builder config file with tmp_path override."""
 
-        @classmethod
-        def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
+        def create_artifacts(self, temp_artifacts_dir: Path) -> None:
             """Create the artifacts."""
-            file = temp_artifacts_dir / cls.filename()
-            file.write_text(cls.__name__)
+            file = temp_artifacts_dir / self.filename()
+            file.write_text(self.__class__.__name__)
 
     return MyTestBuilderConfigFile
 
@@ -35,49 +34,62 @@ def my_test_builder_config_file(
 class TestBuilderConfigFile:
     """Test class."""
 
+    def test_dist_dir_name(self) -> None:
+        """Test method."""
+        result = BuilderConfigFile.dist_dir_name()
+        assert result == "dist"
+
     def test_create_artifacts(
         self,
         my_test_builder_config_file: type[BuilderConfigFile],
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        my_test_builder_config_file.validate()
+        my_test_builder_config_file().validate()
         with chdir(tmp_path):
-            platform_file = my_test_builder_config_file.platform_specific_path(
-                Path(my_test_builder_config_file.filename())
+            platform_file = my_test_builder_config_file().platform_specific_path(
+                Path(my_test_builder_config_file().filename())
             )
             assert platform_file.exists()
-            loaded = my_test_builder_config_file.load()
+            loaded = my_test_builder_config_file().load()
             assert loaded == [platform_file]
 
-    def test_parent_path(self) -> None:
+    def test_parent_path(
+        self, my_test_builder_config_file: type[BuilderConfigFile], tmp_path: Path
+    ) -> None:
         """Test method."""
-        assert BuilderConfigFile.parent_path() == Path("dist")
+        assert my_test_builder_config_file().parent_path() == tmp_path / "dist"
 
     def test__load(self, my_test_builder_config_file: type[BuilderConfigFile]) -> None:
         """Test method."""
-        my_test_builder_config_file.validate()
-        loaded = my_test_builder_config_file.load()
+        my_test_builder_config_file().validate()
+        loaded = my_test_builder_config_file().load()
         assert isinstance(loaded, list)
         assert len(loaded) == 1
         assert all(isinstance(item, Path) for item in loaded)
 
-    def test__dump(self, mocker: MockFixture) -> None:
+    def test__dump(
+        self, mocker: MockFixture, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
         # assert calls build
         mock_build = mocker.patch.object(
-            BuilderConfigFile, BuilderConfigFile.build.__name__
+            my_test_builder_config_file, my_test_builder_config_file().build.__name__
         )
-        BuilderConfigFile._dump(BuilderConfigFile.configs())  # noqa: SLF001
+        my_test_builder_config_file()._dump(my_test_builder_config_file().configs())  # noqa: SLF001
         mock_build.assert_called_once()
 
-    def test_extension(self) -> None:
+    def test_extension(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        assert BuilderConfigFile.extension() == ""
+        assert my_test_builder_config_file().extension() == ""
 
-    def test__configs(self) -> None:
+    def test__configs(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        assert BuilderConfigFile.configs() == []
+        assert my_test_builder_config_file().configs() == []
 
     def test_is_correct(
         self,
@@ -85,24 +97,24 @@ class TestBuilderConfigFile:
         mocker: MockFixture,
     ) -> None:
         """Test method."""
-        assert not my_test_builder_config_file.is_correct()
+        assert not my_test_builder_config_file().is_correct()
         # mock create artifacts to not do anything
         mocker.patch.object(
             my_test_builder_config_file,
-            my_test_builder_config_file.create_artifacts.__name__,
+            my_test_builder_config_file().create_artifacts.__name__,
             return_value=None,
         )
         with pytest.raises(ValueError, match="not correct"):
-            my_test_builder_config_file.validate()
+            my_test_builder_config_file().validate()
 
     def test_create_file(
         self,
         my_test_builder_config_file: type[BuilderConfigFile],
     ) -> None:
         """Test method."""
-        my_test_builder_config_file.create_file()
-        assert my_test_builder_config_file.parent_path().exists()
-        assert not my_test_builder_config_file.path().exists()
+        my_test_builder_config_file().create_file()
+        assert my_test_builder_config_file().parent_path().exists()
+        assert not my_test_builder_config_file().path().exists()
 
     def test_definition_package(self) -> None:
         """Test method."""
@@ -115,93 +127,134 @@ class TestBuilderConfigFile:
     ) -> None:
         """Test method."""
         spy = mocker.spy(
-            my_test_builder_config_file, my_test_builder_config_file.build.__name__
+            my_test_builder_config_file, my_test_builder_config_file().build.__name__
         )
-        my_test_builder_config_file.validate()
+        my_test_builder_config_file().validate()
         spy.assert_called_once()
 
-    def test_rename_artifacts(self, tmp_path: Path) -> None:
+    def test_rename_artifacts(
+        self, tmp_path: Path, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            BuilderConfigFile.create_file()
+            my_test_builder_config_file().create_file()
             file = tmp_path / "test.txt"
             file.write_text("test")
             files = [file]
-            BuilderConfigFile.rename_artifacts(files)
+            my_test_builder_config_file().rename_artifacts(files)
             assert not file.exists()
-            pltform_specific_path = BuilderConfigFile.platform_specific_path(file)
+            pltform_specific_path = (
+                my_test_builder_config_file().platform_specific_path(file)
+            )
             assert pltform_specific_path.exists()
 
-    def test_platform_specific_path(self) -> None:
+    def test_platform_specific_path(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
         path = Path("test.txt")
-        platform_specific_path = BuilderConfigFile.platform_specific_path(path)
-        assert platform_specific_path == BuilderConfigFile.parent_path() / (
+        platform_specific_path = my_test_builder_config_file().platform_specific_path(
+            path
+        )
+        assert platform_specific_path == my_test_builder_config_file().parent_path() / (
             f"test-{platform.system()}.txt"
         )
 
-    def test_rename_artifact(self, tmp_path: Path) -> None:
+    def test_rename_artifact(
+        self, tmp_path: Path, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            BuilderConfigFile.create_file()
+            my_test_builder_config_file().create_file()
             file = tmp_path / "test.txt"
             file.write_text("test")
-            BuilderConfigFile.rename_artifact(file)
+            my_test_builder_config_file().rename_artifact(file)
             assert not file.exists()
-            pltform_specific_path = BuilderConfigFile.platform_specific_path(file)
+            pltform_specific_path = (
+                my_test_builder_config_file().platform_specific_path(file)
+            )
             assert pltform_specific_path.exists()
 
-    def test_platform_specific_name(self) -> None:
+    def test_platform_specific_name(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
         path = Path("test.txt")
-        platform_specific_name = BuilderConfigFile.platform_specific_name(path)
+        platform_specific_name = my_test_builder_config_file().platform_specific_name(
+            path
+        )
         assert platform_specific_name == f"test-{platform.system()}.txt"
 
-    def test_temp_artifacts(self, tmp_path: Path) -> None:
+    def test_temp_artifacts(
+        self, tmp_path: Path, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
         # write a file to tmp_path
         file = tmp_path / "test.txt"
         file.write_text("test")
-        artifacts = BuilderConfigFile.temp_artifacts(tmp_path)
+        artifacts = my_test_builder_config_file().temp_artifacts(tmp_path)
         assert artifacts == [file]
 
-    def test_temp_artifacts_path(self, tmp_path: Path) -> None:
+    def test_temp_artifacts_path(
+        self, tmp_path: Path, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        temp_artifacts_path = BuilderConfigFile.temp_artifacts_path(tmp_path)
-        assert temp_artifacts_path == tmp_path / BuilderConfigFile.ARTIFACTS_DIR_NAME
+        temp_artifacts_path = my_test_builder_config_file().temp_artifacts_path(
+            tmp_path
+        )
+        assert (
+            temp_artifacts_path
+            == tmp_path / my_test_builder_config_file().dist_dir_name()
+        )
         assert temp_artifacts_path.exists()
 
-    def test_app_name(self) -> None:
+    def test_app_name(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        app_name = BuilderConfigFile.app_name()
+        app_name = my_test_builder_config_file().app_name()
         assert app_name == "pyrig"
 
-    def test_root_path(self) -> None:
+    def test_root_path(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        root_path = BuilderConfigFile.root_path()
+        root_path = my_test_builder_config_file().root_path()
         assert root_path == Path.cwd()
 
-    def test_main_path(self) -> None:
+    def test_main_path(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        main_path = BuilderConfigFile.main_path()
+        main_path = my_test_builder_config_file().main_path()
         assert main_path == Path.cwd() / "pyrig" / "main.py"
 
-    def test_resources_path(self) -> None:
+    def test_resources_path(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        resources_path = BuilderConfigFile.resources_path()
+        resources_path = my_test_builder_config_file().resources_path()
         assert resources_path == Path.cwd() / "pyrig" / "resources"
 
-    def test_src_package_path(self) -> None:
+    def test_src_package_path(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        src_package_path = BuilderConfigFile.src_package_path()
+        src_package_path = my_test_builder_config_file().src_package_path()
         assert src_package_path == Path.cwd() / "pyrig"
 
-    def test_main_path_relative_to_src_package(self) -> None:
+    def test_main_path_relative_to_src_package(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        main_path = BuilderConfigFile.main_path_relative_to_src_package()
+        main_path = my_test_builder_config_file().main_path_relative_to_src_package()
         assert main_path == Path("main.py")
 
-    def test_resources_path_relative_to_src_package(self) -> None:
+    def test_resources_path_relative_to_src_package(
+        self, my_test_builder_config_file: type[BuilderConfigFile]
+    ) -> None:
         """Test method."""
-        resources_path = BuilderConfigFile.resources_path_relative_to_src_package()
+        resources_path = (
+            my_test_builder_config_file().resources_path_relative_to_src_package()
+        )
         assert resources_path == Path("resources")

@@ -19,13 +19,11 @@ def my_test_python_package_config_file(
     class MyTestPythonPackageConfigFile(config_file_factory(PythonPackageConfigFile)):  # type: ignore [misc]
         """Test python package config file with tmp_path override."""
 
-        @classmethod
-        def parent_path(cls) -> Path:
+        def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
 
-        @classmethod
-        def lines(cls) -> list[str]:
+        def lines(self) -> list[str]:
             """Get the content string."""
             return ['"""Test content."""']
 
@@ -39,7 +37,7 @@ class TestPythonPackageConfigFile:
         self, my_test_python_package_config_file: type[PythonPackageConfigFile]
     ) -> None:
         """Test method."""
-        my_test_python_package_config_file.validate()
+        my_test_python_package_config_file().validate()
         assert (
-            my_test_python_package_config_file.path().parent / "__init__.py"
+            my_test_python_package_config_file().path().parent / "__init__.py"
         ).exists(), "Expected __init__.py to be created"

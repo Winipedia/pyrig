@@ -8,14 +8,14 @@ Example:
     >>> from typing import Any
     >>> from pyrig.rig.configs.base.yaml import YamlConfigFile
     >>>
-    >>> class MyWorkflowFile(YamlConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    >>> class MyWorkflowConfigFileFile(YamlConfigFile):
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path(".github/workflows")
     ...
-    ...     @classmethod
-    ...     def _configs(cls) -> dict[str, Any]:
-    ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
+    ...
+    ...     def _configs(self) -> dict[str, Any]:
+    ...         return {"name": "My WorkflowConfigFile", "on": ["push", "pull_request"]}
 """
 
 from typing import Any
@@ -37,35 +37,32 @@ class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
 
     Example:
         >>> class MyConfigFile(YamlConfigFile):
-        ...     @classmethod
-        ...     def parent_path(cls) -> Path:
+        ...
+        ...     def parent_path(self) -> Path:
         ...         return Path()
         ...
-        ...     @classmethod
-        ...     def _configs(cls) -> dict[str, Any]:
+        ...
+        ...     def _configs(self) -> dict[str, Any]:
         ...         return {"setting": "value"}
     """
 
-    @classmethod
-    def _load(cls) -> dict[str, Any] | list[Any]:
+    def _load(self) -> dict[str, Any] | list[Any]:
         """Load and parse the YAML file using safe_load.
 
         Returns:
             Parsed YAML content as dict or list. Empty dict if file is empty.
         """
-        return yaml.safe_load(cls.path().read_text(encoding="utf-8")) or {}
+        return yaml.safe_load(self.path().read_text(encoding="utf-8")) or {}
 
-    @classmethod
-    def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(self, config: dict[str, Any] | list[Any]) -> None:
         """Write configuration to YAML file using safe_dump.
 
         Args:
             config: Configuration dict or list to write.
         """
-        with cls.path().open("w") as f:
+        with self.path().open("w") as f:
             yaml.safe_dump(config, f, sort_keys=False)
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return "yaml"."""
         return "yaml"

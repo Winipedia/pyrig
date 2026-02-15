@@ -40,13 +40,11 @@ def my_test_copy_module_only_docstring_config_file(
     ):
         """Test copy module only docstring config file with tmp_path override."""
 
-        @classmethod
-        def src_module(cls) -> ModuleType:
+        def src_module(self) -> ModuleType:
             """Get the source module."""
             return mock_module
 
-        @classmethod
-        def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(self, config: dict[str, Any] | list[Any]) -> None:
             """Dump the config file."""
             with chdir(tmp_path):
                 super()._dump(config)
@@ -64,7 +62,7 @@ class TestCopyModuleOnlyDocstringConfigFile:
         ],
     ) -> None:
         """Test method."""
-        lines = my_test_copy_module_only_docstring_config_file.lines()
+        lines = my_test_copy_module_only_docstring_config_file().lines()
         content_str = "\n".join(lines)
 
         # assert its only the docstring
@@ -82,7 +80,7 @@ class TestCopyModuleOnlyDocstringConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            LicenseConfigFile.validate()
-            PyprojectConfigFile.validate()
-            my_test_copy_module_only_docstring_config_file.validate()
-            assert my_test_copy_module_only_docstring_config_file.is_correct()
+            LicenseConfigFile.I.validate()
+            PyprojectConfigFile.I.validate()
+            my_test_copy_module_only_docstring_config_file().validate()
+            assert my_test_copy_module_only_docstring_config_file().is_correct()

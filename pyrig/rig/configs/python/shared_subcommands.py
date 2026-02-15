@@ -27,7 +27,7 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     Examples:
         Generate shared_subcommands.py::
 
-            SharedSubcommandsConfigFile.validate()
+            SharedSubcommandsConfigFile.I.validate()
 
         Add shared subcommands::
 
@@ -44,8 +44,7 @@ class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
         pyrig.rig.cli.cli.add_shared_subcommands
     """
 
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         """Get the source module to copy docstring from.
 
         Returns:

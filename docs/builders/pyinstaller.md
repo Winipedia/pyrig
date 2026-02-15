@@ -226,7 +226,6 @@ class MyAppBuilder(PyInstallerBuilder):
 
 ```python
 class MyAppBuilder(PyInstallerBuilder):
-    ARTIFACTS_DIR_NAME = "build/executables"  # Custom output directory
 
     @classmethod
     def additional_resource_packages(cls) -> list[ModuleType]:

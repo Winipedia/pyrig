@@ -4,53 +4,55 @@ from collections.abc import Callable
 
 import pytest
 
-from pyrig.rig.configs.workflows.build import BuildWorkflow
+from pyrig.rig.configs.workflows.build import BuildWorkflowConfigFile
 
 
 @pytest.fixture
 def my_test_build_workflow(
-    config_file_factory: Callable[[type[BuildWorkflow]], type[BuildWorkflow]],
-) -> type[BuildWorkflow]:
+    config_file_factory: Callable[
+        [type[BuildWorkflowConfigFile]], type[BuildWorkflowConfigFile]
+    ],
+) -> type[BuildWorkflowConfigFile]:
     """Create a test build workflow class with tmp_path."""
-    return config_file_factory(BuildWorkflow)
+    return config_file_factory(BuildWorkflowConfigFile)
 
 
-class TestBuildWorkflow:
+class TestBuildWorkflowConfigFile:
     """Test class."""
 
     def test_job_build_container_image(
-        self, my_test_build_workflow: type[BuildWorkflow]
+        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow.job_build_container_image()
+        result = my_test_build_workflow().job_build_container_image()
         assert len(result) == 1, f"Expected job to have one key, got {result}"
 
     def test_steps_build_container_image(
-        self, my_test_build_workflow: type[BuildWorkflow]
+        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow.steps_build_container_image()
+        result = my_test_build_workflow().steps_build_container_image()
         assert len(result) > 0, f"Expected some steps, got {result}"
 
     def test_workflow_triggers(
-        self, my_test_build_workflow: type[BuildWorkflow]
+        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow.workflow_triggers()
+        result = my_test_build_workflow().workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
         assert "pull_request" not in result
 
-    def test_jobs(self, my_test_build_workflow: type[BuildWorkflow]) -> None:
+    def test_jobs(self, my_test_build_workflow: type[BuildWorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_build_workflow.jobs()
+        result = my_test_build_workflow().jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_build_artifacts(
-        self, my_test_build_workflow: type[BuildWorkflow]
+        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow.job_build_artifacts()
+        result = my_test_build_workflow().job_build_artifacts()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
@@ -58,23 +60,25 @@ class TestBuildWorkflow:
         assert "runs-on" in result[job_name], "Expected 'runs-on' in job"
 
     def test_steps_build_artifacts(
-        self, my_test_build_workflow: type[BuildWorkflow]
+        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow.steps_build_artifacts()
+        result = my_test_build_workflow().steps_build_artifacts()
         assert len(result) > 0, "Expected steps to be non-empty"
 
-    def test_is_correct(self, my_test_build_workflow: type[BuildWorkflow]) -> None:
+    def test_is_correct(
+        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
+    ) -> None:
         """Test method."""
-        my_test_build_workflow.validate()
-        workflow_path = my_test_build_workflow.path()
+        my_test_build_workflow().validate()
+        workflow_path = my_test_build_workflow().path()
         workflow_path.write_text("")
-        assert my_test_build_workflow.is_correct(), (
+        assert my_test_build_workflow().is_correct(), (
             "Expected workflow to be correct when empty"
         )
 
-        proper_config = my_test_build_workflow.configs()
-        my_test_build_workflow.dump(proper_config)
-        assert my_test_build_workflow.is_correct(), (
+        proper_config = my_test_build_workflow().configs()
+        my_test_build_workflow().dump(proper_config)
+        assert my_test_build_workflow().is_correct(), (
             "Expected workflow to be correct with proper config"
         )

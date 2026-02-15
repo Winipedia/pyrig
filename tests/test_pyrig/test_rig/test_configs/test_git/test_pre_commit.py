@@ -30,7 +30,7 @@ class TestPrekConfigFile:
 
     def test_hook(self) -> None:
         """Test method."""
-        hook = PrekConfigFile.hook("test", Args(("test",)))
+        hook = PrekConfigFile.I.hook("test", Args(("test",)))
         assert hook["id"] == "test", f"Expected id to be 'test', got {hook['id']}"
 
     def test_parent_path(
@@ -40,12 +40,12 @@ class TestPrekConfigFile:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            parent_path = my_test_prek_config_file.parent_path()
+            parent_path = my_test_prek_config_file().parent_path()
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
     def test__configs(self, my_test_prek_config_file: type[PrekConfigFile]) -> None:
         """Test method."""
-        configs = my_test_prek_config_file.configs()
+        configs = my_test_prek_config_file().configs()
         assert "repos" in configs, "Expected 'repos' key in configs"
         assert isinstance(configs["repos"], list), "Expected 'repos' to be a list"
         assert len(configs["repos"]) > 0, "Expected at least one repo in configs"

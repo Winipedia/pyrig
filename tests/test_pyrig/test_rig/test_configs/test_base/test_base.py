@@ -32,28 +32,23 @@ def my_test_config_file(
             "key4": [["value4"], {"key5": "value5", "key6": "value6"}],
         }
 
-        @classmethod
-        def extension(cls) -> str:
+        def extension(self) -> str:
             """Get the file extension of the config file."""
             return "txt"
 
-        @classmethod
-        def _load(cls) -> dict[str, Any]:
+        def _load(self) -> dict[str, Any]:
             """Load the config file."""
-            return copy.deepcopy(cls.STORAGE_DICT)
+            return copy.deepcopy(self.STORAGE_DICT)
 
-        @classmethod
-        def _dump(cls, config: dict[str, Any]) -> None:
+        def _dump(self, config: dict[str, Any]) -> None:
             """Dump the config file."""
-            cls.STORAGE_DICT = config
+            self.STORAGE_DICT = config  # ty:ignore[invalid-attribute-access]
 
-        @classmethod
-        def parent_path(cls) -> Path:
+        def parent_path(self) -> Path:
             """Get the path to the config file."""
             return Path("parent_dir")
 
-        @classmethod
-        def _configs(cls) -> dict[str, Any]:
+        def _configs(self) -> dict[str, Any]:
             """Get the config."""
             return {
                 "key1": "value1",
@@ -77,23 +72,25 @@ class TestConfigFile:
             ConfigFile.validate.__name__,
             return_value=None,
         )
-        my_test_config_file.validate()
+        my_test_config_file().validate()
         mock_validate.assert_called_once()
 
-    def test_sorting_key(self) -> None:
+    def test_sorting_key(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+    ) -> None:
         """Test method."""
-        result = ConfigFile.sorting_key(ConfigFile)
+        result = my_test_config_file.sorting_key(my_test_config_file)
         assert isinstance(result, (float, int))
 
     def test_configs(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        configs = my_test_config_file._configs()  # noqa: SLF001
-        cached_configs = my_test_config_file.configs()
+        configs = my_test_config_file()._configs()  # noqa: SLF001
+        cached_configs = my_test_config_file().configs()
         assert configs == cached_configs
         assert configs is not cached_configs
-        assert my_test_config_file.configs() is cached_configs
+        assert my_test_config_file().configs() is cached_configs
 
     def test_definition_package(self) -> None:
         """Test method."""
@@ -103,41 +100,43 @@ class TestConfigFile:
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        my_test_config_file.create_file()
-        assert my_test_config_file.path().exists()
+        my_test_config_file().create_file()
+        assert my_test_config_file().path().exists()
 
     def test__load(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
-        loaded = my_test_config_file._load()  # noqa: SLF001
+        loaded = my_test_config_file()._load()  # noqa: SLF001
         assert loaded["key0"] == "value0"
 
         # assert cache works
         # _dump to change STORAGE_DICT
-        loaded = my_test_config_file.load()
+        loaded = my_test_config_file().load()
         assert loaded["key0"] == "value0"
         loaded = copy.deepcopy(loaded)
         loaded["key0"] = "new_value0"
-        my_test_config_file._dump(loaded)  # noqa: SLF001
-        loaded = my_test_config_file.load()
+        my_test_config_file()._dump(loaded)  # noqa: SLF001
+        loaded = my_test_config_file().load()
         assert loaded["key0"] == "value0"  # cache still has old value
 
         # clear cache and assert new value
-        my_test_config_file.load.cache_clear()
-        loaded = my_test_config_file.load()
+        my_test_config_file().load.cache_clear()
+        loaded = my_test_config_file().load()
         assert loaded["key0"] == "new_value0"
 
     def test__dump(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
-        my_test_config_file._dump({"key": "value"})  # noqa: SLF001
-        assert my_test_config_file.load()["key"] == "value"
+        my_test_config_file()._dump({"key": "value"})  # noqa: SLF001
+        assert my_test_config_file().load()["key"] == "value"
 
         # dump and assert cache is cleared
-        my_test_config_file.dump({"key": "new_value"})
-        assert my_test_config_file.load()["key"] == "new_value"
+        my_test_config_file().dump({"key": "new_value"})
+        assert my_test_config_file().load()["key"] == "new_value"
 
-    def test_priority(self) -> None:
+    def test_priority(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+    ) -> None:
         """Test method."""
-        assert ConfigFile.priority() == 0
+        assert my_test_config_file().priority() == 0
 
     def test_priority_subclasses(self) -> None:
         """Test method."""
@@ -173,56 +172,58 @@ class TestConfigFile:
         ConfigFile.validate_priority_subclasses()
         assert mock.call_count == len(num_priority_subclasses)
 
-    def test_extension_separator(self) -> None:
+    def test_extension_separator(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+    ) -> None:
         """Test method."""
-        assert ConfigFile.extension_separator() == "."
+        assert my_test_config_file().extension_separator() == "."
 
     def test_parent_path(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
         expected = Path("parent_dir")
-        actual = my_test_config_file.parent_path()
+        actual = my_test_config_file().parent_path()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_load(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
         # assert is dict
-        assert isinstance(my_test_config_file.load(), dict), "Expected dict"
+        assert isinstance(my_test_config_file().load(), dict), "Expected dict"
 
     def test_dump(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
         # assert dumps correctly
-        storage_dict = my_test_config_file.load()
+        storage_dict = my_test_config_file().load()
         dunmp_dict = {"key": "value"}
         assert storage_dict != dunmp_dict, "Expected different dicts"
 
-        my_test_config_file.dump(dunmp_dict)
-        assert my_test_config_file.load() == dunmp_dict, "Expected dump to work"
+        my_test_config_file().dump(dunmp_dict)
+        assert my_test_config_file().load() == dunmp_dict, "Expected dump to work"
 
     def test_extension(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        assert my_test_config_file.extension() == "txt", "Expected txt"
+        assert my_test_config_file().extension() == "txt", "Expected txt"
 
     def test__configs(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        assert isinstance(my_test_config_file.configs(), dict), "Expected dict"
+        assert isinstance(my_test_config_file().configs(), dict), "Expected dict"
 
     def test_validate(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
     ) -> None:
         """Test method."""
         # create file first to not trigger dunmp in init
-        my_test_config_file.path().parent.mkdir(parents=True, exist_ok=True)
+        my_test_config_file().path().parent.mkdir(parents=True, exist_ok=True)
         # write non-empty file to trigger merge_configs,
         # empty file triggers is_unwanted
-        my_test_config_file.path().write_text("test")
-        my_test_config_file.validate()
-        after = my_test_config_file.load()
+        my_test_config_file().path().write_text("test")
+        my_test_config_file().validate()
+        after = my_test_config_file().load()
 
         # assert config is correct
         assert after == {
@@ -237,23 +238,23 @@ class TestConfigFile:
         }, "Expected config to be correct"
 
         # remove file to trigger init dump
-        my_test_config_file.path().unlink()
-        my_test_config_file.validate()
+        my_test_config_file().path().unlink()
+        my_test_config_file().validate()
         # assert path exists
-        assert my_test_config_file.path().exists(), "Expected path to exist"
+        assert my_test_config_file().path().exists(), "Expected path to exist"
         # assert config is == configs, not any of previous config
-        assert my_test_config_file.load() == my_test_config_file.configs(), (
+        assert my_test_config_file().load() == my_test_config_file().configs(), (
             "Expected config to be correct"
         )
 
         # mock is_correct to return False
         mocker.patch.object(
             my_test_config_file,
-            my_test_config_file.is_correct.__name__,
+            my_test_config_file().is_correct.__name__,
             return_value=False,
         )
         with pytest.raises(ValueError, match="not correct"):
-            my_test_config_file.validate()
+            my_test_config_file().validate()
 
     def test_path(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
@@ -261,7 +262,7 @@ class TestConfigFile:
         # creates a runtime subclass TestConfigFile so filename will removesuffix
         # see implementation of config_file_factory fixture and filename
         expected = Path("parent_dir/my.txt")
-        actual = my_test_config_file.path()
+        actual = my_test_config_file().path()
         # assert actual ends with expected
         assert actual.as_posix().endswith(expected.as_posix()), (
             f"Expected {expected}, got {actual}"
@@ -272,7 +273,7 @@ class TestConfigFile:
     ) -> None:
         """Test method."""
         expected = "my"
-        actual = my_test_config_file.filename()
+        actual = my_test_config_file().filename()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_merge_configs(
@@ -290,7 +291,7 @@ class TestConfigFile:
             ],
             "key7": "value7",
         }
-        actual = my_test_config_file.merge_configs()
+        actual = my_test_config_file().merge_configs()
         assert actual == expected, "Expected config to be correct"
 
     def test_add_missing_dict_val(
@@ -299,7 +300,7 @@ class TestConfigFile:
         """Test method."""
         expected: dict[str, Any] = {"key": "value"}
         actual: dict[str, Any] = {}
-        my_test_config_file.add_missing_dict_val(expected, actual, "key")
+        my_test_config_file().add_missing_dict_val(expected, actual, "key")
         assert actual["key"] == expected["key"], "Expected config to be correct"
 
     def test_insert_missing_list_val(
@@ -308,24 +309,24 @@ class TestConfigFile:
         """Test method."""
         expected: list[Any] = ["value"]
         actual: list[Any] = []
-        my_test_config_file.insert_missing_list_val(expected, actual, 0)
+        my_test_config_file().insert_missing_list_val(expected, actual, 0)
         assert actual[0] == expected[0], "Expected config to be correct"
 
     def test_is_correct(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        assert not my_test_config_file.is_correct(), "Expected config to be correct"
-        my_test_config_file.validate()
-        assert my_test_config_file.is_correct(), "Expected config to be correct"
+        assert not my_test_config_file().is_correct(), "Expected config to be correct"
+        my_test_config_file().validate()
+        assert my_test_config_file().is_correct(), "Expected config to be correct"
 
     def test_is_unwanted(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        my_test_config_file.validate()
-        my_test_config_file.path().write_text("")
-        assert my_test_config_file.is_unwanted(), "Expected config to be unwanted"
+        my_test_config_file().validate()
+        my_test_config_file().path().write_text("")
+        assert my_test_config_file().is_unwanted(), "Expected config to be unwanted"
 
     def test_is_correct_recursively(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
@@ -352,12 +353,12 @@ class TestConfigFile:
             "key7": "value7",
             "key8": "value8",
         }
-        assert my_test_config_file.is_correct_recursively(expected, actual), (
+        assert my_test_config_file().is_correct_recursively(expected, actual), (
             "Expected config to be correct"
         )
         # change one in actual to not be correct
         actual["key2"]["key3"] = "notvalue3"
-        assert not my_test_config_file.is_correct_recursively(expected, actual), (
+        assert not my_test_config_file().is_correct_recursively(expected, actual), (
             "Expected config to be correct"
         )
 

@@ -22,7 +22,7 @@ class SrcInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/src/__init__.py::
 
-            SrcInitConfigFile.validate()
+            SrcInitConfigFile.I.validate()
 
         Add utilities::
 
@@ -36,7 +36,6 @@ class SrcInitConfigFile(InitConfigFile):
         pyrig.rig.configs.base.init.InitConfigFile
     """
 
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         """Return the `pyrig.src` module."""
         return src

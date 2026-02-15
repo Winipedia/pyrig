@@ -21,26 +21,23 @@ class ConfigConfigFile(YmlConfigFile):
     - Whether blank issues are allowed (blank_issues_enabled)
 
     Example:
-        >>> ConfigConfigFile.validate()
+        >>> ConfigConfigFile.I.validate()
 
     See Also:
         https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
         pyrig.rig.configs.base.yml.YmlConfigFile
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         """Return issue template config YAML structure."""
         return {"blank_issues_enabled": False}
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Return True if config.yml exists with content."""
-        return cls.path().exists() and bool(
-            cls.path().read_text(encoding="utf-8").strip()
+        return self.path().exists() and bool(
+            self.path().read_text(encoding="utf-8").strip()
         )

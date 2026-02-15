@@ -26,20 +26,18 @@ class MkdocsConfigFile(YmlConfigFile):
     docstring API documentation.
 
     Example:
-        >>> MkdocsConfigFile.validate()
+        >>> MkdocsConfigFile.I.validate()
 
     See Also:
         pyrig.rig.configs.pyproject.PyprojectConfigFile
         pyrig.rig.configs.markdown.docs.index.IndexConfigFile
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return the project root directory."""
         return Path()
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any] | list[Any]:
+    def _configs(self) -> dict[str, Any] | list[Any]:
         """Build the complete mkdocs.yml configuration.
 
         Include Material theme, navigation (Home, API), plugins (search,

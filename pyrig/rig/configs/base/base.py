@@ -199,15 +199,13 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         return -subclass().priority()
 
     @classmethod
-    def validate_config_file(
-        cls, config_file_self: type["ConfigFile[ConfigT]"]
-    ) -> None:
+    def validate_config_file(cls, config_file_cls: type["ConfigFile[ConfigT]"]) -> None:
         """Validate a single config file class.
 
         Args:
-            config_file_self: The ConfigFile subclass to validate.
+            config_file_cls: The ConfigFile subclass to validate.
         """
-        config_file_self().validate()
+        config_file_cls().validate()
 
     def validate(self) -> None:
         """Validate config file, creating or updating as needed.
@@ -244,8 +242,9 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
 
+    @classmethod
     @cache
-    def configs(self) -> ConfigT:
+    def configs(cls) -> ConfigT:
         """Return expected configuration structure.
 
         Cached to avoid multiple calls to _configs().
@@ -253,10 +252,11 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
         Returns:
             Minimum required configuration as dict or list.
         """
-        return self._configs()
+        return cls()._configs()  # noqa: SLF001
 
+    @classmethod
     @cache
-    def load(self) -> ConfigT:
+    def load(cls) -> ConfigT:
         """Load and parse configuration file.
 
         Cached to avoid multiple reads of same file.
@@ -265,8 +265,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
             Parsed configuration as dict or list. Format-specific implementations
             typically return empty dict/list for empty files (opt-out behavior).
         """
-        logger.debug("Loading config file %s", self.__class__.__name__)
-        return self._load()
+        logger.debug("Loading config file %s", cls.__name__)
+        return cls()._load()  # noqa: SLF001
 
     def dump(self, config: ConfigT) -> None:
         """Write configuration to file.
@@ -306,7 +306,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclas
             Filename without extension.
         """
         cls = self.__class__
-        name = cls.__class__.__name__
+        name = cls.__name__
         abstract_parents = [
             parent.__name__ for parent in cls.__mro__ if inspect.isabstract(parent)
         ]

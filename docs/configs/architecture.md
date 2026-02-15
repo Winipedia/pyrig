@@ -29,21 +29,20 @@ graph TD
     I --> G[BuilderConfigFile]
 
     B --> B1[YmlConfigFile]
-    B1 --> B2[Workflow]
+    B1 --> B2[WorkflowConfigFile]
 
-    D --> D1[TxtConfigFile]
-    D --> D2[MarkdownConfigFile]
-    D --> D3[PythonConfigFile]
+    D --> D1[MarkdownConfigFile]
+    D --> D2[PythonConfigFile]
 
-    D2 --> D2A[BadgesMarkdownConfigFile]
+    D1 --> D1A[BadgesMarkdownConfigFile]
 
-    D3 --> D3A[PythonPackageConfigFile]
-    D3 --> D3B[PythonTestsConfigFile]
+    D2 --> D2A[PythonPackageConfigFile]
+    D2 --> D2B[PythonTestsConfigFile]
 
-    D3A --> D3A1[CopyModuleConfigFile]
-    D3A --> D3A2[MirrorTestConfigFile]
-    D3A1 --> D3A1A[CopyModuleOnlyDocstringConfigFile]
-    D3A1A --> D3A1A1[InitConfigFile]
+    D2A --> D2A1[CopyModuleConfigFile]
+    D2A --> D2A2[MirrorTestConfigFile]
+    D2A1 --> D2A1A[CopyModuleOnlyDocstringConfigFile]
+    D2A1A --> D2A1A1[InitConfigFile]
 
     G --> G1[PyInstallerBuilder]
 
@@ -58,7 +57,7 @@ graph TD
     style G fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style B1 fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
     style B2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
-    style D3A2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
+    style D2A2 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
     style G1 fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
@@ -110,26 +109,26 @@ creates subtle bugs:
 
 ```python
 # ❌ WRONG - mutates cached object
-loaded = MyConfigFile.load()
+loaded = MyConfigFile.I.load()
 loaded["key"] = "new_value"  # This corrupts the cache!
 
 # ❌ WRONG - in-place list modification
-deps = MyConfigFile.load()["dependencies"]
+deps = MyConfigFile.I.load()["dependencies"]
 deps.append("new-dep")  # Mutates cached list
 ```
 
 ```python
 # ✓ CORRECT - create a new structure
-loaded = MyConfigFile.load()
+loaded = MyConfigFile.I.load()
 new_config = {**loaded, "key": "new_value"}
 
 # ✓ CORRECT - copy before modifying
 import copy
-loaded = copy.deepcopy(MyConfigFile.load())
+loaded = copy.deepcopy(MyConfigFile.I.load())
 loaded["key"] = "new_value"
 
 # ✓ CORRECT - create new list
-deps = [*MyConfigFile.load()["dependencies"], "new-dep"]
+deps = [*MyConfigFile.I.load()["dependencies"], "new-dep"]
 ```
 
 This is especially important for ConfigFiles that call `load()` inside
@@ -513,15 +512,15 @@ class MyConfigFile(PythonConfigFile):
 
 Creates `myapp/src/my_config.py`.
 
-### Workflow
+### WorkflowConfigFile
 
 For GitHub Actions workflow files in `.github/workflows/`:
 
 ```python
 from typing import Any
-from pyrig.rig.configs.base.workflow import Workflow
+from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 
-class MyWorkflow(Workflow):
+class MyWorkflowConfigFile(WorkflowConfigFile):
     @classmethod
     def workflow_triggers(cls) -> dict[str, Any]:
         """Define when the workflow runs."""
@@ -544,9 +543,9 @@ class MyWorkflow(Workflow):
         }
 ```
 
-Creates `.github/workflows/my_workflow.yml`. The Workflow class provides many
-helper methods for building jobs, steps, triggers, and matrix strategies. See
-the workflow documentation for details.
+Creates `.github/workflows/my_workflow.yml`. The WorkflowConfigFile class
+provides many helper methods for building jobs, steps, triggers, and matrix
+strategies. See the workflow documentation for details.
 
 ## Advanced Subclasses
 

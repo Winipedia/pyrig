@@ -36,8 +36,7 @@ def my_test_init_config_file(
     ):
         """Test init config file with tmp_path override."""
 
-        @classmethod
-        def src_module(cls) -> ModuleType:
+        def src_module(self) -> ModuleType:
             """Get the source module."""
             return mock_module
 
@@ -49,10 +48,10 @@ class TestInitConfigFile:
 
     def test_parent_path(self, my_test_init_config_file: type[InitConfigFile]) -> None:
         """Test method."""
-        assert isinstance(my_test_init_config_file.parent_path(), Path)
+        assert isinstance(my_test_init_config_file().parent_path(), Path)
 
     def test_filename(self, my_test_init_config_file: type[InitConfigFile]) -> None:
         """Test method."""
         expected = "__init__"
-        actual = my_test_init_config_file.filename()
+        actual = my_test_init_config_file().filename()
         assert expected == actual, f"Expected {expected}, got {actual}"

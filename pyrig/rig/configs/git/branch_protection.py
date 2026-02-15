@@ -14,7 +14,7 @@ from typing import Any
 
 from pyrig.rig.configs.base.json import JsonConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
+from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
 from pyrig.rig.utils.version_control import github_repo_token
@@ -30,29 +30,26 @@ class RepoProtectionConfigFile(JsonConfigFile):
     and protection rules. Upload to Settings > Rules > Rulesets.
 
     See Also:
-        pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow
+        pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile
         pyrig.rig.tools.version_controller.VersionController.default_ruleset_name
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Get parent directory (project root)."""
         return Path()
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Get filename with hyphens (branch-protection)."""
         return "branch-protection"
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         """Get GitHub ruleset config.
 
         Returns:
             Dict with PR requirements, status checks, and protections.
         """
-        status_check_id = HealthCheckWorkflow.make_id_from_func(
-            HealthCheckWorkflow.job_health_check
+        status_check_id = HealthCheckWorkflowConfigFile.I.make_id_from_func(
+            HealthCheckWorkflowConfigFile.I.job_health_check
         )
         bypass_id = 5  # GitHubs standard id for repo owner
         return {
@@ -97,17 +94,15 @@ class RepoProtectionConfigFile(JsonConfigFile):
             ],
         }
 
-    @classmethod
-    def protect_repo(cls) -> None:
+    def protect_repo(self) -> None:
         """Apply security protections to the GitHub repository.
 
         Configures repository-level settings and branch protection rulesets.
         """
-        cls.set_secure_repo_settings()
-        cls.create_or_update_default_branch_ruleset()
+        self.set_secure_repo_settings()
+        self.create_or_update_default_branch_ruleset()
 
-    @classmethod
-    def create_or_update_default_branch_ruleset(cls) -> None:
+    def create_or_update_default_branch_ruleset(self) -> None:
         """Create or update branch protection ruleset for the default branch.
 
         Applies pyrig's standard protection rules to the main branch. Updates
@@ -119,11 +114,10 @@ class RepoProtectionConfigFile(JsonConfigFile):
             token=token,
             owner=owner,
             repo_name=repo_name,
-            **cls.load(),
+            **self.load(),
         )
 
-    @classmethod
-    def set_secure_repo_settings(cls) -> None:
+    def set_secure_repo_settings(self) -> None:
         """Configure repository-level security and merge settings.
 
         Sets description, default branch, merge options, and branch cleanup

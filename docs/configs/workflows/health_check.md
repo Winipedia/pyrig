@@ -5,8 +5,9 @@ Continuous integration workflow that validates code quality and runs tests.
 ## Overview
 
 **File**: `.github/workflows/health_check.yml`
-**Class**: `HealthCheckWorkflow` in `pyrig.rig.configs.workflows.health_check`  
-**Inherits**: `Workflow`
+**Class**: `HealthCheckWorkflowConfigFile`
+in `pyrig.rig.configs.workflows.health_check`  
+**Inherits**: `WorkflowConfigFile`
 
 The health check workflow is the first step in the CI/CD pipeline. It runs on
 every pull request, push to main, and daily on a staggered schedule. It
@@ -36,7 +37,7 @@ midnight, your package runs at 1 AM. This prevents failures when dependencies
 release right before your scheduled run and keeps all packages up to date at the
 same time if you have lots of packages depending in a line.
 
-### Workflow Dispatch
+### WorkflowConfigFile Dispatch
 
 - **Purpose**: Manual trigger for testing
 

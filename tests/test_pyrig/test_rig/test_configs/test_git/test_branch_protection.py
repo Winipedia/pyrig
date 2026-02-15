@@ -26,13 +26,13 @@ class TestRepoProtectionConfigFile:
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert RepoProtectionConfigFile.parent_path() == Path()
+        assert RepoProtectionConfigFile.I.parent_path() == Path()
 
     def test_filename(self) -> None:
         """Test method."""
-        assert RepoProtectionConfigFile.filename() == "branch-protection"
+        assert RepoProtectionConfigFile.I.filename() == "branch-protection"
 
     def test__configs(self) -> None:
         """Test method."""
-        configs = RepoProtectionConfigFile.configs()
+        configs = RepoProtectionConfigFile.I.configs()
         assert isinstance(configs, dict)

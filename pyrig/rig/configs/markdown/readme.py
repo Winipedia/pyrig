@@ -21,15 +21,14 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
     Examples:
         Generate README.md::
 
-            ReadmeConfigFile.validate()
+            ReadmeConfigFile.I.validate()
 
     See Also:
         pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
         pyrig.rig.configs.pyproject.PyprojectConfigFile
     """
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Get the README filename.
 
         Returns:
@@ -37,8 +36,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
         """
         return "README"
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Get the parent directory for README.md.
 
         Returns:
@@ -46,8 +44,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
         """
         return Path()
 
-    @classmethod
-    def is_unwanted(cls) -> bool:
+    def is_unwanted(self) -> bool:
         """Check if README.md is unwanted.
 
         Returns:

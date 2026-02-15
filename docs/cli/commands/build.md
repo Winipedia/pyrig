@@ -67,10 +67,10 @@ See [Builders Documentation](../../builders/index.md) for complete details.
 ## CI/CD Integration
 
 The `build` command is used in the Build workflow. See
-[Build Workflow](../../configs/workflows/build.md) for details.
+[Build WorkflowConfigFile](../../configs/workflows/build.md) for details.
 
 ## Related
 
 - [Builders Documentation](../../builders/index.md) - Complete builder system
   documentation
-- [Build Workflow](../../configs/workflows/build.md) - CI/CD build process
+- [Build WorkflowConfigFile](../../configs/workflows/build.md) - CI/CD build process

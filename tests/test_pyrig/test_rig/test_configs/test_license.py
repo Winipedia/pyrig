@@ -25,20 +25,20 @@ class TestLicenseConfigFile:
     def test_priority(self) -> None:
         """Test method."""
         # assert is bigger than PyprojectConfigFile
-        assert LicenseConfigFile.priority() > PyprojectConfigFile.I.priority()
+        assert LicenseConfigFile.I.priority() > PyprojectConfigFile.I.priority()
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert LicenseConfigFile.is_correct()
+        assert LicenseConfigFile.I.is_correct()
 
     def test_mit_license(self) -> None:
         """Test method."""
-        mit_license = LicenseConfigFile.mit_license()
+        mit_license = LicenseConfigFile.I.mit_license()
         assert "MIT License" in mit_license
 
     def test_mit_license_with_year_and_owner(self) -> None:
         """Test method."""
-        mit_license = LicenseConfigFile.mit_license_with_year_and_owner()
+        mit_license = LicenseConfigFile.I.mit_license_with_year_and_owner()
         assert "MIT License" in mit_license
         assert "Winipedia" in mit_license
 
@@ -48,24 +48,24 @@ class TestLicenseConfigFile:
     def test_filename(self) -> None:
         """Test method."""
         # Should return LICENSE
-        assert LicenseConfigFile.filename() == "LICENSE", "Expected 'LICENSE'"
+        assert LicenseConfigFile.I.filename() == "LICENSE", "Expected 'LICENSE'"
 
     def test_path(self) -> None:
         """Test method."""
         # Should return Path("LICENSE")
-        assert LicenseConfigFile.path() == Path("LICENSE"), "Expected Path('LICENSE')"
+        assert LicenseConfigFile.I.path() == Path("LICENSE"), "Expected Path('LICENSE')"
 
     def test_parent_path(self) -> None:
         """Test method."""
         # Should return Path()
-        assert LicenseConfigFile.parent_path() == Path(), "Expected Path()"
+        assert LicenseConfigFile.I.parent_path() == Path(), "Expected Path()"
 
     def test_extension(self) -> None:
         """Test method."""
         # Should return empty string
-        assert LicenseConfigFile.extension() == "", "Expected ''"
+        assert LicenseConfigFile.I.extension() == "", "Expected ''"
 
     def test_lines(self) -> None:
         """Test method."""
         # Should return empty string
-        assert isinstance(LicenseConfigFile.lines(), list)
+        assert isinstance(LicenseConfigFile.I.lines(), list)

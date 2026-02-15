@@ -64,35 +64,31 @@ class ContributingConfigFile(MarkdownConfigFile):
     Examples:
         Generate CONTRIBUTING.md::
 
-            ContributingConfigFile.validate()
+            ContributingConfigFile.I.validate()
 
     See Also:
         pyrig.rig.configs.base.markdown.MarkdownConfigFile
         pyrig.rig.configs.markdown.code_of_conduct.CodeOfConductConfigFile
     """
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Return "CONTRIBUTING" as the filename."""
         return "CONTRIBUTING"
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return project root as parent directory."""
         return Path()
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Return the contributing template content as lines."""
         return [*CONTRIBUTING_TEMPLATE.splitlines()]
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Check if CONTRIBUTING.md exists and is non-empty.
 
         Returns:
             True if file exists with content, False otherwise.
         """
-        return cls.path().exists() and bool(
-            cls.path().read_text(encoding="utf-8").strip()
+        return self.path().exists() and bool(
+            self.path().read_text(encoding="utf-8").strip()
         )

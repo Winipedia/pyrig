@@ -33,7 +33,7 @@ class TestPyprojectConfigFile:
 
     def test_priority(self) -> None:
         """Test method."""
-        assert PyprojectConfigFile.I.priority() > ConfigsInitConfigFile.priority()
+        assert PyprojectConfigFile.I.priority() > ConfigsInitConfigFile.I.priority()
 
     def test_detect_project_license(self) -> None:
         """Test method."""
@@ -71,7 +71,7 @@ class TestPyprojectConfigFile:
     ) -> None:
         """Test method."""
         dep = "dep (>=1.0.0,<2.0.0)"
-        new_dep = my_test_pyproject_config_file.remove_version_from_dep(dep)
+        new_dep = my_test_pyproject_config_file().remove_version_from_dep(dep)
         assert new_dep == "dep", f"Expected {new_dep}, got {dep}"
 
     def test_project_description(self) -> None:
@@ -83,8 +83,8 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file.validate()
-        is_correct = my_test_pyproject_config_file.is_correct()
+        my_test_pyproject_config_file().validate()
+        is_correct = my_test_pyproject_config_file().is_correct()
         assert is_correct, "Expected config to be correct after validation"
 
     def test__dump(
@@ -93,15 +93,15 @@ class TestPyprojectConfigFile:
         mocker: MockFixture,
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file.validate()
+        my_test_pyproject_config_file().validate()
         # spy on remove_wrong_dependencies
         spy = mocker.spy(
             my_test_pyproject_config_file,
-            my_test_pyproject_config_file.remove_wrong_dependencies.__name__,
+            my_test_pyproject_config_file().remove_wrong_dependencies.__name__,
         )
-        config = my_test_pyproject_config_file.configs()
-        my_test_pyproject_config_file.dump(config)
-        spy.assert_called_once_with(config)
+        config = my_test_pyproject_config_file().configs()
+        my_test_pyproject_config_file().dump(config)
+        spy.assert_called_once()
 
     def test_parent_path(
         self,
@@ -111,7 +111,7 @@ class TestPyprojectConfigFile:
         """Test method."""
         with chdir(tmp_path):
             expected = Path()
-            actual = my_test_pyproject_config_file.parent_path()
+            actual = my_test_pyproject_config_file().parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__configs(self) -> None:
@@ -138,7 +138,7 @@ class TestPyprojectConfigFile:
     ) -> None:
         """Test method."""
         dependencies = ["dep1", "dep1"]
-        deps_versions = my_test_pyproject_config_file.make_dependency_versions(
+        deps_versions = my_test_pyproject_config_file().make_dependency_versions(
             dependencies
         )
         assert deps_versions == ["dep1"]
@@ -147,14 +147,14 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file.validate()
-        config = my_test_pyproject_config_file.configs()
+        my_test_pyproject_config_file().validate()
+        config = my_test_pyproject_config_file().configs()
         # add wrong dependencies to config
         config["project"]["dependencies"] = [
             "wrong>=1.0.0,<2.0.0",
             "wrong>=1.0.0,<2.0.0",
         ]
-        my_test_pyproject_config_file.remove_wrong_dependencies(config)
+        my_test_pyproject_config_file().remove_wrong_dependencies(config)
         assert config["project"]["dependencies"] == ["wrong>=1.0.0,<2.0.0"]
 
     def test_dependencies(self) -> None:
@@ -173,26 +173,34 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file.validate()
-        config = my_test_pyproject_config_file.load()
+        my_test_pyproject_config_file().validate()
+        config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
-        my_test_pyproject_config_file.dump(config)
-        latest_version = my_test_pyproject_config_file.latest_possible_python_version()
+        my_test_pyproject_config_file().dump(config)
+        latest_version = (
+            my_test_pyproject_config_file().latest_possible_python_version()
+        )
         expected = Version("3.11")
         assert latest_version == expected, f"Expected {expected}, got {latest_version}"
         config["project"]["requires-python"] = ">=3.8, <=3.12"
-        my_test_pyproject_config_file.dump(config)
-        latest_version = my_test_pyproject_config_file.latest_possible_python_version()
+        my_test_pyproject_config_file().dump(config)
+        latest_version = (
+            my_test_pyproject_config_file().latest_possible_python_version()
+        )
         expected = Version("3.12")
         assert latest_version == expected, f"Expected {expected}, got {latest_version}"
         config["project"]["requires-python"] = ">=3.8, <3.11, ==3.10.*"
-        my_test_pyproject_config_file.dump(config)
-        latest_version = my_test_pyproject_config_file.latest_possible_python_version()
+        my_test_pyproject_config_file().dump(config)
+        latest_version = (
+            my_test_pyproject_config_file().latest_possible_python_version()
+        )
         expected = Version("3.10")
         assert latest_version == expected, f"Expected {expected}, got {latest_version}"
         config["project"]["requires-python"] = ">=3.8"
-        my_test_pyproject_config_file.dump(config)
-        latest_version = my_test_pyproject_config_file.latest_possible_python_version()
+        my_test_pyproject_config_file().dump(config)
+        latest_version = (
+            my_test_pyproject_config_file().latest_possible_python_version()
+        )
         assert latest_version > Version("3.13"), (
             "Expected latest_possible_python_version to return 3.x"
         )
@@ -201,7 +209,7 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        latest_version = my_test_pyproject_config_file.fetch_latest_python_version()
+        latest_version = my_test_pyproject_config_file().fetch_latest_python_version()
         assert Version(latest_version) >= Version("3.13"), (
             "Expected fetch_latest_python_version to return a version >= 3.11"
         )
@@ -210,18 +218,18 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file.validate()
-        config = my_test_pyproject_config_file.load()
+        my_test_pyproject_config_file().validate()
+        config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
-        my_test_pyproject_config_file.dump(config)
-        supported_versions = my_test_pyproject_config_file.supported_python_versions()
+        my_test_pyproject_config_file().dump(config)
+        supported_versions = my_test_pyproject_config_file().supported_python_versions()
         actual = [str(v) for v in supported_versions]
         expected = ["3.8", "3.9", "3.10", "3.11"]
         assert actual == expected, f"Expected {expected}, got {actual}"
 
         config["project"]["requires-python"] = ">=3.2, <=4.6"
-        my_test_pyproject_config_file.dump(config)
-        supported_versions = my_test_pyproject_config_file.supported_python_versions()
+        my_test_pyproject_config_file().dump(config)
+        supported_versions = my_test_pyproject_config_file().supported_python_versions()
         actual = [str(v) for v in supported_versions]
         expected = [
             "3.2",
@@ -241,20 +249,20 @@ class TestPyprojectConfigFile:
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        my_test_pyproject_config_file.validate()
-        config = my_test_pyproject_config_file.load()
+        my_test_pyproject_config_file().validate()
+        config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
-        my_test_pyproject_config_file.dump(config)
+        my_test_pyproject_config_file().dump(config)
         first_version = str(
-            my_test_pyproject_config_file.first_supported_python_version()
+            my_test_pyproject_config_file().first_supported_python_version()
         )
         assert first_version == "3.8", (
             "Expected first_supported_python_version to return 3.8"
         )
         config["project"]["requires-python"] = "<=3.12, >3.8"
-        my_test_pyproject_config_file.dump(config)
+        my_test_pyproject_config_file().dump(config)
         first_version = str(
-            my_test_pyproject_config_file.first_supported_python_version()
+            my_test_pyproject_config_file().first_supported_python_version()
         )
         assert first_version == "3.8.1", (
             "Expected first_supported_python_version to return 3.8.1"

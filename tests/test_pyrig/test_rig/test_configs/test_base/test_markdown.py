@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
+from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 
 
 class TestMarkdownConfigFile:
@@ -9,5 +10,8 @@ class TestMarkdownConfigFile:
     def test_extension(self) -> None:
         """Test method."""
         expected = "md"
-        actual = MarkdownConfigFile.extension()
+        assert issubclass(ReadmeConfigFile, MarkdownConfigFile), (
+            "ReadmeConfigFile should inherit from MarkdownConfigFile"
+        )
+        actual = ReadmeConfigFile().extension()
         assert actual == expected, f"Expected {expected}, got {actual}"

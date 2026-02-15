@@ -24,19 +24,17 @@ class ToolsInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/rig/tools/__init__.py::
 
-            ToolsInitConfigFile.validate()
+            ToolsInitConfigFile.I.validate()
 
     See Also:
         pyrig.rig.tools
         pyrig.rig.configs.base.init.InitConfigFile
     """
 
-    @classmethod
-    def priority(cls) -> float:
+    def priority(self) -> float:
         """Return `Priority.LOW` to trigger validation earlier than default."""
         return Priority.LOW
 
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         """Return the `pyrig.rig.tools` module."""
         return tools

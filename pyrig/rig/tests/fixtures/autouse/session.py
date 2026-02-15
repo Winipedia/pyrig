@@ -27,6 +27,7 @@ from collections.abc import Generator
 from contextlib import chdir
 from importlib import import_module
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -66,6 +67,9 @@ from pyrig.src.modules.package import (
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.requests import internet_is_available
 from pyrig.src.string_ import make_summary_error_msg, re_search_excluding_docstrings
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 logger = logging.getLogger(__name__)
 
@@ -112,11 +116,11 @@ def assert_root_is_correct() -> None:
     # as they are not pushed to the repository
     running_in_ci = running_in_github_actions()
     if running_in_ci:
-        DotScratchConfigFile.validate()
-        DotEnvConfigFile.validate()
+        DotScratchConfigFile.I.validate()
+        DotEnvConfigFile.I.validate()
 
     subclasses = ConfigFile.subclasses()
-    incorrect_cfs = [cf for cf in subclasses if not cf.is_correct()]
+    incorrect_cfs = [cf for cf in subclasses if not cf().is_correct()]
 
     if incorrect_cfs:
         # init all per test run
@@ -128,7 +132,7 @@ def assert_root_is_correct() -> None:
 """
     for cf in incorrect_cfs:
         msg += f"""
-        - {cf.path()}
+        - {cf().path()}
         """
     assert not incorrect_cfs, msg
 
@@ -262,20 +266,23 @@ def assert_all_modules_tested() -> None:
 
     # we will now go through all the modules in the src package and check
     # that there is a corresponding test module
-    all_modules = []
+    all_modules: list[ModuleType] = []
     for _, modules in walk_package(src_package):
         all_modules.extend(modules)
 
-    mirror_test_cls = MirrorTestConfigFile.I
-    subclasses = mirror_test_cls.make_subclasses_for_modules(all_modules)
-    incorrect_subclasses = [sc for sc in subclasses if not sc.is_correct()]
+    subclasses: list[type[MirrorTestConfigFile]] = (
+        MirrorTestConfigFile.I.make_subclasses_for_modules(all_modules)
+    )
+    incorrect_subclasses: list[type[MirrorTestConfigFile]] = [
+        sc for sc in subclasses if not sc().is_correct()
+    ]
 
     if incorrect_subclasses:
-        mirror_test_cls.validate_subclasses(*incorrect_subclasses)
+        MirrorTestConfigFile.I.validate_subclasses(*incorrect_subclasses)
 
     msg = f"""Found incorrect test modules.
     Test skeletons were automatically created for:
-    {make_summary_error_msg([sc.path().as_posix() for sc in incorrect_subclasses])}
+    {make_summary_error_msg([sc().path().as_posix() for sc in incorrect_subclasses])}
 """
     assert not incorrect_subclasses, msg
 

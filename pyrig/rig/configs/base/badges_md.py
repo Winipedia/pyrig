@@ -8,12 +8,12 @@ Example:
     >>> from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
     >>>
     >>> class ReadmeFile(BadgesMarkdownConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path()
     ...
-    ...     @classmethod
-    ...     def filename(cls) -> str:
+    ...
+    ...     def filename(self) -> str:
     ...         return "README"
     >>>
     >>> ReadmeFile()  # Creates README.md with badges
@@ -24,8 +24,8 @@ import re
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflow
-from pyrig.rig.configs.workflows.release import ReleaseWorkflow
+from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
+from pyrig.rig.configs.workflows.release import ReleaseWorkflowConfigFile
 from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
@@ -48,11 +48,10 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             Repository related badges and more
     """
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Check correctness, replacing a stale description if needed.
 
-        Normally `StringConfigFile.merge_configs` prepends the expected lines to
+        Normally `StringConfigFile.I.merge_configs` prepends the expected lines to
         the actual lines. This leads to a stale description remaining in the file
         if it was changed in pyproject.toml. This override detects the old description
         block between `---` fences and replaces it with the current one before
@@ -63,24 +62,23 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         """
         if super().is_correct():
             return True
-        file_content = cls.file_content()
-        updated_content = cls.replace_description(file_content)
+        file_content = self.file_content()
+        updated_content = self.replace_description(file_content)
         # only dump if content changed
         if updated_content != file_content:
-            cls.dump(updated_content.splitlines())
+            self.dump(updated_content.splitlines())
         # note dump clears the cache,
         # and this checks the real file again, which is the wanted behavior
         return super().is_correct()
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Generate Markdown with project name, categorized badges, and description.
 
         Returns:
             Formatted Markdown with H1 header, badge categories, and description.
         """
         project_name = PyprojectConfigFile.I.project_name()
-        badges = cls.badges()
+        badges = self.badges()
         badges_lines: list[str] = []
         for badge_category, badge_list in badges.items():
             badges_lines.append(f"<!-- {badge_category} -->")
@@ -99,8 +97,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             "",
         ]
 
-    @classmethod
-    def badges(cls) -> dict[str, list[str]]:
+    def badges(self) -> dict[str, list[str]]:
         """Return categorized badges from project metadata and CI/CD configurations.
 
         Returns:
@@ -109,8 +106,8 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         """
         python_versions = PyprojectConfigFile.I.supported_python_versions()
         joined_python_versions = "|".join(str(v) for v in python_versions)
-        health_check_wf_name = HealthCheckWorkflow.filename()
-        release_wf_name = ReleaseWorkflow.filename()
+        health_check_wf_name = HealthCheckWorkflowConfigFile.I.filename()
+        release_wf_name = ReleaseWorkflowConfigFile.I.filename()
         badge_groups = Tool.grouped_badges()
 
         badge_groups[ToolGroup.PROJECT_INFO].extend(
@@ -137,8 +134,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         )
         return badge_groups
 
-    @classmethod
-    def replace_description(cls, content: str) -> str:
+    def replace_description(self, content: str) -> str:
         """Replace the description between `---` fences with the current one.
 
         Args:

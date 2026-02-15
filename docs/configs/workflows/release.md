@@ -5,8 +5,9 @@ Release creation workflow that versions, tags, and publishes GitHub releases.
 ## Overview
 
 **File**: `.github/workflows/release.yml`
-**Class**: `ReleaseWorkflow` in `pyrig.rig.configs.workflows.release`  
-**Inherits**: `Workflow`
+**Class**: `ReleaseWorkflowConfigFile`
+in `pyrig.rig.configs.workflows.release`  
+**Inherits**: `WorkflowConfigFile`
 
 The release workflow runs after successful artifact builds. It bumps the
 version, commits changes, creates git tags, generates changelogs, and publishes
@@ -14,16 +15,16 @@ GitHub releases with all artifacts attached.
 
 ## Triggers
 
-### Workflow Run
+### WorkflowConfigFile Run
 
-- **Workflow**: `Build`
+- **WorkflowConfigFile**: `Build`
 - **Event**: `completed`
 - **Condition**: Only runs if build succeeded
 
 **Why workflow_run?** Ensures releases are only created after artifacts are
 successfully built.
 
-### Workflow Dispatch
+### WorkflowConfigFile Dispatch
 
 - **Purpose**: Manual trigger for testing
 
@@ -145,7 +146,7 @@ graph TD
     - Sets `version=v{version}` in `$GITHUB_OUTPUT`
     - Used by later steps
 
-13. **Download Artifacts From Workflow Run** (`actions/download-artifact@main`)
+13. **Download Artifacts From WorkflowConfigFile Run** (`actions/download-artifact@main`)
     - Downloads all artifacts from build workflow
     - Uses `run-id` from triggering workflow
     - `merge-multiple: true`: Combines all artifacts into `dist/`

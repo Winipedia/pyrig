@@ -25,7 +25,7 @@ class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
     Examples:
         Generate subcommands.py::
 
-            SubcommandsConfigFile.validate()
+            SubcommandsConfigFile.I.validate()
 
         Add project-specific subcommands::
 
@@ -43,7 +43,6 @@ class SubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
         pyrig.rig.cli.cli.add_subcommands
     """
 
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         """Return the `pyrig.rig.cli.subcommands` module."""
         return subcommands

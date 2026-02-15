@@ -43,30 +43,27 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
     Examples:
         Generate pull_request_template.md::
 
-            PullRequestTemplateConfigFile.validate()
+            PullRequestTemplateConfigFile.I.validate()
 
     See Also:
         pyrig.rig.configs.base.markdown.MarkdownConfigFile
         https://github.com/facebook/react/blob/main/.github/PULL_REQUEST_TEMPLATE.md
     """
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return `.github` as parent directory."""
         return Path(".github")
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Return the pull request template content as lines."""
         return [*PULL_REQUEST_TEMPLATE.strip().splitlines()]
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Check if pull_request_template.md exists and is non-empty.
 
         Returns:
             True if file exists with content, False otherwise.
         """
-        return cls.path().exists() and bool(
-            cls.path().read_text(encoding="utf-8").strip()
+        return self.path().exists() and bool(
+            self.path().read_text(encoding="utf-8").strip()
         )

@@ -17,8 +17,7 @@ def my_test_typed_config_file(
     class MyTestTypedConfigFile(config_file_factory(TypedConfigFile)):  # type: ignore [misc]
         """Test typed config file with tmp_path override."""
 
-        @classmethod
-        def parent_path(cls) -> Path:
+        def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
 
@@ -31,26 +30,26 @@ class TestTypedConfigFile:
     def test_extension(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method."""
         expected = "typed"
-        actual = my_test_typed_config_file.extension()
+        actual = my_test_typed_config_file().extension()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__load(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method."""
-        loaded = my_test_typed_config_file.load()
+        loaded = my_test_typed_config_file().load()
         assert loaded == {}, "Expected load to return empty dict"
 
     def test__dump(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method."""
         # assert dumps empty dict successfully
-        my_test_typed_config_file.dump({})
-        assert my_test_typed_config_file.load() == {}, (
+        my_test_typed_config_file().dump({})
+        assert my_test_typed_config_file().load() == {}, (
             "Expected dump to work with empty dict"
         )
         # assert raises ValueError if config is not empty
         with pytest.raises(ValueError, match=r"Cannot dump to py\.typed file"):
-            my_test_typed_config_file.dump({"key": "value"})
+            my_test_typed_config_file().dump({"key": "value"})
 
     def test__configs(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:
         """Test method."""
-        configs = my_test_typed_config_file.configs()
+        configs = my_test_typed_config_file().configs()
         assert configs == {}, "Expected configs to return empty dict"

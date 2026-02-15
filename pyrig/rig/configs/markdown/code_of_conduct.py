@@ -9,7 +9,6 @@ See Also:
     pyrig.rig.configs.base.markdown.MarkdownConfigFile
 """
 
-from functools import cache
 from pathlib import Path
 
 import requests
@@ -34,30 +33,26 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     Examples:
         Generate CODE_OF_CONDUCT.md::
 
-            CodeOfConductConfigFile.validate()
+            CodeOfConductConfigFile.I.validate()
 
     See Also:
         https://www.contributor-covenant.org/
         pyrig.rig.configs.base.markdown.MarkdownConfigFile
     """
 
-    @classmethod
-    def filename(cls) -> str:
+    def filename(self) -> str:
         """Return "CODE_OF_CONDUCT" as the filename."""
         return "CODE_OF_CONDUCT"
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Return project root as parent directory."""
         return Path()
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Return Contributor Covenant Code of Conduct content as lines."""
-        return [*cls.contributor_covenant_with_contact_method().splitlines()]
+        return [*self.contributor_covenant_with_contact_method().splitlines()]
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Check if CODE_OF_CONDUCT.md exists and is non-empty.
 
         Note:
@@ -70,30 +65,27 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         if src_package_is_pyrig():
             # if in pyrig just run get contributor covenant
             # to trigger resource update if needed
-            cls.contributor_covenant()
-        return cls.path().exists() and bool(
-            cls.path().read_text(encoding="utf-8").strip()
+            self.contributor_covenant()
+        return self.path().exists() and bool(
+            self.path().read_text(encoding="utf-8").strip()
         )
 
-    @classmethod
-    def contributor_covenant_with_contact_method(cls) -> str:
+    def contributor_covenant_with_contact_method(self) -> str:
         """Return the Contributor Covenant with the contact method inserted.
 
         Returns:
             Contributor Covenant 2.1 content with the contact method in place
             of ``[INSERT CONTACT METHOD]``.
         """
-        contact_method = cls.contact_method()
-        return cls.contributor_covenant().replace(
+        contact_method = self.contact_method()
+        return self.contributor_covenant().replace(
             "[INSERT CONTACT METHOD]", contact_method
         )
 
-    @classmethod
-    @cache
     @return_resource_content_on_fetch_error(
         resource_name="CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT.md"
     )
-    def contributor_covenant(cls) -> str:
+    def contributor_covenant(self) -> str:
         """Fetch the Contributor Covenant from GitHub's MVG repository.
 
         Fall back to a bundled resource template on fetch error.
@@ -108,8 +100,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         resp.raise_for_status()
         return resp.text
 
-    @classmethod
-    def contact_method(cls) -> str:
+    def contact_method(self) -> str:
         """Return the contact method for the code of conduct.
 
         Returns:

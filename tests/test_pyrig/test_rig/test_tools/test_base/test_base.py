@@ -58,8 +58,8 @@ class TestTool:
         result = Tool.subclasses_dev_dependencies()
         # should be the same as the dev dependencies in pyproject.toml
         no_version_from_toml = [
-            PyprojectConfigFile.remove_version_from_dep(dep)
-            for dep in PyprojectConfigFile.dev_dependencies()
+            PyprojectConfigFile.I.remove_version_from_dep(dep)
+            for dep in PyprojectConfigFile.I.dev_dependencies()
         ]
         assert result == no_version_from_toml
 

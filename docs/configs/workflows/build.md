@@ -6,8 +6,8 @@ images.
 ## Overview
 
 **File**: `.github/workflows/build.yml`
-**Class**: `BuildWorkflow` in `pyrig.rig.configs.workflows.build`  
-**Inherits**: `Workflow`
+**Class**: `BuildWorkflowConfigFile` in `pyrig.rig.configs.workflows.build`  
+**Inherits**: `WorkflowConfigFile`
 
 The build workflow runs after successful health checks on the main branch. It
 builds platform-specific artifacts (executables, wheels) across OS matrix and
@@ -16,9 +16,9 @@ to create releases.
 
 ## Triggers
 
-### Workflow Run
+### WorkflowConfigFile Run
 
-- **Workflow**: `Health Check`
+- **WorkflowConfigFile**: `Health Check`
 - **Event**: `completed`
 - **Branches**: `main`
 - **Condition**: Only runs if health check succeeded and was not cron-triggered
@@ -30,7 +30,7 @@ main branch.
 shouldn't trigger releases. Only actual code changes (push) should create new
 releases.
 
-### Workflow Dispatch
+### WorkflowConfigFile Dispatch
 
 - **Purpose**: Manual trigger for testing
 

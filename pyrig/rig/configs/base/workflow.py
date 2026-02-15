@@ -1,10 +1,10 @@
 """Base class for GitHub Actions workflow configuration.
 
-This module provides the Workflow base class that all workflow configuration
+This module provides the WorkflowConfigFile base class that all workflow configuration
 files inherit from. It includes comprehensive utilities for building GitHub
 Actions workflows programmatically.
 
-The Workflow class provides:
+The WorkflowConfigFile class provides:
     - **Job Builders**: Methods for creating common CI/CD jobs (test, build,
       release, deploy)
     - **Step Builders**: Reusable step templates (checkout, setup Python, cache,
@@ -55,7 +55,7 @@ from pyrig.src.string_ import (
 )
 
 
-class Workflow(YmlConfigFile):
+class WorkflowConfigFile(YmlConfigFile):
     """Abstract base class for GitHub Actions workflow configuration.
 
     Provides a declarative API for building GitHub Actions workflow YAML files
@@ -79,31 +79,29 @@ class Workflow(YmlConfigFile):
         UBUNTU_LATEST (str): Runner label for Ubuntu ("ubuntu-latest")
         WINDOWS_LATEST (str): Runner label for Windows ("windows-latest")
         MACOS_LATEST (str): Runner label for macOS ("macos-latest")
-        ARTIFACTS_DIR_NAME (str): Directory name for build artifacts
-        ARTIFACTS_PATTERN (str): Glob pattern for artifact files
 
     Example:
-        >>> from pyrig.rig.configs.base.workflow import Workflow
+        >>> from pyrig.rig.configs.base.workflow import WorkflowConfigFile
         >>>
-        >>> class MyWorkflow(Workflow):
-        ...     @classmethod
-        ...     def jobs(cls) -> dict[str, Any]:
-        ...         return cls.job(
-        ...             job_func=cls.jobs,
+        >>> class MyWorkflowConfigFile(WorkflowConfigFile):
+        ...
+        ...     def jobs(self) -> dict[str, Any]:
+        ...         return self.job(
+        ...             job_func=self.jobs,
         ...             steps=[
-        ...                 *cls.steps_core_installed_setup(),
-        ...                 cls.step_run_tests(),
+        ...                 *self.steps_core_installed_setup(),
+        ...                 self.step_run_tests(),
         ...             ],
         ...         )
         ...
-        ...     @classmethod
-        ...     def workflow_triggers(cls) -> dict[str, Any]:
+        ...
+        ...     def workflow_triggers(self) -> dict[str, Any]:
         ...         triggers = super().workflow_triggers()
-        ...         triggers.update(cls.on_push())
+        ...         triggers.update(self.on_push())
         ...         return triggers
 
     See Also:
-        pyrig.rig.configs.workflows.health_check.HealthCheckWorkflow
+        pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile
             Example concrete workflow implementation
         pyrig.rig.configs.base.yml.YmlConfigFile
             Parent class for .yml configuration files
@@ -113,28 +111,23 @@ class Workflow(YmlConfigFile):
     WINDOWS_LATEST = "windows-latest"
     MACOS_LATEST = "macos-latest"
 
-    ARTIFACTS_DIR_NAME = BuilderConfigFile.ARTIFACTS_DIR_NAME
-    ARTIFACTS_PATTERN = f"{ARTIFACTS_DIR_NAME}/*"
-
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         """Build the complete workflow configuration.
 
         Returns:
             Dict with name, triggers, permissions, defaults, env, and jobs.
         """
         return {
-            "name": cls.workflow_name(),
-            "on": cls.workflow_triggers(),
-            "permissions": cls.permissions(),
-            "run-name": cls.run_name(),
-            "defaults": cls.defaults(),
-            "env": cls.global_env(),
-            "jobs": cls.jobs(),
+            "name": self.workflow_name(),
+            "on": self.workflow_triggers(),
+            "permissions": self.permissions(),
+            "run-name": self.run_name(),
+            "defaults": self.defaults(),
+            "env": self.global_env(),
+            "jobs": self.jobs(),
         }
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Get the parent directory for workflow files.
 
         Returns:
@@ -142,8 +135,7 @@ class Workflow(YmlConfigFile):
         """
         return Path(".github/workflows")
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Check if the workflow configuration is correct.
 
         Handles the special case where workflow files cannot be empty.
@@ -156,26 +148,26 @@ class Workflow(YmlConfigFile):
         """
         correct = super().is_correct()
 
-        if cls.path().read_text(encoding="utf-8") == "":
-            config = cls.configs()
+        if self.path().read_text(encoding="utf-8") == "":
+            config = self.configs()
             jobs = config["jobs"]
             for job in jobs.values():
-                job["steps"] = [cls.step_opt_out_of_workflow()]
-            cls.dump(config)
+                job["steps"] = [self.step_opt_out_of_workflow()]
+            self.dump(config)
 
-        config = cls.load()
+        config = self.load()
         jobs = config["jobs"]
         opted_out = all(
-            job["steps"] == [cls.step_opt_out_of_workflow()] for job in jobs.values()
+            job["steps"] == [self.step_opt_out_of_workflow()] for job in jobs.values()
         )
 
         return correct or opted_out
 
-    # Overridable Workflow Parts
+    # Overridable WorkflowConfigFile Parts
     # ----------------------------------------------------------------------------
-    @classmethod
+
     @abstractmethod
-    def jobs(cls) -> dict[str, Any]:
+    def jobs(self) -> dict[str, Any]:
         """Get the workflow jobs.
 
         Subclasses must implement this to define their jobs.
@@ -184,8 +176,7 @@ class Workflow(YmlConfigFile):
             Dict mapping job IDs to job configurations.
         """
 
-    @classmethod
-    def workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(self) -> dict[str, Any]:
         """Get the workflow triggers.
 
         Override to customize when the workflow runs.
@@ -194,10 +185,9 @@ class Workflow(YmlConfigFile):
         Returns:
             Dict of trigger configurations.
         """
-        return cls.on_workflow_dispatch()
+        return self.on_workflow_dispatch()
 
-    @classmethod
-    def permissions(cls) -> dict[str, Any]:
+    def permissions(self) -> dict[str, Any]:
         """Get the workflow permissions.
 
         Override to request additional permissions.
@@ -208,8 +198,7 @@ class Workflow(YmlConfigFile):
         """
         return {}
 
-    @classmethod
-    def defaults(cls) -> dict[str, Any]:
+    def defaults(self) -> dict[str, Any]:
         """Get the workflow defaults.
 
         Override to customize default settings.
@@ -220,8 +209,7 @@ class Workflow(YmlConfigFile):
         """
         return {"run": {"shell": "bash"}}
 
-    @classmethod
-    def global_env(cls) -> dict[str, Any]:
+    def global_env(self) -> dict[str, Any]:
         """Get the global environment variables.
 
         Override to add environment variables.
@@ -235,32 +223,31 @@ class Workflow(YmlConfigFile):
             PackageManager.I.no_auto_install_env_var(): 1,
         }
 
-    # Workflow Conventions
+    # WorkflowConfigFile Conventions
     # ----------------------------------------------------------------------------
-    @classmethod
-    def workflow_name(cls) -> str:
+
+    def workflow_name(self) -> str:
         """Generate a human-readable workflow name from the class name.
 
         Returns:
             Class name split on uppercase letters and joined with spaces.
         """
-        name = cls.__name__.removesuffix(Workflow.__name__)
+        name = self.__class__.__name__.removesuffix(WorkflowConfigFile.__name__)
         return " ".join(split_on_uppercase(name))
 
-    @classmethod
-    def run_name(cls) -> str:
+    def run_name(self) -> str:
         """Get the display name for workflow runs.
 
         Returns:
             The workflow name by default.
         """
-        return cls.workflow_name()
+        return self.workflow_name()
 
     # Build Utilities
     # ----------------------------------------------------------------------------
-    @classmethod
+
     def job(  # noqa: PLR0913
-        cls,
+        self,
         job_func: Callable[..., Any],
         needs: list[str] | None = None,
         strategy: dict[str, Any] | None = None,
@@ -289,7 +276,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Dict mapping job ID to job configuration.
         """
-        name = cls.make_id_from_func(job_func)
+        name = self.make_id_from_func(job_func)
         if job is None:
             job = {}
         job_config: dict[str, Any] = {}
@@ -311,8 +298,7 @@ class Workflow(YmlConfigFile):
         job_config.update(job)
         return {name: job_config}
 
-    @classmethod
-    def make_name_from_func(cls, func: Callable[..., Any]) -> str:
+    def make_name_from_func(self, func: Callable[..., Any]) -> str:
         """Generate a human-readable name from a function.
 
         Args:
@@ -325,8 +311,7 @@ class Workflow(YmlConfigFile):
         prefix = split_on_uppercase(name)[0]
         return name.removeprefix(prefix).strip()
 
-    @classmethod
-    def make_id_from_func(cls, func: Callable[..., Any]) -> str:
+    def make_id_from_func(self, func: Callable[..., Any]) -> str:
         """Generate a job/step ID from a function name.
 
         Args:
@@ -343,8 +328,8 @@ class Workflow(YmlConfigFile):
         return name.removeprefix(f"{prefix}_")
 
     # triggers
-    @classmethod
-    def on_workflow_dispatch(cls) -> dict[str, Any]:
+
+    def on_workflow_dispatch(self) -> dict[str, Any]:
         """Create a manual workflow dispatch trigger.
 
         Returns:
@@ -352,8 +337,7 @@ class Workflow(YmlConfigFile):
         """
         return {"workflow_dispatch": {}}
 
-    @classmethod
-    def on_push(cls, branches: list[str] | None = None) -> dict[str, Any]:
+    def on_push(self, branches: list[str] | None = None) -> dict[str, Any]:
         """Create a push trigger.
 
         Args:
@@ -366,8 +350,7 @@ class Workflow(YmlConfigFile):
             branches = [VersionController.I.default_branch()]
         return {"push": {"branches": branches}}
 
-    @classmethod
-    def on_schedule(cls, cron: str) -> dict[str, Any]:
+    def on_schedule(self, cron: str) -> dict[str, Any]:
         """Create a scheduled trigger.
 
         Args:
@@ -378,8 +361,7 @@ class Workflow(YmlConfigFile):
         """
         return {"schedule": [{"cron": cron}]}
 
-    @classmethod
-    def on_pull_request(cls, types: list[str] | None = None) -> dict[str, Any]:
+    def on_pull_request(self, types: list[str] | None = None) -> dict[str, Any]:
         """Create a pull request trigger.
 
         Args:
@@ -392,29 +374,26 @@ class Workflow(YmlConfigFile):
             types = ["opened", "synchronize", "reopened"]
         return {"pull_request": {"types": types}}
 
-    @classmethod
     def on_workflow_run(
-        cls, workflows: list[str] | None = None, branches: list[str] | None = None
+        self, workflows: list[str], branches: list[str] | None = None
     ) -> dict[str, Any]:
         """Create a workflow run trigger.
 
         Args:
-            workflows: Workflow names to trigger on. Defaults to this workflow.
+            workflows: WorkflowConfigFile names to trigger on.
             branches: Branches to filter on.
 
         Returns:
             Trigger configuration for workflow completion events.
         """
-        if workflows is None:
-            workflows = [cls.workflow_name()]
         config: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
         if branches is not None:
             config["branches"] = branches
         return {"workflow_run": config}
 
     # permissions
-    @classmethod
-    def permission_content(cls, permission: str = "read") -> dict[str, Any]:
+
+    def permission_content(self, permission: str = "read") -> dict[str, Any]:
         """Create a contents permission configuration.
 
         Args:
@@ -426,9 +405,9 @@ class Workflow(YmlConfigFile):
         return {"contents": permission}
 
     # Steps
-    @classmethod
+
     def step(  # noqa: PLR0913
-        cls,
+        self,
         step_func: Callable[..., Any],
         run: str | None = None,
         if_condition: str | None = None,
@@ -454,8 +433,8 @@ class Workflow(YmlConfigFile):
         if step is None:
             step = {}
         # make name from setup function name if name is a function
-        name = cls.make_name_from_func(step_func)
-        id_ = cls.make_id_from_func(step_func)
+        name = self.make_name_from_func(step_func)
+        id_ = self.make_id_from_func(step_func)
         step_config: dict[str, Any] = {"name": name, "id": id_}
         if run is not None:
             step_config["run"] = run
@@ -473,9 +452,9 @@ class Workflow(YmlConfigFile):
         return step_config
 
     # Strategy
-    @classmethod
+
     def strategy_matrix_os_and_python_version(
-        cls,
+        self,
         os: list[str] | None = None,
         python_version: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
@@ -492,16 +471,15 @@ class Workflow(YmlConfigFile):
         Returns:
             Strategy configuration with OS and Python matrix.
         """
-        return cls.strategy_matrix(
-            matrix=cls.matrix_os_and_python_version(
+        return self.strategy_matrix(
+            matrix=self.matrix_os_and_python_version(
                 os=os, python_version=python_version, matrix=matrix
             ),
             strategy=strategy,
         )
 
-    @classmethod
     def strategy_matrix_python_version(
-        cls,
+        self,
         python_version: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
         strategy: dict[str, Any] | None = None,
@@ -516,16 +494,15 @@ class Workflow(YmlConfigFile):
         Returns:
             Strategy configuration with Python version matrix.
         """
-        return cls.strategy_matrix(
-            matrix=cls.matrix_python_version(
+        return self.strategy_matrix(
+            matrix=self.matrix_python_version(
                 python_version=python_version, matrix=matrix
             ),
             strategy=strategy,
         )
 
-    @classmethod
     def strategy_matrix_os(
-        cls,
+        self,
         os: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
         strategy: dict[str, Any] | None = None,
@@ -540,13 +517,12 @@ class Workflow(YmlConfigFile):
         Returns:
             Strategy configuration with OS matrix.
         """
-        return cls.strategy_matrix(
-            matrix=cls.matrix_os(os=os, matrix=matrix), strategy=strategy
+        return self.strategy_matrix(
+            matrix=self.matrix_os(os=os, matrix=matrix), strategy=strategy
         )
 
-    @classmethod
     def strategy_matrix(
-        cls,
+        self,
         *,
         strategy: dict[str, Any] | None = None,
         matrix: dict[str, list[Any]] | None = None,
@@ -565,11 +541,10 @@ class Workflow(YmlConfigFile):
         if matrix is None:
             matrix = {}
         strategy["matrix"] = matrix
-        return cls.strategy(strategy=strategy)
+        return self.strategy(strategy=strategy)
 
-    @classmethod
     def strategy(
-        cls,
+        self,
         *,
         strategy: dict[str, Any],
     ) -> dict[str, Any]:
@@ -584,9 +559,8 @@ class Workflow(YmlConfigFile):
         strategy["fail-fast"] = strategy.pop("fail-fast", True)
         return strategy
 
-    @classmethod
     def matrix_os_and_python_version(
-        cls,
+        self,
         os: list[str] | None = None,
         python_version: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
@@ -603,17 +577,16 @@ class Workflow(YmlConfigFile):
         """
         if matrix is None:
             matrix = {}
-        os_matrix = cls.matrix_os(os=os, matrix=matrix)["os"]
-        python_version_matrix = cls.matrix_python_version(
+        os_matrix = self.matrix_os(os=os, matrix=matrix)["os"]
+        python_version_matrix = self.matrix_python_version(
             python_version=python_version, matrix=matrix
         )["python-version"]
         matrix["os"] = os_matrix
         matrix["python-version"] = python_version_matrix
-        return cls.matrix(matrix=matrix)
+        return self.matrix(matrix=matrix)
 
-    @classmethod
     def matrix_os(
-        cls,
+        self,
         *,
         os: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
@@ -628,15 +601,14 @@ class Workflow(YmlConfigFile):
             Matrix configuration with os.
         """
         if os is None:
-            os = [cls.UBUNTU_LATEST, cls.WINDOWS_LATEST, cls.MACOS_LATEST]
+            os = [self.UBUNTU_LATEST, self.WINDOWS_LATEST, self.MACOS_LATEST]
         if matrix is None:
             matrix = {}
         matrix["os"] = os
-        return cls.matrix(matrix=matrix)
+        return self.matrix(matrix=matrix)
 
-    @classmethod
     def matrix_python_version(
-        cls,
+        self,
         *,
         python_version: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
@@ -657,10 +629,9 @@ class Workflow(YmlConfigFile):
         if matrix is None:
             matrix = {}
         matrix["python-version"] = python_version
-        return cls.matrix(matrix=matrix)
+        return self.matrix(matrix=matrix)
 
-    @classmethod
-    def matrix(cls, matrix: dict[str, list[Any]]) -> dict[str, Any]:
+    def matrix(self, matrix: dict[str, list[Any]]) -> dict[str, Any]:
         """Return the matrix configuration.
 
         Args:
@@ -671,12 +642,12 @@ class Workflow(YmlConfigFile):
         """
         return matrix
 
-    # Workflow Steps
+    # WorkflowConfigFile Steps
     # ----------------------------------------------------------------------------
     # Combined Steps
-    @classmethod
+
     def steps_core_setup(
-        cls,
+        self,
         python_version: str | None = None,
         *,
         repo_token: bool = False,
@@ -697,21 +668,20 @@ class Workflow(YmlConfigFile):
                 PyprojectConfigFile.I.latest_possible_python_version(level="minor")
             )
         core = [
-            cls.step_checkout_repository(repo_token=repo_token),
-            cls.step_setup_version_control(),
-            cls.step_setup_package_manager(python_version=python_version),
+            self.step_checkout_repository(repo_token=repo_token),
+            self.step_setup_version_control(),
+            self.step_setup_package_manager(python_version=python_version),
         ]
         if patch_version:
             core = [
                 *core,
-                cls.step_patch_version(),
-                cls.step_add_version_bump_to_version_control(),
+                self.step_patch_version(),
+                self.step_add_version_bump_to_version_control(),
             ]
         return core
 
-    @classmethod
     def steps_core_installed_setup(
-        cls,
+        self,
         *,
         no_dev: bool = False,
         python_version: str | None = None,
@@ -730,19 +700,18 @@ class Workflow(YmlConfigFile):
             List with setup, dependency update, and dependency installation steps.
         """
         return [
-            *cls.steps_core_setup(
+            *self.steps_core_setup(
                 python_version=python_version,
                 repo_token=repo_token,
                 patch_version=patch_version,
             ),
-            cls.step_update_dependencies(),
-            cls.step_install_dependencies(no_dev=no_dev),
-            cls.step_add_dependency_updates_to_version_control(),
+            self.step_update_dependencies(),
+            self.step_install_dependencies(no_dev=no_dev),
+            self.step_add_dependency_updates_to_version_control(),
         ]
 
-    @classmethod
     def steps_core_matrix_setup(
-        cls,
+        self,
         *,
         no_dev: bool = False,
         python_version: str | None = None,
@@ -762,7 +731,7 @@ class Workflow(YmlConfigFile):
             List with full setup steps for matrix execution.
         """
         return [
-            *cls.steps_core_installed_setup(
+            *self.steps_core_installed_setup(
                 python_version=python_version,
                 repo_token=repo_token,
                 no_dev=no_dev,
@@ -771,9 +740,9 @@ class Workflow(YmlConfigFile):
         ]
 
     # Single Step
-    @classmethod
+
     def step_opt_out_of_workflow(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -785,15 +754,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that echoes an opt-out message.
         """
-        return cls.step(
-            step_func=cls.step_opt_out_of_workflow,
-            run=f"echo 'Opting out of {cls.workflow_name()} workflow.'",
+        return self.step(
+            step_func=self.step_opt_out_of_workflow,
+            run=f"echo 'Opting out of {self.workflow_name()} workflow.'",
             step=step,
         )
 
-    @classmethod
     def step_aggregate_jobs(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -805,15 +773,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step configuration for result aggregation.
         """
-        return cls.step(
-            step_func=cls.step_aggregate_jobs,
+        return self.step(
+            step_func=self.step_aggregate_jobs,
             run="echo 'Aggregating jobs into one job.'",
             step=step,
         )
 
-    @classmethod
     def step_no_builder_defined(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -825,15 +792,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that echoes a skip message.
         """
-        return cls.step(
-            step_func=cls.step_no_builder_defined,
+        return self.step(
+            step_func=self.step_no_builder_defined,
             run="echo 'No non-abstract builders defined. Skipping build.'",
             step=step,
         )
 
-    @classmethod
     def step_install_container_engine(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -847,16 +813,15 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that installs podman.
         """
-        return cls.step(
-            step_func=cls.step_install_container_engine,
+        return self.step(
+            step_func=self.step_install_container_engine,
             uses="redhat-actions/podman-install@main",
-            with_={"github-token": cls.insert_github_token()},
+            with_={"github-token": self.insert_github_token()},
             step=step,
         )
 
-    @classmethod
     def step_build_container_image(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -868,8 +833,8 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that builds the container image.
         """
-        return cls.step(
-            step_func=cls.step_build_container_image,
+        return self.step(
+            step_func=self.step_build_container_image,
             run=str(
                 ContainerEngine.I.build_args(
                     project_name=PyprojectConfigFile.I.project_name()
@@ -878,9 +843,8 @@ class Workflow(YmlConfigFile):
             step=step,
         )
 
-    @classmethod
     def step_save_container_image(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -893,9 +857,9 @@ class Workflow(YmlConfigFile):
             Step that saves the container image.
         """
         image_file = Path(f"{PyprojectConfigFile.I.project_name()}.tar")
-        image_path = Path(cls.ARTIFACTS_DIR_NAME) / image_file
-        return cls.step(
-            step_func=cls.step_save_container_image,
+        image_path = Path(BuilderConfigFile.dist_dir_name()) / image_file
+        return self.step(
+            step_func=self.step_save_container_image,
             run=str(
                 ContainerEngine.I.save_args(
                     image_file=image_file,
@@ -905,31 +869,8 @@ class Workflow(YmlConfigFile):
             step=step,
         )
 
-    @classmethod
-    def step_make_dist_folder(
-        cls,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that makes the dist folder.
-
-        Creates only if it does not exist.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that makes the dist folder.
-        """
-        return cls.step(
-            step_func=cls.step_make_dist_folder,
-            run=f"mkdir -p {cls.ARTIFACTS_DIR_NAME}",
-            step=step,
-        )
-
-    @classmethod
     def step_run_tests(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -944,17 +885,16 @@ class Workflow(YmlConfigFile):
         if step is None:
             step = {}
         if src_package_is_pyrig():
-            step.setdefault("env", {})["REPO_TOKEN"] = cls.insert_repo_token()
+            step.setdefault("env", {})["REPO_TOKEN"] = self.insert_repo_token()
         run = str(PackageManager.I.run_args(*ProjectTester.I.run_tests_in_ci_args()))
-        return cls.step(
-            step_func=cls.step_run_tests,
+        return self.step(
+            step_func=self.step_run_tests,
             run=run,
             step=step,
         )
 
-    @classmethod
     def step_upload_coverage_report(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -976,23 +916,22 @@ class Workflow(YmlConfigFile):
             Step configuration for uploading coverage report.
         """
         #  make fail_ci_if_error true if token exists and false if it doesn't
-        fail_ci_if_error = cls.insert_var(
+        fail_ci_if_error = self.insert_var(
             "${{ secrets.CODECOV_TOKEN && 'true' || 'false' }}"
         )
-        return cls.step(
-            step_func=cls.step_upload_coverage_report,
+        return self.step(
+            step_func=self.step_upload_coverage_report,
             uses="codecov/codecov-action@main",
             with_={
                 "files": "coverage.xml",
-                "token": cls.insert_codecov_token(),
+                "token": self.insert_codecov_token(),
                 "fail_ci_if_error": fail_ci_if_error,
             },
             step=step,
         )
 
-    @classmethod
     def step_patch_version(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1004,15 +943,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that increments version and stages pyproject.toml.
         """
-        return cls.step(
-            step_func=cls.step_patch_version,
+        return self.step(
+            step_func=self.step_patch_version,
             run=str(PackageManager.I.patch_version_args()),
             step=step,
         )
 
-    @classmethod
     def step_add_version_bump_to_version_control(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1024,15 +962,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that stages pyproject.toml.
         """
-        return cls.step(
-            step_func=cls.step_add_version_bump_to_version_control,
+        return self.step(
+            step_func=self.step_add_version_bump_to_version_control,
             run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
 
-    @classmethod
     def step_add_dependency_updates_to_version_control(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1044,15 +981,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that stages pyproject.toml and uv.lock.
         """
-        return cls.step(
-            step_func=cls.step_add_dependency_updates_to_version_control,
+        return self.step(
+            step_func=self.step_add_dependency_updates_to_version_control,
             run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
 
-    @classmethod
     def step_checkout_repository(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
         fetch_depth: int | None = None,
@@ -1073,16 +1009,15 @@ class Workflow(YmlConfigFile):
         if fetch_depth is not None:
             step.setdefault("with", {})["fetch-depth"] = fetch_depth
         if repo_token:
-            step.setdefault("with", {})["token"] = cls.insert_repo_token()
-        return cls.step(
-            step_func=cls.step_checkout_repository,
+            step.setdefault("with", {})["token"] = self.insert_repo_token()
+        return self.step(
+            step_func=self.step_checkout_repository,
             uses="actions/checkout@main",
             step=step,
         )
 
-    @classmethod
     def step_setup_version_control(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1094,8 +1029,8 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that sets git user.email and user.name.
         """
-        return cls.step(
-            step_func=cls.step_setup_version_control,
+        return self.step(
+            step_func=self.step_setup_version_control,
             run=str(
                 VersionController.I.config_global_user_email_args(
                     email='"github-actions[bot]@users.noreply.github.com"',
@@ -1110,9 +1045,8 @@ class Workflow(YmlConfigFile):
             step=step,
         )
 
-    @classmethod
     def step_setup_python(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
         python_version: str | None = None,
@@ -1134,15 +1068,14 @@ class Workflow(YmlConfigFile):
             )
 
         step.setdefault("with", {})["python-version"] = python_version
-        return cls.step(
-            step_func=cls.step_setup_python,
+        return self.step(
+            step_func=self.step_setup_python,
             uses="actions/setup-python@main",
             step=step,
         )
 
-    @classmethod
     def step_setup_package_manager(
-        cls,
+        self,
         *,
         python_version: str,
         step: dict[str, Any] | None = None,
@@ -1156,16 +1089,15 @@ class Workflow(YmlConfigFile):
         Returns:
             Step using astral-sh/setup-uv.
         """
-        return cls.step(
-            step_func=cls.step_setup_package_manager,
+        return self.step(
+            step_func=self.step_setup_package_manager,
             uses="astral-sh/setup-uv@main",
             with_={"python-version": python_version},
             step=step,
         )
 
-    @classmethod
     def step_build_wheel(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1177,15 +1109,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv build.
         """
-        return cls.step(
-            step_func=cls.step_build_wheel,
+        return self.step(
+            step_func=self.step_build_wheel,
             run=str(PackageManager.I.build_args()),
             step=step,
         )
 
-    @classmethod
     def step_publish_to_pypi(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1199,17 +1130,16 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv publish with PYPI_TOKEN.
         """
-        run = str(PackageManager.I.publish_args(token=cls.insert_pypi_token()))
-        run_if = cls.run_if_condition(run, cls.insert_pypi_token())
-        return cls.step(
-            step_func=cls.step_publish_to_pypi,
+        run = str(PackageManager.I.publish_args(token=self.insert_pypi_token()))
+        run_if = self.run_if_condition(run, self.insert_pypi_token())
+        return self.step(
+            step_func=self.step_publish_to_pypi,
             run=run_if,
             step=step,
         )
 
-    @classmethod
     def step_build_documentation(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1221,15 +1151,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that builds the project documentation.
         """
-        return cls.step(
-            step_func=cls.step_build_documentation,
+        return self.step(
+            step_func=self.step_build_documentation,
             run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
             step=step,
         )
 
-    @classmethod
     def step_enable_pages(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1241,16 +1170,15 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that enables GitHub Pages.
         """
-        return cls.step(
-            step_func=cls.step_enable_pages,
+        return self.step(
+            step_func=self.step_enable_pages,
             uses="actions/configure-pages@main",
-            with_={"token": cls.insert_repo_token(), "enablement": "true"},
+            with_={"token": self.insert_repo_token(), "enablement": "true"},
             step=step,
         )
 
-    @classmethod
     def step_upload_documentation(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1262,16 +1190,15 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that uploads the documentation to GitHub Pages.
         """
-        return cls.step(
-            step_func=cls.step_upload_documentation,
+        return self.step(
+            step_func=self.step_upload_documentation,
             uses="actions/upload-pages-artifact@main",
             with_={"path": "site"},
             step=step,
         )
 
-    @classmethod
     def step_deploy_documentation(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1283,15 +1210,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that deploys documentation to GitHub Pages.
         """
-        return cls.step(
-            step_func=cls.step_deploy_documentation,
+        return self.step(
+            step_func=self.step_deploy_documentation,
             uses="actions/deploy-pages@main",
             step=step,
         )
 
-    @classmethod
     def step_update_dependencies(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1303,15 +1229,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs uv lock --upgrade.
         """
-        return cls.step(
-            step_func=cls.step_update_dependencies,
+        return self.step(
+            step_func=self.step_update_dependencies,
             run=str(PackageManager.I.update_dependencies_args()),
             step=step,
         )
 
-    @classmethod
     def step_install_dependencies(
-        cls,
+        self,
         *,
         no_dev: bool = False,
         step: dict[str, Any] | None = None,
@@ -1330,15 +1255,14 @@ class Workflow(YmlConfigFile):
             install += " --no-group dev"
         run = install
 
-        return cls.step(
-            step_func=cls.step_install_dependencies,
+        return self.step(
+            step_func=self.step_install_dependencies,
             run=run,
             step=step,
         )
 
-    @classmethod
     def step_protect_repository(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1350,16 +1274,15 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs the pyrig protect-repo command.
         """
-        return cls.step(
-            step_func=cls.step_protect_repository,
+        return self.step(
+            step_func=self.step_protect_repository,
             run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=protect_repo))),
-            env={"REPO_TOKEN": cls.insert_repo_token()},
+            env={"REPO_TOKEN": self.insert_repo_token()},
             step=step,
         )
 
-    @classmethod
     def step_run_pre_commit_hooks(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1374,15 +1297,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs prek on all files.
         """
-        return cls.step(
-            step_func=cls.step_run_pre_commit_hooks,
+        return self.step(
+            step_func=self.step_run_pre_commit_hooks,
             run=str(PackageManager.I.run_args(*PreCommitter.I.run_all_files_args())),
             step=step,
         )
 
-    @classmethod
     def step_run_dependency_audit(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1397,15 +1319,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs pip-audit.
         """
-        return cls.step(
-            step_func=cls.step_run_dependency_audit,
+        return self.step(
+            step_func=self.step_run_dependency_audit,
             run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
             step=step,
         )
 
-    @classmethod
     def step_commit_added_changes(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1418,15 +1339,14 @@ class Workflow(YmlConfigFile):
             Step that commits with [skip ci] prefix.
         """
         msg = '"[skip ci] CI/CD: Committing possible staged changes"'
-        return cls.step(
-            step_func=cls.step_commit_added_changes,
+        return self.step(
+            step_func=self.step_commit_added_changes,
             run=str(VersionController.I.commit_no_verify_args(msg=msg)),
             step=step,
         )
 
-    @classmethod
     def step_push_commits(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1438,15 +1358,14 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs git push.
         """
-        return cls.step(
-            step_func=cls.step_push_commits,
+        return self.step(
+            step_func=self.step_push_commits,
             run=str(VersionController.I.push_args()),
             step=step,
         )
 
-    @classmethod
     def step_create_and_push_tag(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1458,85 +1377,40 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that creates a git tag and pushes it.
         """
-        return cls.step(
-            step_func=cls.step_create_and_push_tag,
-            run=str(VersionController.I.tag_args(tag=cls.insert_version()))
+        return self.step(
+            step_func=self.step_create_and_push_tag,
+            run=str(VersionController.I.tag_args(tag=self.insert_version()))
             + " && "
-            + str(VersionController.I.push_origin_tag_args(tag=cls.insert_version())),
+            + str(VersionController.I.push_origin_tag_args(tag=self.insert_version())),
             step=step,
         )
 
-    @classmethod
-    def step_create_folder(
-        cls,
-        *,
-        folder: str,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that creates a directory.
-
-        Args:
-            folder: Directory name to create.
-            step: Existing step dict to update.
-
-        Returns:
-            Step that runs mkdir (cross-platform).
-        """
-        # should work on all OSs
-        return cls.step(
-            step_func=cls.step_create_folder,
-            run=f"mkdir {folder}",
-            step=step,
-        )
-
-    @classmethod
-    def step_create_artifacts_folder(
-        cls,
-        *,
-        folder: str = BuilderConfigFile.ARTIFACTS_DIR_NAME,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that creates the artifacts directory.
-
-        Args:
-            folder: Directory name. Defaults to ARTIFACTS_DIR_NAME.
-            step: Existing step dict to update.
-
-        Returns:
-            Step that creates the artifacts folder.
-        """
-        return cls.step_create_folder(folder=folder, step=step)
-
-    @classmethod
     def step_upload_artifacts(
-        cls,
+        self,
         *,
         name: str | None = None,
-        path: str | Path = ARTIFACTS_DIR_NAME,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a step that uploads build artifacts.
 
         Args:
             name: Artifact name. Defaults to package-os format.
-            path: Path to upload. Defaults to artifacts directory.
             step: Existing step dict to update.
 
         Returns:
             Step using actions/upload-artifact.
         """
         if name is None:
-            name = cls.insert_artifact_name()
-        return cls.step(
-            step_func=cls.step_upload_artifacts,
+            name = self.insert_artifact_name()
+        return self.step(
+            step_func=self.step_upload_artifacts,
             uses="actions/upload-artifact@main",
-            with_={"name": name, "path": str(path)},
+            with_={"name": name, "path": BuilderConfigFile.dist_dir_name()},
             step=step,
         )
 
-    @classmethod
     def step_build_artifacts(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1548,18 +1422,16 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that runs the pyrig build command.
         """
-        return cls.step(
-            step_func=cls.step_build_artifacts,
+        return self.step(
+            step_func=self.step_build_artifacts,
             run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=build))),
             step=step,
         )
 
-    @classmethod
     def step_download_artifacts(
-        cls,
+        self,
         *,
         name: str | None = None,
-        path: str | Path = ARTIFACTS_DIR_NAME,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a step that downloads build artifacts.
@@ -1573,23 +1445,21 @@ class Workflow(YmlConfigFile):
             Step using actions/download-artifact.
         """
         # omit name downloads all by default
-        with_: dict[str, Any] = {"path": str(path)}
+        with_: dict[str, Any] = {"path": BuilderConfigFile.dist_dir_name()}
         if name is not None:
             with_["name"] = name
         with_["merge-multiple"] = "true"
-        return cls.step(
-            step_func=cls.step_download_artifacts,
+        return self.step(
+            step_func=self.step_download_artifacts,
             uses="actions/download-artifact@main",
             with_=with_,
             step=step,
         )
 
-    @classmethod
     def step_download_artifacts_from_workflow_run(
-        cls,
+        self,
         *,
         name: str | None = None,
-        path: str | Path = ARTIFACTS_DIR_NAME,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a step that downloads artifacts from triggering workflow run.
@@ -1606,23 +1476,22 @@ class Workflow(YmlConfigFile):
             Step using actions/download-artifact with run-id parameter.
         """
         with_: dict[str, Any] = {
-            "path": str(path),
-            "run-id": cls.insert_workflow_run_id(),
-            "github-token": cls.insert_github_token(),
+            "path": BuilderConfigFile.dist_dir_name(),
+            "run-id": self.insert_workflow_run_id(),
+            "github-token": self.insert_github_token(),
         }
         if name is not None:
             with_["name"] = name
         with_["merge-multiple"] = "true"
-        return cls.step(
-            step_func=cls.step_download_artifacts_from_workflow_run,
+        return self.step(
+            step_func=self.step_download_artifacts_from_workflow_run,
             uses="actions/download-artifact@main",
             with_=with_,
             step=step,
         )
 
-    @classmethod
     def step_build_changelog(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1634,16 +1503,15 @@ class Workflow(YmlConfigFile):
         Returns:
             Step using release-changelog-builder-action.
         """
-        return cls.step(
-            step_func=cls.step_build_changelog,
+        return self.step(
+            step_func=self.step_build_changelog,
             uses="mikepenz/release-changelog-builder-action@develop",
-            with_={"token": cls.insert_github_token()},
+            with_={"token": self.insert_github_token()},
             step=step,
         )
 
-    @classmethod
     def step_extract_version(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -1655,18 +1523,16 @@ class Workflow(YmlConfigFile):
         Returns:
             Step that outputs the version for later steps.
         """
-        return cls.step(
-            step_func=cls.step_extract_version,
-            run=f'echo "version={cls.insert_version()}" >> $GITHUB_OUTPUT',
+        return self.step(
+            step_func=self.step_extract_version,
+            run=f'echo "version={self.insert_version()}" >> $GITHUB_OUTPUT',
             step=step,
         )
 
-    @classmethod
     def step_create_release(
-        cls,
+        self,
         *,
         step: dict[str, Any] | None = None,
-        artifacts_pattern: str = ARTIFACTS_PATTERN,
     ) -> dict[str, Any]:
         """Create a step that creates a GitHub release.
 
@@ -1677,23 +1543,23 @@ class Workflow(YmlConfigFile):
         Returns:
             Step using ncipollo/release-action.
         """
-        version = cls.insert_version_from_extract_version_step()
-        return cls.step(
-            step_func=cls.step_create_release,
+        version = self.insert_version_from_extract_version_step()
+        return self.step(
+            step_func=self.step_create_release,
             uses="ncipollo/release-action@main",
             with_={
                 "tag": version,
-                "name": f"{cls.insert_repository_name()} {version}",
-                "body": cls.insert_changelog(),
-                "artifacts": artifacts_pattern,
+                "name": f"{self.insert_repository_name()} {version}",
+                "body": self.insert_changelog(),
+                "artifacts": f"{BuilderConfigFile.dist_dir_name()}/*",
             },
             step=step,
         )
 
     # Insertions
     # ----------------------------------------------------------------------------
-    @classmethod
-    def insert_var(cls, var: str) -> str:
+
+    def insert_var(self, var: str) -> str:
         """Wrap a variable in GitHub Actions expression syntax.
 
         Args:
@@ -1706,26 +1572,23 @@ class Workflow(YmlConfigFile):
         var = var.strip().removeprefix("${{").removesuffix("}}").strip()
         return f"${{{{ {var} }}}}"
 
-    @classmethod
-    def insert_repo_token(cls) -> str:
+    def insert_repo_token(self) -> str:
         """Get the GitHub expression for REPO_TOKEN secret.
 
         Returns:
             GitHub Actions expression for secrets.REPO_TOKEN.
         """
-        return cls.insert_var("secrets.REPO_TOKEN")
+        return self.insert_var("secrets.REPO_TOKEN")
 
-    @classmethod
-    def insert_pypi_token(cls) -> str:
+    def insert_pypi_token(self) -> str:
         """Get the GitHub expression for PYPI_TOKEN secret.
 
         Returns:
             GitHub Actions expression for secrets.PYPI_TOKEN.
         """
-        return cls.insert_var("secrets.PYPI_TOKEN")
+        return self.insert_var("secrets.PYPI_TOKEN")
 
-    @classmethod
-    def insert_version(cls) -> str:
+    def insert_version(self) -> str:
         """Get a shell expression for the current version.
 
         Returns:
@@ -1734,76 +1597,68 @@ class Workflow(YmlConfigFile):
         script = str(PackageManager.I.version_short_args())
         return f"v$({script})"
 
-    @classmethod
-    def insert_version_from_extract_version_step(cls) -> str:
+    def insert_version_from_extract_version_step(self) -> str:
         """Get the GitHub expression for version from extract step.
 
         Returns:
             GitHub Actions expression referencing the extract_version output.
         """
-        # make dynamic with cls.make_id_from_func(cls.step_extract_version)
-        return cls.insert_var(
-            f"steps.{cls.make_id_from_func(cls.step_extract_version)}.outputs.version"
+        # make dynamic with self.make_id_from_func(self.step_extract_version)
+        return self.insert_var(
+            f"steps.{self.make_id_from_func(self.step_extract_version)}.outputs.version"
         )
 
-    @classmethod
-    def insert_changelog(cls) -> str:
+    def insert_changelog(self) -> str:
         """Get the GitHub expression for changelog from build step.
 
         Returns:
             GitHub Actions expression referencing the build_changelog output.
         """
-        return cls.insert_var(
-            f"steps.{cls.make_id_from_func(cls.step_build_changelog)}.outputs.changelog"
+        return self.insert_var(
+            f"steps.{self.make_id_from_func(self.step_build_changelog)}.outputs.changelog"
         )
 
-    @classmethod
-    def insert_github_token(cls) -> str:
+    def insert_github_token(self) -> str:
         """Get the GitHub expression for GITHUB_TOKEN.
 
         Returns:
             GitHub Actions expression for secrets.GITHUB_TOKEN.
         """
-        return cls.insert_var("secrets.GITHUB_TOKEN")
+        return self.insert_var("secrets.GITHUB_TOKEN")
 
-    @classmethod
-    def insert_codecov_token(cls) -> str:
+    def insert_codecov_token(self) -> str:
         """Get the GitHub expression for CODECOV_TOKEN.
 
         Returns:
             GitHub Actions expression for secrets.CODECOV_TOKEN.
         """
-        return cls.insert_var("secrets.CODECOV_TOKEN")
+        return self.insert_var("secrets.CODECOV_TOKEN")
 
-    @classmethod
-    def insert_repository_name(cls) -> str:
+    def insert_repository_name(self) -> str:
         """Get the GitHub expression for repository name.
 
         Returns:
             GitHub Actions expression for the repository name.
         """
-        return cls.insert_var("github.event.repository.name")
+        return self.insert_var("github.event.repository.name")
 
-    @classmethod
-    def insert_ref_name(cls) -> str:
+    def insert_ref_name(self) -> str:
         """Get the GitHub expression for the ref name.
 
         Returns:
             GitHub Actions expression for github.ref_name.
         """
-        return cls.insert_var("github.ref_name")
+        return self.insert_var("github.ref_name")
 
-    @classmethod
-    def insert_repository_owner(cls) -> str:
+    def insert_repository_owner(self) -> str:
         """Get the GitHub expression for repository owner.
 
         Returns:
             GitHub Actions expression for github.repository_owner.
         """
-        return cls.insert_var("github.repository_owner")
+        return self.insert_var("github.repository_owner")
 
-    @classmethod
-    def insert_workflow_run_id(cls) -> str:
+    def insert_workflow_run_id(self) -> str:
         """Get the GitHub expression for triggering workflow run ID.
 
         Used when downloading artifacts from the workflow that triggered
@@ -1812,48 +1667,44 @@ class Workflow(YmlConfigFile):
         Returns:
             GitHub Actions expression for github.event.workflow_run.id.
         """
-        return cls.insert_var("github.event.workflow_run.id")
+        return self.insert_var("github.event.workflow_run.id")
 
-    @classmethod
-    def insert_os(cls) -> str:
+    def insert_os(self) -> str:
         """Get the GitHub expression for runner OS.
 
         Returns:
             GitHub Actions expression for runner.os.
         """
-        return cls.insert_var("runner.os")
+        return self.insert_var("runner.os")
 
-    @classmethod
-    def insert_matrix_os(cls) -> str:
+    def insert_matrix_os(self) -> str:
         """Get the GitHub expression for matrix OS value.
 
         Returns:
             GitHub Actions expression for matrix.os.
         """
-        return cls.insert_var("matrix.os")
+        return self.insert_var("matrix.os")
 
-    @classmethod
-    def insert_matrix_python_version(cls) -> str:
+    def insert_matrix_python_version(self) -> str:
         """Get the GitHub expression for matrix Python version.
 
         Returns:
             GitHub Actions expression for matrix.python-version.
         """
-        return cls.insert_var("matrix.python-version")
+        return self.insert_var("matrix.python-version")
 
-    @classmethod
-    def insert_artifact_name(cls) -> str:
+    def insert_artifact_name(self) -> str:
         """Generate an artifact name based on package and OS.
 
         Returns:
             Artifact name in format: package-os.
         """
-        return f"{PyprojectConfigFile.I.project_name()}-{cls.insert_os()}"
+        return f"{PyprojectConfigFile.I.project_name()}-{self.insert_os()}"
 
     # ifs
     # ----------------------------------------------------------------------------
-    @classmethod
-    def combined_if(cls, *conditions: str, operator: str) -> str:
+
+    def combined_if(self, *conditions: str, operator: str) -> str:
         """Combine multiple conditions with a logical operator.
 
         Args:
@@ -1867,10 +1718,9 @@ class Workflow(YmlConfigFile):
             condition.strip().removeprefix("${{").removesuffix("}}").strip()
             for condition in conditions
         ]
-        return cls.insert_var(f" {operator} ".join(bare_conditions))
+        return self.insert_var(f" {operator} ".join(bare_conditions))
 
-    @classmethod
-    def if_matrix_is_not_os(cls, os: str) -> str:
+    def if_matrix_is_not_os(self, os: str) -> str:
         """Create a condition for not matching a specific OS.
 
         Args:
@@ -1879,57 +1729,52 @@ class Workflow(YmlConfigFile):
         Returns:
             Condition expression for matrix.os comparison.
         """
-        return cls.insert_var(f"matrix.os != '{os}'")
+        return self.insert_var(f"matrix.os != '{os}'")
 
-    @classmethod
-    def if_not_triggered_by_cron(cls) -> str:
+    def if_not_triggered_by_cron(self) -> str:
         """Create a condition for not being triggered by cron.
 
         Returns:
             GitHub Actions expression checking event name.
         """
-        return cls.insert_var("github.event_name != 'schedule'")
+        return self.insert_var("github.event_name != 'schedule'")
 
-    @classmethod
-    def if_workflow_run_is_success(cls) -> str:
+    def if_workflow_run_is_success(self) -> str:
         """Create a condition for successful workflow run.
 
         Returns:
             GitHub Actions expression checking workflow_run conclusion.
         """
-        return cls.insert_var("github.event.workflow_run.conclusion == 'success'")
+        return self.insert_var("github.event.workflow_run.conclusion == 'success'")
 
-    @classmethod
-    def if_workflow_run_is_not_cron_triggered(cls) -> str:
+    def if_workflow_run_is_not_cron_triggered(self) -> str:
         """Create a condition for the triggering workflow run not being cron.
 
         Returns:
             GitHub Actions expression checking workflow_run event name.
         """
-        return cls.insert_var("github.event.workflow_run.event != 'schedule'")
+        return self.insert_var("github.event.workflow_run.event != 'schedule'")
 
-    @classmethod
-    def if_pypi_token_configured(cls) -> str:
+    def if_pypi_token_configured(self) -> str:
         """Create a condition for PYPI_TOKEN being configured.
 
         Returns:
             GitHub Actions expression checking for PYPI_TOKEN.
         """
-        return cls.insert_var("secrets.PYPI_TOKEN != ''")
+        return self.insert_var("secrets.PYPI_TOKEN != ''")
 
-    @classmethod
-    def if_codecov_token_configured(cls) -> str:
+    def if_codecov_token_configured(self) -> str:
         """Create a condition for CODECOV_TOKEN being configured.
 
         Returns:
             GitHub Actions expression checking for CODECOV_TOKEN.
         """
-        return cls.insert_var("secrets.CODECOV_TOKEN != ''")
+        return self.insert_var("secrets.CODECOV_TOKEN != ''")
 
     # Runs
     # ----------------------------------------------------------------------------
-    @classmethod
-    def run_if_condition(cls, run: str, condition: str) -> str:
+
+    def run_if_condition(self, run: str, condition: str) -> str:
         """Return a run command that only runs if condition is true.
 
         Args:
@@ -1939,7 +1784,7 @@ class Workflow(YmlConfigFile):
         Returns:
             Shell script that runs the command conditionally.
         """
-        condition_check = cls.insert_var(condition)
+        condition_check = self.insert_var(condition)
         # make a script that runs the command if the token is configured
         # and echos a message if it is not
         condition_as_str = (

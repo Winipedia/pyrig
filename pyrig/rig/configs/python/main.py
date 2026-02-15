@@ -30,7 +30,7 @@ class MainConfigFile(CopyModuleConfigFile):
     Examples:
         Generate {package_name}/main.py::
 
-            MainConfigFile.validate()
+            MainConfigFile.I.validate()
 
         Generated file structure::
 
@@ -50,18 +50,16 @@ class MainConfigFile(CopyModuleConfigFile):
         pyrig.rig.configs.base.copy_module.CopyModuleConfigFile
     """
 
-    @classmethod
-    def create_file(cls) -> None:
+    def create_file(self) -> None:
         """Create main.py by copying the `pyrig.main` module.
 
         Also delete root-level main.py if it exists to clean up legacy
         files from ``uv init``.
         """
         super().create_file()
-        cls.delete_root_main()
+        self.delete_root_main()
 
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         """Get the source module to copy.
 
         Returns:
@@ -72,8 +70,7 @@ class MainConfigFile(CopyModuleConfigFile):
         """
         return main
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Check if the main.py file is valid.
 
         Returns:
@@ -84,12 +81,11 @@ class MainConfigFile(CopyModuleConfigFile):
             Reads file from disk to check content.
         """
         return super().is_correct() or (
-            "def main" in cls.file_content()
-            and 'if __name__ == "__main__":' in cls.file_content()
+            "def main" in self.file_content()
+            and 'if __name__ == "__main__":' in self.file_content()
         )
 
-    @classmethod
-    def delete_root_main(cls) -> None:
+    def delete_root_main(self) -> None:
         """Delete root-level main.py if it exists.
 
         Note:

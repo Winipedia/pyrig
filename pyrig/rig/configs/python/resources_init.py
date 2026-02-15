@@ -23,15 +23,14 @@ class ResourcesInitConfigFile(InitConfigFile):
     Examples:
         Generate {package_name}/resources/__init__.py::
 
-            ResourcesInitConfigFile.validate()
+            ResourcesInitConfigFile.I.validate()
 
     See Also:
         pyrig.resources
         pyrig.rig.configs.base.init.InitConfigFile
     """
 
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         """Get the source module to copy docstring from.
 
         Returns:

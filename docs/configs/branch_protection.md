@@ -174,7 +174,7 @@ When initialized via `uv run pyrig mkroot`, the `branch-protection.json` file is
 created by:
 
 1. **Generating ruleset configuration**:
-   `RepoProtectionConfigFile.configs()` creates the complete ruleset
+   `RepoProtectionConfigFile.I.configs()` creates the complete ruleset
 2. **Setting required status checks**: Uses health check workflow job IDs
 3. **Configuring bypass actors**: Adds repository admin bypass permissions
 4. **Applying security defaults**: Enforces pyrig's opinionated protection rules
@@ -196,7 +196,7 @@ uv run pyrig protect-repo
 
 This command:
 
-1. Loads `branch-protection.json` using `RepoProtectionConfigFile.load()`
+1. Loads `branch-protection.json` using `RepoProtectionConfigFile.I.load()`
 2. Checks if a ruleset with the same name exists
 3. Creates or updates the ruleset via GitHub API
 4. Applies all protection rules to the main branch
@@ -291,7 +291,7 @@ Or export the current ruleset from GitHub and compare with your local file.
 
 - [protect-repo Command](../cli/commands/protect-repo.md) - Uses this file to
   apply protection
-- [Health Check Workflow](workflows/health_check.md) - Runs protect-repo
+- [Health Check WorkflowConfigFile](workflows/health_check.md) - Runs protect-repo
   automatically
 - [JsonConfigFile](architecture.md#jsonconfigfile) - Base class for JSON
   configuration files

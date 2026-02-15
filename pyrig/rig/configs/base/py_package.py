@@ -8,12 +8,12 @@ Example:
     >>> from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
     >>>
     >>> class MyPackageInit(PythonPackageConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path("src/mypackage/subpackage")
     ...
-    ...     @classmethod
-    ...     def lines(cls) -> list[str]:
+    ...
+    ...     def lines(self) -> list[str]:
     ...         return ['"""Subpackage docstring."""']
     >>>
     >>> MyPackageInit()  # Creates src/, src/mypackage/, src/mypackage/subpackage/
@@ -39,12 +39,11 @@ class PythonPackageConfigFile(PythonConfigFile):
         pyrig.rig.configs.base.init.InitConfigFile: For __init__.py files
     """
 
-    @classmethod
-    def _dump(cls, config: list[str]) -> None:
+    def _dump(self, config: list[str]) -> None:
         """Write the configuration file and create parent `__init__.py` files.
 
         Args:
             config: List of lines to write to the file.
         """
         super()._dump(config)
-        make_package_dir(cls.path().parent)
+        make_package_dir(self.path().parent)

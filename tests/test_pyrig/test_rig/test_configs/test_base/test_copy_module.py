@@ -41,13 +41,11 @@ def my_test_copy_module_config_file(
     class MyTestCopyModuleConfigFile(config_file_factory(CopyModuleConfigFile)):  # type: ignore [misc]
         """Test copy module config file with tmp_path override."""
 
-        @classmethod
-        def src_module(cls) -> ModuleType:
+        def src_module(self) -> ModuleType:
             """Get the source module."""
             return mock_module
 
-        @classmethod
-        def _dump(cls, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(self, config: dict[str, Any] | list[Any]) -> None:
             """Dump the config file."""
             with chdir(tmp_path):
                 super()._dump(config)
@@ -62,7 +60,7 @@ class TestCopyModuleConfigFile:
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method."""
-        src_module = my_test_copy_module_config_file.src_module()
+        src_module = my_test_copy_module_config_file().src_module()
         assert isinstance(src_module, ModuleType), "Expected ModuleType"
         expected_name = "test_package.test_subpackage.test_module"
         assert src_module.__name__ == expected_name, (
@@ -73,14 +71,14 @@ class TestCopyModuleConfigFile:
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method."""
-        parent_path = my_test_copy_module_config_file.parent_path()
+        parent_path = my_test_copy_module_config_file().parent_path()
         assert isinstance(parent_path, Path), "Expected Path"
 
     def test_lines(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method."""
-        lines = my_test_copy_module_config_file.lines()
+        lines = my_test_copy_module_config_file().lines()
         content_str = "\n".join(lines)
         assert len(content_str) > 0, "Expected non-empty string"
         # Verify it contains the module content
@@ -90,5 +88,5 @@ class TestCopyModuleConfigFile:
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method."""
-        filename = my_test_copy_module_config_file.filename()
+        filename = my_test_copy_module_config_file().filename()
         assert filename == "test_module", f"Expected 'test_module', got {filename}"

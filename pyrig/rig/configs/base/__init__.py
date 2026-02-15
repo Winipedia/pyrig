@@ -19,7 +19,6 @@ Architecture:
        - ``StringConfigFile``: Plain text with required content
        - ``PythonConfigFile``: Python source (.py)
        - ``MarkdownConfigFile``: Markdown (.md)
-       - ``TxtConfigFile``: Text files (.txt)
        - ``TypedConfigFile``: PEP 561 marker (py.typed)
 
     4. **Specialized**:
@@ -29,7 +28,7 @@ Architecture:
        - ``CopyModuleOnlyDocstringConfigFile``: Copy only docstrings
        - ``InitConfigFile``: __init__.py with copied docstrings
        - ``BadgesMarkdownConfigFile``: Markdown with project badges
-       - ``Workflow``: GitHub Actions workflow files
+       - ``WorkflowConfigFile``: GitHub Actions workflow files
 
 Format Features:
     - **TOML**: tomlkit for format-preserving parsing, multiline arrays, inline tables
@@ -46,7 +45,7 @@ Specialized Classes:
     - **CopyModuleOnlyDocstringConfigFile**: Extracts docstrings, creates stubs
     - **InitConfigFile**: Creates __init__.py with copied docstrings
     - **BadgesMarkdownConfigFile**: Generates Markdown with badges from pyproject.toml
-    - **WorkflowConfigFile**: Base class for GitHub Actions workflow configs
+    - **WorkflowConfigFileConfigFile**: Base class for GitHub Actions workflow configs
 
 Example:
     Using format-specific base classes::
@@ -58,12 +57,12 @@ Example:
         class MyConfigFile(TomlConfigFile):
             '''Manages myconfig.toml.'''
 
-            @classmethod
-            def parent_path(cls) -> Path:
+
+            def parent_path(self) -> Path:
                 return Path()
 
-            @classmethod
-            def _configs(cls) -> dict[str, Any]:
+
+            def _configs(self) -> dict[str, Any]:
                 return {"setting": "value"}
 
     Using specialized base classes::
@@ -75,8 +74,8 @@ Example:
         class StringModuleCopy(CopyModuleConfigFile):
             '''Copy pyrig.src.string_ to the target project.'''
 
-            @classmethod
-            def src_module(cls) -> ModuleType:
+
+            def src_module(self) -> ModuleType:
                 return pyrig.src.string_
 
 See Also:

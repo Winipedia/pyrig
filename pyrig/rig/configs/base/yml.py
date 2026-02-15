@@ -9,12 +9,12 @@ Example:
     >>> from pyrig.rig.configs.base.yml import YmlConfigFile
     >>>
     >>> class MkDocsConfigFile(YmlConfigFile):
-    ...     @classmethod
-    ...     def parent_path(cls) -> Path:
+    ...
+    ...     def parent_path(self) -> Path:
     ...         return Path()
     ...
-    ...     @classmethod
-    ...     def _configs(cls) -> dict[str, Any]:
+    ...
+    ...     def _configs(self) -> dict[str, Any]:
     ...         return {"site_name": "My Project", "theme": {"name": "material"}}
 """
 
@@ -34,7 +34,6 @@ class YmlConfigFile(YamlConfigFile):
         pyrig.rig.configs.base.yaml.YamlConfigFile: Parent class
     """
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         """Return "yml"."""
         return "yml"

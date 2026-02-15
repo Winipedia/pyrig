@@ -13,13 +13,13 @@ class TestBadgesMarkdownConfigFile:
         expected_description = PyprojectConfigFile.I.project_description()
         old_description = "Old stale project description"
         content = f"# Project\n\n---\n\n> {old_description}\n\n---\n"
-        result = BadgesMarkdownConfigFile.replace_description(content)
+        result = ReadmeConfigFile().replace_description(content)
         assert f"> {expected_description}" in result
         assert old_description not in result
 
     def test_lines(self) -> None:
         """Test method."""
-        lines = BadgesMarkdownConfigFile.lines()
+        lines = ReadmeConfigFile().lines()
         content_str = "\n".join(lines)
         assert isinstance(content_str, str)
 
@@ -27,9 +27,12 @@ class TestBadgesMarkdownConfigFile:
         """Test method."""
         badges_md_config_cls = ReadmeConfigFile
         assert issubclass(badges_md_config_cls, BadgesMarkdownConfigFile)
-        assert badges_md_config_cls.is_correct()
+        assert badges_md_config_cls.I.is_correct()
 
     def test_badges(self) -> None:
         """Test method."""
-        badges = BadgesMarkdownConfigFile.badges()
+        assert issubclass(ReadmeConfigFile, BadgesMarkdownConfigFile), (
+            "ReadmeConfigFile should inherit from BadgesMarkdownConfigFile"
+        )
+        badges = ReadmeConfigFile().badges()
         assert isinstance(badges, dict)

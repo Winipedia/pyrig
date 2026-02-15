@@ -9,5 +9,5 @@ class TestSrcInitConfigFile:
 
     def test_src_module(self) -> None:
         """Test method."""
-        module = SrcInitConfigFile.src_module()
+        module = SrcInitConfigFile.I.src_module()
         assert module == src

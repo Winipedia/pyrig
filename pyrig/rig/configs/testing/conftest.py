@@ -22,7 +22,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
     Examples:
         Generate tests/conftest.py::
 
-            ConftestConfigFile.validate()
+            ConftestConfigFile.I.validate()
 
         Generated file::
 
@@ -38,8 +38,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
         pyrig.rig.configs.base.py_tests.PythonTestsConfigFile
     '''
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         """Get the conftest.py file content.
 
         Returns:
@@ -56,8 +55,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
             "",
         ]
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Check if the conftest.py file is valid.
 
         Returns:
@@ -68,5 +66,5 @@ class ConftestConfigFile(PythonTestsConfigFile):
         """
         return super().is_correct() or (
             f'pytest_plugins = ["{make_obj_importpath(conftest)}"]'
-            in cls.file_content()
+            in self.file_content()
         )
