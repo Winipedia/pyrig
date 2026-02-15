@@ -18,14 +18,12 @@ Example:
     ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
 """
 
-from typing import Any
-
 import yaml
 
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.base import ConfigFile, ConfigT
 
 
-class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
+class YamlConfigFile(ConfigFile[ConfigT]):
     """Base class for YAML configuration files.
 
     Uses PyYAML's safe methods to prevent code execution. Preserves key order
@@ -46,15 +44,15 @@ class YamlConfigFile(ConfigFile[dict[str, Any] | list[Any]]):
         ...         return {"setting": "value"}
     """
 
-    def _load(self) -> dict[str, Any] | list[Any]:
+    def _load(self) -> ConfigT:
         """Load and parse the YAML file using safe_load.
 
         Returns:
             Parsed YAML content as dict or list. Empty dict if file is empty.
         """
-        return yaml.safe_load(self.path().read_text(encoding="utf-8")) or {}
+        return yaml.safe_load(self.path().read_text(encoding="utf-8"))
 
-    def _dump(self, config: dict[str, Any] | list[Any]) -> None:
+    def _dump(self, config: ConfigT) -> None:
         """Write configuration to YAML file using safe_dump.
 
         Args:

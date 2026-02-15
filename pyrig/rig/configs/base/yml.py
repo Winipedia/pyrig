@@ -18,10 +18,11 @@ Example:
     ...         return {"site_name": "My Project", "theme": {"name": "material"}}
 """
 
+from pyrig.rig.configs.base.base import ConfigDict, ConfigT
 from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 
-class YmlConfigFile(YamlConfigFile):
+class YmlConfigFile(YamlConfigFile[ConfigT]):
     """Base class for .yml files.
 
     Extends YamlConfigFile with "yml" extension. All functionality inherited.
@@ -37,3 +38,17 @@ class YmlConfigFile(YamlConfigFile):
     def extension(self) -> str:
         """Return "yml"."""
         return "yml"
+
+
+class DictYmlConfigFile(YmlConfigFile[ConfigDict]):
+    """Base class for .yml files with dict structure.
+
+    Extends YmlConfigFile with dict-specific type hints. All functionality inherited.
+
+    Subclasses must implement:
+        - `parent_path`: Directory containing the .yml file
+        - `_configs`: Expected YAML configuration structure as a dict
+
+    See Also:
+        pyrig.rig.configs.base.yaml.YamlConfigFile: Parent class
+    """

@@ -9,10 +9,10 @@ See Also:
 from pathlib import Path
 from typing import Any
 
-from pyrig.rig.configs.base.yml import YmlConfigFile
+from pyrig.rig.configs.base.yml import DictYmlConfigFile
 
 
-class BugReportConfigFile(YmlConfigFile):
+class BugReportConfigFile(DictYmlConfigFile):
     """Manage .github/ISSUE_TEMPLATE/bug_report.yml.
 
     Bug report template with fields for:

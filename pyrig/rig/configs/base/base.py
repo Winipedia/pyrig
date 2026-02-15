@@ -72,7 +72,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Self
+from typing import Any, Self, TypeVar
 
 from pyrig.rig import configs
 from pyrig.src.iterate import nested_structure_is_subset
@@ -80,6 +80,12 @@ from pyrig.src.string_ import split_on_uppercase
 from pyrig.src.subclass import SingletonDependencySubclass
 
 logger = logging.getLogger(__name__)
+
+type ConfigDict = dict[str, Any]
+type ConfigList = list[Any]
+type ConfigData = ConfigDict | ConfigList
+
+ConfigT = TypeVar("ConfigT", bound=ConfigData)
 
 
 class Priority:
@@ -91,7 +97,7 @@ class Priority:
     HIGH = MEDIUM + 10
 
 
-class ConfigFile[ConfigT: dict[str, Any] | list[Any]](SingletonDependencySubclass):
+class ConfigFile[ConfigT: ConfigData](SingletonDependencySubclass):
     """Abstract base class for declarative configuration file management.
 
     Declarative, idempotent system for managing config files. Preserves user

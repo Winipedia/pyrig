@@ -11,10 +11,10 @@ See Also:
 from pathlib import Path
 from typing import Any
 
-from pyrig.rig.configs.base.yml import YmlConfigFile
+from pyrig.rig.configs.base.yml import DictYmlConfigFile
 
 
-class ConfigConfigFile(YmlConfigFile):
+class ConfigConfigFile(DictYmlConfigFile):
     """Manage .github/ISSUE_TEMPLATE/config.yml.
 
     Control the issue template chooser:

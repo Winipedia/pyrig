@@ -12,7 +12,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from pyrig.rig.configs.base.json import JsonConfigFile
+from pyrig.rig.configs.base.json import DictJsonConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
 from pyrig.rig.tools.version_controller import VersionController
@@ -22,7 +22,7 @@ from pyrig.rig.utils.version_control import github_repo_token
 logger = logging.getLogger(__name__)
 
 
-class RepoProtectionConfigFile(JsonConfigFile):
+class RepoProtectionConfigFile(DictJsonConfigFile):
     """Manages branch-protection.json for GitHub rulesets.
 
     Creates JSON config with PR requirements (1 approval, code owner review),

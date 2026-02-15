@@ -6,14 +6,13 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.rig.configs.base.yaml import YamlConfigFile
 from pyrig.rig.configs.git.pre_commit import PrekConfigFile
 from pyrig.src.processes import Args
 
 
 @pytest.fixture
 def my_test_prek_config_file(
-    config_file_factory: Callable[[type[YamlConfigFile]], type[YamlConfigFile]],
+    config_file_factory: Callable[[type[PrekConfigFile]], type[PrekConfigFile]],
 ) -> type[PrekConfigFile]:
     """Create a test prek config file class with tmp_path."""
 

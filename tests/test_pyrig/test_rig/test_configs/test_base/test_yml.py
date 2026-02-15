@@ -12,3 +12,7 @@ class TestYmlConfigFile:
         assert issubclass(MkdocsConfigFile, YmlConfigFile)
         extension = MkdocsConfigFile.I.extension()
         assert extension == "yml"
+
+
+class TestDictYmlConfigFile:
+    """Test class."""

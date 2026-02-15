@@ -36,7 +36,7 @@ from typing import Any
 
 from pyrig.rig.builders.base.base import BuilderConfigFile
 from pyrig.rig.cli.subcommands import build, protect_repo
-from pyrig.rig.configs.base.yml import YmlConfigFile
+from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.container_engine import (
     ContainerEngine,
@@ -55,7 +55,7 @@ from pyrig.src.string_ import (
 )
 
 
-class WorkflowConfigFile(YmlConfigFile):
+class WorkflowConfigFile(DictYmlConfigFile):
     """Abstract base class for GitHub Actions workflow configuration.
 
     Provides a declarative API for building GitHub Actions workflow YAML files
@@ -103,7 +103,7 @@ class WorkflowConfigFile(YmlConfigFile):
     See Also:
         pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile
             Example concrete workflow implementation
-        pyrig.rig.configs.base.yml.YmlConfigFile
+        pyrig.rig.configs.base.yml.DictYmlConfigFile
             Parent class for .yml configuration files
     """
 
