@@ -142,7 +142,7 @@ Test file for the CLI entry point (main.py).
 
 Placeholder test file that ensures pytest runs when no other tests exist.
 
-### [WorkflowConfigFiles](workflows/index.md)
+### [Workflows](workflows/index.md)
 
 GitHub Actions workflow configuration files for CI/CD automation.
 

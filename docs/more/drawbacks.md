@@ -177,9 +177,9 @@ predictability.
   versions (3.12+)
 - **Automated releases** - Version bumping, changelog, GitHub releases
 - **GitHub Pages** - Documentation auto-deployed
-- **Zero CI/CD config** - WorkflowConfigFiles generated and maintained automatically
+- **Zero CI/CD config** - Workflows generated and maintained automatically
 
-**Reality Check**: GitHub is the industry standard for open source. WorkflowConfigFiles
+**Reality Check**: GitHub is the industry standard for open source. Workflows
 can be adapted for other platforms if needed.
 
 **Bottom Line**: Sacrifice platform flexibility for complete, automated GitHub
@@ -310,7 +310,7 @@ automation features.
 - Remove `pyrig` commands from GitHub Actions workflows
 - Remove `pyrig protect-repo` from health check
 - Remove `pyrig build` from build workflow
-- WorkflowConfigFiles still run, just without pyrig automation
+- Workflows still run, just without pyrig automation
 
 **Manual Config Management**:
 
@@ -361,7 +361,7 @@ still be left with a nice initial project structure and tooling.
 - Tool configurations (you maintain them)
 - CLI framework (command discovery still works)
 - Prek hooks (if you keep them)
-- WorkflowConfigFiles (if you keep them)
+- Workflows (if you keep them)
 
 ### When to Use Partial Opt-Out
 

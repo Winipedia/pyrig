@@ -1,4 +1,4 @@
-# GitHub Actions WorkflowConfigFiles
+# GitHub Actions Workflows
 
 GitHub Actions workflow configuration files for CI/CD automation.
 
@@ -24,7 +24,7 @@ See [WorkflowConfigFile Architecture](architecture.md) for details on:
 - Opt-out mechanism
 - Complete CI/CD pipeline
 
-## WorkflowConfigFile Files
+## Workflow Files
 
 ### [health_check.yml](health_check.md)
 
@@ -72,7 +72,7 @@ Add these to your GitHub repository secrets:
   private repos)
   - See the [Getting Started - Codecov setup](../../more/getting-started.md#accounts--tokens) for details
 
-### WorkflowConfigFile Pipeline
+### Workflow Pipeline
 
 ```text
 1. Health Check (on PR/push/schedule)
@@ -89,7 +89,7 @@ releases. Only push/dispatch events trigger the full pipeline.
 
 ## Customization
 
-### Opting Out of WorkflowConfigFiles
+### Opting Out of Workflows
 
 To disable a workflow without deleting it:
 
@@ -99,7 +99,7 @@ To disable a workflow without deleting it:
 
 The workflow will exist but never execute.
 
-### Modifying WorkflowConfigFiles
+### Modifying Workflows
 
 1. Edit the workflow class in `myapp/rig/configs/workflows/`
 2. Override methods like `jobs()`, `workflow_triggers()`, etc.
@@ -110,5 +110,5 @@ The workflow will exist but never execute.
 1. **Don't edit YAML directly**: Always modify Python subclasses of `WorkflowConfigFile`
 2. **Test locally first**: Run `uv run pyrig mkroot` before committing
 3. **Use matrix strategies**: Test across OS and Python versions
-4. **Configure secrets properly**: WorkflowConfigFiles fail without required tokens
+4. **Configure secrets properly**: Workflows fail without required tokens
 5. **Monitor workflow runs**: Check GitHub Actions tab for failures

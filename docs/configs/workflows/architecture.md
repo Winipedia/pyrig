@@ -105,13 +105,13 @@ class MyWorkflowConfigFile(WorkflowConfigFile):
 
 ### Opt-Out Mechanism
 
-WorkflowConfigFiles can be opted out by replacing all steps with
+Workflows can be opted out by replacing all steps with
 `step_opt_out_of_workflow()`. This creates a valid workflow that never runs,
 allowing users to disable workflows without deleting files. Or if you empty the
 file it will be regenerated on next `uv run pyrig mkroot` with the opt-out steps
 for you. So just empty the file and run `uv run pyrig mkroot` to opt out.
 
-## Concrete WorkflowConfigFiles
+## Concrete Workflows
 
 Pyrig provides four workflows that form a complete CI/CD pipeline:
 
@@ -227,7 +227,7 @@ graph LR
 
 **Purpose**: Distributes package and documentation.
 
-## Creating Custom WorkflowConfigFiles
+## Creating Custom Workflows
 
 To create your own workflow, subclass `WorkflowConfigFile` and implement `jobs()`:
 
