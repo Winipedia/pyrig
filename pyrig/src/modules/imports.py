@@ -81,9 +81,10 @@ def import_package_with_dir_fallback(path: Path) -> ModuleType:
     """Import a package, falling back to direct directory import if needed.
 
     Primary package import function with two-stage strategy:
-        1. Attempts standard import via
-            ``import_module_with_default`` (uses ``sys.modules``)
-        2. Falls back to direct file import via ``import_package_from_dir``
+
+    1. Attempts standard import via ``import_module_with_default`` (uses
+       ``sys.modules``)
+    2. Falls back to direct file import via ``import_package_from_dir``
 
     The fallback handles packages not yet in ``sys.modules``, such as dynamically
     created packages or packages in non-standard locations.

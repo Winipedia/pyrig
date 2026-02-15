@@ -37,6 +37,7 @@ def is_func(obj: Any) -> bool:
     """Check if an object is any kind of callable method-like attribute.
 
     Detects plain functions, staticmethod, classmethod, property, and decorators.
+    Unwraps decorated objects to check underlying callable.
 
     Args:
         obj: Object to check.
@@ -65,6 +66,9 @@ def all_functions_from_module(
 
     Returns:
         List of functions sorted by definition order.
+
+    Raises:
+        ModuleNotFoundError: If module string cannot be imported.
     """
     if isinstance(module, str):
         module = import_module(module)
