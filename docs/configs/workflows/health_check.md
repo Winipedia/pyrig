@@ -37,7 +37,7 @@ midnight, your package runs at 1 AM. This prevents failures when dependencies
 release right before your scheduled run and keeps all packages up to date at the
 same time if you have lots of packages depending in a line.
 
-### WorkflowConfigFile Dispatch
+### Workflow Dispatch
 
 - **Purpose**: Manual trigger for testing
 

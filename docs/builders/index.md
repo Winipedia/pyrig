@@ -86,8 +86,7 @@ from pathlib import Path
 from pyrig.rig.builders.base.base import BuilderConfigFile
 
 class MyBuilder(BuilderConfigFile):
-    @classmethod
-    def create_artifacts(cls, temp_artifacts_dir: Path) -> None:
+    def create_artifacts(self, temp_artifacts_dir: Path) -> None:
         """Create your artifacts."""
         output_file = temp_artifacts_dir / "my-artifact.zip"
         # Create your artifact

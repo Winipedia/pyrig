@@ -73,11 +73,11 @@ Every ConfigFile subclass must implement:
 
 | Method                 | Purpose                                    | Returns            |
 | ---------------------- | ------------------------------------------ | ------------------ |
-| `parent_path()`    | Directory containing the file              | `Path`             |
-| `extension()` | File extension without dot                 | `str`              |
-| `_configs()`       | Expected configuration structure           | `ConfigT`          |
-| `_load()`              | Parse file content (internal)              | `ConfigT`          |
-| `_dump(config)`        | Write configuration to file (internal)     | `None`             |
+| `parent_path(self)`    | Directory containing the file              | `Path`             |
+| `extension(self)` | File extension without dot                 | `str`              |
+| `_configs(self)`       | Expected configuration structure           | `ConfigT`          |
+| `_load(self)`              | Parse file content (internal)              | `ConfigT`          |
+| `_dump(self, config)`        | Write configuration to file (internal)     | `None`             |
 
 **Note**: `ConfigT` is the type parameter - `dict[str, Any]` for
 `DictConfigFile`, `list[Any]` for `ListConfigFile`, or
@@ -244,8 +244,7 @@ Each ConfigFile subclass can override `priority()` to specify Validation
 order:
 
 ```python
-@classmethod
-def priority(cls) -> float:
+def priority(self) -> float:
     """Return priority for this config file.
 
     Higher numbers are processed first. 
@@ -332,26 +331,21 @@ from typing import Any
 from pyrig.rig.configs.base.dict_cf import DictConfigFile
 
 class MyConfigFile(DictConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         return Path("config")
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         return "conf"
 
-    @classmethod
-    def _load(cls) -> dict[str, Any]:
+    def _load(self) -> dict[str, Any]:
         # Custom loading logic
         return {}
 
-    @classmethod
-    def _dump(cls, config: dict[str, Any]) -> None:
+    def _dump(self, config: dict[str, Any]) -> None:
         # Custom dumping logic
         pass
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -370,26 +364,21 @@ from typing import Any
 from pyrig.rig.configs.base.list_cf import ListConfigFile
 
 class MyListConfigFile(ListConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         return Path(".")
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         return "list"
 
-    @classmethod
-    def _load(cls) -> list[Any]:
+    def _load(self) -> list[Any]:
         # Custom loading logic
         return []
 
-    @classmethod
-    def _dump(cls, config: list[Any]) -> None:
+    def _dump(self, config: list[Any]) -> None:
         # Custom dumping logic
         pass
 
-    @classmethod
-    def _configs(cls) -> list[Any]:
+    def _configs(self) -> list[Any]:
         return ["item1", "item2"]
 ```
 
@@ -408,12 +397,10 @@ from typing import Any
 from pyrig.rig.configs.base.json import JsonConfigFile
 
 class MyConfigFile(JsonConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         return Path("config")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -429,12 +416,10 @@ from typing import Any
 from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 class MyConfigFile(YamlConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         return Path("config")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         return {"key": "value"}
 ```
 
@@ -450,12 +435,10 @@ from typing import Any
 from pyrig.rig.configs.base.toml import TomlConfigFile
 
 class MyConfigFile(TomlConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         return Path(".")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         return {"tool": {"myapp": {"setting": "value"}}}
 ```
 
@@ -475,16 +458,13 @@ from pathlib import Path
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
 class MyConfigFile(StringConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         return Path(".")
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         return ["# Required header"]
 
-    @classmethod
-    def extension(cls) -> str:
+    def extension(self) -> str:
         return "someext"
 ```
 
@@ -501,12 +481,10 @@ from pathlib import Path
 from pyrig.rig.configs.base.python import PythonConfigFile
 
 class MyConfigFile(PythonConfigFile):
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         return Path("myapp/src")
 
-    @classmethod
-    def lines(cls) -> list[str]:
+    def lines(self) -> list[str]:
         return ['"""Module docstring."""', '', 'def main():', '    pass']
 ```
 
@@ -521,22 +499,20 @@ from typing import Any
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 
 class MyWorkflowConfigFile(WorkflowConfigFile):
-    @classmethod
-    def workflow_triggers(cls) -> dict[str, Any]:
+    def workflow_triggers(self) -> dict[str, Any]:
         """Define when the workflow runs."""
         triggers = super().workflow_triggers()
-        triggers.update(cls.on_push())  # Trigger on push
+        triggers.update(self.on_push())  # Trigger on push
         return triggers
 
-    @classmethod
-    def jobs(cls) -> dict[str, Any]:
+    def jobs(self) -> dict[str, Any]:
         """Define the workflow jobs."""
         return {
             "my-job": {
-                "runs-on": cls.UBUNTU_LATEST,
+                "runs-on": self.UBUNTU_LATEST,
                 "steps": [
-                    cls.step_checkout_repository(),
-                    cls.step_setup_python(),
+                    self.step_checkout_repository(),
+                    self.step_setup_python(),
                     {"name": "Run tests", "run": "pytest"}
                 ]
             }
@@ -559,8 +535,7 @@ from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 from pyrig import main
 
 class MainConfigFile(CopyModuleConfigFile):
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         return main
 ```
 
@@ -578,8 +553,7 @@ from pyrig.rig.configs.base.copy_module_docstr import (
 from pyrig.rig.cli import shared_subcommands
 
 class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         return shared_subcommands
 ```
 
@@ -595,8 +569,7 @@ from pyrig.rig.configs.base.init import InitConfigFile
 from pyrig.rig import configs
 
 class ConfigsInitConfigFile(InitConfigFile):
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         return configs
 ```
 
@@ -613,8 +586,7 @@ from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 import myapp.core
 
 class CoreMirrorTest(MirrorTestConfigFile):
-    @classmethod
-    def src_module(cls) -> ModuleType:
+    def src_module(self) -> ModuleType:
         return myapp.core
 ```
 
@@ -634,8 +606,7 @@ used. For example, to change the skeleton for test functions:
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile as BaseMirrorTest
 
 class MirrorTestConfigFile(BaseMirrorTest):
-    @classmethod
-    def test_func_skeleton(cls, test_func_name: str) -> str:
+    def test_func_skeleton(self, test_func_name: str) -> str:
         return f'''
 def {test_func_name}() -> None:
     """Test function for {test_func_name.removeprefix("test_")}."""
@@ -663,8 +634,7 @@ The system:
 Override `filename()` for custom names:
 
 ```python
-@classmethod
-def filename(cls) -> str:
+def filename(self) -> str:
     return ""  # Creates ".env" instead of "dot_env.env"
 ```
 
@@ -683,10 +653,9 @@ Override `is_correct()` for custom validation logic, pyrig does this in many of
 its own config files:
 
 ```python
-@classmethod
-def is_correct(cls) -> bool:
+def is_correct(self) -> bool:
     """Check if config contains required structure."""
-    content = cls.file_content()
+    content = self.file_content()
     return super().is_correct() or (
         "required_string" in content
         and "another_required_string" in content
@@ -714,13 +683,11 @@ from pyrig.rig.configs.base.yaml import YamlConfigFile
 class DatabaseConfigFile(YamlConfigFile):
     """Configuration for database connection settings."""
 
-    @classmethod
-    def parent_path(cls) -> Path:
+    def parent_path(self) -> Path:
         """Place in config/ directory."""
         return Path("config")
 
-    @classmethod
-    def _configs(cls) -> dict[str, Any]:
+    def _configs(self) -> dict[str, Any]:
         """Required database configuration."""
         return {
             "database": {
@@ -730,10 +697,9 @@ class DatabaseConfigFile(YamlConfigFile):
             }
         }
 
-    @classmethod
-    def is_correct(cls) -> bool:
+    def is_correct(self) -> bool:
         """Ensure required keys exist."""
-        config = cls.load()
+        config = self.load()
         required_keys = {"host", "port", "name"}
         actual_keys = set(config.get("database", {}).keys())
         return super().is_correct() or required_keys.issubset(actual_keys)
