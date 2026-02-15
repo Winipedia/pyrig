@@ -24,10 +24,11 @@ def resource_path(name: str, package: ModuleType) -> Path:
             `__init__.py` module and pass it directly.
 
     Returns:
-        Absolute path to the resource file.
+        Path: Absolute filesystem path to the resource file.
 
     Raises:
-        TypeError: If package is not a valid module object.
+        AttributeError: If package is not a valid module object.
+        ModuleNotFoundError: If package string name cannot be found.
 
     Example:
         >>> from pyrig import resources
@@ -50,6 +51,6 @@ def resource_path(name: str, package: ModuleType) -> Path:
         For file-based packages, the path remains valid. For zip-imported packages,
         this is acceptable for pyrig's use cases where packages are always file-based.
     """
-    resource_path = files(package) / name
-    with as_file(resource_path) as path:
+    resource_file = files(package) / name
+    with as_file(resource_file) as path:
         return path

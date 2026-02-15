@@ -114,6 +114,15 @@ def run_subprocess_cached(
     Args:
         args: Command and arguments as tuple (e.g., ("git", "status")).
         **kwargs: Additional arguments passed to `run_subprocess()`.
+
+    Returns:
+        `CompletedProcess` with args, returncode, stdout, stderr.
+
+    Raises:
+        ValueError: If `shell=True` is passed via kwargs.
+        subprocess.CalledProcessError:
+            If process returns non-zero exit and `check=True`.
+        subprocess.TimeoutExpired: If process exceeds timeout.
     """
     return run_subprocess(args, **kwargs)
 
