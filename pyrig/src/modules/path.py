@@ -122,6 +122,10 @@ class ModulePath:
 
         Returns:
             Absolute path to the package's directory (parent of ``__init__.py``).
+
+        Raises:
+            ValueError: If the package has no ``__file__`` attribute (e.g.,
+                built-in modules or namespace packages).
         """
         return ModulePath.module_type_to_file_path(package).parent
 
@@ -137,6 +141,10 @@ class ModulePath:
 
         Returns:
             Absolute path to the package's ``__init__.py`` file.
+
+        Raises:
+            ValueError: If the package has no ``__file__`` attribute (e.g.,
+                built-in modules or namespace packages).
         """
         return ModulePath.module_type_to_file_path(package)
 
