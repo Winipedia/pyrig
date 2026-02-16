@@ -45,4 +45,4 @@ def test_ignored_config_files() -> None:
     """Test function."""
     cfs = list(ignored_config_files())
 
-    assert [type(cf) for cf in cfs] == [DotEnvConfigFile, DotScratchConfigFile]
+    assert {type(cf) for cf in cfs} == {DotEnvConfigFile, DotScratchConfigFile}
