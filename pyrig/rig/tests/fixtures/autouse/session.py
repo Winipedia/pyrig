@@ -27,7 +27,6 @@ from collections.abc import Generator
 from contextlib import chdir
 from importlib import import_module
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
 
@@ -51,7 +50,7 @@ from pyrig.src.git import (
     running_in_github_actions,
 )
 from pyrig.src.modules.imports import (
-    modules_and_packages_from_package,
+    iter_modules,
     walk_package,
 )
 from pyrig.src.modules.module import (
@@ -66,9 +65,6 @@ from pyrig.src.modules.package import (
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.requests import internet_is_available
 from pyrig.src.string_ import make_summary_error_msg, re_search_excluding_docstrings
-
-if TYPE_CHECKING:
-    from types import ModuleType
 
 logger = logging.getLogger(__name__)
 
@@ -122,7 +118,7 @@ def assert_root_is_correct() -> None:
 
     if incorrect_cfs:
         # init all per test run
-        ConfigFile.validate_subclasses(*incorrect_cfs)
+        ConfigFile.validate_subclasses(incorrect_cfs)
 
     msg = f"""Found {len(incorrect_cfs)} incorrect ConfigFiles.
     Attempted correcting them automatically.
@@ -187,10 +183,13 @@ def assert_all_src_code_in_one_package() -> None:
 """
 
     # assert the src package's only submodules are main, src and rig
-    subpackages, submodules = modules_and_packages_from_package(src_package)
-    subpackage_names = {p.__name__.split(".")[-1] for p in subpackages}
-    submodule_names = {m.__name__.split(".")[-1] for m in submodules}
-
+    submodules = tuple(iter_modules(src_package))
+    subpackage_names = {
+        mod.__name__.split(".")[-1] for mod, is_pkg in submodules if is_pkg
+    }
+    submodule_names = {
+        mod.__name__.split(".")[-1] for mod, is_pkg in submodules if not is_pkg
+    }
     expected_subpackages = {
         isolated_obj_name(sub_package)
         for sub_package in [
@@ -264,9 +263,7 @@ def assert_all_modules_tested() -> None:
 
     # we will now go through all the modules in the src package and check
     # that there is a corresponding test module
-    all_modules: list[ModuleType] = []
-    for _, modules in walk_package(src_package):
-        all_modules.extend(modules)
+    all_modules = (m for m, is_pkg in walk_package(src_package) if not is_pkg)
 
     subclasses: list[type[MirrorTestConfigFile]] = (
         MirrorTestConfigFile.I.make_subclasses_for_modules(all_modules)
@@ -276,7 +273,7 @@ def assert_all_modules_tested() -> None:
     ]
 
     if incorrect_subclasses:
-        MirrorTestConfigFile.I.validate_subclasses(*incorrect_subclasses)
+        MirrorTestConfigFile.I.validate_subclasses(incorrect_subclasses)
 
     msg = f"""Found incorrect test modules.
     Test skeletons were automatically created for:

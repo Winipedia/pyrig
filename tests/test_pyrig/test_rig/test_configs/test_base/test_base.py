@@ -149,9 +149,11 @@ class TestConfigFile:
     ) -> None:
         """Test method."""
         mock = mocker.patch.object(
-            ConfigFile, ConfigFile.validate.__name__, return_value=None
+            my_test_config_file,
+            my_test_config_file.validate.__name__,
+            return_value=None,
         )
-        ConfigFile.validate_subclasses(my_test_config_file)
+        my_test_config_file.validate_subclasses([my_test_config_file])
         mock.assert_called_once()
 
     def test_validate_all_subclasses(self, mocker: MockFixture) -> None:
