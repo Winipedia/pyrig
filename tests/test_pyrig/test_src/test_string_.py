@@ -18,33 +18,33 @@ from pyrig.src.string_ import (
 def test_split_on_uppercase() -> None:
     """Test function."""
     # Test with simple string
-    result = split_on_uppercase("HelloWorld")
+    result = list(split_on_uppercase("HelloWorld"))
     assert result == ["Hello", "World"], f"Expected ['Hello', 'World'], got {result}"
 
     # Test with multiple uppercase letters
-    result = split_on_uppercase("SplitCamelCase")
+    result = list(split_on_uppercase("SplitCamelCase"))
     assert result == ["Split", "Camel", "Case"], (
         f"Expected ['Split', 'Camel', 'Case'], got {result}"
     )
 
     # Test with all uppercase
-    result = split_on_uppercase("ALLUPPERCASE")
+    result = list(split_on_uppercase("ALLUPPERCASE"))
     assert result == list("ALLUPPERCASE"), (
         f"Expected {list('ALLUPPERCASE')}, got {result}"
     )
 
     # Test with all lowercase
-    result = split_on_uppercase("alllowercase")
+    result = list(split_on_uppercase("alllowercase"))
     assert result == ["alllowercase"], f"Expected ['alllowercase'], got {result}"
 
     # test with numbers
-    result = split_on_uppercase("split1Camel2Case")
+    result = list(split_on_uppercase("split1Camel2Case"))
     assert result == ["split1", "Camel2", "Case"], (
         f"Expected ['split1', 'Camel2', 'Case'], got {result}"
     )
 
     # entire sentence
-    result = split_on_uppercase("Split some Camel Case")
+    result = list(split_on_uppercase("Split some Camel Case"))
     expected = ["Split some ", "Camel ", "Case"]
     assert result == expected, f"Expected {expected}, got {result}"
 
