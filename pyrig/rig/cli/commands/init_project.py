@@ -157,7 +157,6 @@ def setup_steps() -> list[Callable[..., Any]]:
     return [
         initializing_version_control,
         adding_dev_dependencies,
-        syncing_venv,
         creating_priority_config_files,
         syncing_venv,
         creating_project_root,
