@@ -26,6 +26,7 @@ Example:
 """
 
 from abc import abstractmethod
+from collections.abc import Iterable
 
 from pyrig.rig.configs.base.base import ConfigList
 from pyrig.rig.configs.base.list_cf import ListConfigFile
@@ -124,6 +125,6 @@ class StringConfigFile(ListConfigFile):
         r"""Return file content as a single string by joining lines from `load()`."""
         return self.make_string_from_lines(self.load())
 
-    def make_string_from_lines(self, lines: list[str]) -> str:
+    def make_string_from_lines(self, lines: Iterable[str]) -> str:
         """Join lines with newline."""
         return "\n".join(lines)
