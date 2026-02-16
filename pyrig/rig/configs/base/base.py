@@ -68,6 +68,7 @@ import inspect
 import logging
 from abc import abstractmethod
 from collections import defaultdict
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 from pathlib import Path
@@ -436,7 +437,7 @@ class ConfigFile[ConfigT: ConfigData](SingletonDependencySubclass):
     @classmethod
     def validate_subclasses(
         cls,
-        *subclasses: type[Self],
+        subclasses: Iterable[type[Self]],
     ) -> None:
         """Validate specific ConfigFile subclasses with priority-based ordering.
 
@@ -476,7 +477,7 @@ class ConfigFile[ConfigT: ConfigData](SingletonDependencySubclass):
             validate_priority_subclasses: validate only priority files
         """
         logger.info("Creating all config files")
-        cls.validate_subclasses(*cls.subclasses())
+        cls.validate_subclasses(cls.subclasses())
 
     @classmethod
     def validate_priority_subclasses(cls) -> None:
@@ -488,4 +489,4 @@ class ConfigFile[ConfigT: ConfigData](SingletonDependencySubclass):
             validate_all_subclasses: validate all files
         """
         logger.info("Creating priority config files")
-        cls.validate_subclasses(*cls.priority_subclasses())
+        cls.validate_subclasses(cls.priority_subclasses())

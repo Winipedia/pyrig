@@ -6,7 +6,6 @@ untested code.
 """
 
 import logging
-from concurrent.futures import ThreadPoolExecutor
 from importlib import import_module
 from types import ModuleType
 
@@ -42,17 +41,7 @@ def create_tests_for_package(package: ModuleType) -> None:
         package: The source package to create tests for.
     """
     logger.debug("Creating tests for package: %s", package.__name__)
-    all_modules: list[ModuleType] = []
-    packages_without_modules: list[ModuleType] = []
-    for pkg, modules in walk_package(package):
-        if not modules:
-            packages_without_modules.append(pkg)
-            continue
-        all_modules.extend(modules)
-
-    with ThreadPoolExecutor() as executor:
-        list(executor.map(create_test_package, packages_without_modules))
-
+    all_modules = (m for m, is_pkg in walk_package(package) if not is_pkg)
     # create test modules for all modules
     MirrorTestConfigFile.I.create_test_modules(all_modules)
 
