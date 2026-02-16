@@ -1,7 +1,7 @@
 """module."""
 
 import copy
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from pathlib import Path
 from typing import Any, ClassVar
 
@@ -72,7 +72,7 @@ class TestConfigFile:
             ConfigFile.validate.__name__,
             return_value=None,
         )
-        my_test_config_file().validate()
+        my_test_config_file.validate_config_file(my_test_config_file())
         mock_validate.assert_called_once()
 
     def test_sorting_key(
@@ -141,7 +141,7 @@ class TestConfigFile:
     def test_priority_subclasses(self) -> None:
         """Test method."""
         priority_subclasses = ConfigFile.priority_subclasses()
-        assert isinstance(priority_subclasses, list)
+        assert isinstance(priority_subclasses, Generator)
         assert all(issubclass(cf, ConfigFile) for cf in priority_subclasses)
 
     def test_validate_subclasses(
@@ -151,26 +151,26 @@ class TestConfigFile:
         mock = mocker.patch.object(
             ConfigFile, ConfigFile.validate.__name__, return_value=None
         )
-        ConfigFile.validate_subclasses(my_test_config_file)
+        ConfigFile.validate_subclasses([my_test_config_file])
         mock.assert_called_once()
 
     def test_validate_all_subclasses(self, mocker: MockFixture) -> None:
         """Test method."""
-        num_subclasses = ConfigFile.subclasses()
+        subclasses = tuple(ConfigFile.subclasses())
         mock = mocker.patch.object(
             ConfigFile, ConfigFile.validate.__name__, return_value=None
         )
         ConfigFile.validate_all_subclasses()
-        assert mock.call_count == len(num_subclasses)
+        assert mock.call_count == len(subclasses)
 
     def test_validate_priority_subclasses(self, mocker: MockFixture) -> None:
         """Test method."""
-        num_priority_subclasses = ConfigFile.priority_subclasses()
+        priority_subclasses = tuple(ConfigFile.priority_subclasses())
         mock = mocker.patch.object(
             ConfigFile, ConfigFile.validate.__name__, return_value=None
         )
         ConfigFile.validate_priority_subclasses()
-        assert mock.call_count == len(num_priority_subclasses)
+        assert mock.call_count == len(priority_subclasses)
 
     def test_extension_separator(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]

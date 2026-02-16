@@ -63,14 +63,14 @@ class VersionController(Tool):
             "https://git-scm.com",
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get development dependencies.
 
         Returns:
-            Empty list (git is a system dependency).
+            Empty tuple (git is a system dependency).
         """
         # git is a system dependency, so we don't have a dev dependency for it
-        return []
+        return ()
 
     def default_branch(self) -> str:
         """Get the default branch name.
@@ -492,13 +492,13 @@ class VersionController(Tool):
         """
         return Path(self.ignore_filename())
 
-    def loaded_ignore(self) -> list[str]:
+    def loaded_ignore(self) -> tuple[str, ...]:
         """Get the loaded gitignore patterns.
 
         Returns:
-            List of gitignore patterns.
+            Tuple of gitignore patterns.
         """
-        return self.ignore_path().read_text(encoding="utf-8").splitlines()
+        return tuple(self.ignore_path().read_text(encoding="utf-8").splitlines())
 
     def email(self) -> str:
         """Get the email from git config.

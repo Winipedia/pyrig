@@ -8,7 +8,7 @@ implementations, and CLI commands across the package dependency ecosystem.
 Key functions:
     walk_package: Recursive package traversal for discovery
     import_package_with_dir_fallback: Import with direct file fallback
-    modules_and_packages_from_package: Extract direct children from a package
+    iter_modules: Extract direct children from a package
 """
 
 import importlib.machinery
@@ -16,7 +16,6 @@ import importlib.util
 import logging
 import pkgutil
 from collections.abc import Generator
-from functools import cache
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -132,10 +131,39 @@ def import_package_with_dir_fallback_with_default(
         return default
 
 
-@cache
-def modules_and_packages_from_package(
+def walk_package(
     package: ModuleType,
-) -> tuple[list[ModuleType], list[ModuleType]]:
+) -> Generator[tuple[ModuleType, bool], None, None]:
+    """Recursively walk and import all modules in a package hierarchy.
+
+    Performs depth-first traversal, yielding each package with its direct
+    module children. Essential for pyrig's discovery system - ensures all
+    modules are imported so that subclass registration (via ``__subclasses__()``)
+    is complete before discovery queries.
+
+    See Also:
+        `pyrig.src.modules.class_.discover_all_subclasses`: Subclass discovery.
+        `pyrig.rig.cli.commands.create_tests.create_tests_for_package`: Test
+            generation.
+
+    Args:
+        package: Root package module to start traversal from.
+
+    Yields:
+        Tuples of (package, modules) where modules is the list of direct
+        module children (not subpackages) in that package.
+    """
+    yield package, True
+    for module, is_package in iter_modules(package):
+        if is_package:
+            yield from walk_package(module)
+        else:
+            yield module, False
+
+
+def iter_modules(
+    package: ModuleType,
+) -> Generator[tuple[ModuleType, bool], None, None]:
     """Extract and import all direct subpackages and modules from a package.
 
     Uses ``pkgutil.iter_modules`` to discover direct children of the package,
@@ -159,57 +187,14 @@ def modules_and_packages_from_package(
             - ``subpackages``: List of imported subpackage modules, sorted by name
             - ``modules``: List of imported module objects, sorted by name
     """
-    modules_and_packages = list(
-        pkgutil.iter_modules(package.__path__, prefix=package.__name__ + ".")
-    )
-    packages: list[ModuleType] = []
-    modules: list[ModuleType] = []
-    for _finder, name, is_package in modules_and_packages:
+    for _finder, name, is_package in pkgutil.iter_modules(
+        package.__path__, prefix=package.__name__ + "."
+    ):
         if is_package:
             path = ModulePath.package_name_to_relative_dir_path(name)
-            package = import_package_with_dir_fallback(path)
-            packages.append(package)
+            mod = import_package_with_dir_fallback(path)
         else:
             path = ModulePath.module_name_to_relative_file_path(name)
             mod = import_module_with_file_fallback(path)
-            modules.append(mod)
 
-    # make consistent order
-    packages.sort(key=lambda p: p.__name__)
-    modules.sort(key=lambda m: m.__name__)
-
-    logger.debug(
-        "Extracted from package %s: subpackages=%s, modules=%s",
-        package.__name__,
-        [p.__name__ for p in packages],
-        [m.__name__ for m in modules],
-    )
-    return packages, modules
-
-
-def walk_package(
-    package: ModuleType,
-) -> Generator[tuple[ModuleType, list[ModuleType]], None, None]:
-    """Recursively walk and import all modules in a package hierarchy.
-
-    Performs depth-first traversal, yielding each package with its direct
-    module children. Essential for pyrig's discovery system - ensures all
-    modules are imported so that subclass registration (via ``__subclasses__()``)
-    is complete before discovery queries.
-
-    See Also:
-        `pyrig.src.modules.class_.discover_all_subclasses`: Subclass discovery.
-        `pyrig.rig.cli.commands.create_tests.create_tests_for_package`: Test
-            generation.
-
-    Args:
-        package: Root package module to start traversal from.
-
-    Yields:
-        Tuples of (package, modules) where modules is the list of direct
-        module children (not subpackages) in that package.
-    """
-    subpackages, submodules = modules_and_packages_from_package(package)
-    yield package, submodules
-    for subpackage in subpackages:
-        yield from walk_package(subpackage)
+        yield mod, is_package

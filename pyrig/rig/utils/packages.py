@@ -27,7 +27,7 @@ See Also:
 """
 
 import logging
-from functools import cache
+from collections.abc import Generator, Iterable
 
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
@@ -36,20 +36,20 @@ import pyrig
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.version_control import path_is_in_ignore
+from pyrig.src.iterate import generator
 from pyrig.src.modules.path import ModulePath
 
 logger = logging.getLogger(__name__)
 
 
-@cache
 def find_packages(
     *,
     depth: int | None = None,
     include_namespace_packages: bool = False,
     where: str = ".",
-    exclude: tuple[str, ...] | None = None,
+    exclude: Iterable[str] | None = None,
     include: tuple[str, ...] = ("*",),
-) -> list[str]:
+) -> Generator[str, None, None]:
     """Discover Python packages in the specified directory.
 
     Wraps setuptools' package discovery with additional filtering. Automatically
@@ -70,8 +70,8 @@ def find_packages(
         include: Glob patterns for package names to include. Defaults to all ("*").
 
     Returns:
-        List of discovered package names as dot-separated strings. Returns empty
-        list if no packages found.
+        Generator of discovered package names as dot-separated strings. Returns empty
+        generator if no packages found.
 
     Examples:
         Find only top-level packages:
@@ -96,7 +96,7 @@ def find_packages(
             if gitignore_path.exists()
             else ()
         )
-        exclude = tuple(
+        exclude = (
             p.replace("/", ".").removesuffix(".") for p in exclude if p.endswith("/")
         )
     if include_namespace_packages:
@@ -106,13 +106,10 @@ def find_packages(
     else:
         package_names = _find_packages(where=where, exclude=exclude, include=include)
 
-    # Convert to list of strings explicitly
-    package_names_list: list[str] = list(map(str, package_names))
-
     if depth is not None:
-        package_names_list = [p for p in package_names_list if p.count(".") <= depth]
+        return (p for p in package_names if p.count(".") <= depth)
 
-    return package_names_list
+    return generator(package_names)
 
 
 def src_package_is_pyrig() -> bool:
@@ -137,7 +134,7 @@ def src_package_is_pyrig() -> bool:
     return pyrig.__name__ in packages
 
 
-def find_namespace_packages() -> list[str]:
+def find_namespace_packages() -> Generator[str, None, None]:
     """Find all PEP 420 namespace packages in the project.
 
     Discovers namespace packages (packages without `__init__.py`) by comparing
@@ -145,8 +142,8 @@ def find_namespace_packages() -> list[str]:
     docs directory and .gitignore patterns.
 
     Returns:
-        List of namespace package names as dot-separated strings. Empty list if
-        none found.
+        Generator of namespace package names as dot-separated strings.
+        Empty generator if none found.
 
     Examples:
         Find all namespace packages:
@@ -159,17 +156,15 @@ def find_namespace_packages() -> list[str]:
         PEP 420: Implicit Namespace Packages
     """
     logger.debug("Discovering namespace packages")
-    packages = find_packages(depth=None)
+    packages = set(find_packages(depth=None))
     namespace_packages = find_packages(depth=None, include_namespace_packages=True)
-    namespace_packages = [
+    namespace_packages = (
         p for p in namespace_packages if not p.startswith(DocsBuilder.I.docs_dir().name)
-    ]
+    )
     # exclude all that are in .gitignore
-    namespace_packages = [
+    namespace_packages = (
         p
         for p in namespace_packages
         if not path_is_in_ignore(ModulePath.package_name_to_relative_dir_path(p))
-    ]
-    result = list(set(namespace_packages) - set(packages))
-    logger.debug("Found %d namespace packages: %s", len(result), result)
-    return result
+    )
+    return (p for p in namespace_packages if p not in packages)

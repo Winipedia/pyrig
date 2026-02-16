@@ -36,7 +36,7 @@ class TestVersionController:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = VersionController.I.dev_dependencies()
-        assert result == []
+        assert result == ()
 
     def test_config_get_user_email_args(self) -> None:
         """Test method."""
@@ -195,7 +195,7 @@ class TestVersionController:
     def test_loaded_ignore(self) -> None:
         """Test method."""
         result = VersionController.I.loaded_ignore()
-        assert isinstance(result, list)
+        assert isinstance(result, tuple)
         assert all(isinstance(item, str) for item in result)
 
     def test_repo_owner_and_name(self) -> None:

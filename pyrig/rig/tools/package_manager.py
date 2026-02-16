@@ -55,17 +55,17 @@ class PackageManager(Tool):
             "https://github.com/astral-sh/uv",
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get development dependencies for this tool.
 
         UV is a system-level dependency installed outside the Python
         environment, so no dev dependencies are required.
 
         Returns:
-            Empty list.
+            Empty tuple.
         """
         # uv is a system dependency, so we don't have a dev dependency for it
-        return []
+        return ()
 
     def init_project_args(self, *args: str) -> Args:
         """Construct uv init arguments.
@@ -235,17 +235,17 @@ class PackageManager(Tool):
         """
         return "UV_NO_SYNC"
 
-    def build_system_requires(self) -> list[str]:
+    def build_system_requires(self) -> tuple[str, ...]:
         """Get build-system requires for pyproject.toml.
 
         If uv is not used but replaced by poetry for example, this should be
-        overridden to return ["poetry-core"].
+        overridden to return ("poetry-core",).
         Or if setuptools or hatch is preferred, that should be returned instead.
 
         Returns:
-            List of dependencies for [build-system].requires.
+            Tuple of dependencies for [build-system].requires.
         """
-        return ["uv_build"]
+        return ("uv_build",)
 
     def build_backend(self) -> str:
         """Get build-backend for pyproject.toml.

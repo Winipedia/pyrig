@@ -57,6 +57,20 @@ class DiGraph(ABC):
         if node not in self._reverse_edges:
             self._reverse_edges[node] = set()
 
+    def remove_node(self, node: str) -> None:
+        """Remove a node and all its edges from the graph.
+
+        Args:
+            node: Node identifier to remove.
+        """
+        self._nodes.discard(node)
+        self._edges.pop(node, None)
+        self._reverse_edges.pop(node, None)
+        for neighbors in self._edges.values():
+            neighbors.discard(node)
+        for neighbors in self._reverse_edges.values():
+            neighbors.discard(node)
+
     def add_edge(self, source: str, target: str) -> None:
         """Add a directed edge from source to target.
 
@@ -102,10 +116,6 @@ class DiGraph(ABC):
         the target. In dependency graph context (where edge A → B means
         "A depends on B"), this returns all packages that depend on the target,
         either directly or transitively.
-
-        Used by ``DependencyGraph.all_depending_on`` to discover all packages
-        in the ecosystem that depend on a given package (e.g., finding all packages
-        that depend on pyrig).
 
         Args:
             target: Node to find ancestors for.
@@ -175,17 +185,12 @@ class DiGraph(ABC):
         msg = f"No path from {source} to {target}"
         raise ValueError(msg)
 
-    def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
+    def topological_sort_subgraph(self, nodes: set[str]) -> tuple[str, ...]:
         """Sort a subset of nodes in topological order (dependencies first).
 
         Uses Kahn's algorithm with a min-heap for deterministic ordering when
         multiple nodes have no remaining dependencies. An edge A → B means
         "A depends on B", so B appears before A in the result.
-
-        Used by ``DependencyGraph.all_depending_on`` to ensure packages are
-        processed in the correct order: base dependencies before dependents.
-        This is critical for discovering plugin implementations where a child
-        package's class extends a parent package's class.
 
         Args:
             nodes: Set of nodes to sort. Only edges between nodes in this set
@@ -230,4 +235,4 @@ class DiGraph(ABC):
             msg = "Cycle detected in subgraph, cannot topologically sort"
             raise ValueError(msg)
 
-        return result
+        return tuple(result)

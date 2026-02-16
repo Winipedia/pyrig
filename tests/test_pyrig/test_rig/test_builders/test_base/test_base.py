@@ -192,7 +192,7 @@ class TestBuilderConfigFile:
         # write a file to tmp_path
         file = tmp_path / "test.txt"
         file.write_text("test")
-        artifacts = my_test_builder_config_file().temp_artifacts(tmp_path)
+        artifacts = list(my_test_builder_config_file().temp_artifacts(tmp_path))
         assert artifacts == [file]
 
     def test_temp_artifacts_path(

@@ -8,13 +8,17 @@ dependency, enabling automatic discovery of ``ConfigFile`` implementations and
 """
 
 import logging
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Generator
 from functools import cache
+from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 from pyrig.src.dependency_graph import DependencyGraph
+from pyrig.src.iterate import (
+    generator_has_items,
+)
 from pyrig.src.modules.class_ import (
     all_cls_from_module,
     all_methods_from_cls,
@@ -24,8 +28,8 @@ from pyrig.src.modules.class_ import (
 from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.imports import (
     import_package_with_dir_fallback,
+    iter_modules,
     module_is_package,
-    modules_and_packages_from_package,
 )
 from pyrig.src.modules.module import (
     import_module_with_file_fallback,
@@ -105,7 +109,7 @@ def package_name_from_cwd() -> str:
 
 def objs_from_obj(
     obj: Callable[..., Any] | type | ModuleType,
-) -> Sequence[Callable[..., Any] | type | ModuleType]:
+) -> tuple[Callable[..., Any] | type | ModuleType, ...]:
     """Extract contained objects from a container.
 
     Behavior depends on type:
@@ -117,24 +121,20 @@ def objs_from_obj(
         obj: Container object.
 
     Returns:
-        Sequence of contained objects.
+        Tuple of contained objects.
     """
     if isinstance(obj, ModuleType):
         if module_is_package(obj):
-            return modules_and_packages_from_package(obj)[1]
-        objs: list[Callable[..., Any] | type] = []
-        objs.extend(all_functions_from_module(obj))
-        objs.extend(all_cls_from_module(obj))
-        return objs
+            return tuple(m for m, _ in iter_modules(obj))
+        return (*all_functions_from_module(obj), *all_cls_from_module(obj))
     if isinstance(obj, type):
         return all_methods_from_cls(obj, exclude_parent_methods=True)
-    return []
+    return ()
 
 
-@cache
 def all_deps_depending_on_dep(
     dep: ModuleType, *, include_self: bool = False
-) -> list[ModuleType]:
+) -> Generator[ModuleType, None, None]:
     """Get all packages that depend on the given dependency.
 
     Args:
@@ -142,19 +142,20 @@ def all_deps_depending_on_dep(
         include_self: If True, includes ``dep`` itself in the result.
 
     Returns:
-        List of imported module objects for dependent packages.
+        Generator of imported module objects for dependent packages.
     """
-    deps = DependencyGraph().all_depending_on(dep, include_self=include_self)
+    deps = DependencyGraph(dep).all_packages_depending_on_sorted(
+        dep, include_self=include_self
+    )
     # clear the DependencyGraph cache to optimize memory usage,
     # we don't need to keep the full graph in memory after this
     DependencyGraph.clear_cache()
-    return deps
+    return (import_module(d) for d in deps)
 
 
-@cache
 def discover_equivalent_modules_across_dependents(
     module: ModuleType, dep: ModuleType, until_package: ModuleType | None = None
-) -> list[ModuleType]:
+) -> Generator[ModuleType, None, None]:
     """Find equivalent module paths across all packages that depend on a dependency.
 
     Core function for pyrig's multi-package architecture. Given a module path
@@ -199,7 +200,7 @@ def discover_equivalent_modules_across_dependents(
         This assumes consistent package structure across the ecosystem.
 
     See Also:
-        DependencyGraph.all_depending_on: Finds dependent packages
+        DependencyGraph.all_packages_depending_on_sorted: Finds dependent packages
         discover_subclasses_across_dependents: Uses this to find subclasses
     """
     module_name = module.__name__
@@ -210,26 +211,29 @@ def discover_equivalent_modules_across_dependents(
     )
     packages = all_deps_depending_on_dep(dep, include_self=True)
 
-    modules: list[ModuleType] = []
     for package in packages:
         package_module_name = module_name.replace(dep.__name__, package.__name__, 1)
         package_module_path = ModulePath.package_name_to_relative_dir_path(
             package_module_name
         )
         package_module = import_module_with_file_fallback(package_module_path)
-        modules.append(package_module)
+        logger.debug(
+            "Found equivalent module to %s: %s",
+            package.__name__,
+            package_module.__name__,
+        )
+        yield package_module
         if (
             isinstance(until_package, ModuleType)
             and package.__name__ == until_package.__name__
         ):
-            break
-    logger.debug(
-        "Found modules equivalent to %s: %s", module_name, [m.__name__ for m in modules]
-    )
-    return modules
+            logger.debug(
+                "Reached until_package %s. Stopping discovery of equivalent modules.",
+                until_package.__name__,
+            )
+            return
 
 
-@cache
 def discover_subclasses_across_dependents[T: type](
     cls: T,
     dep: ModuleType,
@@ -237,7 +241,7 @@ def discover_subclasses_across_dependents[T: type](
     *,
     discard_parents: bool = False,
     exclude_abstract: bool = False,
-) -> list[T]:
+) -> Generator[T, None, None]:
     """Discover all subclasses of a class across the entire dependency ecosystem.
 
     Primary discovery function for pyrig's multi-package plugin architecture.
@@ -280,7 +284,7 @@ def discover_subclasses_across_dependents[T: type](
             classes that will be instantiated.
 
     Returns:
-        List of discovered subclass types. Order is based on topological
+        Generator of discovered subclass types. Order is based on topological
         dependency order (base package classes first, then dependents).
 
     Example:
@@ -313,27 +317,23 @@ def discover_subclasses_across_dependents[T: type](
         cls.__name__,
         dep.__name__,
     )
-    subclasses: list[T] = []
-    for package in discover_equivalent_modules_across_dependents(
-        load_package_before, dep
-    ):
-        subclasses.extend(
-            discover_all_subclasses(
-                cls,
-                load_package_before=package,
-                discard_parents=discard_parents,
-                exclude_abstract=exclude_abstract,
-            )
+    subclasses = (
+        subclass
+        for package in discover_equivalent_modules_across_dependents(
+            load_package_before, dep
         )
+        for subclass in discover_all_subclasses(
+            cls,
+            load_package_before=package,
+            discard_parents=discard_parents,
+            exclude_abstract=exclude_abstract,
+        )
+    )
     # as these are different modules and pks we need to discard parents again
     if discard_parents:
         logger.debug("Discarding parent classes. Only keeping leaf classes...")
         subclasses = discard_parent_classes(subclasses)
-    logger.debug(
-        "Found subclasses of %s: %s",
-        cls.__name__,
-        [c.__name__ for c in subclasses],
-    )
+
     return subclasses
 
 
@@ -396,20 +396,37 @@ def discover_leaf_subclass_across_dependents[T: type](
         discover_subclasses_across_dependents: General multi-subclass discovery
         DependencySubclass.L: Direct caller of this function
     """
-    classes = discover_subclasses_across_dependents(
+    subclasses = discover_subclasses_across_dependents(
         cls=cls,
         dep=dep,
         load_package_before=load_package_before,
         discard_parents=True,
         exclude_abstract=False,
     )
-    # raise if more than one final leaf
-    if len(classes) > 1:
+    has_leaf, subclasses = generator_has_items(subclasses)
+
+    if not has_leaf:
+        msg = f"""No subclasses found for {cls.__name__} across dependents
+of {dep.__name__}. This can only happen if there are no non-abstract subclasses defined
+in any dependent package and the given class is abstract as well, otherwise the given
+class would have been returned as a leaf."""
+        raise ValueError(msg)
+
+    leaf = next(subclasses)
+
+    # check for multiple leaves - this indicates an ambiguous inheritance structure
+    second_leaf = next(
+        subclasses,
+        None,
+    )
+    if second_leaf is not None:
         msg = (
-            f"Multiple final leaves found for {cls.__name__} "
-            f"in {load_package_before.__name__}: {classes}"
+            f"Multiple final leaves found for {cls.__name__}: "
+            f"{leaf.__module__}.{leaf.__name__} and "
+            f"{second_leaf.__module__}.{second_leaf.__name__}. "
+            "This indicates an ambiguous inheritance structure where two classes "
+            "both extend the same parent without one extending the other."
         )
         raise ValueError(msg)
-    leaf = classes[0]
     logger.debug("Found final leaf of %s: %s", cls.__name__, leaf.__name__)
     return leaf

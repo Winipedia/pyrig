@@ -4,7 +4,7 @@ tests.test_pyrig.test_modules.test_inspection
 """
 
 import os
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from functools import wraps
 
 from pyrig.src.modules.inspection import (
@@ -20,8 +20,9 @@ from pyrig.src.modules.inspection import (
 def test_obj_members() -> None:
     """Test function."""
     members = obj_members(test_obj_members)
-    assert isinstance(members, list), f"Expected list, got {type(members)}"
-    assert len(members) > 0, f"Expected at least 1 member, got {len(members)}"
+    assert isinstance(members, Generator), f"Expected Generator, got {type(members)}"
+    members_list = list(members)
+    assert len(members_list) > 0, f"Expected at least 1 member, got {len(members_list)}"
 
 
 def test_def_line() -> None:

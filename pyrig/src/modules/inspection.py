@@ -9,33 +9,33 @@ for method extraction, subclass discovery, and test generation throughout pyrig.
 
 import inspect
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from types import ModuleType
 from typing import Any, cast
 
 
-def obj_members(obj: Any, *, include_annotate: bool = False) -> list[tuple[str, Any]]:
+def obj_members(obj: Any) -> Generator[tuple[str, Any], None, None]:
     """Get all members of an object as name-value pairs using static introspection.
 
     Uses ``inspect.getmembers_static`` to retrieve members without invoking descriptors,
     making it safe for introspecting classes with properties that have side effects.
 
+    This will always exclude __annotate__ and __annotate_func__ members,
+    which are used for Python 3.14+ for definition annotation
+    and can interfere with introspection.
+
     Args:
         obj: Object to inspect (class, module, or any Python object).
-        include_annotate: If False, excludes ``__annotate__`` and ``__annotate_func__``
-            attributes added in Python 3.14+ for deferred annotation evaluation.
+
 
     Returns:
         List of (name, value) tuples for all object members.
     """
-    members = [(member, value) for member, value in inspect.getmembers_static(obj)]
-    if not include_annotate:
-        members = [
-            (member, value)
-            for member, value in members
-            if member not in ("__annotate__", "__annotate_func__")
-        ]
-    return members
+    return (
+        (member, value)
+        for member, value in inspect.getmembers_static(obj)
+        if member not in ("__annotate__", "__annotate_func__")
+    )
 
 
 def inside_frozen_bundle() -> bool:

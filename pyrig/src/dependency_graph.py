@@ -11,7 +11,6 @@ import logging
 from types import ModuleType
 
 from pyrig.src.graph import DiGraph
-from pyrig.src.modules.module import import_modules
 from pyrig.src.singleton import Singleton
 from pyrig.src.string_ import package_req_name_split_pattern
 
@@ -28,6 +27,42 @@ class DependencyGraph(DiGraph, Singleton):
     Central to pyrig's multi-package discovery system.
     """
 
+    def __init__(self, dependency: ModuleType | None = None) -> None:
+        """Initialize the dependency graph.
+
+        Args:
+            dependency: The base dependency module to build the graph for.
+                If provided, it will remove any packages that do not depend
+                on this module, ensuring the graph only contains relevant packages.
+                If None, the graph will include all installed packages.
+                This is useful for speed and efficiency
+        """
+        super().__init__()
+        if dependency is not None:
+            self.remove_irrelevant_packages(dependency)
+
+    def remove_irrelevant_packages(self, dependency: ModuleType) -> None:
+        """Remove packages that do not depend on the given base dependency.
+
+        This method is called during initialization if a base dependency is provided.
+        It identifies all packages that depend on the base dependency and removes
+        any packages from the graph that are not in this set. This ensures the
+        graph only contains packages relevant to the base dependency, improving
+        performance for discovery operations.
+
+        Args:
+            dependency: The module that serves as the root of relevance.
+                Only packages that depend on this module (directly or indirectly)
+                will be retained in the graph.
+        """
+        relevant_packages = self.ancestors(dependency.__name__.lower()) | {
+            dependency.__name__.lower()
+        }
+        irrelevant_packages = set(self.nodes()) - relevant_packages
+
+        for pkg in irrelevant_packages:
+            self.remove_node(pkg)
+
     def build(self) -> None:
         """Build the graph from installed Python distributions."""
         logger.debug("Building dependency graph from installed distributions")
@@ -42,7 +77,7 @@ class DependencyGraph(DiGraph, Singleton):
     @staticmethod
     def parse_name_and_deps(
         dist: importlib.metadata.Distribution,
-    ) -> tuple[str, list[str]]:
+    ) -> tuple[str, tuple[str, ...]]:
         """Extract package name and dependencies from a distribution.
 
         Uses the public ``importlib.metadata`` API (``dist.metadata`` and
@@ -58,10 +93,10 @@ class DependencyGraph(DiGraph, Singleton):
         raw_name = dist.name
         name = DependencyGraph.normalize_package_name(raw_name) if raw_name else ""
 
-        deps = [
+        deps = tuple(
             DependencyGraph.parse_package_name_from_req(req)
             for req in (dist.requires or [])
-        ]
+        )
 
         return name, deps
 
@@ -95,9 +130,9 @@ class DependencyGraph(DiGraph, Singleton):
         """
         return name.lower().replace("-", "_").strip()
 
-    def all_depending_on(
-        self, package: ModuleType | str, *, include_self: bool = False
-    ) -> list[ModuleType]:
+    def all_packages_depending_on_sorted(
+        self, package: ModuleType, *, include_self: bool = False
+    ) -> tuple[str, ...]:
         """Find all packages that depend on the given package.
 
         Primary method for discovering packages that extend pyrig's functionality.
@@ -107,7 +142,7 @@ class DependencyGraph(DiGraph, Singleton):
             include_self: If True, includes the target package in results.
 
         Returns:
-            List of imported module objects for dependent packages.
+            Tuple of package names (strings) for dependent packages.
             Sorted in topological order (dependencies before dependents).
 
         Raises:
@@ -117,9 +152,7 @@ class DependencyGraph(DiGraph, Singleton):
             Only returns packages that can be successfully imported.
         """
         # replace - with _ to handle packages like pyrig
-        if isinstance(package, ModuleType):
-            package = package.__name__
-        target = package.lower()
+        target = package.__name__.lower()
         if target not in self:
             msg = f"""Package '{target}' not found in dependency graph."""
             raise ValueError(msg)
@@ -133,4 +166,4 @@ class DependencyGraph(DiGraph, Singleton):
 
         logger.debug("Found packages depending on %s: %s", package, dependents)
 
-        return import_modules(dependents)
+        return dependents

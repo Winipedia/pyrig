@@ -9,13 +9,12 @@ pyrig for dynamic module loading when standard import mechanisms may not suffice
 import importlib.util
 import logging
 import sys
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.inspection import (
     module_of_obj,
     qualname_of_obj,
@@ -244,26 +243,6 @@ def isolated_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
     return qualname_of_obj(obj).split(".")[-1]
 
 
-def execute_all_functions_from_module(module: ModuleType) -> list[Any]:
-    """Execute all functions defined in a module and collect their return values.
-
-    Useful for running setup/initialization functions or test fixtures defined
-    in a module. Functions are executed in definition order.
-
-    Args:
-        module: Module containing zero-argument functions to execute.
-
-    Returns:
-        List of return values from all executed functions, in definition order.
-
-    Note:
-        Only executes functions defined directly in the module (not imported).
-        All functions must accept zero arguments or have default values for all
-        parameters. Raises ``TypeError`` if a function requires arguments.
-    """
-    return [f() for f in all_functions_from_module(module)]
-
-
 def default_module_content() -> str:
     """Generate default content for a new Python module file.
 
@@ -338,15 +317,3 @@ def module_has_docstring(module: ModuleType) -> bool:
         True if module has a docstring, False otherwise.
     """
     return module.__doc__ is not None
-
-
-def import_modules(module_names: Iterable[str]) -> list[ModuleType]:
-    """Import multiple modules by name.
-
-    Args:
-        module_names: List of dotted module names to import.
-
-    Returns:
-        List of imported module objects corresponding to the input names.
-    """
-    return list(map(import_module, module_names))

@@ -10,10 +10,70 @@ See Also:
 """
 
 import logging
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Generator, Iterable
 from typing import Any
 
 logger = logging.getLogger(__name__)
+
+
+def generator(iterable: Iterable[Any]) -> Generator[Any, None, None]:
+    """Convert an iterable to a generator."""
+    yield from iterable
+
+
+def empty_generator() -> Generator[Any, None, None]:
+    """Generate nothing."""
+    if False:
+        yield
+
+
+def generator_has_items(
+    gen: Generator[Any, Any, Any],
+) -> tuple[bool, Generator[Any, Any, Any]]:
+    """Check if a generator has any items without consuming them.
+
+    Returns a tuple of (has_items, generator). The returned generator will yield
+    all the original items including the first one that was checked.
+
+    Example:
+        >>> gen = (x for x in [1, 2, 3])
+        >>> has_items, gen = generator_has_items(gen)
+        >>> has_items
+        True
+        >>> list(gen)
+        [1, 2, 3]
+
+        >>> empty_gen = (x for x in [])
+        >>> has_items, empty_gen = generator_has_items(empty_gen)
+        >>> has_items
+        False
+        >>> list(empty_gen)
+        []
+    """
+    sentinel = object()
+    first = next(gen, sentinel)
+    if first is sentinel:
+        return False, empty_generator()
+    return True, combine_generators(generator((first,)), gen)
+
+
+def combine_generators(*gens: Iterable[Any]) -> Generator[Any, None, None]:
+    """Combine multiple generators into a single generator.
+
+    Args:
+        *gens: Any number of generator objects to combine.
+
+    Returns:
+        A single generator that yields all items from the input generators in order.
+
+    Example:
+        >>> gen1 = (x for x in [1, 2, 3])
+        >>> gen2 = (x for x in ['a', 'b'])
+        >>> list(combine_generators(gen1, gen2))
+        [1, 2, 3, 'a', 'b']
+    """
+    for gen in gens:
+        yield from gen
 
 
 def nested_structure_is_subset(  # noqa: C901

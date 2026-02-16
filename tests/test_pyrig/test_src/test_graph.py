@@ -15,6 +15,18 @@ class MyTestDiGraph(DiGraph):
 class TestDiGraph:
     """Test class."""
 
+    def test_remove_node(self) -> None:
+        """Test method."""
+        graph = MyTestDiGraph()
+        graph.add_edge("a", "b")
+        graph.add_edge("b", "c")
+
+        # Remove node b and check it is removed along with its edges
+        graph.remove_node("b")
+        assert "b" not in graph
+        assert not graph.has_edge("a", "b")
+        assert not graph.has_edge("b", "c")
+
     def test_build(self) -> None:
         """Test method."""
         graph = MyTestDiGraph()
@@ -154,7 +166,7 @@ class TestDiGraph:
 
         # Sort should give: pyrig, package1, package2 (dependencies first)
         result = graph.topological_sort_subgraph({"pyrig", "package1", "package2"})
-        assert result == ["pyrig", "package1", "package2"]
+        assert result == ("pyrig", "package1", "package2")
 
         # Test with more complex graph
         graph2 = MyTestDiGraph()
@@ -191,7 +203,7 @@ class TestDiGraph:
         graph.add_edge("a", "b")
 
         result = graph.topological_sort_subgraph(set())
-        assert result == []
+        assert result == ()
 
     def test_topological_sort_subgraph_single_node(self) -> None:
         """Test topological sort with single node."""
@@ -199,4 +211,4 @@ class TestDiGraph:
         graph.add_node("a")
 
         result = graph.topological_sort_subgraph({"a"})
-        assert result == ["a"]
+        assert result == ("a",)

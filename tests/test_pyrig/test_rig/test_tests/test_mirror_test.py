@@ -1,12 +1,12 @@
 """module."""
 
+import sys
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
 import pytest
-from pytest_mock import MockFixture
 
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
@@ -48,34 +48,18 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
-    def test_test_module(self, mocker: MockFixture) -> None:
+    def test__dump(
+        self,
+        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
+        tmp_path: Path,
+    ) -> None:
         """Test method."""
-        # mock the internal _test_module to return None
-        # and check that it is called
-        mock = mocker.patch.object(
-            MirrorTestConfigFile,
-            MirrorTestConfigFile._test_module.__name__,  # noqa: SLF001
-        )
-        MirrorTestConfigFile.I.test_module()
-        mock.assert_called_once()
-
-    def test_untested_func_names(self, mocker: MockFixture) -> None:
-        """Test method."""
-        mock = mocker.patch.object(
-            MirrorTestConfigFile,
-            MirrorTestConfigFile._untested_func_names.__name__,  # noqa: SLF001
-        )
-        MirrorTestConfigFile.I.untested_func_names()
-        mock.assert_called_once()
-
-    def test_untested_class_and_method_names(self, mocker: MockFixture) -> None:
-        """Test method."""
-        mock = mocker.patch.object(
-            MirrorTestConfigFile,
-            MirrorTestConfigFile._untested_class_and_method_names.__name__,  # noqa: SLF001
-        )
-        MirrorTestConfigFile.I.untested_class_and_method_names()
-        mock.assert_called_once()
+        with chdir(tmp_path):
+            my_test_mirror_test_config_file().validate()
+            # delete file after
+            my_test_mirror_test_config_file().path().unlink()
+            # remove module from cache to avoid interference with other tests
+            sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
 
     def test_obj_from_test_obj(self) -> None:
         """Test method."""
@@ -238,7 +222,7 @@ class TestMirrorTestConfigFile:
         )
         assert test_module_name == "tests.test_mirror_test_module"
 
-    def test__test_module(
+    def test_test_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
@@ -271,13 +255,15 @@ class TestMirrorTestConfigFile:
         assert "def test_mirror_function" in content
         assert "class TestMirrorClass" in content
 
-    def test__untested_func_names(
+    def test_untested_func_names(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
         # create the file first
         my_test_mirror_test_config_file().create_file()
-        untested_func_names = my_test_mirror_test_config_file().untested_func_names()
+        untested_func_names = tuple(
+            my_test_mirror_test_config_file().untested_func_names()
+        )
         assert len(untested_func_names) > 0
 
     def test_test_func_skeleton(self) -> None:
@@ -301,13 +287,13 @@ class TestMirrorTestConfigFile:
         assert "def test_mirror_function" in content
         assert "class TestMirrorClass" in content
 
-    def test__untested_class_and_method_names(
+    def test_untested_class_and_method_names(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
         # create the file first
         my_test_mirror_test_config_file().create_file()
-        untested_class_and_method_names = (
+        untested_class_and_method_names = tuple(
             my_test_mirror_test_config_file().untested_class_and_method_names()
         )
         assert len(untested_class_and_method_names) > 0
@@ -325,7 +311,9 @@ class TestMirrorTestConfigFile:
 
     def test_make_subclasses_for_modules(self) -> None:
         """Test method."""
-        subclasses = MirrorTestConfigFile.I.make_subclasses_for_modules([mirror_test])
+        subclasses = tuple(
+            MirrorTestConfigFile.I.make_subclasses_for_modules([mirror_test])
+        )
         assert len(subclasses) > 0
 
     def test_make_subclass_for_module(self) -> None:

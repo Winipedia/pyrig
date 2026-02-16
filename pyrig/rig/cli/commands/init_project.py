@@ -83,9 +83,9 @@ def creating_priority_config_files() -> Args:
 def syncing_venv() -> Args:
     """Return args for syncing the virtual environment via `uv sync`.
 
-    Installs all dependencies from `pyproject.toml`. Called twice during
-    initialization: after adding dev dependencies and after creating
-    priority config files.
+    Installs all dependencies from `pyproject.toml`.
+    Called after the priority config files are created and with them PyprojectConfigFile
+    to ensure the venv is properly configured for the remaining steps.
     """
     return PackageManager.I.install_dependencies_args()
 
@@ -148,16 +148,15 @@ def committing_initial_changes() -> Args:
     )
 
 
-def setup_steps() -> list[Callable[..., Any]]:
-    """Return the ordered list of setup step functions for project initialization.
+def setup_steps() -> tuple[Callable[..., Any], ...]:
+    """Return the ordered tuple of setup step functions for project initialization.
 
-    Each function in the returned list takes no arguments and returns an `Args`
+    Each function in the returned tuple takes no arguments and returns an `Args`
     object that can be executed via `PackageManager`.
     """
-    return [
+    return (
         initializing_version_control,
         adding_dev_dependencies,
-        syncing_venv,
         creating_priority_config_files,
         syncing_venv,
         creating_project_root,
@@ -167,7 +166,7 @@ def setup_steps() -> list[Callable[..., Any]]:
         running_pre_commit_hooks,
         running_tests,
         committing_initial_changes,
-    ]
+    )
 
 
 def init_project() -> None:

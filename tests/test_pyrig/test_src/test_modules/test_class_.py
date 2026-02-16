@@ -6,6 +6,7 @@ tests.test_pyrig.test_modules.test_class_
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import wraps
+from importlib import import_module
 from typing import Any, ClassVar
 
 from pyrig.src.modules.class_ import (
@@ -126,10 +127,22 @@ class AnotherAbstractChild(AbstractParent):
         """Another abstract method."""
 
 
+class ConcreteGrandChild(AnotherAbstractChild):
+    """Concrete grandchild used for indirect-parent filtering tests."""
+
+    def abstract_method(self) -> str:
+        """Implement inherited abstract method."""
+        return "concrete_grandchild_implementation"
+
+    def another_abstract_method(self) -> str:
+        """Implement inherited abstract method."""
+        return "another_concrete_grandchild_implementation"
+
+
 def test_all_methods_from_cls() -> None:
     """Test function."""
     # Test case 1: Get all methods excluding inherited methods
-    methods = all_methods_from_cls(TestClass, exclude_parent_methods=True)
+    methods = tuple(all_methods_from_cls(TestClass, exclude_parent_methods=True))
 
     # assert __annotate__ is not considered a method (3.14 introduces this injection)
     assert "__annotate__" not in [
@@ -173,7 +186,7 @@ def test_all_methods_from_cls() -> None:
 def test_all_cls_from_module() -> None:
     """Test function."""
     # use this file as the module
-    module = test_all_cls_from_module.__module__
+    module = import_module(test_all_cls_from_module.__module__)
 
     classes = all_cls_from_module(module)
 
@@ -185,6 +198,7 @@ def test_all_cls_from_module() -> None:
         AbstractParent,
         ConcreteChild,
         AnotherAbstractChild,
+        ConcreteGrandChild,
         Testclassproperty,
     ]
     expected_classes_names: list[str] = [c.__name__ for c in expected_classes]
@@ -197,7 +211,7 @@ def test_all_cls_from_module() -> None:
 def test_discover_all_subclasses() -> None:
     """Test func."""
     # Test with ParentClass - should find TestClass as subclass
-    subclasses = discover_all_subclasses(ParentClass)
+    subclasses = set(discover_all_subclasses(ParentClass))
 
     expected_subclasses: set[type] = {ParentClass, TestClass}
 
@@ -207,23 +221,27 @@ def test_discover_all_subclasses() -> None:
         )
 
     # Test with TestClass - should have no subclasses
-    subclasses = discover_all_subclasses(TestClass)
+    subclasses = set(discover_all_subclasses(TestClass))
 
     assert subclasses == {TestClass}, (
         f"Expected no subclasses for TestClass, got {subclasses}"
     )
 
     # test with discard_parents
-    subclasses = discover_all_subclasses(ParentClass, discard_parents=True)
+    subclasses = set(discover_all_subclasses(ParentClass, discard_parents=True))
     assert ParentClass not in subclasses, f"Expected ParentClass not in {subclasses}"
     assert TestClass in subclasses, f"Expected TestClass in {subclasses}"
 
 
 def test_discard_parent_classes() -> None:
     """Test function."""
-    classes = discard_parent_classes([ParentClass, TestClass])
+    classes = set(discard_parent_classes([ParentClass, TestClass]))
     assert ParentClass not in classes, f"Expected ParentClass not in {classes}"
     assert TestClass in classes, f"Expected TestClass in {classes}"
+
+    classes = set(discard_parent_classes([AbstractParent, ConcreteGrandChild]))
+    assert AbstractParent not in classes, f"Expected AbstractParent not in {classes}"
+    assert ConcreteGrandChild in classes, f"Expected ConcreteGrandChild in {classes}"
 
 
 class Testclassproperty:

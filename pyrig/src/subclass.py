@@ -69,24 +69,26 @@ class DependencySubclass(ABC):
         return pyrig
 
     @classmethod
-    def subclasses(cls) -> list[type[Self]]:
+    def subclasses(cls) -> tuple[type[Self], ...]:
         """Discover all non-abstract subclasses.
 
         Search all dependent packages of the base dependency, scoped to the
         definition package, and return the results sorted by `sorting_key`.
 
         Returns:
-            Sorted list of concrete subclass types.
+            Sorted tuple of concrete subclass types.
         """
-        return sorted(
-            discover_subclasses_across_dependents(
-                cls,
-                cls.base_dependency(),
-                cls.definition_package(),
-                discard_parents=True,
-                exclude_abstract=True,
-            ),
-            key=cls.sorting_key,
+        return tuple(
+            sorted(
+                discover_subclasses_across_dependents(
+                    cls,
+                    cls.base_dependency(),
+                    cls.definition_package(),
+                    discard_parents=True,
+                    exclude_abstract=True,
+                ),
+                key=cls.sorting_key,
+            )
         )
 
     @classproperty

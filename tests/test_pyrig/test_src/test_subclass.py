@@ -1,5 +1,7 @@
 """module."""
 
+from collections.abc import Generator
+
 import pyrig
 from pyrig.rig import configs
 from pyrig.rig.configs.base.base import ConfigFile
@@ -38,9 +40,10 @@ class TestDependencySubclass:
     def test_subclasses(self) -> None:
         """Test method."""
         result = ConfigFile.subclasses()
-        assert isinstance(result, list)
-        assert len(result) > 0
-        assert all(issubclass(subclass, ConfigFile) for subclass in result)
+        assert isinstance(result, Generator)
+        result_list = list(result)
+        assert len(result_list) > 0
+        assert all(issubclass(subclass, ConfigFile) for subclass in result_list)
 
     def test_L(self) -> None:  # noqa: N802
         """Test method."""

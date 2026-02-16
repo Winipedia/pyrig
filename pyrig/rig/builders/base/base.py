@@ -31,6 +31,8 @@ import platform
 import shutil
 import tempfile
 from abc import abstractmethod
+from collections.abc import Generator, Iterable
+from concurrent.futures import ThreadPoolExecutor
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
@@ -185,21 +187,18 @@ class BuilderConfigFile(ListConfigFile):
             self.create_artifacts(temp_artifacts_dir)
             artifacts = self.temp_artifacts(temp_artifacts_dir)
             self.rename_artifacts(artifacts)
-        logger.debug(
-            "Built %d artifact(s) with %s", len(artifacts), self.__class__.__name__
-        )
 
-    def rename_artifacts(self, artifacts: list[Path]) -> None:
+    def rename_artifacts(self, artifacts: Iterable[Path]) -> None:
         """Move artifacts to output directory with platform-specific names.
 
         Renames artifacts with platform-specific suffixes (`-Linux`, `-Windows`,
         `-Darwin`) and moves them to the final output directory.
 
         Args:
-            artifacts: List of artifact paths from the temporary directory.
+            artifacts: Iterable of artifact paths from the temporary directory.
         """
-        for artifact in artifacts:
-            self.rename_artifact(artifact)
+        with ThreadPoolExecutor() as executor:
+            tuple(executor.map(self.rename_artifact, artifacts))
 
     def rename_artifact(self, artifact: Path) -> None:
         """Move a single artifact to the output directory with a platform-specific name.
@@ -230,17 +229,17 @@ class BuilderConfigFile(ListConfigFile):
         """
         return f"{artifact.stem}-{platform.system()}{artifact.suffix}"
 
-    def temp_artifacts(self, temp_artifacts_dir: Path) -> list[Path]:
+    def temp_artifacts(self, temp_artifacts_dir: Path) -> Generator[Path, None, None]:
         """Get all artifacts from the temporary build directory.
 
         Args:
             temp_artifacts_dir: Path to the temporary artifacts directory.
 
         Returns:
-            List of artifact paths (non-recursive). May be empty if no
+            Generator of artifact paths (non-recursive). May be empty if no
             artifacts were created.
         """
-        return list(temp_artifacts_dir.glob("*"))
+        return temp_artifacts_dir.glob("*")
 
     def temp_artifacts_path(self, temp_dir: Path) -> Path:
         """Create and return the temporary artifacts subdirectory.

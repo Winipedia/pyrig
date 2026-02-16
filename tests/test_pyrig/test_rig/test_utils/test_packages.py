@@ -28,19 +28,19 @@ def test_find_packages(tmp_path: Path) -> None:
         (Path.cwd() / "package2" / "__init__.py").write_text("")
 
         # Test without depth limit
-        find_packages.cache_clear()
+
         result = find_packages()
         expected = ["package2", "package1", "package1.sub1", "package1.sub1.sub2"]
         assert set(result) == set(expected)
 
         # Test with depth limit
-        find_packages.cache_clear()
+
         result = find_packages(depth=1)
         expected = ["package2", "package1", "package1.sub1"]
         assert set(result) == set(expected)
 
         # Test with depth 0
-        find_packages.cache_clear()
+
         result = find_packages(depth=0)
         expected = ["package2", "package1"]
         assert set(result) == set(expected)
@@ -53,22 +53,22 @@ def test_find_namespace_packages(tmp_path: Path) -> None:
         GitignoreConfigFile.I.validate()
 
         (Path.cwd() / "docs").mkdir()
-        find_packages.cache_clear()
-        assert find_namespace_packages() == []
+
+        assert list(find_namespace_packages()) == []
         (Path.cwd() / "src").mkdir()
-        find_packages.cache_clear()
-        assert find_namespace_packages() == ["src"]
+
+        assert list(find_namespace_packages()) == ["src"]
         (Path.cwd() / "src" / "__init__.py").write_text("")
-        find_packages.cache_clear()
-        assert find_namespace_packages() == []
+
+        assert list(find_namespace_packages()) == []
 
         # assert exists
         assert (Path.cwd() / ".gitignore").exists()
         assert path_is_in_ignore("dist")
 
         (Path.cwd() / "dist").mkdir()
-        find_packages.cache_clear()
-        assert find_namespace_packages() == []
+
+        assert list(find_namespace_packages()) == []
 
 
 def test_src_package_is_pyrig() -> None:

@@ -105,7 +105,7 @@ class TestClass2:
         test_objs_module = import_module_from_file(module_file)
 
         # Test getting objects from module
-        objs = objs_from_obj(test_objs_module)
+        objs = tuple(objs_from_obj(test_objs_module))
 
         # Should contain 2 functions and 2 classes
         expected_function_count = 2
@@ -130,7 +130,7 @@ class TestClass2:
         def test_func() -> None:
             pass
 
-        result = objs_from_obj(test_func)
+        result = list(objs_from_obj(test_func))
         assert result == [], f"Expected empty list for function, got {result}"
 
 
@@ -138,7 +138,7 @@ def test_discover_equivalent_modules_across_dependents() -> None:
     """Test function."""
     # Test getting the same module from all packages depending on pyrig
 
-    modules = discover_equivalent_modules_across_dependents(src, pyrig)
+    modules = tuple(discover_equivalent_modules_across_dependents(src, pyrig))
     # Should at least include pyrig.src itself
     assert len(modules) > 0, f"Expected at least one module, got {modules}"
     assert src in modules, f"Expected pyrig.src in modules, got {modules}"

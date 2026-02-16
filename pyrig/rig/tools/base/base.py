@@ -132,13 +132,13 @@ class Tool(SingletonDependencySubclass):
             alt_text=self.name(),
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool dependencies.
 
         Returns:
-            List of tool dependencies. Defaults to the name of the tool.
+            Tuple of tool dependencies. Defaults to the name of the tool.
         """
-        return [self.name()]
+        return (self.name(),)
 
     def args(self, *args: str) -> Args:
         """Construct command arguments with tool name prepended.
@@ -165,7 +165,7 @@ class Tool(SingletonDependencySubclass):
         return groups
 
     @classmethod
-    def subclasses_dev_dependencies(cls) -> list[str]:
+    def subclasses_dev_dependencies(cls) -> tuple[str, ...]:
         """Get all dev dependencies for all tools.
 
         This gets all subclasses of Tools and calls dev_dependencies() on them.
@@ -175,10 +175,13 @@ class Tool(SingletonDependencySubclass):
         replaced.
 
         Returns:
-            List of all tool dependencies.
+            Tuple of all tool dependencies.
+
         """
-        subclasses = cls.subclasses()
-        all_dev_deps: list[str] = []
-        for subclass in subclasses:
-            all_dev_deps.extend(subclass().dev_dependencies())
-        return sorted(all_dev_deps)
+        return tuple(
+            sorted(
+                dep
+                for subclass in cls.subclasses()
+                for dep in subclass().dev_dependencies()
+            )
+        )

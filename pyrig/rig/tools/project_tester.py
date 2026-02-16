@@ -48,13 +48,13 @@ class ProjectTester(Tool):
             "https://pytest.org",
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool dependencies.
 
         Returns:
-            List of tool dependencies.
+            Tuple of tool dependencies.
         """
-        return [*super().dev_dependencies(), "pytest-mock"]
+        return (*super().dev_dependencies(), "pytest-mock")
 
     def coverage_threshold(self) -> int:
         """Get minimum test coverage percentage threshold.

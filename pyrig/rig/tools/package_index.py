@@ -64,13 +64,13 @@ class PackageIndex(Tool):
         )
         return f"https://pypi.org/project/{repo}"
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get development dependencies for this tool.
 
         PyPI integration requires no dev dependencies; the package manager
         (e.g. uv) handles publishing via pyproject.toml.
 
         Returns:
-            Empty list.
+            Empty tuple.
         """
-        return []
+        return ()

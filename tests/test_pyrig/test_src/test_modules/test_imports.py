@@ -11,14 +11,14 @@ from pyrig.src.modules.imports import (
     import_package_from_dir,
     import_package_with_dir_fallback,
     import_package_with_dir_fallback_with_default,
+    iter_modules,
     module_is_package,
-    modules_and_packages_from_package,
     walk_package,
 )
 from pyrig.src.modules.module import make_obj_importpath
 
 
-def test_modules_and_packages_from_package(tmp_path: Path) -> None:
+def test_iter_modules(tmp_path: Path) -> None:
     """Test function."""
     # Create a temporary package with known content
     with chdir(tmp_path):
@@ -30,9 +30,8 @@ def test_modules_and_packages_from_package(tmp_path: Path) -> None:
         module_file.write_text('"""Test module."""\n')
         package = import_package_from_dir(package_dir)
 
-        packages, modules = modules_and_packages_from_package(package)
-        assert packages == [], f"Expected no packages, got {packages}"
-        modules_names = [m.__name__ for m in modules]
+        modules = iter_modules(package)
+        modules_names = [m.__name__ for m, _ in modules]
         assert modules_names == [package.__name__ + ".test_module"], (
             f"Expected [package.test_module], got {modules}"
         )
@@ -48,39 +47,46 @@ def test_walk_package(mocker: MockFixture) -> None:
     module2 = ModuleType("root.sub1.module2")
     module3 = ModuleType("root.sub2.module3")
 
-    # Mock modules_and_packages_from_package
-    mock_modules = mocker.patch(make_obj_importpath(modules_and_packages_from_package))
+    # Mock iter_modules (walk_package calls iter_modules internally)
+    mock_modules = mocker.patch(make_obj_importpath(iter_modules))
 
     # Define side effects for different packages
-    def side_effect(package: ModuleType) -> tuple[list[ModuleType], list[ModuleType]]:
+    # iter_modules now yields (module, is_package) tuples
+    def side_effect(
+        package: ModuleType,
+    ) -> list[tuple[ModuleType, bool]]:
         if package == root_package:
-            return [sub_package1, sub_package2], [module1]
+            return [(sub_package1, True), (sub_package2, True), (module1, False)]
         if package == sub_package1:
-            return [], [module2]
+            return [(module2, False)]
         if package == sub_package2:
-            return [], [module3]
-        return [], []
+            return [(module3, False)]
+        return []
 
     mock_modules.side_effect = side_effect
 
     result = list(walk_package(root_package))
+    # walk_package now yields (module, is_package) tuples
     expected = [
-        (root_package, [module1]),
-        (sub_package1, [module2]),
-        (sub_package2, [module3]),
+        (root_package, True),
+        (sub_package1, True),
+        (module2, False),
+        (sub_package2, True),
+        (module3, False),
+        (module1, False),
     ]
 
     assert len(result) == len(expected), (
         f"Expected {len(expected)} results, got {len(result)}"
     )
 
-    for i, (package, modules) in enumerate(result):
-        expected_package, expected_modules = expected[i]
-        assert package == expected_package, (
-            f"Expected package {expected_package}, got {package} at index {i}"
+    for i, (mod, is_pkg) in enumerate(result):
+        expected_mod, expected_is_pkg = expected[i]
+        assert mod == expected_mod, (
+            f"Expected module {expected_mod}, got {mod} at index {i}"
         )
-        assert modules == expected_modules, (
-            f"Expected modules {expected_modules}, got {modules} at index {i}"
+        assert is_pkg == expected_is_pkg, (
+            f"Expected is_package={expected_is_pkg}, got {is_pkg} at index {i}"
         )
 
 

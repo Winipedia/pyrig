@@ -11,13 +11,27 @@ from pyrig.src.dependency_graph import DependencyGraph
 class TestDependencyGraph:
     """Test class."""
 
+    def test_remove_irrelevant_packages(self) -> None:
+        """Test method."""
+        DependencyGraph.clear_cache()  # Clear singleton instance to force rebuild
+        graph = DependencyGraph(typer)
+
+        # Test that irrelevant packages are not in the graph
+        assert "pyrig" in graph.nodes(), "Expected 'pyrig' to not be in the graph"
+        # assert typer itself should be in the graph as the root package
+        assert "typer" in graph.nodes(), "Expected 'typer' to be in the graph"
+        # assert setuptools is not in the graph
+        assert "setuptools" not in graph.nodes(), (
+            "Expected 'setuptools' to not be in the graph"
+        )
+
     def test_parse_name_and_deps(self) -> None:
         """Test method."""
         name = "pyrig"
         dist = importlib.metadata.distribution(name)
         result_name, result_deps = DependencyGraph.parse_name_and_deps(dist)
         assert result_name == "pyrig", f"Expected 'pyrig', got '{result_name}'"
-        assert isinstance(result_deps, list), "Expected deps to be a list"
+        assert isinstance(result_deps, tuple), "Expected deps to be a tuple"
         assert "typer" in result_deps, "Expected 'typer' to be in dependencies"
 
     def test_normalize_package_name(self) -> None:
@@ -44,6 +58,7 @@ class TestDependencyGraph:
 
     def test_build(self) -> None:
         """Test method."""
+        DependencyGraph.clear_cache()  # Clear singleton instance to force rebuild
         graph = DependencyGraph()
 
         # Verify that known packages are in the graph
@@ -79,12 +94,14 @@ class TestDependencyGraph:
         result = DependencyGraph.parse_package_name_from_req("  package-name  >=1.0")
         assert result == "package_name", f"Expected 'package_name', got {result}"
 
-    def test_all_depending_on(self) -> None:
+    def test_all_packages_depending_on_sorted(self) -> None:
         """Test method."""
         DependencyGraph.clear_cache()  # Clear singleton instance to force rebuild
         dg = DependencyGraph()
 
-        dep_on_typer = dg.all_depending_on("typer", include_self=True)
+        dep_on_typer = tuple(
+            dg.all_packages_depending_on_sorted(typer, include_self=True)
+        )
 
         assert typer in dep_on_typer, "Expected 'typer' to be in dependents"
         assert pyrig in dep_on_typer, "Expected 'pyrig' to be in dependents"

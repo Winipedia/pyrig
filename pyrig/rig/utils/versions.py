@@ -288,8 +288,8 @@ class VersionConstraint:
         level: Literal["major", "minor", "micro"] = "major",
         lower_default: str | Version | None = None,
         upper_default: str | Version | None = None,
-    ) -> list[Version]:
-        """Generate a list of versions within the constraint at specified precision.
+    ) -> tuple[Version, ...]:
+        """Generate a tuple of versions within the constraint at specified precision.
 
         Creates list of all versions satisfying the constraint, incrementing at
         specified level. Useful for test matrices, listing supported versions, or
@@ -309,7 +309,7 @@ class VersionConstraint:
                 String or Version. Raises ValueError if None and no constraint bound.
 
         Returns:
-            List of Version objects satisfying constraint, sorted ascending. May be
+            Tuple of Version objects satisfying constraint, sorted ascending. May be
             empty if no versions satisfy constraint.
 
         Raises:
@@ -318,10 +318,10 @@ class VersionConstraint:
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12")
             >>> vc.version_range(level="minor")
-            [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
+            (<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>)
             >>> vc = VersionConstraint(">=3.10.1,<=3.10.3")
             >>> vc.version_range(level="micro")
-            [<Version('3.10.1')>, <Version('3.10.2')>, <Version('3.10.3')>]
+            (<Version('3.10.1')>, <Version('3.10.2')>, <Version('3.10.3')>)
 
         Note:
             Generates all version combinations between bounds, then filters using
@@ -379,4 +379,4 @@ class VersionConstraint:
                     versions.append(version[: level_int + 1])
                     version.pop()
         version_versions = sorted({Version(".".join(map(str, v))) for v in versions})
-        return [v for v in version_versions if self.sset.contains(v)]
+        return tuple(v for v in version_versions if self.sset.contains(v))
