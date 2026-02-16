@@ -7,7 +7,6 @@ from pytest_mock import MockFixture
 
 from pyrig.rig.cli.commands import create_tests as create_tests_module
 from pyrig.rig.cli.commands.create_tests import (
-    create_test_package,
     create_tests_for_package,
     make_test_skeletons,
 )
@@ -76,14 +75,3 @@ def test_create_tests_for_package(tmp_path: Path) -> None:
         assert test_mod2_path.exists()
         assert test_sub_mod1_path.exists()
         assert test_sub_mod2_path.exists()
-
-
-def test_create_test_package(tmp_path: Path) -> None:
-    """Test function."""
-    package_name = create_test_package.__name__
-    package_path = tmp_path / package_name
-    with chdir(tmp_path):
-        package = create_package(package_path)
-        create_test_package(package)
-        test_package_path = tmp_path / f"tests/{test_create_test_package.__name__}"
-        assert test_package_path.exists()
