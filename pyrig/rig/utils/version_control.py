@@ -13,10 +13,12 @@ See Also:
 
 import logging
 import os
+from collections.abc import Generator
 from pathlib import Path
 
 import pathspec
 
+from pyrig.rig.configs.base.base import ConfigData, ConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 
@@ -96,3 +98,12 @@ def path_is_in_ignore(path: str | Path) -> bool:
     )
 
     return spec.match_file(as_posix)
+
+
+def ignored_config_files() -> Generator[ConfigFile[ConfigData], None, None]:
+    """Get config file classes that are ignored by .gitignore.
+
+    Returns:
+        Generator of ConfigFile instances whose paths match .gitignore patterns.
+    """
+    return (cf() for cf in ConfigFile.subclasses() if path_is_in_ignore(cf().path()))

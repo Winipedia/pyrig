@@ -3,9 +3,12 @@
 from contextlib import chdir
 from pathlib import Path
 
+from pyrig.rig.configs.dot_env import DotEnvConfigFile
+from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.version_control import (
     github_repo_token,
+    ignored_config_files,
     path_is_in_ignore,
 )
 
@@ -36,3 +39,10 @@ dist/
         assert path_is_in_ignore("build/file.py")
         assert path_is_in_ignore("dist/file.py")
         assert path_is_in_ignore("folder/folder.egg-info/file.py")
+
+
+def test_ignored_config_files() -> None:
+    """Test function."""
+    cfs = list(ignored_config_files())
+
+    assert [type(cf) for cf in cfs] == [DotEnvConfigFile, DotScratchConfigFile]

@@ -35,11 +35,9 @@ import pyrig
 from pyrig import main, resources, rig, src
 from pyrig.rig.cli.commands.make_inits import make_init_files
 from pyrig.rig.configs.base.base import ConfigFile
-from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
 )
-from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
@@ -48,6 +46,7 @@ from pyrig.rig.utils.packages import (
     find_namespace_packages,
     find_packages,
 )
+from pyrig.rig.utils.version_control import ignored_config_files
 from pyrig.src.git import (
     running_in_github_actions,
 )
@@ -116,8 +115,7 @@ def assert_root_is_correct() -> None:
     # as they are not pushed to the repository
     running_in_ci = running_in_github_actions()
     if running_in_ci:
-        DotScratchConfigFile.I.validate()
-        DotEnvConfigFile.I.validate()
+        tuple(cf.validate() for cf in ignored_config_files())
 
     subclasses = ConfigFile.subclasses()
     incorrect_cfs = [cf for cf in subclasses if not cf().is_correct()]
