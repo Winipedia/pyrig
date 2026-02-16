@@ -26,8 +26,8 @@ def make_init_files() -> None:
         directory is excluded from scanning.
     """
     logger.info("Starting __init__.py file creation")
-    any_namespace_packages = find_namespace_packages()
-    if not any_namespace_packages:
+    namespace_packages = tuple(find_namespace_packages())
+    if not namespace_packages:
         logger.info(
             "No namespace packages found, all packages already have __init__.py files"
         )
@@ -36,7 +36,7 @@ def make_init_files() -> None:
     # make init files for all namespace packages
     package_paths = [
         ModulePath.package_name_to_relative_dir_path(package)
-        for package in any_namespace_packages
+        for package in namespace_packages
     ]
     with ThreadPoolExecutor() as executor:
         list(executor.map(make_init_module, package_paths))
