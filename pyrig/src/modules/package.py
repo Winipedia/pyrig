@@ -8,24 +8,17 @@ dependency, enabling automatic discovery of ``ConfigFile`` implementations and
 """
 
 import logging
-from collections.abc import Callable, Sequence
 from functools import cache
 from pathlib import Path
 from types import ModuleType
-from typing import Any
 
 from pyrig.src.dependency_graph import DependencyGraph
 from pyrig.src.modules.class_ import (
-    all_cls_from_module,
-    all_methods_from_cls,
     discard_parent_classes,
     discover_all_subclasses,
 )
-from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.imports import (
     import_package_with_dir_fallback,
-    module_is_package,
-    modules_and_packages_from_package,
 )
 from pyrig.src.modules.module import (
     import_module_with_file_fallback,
@@ -101,34 +94,6 @@ def package_name_from_cwd() -> str:
         Package name (directory name with underscores).
     """
     return package_name_from_project_name(project_name_from_cwd())
-
-
-def objs_from_obj(
-    obj: Callable[..., Any] | type | ModuleType,
-) -> Sequence[Callable[..., Any] | type | ModuleType]:
-    """Extract contained objects from a container.
-
-    Behavior depends on type:
-    - Modules: all functions and classes
-    - Packages: all direct module files (excludes subpackages)
-    - Classes: all methods (excluding inherited)
-
-    Args:
-        obj: Container object.
-
-    Returns:
-        Sequence of contained objects.
-    """
-    if isinstance(obj, ModuleType):
-        if module_is_package(obj):
-            return modules_and_packages_from_package(obj)[1]
-        objs: list[Callable[..., Any] | type] = []
-        objs.extend(all_functions_from_module(obj))
-        objs.extend(all_cls_from_module(obj))
-        return objs
-    if isinstance(obj, type):
-        return all_methods_from_cls(obj, exclude_parent_methods=True)
-    return []
 
 
 @cache

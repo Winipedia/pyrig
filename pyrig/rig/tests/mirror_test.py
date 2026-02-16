@@ -47,7 +47,7 @@ See Also:
 """
 
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from functools import cache
 from pathlib import Path
 from types import ModuleType
@@ -626,7 +626,7 @@ class {test_class_name}:
 '''
 
     def make_subclasses_for_modules(
-        self, modules: list[ModuleType]
+        self, modules: Iterable[ModuleType]
     ) -> list[type[Self]]:
         """Create config subclasses for multiple modules.
 
@@ -692,7 +692,7 @@ class {test_class_name}:
         )
         return cast("type[Self]", subclass)
 
-    def create_test_modules(self, modules: list[ModuleType]) -> None:
+    def create_test_modules(self, modules: Iterable[ModuleType]) -> None:
         """Generate test files for multiple source modules at once.
 
         High-level convenience method that orchestrates the complete test
@@ -715,7 +715,7 @@ class {test_class_name}:
             validate_subclasses: Inherited method that instantiates config subclasses
         """
         subclasses = self.make_subclasses_for_modules(modules)
-        self.validate_subclasses(*subclasses)
+        self.validate_subclasses(subclasses)
 
     @overload
     def obj_from_test_obj(self, test_obj: type) -> type: ...

@@ -12,16 +12,12 @@ import pyrig
 from pyrig import src
 from pyrig.rig import configs
 from pyrig.rig.configs.base.base import ConfigFile
-from pyrig.src.modules.module import (
-    import_module_from_file,
-)
 from pyrig.src.modules.package import (
     all_deps_depending_on_dep,
     create_package,
     discover_equivalent_modules_across_dependents,
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
-    objs_from_obj,
     package_name_from_cwd,
     package_name_from_project_name,
     project_name_from_cwd,
@@ -70,68 +66,6 @@ def test_package_name_from_cwd() -> None:
     assert package_name == expected_package_name, (
         f"Expected {expected_package_name}, got {package_name}"
     )
-
-
-def test_objs_from_obj(tmp_path: Path) -> None:
-    """Test function."""
-    # Create a test module with functions and classes
-    module_content = '''"""Test module."""
-
-def func1() -> str:
-    """Function 1."""
-    return "func1"
-
-def func2() -> str:
-    """Function 2."""
-    return "func2"
-
-class TestClass1:
-    """Test class 1."""
-
-    def method1(self) -> str:
-        """Method 1."""
-        return "method1"
-
-class TestClass2:
-    """Test class 2."""
-    pass
-'''
-
-    # Create and import the module
-    module_file = tmp_path / "test_objs_module.py"
-    module_file.write_text(module_content)
-
-    with chdir(tmp_path):
-        test_objs_module = import_module_from_file(module_file)
-
-        # Test getting objects from module
-        objs = objs_from_obj(test_objs_module)
-
-        # Should contain 2 functions and 2 classes
-        expected_function_count = 2
-        expected_class_count = 2
-        expected_total_objects = expected_function_count + expected_class_count
-        assert len(objs) == expected_total_objects, (
-            f"Expected {expected_total_objects} objects "
-            f"({expected_function_count} functions + {expected_class_count} classes), "
-            f"got {len(objs)}"
-        )
-
-        # Test getting objects from a class
-        class_objs = objs_from_obj(test_objs_module.TestClass1)
-
-        # Should contain at least the method1
-        method_names = [getattr(obj, "__name__", None) for obj in class_objs]
-        assert "method1" in method_names, (
-            f"Expected 'method1' in class methods, got {method_names}"
-        )
-
-        # Test with non-module, non-class object
-        def test_func() -> None:
-            pass
-
-        result = objs_from_obj(test_func)
-        assert result == [], f"Expected empty list for function, got {result}"
 
 
 def test_discover_equivalent_modules_across_dependents() -> None:
