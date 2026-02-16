@@ -309,7 +309,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             Formatted name with prefix removed.
         """
         name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
-        prefix = split_on_uppercase(name)[0]
+        prefix = next(split_on_uppercase(name))
         return name.removeprefix(prefix).strip()
 
     def make_id_from_func(self, func: Callable[..., Any]) -> str:

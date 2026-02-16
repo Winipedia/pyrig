@@ -11,12 +11,12 @@ These utilities are used throughout pyrig for:
 """
 
 import re
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Generator, Iterable
 from types import ModuleType
 from typing import Any
 
 
-def split_on_uppercase(string: str) -> list[str]:
+def split_on_uppercase(string: str) -> Generator[str, None, None]:
     """Split string at uppercase letter boundaries.
 
     Used internally by pyrig to convert PascalCase class names to snake_case
@@ -26,20 +26,20 @@ def split_on_uppercase(string: str) -> list[str]:
         string: String to split (e.g., "MyClassName").
 
     Returns:
-        List of substrings split before each uppercase letter, with empty strings
+        Generator of substrings split before each uppercase letter, with empty strings
         filtered out.
 
     Example:
-        >>> split_on_uppercase("HelloWorld")
+        >>> list(split_on_uppercase("HelloWorld"))
         ['Hello', 'World']
-        >>> split_on_uppercase("XMLParser")
+        >>> list(split_on_uppercase("XMLParser"))
         ['X', 'M', 'L', 'Parser']
 
     Note:
         Consecutive uppercase letters split individually. Only splits on ASCII
         uppercase letters (A-Z), not Unicode uppercase characters.
     """
-    return [s for s in re.split(r"(?=[A-Z])", string) if s]
+    return (s for s in re.split(r"(?=[A-Z])", string) if s)
 
 
 def make_name_from_obj(
