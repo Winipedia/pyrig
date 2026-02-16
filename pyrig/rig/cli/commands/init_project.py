@@ -30,7 +30,6 @@ Note:
 """
 
 from collections.abc import Callable
-from typing import Any
 
 from rich.progress import (
     BarColumn,
@@ -148,13 +147,13 @@ def committing_initial_changes() -> Args:
     )
 
 
-def setup_steps() -> list[Callable[..., Any]]:
-    """Return the ordered list of setup step functions for project initialization.
+def setup_steps() -> tuple[Callable[..., Args], ...]:
+    """Return the ordered setup step functions for project initialization.
 
-    Each function in the returned list takes no arguments and returns an `Args`
+    Each function in the returned tuple takes no arguments and returns an `Args`
     object that can be executed via `PackageManager`.
     """
-    return [
+    return (
         initializing_version_control,
         adding_dev_dependencies,
         syncing_venv,  # to install dev deps
@@ -167,7 +166,7 @@ def setup_steps() -> list[Callable[..., Any]]:
         running_pre_commit_hooks,
         running_tests,
         committing_initial_changes,
-    ]
+    )
 
 
 def init_project() -> None:

@@ -12,8 +12,6 @@ from types import ModuleType
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.modules.imports import walk_package
-from pyrig.src.modules.package import create_package
-from pyrig.src.modules.path import ModulePath
 
 logger = logging.getLogger(__name__)
 
@@ -44,15 +42,3 @@ def create_tests_for_package(package: ModuleType) -> None:
     all_modules = (m for m, is_pkg in walk_package(package) if not is_pkg)
     # create test modules for all modules
     MirrorTestConfigFile.I.create_test_modules(all_modules)
-
-
-def create_test_package(package: ModuleType) -> None:
-    """Create a test package for a source package.
-
-    Args:
-        package: The source package to create a test package for.
-    """
-    test_package_name = MirrorTestConfigFile.I.test_obj_importpath_from_obj(package)
-    test_package_path = ModulePath.package_name_to_relative_dir_path(test_package_name)
-    # create package if it doesn't exist
-    create_package(test_package_path)
