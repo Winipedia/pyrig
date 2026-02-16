@@ -1,7 +1,7 @@
 """Test module."""
 
 import random
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from pathlib import Path
 from types import ModuleType
 
@@ -65,15 +65,18 @@ class TestPyInstallerBuilder:
         # Test that all resource packages includes both default and resources
         result = my_test_pyinstaller_builder().all_resource_packages()
         # Should return a list of modules
-        assert isinstance(result, list), f"Expected list, got {type(result)}"
+        assert isinstance(result, Generator), f"Expected Generator, got {type(result)}"
         # Should include at least the resources package
-        assert len(result) > 0, f"Expected at least one resource package, got {result}"
+        result_list = list(result)
+        assert len(result_list) > 0, (
+            f"Expected at least one resource package, got {result_list}"
+        )
 
     def test_additional_resource_packages(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
-        additional_packages = (
+        additional_packages = tuple(
             my_test_pyinstaller_builder().additional_resource_packages()
         )
         assert len(additional_packages) == 0, "Expected no additional packages"
@@ -105,7 +108,8 @@ class TestPyInstallerBuilder:
         """Test method."""
         result = my_test_pyinstaller_builder().add_datas()
         # should contain the resource.py and __init__.py from the resources package
-        assert len(result) > 1, f"Expected at least two files, got {result}"
+        result_list = list(result)
+        assert len(result_list) > 1, f"Expected at least two files, got {result_list}"
 
     def test_pyinstaller_options(
         self,
