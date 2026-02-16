@@ -157,8 +157,9 @@ def setup_steps() -> list[Callable[..., Any]]:
     return [
         initializing_version_control,
         adding_dev_dependencies,
+        syncing_venv,  # to install dev deps
         creating_priority_config_files,
-        syncing_venv,
+        syncing_venv,  # to install current pyproject.toml changes
         creating_project_root,
         creating_test_files,
         install_pre_commit_hooks,
