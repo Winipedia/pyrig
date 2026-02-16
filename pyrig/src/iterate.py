@@ -10,10 +10,23 @@ See Also:
 """
 
 import logging
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Generator, Iterable
 from typing import Any
 
 logger = logging.getLogger(__name__)
+
+
+def combine_generators(*generators: Iterable[Any]) -> Generator[Any, None, None]:
+    """Combine multiple generators into a single generator.
+
+    Args:
+        *generators: Any number of generators to combine.
+
+    Yields:
+        Items from all generators in the order they were provided.
+    """
+    for generator in generators:
+        yield from generator
 
 
 def nested_structure_is_subset(  # noqa: C901

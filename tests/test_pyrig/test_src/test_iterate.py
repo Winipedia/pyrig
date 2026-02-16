@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from pyrig.src.iterate import nested_structure_is_subset
+from pyrig.src.iterate import combine_generators, nested_structure_is_subset
 
 
 def test_nested_structure_is_subset() -> None:
@@ -72,3 +72,17 @@ def test_nested_structure_is_subset() -> None:
         subset, superset, on_dict_mismatch, on_list_mismatch
     )
     assert is_nested_subset, "Expected subset to be subset of superset"
+
+
+def test_combine_generators() -> None:
+    """Test function."""
+    gen1 = (x for x in [1, 2, 3])
+    gen2 = (x for x in ["a", "b"])
+    combined_gen = combine_generators(gen1, gen2)
+    assert list(combined_gen) == [1, 2, 3, "a", "b"], (
+        "Expected combined generator to yield all items from both generators in order"
+    )
+
+    # assert gen1 and gen2 are exhausted after combining and consuming combined_gen
+    assert list(gen1) == [], "Expected gen1 to be exhausted after combining"
+    assert list(gen2) == [], "Expected gen2 to be exhausted after combining"

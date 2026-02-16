@@ -38,6 +38,7 @@ Example:
 import os
 import platform
 from abc import abstractmethod
+from collections.abc import Generator, Iterable
 from pathlib import Path
 from types import ModuleType
 
@@ -48,6 +49,7 @@ from PyInstaller.utils.hooks import collect_data_files
 import pyrig
 from pyrig import resources
 from pyrig.rig.builders.base.base import BuilderConfigFile
+from pyrig.src.iterate import combine_generators
 from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
 
 
@@ -97,7 +99,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         run(options)
 
     @abstractmethod
-    def additional_resource_packages(self) -> list[ModuleType]:
+    def additional_resource_packages(self) -> Iterable[ModuleType]:
         """Return packages containing additional resources to bundle.
 
         Subclasses must implement this method to specify resource packages beyond
@@ -105,15 +107,15 @@ class PyInstallerBuilder(BuilderConfigFile):
         be included in the executable and accessible at runtime.
 
         Returns:
-            List of module objects representing resource packages.
+            Iterable of module objects representing resource packages.
 
         Example:
             Subclass implementation:
 
 
-                def additional_resource_packages(self) -> list[ModuleType]:
+                def additional_resource_packages(self) -> tuple[ModuleType, ...]:
                     from pyrig import resources
-                    return [resources]
+                    return (resources,)
         """
 
     def default_additional_resource_packages(self) -> list[ModuleType]:
@@ -129,19 +131,19 @@ class PyInstallerBuilder(BuilderConfigFile):
         """
         return discover_equivalent_modules_across_dependents(resources, pyrig)
 
-    def all_resource_packages(self) -> list[ModuleType]:
+    def all_resource_packages(self) -> Generator[ModuleType, None, None]:
         """Get all resource packages to bundle in the executable.
 
         Combines auto-discovered resource packages with additional packages
         specified by the subclass.
 
         Returns:
-            List of all resource packages to bundle.
+            Tuple of all resource packages to bundle.
         """
-        return [
-            *self.default_additional_resource_packages(),
-            *self.additional_resource_packages(),
-        ]
+        return combine_generators(
+            self.default_additional_resource_packages(),
+            self.additional_resource_packages(),
+        )
 
     def add_datas(self) -> list[tuple[str, str]]:
         """Build the --add-data arguments for PyInstaller.
