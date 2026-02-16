@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 def test_setup_steps() -> None:
     """Test that setup_steps returns a non-empty list of callables."""
     steps = setup_steps()
-    assert isinstance(steps, list), f"Expected list, got {type(steps)}"
+    assert isinstance(steps, tuple), f"Expected list, got {type(steps)}"
     assert len(steps) > 0, "Expected non-empty list of setup steps"
     assert all(callable(step) for step in steps), "All steps should be callable"
 
