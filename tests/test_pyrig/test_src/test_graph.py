@@ -15,6 +15,44 @@ class MyTestDiGraph(DiGraph):
 class TestDiGraph:
     """Test class."""
 
+    def test_longest_dependent_chain(self) -> None:
+        """Test method."""
+        graph = MyTestDiGraph()
+
+        # Build a more complex acyclic graph using letters.
+        # Edges are added as (source, target) meaning "source depends on target".
+        # Graph structure (dependents flow left-to-right):
+        # A <- B <- H <- I
+        # A <- C <- E <- K <- L
+        # A <- C <- J
+        # A <- D <- F
+        # (so the longest dependent chain for A is A -> C -> E -> K -> L)
+
+        graph.add_edge("B", "A")
+        graph.add_edge("C", "A")
+        graph.add_edge("D", "A")
+
+        graph.add_edge("H", "B")
+        graph.add_edge("I", "H")
+
+        graph.add_edge("E", "C")
+        graph.add_edge("K", "E")
+        graph.add_edge("L", "K")
+        graph.add_edge("J", "C")
+
+        graph.add_edge("F", "D")
+
+        # Longest dependent path belonging to A should be A -> C -> E -> K -> L
+        assert graph.longest_dependent_chain("A") == ("A", "C", "E", "K", "L")
+
+        # Shorter chains
+        assert graph.longest_dependent_chain("B") == ("B", "H", "I")
+        assert graph.longest_dependent_chain("D") == ("D", "F")
+
+        # A node with no dependents returns itself
+        graph.add_node("Z")
+        assert graph.longest_dependent_chain("Z") == ("Z",)
+
     def test_build(self) -> None:
         """Test method."""
         graph = MyTestDiGraph()
@@ -113,36 +151,6 @@ class TestDiGraph:
 
         # Ancestors of non-existent node
         assert graph.ancestors("x") == set()
-
-    def test_shortest_path_length(self) -> None:
-        """Test finding shortest path length between nodes."""
-        graph = MyTestDiGraph()
-        # Build graph: a -> b -> c -> d
-        #              a -> c (shortcut)
-        graph.add_edge("a", "b")
-        graph.add_edge("b", "c")
-        graph.add_edge("c", "d")
-        graph.add_edge("a", "c")
-
-        # Same node
-        assert graph.shortest_path_length("a", "a") == 0
-
-        # Direct edge
-        assert graph.shortest_path_length("a", "b") == 1
-
-        # Shortest path a -> c is 1 (direct), not 2 (via b)
-        assert graph.shortest_path_length("a", "c") == 1
-
-        # Path a -> d: a -> c -> d = 2
-        assert graph.shortest_path_length("a", "d") == 2  # noqa: PLR2004
-
-        # No path from d to a (directed graph)
-        with pytest.raises(ValueError, match="No path from d to a"):
-            graph.shortest_path_length("d", "a")
-
-        # Non-existent node
-        with pytest.raises(ValueError, match="Node not in graph"):
-            graph.shortest_path_length("a", "x")
 
     def test_topological_sort_subgraph(self) -> None:
         """Test topological sorting of a subgraph."""

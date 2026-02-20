@@ -30,7 +30,6 @@ See Also:
 """
 
 from datetime import UTC, datetime, timedelta
-from importlib import import_module
 from typing import Any
 
 import pyrig
@@ -38,6 +37,7 @@ from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.src.dependency_graph import DependencyGraph
+from pyrig.src.iterate import generator_length
 
 
 class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
@@ -78,8 +78,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Base class with workflow generation utilities
     """
 
-    BASE_CRON_HOUR = 0
-
     def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 
@@ -103,7 +101,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         offset = self.dependency_offset()
         base_time = datetime.now(tz=UTC).replace(
-            hour=self.BASE_CRON_HOUR, minute=0, second=0, microsecond=0
+            hour=0, minute=0, second=0, microsecond=0
         )
         scheduled_time = base_time + timedelta(hours=offset)
         return f"0 {scheduled_time.hour} * * *"
@@ -115,8 +113,11 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Number of hours to offset from base cron hour.
         """
         graph = DependencyGraph()
-        src_package = import_module(PyprojectConfigFile.I.package_name())
-        return graph.shortest_path_length(src_package.__name__, pyrig.__name__)
+        chain = graph.longest_dependent_chain(pyrig.__name__)
+        chain_without_src = (
+            n for n in chain if n != PyprojectConfigFile.I.package_name()
+        )
+        return generator_length(chain_without_src)
 
     def jobs(self) -> ConfigDict:
         """Get the workflow jobs.

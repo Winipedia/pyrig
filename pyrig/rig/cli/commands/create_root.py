@@ -11,19 +11,12 @@ from pyrig.rig.configs.base.base import ConfigFile
 logger = logging.getLogger(__name__)
 
 
-def make_project_root(*, priority: bool = False) -> None:
+def make_project_root() -> None:
     """Create project configuration files and directory structure.
 
     Discovers and validates all `ConfigFile` subclasses to create the complete
     project structure.
-
-    Args:
-        priority: If True, only creates high-priority config files (e.g.,
-            LICENSE, pyproject.toml). If False, creates all config files.
     """
     logger.info("Creating project root")
-    if priority:
-        ConfigFile.validate_priority_subclasses()
-        return
     ConfigFile.validate_all_subclasses()
     logger.info("Project root creation complete")

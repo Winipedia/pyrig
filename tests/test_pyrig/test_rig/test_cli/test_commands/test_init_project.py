@@ -14,14 +14,13 @@ from pyrig.main import main
 from pyrig.rig.cli.commands.init_project import (
     adding_dev_dependencies,
     committing_initial_changes,
-    creating_priority_config_files,
     creating_project_root,
     creating_test_files,
     initializing_version_control,
+    installing_dependencies,
     running_pre_commit_hooks,
     running_tests,
     setup_steps,
-    syncing_venv,
 )
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -60,12 +59,6 @@ def test_running_tests() -> None:
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_creating_priority_config_files() -> None:
-    """Test func."""
-    res = creating_priority_config_files()
-    assert isinstance(res, Args), f"Expected Args, got {type(res)}"
-
-
 def test_creating_project_root() -> None:
     """Test function."""
     # mock the real underlying subprocess.run from subprocess package
@@ -73,9 +66,9 @@ def test_creating_project_root() -> None:
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 
-def test_syncing_venv() -> None:
+def test_installing_dependencies() -> None:
     """Test function."""
-    res = syncing_venv()
+    res = installing_dependencies()
     assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
 

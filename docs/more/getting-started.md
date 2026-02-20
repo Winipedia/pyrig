@@ -203,10 +203,10 @@ information about each step.
 
 - Initializing version control (git init)
 - Adding dev dependencies (tool deps)
-- Syncing venv (install all dependencies)
-- Creating priority config files (LICENSE, pyproject.toml, etc.)
-- Syncing venv (install project itself, activate CLI)
+- Installing Dependencies (install all dependencies)
 - Creating project root (all config files and directory structure)
+- Installing Dependencies (install project itself, activate CLI)
+- Creating test files (test skeletons for all code)
 - Creating test files (test skeletons for all code)
 - Installing prek hooks (install hooks into git repository)
 - Adding all files to version control (stage all files)
