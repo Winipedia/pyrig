@@ -14,8 +14,8 @@ from typing import Any
 
 import pyrig
 from pyrig.rig.tools.base.base import Tool, ToolGroup
-from pyrig.src.modules.package import project_name_from_package_name
 from pyrig.src.processes import Args
+from pyrig.src.string_ import project_name_from_package_name
 
 
 class Pyrigger(Tool):

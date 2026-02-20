@@ -22,6 +22,7 @@ from pyrig.src.modules.imports import (
 )
 from pyrig.src.modules.module import (
     import_module_with_file_fallback,
+    import_modules,
 )
 from pyrig.src.modules.path import ModulePath, make_dir_with_init_file
 
@@ -53,53 +54,8 @@ def create_package(path: Path) -> ModuleType:
     return import_package_with_dir_fallback(path)
 
 
-def package_name_from_project_name(project_name: str) -> str:
-    """Convert project name to package name (hyphens → underscores).
-
-    Args:
-        project_name: Project name.
-
-    Returns:
-        Package name.
-    """
-    return project_name.replace("-", "_")
-
-
-def project_name_from_package_name(package_name: str) -> str:
-    """Convert package name to project name (underscores → hyphens).
-
-    Args:
-        package_name: Package name.
-
-    Returns:
-        Project name.
-    """
-    return package_name.replace("_", "-")
-
-
-def project_name_from_cwd() -> str:
-    """Get project name from current directory name.
-
-    Returns:
-        Current directory name.
-    """
-    cwd = Path.cwd()
-    return cwd.name
-
-
-def package_name_from_cwd() -> str:
-    """Get package name from current directory name.
-
-    Returns:
-        Package name (directory name with underscores).
-    """
-    return package_name_from_project_name(project_name_from_cwd())
-
-
 @cache
-def all_deps_depending_on_dep(
-    dep: ModuleType, *, include_self: bool = False
-) -> list[ModuleType]:
+def all_deps_depending_on_dep(dep: ModuleType) -> list[ModuleType]:
     """Get all packages that depend on the given dependency.
 
     Args:
@@ -109,11 +65,7 @@ def all_deps_depending_on_dep(
     Returns:
         List of imported module objects for dependent packages.
     """
-    deps = DependencyGraph().all_depending_on(dep, include_self=include_self)
-    # clear the DependencyGraph cache to optimize memory usage,
-    # we don't need to keep the full graph in memory after this
-    DependencyGraph.clear_cache()
-    return deps
+    return import_modules(DependencyGraph().sorted_ancestors(dep.__name__))
 
 
 @cache
@@ -173,7 +125,7 @@ def discover_equivalent_modules_across_dependents(
         module_name,
         dep.__name__,
     )
-    packages = all_deps_depending_on_dep(dep, include_self=True)
+    packages = [dep, *all_deps_depending_on_dep(dep)]
 
     modules: list[ModuleType] = []
     for package in packages:

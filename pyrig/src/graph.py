@@ -95,6 +95,26 @@ class DiGraph(ABC):
         """Check if a directed edge exists from source to target."""
         return target in self._edges.get(source, set())
 
+    def sorted_ancestors(self, target: str) -> list[str]:
+        """Return all ancestors of the target node, sorted in topological order.
+
+        Ancestors are nodes that have a directed path to the target (i.e., depend
+        on it directly or transitively). The result is sorted in topological
+        order (dependencies before dependents) using Kahn's algorithm.
+
+        Args:
+            target: Node to find ancestors of.
+
+        Returns:
+            List of ancestor node identifiers, sorted with dependencies first.
+            Returns empty list if target is not in the graph.
+
+        Raises:
+            ValueError: If the subgraph of ancestors contains a cycle, making
+                topological sorting impossible.
+        """
+        return self.topological_sort_subgraph(self.ancestors(target))
+
     def ancestors(self, target: str) -> set[str]:
         """Find all nodes that have a path to the target node.
 
@@ -114,9 +134,6 @@ class DiGraph(ABC):
             Set of all nodes with a directed path to target (excludes target itself).
             Returns empty set if target is not in the graph.
         """
-        if target not in self:
-            return set()
-
         visited: set[str] = set()
         queue: deque[str] = deque(self._reverse_edges.get(target, set()))
 
@@ -156,10 +173,6 @@ class DiGraph(ABC):
                 making longest path computation impossible.
             ValueError: If the specified node does not exist in the graph.
         """
-        if node not in self:
-            msg = f"Node '{node}' not found in graph"
-            raise ValueError(msg)
-
         memo: dict[str, tuple[str, ...]] = {}
         visiting: set[str] = set()
 
