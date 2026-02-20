@@ -1,5 +1,6 @@
 """tests module."""
 
+import sys
 from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
@@ -110,6 +111,10 @@ def test_import_package_from_dir(tmp_path: Path) -> None:
         init_file.write_text('"""Test package."""\n')
         package = import_package_from_dir(subdir)
         assert package.__name__ == "test_package.subdir"
+
+        # check all are now registered in sys.modules
+        assert "test_package" in sys.modules
+        assert "test_package.subdir" in sys.modules
 
 
 def test_import_package_with_dir_fallback_with_default() -> None:
