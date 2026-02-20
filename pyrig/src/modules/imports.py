@@ -15,14 +15,15 @@ import importlib.machinery
 import importlib.util
 import logging
 import pkgutil
+import sys
 from collections.abc import Generator
+from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 from pyrig.src.modules.module import (
     import_module_with_default,
-    import_module_with_file_fallback,
 )
 from pyrig.src.modules.path import ModulePath
 
@@ -73,6 +74,7 @@ def import_package_from_dir(package_dir: Path) -> ModuleType:
         raise ValueError(msg)
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)
+    sys.modules[package_name] = module
     return module
 
 
@@ -190,11 +192,5 @@ def iter_modules(
     for _finder, name, is_package in pkgutil.iter_modules(
         package.__path__, prefix=package.__name__ + "."
     ):
-        if is_package:
-            path = ModulePath.package_name_to_relative_dir_path(name)
-            mod = import_package_with_dir_fallback(path)
-        else:
-            path = ModulePath.module_name_to_relative_file_path(name)
-            mod = import_module_with_file_fallback(path)
-
+        mod = import_module(name)
         yield mod, is_package
