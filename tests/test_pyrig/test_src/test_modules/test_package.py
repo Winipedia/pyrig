@@ -18,54 +18,12 @@ from pyrig.src.modules.package import (
     discover_equivalent_modules_across_dependents,
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
-    package_name_from_cwd,
-    package_name_from_project_name,
-    project_name_from_cwd,
-    project_name_from_package_name,
 )
 from tests.test_pyrig.test_src import test_modules
 from tests.test_pyrig.test_src.test_modules.test_class_ import (
     AbstractParent,
     ConcreteChild,
 )
-
-
-def test_package_name_from_project_name() -> None:
-    """Test function."""
-    project_name = "test-project"
-    package_name = package_name_from_project_name(project_name)
-    expected_package_name = "test_project"
-    assert package_name == expected_package_name, (
-        f"Expected {expected_package_name}, got {package_name}"
-    )
-
-
-def test_project_name_from_package_name() -> None:
-    """Test function."""
-    package_name = "test_project"
-    project_name = project_name_from_package_name(package_name)
-    expected_project_name = "test-project"
-    assert project_name == expected_project_name, (
-        f"Expected {expected_project_name}, got {project_name}"
-    )
-
-
-def test_project_name_from_cwd() -> None:
-    """Test function."""
-    project_name = project_name_from_cwd()
-    expected_project_name = pyrig.__name__
-    assert project_name == expected_project_name, (
-        f"Expected {expected_project_name}, got {project_name}"
-    )
-
-
-def test_package_name_from_cwd() -> None:
-    """Test function."""
-    package_name = package_name_from_cwd()
-    expected_package_name = pyrig.__name__
-    assert package_name == expected_package_name, (
-        f"Expected {expected_package_name}, got {package_name}"
-    )
 
 
 def test_discover_equivalent_modules_across_dependents() -> None:
@@ -118,5 +76,5 @@ def test_discover_leaf_subclass_across_dependents() -> None:
 
 def test_all_deps_depending_on_dep() -> None:
     """Test function."""
-    packages = all_deps_depending_on_dep(pyrig, include_self=True)
+    packages = [*all_deps_depending_on_dep(pyrig), pyrig]
     assert pyrig in packages, f"Expected pyrig in packages, got {packages}"

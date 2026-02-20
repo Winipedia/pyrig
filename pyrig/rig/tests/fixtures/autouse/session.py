@@ -59,12 +59,15 @@ from pyrig.src.modules.module import (
 )
 from pyrig.src.modules.package import (
     all_deps_depending_on_dep,
-    package_name_from_project_name,
-    project_name_from_package_name,
 )
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.requests import internet_is_available
-from pyrig.src.string_ import make_summary_error_msg, re_search_excluding_docstrings
+from pyrig.src.string_ import (
+    make_summary_error_msg,
+    package_name_from_project_name,
+    project_name_from_package_name,
+    re_search_excluding_docstrings,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -505,7 +508,7 @@ def assert_src_does_not_use_rig() -> None:
 
     src_src_package = import_module(src_src_package_name)
 
-    packages_depending_on_pyrig = all_deps_depending_on_dep(pyrig, include_self=True)
+    packages_depending_on_pyrig = [pyrig, *all_deps_depending_on_dep(pyrig)]
 
     possible_rig_usages = [
         module_name_replacing_start_module(rig, package.__name__)

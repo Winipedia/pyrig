@@ -33,12 +33,12 @@ from pyrig.rig.utils.resources import (
     return_resource_content_on_fetch_error,
 )
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
-from pyrig.src.modules.package import (
+from pyrig.src.string_ import (
     package_name_from_cwd,
     package_name_from_project_name,
+    package_req_name_split_pattern,
     project_name_from_cwd,
 )
-from pyrig.src.string_ import package_req_name_split_pattern
 
 
 class PyprojectConfigFile(TomlConfigFile):

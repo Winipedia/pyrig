@@ -2,9 +2,6 @@
 
 import importlib.metadata
 
-import typer
-
-import pyrig
 from pyrig.src.dependency_graph import DependencyGraph
 
 
@@ -78,13 +75,3 @@ class TestDependencyGraph:
         # Test with trailing spaces (leading spaces result in empty first split)
         result = DependencyGraph.parse_package_name_from_req("  package-name  >=1.0")
         assert result == "package_name", f"Expected 'package_name', got {result}"
-
-    def test_all_depending_on(self) -> None:
-        """Test method."""
-        DependencyGraph.clear_cache()  # Clear singleton instance to force rebuild
-        dg = DependencyGraph()
-
-        dep_on_typer = dg.all_depending_on("typer", include_self=True)
-
-        assert typer in dep_on_typer, "Expected 'typer' to be in dependents"
-        assert pyrig in dep_on_typer, "Expected 'pyrig' to be in dependents"

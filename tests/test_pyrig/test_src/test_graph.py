@@ -2,6 +2,7 @@
 
 import pytest
 
+from pyrig.src.dependency_graph import DependencyGraph
 from pyrig.src.graph import DiGraph
 
 
@@ -14,6 +15,12 @@ class MyTestDiGraph(DiGraph):
 
 class TestDiGraph:
     """Test class."""
+
+    def test_sorted_ancestors(self) -> None:
+        """Test method."""
+        graph = DependencyGraph()
+        deps = graph.sorted_ancestors("typer")
+        assert deps == ["pyrig"]
 
     def test_longest_dependent_chain(self) -> None:
         """Test method."""
