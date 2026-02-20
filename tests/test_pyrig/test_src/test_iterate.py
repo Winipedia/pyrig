@@ -2,7 +2,11 @@
 
 from typing import Any
 
-from pyrig.src.iterate import combine_generators, nested_structure_is_subset
+from pyrig.src.iterate import (
+    combine_generators,
+    generator_length,
+    nested_structure_is_subset,
+)
 
 
 def test_nested_structure_is_subset() -> None:
@@ -86,3 +90,13 @@ def test_combine_generators() -> None:
     # assert gen1 and gen2 are exhausted after combining and consuming combined_gen
     assert list(gen1) == [], "Expected gen1 to be exhausted after combining"
     assert list(gen2) == [], "Expected gen2 to be exhausted after combining"
+
+
+def test_generator_length() -> None:
+    """Test function."""
+    length = 5
+    gen = (x for x in range(length))
+    assert generator_length(gen) == length, f"Expected generator length to be {length}"
+
+    gen = (x for x in [])
+    assert generator_length(gen) == 0, "Expected generator length to be 0"

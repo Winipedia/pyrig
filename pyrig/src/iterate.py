@@ -29,6 +29,24 @@ def combine_generators(*generators: Iterable[Any]) -> Generator[Any, None, None]
         yield from generator
 
 
+def generator_length(generator: Generator[Any, None, None]) -> int:
+    """Calculate the length of a generator without consuming it.
+
+    Warning:
+    This function will consume the generator, so it should only be used when
+    the generator is not needed afterward or when it can be recreated. If you need
+    to both calculate the length and use the items, consider converting the generator
+    to a Sequence first.
+
+    Args:
+        generator: The generator to measure.
+
+    Returns:
+        The number of items in the generator.
+    """
+    return sum(1 for _ in generator)
+
+
 def nested_structure_is_subset(  # noqa: C901
     subset: dict[Any, Any] | list[Any] | Any,
     superset: dict[Any, Any] | list[Any] | Any,

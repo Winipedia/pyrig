@@ -8,18 +8,14 @@ Creates the project root structure by validating all config files (including
 ```bash
 # Create all config files
 uv run pyrig mkroot
-
-# Create only priority config files
-uv run pyrig mkroot --priority
-
 # With verbose output to see which files are created/updated
 uv run pyrig -v mkroot
 ```
 
 ## Options
 
-- `--priority` - Only create priority config files (essential files needed
-  before dependency installation)
+(No command-line options are required for `mkroot`. It always discovers and
+validates all config files.)
 
 ## What It Does
 
@@ -27,16 +23,11 @@ The `mkroot` command discovers and validates all `ConfigFile` subclasses
 across the project and its dependencies. Config files are processed in priority
 order to ensure dependencies between files are respected.
 
-### Priority Config Files
-
-When using `--priority`, only essential config files are created—those required
-before installing dependencies or running other initialization steps (e.g.,
-`LICENSE`, `pyproject.toml`, package `__init__.py` files).
-
 ### All Config Files
 
-Without `--priority`, all config files are created or updated, including project
-metadata, workflows, git configuration, documentation structure, and test setup.
+`mkroot` discovers and validates all `ConfigFile` subclasses and creates or
+updates the corresponding configuration files, including project metadata,
+workflows, git configuration, documentation structure, and test setup.
 
 See [Configs Documentation](../../configs/index.md) for the complete list.
 
@@ -56,9 +47,9 @@ Use `mkroot` when:
 - Adding new `ConfigFile` subclasses to a project
 - Ensuring project structure is up to date
 
-Use `mkroot --priority` when:
+Use `mkroot` when:
 
-- During initial project setup (before installing dependencies)
+- During initial project setup
 - As part of `pyrig init` (runs automatically)
 
 ## Autouse Fixture

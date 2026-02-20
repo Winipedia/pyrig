@@ -12,10 +12,9 @@ immediately.
 The initialization steps execute in the following order:
     - Initializing version control (git init)
     - Adding dev dependencies (uv add --group dev)
-    - Syncing venv (uv sync)
-    - Creating priority config files (LICENSE, pyproject.toml, etc.)
-    - Syncing venv again (apply new configs)
-    - Creating project root (all remaining config files)
+    - Installing Dependencies (uv sync)
+    - Creating project root (all config files)
+    - Installing Dependencies again (apply new configs)
     - Creating test files (test skeletons for all source code)
     - Installing prek hooks (prek install)
     - Adding all files to version control (git add .)
@@ -68,23 +67,12 @@ def adding_dev_dependencies() -> Args:
     )
 
 
-def creating_priority_config_files() -> Args:
-    """Return args for creating priority config files.
-
-    Creates high-priority config files (`pyproject.toml`, `.gitignore`,
-    `LICENSE`) that other initialization steps depend on via
-    `pyrig mkroot --priority`.
-    """
-    # local imports to avoid failure on init when dev deps are not installed yet.
-    return Pyrigger.I.cmd_args("--priority", cmd=mkroot)
-
-
-def syncing_venv() -> Args:
-    """Return args for syncing the virtual environment via `uv sync`.
+def installing_dependencies() -> Args:
+    """Return args for installing the virtual environment via `uv sync`.
 
     Installs all dependencies from `pyproject.toml`. Called twice during
-    initialization: after adding dev dependencies and after creating
-    priority config files.
+    initialization: after adding dev dependencies and after creating the
+    project root.
     """
     return PackageManager.I.install_dependencies_args()
 
@@ -156,10 +144,9 @@ def setup_steps() -> tuple[Callable[..., Args], ...]:
     return (
         initializing_version_control,
         adding_dev_dependencies,
-        syncing_venv,  # to install dev deps
-        creating_priority_config_files,
-        syncing_venv,  # to install current pyproject.toml changes
+        installing_dependencies,  # to install dev deps
         creating_project_root,
+        installing_dependencies,  # to install project bc of pyproject.toml changes
         creating_test_files,
         install_pre_commit_hooks,
         add_all_files_to_version_control,

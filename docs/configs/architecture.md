@@ -288,21 +288,8 @@ group:
 **Key methods**:
 
 - `ConfigFile.validate_all_subclasses()` - validate all discovered config files
-- `ConfigFile.validate_priority_subclasses()` - validate only files with
-  priority > 0
 - `ConfigFile.subclasses()` - Discover all config files (sorted by
   priority)
-- `ConfigFile.priority_subclasses()` - Get only config files with priority >
-  0
-
-**Priority-only validation**:
-
-```bash
-uv run pyrig mkroot --priority
-```
-
-This creates only the essential files (priority > 0) during initial project
-setup, useful when you need core files before installing dependencies.
 
 #### Performance Benefits
 
