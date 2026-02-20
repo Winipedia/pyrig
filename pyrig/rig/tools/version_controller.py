@@ -15,8 +15,8 @@ from pathlib import Path
 from urllib.parse import quote
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
-from pyrig.src.modules.package import project_name_from_cwd
 from pyrig.src.processes import Args
+from pyrig.src.string_ import project_name_from_cwd
 
 logger = logging.getLogger(__name__)
 

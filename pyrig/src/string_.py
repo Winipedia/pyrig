@@ -12,6 +12,7 @@ These utilities are used throughout pyrig for:
 
 import re
 from collections.abc import Callable, Generator, Iterable
+from pathlib import Path
 from types import ModuleType
 from typing import Any
 
@@ -212,3 +213,46 @@ def package_req_name_split_pattern() -> re.Pattern[str]:
     """
     # re.compile is already internally cached by Python
     return re.compile(r"[^a-zA-Z0-9_.\[\]-]")
+
+
+def package_name_from_project_name(project_name: str) -> str:
+    """Convert project name to package name (hyphens → underscores).
+
+    Args:
+        project_name: Project name.
+
+    Returns:
+        Package name.
+    """
+    return project_name.replace("-", "_")
+
+
+def project_name_from_package_name(package_name: str) -> str:
+    """Convert package name to project name (underscores → hyphens).
+
+    Args:
+        package_name: Package name.
+
+    Returns:
+        Project name.
+    """
+    return package_name.replace("_", "-")
+
+
+def project_name_from_cwd() -> str:
+    """Get project name from current directory name.
+
+    Returns:
+        Current directory name.
+    """
+    cwd = Path.cwd()
+    return cwd.name
+
+
+def package_name_from_cwd() -> str:
+    """Get package name from current directory name.
+
+    Returns:
+        Package name (directory name with underscores).
+    """
+    return package_name_from_project_name(project_name_from_cwd())

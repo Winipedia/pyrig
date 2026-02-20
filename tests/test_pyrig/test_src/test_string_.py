@@ -5,14 +5,57 @@ from types import ModuleType
 
 import pytest
 
+import pyrig
 from pyrig.src.string_ import (
     make_linked_badge_markdown,
     make_name_from_obj,
     make_summary_error_msg,
+    package_name_from_cwd,
+    package_name_from_project_name,
     package_req_name_split_pattern,
+    project_name_from_cwd,
+    project_name_from_package_name,
     re_search_excluding_docstrings,
     split_on_uppercase,
 )
+
+
+def test_package_name_from_project_name() -> None:
+    """Test function."""
+    project_name = "test-project"
+    package_name = package_name_from_project_name(project_name)
+    expected_package_name = "test_project"
+    assert package_name == expected_package_name, (
+        f"Expected {expected_package_name}, got {package_name}"
+    )
+
+
+def test_project_name_from_package_name() -> None:
+    """Test function."""
+    package_name = "test_project"
+    project_name = project_name_from_package_name(package_name)
+    expected_project_name = "test-project"
+    assert project_name == expected_project_name, (
+        f"Expected {expected_project_name}, got {project_name}"
+    )
+
+
+def test_project_name_from_cwd() -> None:
+    """Test function."""
+    project_name = project_name_from_cwd()
+    expected_project_name = pyrig.__name__
+    assert project_name == expected_project_name, (
+        f"Expected {expected_project_name}, got {project_name}"
+    )
+
+
+def test_package_name_from_cwd() -> None:
+    """Test function."""
+    package_name = package_name_from_cwd()
+    expected_package_name = pyrig.__name__
+    assert package_name == expected_package_name, (
+        f"Expected {expected_package_name}, got {package_name}"
+    )
 
 
 def test_split_on_uppercase() -> None:

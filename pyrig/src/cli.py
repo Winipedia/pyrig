@@ -22,7 +22,7 @@ Example:
 import sys
 from pathlib import Path
 
-from pyrig.src.modules.package import package_name_from_project_name
+from pyrig.src.string_ import package_name_from_project_name
 
 
 def project_name_from_argv() -> str:
