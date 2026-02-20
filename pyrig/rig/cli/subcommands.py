@@ -4,16 +4,8 @@ Add custom CLI commands here as public functions. All public functions are
 automatically discovered and registered as CLI commands.
 """
 
-import typer
 
-
-def mkroot(
-    *,
-    priority: bool = typer.Option(
-        default=False,
-        help="Only create priority config files.",
-    ),
-) -> None:
+def mkroot() -> None:
     """Create or update project configuration files and directory structure.
 
     Discovers all ConfigFile subclasses across the project and its dependencies,
@@ -24,24 +16,15 @@ def mkroot(
     The command is idempotent: safe to run multiple times, overwrites incorrect
     files but respects opt-out markers.
 
-    Args:
-        priority: If True, only creates high-priority config files (e.g.,
-            LICENSE, pyproject.toml). Used during `init` to create essential
-            files before installing dependencies. Default: False.
-
     Example:
         $ uv run pyrig mkroot
-        $ uv run pyrig mkroot --priority
 
-    Note:
-        Config files are created in parallel within each priority group for
-        performance. The command is automatically called twice by `pyrig init`.
     """
     # local imports in pyrig to avoid cli failure when installing without dev deps
     # as some pyrig commands are dependend on dev deps and can only be used in a dev env
     from pyrig.rig.cli.commands.create_root import make_project_root  # noqa: PLC0415
 
-    make_project_root(priority=priority)
+    make_project_root()
 
 
 def mktests() -> None:
@@ -107,9 +90,8 @@ def init() -> None:
         - Initialize version control (git init)
         - Add development dependencies (uv add --group dev)
         - Sync virtual environment (uv sync)
-        - Create priority config files (mkroot --priority)
+        - Create project root (mkroot)
         - Sync virtual environment again (apply new configs)
-        - Create complete project structure (mkroot)
         - Generate test skeletons (mktests)
         - Install prek hooks (prek install)
         - Add all files to version control (git add .)

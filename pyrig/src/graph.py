@@ -131,49 +131,68 @@ class DiGraph(ABC):
 
         return visited
 
-    def shortest_path_length(self, source: str, target: str) -> int:
-        """Find the shortest path length (number of edges) between two nodes.
+    def longest_dependent_chain(self, node: str) -> tuple[str, ...]:
+        """Return the longest directed path that "belongs to" (is rooted at) a node.
 
-        Uses BFS to find the minimum number of edges required to traverse from
-        source to target. In dependency graph context, this represents the
-        dependency depth between packages.
+        "Belongs to" in this context means the path of dependents starting from
+        the given node following reverse edges (nodes that depend on the node,
+        their dependents, and so on). For example, if `A` is depended-on by
+        `B` and `C`, and `D` depends on `C`, then
+        `longest_path_belonging_to('A')` -> ``('A', 'C', 'D')``.
 
-        Used by `pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile`
-        to calculate cron schedule offsets based on dependency depth to pyrig,
-        ensuring dependent packages run health checks after their dependencies.
+        Implementation: depth-first search with memoization (dynamic
+        programming). This runs in O(V + E) time on a DAG. Cycle detection is
+        performed and a ``ValueError`` is raised if a cycle is encountered.
 
         Args:
-            source: Starting node.
-            target: Destination node.
+            node: Node identifier to compute longest dependent-path for.
 
         Returns:
-            Number of edges in the shortest path. Returns 0 if source == target.
+            Tuple of node identifiers representing the longest path starting
+            with ``node`` and continuing along dependents.
 
         Raises:
-            ValueError: If either node is not in the graph, or if no path exists
-                from source to target.
+            ValueError: If the graph contains a cycle,
+                making longest path computation impossible.
+            ValueError: If the specified node does not exist in the graph.
         """
-        if source not in self or target not in self:
-            msg = f"Node not in graph: {source if source not in self else target}"
+        if node not in self:
+            msg = f"Node '{node}' not found in graph"
             raise ValueError(msg)
 
-        if source == target:
-            return 0
+        memo: dict[str, tuple[str, ...]] = {}
+        visiting: set[str] = set()
 
-        visited: set[str] = {source}
-        queue: deque[tuple[str, int]] = deque([(source, 0)])
+        def dfs(n: str) -> tuple[str, ...]:
+            if n in memo:
+                return memo[n]
+            if n in visiting:
+                msg = "Cycle detected while computing longest path"
+                raise ValueError(msg)
 
-        while queue:
-            node, distance = queue.popleft()
-            for neighbor in self._edges.get(node, set()):
-                if neighbor == target:
-                    return distance + 1
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append((neighbor, distance + 1))
+            visiting.add(n)
 
-        msg = f"No path from {source} to {target}"
-        raise ValueError(msg)
+            # Start with the trivial path (the node itself)
+            best: tuple[str, ...] = (n,)
+
+            # Iterate dependents (nodes that have an edge -> n). Sort for
+            # deterministic tie-breaking when multiple equal-length paths exist.
+            dependents = sorted(self._reverse_edges.get(n, set()))
+            for dep in dependents:
+                candidate_tail = dfs(dep)
+                # candidate_tail begins with dep; prepend current node
+                candidate = (n, *candidate_tail)
+                # Prefer longer paths; break ties deterministically by tuple
+                if len(candidate) > len(best) or (
+                    len(candidate) == len(best) and candidate < best
+                ):
+                    best = candidate
+
+            visiting.remove(n)
+            memo[n] = best
+            return best
+
+        return dfs(node)
 
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
         """Sort a subset of nodes in topological order (dependencies first).

@@ -138,12 +138,6 @@ class TestConfigFile:
         """Test method."""
         assert my_test_config_file().priority() == 0
 
-    def test_priority_subclasses(self) -> None:
-        """Test method."""
-        priority_subclasses = ConfigFile.priority_subclasses()
-        assert isinstance(priority_subclasses, list)
-        assert all(issubclass(cf, ConfigFile) for cf in priority_subclasses)
-
     def test_validate_subclasses(
         self, mocker: MockFixture, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
@@ -164,15 +158,6 @@ class TestConfigFile:
         )
         ConfigFile.validate_all_subclasses()
         assert mock.call_count == len(num_subclasses)
-
-    def test_validate_priority_subclasses(self, mocker: MockFixture) -> None:
-        """Test method."""
-        num_priority_subclasses = ConfigFile.priority_subclasses()
-        mock = mocker.patch.object(
-            ConfigFile, ConfigFile.validate.__name__, return_value=None
-        )
-        ConfigFile.validate_priority_subclasses()
-        assert mock.call_count == len(num_priority_subclasses)
 
     def test_extension_separator(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]

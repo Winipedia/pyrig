@@ -223,7 +223,7 @@ class PackageManager(Tool):
         return self.version_args("--short", *args)
 
     def no_auto_install_env_var(self) -> str:
-        """Get environment variable name for disabling automatic dependency syncing.
+        """Get environment variable name for disabling automatic dependency installing.
 
         UV normally runs ``uv sync`` implicitly before commands like
         ``uv run`` or ``uv version --bump`` when the venv is out of date.

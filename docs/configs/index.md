@@ -169,13 +169,8 @@ system works.
 ```bash
 # Create all config files
 uv run pyrig mkroot
-
-# Create only priority config files (useful during initial setup)
-uv run pyrig mkroot --priority
 ```
 
-The `--priority` flag creates only essential files needed before installing
-dependencies (LICENSE, pyproject.toml, `__init__.py` files).
 
 ### Creating a Custom Config File
 

@@ -18,14 +18,11 @@ pyrig project. The following steps execute in order:
 
 - **Initializing Version Control** - Initializes a git repository (`git init`)
 - **Adding Dev Dependencies** - Adds pyrig's development dependencies
-- **Syncing Venv** - Installs all dependencies
-- **Creating Priority Config Files** - Creates essential files (LICENSE,
-  pyproject.toml, package `__init__.py` files) that must exist before other
-  steps
-- **Syncing Venv (Again)** - Installs the project itself, making CLI commands
-  available
-- **Creating Project Root** - Generates all remaining config files via
-  [mkroot](mkroot.md)
+- **Installing Dependencies** - Installs all dependencies
+- **Creating Project Root** - Generates all configuration files and project
+  structure via [mkroot](mkroot.md)
+- **Installing Dependencies (Again)** -Installs the project itself,
+making CLI commands available
 - **Creating Test Files** - Generates test skeletons via [mktests](mktests.md)
 - **Installing Prek Hooks** - Installs prek hooks into the git
   repository
