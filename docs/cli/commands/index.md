@@ -11,6 +11,7 @@ management.
 - **[mkinits](mkinits.md)** - Create `__init__.py` files
 - **[build](build.md)** - Build all artifacts
 - **[protect-repo](protect-repo.md)** - Configure repository protection
+- **[scratch](scratch.md)** - Execute the project's `.scratch` file for temporary code
 - **version** - Display the current project's version (shared command)
 
 ## Quick Reference
@@ -36,6 +37,9 @@ uv run pyrig protect-repo
 
 # Show version
 uv run pyrig version
+
+# Execute project .scratch file
+uv run pyrig scratch
 ```
 
 ## Global Options
