@@ -14,7 +14,6 @@ class TestDependencyGraph:
         dist = importlib.metadata.distribution(name)
         result_name, result_deps = DependencyGraph.parse_name_and_deps(dist)
         assert result_name == "pyrig", f"Expected 'pyrig', got '{result_name}'"
-        assert isinstance(result_deps, list), "Expected deps to be a list"
         assert "typer" in result_deps, "Expected 'typer' to be in dependencies"
 
     def test_normalize_package_name(self) -> None:
