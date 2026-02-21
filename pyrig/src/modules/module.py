@@ -26,7 +26,7 @@ from pyrig.src.modules.path import ModulePath, make_dir_with_init_file
 logger = logging.getLogger(__name__)
 
 
-def module_content_as_str(module: ModuleType) -> str:
+def module_content(module: ModuleType) -> str:
     """Read the source code of a module as a string.
 
     Args:
@@ -95,28 +95,6 @@ def import_module_with_file_fallback(path: Path) -> ModuleType:
     if isinstance(module, ModuleType):
         return module
     return import_module_from_file(path)
-
-
-def import_module_with_file_fallback_with_default(
-    path: Path, default: Any = None
-) -> ModuleType | Any:
-    """Import a module from a path, returning a default value on failure.
-
-    Wraps ``import_module_with_file_fallback`` with error handling. Returns the
-    default value only when a ``FileNotFoundError`` occurs (other exceptions
-    are not caught).
-
-    Args:
-        path: Path to the module file.
-        default: Value to return if the file is not found.
-
-    Returns:
-        The imported module, or ``default`` if the file does not exist.
-    """
-    try:
-        return import_module_with_file_fallback(path)
-    except FileNotFoundError:
-        return default
 
 
 def import_module_from_file(path: Path) -> ModuleType:

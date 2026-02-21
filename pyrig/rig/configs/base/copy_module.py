@@ -24,7 +24,7 @@ from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.src.modules.module import (
     isolated_obj_name,
-    module_content_as_str,
+    module_content,
     module_name_replacing_start_module,
 )
 from pyrig.src.modules.path import ModulePath
@@ -75,7 +75,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             Full source code of the module as list of lines.
         """
         src_module = self.src_module()
-        return [*module_content_as_str(src_module).splitlines()]
+        return [*module_content(src_module).splitlines()]
 
     def filename(self) -> str:
         """Return module's isolated name (last component).
