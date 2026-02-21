@@ -9,6 +9,6 @@ See Also:
     pyrig.rig.tools.base.base: Implementation of `Tool` and `ToolGroup`.
     pyrig.src.processes: Implementation of `Args`, the command container
         returned by ``Tool`` methods.
-    pyrig.src.subclass: `SingletonDependencySubclass`, the discovery
+    pyrig.src.subclass: `DependencySubclass`, the discovery
         base that ``Tool`` inherits from.
 """

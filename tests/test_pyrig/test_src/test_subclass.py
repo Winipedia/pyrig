@@ -17,7 +17,6 @@ class TestDependencySubclass:
         result = GitignoreConfigFile.I
         assert isinstance(result, GitignoreConfigFile)
         assert result is GitignoreConfigFile.I.I
-        assert result is GitignoreConfigFile.I.L()
 
     def test_definition_package(self) -> None:
         """Test method."""
@@ -45,7 +44,3 @@ class TestDependencySubclass:
     def test_L(self) -> None:  # noqa: N802
         """Test method."""
         assert MirrorTestConfigFile.I.L.L is MirrorTestConfigFile
-
-
-class TestSingletonDependencySubclass:
-    """Test class."""
