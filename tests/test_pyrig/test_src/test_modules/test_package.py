@@ -6,17 +6,12 @@ tests.test_pyrig.test_modules.test_package
 from contextlib import chdir
 from pathlib import Path
 
-import pytest
-
 import pyrig
 from pyrig import src
-from pyrig.rig import configs
-from pyrig.rig.configs.base.base import ConfigFile
 from pyrig.src.modules.package import (
     all_deps_depending_on_dep,
     create_package,
     discover_equivalent_modules_across_dependents,
-    discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
 )
 from tests.test_pyrig.test_src import test_modules
@@ -51,27 +46,11 @@ def test_create_package(tmp_path: Path) -> None:
 def test_discover_subclasses_across_dependents() -> None:
     """Test func."""
     subclasses = discover_subclasses_across_dependents(
-        AbstractParent, pyrig, test_modules, exclude_abstract=True
+        AbstractParent, pyrig, test_modules
     )
     assert ConcreteChild in subclasses, (
         f"Expected ConcreteChild in non-abstract subclasses, got {subclasses}"
     )
-
-
-def test_discover_leaf_subclass_across_dependents() -> None:
-    """Test function."""
-    with pytest.raises(ValueError, match="Multiple final leaves found"):
-        discover_leaf_subclass_across_dependents(
-            cls=ConfigFile, dep=pyrig, load_package_before=configs
-        )
-
-    class MyTestConfigFile(ConfigFile):
-        pass
-
-    final_leaf = discover_leaf_subclass_across_dependents(
-        cls=MyTestConfigFile, dep=pyrig, load_package_before=test_modules
-    )
-    assert final_leaf is MyTestConfigFile
 
 
 def test_all_deps_depending_on_dep() -> None:
