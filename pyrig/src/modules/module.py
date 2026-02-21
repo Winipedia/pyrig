@@ -15,7 +15,6 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.inspection import (
     module_of_obj,
     qualname_of_obj,
@@ -216,26 +215,6 @@ def isolated_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
     if isinstance(obj, type):
         return obj.__name__
     return qualname_of_obj(obj).split(".")[-1]
-
-
-def execute_all_functions_from_module(module: ModuleType) -> list[Any]:
-    """Execute all functions defined in a module and collect their return values.
-
-    Useful for running setup/initialization functions or test fixtures defined
-    in a module. Functions are executed in definition order.
-
-    Args:
-        module: Module containing zero-argument functions to execute.
-
-    Returns:
-        List of return values from all executed functions, in definition order.
-
-    Note:
-        Only executes functions defined directly in the module (not imported).
-        All functions must accept zero arguments or have default values for all
-        parameters. Raises ``TypeError`` if a function requires arguments.
-    """
-    return [f() for f in all_functions_from_module(module)]
 
 
 def default_module_content() -> str:
