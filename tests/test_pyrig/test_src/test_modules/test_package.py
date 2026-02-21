@@ -27,7 +27,6 @@ def test_discover_equivalent_modules_across_dependents() -> None:
 
     modules = discover_equivalent_modules_across_dependents(src, pyrig)
     # Should at least include pyrig.src itself
-    assert len(modules) > 0, f"Expected at least one module, got {modules}"
     assert src in modules, f"Expected pyrig.src in modules, got {modules}"
 
 

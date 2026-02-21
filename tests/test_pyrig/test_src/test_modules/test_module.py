@@ -274,9 +274,6 @@ def test_module_has_docstring(tmp_path: Path) -> None:
 def test_import_modules() -> None:
     """Test function."""
     names = ["sys", "os"]
-    modules = import_modules(names)
-    assert len(modules) == len(names), (
-        f"Expected {len(names)} modules, got {len(modules)}"
-    )
-    assert modules[0].__name__ == "sys", f"Expected sys module, got {modules[0]}"
-    assert modules[1].__name__ == "os", f"Expected os module, got {modules[1]}"
+    modules = tuple(import_modules(names))
+
+    assert modules == (sys, os)

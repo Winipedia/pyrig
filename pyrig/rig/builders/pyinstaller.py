@@ -118,7 +118,7 @@ class PyInstallerBuilder(BuilderConfigFile):
                     return (resources,)
         """
 
-    def default_additional_resource_packages(self) -> list[ModuleType]:
+    def default_additional_resource_packages(self) -> Generator[ModuleType, None, None]:
         """Get resource packages from all pyrig-dependent packages.
 
         Automatically discovers all `resources` modules from packages that depend
@@ -126,7 +126,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         their entire dependency chain.
 
         Returns:
-            List of module objects representing resources packages from all
+             Generator of module objects representing resources packages from all
             packages in the dependency chain.
         """
         return discover_equivalent_modules_across_dependents(resources, pyrig)
@@ -138,7 +138,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         specified by the subclass.
 
         Returns:
-            Tuple of all resource packages to bundle.
+            Generator of all resource packages to bundle.
         """
         return combine_generators(
             self.default_additional_resource_packages(),
