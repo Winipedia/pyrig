@@ -7,6 +7,7 @@ from pyrig.rig.cli.subcommands import (
     mkroot,
     mktests,
     protect_repo,
+    scratch,
 )
 from pyrig.rig.tools.pyrigger import Pyrigger
 
@@ -65,3 +66,13 @@ def test_protect_repo() -> None:
     stoud = args.run().stdout
     name = protect_repo.__name__.replace("_", "-")
     assert name in stoud, f"Expected {name} in stdout, got {stoud}"
+
+
+def test_scratch() -> None:
+    """Test function."""
+    # run --help comd to see if its available
+    args = Pyrigger.I.cmd_args("--help", cmd=scratch)
+    stoud = args.run().stdout
+    assert scratch.__name__ in stoud, (
+        f"Expected {scratch.__name__} in stdout, got {stoud}"
+    )

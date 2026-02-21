@@ -184,3 +184,24 @@ def protect_repo() -> None:
     from pyrig.rig.cli.commands.protect_repo import protect_repository  # noqa: PLC0415
 
     protect_repository()
+
+
+def scratch() -> None:
+    """Execute the .scratch file for temporary, ad-hoc code.
+
+    The .scratch file is a Python script located at the project root, intended
+    for temporary, experimental code that doesn't belong in the main source
+    files. This command checks for the existence of .scratch and executes it in
+    a clean namespace.
+
+    Example usage:
+        $ uv run pyrig scratch
+
+    Note:
+        The .scratch file is not tracked by version control and should be used
+        for one-off scripts, debugging, or experimental code related to the
+        project.
+    """
+    from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
+
+    run_scratch_file()
