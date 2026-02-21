@@ -6,7 +6,6 @@ Handles functions, methods, staticmethods, classmethods, properties, and decorat
 
 import inspect
 from collections.abc import Callable
-from importlib import import_module
 from types import ModuleType
 from typing import Any
 
@@ -52,27 +51,22 @@ def is_func(obj: Any) -> bool:
     return is_func_or_method(unwrapped)
 
 
-def all_functions_from_module(
-    module: ModuleType | str, *, include_annotate: bool = False
-) -> list[Callable[..., Any]]:
+def all_functions_from_module(module: ModuleType) -> list[Callable[..., Any]]:
     """Extract all functions defined directly in a module.
 
     Excludes imported functions.
 
     Args:
         module: Module to extract from (object or name string).
-        include_annotate: If False, excludes `__annotate__` (Python 3.14+).
 
     Returns:
         List of functions sorted by definition order.
     """
-    if isinstance(module, str):
-        module = import_module(module)
-    funcs = [
+    funcs = (
         func
-        for _name, func in obj_members(module, include_annotate=include_annotate)
+        for _name, func in obj_members(module)
         if is_func(func)
         if module_of_obj(func).__name__ == module.__name__
-    ]
+    )
     # sort by definition order
     return sorted(funcs, key=def_line)

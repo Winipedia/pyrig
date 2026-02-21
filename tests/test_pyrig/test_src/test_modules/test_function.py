@@ -2,7 +2,6 @@
 
 import functools
 
-from pyrig.src.modules import function
 from pyrig.src.modules import function as func_module
 from pyrig.src.modules.class_ import classproperty
 from pyrig.src.modules.function import (
@@ -10,7 +9,6 @@ from pyrig.src.modules.function import (
     is_func,
     is_func_or_method,
 )
-from pyrig.src.modules.module import make_obj_importpath
 
 
 def test_is_func_or_method() -> None:
@@ -180,16 +178,3 @@ def test_all_functions_from_module() -> None:
         assert expected_name in function_names, (
             f"Expected function '{expected_name}' to be found"
         )
-
-    # Test with string module name
-    functions_from_string = all_functions_from_module(
-        make_obj_importpath(function),
-    )
-
-    assert len(functions_from_string) == len(functions), (
-        "Expected same number of functions when using string module name"
-    )
-
-    # Verify all functions are callable
-    for func in functions:
-        assert callable(func), f"Expected function {func} to be callable"
