@@ -12,7 +12,7 @@ import logging
 from pyrig.src.graph import DiGraph
 from pyrig.src.singleton import Singleton
 from pyrig.src.string_ import (
-    package_name_from_project_name,
+    kebab_to_snake_case,
     package_req_name_split_pattern,
 )
 
@@ -94,4 +94,4 @@ class DependencyGraph(DiGraph, Singleton):
         Returns:
             Normalized package name.
         """
-        return package_name_from_project_name(name)
+        return kebab_to_snake_case(name)

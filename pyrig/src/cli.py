@@ -22,7 +22,7 @@ Example:
 import sys
 from pathlib import Path
 
-from pyrig.src.string_ import package_name_from_project_name
+from pyrig.src.string_ import kebab_to_snake_case
 
 
 def project_name_from_argv() -> str:
@@ -65,8 +65,8 @@ def package_name_from_argv() -> str:
 
     See Also:
         project_name_from_argv: Returns the raw project name without conversion.
-        pyrig.src.modules.package.package_name_from_project_name: The underlying
+        pyrig.src.modules.package.kebab_to_snake_case: The underlying
             conversion function.
     """
     project_name = project_name_from_argv()
-    return package_name_from_project_name(project_name)
+    return kebab_to_snake_case(project_name)
