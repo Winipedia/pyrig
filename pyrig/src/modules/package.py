@@ -12,6 +12,7 @@ from functools import cache
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 from pyrig.src.dependency_graph import DependencyGraph
 from pyrig.src.modules.class_ import (
@@ -143,7 +144,6 @@ def discover_equivalent_modules_across_dependents(
     return modules
 
 
-@cache
 def discover_subclasses_across_dependents[T: type](
     cls: T,
     dep: ModuleType,
@@ -251,8 +251,7 @@ def discover_subclasses_across_dependents[T: type](
     return subclasses
 
 
-@cache
-def discover_leaf_subclass_across_dependents[T: type](
+def discover_leaf_subclass_across_dependents[T: type[Any]](
     cls: T, dep: ModuleType, load_package_before: ModuleType
 ) -> T:
     """Discover the single deepest subclass in the inheritance hierarchy.
