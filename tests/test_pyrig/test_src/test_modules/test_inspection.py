@@ -7,9 +7,9 @@ import os
 from collections.abc import Callable
 from functools import wraps
 
+from pyrig.src.iterate import generator_length
 from pyrig.src.modules.inspection import (
     def_line,
-    inside_frozen_bundle,
     module_of_obj,
     obj_members,
     qualname_of_obj,
@@ -20,8 +20,7 @@ from pyrig.src.modules.inspection import (
 def test_obj_members() -> None:
     """Test function."""
     members = obj_members(test_obj_members)
-    assert isinstance(members, list), f"Expected list, got {type(members)}"
-    assert len(members) > 0, f"Expected at least 1 member, got {len(members)}"
+    assert generator_length(members) > 0
 
 
 def test_def_line() -> None:
@@ -54,12 +53,6 @@ def test_def_line() -> None:
     assert prop_line > 0, (
         f"Expected positive integer line number for property, got {prop_line}"
     )
-
-
-def test_inside_frozen_bundle() -> None:
-    """Test function."""
-    result = inside_frozen_bundle()
-    assert result is False, f"Expected False, got {result}"
 
 
 def test_qualname_of_obj() -> None:

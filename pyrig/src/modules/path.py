@@ -15,7 +15,6 @@ Key Components:
 """
 
 import logging
-import sys
 from pathlib import Path
 from types import ModuleType
 
@@ -37,61 +36,7 @@ class ModulePath:
         - Module/package object → file path: ``module_type_to_file_path``,
           ``package_type_to_dir_path``
 
-    Frozen Environment Support:
-        Methods ``cwd``, ``rel_cwd``, ``meipass``, and ``in_frozen_env``
-        handle PyInstaller frozen executables where files are extracted to a
-        temporary ``_MEIPASS`` directory.
     """
-
-    @staticmethod
-    def cwd() -> Path:
-        """Get the base directory for module path resolution.
-
-        In normal execution, returns the current working directory. In frozen
-        environments (PyInstaller), returns the _MEIPASS temporary directory
-        where bundled files are extracted.
-
-        Returns:
-            Absolute path to CWD, or _MEIPASS directory in frozen environment.
-        """
-        return Path.cwd() if not ModulePath.in_frozen_env() else ModulePath.meipass()
-
-    @staticmethod
-    def rel_cwd() -> Path:
-        """Get the relative base path for module path resolution.
-
-        Returns an empty ``Path()`` (representing current directory ".") in normal
-        execution. In frozen environments, returns the _MEIPASS path since relative
-        paths must be resolved from the extraction directory.
-
-        Returns:
-            Empty Path in normal execution, or _MEIPASS in frozen environment.
-        """
-        return Path() if not ModulePath.in_frozen_env() else ModulePath.meipass()
-
-    @staticmethod
-    def meipass() -> Path:
-        """Get the PyInstaller _MEIPASS temporary extraction directory.
-
-        PyInstaller bundles Python files into a single executable and extracts
-        them to a temporary directory at runtime. The path is stored in
-        ``sys._MEIPASS``.
-
-        Returns:
-            Path to _MEIPASS directory, or empty Path("") if not in frozen
-            environment.
-        """
-        return Path(getattr(sys, "_MEIPASS", ""))
-
-    @staticmethod
-    def in_frozen_env() -> bool:
-        """Check if running in a PyInstaller frozen executable.
-
-        Returns:
-            True if ``sys.frozen`` is set (PyInstaller environment),
-            False otherwise.
-        """
-        return getattr(sys, "frozen", False)
 
     @staticmethod
     def module_type_to_file_path(module: ModuleType) -> Path:
@@ -228,8 +173,7 @@ class ModulePath:
         """
         if not path.is_absolute():
             return ModulePath.relative_path_to_module_name(path)
-        cwd = ModulePath.cwd()
-        rel_path = path.resolve().relative_to(cwd)
+        rel_path = path.resolve().relative_to(Path.cwd())
         return ModulePath.relative_path_to_module_name(rel_path)
 
 

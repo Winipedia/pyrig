@@ -74,24 +74,6 @@ def test_make_package_dir(tmp_path: Path) -> None:
 class TestModulePath:
     """Test class."""
 
-    def test_cwd(self, tmp_path: Path) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            assert ModulePath.cwd() == tmp_path
-
-    def test_rel_cwd(self, tmp_path: Path) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            assert ModulePath.rel_cwd() == Path()
-
-    def test_meipass(self) -> None:
-        """Test method."""
-        assert ModulePath.meipass() == Path()
-
-    def test_in_frozen_env(self) -> None:
-        """Test method."""
-        assert ModulePath.in_frozen_env() is False
-
     def test_module_type_to_file_path(self, tmp_path: Path) -> None:
         """Test method."""
         test_module_name = self.test_module_type_to_file_path.__name__

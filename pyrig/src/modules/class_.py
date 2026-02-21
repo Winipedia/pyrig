@@ -26,7 +26,6 @@ def all_methods_from_cls(
     class_: type,
     *,
     exclude_parent_methods: bool = False,
-    include_annotate: bool = False,
 ) -> list[Callable[..., Any]]:
     """Extract all methods from a class.
 
@@ -36,15 +35,12 @@ def all_methods_from_cls(
     Args:
         class_: Class to extract methods from.
         exclude_parent_methods: If True, excludes inherited methods.
-        include_annotate: If False, excludes `__annotate__` (Python 3.14+).
 
     Returns:
         List of method objects sorted by definition order.
     """
     methods = [
-        (method, name)
-        for name, method in obj_members(class_, include_annotate=include_annotate)
-        if is_func(method)
+        (method, name) for name, method in obj_members(class_) if is_func(method)
     ]
 
     if exclude_parent_methods:
