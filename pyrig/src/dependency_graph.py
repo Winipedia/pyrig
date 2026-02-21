@@ -8,6 +8,7 @@ on a given package, facilitating pyrig's multi-package discovery system.
 
 import importlib.metadata
 import logging
+from collections.abc import Generator
 
 from pyrig.src.graph import DiGraph
 from pyrig.src.singleton import Singleton
@@ -43,7 +44,7 @@ class DependencyGraph(DiGraph, Singleton):
     @staticmethod
     def parse_name_and_deps(
         dist: importlib.metadata.Distribution,
-    ) -> tuple[str, list[str]]:
+    ) -> tuple[str, Generator[str, None, None]]:
         """Extract package name and dependencies from a distribution.
 
         Uses the public ``importlib.metadata`` API (``dist.metadata`` and
@@ -59,10 +60,10 @@ class DependencyGraph(DiGraph, Singleton):
         raw_name = dist.name
         name = DependencyGraph.normalize_package_name(raw_name) if raw_name else ""
 
-        deps = [
+        deps = (
             DependencyGraph.parse_package_name_from_req(req)
             for req in (dist.requires or [])
-        ]
+        )
 
         return name, deps
 
