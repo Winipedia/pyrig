@@ -8,6 +8,7 @@ consistent discovery API.
 """
 
 from abc import ABC, abstractmethod
+from functools import cache
 from types import ModuleType
 from typing import Any, Self, TypeVar
 
@@ -69,6 +70,7 @@ class DependencySubclass(ABC):
         return pyrig
 
     @classmethod
+    @cache
     def subclasses(cls) -> list[type[Self]]:
         """Discover all non-abstract subclasses.
 
@@ -90,7 +92,8 @@ class DependencySubclass(ABC):
         )
 
     @classproperty
-    def L(cls) -> type[Self]:  # noqa: N802, N805
+    @cache  # noqa: B019  # false warning bc of custom classproperty decorator
+    def L(cls: type[Self]) -> type[Self]:  # noqa: N802, N805
         """Get the final leaf subclass (deepest in the inheritance tree).
 
         Returns:
@@ -106,7 +109,8 @@ class DependencySubclass(ABC):
         )
 
     @classproperty
-    def I(cls) -> Self:  # noqa: E743, N802, N805
+    @cache  # noqa: B019  # false warning bc of custom classproperty decorator
+    def I(cls: type[Self]) -> Self:  # noqa: E743, N802, N805
         """Get an instance of the final leaf subclass."""
         return cls.L()
 
