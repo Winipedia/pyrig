@@ -63,10 +63,10 @@ from pyrig.src.modules.package import (
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.requests import internet_is_available
 from pyrig.src.string_ import (
+    kebab_to_snake_case,
     make_summary_error_msg,
-    package_name_from_project_name,
-    project_name_from_package_name,
     re_search_excluding_docstrings,
+    snake_to_kebab_case,
 )
 
 logger = logging.getLogger(__name__)
@@ -237,7 +237,7 @@ def assert_src_package_correctly_named() -> None:
     src_package = import_module(PyprojectConfigFile.I.package_name())
 
     src_package_name = src_package.__name__
-    src_package_name_from_cwd = package_name_from_project_name(cwd_name)
+    src_package_name_from_cwd = kebab_to_snake_case(cwd_name)
     msg = (
         f"Expected source package to be named {src_package_name_from_cwd}, "
         f"but it is named {src_package_name}"
@@ -408,7 +408,7 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
 
     project_path = Path(src_package_file_str).parent
 
-    project_name = project_name_from_package_name(src_package.__name__)
+    project_name = snake_to_kebab_case(src_package.__name__)
 
     temp_project_path = tmp_path / src_package.__name__
 

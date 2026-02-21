@@ -93,13 +93,10 @@ def make_name_from_obj(
     else:
         obj_name = obj
     parts = obj_name.split(split_on)
-    # Filter out empty parts to avoid names consisting only of separators
-    parts = [part for part in parts if part]
-    if not parts:
-        msg = f"Cannot create name from '{obj_name}': no valid parts after splitting"
-        raise ValueError(msg)
+    parts = (part for part in parts if part)
+
     if capitalize:
-        parts = [part.capitalize() for part in parts]
+        parts = (part.capitalize() for part in parts)
     return join_on.join(parts)
 
 
@@ -215,28 +212,28 @@ def package_req_name_split_pattern() -> re.Pattern[str]:
     return re.compile(r"[^a-zA-Z0-9_.\[\]-]")
 
 
-def package_name_from_project_name(project_name: str) -> str:
+def kebab_to_snake_case(value: str) -> str:
     """Convert project name to package name (hyphens → underscores).
 
     Args:
-        project_name: Project name.
+        value: Project name.
 
     Returns:
         Package name.
     """
-    return project_name.replace("-", "_")
+    return value.replace("-", "_")
 
 
-def project_name_from_package_name(package_name: str) -> str:
+def snake_to_kebab_case(value: str) -> str:
     """Convert package name to project name (underscores → hyphens).
 
     Args:
-        package_name: Package name.
+        value: Package name.
 
     Returns:
         Project name.
     """
-    return package_name.replace("_", "-")
+    return value.replace("_", "-")
 
 
 def project_name_from_cwd() -> str:
@@ -255,4 +252,4 @@ def package_name_from_cwd() -> str:
     Returns:
         Package name (directory name with underscores).
     """
-    return package_name_from_project_name(project_name_from_cwd())
+    return kebab_to_snake_case(project_name_from_cwd())
