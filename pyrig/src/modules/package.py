@@ -67,7 +67,6 @@ def all_deps_depending_on_dep(dep: ModuleType) -> list[ModuleType]:
     return import_modules(DependencyGraph().sorted_ancestors(dep.__name__))
 
 
-@cache
 def discover_equivalent_modules_across_dependents(
     module: ModuleType, dep: ModuleType, until_package: ModuleType | None = None
 ) -> list[ModuleType]:

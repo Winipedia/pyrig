@@ -41,7 +41,6 @@ from pyrig.src.modules.path import ModulePath
 logger = logging.getLogger(__name__)
 
 
-@cache
 def find_packages(
     *,
     depth: int | None = None,
@@ -115,6 +114,7 @@ def find_packages(
     return package_names_list
 
 
+@cache
 def src_package_is_pyrig() -> bool:
     """Check if the current project is pyrig itself.
 
