@@ -39,19 +39,19 @@ def all_methods_from_cls(
     Returns:
         List of method objects sorted by definition order.
     """
-    methods = [
+    methods = (
         (method, name) for name, method in obj_members(class_) if is_func(method)
-    ]
+    )
 
     if exclude_parent_methods:
-        methods = [
+        methods = (
             (method, name)
             for method, name in methods
             if module_of_obj(method).__name__ == class_.__module__
             and name in class_.__dict__
-        ]
+        )
 
-    only_methods = [method for method, _name in methods]
+    only_methods = (method for method, _name in methods)
     # sort by definition order
     return sorted(only_methods, key=def_line)
 
@@ -70,11 +70,11 @@ def all_cls_from_module(module: ModuleType) -> list[type]:
     """
     # necessary for bindings packages like AESGCM from cryptography._rust backend
     default = ModuleType("default")
-    classes = [
+    classes = (
         obj
         for _, obj in inspect.getmembers(module, inspect.isclass)
         if module_of_obj(obj, default).__name__ == module.__name__
-    ]
+    )
     # sort by definition order
     return sorted(classes, key=def_line)
 
@@ -131,19 +131,19 @@ def discover_all_subclasses[T: type](
             triggers imports.
     """
     if load_package_before:
-        _ = list(walk_package(load_package_before))
-    subclasses_set: set[T] = {cls}
-    subclasses_set.update(cls.__subclasses__())
+        # loads the classes for .__subclasses__()__ to find
+        _ = tuple(walk_package(load_package_before))
+    subclasses: set[T] = {cls, *cls.__subclasses__()}
     for subclass in cls.__subclasses__():
-        subclasses_set.update(discover_all_subclasses(subclass))
+        subclasses.update(discover_all_subclasses(subclass))
     if load_package_before is not None:
         # remove all not in the package
-        subclasses_set = {
+        subclasses = {
             subclass
-            for subclass in subclasses_set
+            for subclass in subclasses
             if load_package_before.__name__ in subclass.__module__
         }
-    return subclasses_set
+    return subclasses
 
 
 def discard_parent_classes[T: type](
