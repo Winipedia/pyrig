@@ -34,8 +34,8 @@ from pyrig.rig.utils.resources import (
 )
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.string_ import (
+    kebab_to_snake_case,
     package_name_from_cwd,
-    package_name_from_project_name,
     package_req_name_split_pattern,
     project_name_from_cwd,
 )
@@ -264,7 +264,7 @@ class PyprojectConfigFile(TomlConfigFile):
     def package_name(self) -> str:
         """Get the Python package name (e.g., 'my-project' -> 'my_project')."""
         project_name = self.project_name()
-        return package_name_from_project_name(project_name)
+        return kebab_to_snake_case(project_name)
 
     def project_name(self) -> str:
         """Get project name from pyproject.toml."""
