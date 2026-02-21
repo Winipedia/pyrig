@@ -6,7 +6,6 @@ tests.test_pyrig.test_modules.test_module
 import os
 import sys
 from contextlib import chdir
-from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
@@ -16,7 +15,6 @@ from pytest_mock import MockFixture
 from pyrig.src.modules.module import (
     create_module,
     default_module_content,
-    execute_all_functions_from_module,
     import_module_from_file,
     import_module_with_default,
     import_module_with_file_fallback,
@@ -138,64 +136,6 @@ def test_isolated_obj_name() -> None:
 
     result = isolated_obj_name(test_function)
     assert result == "test_function", f"Expected 'test_function', got {result}"
-
-
-def test_execute_all_functions_from_module(tmp_path: Path) -> None:
-    """Test function."""
-    # Create a test module with functions that return values
-    module_content = '''"""Test module."""
-
-def func1() -> str:
-    """Function 1."""
-    return "result1"
-
-def func2() -> int:
-    """Function 2."""
-    return 42
-
-def func3() -> None:
-    """Function 3."""
-    pass
-'''
-
-    # Create and import the module
-    module_file = tmp_path / "test_exec_module.py"
-    module_file.write_text(module_content)
-
-    # Change to tmp_path directory and add to sys.path temporarily
-    original_cwd = Path.cwd()
-    original_path = sys.path[:]
-    os.chdir(tmp_path)
-    sys.path.insert(0, str(tmp_path))
-
-    try:
-        test_exec_module = import_module("test_exec_module")
-
-        # Execute all functions
-        results = execute_all_functions_from_module(test_exec_module)
-
-        # Should have 3 results
-        expected_exec_results_count = 3
-        assert len(results) == expected_exec_results_count, (
-            f"Expected {expected_exec_results_count} results, got {len(results)}"
-        )
-
-        # Check that we got the expected return values
-        assert "result1" in results, f"Expected 'result1' in results, got {results}"
-
-        test_return_value = 42
-        assert test_return_value in results, (
-            f"Expected {test_return_value} in results, got {results}"
-        )
-
-        assert None in results, f"Expected None in results, got {results}"
-
-    finally:
-        # Clean up
-        os.chdir(original_cwd)
-        sys.path[:] = original_path
-        if "test_exec_module" in sys.modules:
-            del sys.modules["test_exec_module"]
 
 
 def test_default_module_content() -> None:
