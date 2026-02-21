@@ -8,6 +8,7 @@ dependency, enabling automatic discovery of ``ConfigFile`` implementations and
 """
 
 import logging
+from collections.abc import Generator
 from functools import cache
 from importlib import import_module
 from pathlib import Path
@@ -54,7 +55,7 @@ def create_package(path: Path) -> ModuleType:
 
 
 @cache
-def all_deps_depending_on_dep(dep: ModuleType) -> list[ModuleType]:
+def all_deps_depending_on_dep(dep: ModuleType) -> tuple[ModuleType, ...]:
     """Get all packages that depend on the given dependency.
 
     Args:
@@ -62,14 +63,14 @@ def all_deps_depending_on_dep(dep: ModuleType) -> list[ModuleType]:
         include_self: If True, includes ``dep`` itself in the result.
 
     Returns:
-        List of imported module objects for dependent packages.
+        Tuple of imported module objects for dependent packages.
     """
-    return import_modules(DependencyGraph().sorted_ancestors(dep.__name__))
+    return tuple(import_modules(DependencyGraph().sorted_ancestors(dep.__name__)))
 
 
 def discover_equivalent_modules_across_dependents(
     module: ModuleType, dep: ModuleType, until_package: ModuleType | None = None
-) -> list[ModuleType]:
+) -> Generator[ModuleType, None, None]:
     """Find equivalent module paths across all packages that depend on a dependency.
 
     Core function for pyrig's multi-package architecture. Given a module path
@@ -118,34 +119,29 @@ def discover_equivalent_modules_across_dependents(
         discover_subclasses_across_dependents: Uses this to find subclasses
     """
     module_name = module.__name__
+    dependency_name = dep.__name__
     logger.debug(
         "Discovering modules equivalent to %s in packages depending on %s",
         module_name,
-        dep.__name__,
+        dependency_name,
     )
-    packages = [dep, *all_deps_depending_on_dep(dep)]
 
-    modules: list[ModuleType] = []
-    for package in packages:
-        package_module_name = module_name.replace(dep.__name__, package.__name__, 1)
+    for package in (dep, *all_deps_depending_on_dep(dep)):
+        package_module_name = module_name.replace(dependency_name, package.__name__, 1)
         package_module = import_module(package_module_name)
-        modules.append(package_module)
+        yield package_module
         if (
             isinstance(until_package, ModuleType)
             and package.__name__ == until_package.__name__
         ):
             break
-    logger.debug(
-        "Found modules equivalent to %s: %s", module_name, [m.__name__ for m in modules]
-    )
-    return modules
 
 
 def discover_subclasses_across_dependents[T: type](
     cls: T,
     dep: ModuleType,
     load_package_before: ModuleType,
-) -> list[T]:
+) -> Generator[T, None, None]:
     """Discover all subclasses of a class across the entire dependency ecosystem.
 
     Primary discovery function for pyrig's multi-package plugin architecture.
@@ -201,20 +197,14 @@ def discover_subclasses_across_dependents[T: type](
         cls.__name__,
         dep.__name__,
     )
-    subclasses: list[T] = []
-    for package in discover_equivalent_modules_across_dependents(
-        load_package_before, dep
-    ):
-        subclasses.extend(
-            discover_all_subclasses(
-                cls,
-                load_package_before=package,
-            )
-        )
 
-    logger.debug(
-        "Found subclasses of %s: %s",
-        cls.__name__,
-        [c.__name__ for c in subclasses],
+    return (
+        subclass
+        for package in discover_equivalent_modules_across_dependents(
+            load_package_before, dep
+        )
+        for subclass in discover_all_subclasses(
+            cls,
+            load_package_before=package,
+        )
     )
-    return subclasses
