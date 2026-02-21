@@ -141,7 +141,9 @@ uv run pyrig mktests        # Generate test skeletons
 uv run pyrig mkinits        # Create missing __init__.py files
 uv run pyrig build          # Build artifacts (PyInstaller, etc.)
 uv run pyrig protect-repo   # Configure repository protection
+uv run pyrig scratch        # Execute the project's .scratch file
 uv run my-project --help    # Your project's CLI
+uv run my-project version        # Show pyrig version
 ```
 
 → [CLI Reference](https://winipedia.github.io/pyrig/cli/)
