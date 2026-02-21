@@ -6,12 +6,14 @@ tests.test_pyrig.test_modules.test_class_
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import wraps
+from importlib import import_module
 from typing import Any, ClassVar
 
 from pyrig.src.modules.class_ import (
     all_cls_from_module,
     all_methods_from_cls,
     classproperty,
+    discard_abstract_classes,
     discard_parent_classes,
     discover_all_subclasses,
 )
@@ -173,7 +175,7 @@ def test_all_methods_from_cls() -> None:
 def test_all_cls_from_module() -> None:
     """Test function."""
     # use this file as the module
-    module = test_all_cls_from_module.__module__
+    module = import_module(test_all_cls_from_module.__module__)
 
     classes = all_cls_from_module(module)
 
@@ -213,15 +215,10 @@ def test_discover_all_subclasses() -> None:
         f"Expected no subclasses for TestClass, got {subclasses}"
     )
 
-    # test with discard_parents
-    subclasses = discover_all_subclasses(ParentClass, discard_parents=True)
-    assert ParentClass not in subclasses, f"Expected ParentClass not in {subclasses}"
-    assert TestClass in subclasses, f"Expected TestClass in {subclasses}"
-
 
 def test_discard_parent_classes() -> None:
     """Test function."""
-    classes = discard_parent_classes([ParentClass, TestClass])
+    classes = tuple(discard_parent_classes([ParentClass, TestClass]))
     assert ParentClass not in classes, f"Expected ParentClass not in {classes}"
     assert TestClass in classes, f"Expected TestClass in {classes}"
 
@@ -250,3 +247,15 @@ class Testclassproperty:
         assert MyClass.name == "myclass"
         # Access via instance
         assert MyClass().name == "myclass"
+
+
+def test_discard_abstract_classes() -> None:
+    """Test function."""
+    classes = tuple(
+        discard_abstract_classes([AbstractParent, ConcreteChild, AnotherAbstractChild])
+    )
+    assert AbstractParent not in classes, f"Expected AbstractParent not in {classes}"
+    assert AnotherAbstractChild not in classes, (
+        f"Expected AnotherAbstractChild not in {classes}"
+    )
+    assert ConcreteChild in classes, f"Expected ConcreteChild in {classes}"

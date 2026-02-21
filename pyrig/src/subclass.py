@@ -13,9 +13,12 @@ from types import ModuleType
 from typing import Any, Self, TypeVar
 
 import pyrig
-from pyrig.src.modules.class_ import classproperty
+from pyrig.src.modules.class_ import (
+    classproperty,
+    discard_abstract_classes,
+    discard_parent_classes,
+)
 from pyrig.src.modules.package import (
-    discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
 )
 
@@ -80,12 +83,14 @@ class DependencySubclass(ABC):
             Sorted list of concrete subclass types.
         """
         return sorted(
-            discover_subclasses_across_dependents(
-                cls,
-                cls.base_dependency(),
-                cls.definition_package(),
-                discard_parents=True,
-                exclude_abstract=True,
+            discard_parent_classes(
+                discard_abstract_classes(
+                    discover_subclasses_across_dependents(
+                        cls,
+                        dep=cls.base_dependency(),
+                        load_package_before=cls.definition_package(),
+                    )
+                )
             ),
             key=cls.sorting_key,
         )
@@ -101,11 +106,11 @@ class DependencySubclass(ABC):
         See Also:
             subclasses: Discover all concrete subclasses, sorted by sorting key.
         """
-        return discover_leaf_subclass_across_dependents(
-            cls=cls,
-            dep=cls.base_dependency(),
-            load_package_before=cls.definition_package(),
-        )
+        leaf = cls.subclasses()[0]
+        if len(cls.subclasses()) > 1:
+            msg = f"Multiple subclasses found for {cls.__name__}, expected one final leaf: {cls.subclasses()}"  # noqa: E501
+            raise ValueError(msg)
+        return leaf
 
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator
