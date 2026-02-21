@@ -20,57 +20,29 @@ from pyrig.src.modules.module import (
     import_module_from_file,
     import_module_with_default,
     import_module_with_file_fallback,
-    import_module_with_file_fallback_with_default,
     import_modules,
     import_obj_from_importpath,
     isolated_obj_name,
     make_obj_importpath,
-    module_content_as_str,
+    module_content,
     module_has_docstring,
     module_name_replacing_start_module,
 )
 
 
-def test_module_content_as_str(tmp_path: Path) -> None:
+def test_module_content(tmp_path: Path) -> None:
     """Test function."""
-    # Create a temporary module file with known content
-    module_content = '''"""Test module."""
+    with chdir(tmp_path):
+        module_path = tmp_path / "test_module.py"
+        content = '"""Test module."""\n'
+        module_path.write_text(content)
+        module = import_module_from_file(module_path)
+        assert module.__name__ == "test_module"
+        assert module.__file__ == str(module_path)
+        assert module.__doc__ == "Test module."
 
-def test_function() -> str:
-    """Test function."""
-    return "test"
-
-class TestClass:
-    """Test class."""
-    pass
-'''
-
-    # Create module file
-    module_file = tmp_path / "test_module.py"
-    module_file.write_text(module_content)
-
-    # Change to tmp_path directory and add to sys.path temporarily
-    original_cwd = Path.cwd()
-    original_path = sys.path[:]
-    os.chdir(tmp_path)
-    sys.path.insert(0, str(tmp_path))
-
-    try:
-        # Import the module using importlib
-        test_module = import_module("test_module")
-
-        # Test getting module content
-        result = module_content_as_str(test_module)
-        assert result == module_content, (
-            f"Expected module content to match, got {result!r}"
-        )
-
-    finally:
-        # Clean up
-        os.chdir(original_cwd)
-        sys.path[:] = original_path
-        if "test_module" in sys.modules:
-            del sys.modules["test_module"]
+        content = module_content(module)
+        assert content == '"""Test module."""\n'
 
 
 def test_create_module(tmp_path: Path) -> None:
@@ -264,29 +236,6 @@ def test_import_module_with_file_fallback(tmp_path: Path) -> None:
         module_file = tmp_path / "test_module.py"
         module_file.write_text('"""Test module."""\n')
         module = import_module_with_file_fallback(module_file)
-        assert module.__name__ == "test_module"
-
-
-def test_import_module_with_file_fallback_with_default(tmp_path: Path) -> None:
-    """Test function."""
-    with chdir(tmp_path):
-        non_existing_file = tmp_path / Path("non_existing.py")
-        assert not non_existing_file.exists()
-
-        module = import_module_with_file_fallback_with_default(non_existing_file)
-        assert module is None
-
-        assert not non_existing_file.exists()
-
-        module = import_module_with_file_fallback_with_default(
-            non_existing_file, default="default"
-        )
-        assert module == "default"
-
-        # create a module
-        module_file = tmp_path / "test_module.py"
-        module_file.write_text('"""Test module."""\n')
-        module = import_module_with_file_fallback_with_default(module_file)
         assert module.__name__ == "test_module"
 
 

@@ -21,7 +21,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.python.main import MainConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.modules.module import (
-    module_content_as_str,
+    module_content,
     module_name_replacing_start_module,
 )
 
@@ -85,7 +85,7 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     del sys.modules[main_module_name]
     # run module as __main__, pytest-cov will see it
     # run only if file content is the same as pyrig.main
-    main_module_content = module_content_as_str(main_module).strip()
+    main_module_content = module_content(main_module).strip()
 
     lines = MainConfigFile.I.lines()
     config_main_module_content = MainConfigFile.I.make_string_from_lines(lines).strip()
