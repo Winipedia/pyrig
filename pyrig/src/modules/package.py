@@ -12,11 +12,9 @@ from functools import cache
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
-from typing import Any
 
 from pyrig.src.dependency_graph import DependencyGraph
 from pyrig.src.modules.class_ import (
-    discard_parent_classes,
     discover_all_subclasses,
 )
 from pyrig.src.modules.imports import (
@@ -148,9 +146,6 @@ def discover_subclasses_across_dependents[T: type](
     cls: T,
     dep: ModuleType,
     load_package_before: ModuleType,
-    *,
-    discard_parents: bool = False,
-    exclude_abstract: bool = False,
 ) -> list[T]:
     """Discover all subclasses of a class across the entire dependency ecosystem.
 
@@ -171,10 +166,6 @@ def discover_subclasses_across_dependents[T: type](
            subclasses of ``cls`` defined in that module
            (applying ``discard_parents`` and ``exclude_abstract`` filters per-module)
         3. Aggregates all discovered subclasses into a single list
-        4. If ``discard_parents=True``, performs a second pass to remove any
-           parent classes across the aggregated list (necessary because a class
-           in package A may be a parent of a class in package B, which wouldn't
-           be caught by the per-module filtering)
 
     Args:
         cls: Base class to find subclasses of. All returned classes will be
@@ -185,13 +176,6 @@ def discover_subclasses_across_dependents[T: type](
             across dependent packages. For example, passing the ``pyrig.rig.configs``
             module would search for subclasses in ``myapp.rig.configs`` for each
             dependent package ``myapp``.
-        discard_parents: If True, removes classes that have subclasses also
-            in the result set. Essential for override patterns where a package
-            extends a config from another package - only the leaf (most derived)
-            class should be used.
-        exclude_abstract: If True, removes abstract classes (those with
-            unimplemented abstract methods). Typically True for discovering
-            classes that will be instantiated.
 
     Returns:
         List of discovered subclass types. Order is based on topological
@@ -204,18 +188,9 @@ def discover_subclasses_across_dependents[T: type](
         >>> subclasses = discover_subclasses_across_dependents(
         ...     cls=ConfigFile,
         ...     dep=pyrig,
-        ...     load_package_before=configs,
-        ...     discard_parents=True,
-        ...     exclude_abstract=True,
+        ...     load_package_before=configs
         ... )
         >>> # Returns: [PyprojectConfigFile, RuffConfigFile, MyAppConfig, ...]
-
-    Note:
-        When ``discard_parents=True``, the filtering is performed twice: once
-        within each ``discover_all_subclasses`` call (per-module) and once after
-        aggregation (cross-module). The second pass is essential because a
-        parent class from module A and its child from module B would both
-        survive the per-module filtering.
 
     See Also:
         discover_equivalent_modules_across_dependents: Module discovery
@@ -235,94 +210,12 @@ def discover_subclasses_across_dependents[T: type](
             discover_all_subclasses(
                 cls,
                 load_package_before=package,
-                discard_parents=discard_parents,
-                exclude_abstract=exclude_abstract,
             )
         )
-    # as these are different modules and pks we need to discard parents again
-    if discard_parents:
-        logger.debug("Discarding parent classes. Only keeping leaf classes...")
-        subclasses = discard_parent_classes(subclasses)
+
     logger.debug(
         "Found subclasses of %s: %s",
         cls.__name__,
         [c.__name__ for c in subclasses],
     )
     return subclasses
-
-
-def discover_leaf_subclass_across_dependents[T: type[Any]](
-    cls: T, dep: ModuleType, load_package_before: ModuleType
-) -> T:
-    """Discover the single deepest subclass in the inheritance hierarchy.
-
-    Specialized discovery function for cases where exactly one "final" subclass
-    is expected across the entire dependency ecosystem. Used when a base class
-    should have a single active implementation determined by the inheritance
-    chain.
-
-    This is typically invoked via ``DependencySubclass.L`` to find the
-    most-derived version of a class. For example, if:
-        - ``pyrig`` defines ``PyprojectConfigFile``
-        - ``mylib`` extends it as ``MyLibPyprojectConfigFile``
-        - ``myapp`` extends that as ``MyAppPyprojectConfigFile``
-
-    Then this function returns ``MyAppPyprojectConfigFile`` as the single leaf.
-
-    The discovery process:
-        1. Calls ``discover_subclasses_across_dependents`` with
-           ``discard_parents=True`` to get only leaf classes
-        2. Validates that exactly one leaf class was found
-        3. Returns that single leaf class
-
-    Args:
-        cls: Base class to find the leaf subclass of.
-        dep: The base dependency package (e.g., ``pyrig``).
-        load_package_before: Template module path to replicate across dependents.
-
-    Returns:
-        The single leaf subclass type (deepest in inheritance tree).
-        May be abstract - use ``exclude_abstract`` in the caller if needed.
-
-    Raises:
-        ValueError: If multiple leaf classes are found. This indicates an
-            ambiguous inheritance structure where two classes both extend
-            the same parent without one extending the other.
-        IndexError: If no subclasses are found (empty result from discovery).
-
-    Example:
-        >>> # Find the final PyprojectConfigFile implementation
-        >>> leaf = discover_leaf_subclass_across_dependents(
-        ...     cls=PyprojectConfigFile,
-        ...     dep=pyrig,
-        ...     load_package_before=configs,
-        ... )
-        >>> # Returns the most-derived PyprojectConfigFile subclass
-
-    Note:
-        Abstract classes are NOT excluded - the leaf may be abstract if no
-        concrete implementation exists. This is intentional for cases where
-        the leaf class defines the interface but concrete instantiation
-        happens elsewhere.
-
-    See Also:
-        discover_subclasses_across_dependents: General multi-subclass discovery
-        DependencySubclass.L: Direct caller of this function
-    """
-    classes = discover_subclasses_across_dependents(
-        cls=cls,
-        dep=dep,
-        load_package_before=load_package_before,
-        discard_parents=True,
-        exclude_abstract=False,
-    )
-    # raise if more than one final leaf
-    if len(classes) > 1:
-        msg = (
-            f"Multiple final leaves found for {cls.__name__} "
-            f"in {load_package_before.__name__}: {classes}"
-        )
-        raise ValueError(msg)
-    leaf = classes[0]
-    logger.debug("Found final leaf of %s: %s", cls.__name__, leaf.__name__)
-    return leaf
