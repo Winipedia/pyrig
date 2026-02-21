@@ -16,6 +16,7 @@ Documentation for all built-in pyrig commands:
 - mkinits - Create `__init__.py` files
 - build - Build all artifacts
 - protect-repo - Configure repository protection
+- scratch - Execute the project's `.scratch` file
 
 ### [Architecture](architecture.md)
 
