@@ -18,7 +18,6 @@ from pyrig.src.modules.package import (
     discover_leaf_subclass_across_dependents,
     discover_subclasses_across_dependents,
 )
-from pyrig.src.singleton import Singleton
 
 T = TypeVar("T", bound="DependencySubclass")
 
@@ -113,12 +112,3 @@ class DependencySubclass(ABC):
     def I(cls: type[Self]) -> Self:  # noqa: E743, N802, N805
         """Get an instance of the final leaf subclass."""
         return cls.L()
-
-
-class SingletonDependencySubclass(Singleton, DependencySubclass):
-    """Convenience base combining `Singleton` with `DependencySubclass`.
-
-    By inheriting from `Singleton`, the inherited `I` property returns a
-    cached singleton instance of the leaf subclass instead of creating a new
-    one on every access.
-    """

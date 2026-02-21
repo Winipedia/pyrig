@@ -42,7 +42,7 @@ def my_test_config_file(
 
         def _dump(self, config: dict[str, Any]) -> None:
             """Dump the config file."""
-            self.STORAGE_DICT = config  # ty:ignore[invalid-attribute-access]
+            self.__class__.STORAGE_DICT = config
 
         def parent_path(self) -> Path:
             """Get the path to the config file."""
@@ -119,7 +119,7 @@ class TestConfigFile:
         assert loaded["key0"] == "value0"  # cache still has old value
 
         # clear cache and assert new value
-        my_test_config_file().load.cache_clear()
+        my_test_config_file.load.cache_clear()
         loaded = my_test_config_file().load()
         assert loaded["key0"] == "new_value0"
 
@@ -182,11 +182,11 @@ class TestConfigFile:
         """Test method."""
         # assert dumps correctly
         storage_dict = my_test_config_file().load()
-        dunmp_dict = {"key": "value"}
-        assert storage_dict != dunmp_dict, "Expected different dicts"
+        dump_dict = {"key": "value"}
+        assert storage_dict != dump_dict, "Expected different dicts"
 
-        my_test_config_file().dump(dunmp_dict)
-        assert my_test_config_file().load() == dunmp_dict, "Expected dump to work"
+        my_test_config_file().dump(dump_dict)
+        assert my_test_config_file().load() == dump_dict, "Expected dump to work"
 
     def test_extension(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
@@ -204,7 +204,7 @@ class TestConfigFile:
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
     ) -> None:
         """Test method."""
-        # create file first to not trigger dunmp in init
+        # create file first to not trigger dump in init
         my_test_config_file().path().parent.mkdir(parents=True, exist_ok=True)
         # write non-empty file to trigger merge_configs,
         # empty file triggers is_unwanted
