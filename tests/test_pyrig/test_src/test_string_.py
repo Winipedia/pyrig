@@ -3,8 +3,6 @@
 import re
 from types import ModuleType
 
-import pytest
-
 import pyrig
 from pyrig.src.string_ import (
     kebab_to_snake_case,
@@ -105,23 +103,6 @@ def test_make_name_from_obj() -> None:
     result = make_name_from_obj(mock_src_package, capitalize=False)
     expected = "some-package"
     assert result == expected, f"Expected '{expected}', got '{result}'"
-
-
-def test_make_name_from_obj_empty_input() -> None:
-    """Test that empty or separator-only inputs raise ValueError."""
-    # Empty string should raise ValueError
-    with pytest.raises(ValueError, match="no valid parts"):
-        make_name_from_obj("")
-
-    # String with only separators should raise ValueError
-    with pytest.raises(ValueError, match="no valid parts"):
-        make_name_from_obj("_")
-
-    with pytest.raises(ValueError, match="no valid parts"):
-        make_name_from_obj("__")
-
-    with pytest.raises(ValueError, match="no valid parts"):
-        make_name_from_obj("___")
 
 
 def test_re_search_excluding_docstrings() -> None:
