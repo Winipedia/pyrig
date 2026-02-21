@@ -9,6 +9,7 @@ dependency, enabling automatic discovery of ``ConfigFile`` implementations and
 
 import logging
 from functools import cache
+from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
@@ -21,10 +22,9 @@ from pyrig.src.modules.imports import (
     import_package_with_dir_fallback,
 )
 from pyrig.src.modules.module import (
-    import_module_with_file_fallback,
     import_modules,
 )
-from pyrig.src.modules.path import ModulePath, make_dir_with_init_file
+from pyrig.src.modules.path import make_dir_with_init_file
 
 logger = logging.getLogger(__name__)
 
@@ -130,10 +130,7 @@ def discover_equivalent_modules_across_dependents(
     modules: list[ModuleType] = []
     for package in packages:
         package_module_name = module_name.replace(dep.__name__, package.__name__, 1)
-        package_module_path = ModulePath.package_name_to_relative_dir_path(
-            package_module_name
-        )
-        package_module = import_module_with_file_fallback(package_module_path)
+        package_module = import_module(package_module_name)
         modules.append(package_module)
         if (
             isinstance(until_package, ModuleType)

@@ -40,11 +40,9 @@ from pyrig.rig.cli import shared_subcommands, subcommands
 from pyrig.src.cli import package_name_from_argv
 from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.module import (
-    import_module_with_file_fallback,
     module_name_replacing_start_module,
 )
 from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
-from pyrig.src.modules.path import ModulePath
 
 app = typer.Typer(no_args_is_help=True)
 """Main Typer application instance.
@@ -148,19 +146,15 @@ def add_subcommands() -> None:
     package_name = package_name_from_argv()
 
     main_module_name = module_name_replacing_start_module(pyrig_main, package_name)
-    main_module_path = ModulePath.module_name_to_relative_file_path(main_module_name)
-    main_module = import_module_with_file_fallback(main_module_path)
+    main_module = import_module(main_module_name)
     app.command()(main_module.main)
 
     # replace the first parent with package_name
     subcommands_module_name = module_name_replacing_start_module(
         subcommands, package_name
     )
-    subcommands_module_path = ModulePath.module_name_to_relative_file_path(
-        subcommands_module_name
-    )
 
-    subcommands_module = import_module_with_file_fallback(subcommands_module_path)
+    subcommands_module = import_module(subcommands_module_name)
 
     sub_cmds = all_functions_from_module(subcommands_module)
 

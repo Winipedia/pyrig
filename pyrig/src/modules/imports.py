@@ -20,7 +20,6 @@ from collections.abc import Generator
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
-from typing import Any
 
 from pyrig.src.modules.module import (
     import_module_with_default,
@@ -105,32 +104,6 @@ def import_package_with_dir_fallback(path: Path) -> ModuleType:
     if isinstance(package, ModuleType):
         return package
     return import_package_from_dir(path)
-
-
-def import_package_with_dir_fallback_with_default(
-    path: Path, default: Any = None
-) -> ModuleType | Any:
-    """Import a package, returning a default value if the package doesn't exist.
-
-    Wrapper around ``import_package_with_dir_fallback`` that catches
-    ``FileNotFoundError`` and returns a default value instead.
-
-    Note:
-        Only catches ``FileNotFoundError``. Other exceptions (``ValueError``,
-        ``ImportError`` from syntax errors, etc.) will still propagate.
-
-    Args:
-        path: Path to the package directory.
-        default: Value to return if the package doesn't exist. Defaults to None.
-
-    Returns:
-        The imported package module, or ``default`` if import fails due to
-        missing files.
-    """
-    try:
-        return import_package_with_dir_fallback(path)
-    except FileNotFoundError:
-        return default
 
 
 def walk_package(

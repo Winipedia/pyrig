@@ -49,6 +49,7 @@ See Also:
 import logging
 from collections.abc import Callable, Iterable
 from functools import cache
+from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Self, cast, overload
@@ -65,7 +66,6 @@ from pyrig.src.modules.module import (
     import_obj_from_importpath,
     isolated_obj_name,
     make_obj_importpath,
-    module_content_as_str,
     module_has_docstring,
 )
 from pyrig.src.modules.path import ModulePath
@@ -175,6 +175,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return True
 
+    def create_file(self) -> None:
+        """Create the test file and also import it from the file system."""
+        super().create_file()
+        import_module_with_file_fallback(self.path())
+
     def is_correct(self) -> bool:
         """Check if all source elements have corresponding tests.
 
@@ -187,7 +192,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         if not self.path().exists():
             return False
-        test_module_content = module_content_as_str(self.test_module())
+        test_module_content = self.test_module_content()
         untested_funcs = [
             f for f in self.untested_func_names() if f not in test_module_content
         ]
@@ -252,6 +257,14 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return self.test_module_name_from_src_module(self.src_module())
 
+    def test_module_content(self) -> str:
+        """Get the current content of the test module as a string.
+
+        Returns:
+            The source code of the test module as a single string.
+        """
+        return self.file_content()
+
     def test_module_name_from_src_module(self, src_module: ModuleType) -> str:
         """Convert source module to its corresponding test module import path.
 
@@ -266,37 +279,13 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return self.test_obj_importpath_from_obj(src_module)
 
-    @classmethod
-    @cache
-    def test_module(cls) -> ModuleType:
-        """Import and return the test module, creating it if necessary.
-
-        Uses file-based fallback to handle cases where the test module doesn't
-        exist yet - creates an empty module from the expected file path.
-
-        Cached for performance - avoids repeated imports of the same module
-        during test skeleton generation.
-
-        If user wants to override they should overide _test_module, not this method,
-        since this method is cached.
+    def test_module(self) -> ModuleType:
+        """Import and return the test module.
 
         Returns:
             The test module object, either imported or newly created.
         """
-        return cls()._test_module()  # noqa: SLF001
-
-    def _test_module(self) -> ModuleType:
-        """Import and return the test module, creating it if necessary.
-
-        Uses file-based fallback to handle cases where the test module doesn't
-        exist yet - creates an empty module from the expected file path.
-
-        Returns:
-            The test module object, either imported or newly created.
-        """
-        return import_module_with_file_fallback(
-            ModulePath.module_name_to_relative_file_path(self.test_module_name())
-        )
+        return import_module(self.test_module_name())
 
     def test_module_content_with_skeletons(self) -> str:
         """Build complete test module content by adding skeletons for untested code.
@@ -313,7 +302,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Note:
             Preserves all existing test implementations while adding new skeletons.
         """
-        test_module_content = module_content_as_str(self.test_module())
+        test_module_content = self.test_module_content()
         # if module content has no docstring, add the default one
         if not module_has_docstring(self.test_module()):
             test_module_content = default_module_content() + test_module_content
