@@ -206,7 +206,6 @@ def module_setup():
 
 `pyrig.rig.utils.testing` provides skip markers for conditional test execution:
 
-- `skip_in_github_actions` — skip tests that cannot run in CI
 - `skip_if_no_internet` — skip tests requiring internet connectivity
 
 ## Multi-Package Example
