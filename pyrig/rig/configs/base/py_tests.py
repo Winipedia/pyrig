@@ -21,7 +21,7 @@ Example:
 from pathlib import Path
 
 from pyrig.rig.configs.base.python import PythonConfigFile
-from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.project_tester import ProjectTester
 
 
 class PythonTestsConfigFile(PythonConfigFile):
@@ -41,4 +41,4 @@ class PythonTestsConfigFile(PythonConfigFile):
 
     def parent_path(self) -> Path:
         """Return the tests package directory path, typically `Path("tests")`."""
-        return Path(MirrorTestConfigFile.I.tests_package_name())
+        return Path(ProjectTester.I.tests_package_name())

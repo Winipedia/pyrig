@@ -9,7 +9,7 @@ from pyrig.rig.utils.packages import (
     find_packages,
     src_package_is_pyrig,
 )
-from pyrig.rig.utils.version_control import path_is_in_ignore
+from pyrig.src.string_ import package_name_from_cwd
 
 
 def test_find_packages(tmp_path: Path) -> None:
@@ -49,26 +49,21 @@ def test_find_packages(tmp_path: Path) -> None:
 def test_find_namespace_packages(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        # make package in gitignore
-        GitignoreConfigFile.I.validate()
-
         (Path.cwd() / "docs").mkdir()
 
-        assert find_namespace_packages() == []
-        (Path.cwd() / "src").mkdir()
+        assert list(find_namespace_packages()) == []
 
-        assert find_namespace_packages() == ["src"]
-        (Path.cwd() / "src" / "__init__.py").write_text("")
+        package_name = package_name_from_cwd()
+        (Path.cwd() / package_name).mkdir()
 
-        assert find_namespace_packages() == []
+        assert list(find_namespace_packages()) == [package_name]
+        (Path.cwd() / package_name / "__init__.py").write_text("")
 
-        # assert exists
-        assert (Path.cwd() / ".gitignore").exists()
-        assert path_is_in_ignore("dist")
+        assert list(find_namespace_packages()) == []
 
         (Path.cwd() / "dist").mkdir()
 
-        assert find_namespace_packages() == []
+        assert list(find_namespace_packages()) == []
 
 
 def test_src_package_is_pyrig() -> None:

@@ -21,7 +21,6 @@ from pyrig.rig.cli import cli
 from pyrig.rig.configs.base.base import ConfigData, ConfigDict, Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
-from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
@@ -77,7 +76,7 @@ class PyprojectConfigFile(TomlConfigFile):
     def _configs(self) -> ConfigDict:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
         repo_owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
-        tests_package_name = MirrorTestConfigFile.I.tests_package_name()
+        tests_package_name = ProjectTester.I.tests_package_name()
 
         return {
             "project": {

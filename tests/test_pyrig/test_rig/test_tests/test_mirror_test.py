@@ -12,6 +12,7 @@ from pytest_mock import MockFixture
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.src.modules.module import create_module
 
 
@@ -157,11 +158,6 @@ class TestMirrorTestConfigFile:
         result = MirrorTestConfigFile.I.test_module_prefix()
         assert result == "test_"
 
-    def test_tests_package_name(self) -> None:
-        """Test method."""
-        result = MirrorTestConfigFile.I.tests_package_name()
-        assert result == "tests"
-
     def test_merge_configs(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
@@ -202,7 +198,7 @@ class TestMirrorTestConfigFile:
         # tmp path bc factory of pattern in config_file_factory
         with chdir(tmp_path):
             parent_path = my_test_mirror_test_config_file().parent_path()
-            assert parent_path == Path(MirrorTestConfigFile.I.tests_package_name())
+            assert parent_path == Path(ProjectTester.I.tests_package_name())
 
     def test_lines(
         self,
