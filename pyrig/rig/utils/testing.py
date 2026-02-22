@@ -8,7 +8,6 @@ All markers are partial applications of pytest.mark.skip or pytest.mark.skipif
 with pre-configured conditions.
 
 Attributes:
-    skip_fixture_test: Skip marker for fixture tests.
     skip_in_github_actions: Skip marker for tests that can't run in CI.
     skip_if_no_internet: Skip marker for tests that require internet connection.
 
@@ -31,25 +30,6 @@ import pytest
 
 from pyrig.src.git import running_in_github_actions
 from pyrig.src.requests import internet_is_available
-
-skip_fixture_test: pytest.MarkDecorator = functools.partial(
-    pytest.mark.skip,
-    reason="Fixtures are not testable bc they cannot be called directly.",
-)()
-"""Skip marker for tests of fixture functions themselves.
-
-Pytest fixtures cannot be invoked as regular functions; they are called by pytest's
-dependency injection system. Use this marker to skip placeholder tests that exist
-to satisfy test coverage requirements for fixture definitions.
-
-Examples:
-    Skip a test for a fixture function:
-
-        >>> @skip_fixture_test
-        ... def test_my_fixture_function():
-        ...     # This test exists for coverage but cannot actually test the fixture
-        ...     pass
-"""
 
 skip_in_github_actions: pytest.MarkDecorator = functools.partial(
     pytest.mark.skipif,
