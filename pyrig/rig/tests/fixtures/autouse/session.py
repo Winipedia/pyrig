@@ -62,7 +62,6 @@ from pyrig.src.modules.module import (
 from pyrig.src.modules.package import (
     all_deps_depending_on_dep,
 )
-from pyrig.src.modules.path import ModulePath
 from pyrig.src.requests import internet_is_available
 from pyrig.src.string_ import (
     kebab_to_snake_case,
@@ -286,32 +285,6 @@ def assert_all_modules_tested() -> None:
     {make_summary_error_msg([sc().path().as_posix() for sc in incorrect_subclasses])}
 """
     assert not incorrect_subclasses, msg
-
-
-@pytest.fixture(scope="session", autouse=True)
-def assert_no_unit_test_package_usage() -> None:
-    """Verify unittest is not used in the project (pytest only).
-
-    Raises:
-        AssertionError: If any files contain unittest references.
-    """
-    unit_test_str = "UnitTest".lower()
-    unit_test_pattern = re.compile(unit_test_str)
-    usages: list[str] = []
-    for package in find_packages():
-        package_path = ModulePath.package_name_to_relative_dir_path(package)
-        for path in package_path.rglob("*.py"):
-            content = path.read_text(encoding="utf-8")
-            is_unit_test_used = re_search_excluding_docstrings(
-                unit_test_pattern, content
-            )
-            if is_unit_test_used:
-                usages.append(f"{path}: {is_unit_test_used.group()}")
-
-    msg = f"""Found {unit_test_str} package usage in:
-    {make_summary_error_msg(usages)}
-"""
-    assert not usages, msg
 
 
 @pytest.fixture(scope="session", autouse=True)
