@@ -329,7 +329,7 @@ class PyprojectConfigFile(TomlConfigFile):
             raise ValueError(msg)
         return lower
 
-    def supported_python_versions(self) -> list[Version]:
+    def supported_python_versions(self) -> tuple[Version, ...]:
         """Get all supported Python minor versions within requires-python constraint."""
         constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)

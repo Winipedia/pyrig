@@ -109,10 +109,10 @@ class TestVersionConstraint:
         constraint = ">=3, <3.12"
         version_constraint = VersionConstraint(constraint)
         versions = version_constraint.version_range(level="major")
-        expected = [Version("3")]
+        expected = (Version("3"),)
         assert versions == expected, f"Expected {expected}, got {versions}"
         versions = version_constraint.version_range(level="minor")
-        expected = [
+        expected = tuple(
             Version(x)
             for x in [
                 "3.0",
@@ -128,12 +128,12 @@ class TestVersionConstraint:
                 "3.10",
                 "3.11",
             ]
-        ]
+        )
         assert versions == expected, f"Expected {expected}, got {versions}"
         constraint = ">=3.8.2, <3.9.6"
         version_constraint = VersionConstraint(constraint)
         versions = version_constraint.version_range(level="micro")
-        expected = [
+        expected = tuple(
             Version(x)
             for x in [
                 "3.8.2",
@@ -145,7 +145,7 @@ class TestVersionConstraint:
                 "3.9.4",
                 "3.9.5",
             ]
-        ]
+        )
         assert versions == expected, f"Expected {expected}, got {versions}"
 
         constraint = ">=3.12"
@@ -153,7 +153,7 @@ class TestVersionConstraint:
         versions = version_constraint.version_range(
             level="minor", upper_default="3.14.0"
         )
-        expected = [Version(x) for x in ["3.12", "3.13", "3.14"]]
+        expected = tuple(Version(x) for x in ["3.12", "3.13", "3.14"])
         assert versions == expected, f"Expected {expected}, got {versions}"
 
         # what if the micro or minor is smaller in lower than upper
@@ -161,7 +161,7 @@ class TestVersionConstraint:
         constraint = ">=3.12, <4.1"
         version_constraint = VersionConstraint(constraint)
         versions = version_constraint.version_range(level="minor")
-        expected = [
+        expected = tuple(
             Version(x)
             for x in [
                 "3.12",
@@ -179,13 +179,13 @@ class TestVersionConstraint:
                 "3.24",
                 "4.0",
             ]
-        ]
+        )
         assert versions == expected, f"Expected {expected}, got {versions}"
 
         constraint = ">=3.11.7, <3.12.2"
         version_constraint = VersionConstraint(constraint)
         versions = version_constraint.version_range(level="micro")
-        expected = [
+        expected = tuple(
             Version(x)
             for x in [
                 "3.11.7",
@@ -198,5 +198,5 @@ class TestVersionConstraint:
                 "3.12.0",
                 "3.12.1",
             ]
-        ]
+        )
         assert versions == expected, f"Expected {expected}, got {versions}"
