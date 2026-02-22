@@ -63,14 +63,14 @@ class VersionController(Tool):
             "https://git-scm.com",
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get development dependencies.
 
         Returns:
-            Empty list (git is a system dependency).
+            Empty tuple (git is a system dependency).
         """
         # git is a system dependency, so we don't have a dev dependency for it
-        return []
+        return ()
 
     def default_branch(self) -> str:
         """Get the default branch name.

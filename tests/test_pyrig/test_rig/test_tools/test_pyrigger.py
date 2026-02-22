@@ -24,7 +24,7 @@ class TestPyrigger:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = Pyrigger.I.dev_dependencies()
-        assert isinstance(result, list), f"Expected list, got {type(result)}"
+        assert result == ("pyrig-dev",)
 
     def test_name(self) -> None:
         """Test method."""

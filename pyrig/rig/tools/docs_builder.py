@@ -51,18 +51,18 @@ class DocsBuilder(Tool):
             "https://www.mkdocs.org",
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool dependencies.
 
         Returns:
-            List of tool dependencies.
+            Tuple of tool dependencies.
         """
-        return [
+        return (
             *super().dev_dependencies(),
             "mkdocs-material",
             "mkdocs-mermaid2-plugin",
             "mkdocstrings[python]",
-        ]
+        )
 
     def docs_dir(self) -> Path:
         """Get the documentation directory.
