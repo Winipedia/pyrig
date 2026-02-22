@@ -25,10 +25,6 @@ def test_assert_all_modules_tested() -> None:
     """Test function."""
 
 
-def test_assert_no_unit_test_package_usage() -> None:
-    """Test function."""
-
-
 def test_assert_dependencies_are_up_to_date() -> None:
     """Test function."""
 
