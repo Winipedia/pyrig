@@ -133,33 +133,33 @@ class VersionConstraint:
         self.spec = self.constraint.strip().strip('"').strip("'")
         self.sset = SpecifierSet(self.spec)
 
-        self.lowers_inclusive = [
+        self.lowers_inclusive = tuple(
             Version(s.version) for s in self.sset if s.operator == ">="
-        ]
-        self.lowers_exclusive = [
+        )
+        self.lowers_exclusive = tuple(
             Version(s.version) for s in self.sset if s.operator == ">"
-        ]
+        )
         # increment the last number of exclusive, so
         # >3.4.1 to >=3.4.2; <3.4.0 to <=3.4.1; 3.0.0 to <=3.0.1
-        self.lowers_exclusive_to_inclusive = [
+        self.lowers_exclusive_to_inclusive = tuple(
             Version(f"{v.major}.{v.minor}.{v.micro + 1}") for v in self.lowers_exclusive
-        ]
+        )
         self.lowers_inclusive = (
             self.lowers_inclusive + self.lowers_exclusive_to_inclusive
         )
 
-        self.uppers_inclusive = [
+        self.uppers_inclusive = tuple(
             Version(s.version) for s in self.sset if s.operator == "<="
-        ]
-        self.uppers_exclusive = [
+        )
+        self.uppers_exclusive = tuple(
             Version(s.version) for s in self.sset if s.operator == "<"
-        ]
+        )
 
         # increment the last number of inclusive, so
         # <=3.4.1 to <3.4.2; >=3.4.0 to >3.4.1; 3.0.0 to >3.0.1
-        self.uppers_inclusive_to_exclusive = [
+        self.uppers_inclusive_to_exclusive = tuple(
             Version(f"{v.major}.{v.minor}.{v.micro + 1}") for v in self.uppers_inclusive
-        ]
+        )
         self.uppers_exclusive = (
             self.uppers_inclusive_to_exclusive + self.uppers_exclusive
         )
@@ -288,7 +288,7 @@ class VersionConstraint:
         level: Literal["major", "minor", "micro"] = "major",
         lower_default: str | Version | None = None,
         upper_default: str | Version | None = None,
-    ) -> list[Version]:
+    ) -> tuple[Version, ...]:
         """Generate a list of versions within the constraint at specified precision.
 
         Creates list of all versions satisfying the constraint, incrementing at
@@ -338,16 +338,18 @@ class VersionConstraint:
         level_int = {"major": major_level, "minor": minor_level, "micro": micro_level}[
             level
         ]
-        lower_as_list = [lower.major, lower.minor, lower.micro]
-        upper_as_list = [upper.major, upper.minor, upper.micro]
+        lower_as_tuple = (lower.major, lower.minor, lower.micro)
+        upper_as_tuple = (upper.major, upper.minor, upper.micro)
 
         versions: list[list[int]] = []
-        for major in range(lower_as_list[major_level], upper_as_list[major_level] + 1):
+        for major in range(
+            lower_as_tuple[major_level], upper_as_tuple[major_level] + 1
+        ):
             version = [major]
 
             minor_lower_og, minor_upper_og = (
-                lower_as_list[minor_level],
-                upper_as_list[minor_level],
+                lower_as_tuple[minor_level],
+                upper_as_tuple[minor_level],
             )
             diff = minor_upper_og - minor_lower_og
             minor_lower = minor_lower_og if diff >= 0 else 0
@@ -363,8 +365,8 @@ class VersionConstraint:
                 version.append(minor)
 
                 micro_lower_og, micro_upper_og = (
-                    lower_as_list[micro_level],
-                    upper_as_list[micro_level],
+                    lower_as_tuple[micro_level],
+                    upper_as_tuple[micro_level],
                 )
                 diff = micro_upper_og - micro_lower_og
                 micro_lower = micro_lower_og if diff >= 0 else 0
@@ -379,4 +381,4 @@ class VersionConstraint:
                     versions.append(version[: level_int + 1])
                     version.pop()
         version_versions = sorted({Version(".".join(map(str, v))) for v in versions})
-        return [v for v in version_versions if self.sset.contains(v)]
+        return tuple(v for v in version_versions if self.sset.contains(v))
