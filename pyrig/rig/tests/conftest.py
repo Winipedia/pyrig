@@ -30,22 +30,15 @@ from pyrig.rig.tests import fixtures
 from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
 from pyrig.src.modules.path import ModulePath
 
-# find the fixtures module in all packages that depend on pyrig
-# and add all paths to pytest_plugins
-fixtures_packages = discover_equivalent_modules_across_dependents(fixtures, pyrig)
-
-
-pytest_plugin_paths: list[Path] = []
-for package in fixtures_packages:
-    absolute_path = ModulePath.package_type_to_dir_path(package)
-    relative_path = ModulePath.package_name_to_relative_dir_path(package.__name__)
-
-    package_root = Path(absolute_path.as_posix().removesuffix(relative_path.as_posix()))
-
-    for path in absolute_path.rglob("*.py"):
-        rel_plugin_path = path.relative_to(package_root)
-        pytest_plugin_paths.append(rel_plugin_path)
-
-pytest_plugins = [
-    ModulePath.relative_path_to_module_name(path) for path in pytest_plugin_paths
-]
+pytest_plugins = tuple(
+    ModulePath.relative_path_to_module_name(path.relative_to(package_root))
+    for package in discover_equivalent_modules_across_dependents(fixtures, pyrig)
+    if (absolute_path := ModulePath.package_type_to_dir_path(package))
+    if (relative_path := ModulePath.package_name_to_relative_dir_path(package.__name__))
+    if (
+        package_root := Path(
+            absolute_path.as_posix().removesuffix(relative_path.as_posix())
+        )
+    )
+    for path in absolute_path.rglob("*.py")
+)
