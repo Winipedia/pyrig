@@ -73,26 +73,28 @@ class DependencySubclass(ABC):
 
     @classmethod
     @cache
-    def subclasses(cls) -> list[type[Self]]:
+    def subclasses(cls) -> tuple[type[Self], ...]:
         """Discover all non-abstract subclasses.
 
         Search all dependent packages of the base dependency, scoped to the
         definition package, and return the results sorted by `sorting_key`.
 
         Returns:
-            Sorted list of concrete subclass types.
+            Sorted tuple of concrete subclass types.
         """
-        return sorted(
-            discard_parent_classes(
-                discard_abstract_classes(
-                    discover_subclasses_across_dependents(
-                        cls,
-                        dep=cls.base_dependency(),
-                        load_package_before=cls.definition_package(),
+        return tuple(
+            sorted(
+                discard_parent_classes(
+                    discard_abstract_classes(
+                        discover_subclasses_across_dependents(
+                            cls,
+                            dep=cls.base_dependency(),
+                            load_package_before=cls.definition_package(),
+                        )
                     )
-                )
-            ),
-            key=cls.sorting_key,
+                ),
+                key=cls.sorting_key,
+            )
         )
 
     @classproperty
@@ -106,7 +108,7 @@ class DependencySubclass(ABC):
         See Also:
             subclasses: Discover all concrete subclasses, sorted by sorting key.
         """
-        subclasses: list[type[Self]] = cls.subclasses()
+        subclasses = cls.subclasses()
         if not subclasses:
             msg = f"No concrete subclasses found for {cls.__name__}"
             raise TypeError(msg)
