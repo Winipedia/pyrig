@@ -47,8 +47,8 @@ See Also:
 """
 
 import logging
-from collections.abc import Callable, Iterable
-from functools import cache
+import sys
+from collections.abc import Callable, Generator, Iterable
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
@@ -58,6 +58,7 @@ from pyrig.rig import tests
 from pyrig.rig.configs.base.base import ConfigList
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
 from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.class_ import all_cls_from_module, all_methods_from_cls
 from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.inspection import qualname_of_obj
@@ -131,14 +132,28 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         msg = "Subclasses must implement src_module()"
         raise NotImplementedError(msg)
 
+    def _dump(self, config: ConfigList) -> None:
+        """Forcing reload after dump.
+
+        This is needed because modules are cached and after adding new test skeletons,
+        we want to ensure that the next time we access the test module,
+        we get the updated version with the new skeletons included.
+        By reloading the module after dumping the new content,
+        we ensure that any subsequent introspection of the test module
+        reflects the latest changes. Needed by is_correct() to work properly
+        after skeleton generation.
+        """
+        super()._dump(config)
+        sys.modules.pop(self.test_module_name(), None)  # Remove from cache
+        import_module_with_file_fallback(self.test_path())  # Re-import to refresh cache
+
     def filename(self) -> str:
         """Extract test filename from the derived test path.
 
         Returns:
             Test module filename without extension (e.g., "test_utils").
         """
-        test_path = self.test_path()
-        return test_path.stem  # filename without extension
+        return self.test_path().stem  # filename without extension
 
     def parent_path(self) -> Path:
         """Get parent directory for the test file.
@@ -146,21 +161,15 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Returns:
             Directory path where the test file will be created.
         """
-        test_path = self.test_path()
-        return test_path.parent
+        return self.test_path().parent
 
-    def lines(self) -> list[str]:
+    def lines(self) -> ConfigList:
         """Generate complete test module content with skeletons for untested code.
 
         Returns:
             Full test module source code including existing tests and new skeletons.
         """
-        lines = self.test_module_content_with_skeletons().splitlines()
-        # if last no empty new line, add one
-        last_line = lines[-1]
-        if last_line.strip():
-            lines.append("")
-        return lines
+        return self.test_module_content_with_skeletons().splitlines()
 
     def should_override_content(self) -> bool:
         """Enable content override mode for skeleton insertion.
@@ -193,22 +202,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         if not self.path().exists():
             return False
-        test_module_content = self.test_module_content()
-        untested_funcs = [
-            f for f in self.untested_func_names() if f not in test_module_content
-        ]
-        untested_classes = [
-            c
-            for c in self.untested_class_and_method_names()
-            if ("class " + c) not in test_module_content
-        ]
-        untested_methods = [
-            m
-            for ms in self.untested_class_and_method_names().values()
-            for m in ms
-            if ("def " + m + "(") not in test_module_content
-        ]
-        return not (untested_funcs or untested_classes or untested_methods)
+
+        return not (
+            any(self.untested_func_names())
+            or any(self.untested_class_and_method_names())
+        )
 
     def merge_configs(self) -> ConfigList:
         """Return test configurations without merging.
@@ -247,8 +245,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Relative path to the test file
             (e.g., Path("tests/test_package/test_mod.py")).
         """
-        test_module_name = self.test_module_name()
-        return ModulePath.module_name_to_relative_file_path(test_module_name)
+        return ModulePath.module_name_to_relative_file_path(self.test_module_name())
 
     def test_module_name(self) -> str:
         """Get the fully qualified import name for the test module.
@@ -321,34 +318,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Returns:
             Test module content with new function skeletons appended at the end.
         """
-        for test_func_name in self.untested_func_names():
-            test_module_content += self.test_func_skeleton(test_func_name)
-        return test_module_content
+        return test_module_content + "".join(
+            self.test_func_skeleton(name) for name in self.untested_func_names()
+        )
 
-    @classmethod
-    @cache
-    def untested_func_names(cls) -> tuple[str, ...]:
-        """Identify source functions that lack corresponding test functions.
-
-        Compares functions in the source module against functions in the test
-        module. For each source function, checks if a test function with the
-        expected name (test_<function_name>) exists.
-
-        Cached for performance - called multiple times during validation.
-
-        If user wants to override they should overide _untested_func_names,
-        not this method since this method is cached.
-
-        Returns:
-            Tuple of test function names that need to be created, using the
-            test naming convention (e.g., ("test_foo", "test_bar")).
-
-        Note:
-            Logs debug information about the number and names of untested functions.
-        """
-        return cls()._untested_func_names()  # noqa: SLF001
-
-    def _untested_func_names(self) -> tuple[str, ...]:
+    def untested_func_names(self) -> Generator[str, None, None]:
         """Identify source functions that lack corresponding test functions.
 
         Compares functions in the source module against functions in the test
@@ -356,7 +330,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         expected name (test_<function_name>) exists.
 
         Returns:
-            Tuple of test function names that need to be created, using the
+            Generator of test function names that need to be created, using the
             test naming convention (e.g., ("test_foo", "test_bar")).
 
         Note:
@@ -365,19 +339,10 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         funcs = all_functions_from_module(self.src_module())
         test_funcs = all_functions_from_module(self.test_module())
 
-        supposed_test_func_names = [self.test_name_for_obj(f) for f in funcs]
-        actual_test_func_names = [qualname_of_obj(f) for f in test_funcs]
+        supposed_test_func_names = (self.test_name_for_obj(f) for f in funcs)
+        actual_test_func_names = {qualname_of_obj(f) for f in test_funcs}
 
-        untested_func_names = tuple(
-            f for f in supposed_test_func_names if f not in actual_test_func_names
-        )
-
-        logger.debug(
-            "Found %d untested functions: %s",
-            len(untested_func_names),
-            untested_func_names,
-        )
-        return untested_func_names
+        return (f for f in supposed_test_func_names if f not in actual_test_func_names)
 
     def test_func_skeleton(self, test_func_name: str) -> str:
         '''Generate skeleton code for a test function.
@@ -431,11 +396,11 @@ def {test_func_name}() -> None:
         for (
             test_class_name,
             test_method_names,
-        ) in test_class_to_method_names.items():
+        ) in test_class_to_method_names:
             test_cls_skeleton = self.test_class_skeleton(test_class_name)
-            test_cls_content = test_cls_skeleton
-            for test_method_name in test_method_names:
-                test_cls_content += self.test_method_skeleton(test_method_name)
+            test_cls_content = test_cls_skeleton + "".join(
+                self.test_method_skeleton(name) for name in test_method_names
+            )
 
             # if the class already exists we need to insert the new methods
             # rather than overwrite the class
@@ -455,43 +420,9 @@ def {test_func_name}() -> None:
 
         return test_module_content
 
-    @classmethod
-    @cache
-    def untested_class_and_method_names(cls) -> dict[str, tuple[str, ...]]:
-        """Identify source classes and methods lacking corresponding tests.
-
-        Performs a comprehensive comparison between source and test modules:
-        1. Extracts all classes and their methods from the source module
-        2. Extracts all test classes and their methods from the test module
-        3. Maps source class/method names to expected test names
-        4. Identifies missing test classes and missing test methods within
-           existing test classes
-
-        Cached for performance - called multiple times during validation.
-
-        If user wants to override they should overide _untested_class_and_method_names,
-        not this method since this method is cached.
-
-        Returns:
-            Dictionary mapping test class names to tuples of missing test method
-            names. If a test class is entirely missing, it maps to a tuple of
-            all its expected test method names. Returns empty dict if all
-            classes and methods have tests.
-
-        Example:
-            Return value structure::
-
-                {
-                    "TestMyClass": ("test_method_one", "test_method_two"),
-                }
-
-        Note:
-            Only considers methods defined directly on the class, excluding
-            inherited methods from parent classes.
-        """
-        return cls()._untested_class_and_method_names()  # noqa: SLF001
-
-    def _untested_class_and_method_names(self) -> dict[str, tuple[str, ...]]:
+    def untested_class_and_method_names(
+        self,
+    ) -> Generator[tuple[str, Generator[str, None, None]], None, None]:
         """Identify source classes and methods lacking corresponding tests.
 
         Performs a comprehensive comparison between source and test modules:
@@ -502,10 +433,12 @@ def {test_func_name}() -> None:
            existing test classes
 
         Returns:
-            Dictionary mapping test class names to tuples of missing test method
-            names. If a test class is entirely missing, it maps to a tuple of
-            all its expected test method names. Returns empty dict if all
-            classes and methods have tests.
+            Generator of tuples of (test_class_name, missing_test_methods_generator).
+            The generator yields each test class name and a generator of its
+            missing test method names. If a test class is entirely missing,
+            it yields a tuple with the class name and a generator
+            of all its expected test method names. Returns an empty generator if
+            all classes and methods have tests.
 
         Example:
             Return value structure::
@@ -521,51 +454,47 @@ def {test_func_name}() -> None:
         classes = all_cls_from_module(self.src_module())
         test_classes = all_cls_from_module(self.test_module())
 
-        class_to_methods = {
-            c: all_methods_from_cls(c, exclude_parent_methods=True) for c in classes
-        }
-        test_class_to_test_methods = {
-            tc: all_methods_from_cls(tc, exclude_parent_methods=True)
+        class_to_methods = (
+            (c, all_methods_from_cls(c, exclude_parent_methods=True)) for c in classes
+        )
+        test_class_to_test_methods = (
+            (tc, all_methods_from_cls(tc, exclude_parent_methods=True))
             for tc in test_classes
-        }
+        )
 
-        supposed_test_class_to_test_methods_names = {
-            self.test_name_for_obj(c): [self.test_name_for_obj(m) for m in ms]
-            for c, ms in class_to_methods.items()
-        }
+        supposed_test_class_to_test_methods_names = (
+            (self.test_name_for_obj(c), (self.test_name_for_obj(m) for m in ms))
+            for c, ms in class_to_methods
+        )
         actual_test_class_to_test_methods_names = {
-            isolated_obj_name(tc): [isolated_obj_name(tm) for tm in tms]
-            for tc, tms in test_class_to_test_methods.items()
+            isolated_obj_name(tc): {isolated_obj_name(tm) for tm in tms}
+            for tc, tms in test_class_to_test_methods
         }
 
-        untested_test_class_to_test_methods_names: dict[str, tuple[str, ...]] = {}
         for (
             supposed_test_class_name,
             supposed_test_methods_names,
-        ) in supposed_test_class_to_test_methods_names.items():
-            actual_test_methods_names = actual_test_class_to_test_methods_names.get(
-                supposed_test_class_name, []
+        ) in supposed_test_class_to_test_methods_names:
+            actual_test_methods_names = set(
+                actual_test_class_to_test_methods_names.get(
+                    supposed_test_class_name, ()
+                )
             )
-            untested_test_methods_names = tuple(
+            untested_test_methods_names = (
                 tmn
                 for tmn in supposed_test_methods_names
                 if tmn not in actual_test_methods_names
             )
             # add the test class name to the dict if there are untested methods
             # or if the test class is not in the test module at all
-            if untested_test_methods_names or (
+            has_untested_methods, untested_test_methods_names = generator_has_items(
+                untested_test_methods_names
+            )
+            if has_untested_methods or (
                 supposed_test_class_name not in actual_test_class_to_test_methods_names
             ):
-                untested_test_class_to_test_methods_names[supposed_test_class_name] = (
-                    untested_test_methods_names
-                )
-
-        logger.debug(
-            "Found %d untested classes: %s",
-            len(untested_test_class_to_test_methods_names),
-            untested_test_class_to_test_methods_names,
-        )
-        return untested_test_class_to_test_methods_names
+                logger.debug("Class %s has untested methods", supposed_test_class_name)
+                yield supposed_test_class_name, untested_test_methods_names
 
     def test_class_skeleton(self, test_class_name: str) -> str:
         '''Generate skeleton code for a test class.
@@ -617,7 +546,7 @@ class {test_class_name}:
 
     def make_subclasses_for_modules(
         self, modules: Iterable[ModuleType]
-    ) -> list[type[Self]]:
+    ) -> Generator[type[Self], None, None]:
         """Create config subclasses for multiple modules.
 
         Convenience method for batch processing: creates a subclass for each
@@ -625,16 +554,16 @@ class {test_class_name}:
         ``validate_subclasses``.
 
         Args:
-            modules: List of source modules to create test configs for.
+            modules: Sequence of source modules to create test configs for.
 
         Returns:
-            List of dynamically created subclasses, in input order.
+            Generator yielding dynamically created subclasses, in input order.
 
         See Also:
             make_subclass_for_module: Creates individual subclasses
             validate_subclasses: Orders by priority and validates
         """
-        return list(map(self.make_subclass_for_module, modules))
+        return (self.make_subclass_for_module(m) for m in modules)
 
     def make_subclass_for_module(self, module: ModuleType) -> type[Self]:
         """Dynamically create a config subclass for a specific source module.
@@ -799,7 +728,7 @@ class {test_class_name}:
         """
         parts = make_obj_importpath(obj).split(".")
         test_name = self.test_name_for_obj(obj)
-        test_parts = [
+        test_parts = (
             (
                 self.test_module_prefix()
                 if part[0].islower()
@@ -807,10 +736,8 @@ class {test_class_name}:
             )
             + part
             for part in parts[:-1]
-        ]
-        test_parts.append(test_name)
-        test_parts.insert(0, ProjectTester.I.tests_package_name())
-        return ".".join(test_parts)
+        )
+        return ".".join((self.tests_package_name(), *test_parts, test_name))
 
     def obj_importpath_from_test_obj(
         self,
@@ -834,9 +761,7 @@ class {test_class_name}:
         """
         test_importpath = make_obj_importpath(test_obj)
         # remove tests prefix
-        test_importpath = test_importpath.removeprefix(
-            ProjectTester.I.tests_package_name() + "."
-        )
+        test_importpath = test_importpath.removeprefix(self.tests_package_name() + ".")
         test_parts = test_importpath.split(".")
         parts = [
             self.remove_test_prefix_from_test_name(test_name)
@@ -935,3 +860,11 @@ class {test_class_name}:
             The ``"test_"`` prefix string.
         """
         return "test_"
+
+    def tests_package_name(self) -> str:
+        """Get tests package name.
+
+        Returns:
+            The ``"tests"`` package name string.
+        """
+        return ProjectTester.I.tests_package_name()
