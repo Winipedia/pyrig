@@ -157,7 +157,7 @@ class Tool(DependencySubclass):
     @classmethod
     def grouped_badges(cls) -> dict[str, list[str]]:
         """Get a dict with all badges of tools grouped by their group."""
-        subclasses = cls.subclasses()
+        subclasses = cls.sorted_subclasses()
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:
             t = tool()
@@ -177,8 +177,8 @@ class Tool(DependencySubclass):
         Returns:
             List of all tool dependencies.
         """
-        subclasses = cls.subclasses()
-        all_dev_deps: list[str] = []
-        for subclass in subclasses:
-            all_dev_deps.extend(subclass().dev_dependencies())
-        return sorted(all_dev_deps)
+        return sorted(
+            dep
+            for subclass in cls.subclasses()
+            for dep in subclass().dev_dependencies()
+        )

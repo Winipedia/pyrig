@@ -27,9 +27,9 @@ def generator(iterable: Iterable[Any]) -> Generator[Any, None, None]:
     yield from iterable
 
 
-def generator_has_items(
-    gen: Generator[Any, Any, Any],
-) -> tuple[bool, Generator[Any, Any, Any]]:
+def generator_has_items[T](
+    gen: Generator[T, Any, Any],
+) -> tuple[bool, Generator[T, Any, Any]]:
     """Check if a generator has any items without consuming them.
 
     Returns a tuple of (has_items, generator). The returned generator will yield

@@ -106,4 +106,5 @@ def ignored_config_files() -> Generator[ConfigFile[ConfigData], None, None]:
     Returns:
         Generator of ConfigFile instances whose paths match .gitignore patterns.
     """
-    return (cf() for cf in ConfigFile.subclasses() if path_is_in_ignore(cf().path()))
+    config_files = (cf() for cf in ConfigFile.subclasses())
+    return (cf for cf in config_files if path_is_in_ignore(cf.path()))

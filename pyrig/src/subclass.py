@@ -8,11 +8,13 @@ consistent discovery API.
 """
 
 from abc import ABC, abstractmethod
+from collections.abc import Generator
 from functools import cache
 from types import ModuleType
 from typing import Any, Self, TypeVar
 
 import pyrig
+from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.class_ import (
     classproperty,
     discard_abstract_classes,
@@ -73,7 +75,20 @@ class DependencySubclass(ABC):
 
     @classmethod
     @cache
-    def subclasses(cls) -> tuple[type[Self], ...]:
+    def sorted_subclasses(cls) -> tuple[type[Self], ...]:
+        """Discover and return all concrete subclasses, sorted by sorting key.
+
+        Discovers all non-abstract subclasses across dependent packages, scoped to
+        the definition package. Returns them as a tuple sorted by the value
+        returned from `sorting_key()`.
+
+        Returns:
+            Tuple of concrete subclass types, sorted by sorting key.
+        """
+        return tuple(sorted(cls.subclasses(), key=cls.sorting_key))
+
+    @classmethod
+    def subclasses(cls) -> Generator[type[Self], None, None]:
         """Discover all non-abstract subclasses.
 
         Search all dependent packages of the base dependency, scoped to the
@@ -82,18 +97,13 @@ class DependencySubclass(ABC):
         Returns:
             Sorted tuple of concrete subclass types.
         """
-        return tuple(
-            sorted(
-                discard_parent_classes(
-                    discard_abstract_classes(
-                        discover_subclasses_across_dependents(
-                            cls,
-                            dep=cls.base_dependency(),
-                            load_package_before=cls.definition_package(),
-                        )
-                    )
-                ),
-                key=cls.sorting_key,
+        return discard_parent_classes(
+            discard_abstract_classes(
+                discover_subclasses_across_dependents(
+                    cls,
+                    dep=cls.base_dependency(),
+                    load_package_before=cls.definition_package(),
+                )
             )
         )
 
@@ -108,18 +118,21 @@ class DependencySubclass(ABC):
         See Also:
             subclasses: Discover all concrete subclasses, sorted by sorting key.
         """
-        subclasses = cls.subclasses()
-        if not subclasses:
+        has_leaf, subclasses = generator_has_items(cls.subclasses())
+
+        if not has_leaf:
             msg = f"No concrete subclasses found for {cls.__name__}"
             raise TypeError(msg)
 
-        if len(subclasses) > 1:
+        leaf = next(subclasses)
+        second = next(subclasses, None)
+        if second is not None:
             msg = (
                 f"Multiple concrete subclasses found for {cls.__name__}: "
-                f"{', '.join(subcls.__name__ for subcls in subclasses)}"
+                f"{', '.join(c.__name__ for c in (leaf, second, *subclasses))}"
             )
             raise TypeError(msg)
-        return subclasses[0]
+        return leaf
 
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator

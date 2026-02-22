@@ -152,7 +152,7 @@ class TestConfigFile:
 
     def test_validate_all_subclasses(self, mocker: MockFixture) -> None:
         """Test method."""
-        num_subclasses = ConfigFile.subclasses()
+        num_subclasses = tuple(ConfigFile.subclasses())
         mock = mocker.patch.object(
             ConfigFile, ConfigFile.validate.__name__, return_value=None
         )

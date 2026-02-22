@@ -201,7 +201,7 @@ def discover_subclasses_across_dependents[T: type](
     return (
         subclass
         for package in discover_equivalent_modules_across_dependents(
-            load_package_before, dep
+            module=load_package_before, dep=dep
         )
         for subclass in discover_all_subclasses(
             cls,
