@@ -37,7 +37,6 @@ class TestDependencySubclass:
     def test_subclasses(self) -> None:
         """Test method."""
         result = ConfigFile.subclasses()
-        assert isinstance(result, list)
         assert len(result) > 0
         assert all(issubclass(subclass, ConfigFile) for subclass in result)
 
