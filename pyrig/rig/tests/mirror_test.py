@@ -57,6 +57,7 @@ from typing import Any, Self, cast, overload
 from pyrig.rig import tests
 from pyrig.rig.configs.base.base import ConfigList
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
+from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.src.modules.class_ import all_cls_from_module, all_methods_from_cls
 from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.inspection import qualname_of_obj
@@ -808,7 +809,7 @@ class {test_class_name}:
             for part in parts[:-1]
         ]
         test_parts.append(test_name)
-        test_parts.insert(0, self.tests_package_name())
+        test_parts.insert(0, ProjectTester.I.tests_package_name())
         return ".".join(test_parts)
 
     def obj_importpath_from_test_obj(
@@ -833,7 +834,9 @@ class {test_class_name}:
         """
         test_importpath = make_obj_importpath(test_obj)
         # remove tests prefix
-        test_importpath = test_importpath.removeprefix(self.tests_package_name() + ".")
+        test_importpath = test_importpath.removeprefix(
+            ProjectTester.I.tests_package_name() + "."
+        )
         test_parts = test_importpath.split(".")
         parts = [
             self.remove_test_prefix_from_test_name(test_name)
@@ -932,11 +935,3 @@ class {test_class_name}:
             The ``"test_"`` prefix string.
         """
         return "test_"
-
-    def tests_package_name(self) -> str:
-        """Get tests package name.
-
-        Returns:
-            The ``"tests"`` package name string.
-        """
-        return "tests"
