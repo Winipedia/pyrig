@@ -40,6 +40,7 @@ from pyrig.rig.configs.pyproject import (
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
@@ -49,6 +50,7 @@ from pyrig.rig.utils.version_control import ignored_config_files
 from pyrig.src.git import (
     running_in_github_actions,
 )
+from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.imports import (
     iter_modules,
     walk_package,
@@ -141,20 +143,21 @@ def assert_no_namespace_packages() -> None:
     Raises:
         AssertionError: If namespace packages were found (lists created paths).
     """
-    any_namespace_packages = find_namespace_packages()
-    if any_namespace_packages:
+    namespace_packages = find_namespace_packages()
+    has_namespace_packages, namespace_packages = generator_has_items(namespace_packages)
+    if has_namespace_packages:
         make_init_files()
 
-    msg = f"""Pyrig enforces that all packages have __init__.py files.
-    Found {len(any_namespace_packages)} namespace packages.
+    msg = """Pyrig enforces that all packages have __init__.py files.
+    Found namespace packages.
     Created __init__.py files for them.
     Please verify the changes at the following paths:
 """
-    for package in any_namespace_packages:
+    for package in namespace_packages:
         msg += f"""
         - {package}
         """
-    assert not any_namespace_packages, msg
+    assert not has_namespace_packages, msg
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -167,19 +170,19 @@ def assert_all_src_code_in_one_package() -> None:
     Raises:
         AssertionError: If unexpected packages/subpackages/submodules found.
     """
-    packages = find_packages(depth=0)
+    packages = set(find_packages(depth=0))
     src_package = import_module(PyprojectConfigFile.I.package_name())
     src_package_name = src_package.__name__
     expected_packages = {
-        MirrorTestConfigFile.I.tests_package_name(),
+        ProjectTester.I.tests_package_name(),
         src_package_name,
     }
 
     # packages must be exactly the expected packages
     assert (
-        set(packages) == expected_packages
+        packages == expected_packages
     ), f"""Pyrig enforces a single source package with a specific structure.
-    Found unexpected packages: {set(packages) - expected_packages}
+    Found unexpected packages: {packages - expected_packages}
     Expected packages: {expected_packages}
     Only folders with __init__.py files are considered packages.
     Please move all code and login into the designated src package.
@@ -294,9 +297,8 @@ def assert_no_unit_test_package_usage() -> None:
     """
     unit_test_str = "UnitTest".lower()
     unit_test_pattern = re.compile(unit_test_str)
-    packages = find_packages()
     usages: list[str] = []
-    for package in packages:
+    for package in find_packages():
         package_path = ModulePath.package_name_to_relative_dir_path(package)
         for path in package_path.rglob("*.py"):
             content = path.read_text(encoding="utf-8")

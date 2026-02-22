@@ -47,3 +47,8 @@ class TestProjectTester:
             "--log-cli-level=INFO",
             "--cov-report=xml",
         )
+
+    def test_tests_package_name(self) -> None:
+        """Test method."""
+        result = ProjectTester.I.tests_package_name()
+        assert result == "tests"

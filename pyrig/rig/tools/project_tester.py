@@ -64,6 +64,14 @@ class ProjectTester(Tool):
         """
         return 90
 
+    def tests_package_name(self) -> str:
+        """Get tests package name.
+
+        Returns:
+            The ``"tests"`` package name string.
+        """
+        return "tests"
+
     def test_args(self, *args: str) -> Args:
         """Construct pytest arguments.
 
