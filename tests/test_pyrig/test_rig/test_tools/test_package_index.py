@@ -32,4 +32,4 @@ class TestPackageIndex:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = PackageIndex.I.dev_dependencies()
-        assert result == []
+        assert result == ()

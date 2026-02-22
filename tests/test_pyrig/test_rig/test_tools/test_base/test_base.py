@@ -51,7 +51,7 @@ class TestTool:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = PackageManager.I.dev_dependencies()
-        assert result == []
+        assert result == ()
 
     def test_subclasses_dev_dependencies(self) -> None:
         """Test method."""

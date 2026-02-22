@@ -51,7 +51,7 @@ class ContainerEngine(Tool):
             "https://podman.io",
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool dependencies.
 
         Podman is a system package (not a Python dependency), so this
@@ -60,7 +60,7 @@ class ContainerEngine(Tool):
         Returns:
             Empty list — podman must be installed at the OS level.
         """
-        return []
+        return ()
 
     def build_args(self, *args: str, project_name: str) -> Args:
         """Construct podman build arguments.

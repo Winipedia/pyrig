@@ -36,7 +36,7 @@ class TestVersionController:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = VersionController.I.dev_dependencies()
-        assert result == []
+        assert result == ()
 
     def test_config_get_user_email_args(self) -> None:
         """Test method."""

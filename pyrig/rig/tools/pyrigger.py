@@ -56,14 +56,14 @@ class Pyrigger(Tool):
             f"https://github.com/Winipedia/{self.name()}",
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool dependencies.
 
         Returns:
-            List of tool dependencies.
+            Tuple of tool dependencies.
         """
         # only pyrig-dev not pyrig because pyrig is already installed as dependency
-        return ["pyrig-dev"]
+        return ("pyrig-dev",)
 
     def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments from callable.

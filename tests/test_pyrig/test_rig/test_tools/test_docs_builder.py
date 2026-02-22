@@ -37,12 +37,12 @@ class TestDocsBuilder:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = DocsBuilder.I.dev_dependencies()
-        assert result == [
+        assert result == (
             "mkdocs",
             "mkdocs-material",
             "mkdocs-mermaid2-plugin",
             "mkdocstrings[python]",
-        ]
+        )
 
     def test_docs_dir(self) -> None:
         """Test method."""
