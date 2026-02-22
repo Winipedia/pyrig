@@ -12,6 +12,12 @@ from pyrig.src.subclass import DependencySubclass
 class TestDependencySubclass:
     """Test class."""
 
+    def test_sorted_subclasses(self) -> None:
+        """Test method."""
+        result = ConfigFile.sorted_subclasses()
+        assert len(result) > 0
+        assert all(issubclass(subclass, ConfigFile) for subclass in result)
+
     def test_I(self) -> None:  # noqa: N802
         """Test method."""
         result = GitignoreConfigFile.I
@@ -36,7 +42,7 @@ class TestDependencySubclass:
 
     def test_subclasses(self) -> None:
         """Test method."""
-        result = ConfigFile.subclasses()
+        result = tuple(ConfigFile.subclasses())
         assert len(result) > 0
         assert all(issubclass(subclass, ConfigFile) for subclass in result)
 

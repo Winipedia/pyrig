@@ -119,7 +119,7 @@ def assert_root_is_correct() -> None:
         tuple(cf.validate() for cf in ignored_config_files())
 
     subclasses = ConfigFile.subclasses()
-    incorrect_cfs = [cf for cf in subclasses if not cf().is_correct()]
+    incorrect_cfs = tuple(cf for cf in subclasses if not cf().is_correct())
 
     if incorrect_cfs:
         # init all per test run
