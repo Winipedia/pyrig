@@ -106,11 +106,18 @@ class DependencySubclass(ABC):
         See Also:
             subclasses: Discover all concrete subclasses, sorted by sorting key.
         """
-        leaf = cls.subclasses()[0]
-        if len(cls.subclasses()) > 1:
-            msg = f"Multiple subclasses found for {cls.__name__}, expected one final leaf: {cls.subclasses()}"  # noqa: E501
-            raise ValueError(msg)
-        return leaf
+        subclasses: list[type[Self]] = cls.subclasses()
+        if not subclasses:
+            msg = f"No concrete subclasses found for {cls.__name__}"
+            raise TypeError(msg)
+
+        if len(subclasses) > 1:
+            msg = (
+                f"Multiple concrete subclasses found for {cls.__name__}: "
+                f"{', '.join(subcls.__name__ for subcls in subclasses)}"
+            )
+            raise TypeError(msg)
+        return subclasses[0]
 
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator
