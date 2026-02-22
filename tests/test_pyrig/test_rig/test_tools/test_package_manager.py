@@ -21,7 +21,7 @@ class TestPackageManager:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = PackageManager.I.dev_dependencies()
-        assert result == []
+        assert result == ()
 
     def test_build_system_requires(self) -> None:
         """Test method."""

@@ -23,7 +23,7 @@ class TestContainerEngine:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = ContainerEngine.I.dev_dependencies()
-        assert result == []
+        assert result == ()
 
     def test_name(self) -> None:
         """Test method."""

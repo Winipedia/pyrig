@@ -48,13 +48,13 @@ class RemoteVersionController(Tool):
             self.repo_url(),
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool dependencies.
 
         Returns:
-            List of tool dependencies.
+            Tuple of tool dependencies.
         """
-        return ["pygithub"]
+        return ("pygithub",)
 
     def url_base(self) -> str:
         """Get the base URL for GitHub.

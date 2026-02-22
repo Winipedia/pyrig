@@ -132,13 +132,13 @@ class Tool(DependencySubclass):
             alt_text=self.name(),
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool dependencies.
 
         Returns:
-            List of tool dependencies. Defaults to the name of the tool.
+            Tuple of tool dependencies. Defaults to the name of the tool.
         """
-        return [self.name()]
+        return (self.name(),)
 
     def args(self, *args: str) -> Args:
         """Construct command arguments with tool name prepended.

@@ -55,17 +55,17 @@ class PackageManager(Tool):
             "https://github.com/astral-sh/uv",
         )
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get development dependencies for this tool.
 
         UV is a system-level dependency installed outside the Python
         environment, so no dev dependencies are required.
 
         Returns:
-            Empty list.
+            Empty tuple.
         """
         # uv is a system dependency, so we don't have a dev dependency for it
-        return []
+        return ()
 
     def init_project_args(self, *args: str) -> Args:
         """Construct uv init arguments.

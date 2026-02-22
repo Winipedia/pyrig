@@ -21,7 +21,7 @@ class TestProjectTester:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = ProjectTester.I.dev_dependencies()
-        assert result == ["pytest", "pytest-mock"]
+        assert result == ("pytest", "pytest-mock")
 
     def test_test_args(self) -> None:
         """Test method."""
