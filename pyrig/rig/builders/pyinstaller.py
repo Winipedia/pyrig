@@ -162,7 +162,7 @@ class PyInstallerBuilder(BuilderConfigFile):
             add_datas.extend(package_datas)
         return add_datas
 
-    def pyinstaller_options(self, temp_artifacts_dir: Path) -> list[str]:
+    def pyinstaller_options(self, temp_artifacts_dir: Path) -> tuple[str, ...]:
         """Build the complete PyInstaller command-line options.
 
         Constructs the full list of command-line arguments for PyInstaller,
@@ -172,11 +172,11 @@ class PyInstallerBuilder(BuilderConfigFile):
             temp_artifacts_dir: Temporary directory for the executable.
 
         Returns:
-            List of command-line arguments for PyInstaller.
+            Tuple of command-line arguments for PyInstaller.
         """
         temp_dir = temp_artifacts_dir.parent
 
-        options = [
+        return (
             str(self.main_path()),
             "--name",
             self.app_name(),
@@ -192,10 +192,12 @@ class PyInstallerBuilder(BuilderConfigFile):
             str(self.temp_distpath(temp_dir)),
             "--icon",
             str(self.app_icon_path(temp_dir)),
-        ]
-        for src, dest in self.add_datas():
-            options.extend(["--add-data", f"{src}{os.pathsep}{dest}"])
-        return options
+            *(
+                arg
+                for src, dest in self.add_datas()
+                for arg in ("--add-data", f"{src}{os.pathsep}{dest}")
+            ),
+        )
 
     def temp_distpath(self, temp_dir: Path) -> Path:
         """Get the temporary distribution output path.
