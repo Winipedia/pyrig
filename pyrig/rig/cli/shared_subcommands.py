@@ -23,7 +23,7 @@ def version() -> None:
 
     Example:
         $ uv run pyrig version
-        pyrig version 3.1.5
+        pyrig version 1.2.3
 
         $ uv run myproject version
         myproject version 1.2.3
