@@ -112,7 +112,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     # copy the pyrig package to tmp_path/pyrig with shutil
     project_name = "src-project"
 
-    pyrig_temp_path = tmp_path / PyprojectConfigFile.I.project_name()
+    pyrig_temp_path = tmp_path / PackageManager.I.project_name()
     pyrig_path = ModulePath.package_type_to_dir_path(pyrig)
     shutil.copytree(
         pyrig_path.parent,

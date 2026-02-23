@@ -28,6 +28,7 @@ from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFi
 from pyrig.rig.configs.workflows.release import ReleaseWorkflowConfigFile
 from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.src.string_ import make_linked_badge_markdown
 
@@ -77,7 +78,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         Returns:
             Formatted Markdown with H1 header, badge categories, and description.
         """
-        project_name = PyprojectConfigFile.I.project_name()
+        project_name = PackageManager.I.project_name()
         badges = self.badges()
         badges_lines: list[str] = []
         for badge_category, badge_list in badges.items():

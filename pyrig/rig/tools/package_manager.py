@@ -12,6 +12,7 @@ Example:
 
 from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.src.processes import Args
+from pyrig.src.string_ import kebab_to_snake_case, project_name_from_cwd
 
 
 class PackageManager(Tool):
@@ -54,6 +55,14 @@ class PackageManager(Tool):
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json",
             "https://github.com/astral-sh/uv",
         )
+
+    def project_name(self) -> str:
+        """Get the name of the project."""
+        return project_name_from_cwd()
+
+    def package_name(self) -> str:
+        """Get the main package of the project."""
+        return kebab_to_snake_case(self.project_name())
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Get development dependencies for this tool.

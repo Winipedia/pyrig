@@ -9,8 +9,8 @@ import logging
 from importlib import import_module
 from types import ModuleType
 
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.modules.imports import walk_package
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def make_test_skeletons() -> None:
     modules, classes, and functions for all untested code.
     """
     logger.info("Creating test skeletons")
-    src_package = import_module(PyprojectConfigFile.I.package_name())
+    src_package = import_module(PackageManager.I.package_name())
     logger.debug("Source package: %s", src_package.__name__)
     create_tests_for_package(src_package)
     logger.info("Test skeleton creation complete")

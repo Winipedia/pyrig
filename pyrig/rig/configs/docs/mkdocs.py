@@ -15,7 +15,7 @@ from pathlib import Path
 from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class MkdocsConfigFile(DictYmlConfigFile):
@@ -47,7 +47,7 @@ class MkdocsConfigFile(DictYmlConfigFile):
             The project name is read from pyproject.toml.
         """
         return {
-            "site_name": PyprojectConfigFile.I.project_name(),
+            "site_name": PackageManager.I.project_name(),
             "nav": [
                 {"Home": IndexConfigFile.I.path().name},
                 {"API": "api.md"},

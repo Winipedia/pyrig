@@ -35,7 +35,7 @@ from typing import Any
 import pyrig
 from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.dependency_graph import DependencyGraph
 from pyrig.src.iterate import generator_length
 
@@ -114,9 +114,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         graph = DependencyGraph()
         chain = graph.longest_dependent_chain(pyrig.__name__)
-        chain_without_src = (
-            n for n in chain if n != PyprojectConfigFile.I.package_name()
-        )
+        chain_without_src = (n for n in chain if n != PackageManager.I.package_name())
         return generator_length(chain_without_src)
 
     def jobs(self) -> ConfigDict:

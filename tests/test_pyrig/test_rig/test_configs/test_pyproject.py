@@ -123,16 +123,6 @@ class TestPyprojectConfigFile:
         assert "build-system" in configs, "Expected 'build-system' key in configs"
         assert "tool" in configs, "Expected 'tool' key in configs"
 
-    def test_package_name(self) -> None:
-        """Test method."""
-        package_name = PyprojectConfigFile.I.package_name()
-        assert len(package_name) > 0, "Expected package name to be non-empty"
-
-    def test_project_name(self) -> None:
-        """Test method."""
-        project_name = PyprojectConfigFile.I.project_name()
-        assert len(project_name) > 0, "Expected project name to be non-empty"
-
     def test_make_dependency_versions(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:

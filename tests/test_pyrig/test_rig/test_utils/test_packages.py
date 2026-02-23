@@ -4,12 +4,12 @@ from contextlib import chdir
 from pathlib import Path
 
 from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
     find_packages,
     src_package_is_pyrig,
 )
-from pyrig.src.string_ import package_name_from_cwd
 
 
 def test_find_packages(tmp_path: Path) -> None:
@@ -53,7 +53,7 @@ def test_find_namespace_packages(tmp_path: Path) -> None:
 
         assert list(find_namespace_packages()) == []
 
-        package_name = package_name_from_cwd()
+        package_name = PackageManager.I.package_name()
         (Path.cwd() / package_name).mkdir()
 
         assert list(find_namespace_packages()) == [package_name]

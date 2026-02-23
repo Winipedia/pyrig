@@ -67,8 +67,8 @@ class ContainerfileConfigFile(StringConfigFile):
             Python version.
         """
         latest_python_version = PyprojectConfigFile.I.latest_possible_python_version()
-        project_name = PyprojectConfigFile.I.project_name()
-        package_name = PyprojectConfigFile.I.package_name()
+        project_name = PackageManager.I.project_name()
+        package_name = PackageManager.I.package_name()
         app_user_name = "appuser"
         entrypoint_args = list(PackageManager.I.run_args(project_name))
         default_cmd_args = [main.__name__]

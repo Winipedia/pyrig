@@ -11,7 +11,7 @@ See Also:
 from pathlib import Path
 
 from pyrig.rig.configs.base.typed import TypedConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class PyTypedConfigFile(TypedConfigFile):
@@ -26,4 +26,4 @@ class PyTypedConfigFile(TypedConfigFile):
 
     def parent_path(self) -> Path:
         """Return package directory path."""
-        return Path(PyprojectConfigFile.I.package_name())
+        return Path(PackageManager.I.package_name())

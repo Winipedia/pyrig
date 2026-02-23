@@ -41,7 +41,7 @@ import pyrig
 from pyrig import main, resources
 from pyrig.rig import builders
 from pyrig.rig.configs.base.list_cf import ListConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.modules.path import ModulePath
 
 logger = logging.getLogger(__name__)
@@ -256,11 +256,11 @@ class BuilderConfigFile(ListConfigFile):
 
     def app_name(self) -> str:
         """Return the application name from pyproject.toml."""
-        return PyprojectConfigFile.I.project_name()
+        return PackageManager.I.project_name()
 
     def root_path(self) -> Path:
         """Return the absolute path to the project root directory."""
-        src_package = import_module(PyprojectConfigFile.I.package_name())
+        src_package = import_module(PackageManager.I.package_name())
         src_path = ModulePath.package_type_to_dir_path(src_package)
         return src_path.parent
 
@@ -274,7 +274,7 @@ class BuilderConfigFile(ListConfigFile):
 
     def src_package_path(self) -> Path:
         """Return the absolute path to the source package directory."""
-        return self.root_path() / PyprojectConfigFile.I.package_name()
+        return self.root_path() / PackageManager.I.package_name()
 
     def main_path_relative_to_src_package(self) -> Path:
         """Return the relative path to main.py from the source package."""

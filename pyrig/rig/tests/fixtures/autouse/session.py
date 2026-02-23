@@ -33,9 +33,6 @@ import pyrig
 from pyrig import main, resources, rig, src
 from pyrig.rig.cli.commands.make_inits import make_init_files
 from pyrig.rig.configs.base.base import ConfigFile
-from pyrig.rig.configs.pyproject import (
-    PyprojectConfigFile,
-)
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
@@ -163,7 +160,7 @@ def assert_all_src_code_in_one_package() -> None:
         AssertionError: If unexpected packages/subpackages/submodules found.
     """
     packages = set(find_packages(depth=0))
-    src_package = import_module(PyprojectConfigFile.I.package_name())
+    src_package = import_module(PackageManager.I.package_name())
     src_package_name = src_package.__name__
     expected_packages = {
         ProjectTester.I.tests_package_name(),
@@ -224,12 +221,12 @@ def assert_src_package_correctly_named() -> None:
         AssertionError: If any naming mismatch detected.
     """
     cwd_name = Path.cwd().name
-    project_name = PyprojectConfigFile.I.project_name()
+    project_name = PackageManager.I.project_name()
     assert cwd_name == project_name, (
         f"Expected cwd name to be {project_name}, but it is {cwd_name}"
     )
 
-    src_package = import_module(PyprojectConfigFile.I.package_name())
+    src_package = import_module(PackageManager.I.package_name())
 
     src_package_name = src_package.__name__
     src_package_name_from_cwd = kebab_to_snake_case(cwd_name)
@@ -240,7 +237,7 @@ def assert_src_package_correctly_named() -> None:
     assert src_package_name == src_package_name_from_cwd, msg
 
     src_package = src_package.__name__
-    expected_package = PyprojectConfigFile.I.package_name()
+    expected_package = PackageManager.I.package_name()
     msg = (
         f"Expected source package to be named {expected_package}, "
         f"but it is named {src_package}"
@@ -257,7 +254,7 @@ def assert_all_modules_tested() -> None:
     Raises:
         AssertionError: If any source modules lack corresponding tests.
     """
-    src_package = import_module(PyprojectConfigFile.I.package_name())
+    src_package = import_module(PackageManager.I.package_name())
 
     # we will now go through all the modules in the src package and check
     # that there is a corresponding test module
@@ -359,12 +356,12 @@ However, it failed with the following error:
             assert_src_runs_without_dev_deps.__name__,
         )
         return
-    project_name = PyprojectConfigFile.I.project_name()
+    project_name = PackageManager.I.project_name()
     func_name = assert_src_runs_without_dev_deps.__name__
     tmp_path = tmp_path_factory.mktemp(func_name) / project_name
     # copy the project folder to a temp directory
     # run main.py from that directory
-    src_package = import_module(PyprojectConfigFile.I.package_name())
+    src_package = import_module(PackageManager.I.package_name())
     src_package_file_str = src_package.__file__
     if src_package_file_str is None:
         msg = f"src_package.__file__ is None for {src_package}"
@@ -410,7 +407,7 @@ However, it failed with the following error:
             Path(config).unlink()
 
         # run walk_package with src and import all modules to catch dev dep imports
-        src_package_name = PyprojectConfigFile.I.package_name()
+        src_package_name = PackageManager.I.package_name()
         script_args = (
             "python",
             "-c",
@@ -464,7 +461,7 @@ def assert_src_does_not_use_rig() -> None:
     Raises:
         AssertionError: If any rig imports found in src code.
     """
-    src_package = import_module(PyprojectConfigFile.I.package_name())
+    src_package = import_module(PackageManager.I.package_name())
 
     src_src_package_name = module_name_replacing_start_module(src, src_package.__name__)
 

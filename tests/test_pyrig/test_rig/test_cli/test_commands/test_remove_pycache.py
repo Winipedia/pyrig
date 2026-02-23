@@ -4,14 +4,14 @@ from contextlib import chdir
 from pathlib import Path
 
 from pyrig.rig.cli.commands.remove_pycache import remove_pycache
-from pyrig.src.string_ import package_name_from_cwd
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 def test_remove_pycache(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         # create __pycache__ directories in tests and package
-        package_name = package_name_from_cwd()
+        package_name = PackageManager.I.package_name()
         (tmp_path / "tests" / "__pycache__").mkdir(parents=True)
         (tmp_path / package_name / "__pycache__").mkdir(parents=True)
 

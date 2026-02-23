@@ -17,7 +17,6 @@ import pytest
 from pytest_mock import MockerFixture
 
 from pyrig import main
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.python.main import MainConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.modules.module import (
@@ -53,8 +52,8 @@ def main_test_fixture(mocker: MockerFixture) -> None:
         pyrig.rig.configs.testing.main_test.MainTestConfigFile: Generates test.
         pyrig.rig.configs.python.main.MainConfigFile: Generates main.py.
     """
-    project_name = PyprojectConfigFile.I.project_name()
-    src_package_name = PyprojectConfigFile.I.package_name()
+    project_name = PackageManager.I.project_name()
+    src_package_name = PackageManager.I.package_name()
 
     cmds = (
         PackageManager.I.run_args(project_name, "--help"),

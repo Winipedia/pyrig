@@ -242,14 +242,4 @@ def project_name_from_cwd() -> str:
     Returns:
         Current directory name.
     """
-    cwd = Path.cwd()
-    return cwd.name
-
-
-def package_name_from_cwd() -> str:
-    """Get package name from current directory name.
-
-    Returns:
-        Package name (directory name with underscores).
-    """
-    return kebab_to_snake_case(project_name_from_cwd())
+    return Path.cwd().name
