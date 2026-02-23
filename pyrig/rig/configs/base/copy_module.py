@@ -21,7 +21,7 @@ from pathlib import Path
 from types import ModuleType
 
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.modules.module import (
     isolated_obj_name,
     module_content,
@@ -63,7 +63,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         src_module = self.src_module()
         new_module_name = module_name_replacing_start_module(
-            src_module, PyprojectConfigFile.I.package_name()
+            src_module, PackageManager.I.package_name()
         )
         new_module_path = ModulePath.module_name_to_relative_file_path(new_module_name)
         return new_module_path.parent

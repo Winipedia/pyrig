@@ -6,6 +6,16 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_project_name(self) -> None:
+        """Test method."""
+        result = PackageManager.I.project_name()
+        assert result == "pyrig"
+
+    def test_package_name(self) -> None:
+        """Test method."""
+        result = PackageManager.I.package_name()
+        assert result == "pyrig"
+
     def test_group(self) -> None:
         """Test method."""
         result = PackageManager.I.group()

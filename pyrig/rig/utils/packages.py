@@ -34,10 +34,10 @@ from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
 import pyrig
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.src.iterate import empty_generator, generator
-from pyrig.src.string_ import package_name_from_cwd
 
 logger = logging.getLogger(__name__)
 
@@ -164,7 +164,7 @@ def find_namespace_packages() -> Generator[str, None, None]:
         for p in namespace_packages
         if p.split(".")[0]
         in (
-            package_name_from_cwd(),
+            PackageManager.I.package_name(),
             ProjectTester.I.tests_package_name(),
         )
     )

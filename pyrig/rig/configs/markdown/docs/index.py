@@ -11,8 +11,8 @@ See Also:
 from pathlib import Path
 
 from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class IndexConfigFile(BadgesMarkdownConfigFile):
@@ -49,6 +49,6 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
             Reads project name from pyproject.toml.
         """
         lines = super().lines()
-        project_name = PyprojectConfigFile.I.project_name()
+        project_name = PackageManager.I.project_name()
         lines[0] = lines[0].replace(project_name, f"{project_name} Documentation", 1)
         return lines

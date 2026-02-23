@@ -838,7 +838,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step_func=self.step_build_container_image,
             run=str(
                 ContainerEngine.I.build_args(
-                    project_name=PyprojectConfigFile.I.project_name()
+                    project_name=PackageManager.I.project_name()
                 )
             ),
             step=step,
@@ -857,7 +857,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             Step that saves the container image.
         """
-        image_file = Path(f"{PyprojectConfigFile.I.project_name()}.tar")
+        image_file = Path(f"{PackageManager.I.project_name()}.tar")
         image_path = Path(BuilderConfigFile.dist_dir_name()) / image_file
         return self.step(
             step_func=self.step_save_container_image,
@@ -1699,7 +1699,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             Artifact name in format: package-os.
         """
-        return f"{PyprojectConfigFile.I.project_name()}-{self.insert_os()}"
+        return f"{PackageManager.I.project_name()}-{self.insert_os()}"
 
     # ifs
     # ----------------------------------------------------------------------------

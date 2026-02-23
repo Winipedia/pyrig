@@ -7,8 +7,8 @@ package and the main package, cleaning up compiled Python files.
 import shutil
 from pathlib import Path
 
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
-from pyrig.src.string_ import package_name_from_cwd
 
 
 def remove_pycache() -> None:
@@ -23,7 +23,7 @@ def remove_pycache() -> None:
         directories and their contents. Safe to run multiple times, as it only
         targets existing __pycache__ directories.
     """
-    roots = (ProjectTester.I.tests_package_name(), package_name_from_cwd())
+    roots = (ProjectTester.I.tests_package_name(), PackageManager.I.package_name())
     for r in roots:
         root = Path(r)
         for pycache in root.rglob("__pycache__"):

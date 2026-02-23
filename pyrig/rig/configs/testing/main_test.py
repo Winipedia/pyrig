@@ -13,8 +13,8 @@ from pathlib import Path
 import pyrig
 from pyrig import main
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.modules.path import ModulePath
 
 
@@ -55,7 +55,7 @@ class MainTestConfigFile(PythonPackageConfigFile):
         test_obj_importpath = MirrorTestConfigFile.I.test_obj_importpath_from_obj(main)
         # this is now tests.test_pyrig.test_main
         test_module_prefix = MirrorTestConfigFile.I.test_module_prefix()
-        test_package_name = test_module_prefix + PyprojectConfigFile.I.package_name()
+        test_package_name = test_module_prefix + PackageManager.I.package_name()
         test_pyrig_name = test_module_prefix + pyrig.__name__
 
         test_obj_importpath = test_obj_importpath.replace(

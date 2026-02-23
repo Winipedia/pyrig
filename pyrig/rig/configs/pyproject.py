@@ -34,10 +34,7 @@ from pyrig.rig.utils.resources import (
 )
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 from pyrig.src.string_ import (
-    kebab_to_snake_case,
-    package_name_from_cwd,
     package_req_name_split_pattern,
-    project_name_from_cwd,
 )
 
 
@@ -81,7 +78,7 @@ class PyprojectConfigFile(TomlConfigFile):
 
         return {
             "project": {
-                "name": project_name_from_cwd(),
+                "name": PackageManager.I.project_name(),
                 "version": self.project_version(),
                 "description": self.project_description(),
                 "readme": "README.md",
@@ -106,7 +103,9 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 "keywords": [],
                 "scripts": {
-                    project_name_from_cwd(): f"{cli.__name__}:{cli.main.__name__}"
+                    PackageManager.I.project_name(): (
+                        f"{cli.__name__}:{cli.main.__name__}"
+                    )
                 },
                 "dependencies": self.make_dependency_versions(self.dependencies()),
             },
@@ -123,7 +122,7 @@ class PyprojectConfigFile(TomlConfigFile):
             "tool": {
                 "uv": {
                     "build-backend": {
-                        "module-name": package_name_from_cwd(),
+                        "module-name": PackageManager.I.package_name(),
                         "module-root": "",
                     }
                 },
@@ -150,7 +149,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "pytest": {
                     "ini_options": {
                         "testpaths": [tests_package_name],
-                        "addopts": f"--cov={package_name_from_cwd()} --cov-report=term-missing --cov-fail-under={ProjectTester.I.coverage_threshold()}",  # noqa: E501
+                        "addopts": f"--cov={PackageManager.I.package_name()} --cov-report=term-missing --cov-fail-under={ProjectTester.I.coverage_threshold()}",  # noqa: E501
                     }
                 },
                 "bandit": {
@@ -259,15 +258,6 @@ class PyprojectConfigFile(TomlConfigFile):
             dep: Dependency string, optionally with version specifier.
         """
         return package_req_name_split_pattern().split(dep)[0]
-
-    def package_name(self) -> str:
-        """Get the Python package name (e.g., 'my-project' -> 'my_project')."""
-        project_name = self.project_name()
-        return kebab_to_snake_case(project_name)
-
-    def project_name(self) -> str:
-        """Get project name from pyproject.toml."""
-        return str(self.load().get("project", {}).get("name", ""))
 
     def dev_dependencies(self) -> list[str]:
         """Get dev dependencies from pyproject.toml."""

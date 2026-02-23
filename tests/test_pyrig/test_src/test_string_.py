@@ -9,7 +9,6 @@ from pyrig.src.string_ import (
     make_linked_badge_markdown,
     make_name_from_obj,
     make_summary_error_msg,
-    package_name_from_cwd,
     package_req_name_split_pattern,
     project_name_from_cwd,
     re_search_excluding_docstrings,
@@ -44,15 +43,6 @@ def test_project_name_from_cwd() -> None:
     expected_project_name = pyrig.__name__
     assert project_name == expected_project_name, (
         f"Expected {expected_project_name}, got {project_name}"
-    )
-
-
-def test_package_name_from_cwd() -> None:
-    """Test function."""
-    package_name = package_name_from_cwd()
-    expected_package_name = pyrig.__name__
-    assert package_name == expected_package_name, (
-        f"Expected {expected_package_name}, got {package_name}"
     )
 
 
