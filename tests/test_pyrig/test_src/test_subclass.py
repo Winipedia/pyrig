@@ -4,6 +4,7 @@ import pyrig
 from pyrig.rig import configs
 from pyrig.rig.configs.base.base import ConfigFile
 from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
+from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.src.subclass import DependencySubclass
@@ -12,11 +13,11 @@ from pyrig.src.subclass import DependencySubclass
 class TestDependencySubclass:
     """Test class."""
 
-    def test_sorted_subclasses(self) -> None:
+    def test_subclasses_sorted(self) -> None:
         """Test method."""
-        result = ConfigFile.sorted_subclasses()
-        assert len(result) > 0
-        assert all(issubclass(subclass, ConfigFile) for subclass in result)
+        subclasses = (PyprojectConfigFile, LicenseConfigFile, GitignoreConfigFile)
+        result = ConfigFile.subclasses_sorted(*subclasses)
+        assert result == [LicenseConfigFile, PyprojectConfigFile, GitignoreConfigFile]
 
     def test_I(self) -> None:  # noqa: N802
         """Test method."""

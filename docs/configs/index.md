@@ -171,7 +171,6 @@ system works.
 uv run pyrig mkroot
 ```
 
-
 ### Creating a Custom Config File
 
 ```python
