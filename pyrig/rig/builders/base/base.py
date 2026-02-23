@@ -31,7 +31,7 @@ import platform
 import shutil
 import tempfile
 from abc import abstractmethod
-from collections.abc import Iterable
+from collections.abc import Generator, Iterable
 from concurrent.futures import ThreadPoolExecutor
 from importlib import import_module
 from pathlib import Path
@@ -229,7 +229,7 @@ class BuilderConfigFile(ListConfigFile):
         """
         return f"{artifact.stem}-{platform.system()}{artifact.suffix}"
 
-    def temp_artifacts(self, temp_artifacts_dir: Path) -> Iterable[Path]:
+    def temp_artifacts(self, temp_artifacts_dir: Path) -> Generator[Path, None, None]:
         """Get all artifacts from the temporary build directory.
 
         Args:
