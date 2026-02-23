@@ -126,7 +126,7 @@ def assert_root_is_correct() -> None:
     msg = f"""Found incorrect ConfigFiles.
 Attempted correcting them automatically.
 Please verify the changes at the following paths.
-{make_summary_error_msg([cf().path().as_posix() for cf in incorrect_cfs])}
+{make_summary_error_msg(cf().path().as_posix() for cf in incorrect_cfs)}
 """
     assert not incorrect_cfs, msg
 
@@ -190,11 +190,11 @@ Please move all code and logic into the designated src package.
     }
     expected_subpackages = {
         isolated_obj_name(sub_package)
-        for sub_package in [
+        for sub_package in (
             rig,
             src,
             resources,
-        ]
+        )
     }
     expected_submodules = {isolated_obj_name(main)}
     assert (
@@ -271,7 +271,7 @@ def assert_all_modules_tested() -> None:
 
     msg = f"""Found incorrect test modules.
 Test skeletons were automatically created.
-{make_summary_error_msg([sc().path().as_posix() for sc in incorrect_subclasses])}
+{make_summary_error_msg(sc().path().as_posix() for sc in incorrect_subclasses)}
 """
     assert not incorrect_subclasses, msg
 
@@ -380,11 +380,11 @@ However, it failed with the following error:
     shutil.copytree(project_path, temp_project_path)
 
     # copy pyproject.toml and uv.lock to tmp_path
-    configs = [
+    configs = (
         "pyproject.toml",
         "README.md",
         "LICENSE",
-    ]
+    )
     for config in configs:
         shutil.copy(config, temp_project_path.parent)
 
@@ -411,7 +411,7 @@ However, it failed with the following error:
 
         # run walk_package with src and import all modules to catch dev dep imports
         src_package_name = PyprojectConfigFile.I.package_name()
-        script_args = [
+        script_args = (
             "python",
             "-c",
             "; ".join(
@@ -428,7 +428,7 @@ However, it failed with the following error:
                     "print('Success')",
                 )
             ),
-        ]
+        )
         args = PackageManager.I.run_no_dev_args(*script_args)
 
         completed_process = args.run(
@@ -470,13 +470,13 @@ def assert_src_does_not_use_rig() -> None:
 
     src_src_package = import_module(src_src_package_name)
 
-    packages_depending_on_pyrig = [pyrig, *all_deps_depending_on_dep(pyrig)]
+    packages_depending_on_pyrig = (pyrig, *all_deps_depending_on_dep(pyrig))
 
-    possible_rig_usages = [
+    possible_rig_usages = (
         module_name_replacing_start_module(rig, package.__name__)
         for package in packages_depending_on_pyrig
-    ]
-    possible_rig_usages = [re.escape(usage) for usage in possible_rig_usages]
+    )
+    possible_rig_usages = (re.escape(usage) for usage in possible_rig_usages)
 
     possible_rig_usages_pattern = r"\b(" + "|".join(possible_rig_usages) + r")\b"
 
@@ -520,9 +520,7 @@ def assert_project_mgt_is_up_to_date() -> None:
         stdout = completed_process.stdout
         std_msg = stderr + stdout
 
-        allowed_errors = [
-            "GitHub API rate limit exceeded",
-        ]
+        allowed_errors = ("GitHub API rate limit exceeded",)
 
         allowed_error_in_err_or_out = any(exp in std_msg for exp in allowed_errors)
 

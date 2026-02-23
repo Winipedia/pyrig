@@ -56,10 +56,10 @@ def main_test_fixture(mocker: MockerFixture) -> None:
     project_name = PyprojectConfigFile.I.project_name()
     src_package_name = PyprojectConfigFile.I.package_name()
 
-    cmds = [
+    cmds = (
         PackageManager.I.run_args(project_name, "--help"),
         PackageManager.I.run_args(project_name, main.main.__name__, "--help"),
-    ]
+    )
     success = False
     for cmd in cmds:
         completed_process = cmd.run(check=False)
@@ -67,7 +67,7 @@ def main_test_fixture(mocker: MockerFixture) -> None:
             success = True
             break
     else:
-        cmd_strs = [" ".join(cmd) for cmd in cmds]
+        cmd_strs = tuple(" ".join(cmd) for cmd in cmds)
         msg = f"Expected {main.main.__name__} to be callable by one of {cmd_strs}"
         assert success, msg
 
