@@ -206,13 +206,13 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         return -subclass().priority()
 
     @classmethod
-    def validate_config_file(cls, config_file_cls: type["ConfigFile[ConfigT]"]) -> None:
+    def validate_config_file(cls, config_file_cls: "ConfigFile[ConfigT]") -> None:
         """Validate a single config file class.
 
         Args:
             config_file_cls: The ConfigFile subclass to validate.
         """
-        config_file_cls().validate()
+        config_file_cls.validate()
 
     def validate(self) -> None:
         """Validate config file, creating or updating as needed.
@@ -436,22 +436,20 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         See Also:
             validate_all_subclasses: validate all discovered subclasses
         """
-        # order by priority
-        subclasses_by_priority: dict[float, list[type[ConfigFile[Any]]]] = defaultdict(
-            list
-        )
-        for cf in subclasses:
-            subclasses_by_priority[cf().priority()].append(cf)
+        initialized = (subclass() for subclass in subclasses)
+        grouped: dict[float, list[ConfigFile[Any]]] = defaultdict(list)
+        for cf in initialized:
+            grouped[cf.priority()].append(cf)
 
         with ThreadPoolExecutor() as executor:
-            for priority in sorted(subclasses_by_priority.keys(), reverse=True):
-                cf_group = subclasses_by_priority[priority]
+            for priority in sorted(grouped.keys(), reverse=True):
+                cf_group = grouped[priority]
                 logger.debug(
                     "Validating %d config files with priority: %s",
                     len(cf_group),
                     priority,
                 )
-                list(executor.map(cls.validate_config_file, cf_group))
+                tuple(executor.map(cls.validate_config_file, cf_group))
 
     @classmethod
     def validate_all_subclasses(cls) -> None:
