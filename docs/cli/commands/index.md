@@ -12,6 +12,7 @@ management.
 - **[build](build.md)** - Build all artifacts
 - **[protect-repo](protect-repo.md)** - Configure repository protection
 - **[scratch](scratch.md)** - Execute the project's `.scratch` file for temporary code
+- **[rmpyc](rmpyc.md)** - Remove all **pycache** directories and their contents
 - **version** - Display the current project's version (shared command)
 
 ## Quick Reference
@@ -40,6 +41,9 @@ uv run pyrig version
 
 # Execute project .scratch file
 uv run pyrig scratch
+
+# Remove __pycache__ directories
+uv run pyrig rmpyc
 ```
 
 ## Global Options

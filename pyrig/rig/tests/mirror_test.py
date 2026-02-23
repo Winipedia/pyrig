@@ -737,7 +737,7 @@ class {test_class_name}:
             + part
             for part in parts[:-1]
         )
-        return ".".join((self.tests_package_name(), *test_parts, test_name))
+        return ".".join((ProjectTester.I.tests_package_name(), *test_parts, test_name))
 
     def obj_importpath_from_test_obj(
         self,
@@ -761,7 +761,9 @@ class {test_class_name}:
         """
         test_importpath = make_obj_importpath(test_obj)
         # remove tests prefix
-        test_importpath = test_importpath.removeprefix(self.tests_package_name() + ".")
+        test_importpath = test_importpath.removeprefix(
+            ProjectTester.I.tests_package_name() + "."
+        )
         test_parts = test_importpath.split(".")
         parts = [
             self.remove_test_prefix_from_test_name(test_name)
@@ -860,11 +862,3 @@ class {test_class_name}:
             The ``"test_"`` prefix string.
         """
         return "test_"
-
-    def tests_package_name(self) -> str:
-        """Get tests package name.
-
-        Returns:
-            The ``"tests"`` package name string.
-        """
-        return ProjectTester.I.tests_package_name()
