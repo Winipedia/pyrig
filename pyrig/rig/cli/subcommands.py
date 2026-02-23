@@ -205,3 +205,23 @@ def scratch() -> None:
     from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
 
     run_scratch_file()
+
+
+def rmpyc() -> None:
+    """Remove all __pycache__ directories and their contents from the project.
+
+    This command recursively searches the project directory for any __pycache__
+    directories and deletes them along with their contents. Useful for cleaning up
+    compiled Python files that may be causing issues or taking up unnecessary
+    space.
+
+    Example usage:
+        $ uv run pyrig rmpyc
+    Note:
+        Use with caution, as this will permanently delete all __pycache__ directories
+        and their contents. Safe to run multiple times, as it only targets existing
+        __pycache__ directories.
+    """
+    from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
+
+    remove_pycache()

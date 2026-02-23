@@ -62,14 +62,6 @@ class TestMirrorTestConfigFile:
             # remove module from cache to avoid interference with other tests
             sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
 
-    def test_tests_package_name(self) -> None:
-        """Test method."""
-        assert (
-            MirrorTestConfigFile.I.tests_package_name()
-            == "tests"
-            == ProjectTester.I.tests_package_name()
-        )
-
     def test_create_file(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:

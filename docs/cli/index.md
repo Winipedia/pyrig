@@ -17,6 +17,7 @@ Documentation for all built-in pyrig commands:
 - build - Build all artifacts
 - protect-repo - Configure repository protection
 - scratch - Execute the project's `.scratch` file
+- rmpyc - Remove all __pycache__ directories and their contents
 
 ### [Architecture](architecture.md)
 
