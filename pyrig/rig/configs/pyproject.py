@@ -11,6 +11,7 @@ classifiers.
 """
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Literal
 
@@ -230,24 +231,23 @@ class PyprojectConfigFile(TomlConfigFile):
 
     def make_dependency_versions(
         self,
-        dependencies: list[str],
-        additional: list[str] | None = None,
+        dependencies: Iterable[str],
+        additional: Iterable[str] | None = None,
     ) -> list[str]:
         """Normalize and merge dependency lists (sorted, deduplicated)."""
         if additional is None:
-            additional = []
+            additional = ()
         stripped_dependencies = {
             self.remove_version_from_dep(dep) for dep in dependencies
         }
-        additional = [
+        filtered_additional = (
             dep
             for dep in additional
             if self.remove_version_from_dep(dep) not in stripped_dependencies
-        ]
+        )
         # Due to caching in load(), mutating in place causes bugs.
         # Always return a new structure instead of modifying.
-        dependencies = [*dependencies, *additional]
-        return sorted(set(dependencies))
+        return sorted({*dependencies, *filtered_additional})
 
     def remove_version_from_dep(self, dep: str) -> str:
         """Strip version specifier from dependency.
