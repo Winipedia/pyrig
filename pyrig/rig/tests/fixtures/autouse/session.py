@@ -177,7 +177,7 @@ def assert_all_src_code_in_one_package() -> None:
 Found unexpected packages: {packages - expected_packages}
 Expected packages: {expected_packages}
 Only folders with __init__.py files are considered packages.
-Please move all code and login into the designated src package.
+Please move all code and logic into the designated src package.
 """
 
     # assert the src package's only submodules are main, src and rig
@@ -202,7 +202,7 @@ Please move all code and login into the designated src package.
     ), f"""Pyrig enforces a single source package with a specific structure.
 Found unexpected subpackages: {subpackage_names - expected_subpackages}
 Expected subpackages: {expected_subpackages}
-Please move all code and login into the designated src package.
+Please move all code and logic into the designated src package.
 """
 
     assert (
@@ -210,7 +210,7 @@ Please move all code and login into the designated src package.
     ), f"""Pyrig enforces a single source package with a specific structure.
 Found unexpected submodules: {submodule_names - expected_submodules}
 Expected submodules: {expected_submodules}
-Please move all code and login into the designated src package.
+Please move all code and logic into the designated src package.
 """
 
 
