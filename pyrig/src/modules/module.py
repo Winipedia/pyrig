@@ -303,3 +303,18 @@ def import_modules(module_names: Iterable[str]) -> Generator[ModuleType, None, N
         Generator of imported module objects corresponding to the input names.
     """
     return (import_module(name) for name in module_names)
+
+
+def reimport_module(module_name: str) -> ModuleType:
+    """Re-import a module by name, bypassing the import cache.
+
+    This function removes the specified module from ``sys.modules`` and then
+    imports it again using the file fallback method. This is useful for refreshing
+    a module's content after it has been modified on disk, ensuring that the latest
+    version is loaded.
+    """
+    # Remove from cache
+    sys.modules.pop(module_name, None)
+    module_path = ModulePath.module_name_to_relative_file_path(module_name)
+    # Re-import to refresh cache
+    return import_module_with_file_fallback(module_path)

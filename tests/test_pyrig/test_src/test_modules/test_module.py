@@ -6,6 +6,7 @@ tests.test_pyrig.test_modules.test_module
 import os
 import sys
 from contextlib import chdir
+from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
@@ -25,6 +26,7 @@ from pyrig.src.modules.module import (
     module_content,
     module_has_docstring,
     module_name_replacing_start_module,
+    reimport_module,
 )
 
 
@@ -217,3 +219,10 @@ def test_import_modules() -> None:
     modules = tuple(import_modules(names))
 
     assert modules == (sys, os)
+
+
+def test_reimport_module() -> None:
+    """Test function."""
+    mod1 = import_module("sys")
+    mod2 = reimport_module("sys")
+    assert mod1 is not mod2

@@ -47,7 +47,6 @@ See Also:
 """
 
 import logging
-import sys
 from collections.abc import Callable, Generator, Iterable
 from importlib import import_module
 from pathlib import Path
@@ -69,6 +68,7 @@ from pyrig.src.modules.module import (
     isolated_obj_name,
     make_obj_importpath,
     module_has_docstring,
+    reimport_module,
 )
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.string_ import make_name_from_obj
@@ -144,8 +144,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         after skeleton generation.
         """
         super()._dump(config)
-        sys.modules.pop(self.test_module_name(), None)  # Remove from cache
-        import_module_with_file_fallback(self.test_path())  # Re-import to refresh cache
+        reimport_module(self.test_module_name())
 
     def filename(self) -> str:
         """Extract test filename from the derived test path.
