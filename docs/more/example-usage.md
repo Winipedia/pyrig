@@ -453,21 +453,22 @@ default security checker.
 
 1. **Override `dev_dependencies()` on your tool in `service-base`**:
 
-   ```python
-   def dev_dependencies(self) -> list[str]:
-       return [*super().dev_dependencies(), "safety"]
-   ```
+```python
+def dev_dependencies(self) -> list[str]:
+    return [*super().dev_dependencies(), "safety"]
+```
 
-2. **Commit and push** → GitHub Actions releases `service-base` v1.2.0
+2. **Commit and push**:
+GitHub Actions releases `service-base` v1.2.0
 
 3. **In each service**:
 
-   ```bash
-   # all you gotta do
-   uv lock --upgrade && uv sync
-   uv run pytest  # Auto-heals to add safety or do pyrig mkroot
-   # commit and push and the new release etc happens automatically
-   ```
+```bash
+# all you gotta do
+uv lock --upgrade && uv sync
+uv run pytest  # Auto-heals to add safety or do pyrig mkroot
+# commit and push and the new release etc happens automatically
+```
 
 **Result**: All your microservices now have `safety` without manual edits.
 
