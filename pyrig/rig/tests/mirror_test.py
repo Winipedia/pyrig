@@ -58,7 +58,11 @@ from pyrig.rig.configs.base.base import ConfigList
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.src.iterate import generator_has_items
-from pyrig.src.modules.class_ import all_cls_from_module, all_methods_from_cls
+from pyrig.src.modules.class_ import (
+    all_cls_from_module,
+    all_methods_from_cls,
+    discard_parent_methods,
+)
 from pyrig.src.modules.function import all_functions_from_module
 from pyrig.src.modules.inspection import qualname_of_obj, sorted_by_def_line
 from pyrig.src.modules.module import (
@@ -456,14 +460,12 @@ def {test_func_name}() -> None:
         class_to_methods = (
             (
                 c,
-                sorted_by_def_line(
-                    all_methods_from_cls(c, exclude_parent_methods=True)
-                ),
+                sorted_by_def_line(discard_parent_methods(c, all_methods_from_cls(c))),
             )
             for c in classes
         )
         test_class_to_test_methods = (
-            (tc, all_methods_from_cls(tc, exclude_parent_methods=True))
+            (tc, (discard_parent_methods(tc, all_methods_from_cls(tc))))
             for tc in test_classes
         )
 
