@@ -5,12 +5,11 @@ Handles functions, methods, staticmethods, classmethods, properties, and decorat
 """
 
 import inspect
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from types import ModuleType
 from typing import Any
 
 from pyrig.src.modules.inspection import (
-    def_line,
     module_of_obj,
     obj_members,
     unwrapped_obj,
@@ -51,7 +50,9 @@ def is_func(obj: Any) -> bool:
     return is_func_or_method(unwrapped)
 
 
-def all_functions_from_module(module: ModuleType) -> list[Callable[..., Any]]:
+def all_functions_from_module(
+    module: ModuleType,
+) -> Generator[Callable[..., Any], None, None]:
     """Extract all functions defined directly in a module.
 
     Excludes imported functions.
@@ -60,13 +61,11 @@ def all_functions_from_module(module: ModuleType) -> list[Callable[..., Any]]:
         module: Module to extract from (object or name string).
 
     Returns:
-        List of functions sorted by definition order.
+        Generator of functions
     """
-    funcs = (
+    return (
         func
         for _name, func in obj_members(module)
         if is_func(func)
         if module_of_obj(func).__name__ == module.__name__
     )
-    # sort by definition order
-    return sorted(funcs, key=def_line)

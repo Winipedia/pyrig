@@ -152,7 +152,7 @@ def test_all_functions_from_module() -> None:
     """Test function."""
     # Test with pyrigmodules.function module
 
-    functions = all_functions_from_module(func_module)
+    functions = tuple(all_functions_from_module(func_module))
 
     # Verify we got some functions
     assert len(functions) > 0, f"Expected at least 1 function, got {len(functions)}"
@@ -164,9 +164,9 @@ def test_all_functions_from_module() -> None:
     # Verify functions have __name__ attribute
     function_names = [getattr(func, "__name__", None) for func in functions]
     expected_functions = [
-        "is_func_or_method",
-        "is_func",
-        "all_functions_from_module",
+        is_func_or_method.__name__,
+        is_func.__name__,
+        all_functions_from_module.__name__,
     ]
 
     expected_count = len(expected_functions)

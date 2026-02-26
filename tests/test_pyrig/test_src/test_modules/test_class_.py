@@ -131,7 +131,7 @@ class AnotherAbstractChild(AbstractParent):
 def test_all_methods_from_cls() -> None:
     """Test function."""
     # Test case 1: Get all methods excluding inherited methods
-    methods = all_methods_from_cls(TestClass, exclude_parent_methods=True)
+    methods = tuple(all_methods_from_cls(TestClass, exclude_parent_methods=True))
 
     # assert __annotate__ is not considered a method (3.14 introduces this injection)
     assert "__annotate__" not in [
@@ -149,10 +149,10 @@ def test_all_methods_from_cls() -> None:
     ]
     expected_method_names = [unwrapped_obj(m).__name__ for m in expected_methods]
     method_names = [unwrapped_obj(m).__name__ for m in methods]
-    assert method_names == expected_method_names
+    assert set(method_names) == set(expected_method_names)
 
     # Test case 2: Get all methods including inherited methods
-    methods = all_methods_from_cls(TestClass, exclude_parent_methods=False)
+    methods = tuple(all_methods_from_cls(TestClass, exclude_parent_methods=False))
 
     # expected methods in order of definition
     expected_methods = [
@@ -169,7 +169,7 @@ def test_all_methods_from_cls() -> None:
     ]
     expected_method_names = [unwrapped_obj(m).__name__ for m in expected_methods]
     method_names = [unwrapped_obj(m).__name__ for m in methods]
-    assert method_names == expected_method_names
+    assert set(method_names) == set(expected_method_names)
 
 
 def test_all_cls_from_module() -> None:
@@ -191,7 +191,7 @@ def test_all_cls_from_module() -> None:
     ]
     expected_classes_names: list[str] = [c.__name__ for c in expected_classes]
     classes_names = [c.__name__ for c in classes]
-    assert classes_names == expected_classes_names, (
+    assert set(classes_names) == set(expected_classes_names), (
         f"Expected classes {expected_classes_names}, got {classes_names}"
     )
 

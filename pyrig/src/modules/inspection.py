@@ -8,12 +8,14 @@ for method extraction, subclass discovery, and test generation throughout pyrig.
 """
 
 import inspect
-from collections.abc import Callable, Generator
+from collections.abc import Callable, Generator, Iterable
 from types import ModuleType
 from typing import Any, cast
 
 
-def obj_members(obj: Any) -> Generator[tuple[str, Any], None, None]:
+def obj_members(
+    obj: Any, predicate: Callable[[Any], bool] | None = None
+) -> Generator[tuple[str, Any], None, None]:
     """Get all members of an object as name-value pairs using static introspection.
 
     Uses ``inspect.getmembers_static`` to retrieve members without invoking descriptors,
@@ -21,13 +23,14 @@ def obj_members(obj: Any) -> Generator[tuple[str, Any], None, None]:
 
     Args:
         obj: Object to inspect (class, module, or any Python object).
+        predicate: Optional predicate function to filter members.
 
     Returns:
         Generator of (name, value) tuples for all object members.
     """
     return (
         (member, value)
-        for member, value in inspect.getmembers_static(obj)
+        for member, value in inspect.getmembers_static(obj, predicate=predicate)
         if member not in ("__annotate__", "__annotate_func__")
     )
 
@@ -55,6 +58,22 @@ def def_line(obj: Any) -> int:
         return int(unwrapped.__code__.co_firstlineno)
 
     return inspect.getsourcelines(unwrapped)[1]
+
+
+def sorted_by_def_line(objs: Iterable[Any]) -> list[Any]:
+    """Sort a list of objects by their source definition line number.
+
+    Uses ``def_line`` to determine the line number for each object, allowing for
+    sorting functions, methods, properties, staticmethods, classmethods, and decorated
+    callables in the order they are defined in source code.
+
+    Args:
+        objs: List of objects to sort (functions, methods, properties, etc.).
+
+    Returns:
+        New list of objects sorted by their definition line number.
+    """
+    return sorted(objs, key=def_line)
 
 
 def unwrapped_obj(obj: Any) -> Any:

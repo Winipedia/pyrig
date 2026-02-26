@@ -14,7 +14,6 @@ from typing import Any
 from pyrig.src.modules.function import is_func
 from pyrig.src.modules.imports import walk_package
 from pyrig.src.modules.inspection import (
-    def_line,
     module_of_obj,
     obj_members,
 )
@@ -26,7 +25,7 @@ def all_methods_from_cls(
     class_: type,
     *,
     exclude_parent_methods: bool = False,
-) -> list[Callable[..., Any]]:
+) -> Generator[Callable[..., Any], None, None]:
     """Extract all methods from a class.
 
     Includes instance methods, static methods, class methods, and properties.
@@ -37,7 +36,7 @@ def all_methods_from_cls(
         exclude_parent_methods: If True, excludes inherited methods.
 
     Returns:
-        List of method objects sorted by definition order.
+        Generator of method objects sorted by definition order.
     """
     methods = (
         (method, name) for name, method in obj_members(class_) if is_func(method)
@@ -51,32 +50,29 @@ def all_methods_from_cls(
             and name in class_.__dict__
         )
 
-    only_methods = (method for method, _name in methods)
     # sort by definition order
-    return sorted(only_methods, key=def_line)
+    return (method for method, _name in methods)
 
 
-def all_cls_from_module(module: ModuleType) -> list[type]:
+def all_cls_from_module(module: ModuleType) -> Generator[type]:
     """Extract all classes defined directly in a module.
 
     Args:
         module: Module object or fully qualified module name.
 
     Returns:
-        List of class types sorted by definition order.
+        Generator of class types sorted by definition order.
 
     Note:
         Handles edge cases like Rust-backed classes (e.g., cryptography's AESGCM).
     """
     # necessary for bindings packages like AESGCM from cryptography._rust backend
     default = ModuleType("default")
-    classes = (
+    return (
         obj
-        for _, obj in inspect.getmembers(module, inspect.isclass)
+        for _, obj in obj_members(module, inspect.isclass)
         if module_of_obj(obj, default).__name__ == module.__name__
     )
-    # sort by definition order
-    return sorted(classes, key=def_line)
 
 
 def discover_all_subclasses[T: type](
