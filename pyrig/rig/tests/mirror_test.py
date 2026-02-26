@@ -60,7 +60,7 @@ from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.class_ import all_cls_from_module, all_methods_from_cls
 from pyrig.src.modules.function import all_functions_from_module
-from pyrig.src.modules.inspection import qualname_of_obj
+from pyrig.src.modules.inspection import qualname_of_obj, sorted_by_def_line
 from pyrig.src.modules.module import (
     default_module_content,
     import_module_with_file_fallback,
@@ -335,7 +335,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Note:
             Logs debug information about the number and names of untested functions.
         """
-        funcs = all_functions_from_module(self.src_module())
+        funcs = sorted_by_def_line(all_functions_from_module(self.src_module()))
         test_funcs = all_functions_from_module(self.test_module())
 
         supposed_test_func_names = (self.test_name_for_obj(f) for f in funcs)
@@ -450,11 +450,17 @@ def {test_func_name}() -> None:
             Only considers methods defined directly on the class, excluding
             inherited methods from parent classes.
         """
-        classes = all_cls_from_module(self.src_module())
+        classes = sorted_by_def_line(all_cls_from_module(self.src_module()))
         test_classes = all_cls_from_module(self.test_module())
 
         class_to_methods = (
-            (c, all_methods_from_cls(c, exclude_parent_methods=True)) for c in classes
+            (
+                c,
+                sorted_by_def_line(
+                    all_methods_from_cls(c, exclude_parent_methods=True)
+                ),
+            )
+            for c in classes
         )
         test_class_to_test_methods = (
             (tc, all_methods_from_cls(tc, exclude_parent_methods=True))

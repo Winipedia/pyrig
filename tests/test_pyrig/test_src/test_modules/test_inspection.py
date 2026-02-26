@@ -179,3 +179,34 @@ def test_module_of_obj() -> None:
     assert "posixpath" in os_module.__name__ or "ntpath" in os_module.__name__, (
         f"Expected posixpath or ntpath module, got {os_module.__name__}"
     )
+
+
+def test_sorted_by_def_line() -> None:
+    """Test function."""
+
+    def test_func_a() -> None:
+        pass
+
+    def test_func_b() -> None:
+        pass
+
+    def test_func_c() -> None:
+        pass
+
+    funcs = [
+        test_func_b,
+        test_func_c,
+        test_func_a,
+        test_module_of_obj,
+        test_qualname_of_obj,
+        test_sorted_by_def_line,
+    ]
+    sorted_funcs = sorted(funcs, key=def_line)
+    assert sorted_funcs == [
+        test_qualname_of_obj,
+        test_module_of_obj,
+        test_sorted_by_def_line,
+        test_func_a,
+        test_func_b,
+        test_func_c,
+    ], "Expected functions sorted by definition line"
