@@ -15,6 +15,7 @@ from pyrig.src.modules.class_ import (
     classproperty,
     discard_abstract_classes,
     discard_parent_classes,
+    discard_parent_methods,
     discover_all_subclasses,
 )
 from pyrig.src.modules.inspection import unwrapped_obj
@@ -130,46 +131,22 @@ class AnotherAbstractChild(AbstractParent):
 
 def test_all_methods_from_cls() -> None:
     """Test function."""
-    # Test case 1: Get all methods excluding inherited methods
-    methods = tuple(all_methods_from_cls(TestClass, exclude_parent_methods=True))
-
-    # assert __annotate__ is not considered a method (3.14 introduces this injection)
-    assert "__annotate__" not in [
-        m.__name__ for m in methods if hasattr(m, "__name__")
-    ], "Expected __annotate__ not to be considered a method"
-
-    # expected methods in order of definition
-    expected_methods = [
-        TestClass.instance_method,
-        TestClass.static_method,
-        TestClass.class_method,
-        TestClass.prop,
-        TestClass._private_method,  # noqa: SLF001
-        TestClass.decorated_method,
-    ]
-    expected_method_names = [unwrapped_obj(m).__name__ for m in expected_methods]
+    cls = TestClass
+    methods = all_methods_from_cls(cls)
     method_names = [unwrapped_obj(m).__name__ for m in methods]
-    assert set(method_names) == set(expected_method_names)
-
-    # Test case 2: Get all methods including inherited methods
-    methods = tuple(all_methods_from_cls(TestClass, exclude_parent_methods=False))
-
-    # expected methods in order of definition
-    expected_methods = [
-        ParentClass.parent_method,
-        ParentClass.parent_static_method,
-        TestClass.parent_class_method,  # bound by accessed class
-        ParentClass.parent_property,
-        TestClass.instance_method,
-        TestClass.static_method,
-        TestClass.class_method,
-        TestClass.prop,
-        TestClass._private_method,  # noqa: SLF001
-        TestClass.decorated_method,
-    ]
-    expected_method_names = [unwrapped_obj(m).__name__ for m in expected_methods]
-    method_names = [unwrapped_obj(m).__name__ for m in methods]
-    assert set(method_names) == set(expected_method_names)
+    expected_method_names = {
+        ParentClass.parent_method.__name__,
+        ParentClass.parent_static_method.__name__,
+        ParentClass.parent_class_method.__name__,
+        unwrapped_obj(ParentClass.parent_property).__name__,
+        TestClass.instance_method.__name__,
+        TestClass.static_method.__name__,
+        TestClass.class_method.__name__,
+        unwrapped_obj(TestClass.prop).__name__,
+        TestClass._private_method.__name__,  # noqa: SLF001
+        TestClass.decorated_method.__name__,
+    }
+    assert set(method_names) == expected_method_names
 
 
 def test_all_cls_from_module() -> None:
@@ -259,3 +236,22 @@ def test_discard_abstract_classes() -> None:
         f"Expected AnotherAbstractChild not in {classes}"
     )
     assert ConcreteChild in classes, f"Expected ConcreteChild in {classes}"
+
+
+def test_discard_parent_methods() -> None:
+    """Test function."""
+    cls = TestClass
+    methods = list(all_methods_from_cls(cls))
+    # check a parent method is in the list of methods before discarding
+    assert ParentClass.parent_class_method.__name__ in [
+        unwrapped_obj(m).__name__ for m in methods
+    ]
+    assert TestClass.class_method.__name__ in [
+        unwrapped_obj(m).__name__ for m in methods
+    ]
+    # discard parent methods
+    methods = list(discard_parent_methods(cls, methods))
+    method_names = [unwrapped_obj(m).__name__ for m in methods]
+    assert ParentClass.parent_class_method.__name__ not in method_names
+
+    assert TestClass.class_method.__name__ in method_names

@@ -16,15 +16,14 @@ from pyrig.src.modules.imports import walk_package
 from pyrig.src.modules.inspection import (
     module_of_obj,
     obj_members,
+    unwrapped_obj,
 )
 
 logger = logging.getLogger(__name__)
 
 
 def all_methods_from_cls(
-    class_: type,
-    *,
-    exclude_parent_methods: bool = False,
+    cls: type,
 ) -> Generator[Callable[..., Any], None, None]:
     """Extract all methods from a class.
 
@@ -32,26 +31,25 @@ def all_methods_from_cls(
     Returns methods sorted by definition order.
 
     Args:
-        class_: Class to extract methods from.
-        exclude_parent_methods: If True, excludes inherited methods.
+        cls: Class to extract methods from.
 
     Returns:
         Generator of method objects sorted by definition order.
     """
-    methods = (
-        (method, name) for name, method in obj_members(class_) if is_func(method)
+    return (method for _name, method in obj_members(cls) if is_func(method))
+
+
+def discard_parent_methods(
+    cls: type,
+    methods: Iterable[Callable[..., Any]],
+) -> Generator[Callable[..., Any], None, None]:
+    """Keeps only methods defined in that actual class, discarding inherited methods."""
+    return (
+        method
+        for method in methods
+        if module_of_obj(method).__name__ == cls.__module__
+        and unwrapped_obj(method).__name__ in cls.__dict__
     )
-
-    if exclude_parent_methods:
-        methods = (
-            (method, name)
-            for method, name in methods
-            if module_of_obj(method).__name__ == class_.__module__
-            and name in class_.__dict__
-        )
-
-    # sort by definition order
-    return (method for method, _name in methods)
 
 
 def all_cls_from_module(module: ModuleType) -> Generator[type]:
