@@ -1,1 +1,1 @@
-"""Runtime utilities and production code for pyrig."""
+"""The src package contains all code for the project."""
