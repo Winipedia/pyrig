@@ -15,6 +15,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+import typer
+
 from pyrig.src.modules.inspection import (
     module_of_obj,
     qualname_of_obj,
@@ -66,7 +68,7 @@ def create_module(path: Path) -> ModuleType:
     make_dir_with_init_file(path.parent)
 
     if not path.exists():
-        logger.info("Creating module at: %s", path)
+        typer.echo(f"Creating module at: {path}")
         path.write_text(default_module_content())
     return import_module_with_file_fallback(path)
 

@@ -1,6 +1,5 @@
 """Tests module."""
 
-import logging
 import os
 import re
 import shutil
@@ -29,8 +28,6 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.src.modules.path import ModulePath
 from pyrig.src.processes import Args
-
-logger = logging.getLogger(__name__)
 
 
 def test_setup_steps() -> None:

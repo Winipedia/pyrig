@@ -123,7 +123,7 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
         Sets description, default branch, merge options, and branch cleanup
         settings based on pyproject.toml and pyrig defaults.
         """
-        logger.info("Configuring secure repository settings")
+        logger.debug("Configuring secure repository settings")
         owner, repo_name = VersionController.I.repo_owner_and_name()
         token = github_repo_token()
         repo = repository(token, owner, repo_name)
@@ -141,4 +141,3 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
             allow_rebase_merge=True,
             allow_squash_merge=True,
         )
-        logger.info("Repository settings configured successfully")

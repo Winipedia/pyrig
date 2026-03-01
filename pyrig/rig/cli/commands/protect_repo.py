@@ -4,11 +4,7 @@ Configures secure repository settings and branch protection rulesets on GitHub,
 implementing pyrig's opinionated security defaults.
 """
 
-import logging
-
 from pyrig.rig.configs.git.branch_protection import RepoProtectionConfigFile
-
-logger = logging.getLogger(__name__)
 
 
 def protect_repository() -> None:
@@ -16,6 +12,4 @@ def protect_repository() -> None:
 
     Configures repository-level settings and branch protection rulesets.
     """
-    logger.info("Protecting repository")
     RepoProtectionConfigFile.I.protect_repo()
-    logger.info("Repository protection complete")

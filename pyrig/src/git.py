@@ -8,10 +8,7 @@ See Also:
     pyrig.rig.tools.remote_version_controller: GitHub URL construction
 """
 
-import logging
 import os
-
-logger = logging.getLogger(__name__)
 
 
 def running_in_github_actions() -> bool:

@@ -8,7 +8,6 @@ See Also:
     pyrig.rig.tests.conftest: Automatic fixture discovery and registration.
 """
 
-import logging
 import runpy
 import sys
 from importlib import import_module
@@ -23,8 +22,6 @@ from pyrig.src.modules.module import (
     module_content,
     module_name_replacing_start_module,
 )
-
-logger = logging.getLogger(__name__)
 
 
 @pytest.fixture

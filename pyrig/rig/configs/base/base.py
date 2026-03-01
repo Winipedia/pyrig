@@ -75,6 +75,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Self, TypeVar
 
+import typer
+
 from pyrig.rig import configs
 from pyrig.src.iterate import nested_structure_is_subset
 from pyrig.src.string_ import split_on_uppercase
@@ -247,7 +249,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
     def create_file(self) -> None:
         """Create the config file and its parent directories."""
         path = self.path()
-        logger.info("Creating config file %s at: %s", self.__class__.__name__, path)
+        typer.echo(f"Creating config file {path}")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
 
@@ -287,9 +289,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         Args:
             config: Configuration to write (dict or list).
         """
-        logger.info(
-            "Updating config file %s at: %s", self.__class__.__name__, self.path()
-        )
+        typer.echo(f"Updating config file {self.path()}")
         self.load.cache_clear()
         self._dump(config)
         self.load.cache_clear()
@@ -459,5 +459,4 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
             subclasses: Discovery mechanism
             validate_subclasses: validation mechanism
         """
-        logger.info("Creating all config files")
         cls.validate_subclasses(cls.subclasses())

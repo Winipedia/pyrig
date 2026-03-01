@@ -35,6 +35,7 @@ from functools import cache, wraps
 from typing import Any, ParamSpec
 
 import requests
+import typer
 from requests import RequestException
 from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
@@ -136,10 +137,7 @@ def return_resource_file_content_on_exceptions_or_in_dep(
             result = decorated_func(*args, **kwargs)
             if src_package_is_pyrig() and overwrite_resource and result != content:
                 path.write_text(result, encoding="utf-8")
-                logger.info(
-                    "Updated resource file: %s",
-                    path,
-                )
+                typer.echo(f"Updated resource file: {path}")
             return result
 
         return wrapper

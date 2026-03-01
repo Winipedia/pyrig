@@ -4,14 +4,11 @@ Automatically creates `__init__.py` files for namespace packages (PEP 420
 packages without `__init__.py`) to ensure proper importability.
 """
 
-import logging
 from concurrent.futures import ThreadPoolExecutor
 
 from pyrig.rig.utils.packages import find_namespace_packages
 from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.path import ModulePath, make_init_module
-
-logger = logging.getLogger(__name__)
 
 
 def make_init_files() -> None:
@@ -26,13 +23,9 @@ def make_init_files() -> None:
         Created `__init__.py` files contain a minimal docstring. The docs
         directory is excluded from scanning.
     """
-    logger.info("Starting __init__.py file creation")
     namespace_packages = find_namespace_packages()
     has_namespace_packages, namespace_packages = generator_has_items(namespace_packages)
     if not has_namespace_packages:
-        logger.info(
-            "No namespace packages found, all packages already have __init__.py files"
-        )
         return
 
     # make init files for all namespace packages
@@ -42,5 +35,3 @@ def make_init_files() -> None:
     )
     with ThreadPoolExecutor() as executor:
         list(executor.map(make_init_module, package_paths))
-
-    logger.info("Created __init__.py files for all namespace packages")
