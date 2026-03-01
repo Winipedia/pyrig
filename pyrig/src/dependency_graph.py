@@ -11,7 +11,6 @@ import logging
 from collections.abc import Generator
 
 from pyrig.src.graph import DiGraph
-from pyrig.src.singleton import Singleton
 from pyrig.src.string_ import (
     kebab_to_snake_case,
     package_req_name_split_pattern,
@@ -20,7 +19,7 @@ from pyrig.src.string_ import (
 logger = logging.getLogger(__name__)
 
 
-class DependencyGraph(DiGraph, Singleton):
+class DependencyGraph(DiGraph):
     """Directed graph of installed Python package dependencies.
 
     Nodes are package names, edges represent dependency relationships.
@@ -52,9 +51,8 @@ class DependencyGraph(DiGraph, Singleton):
                     self.add_edge(name, dep)  # package → dependency
         logger.debug("Dependency graph built with %d packages", len(self.nodes()))
 
-    @staticmethod
     def parse_name_and_deps(
-        dist: importlib.metadata.Distribution,
+        self, dist: importlib.metadata.Distribution
     ) -> tuple[str, Generator[str, None, None]]:
         """Extract package name and dependencies from a distribution.
 
@@ -69,17 +67,13 @@ class DependencyGraph(DiGraph, Singleton):
             Name is empty string if not found. Dependencies list may be empty.
         """
         raw_name = dist.name
-        name = DependencyGraph.normalize_package_name(raw_name) if raw_name else ""
+        name = self.normalize_package_name(raw_name) if raw_name else ""
 
-        deps = (
-            DependencyGraph.parse_package_name_from_req(req)
-            for req in (dist.requires or [])
-        )
+        deps = (self.parse_package_name_from_req(req) for req in (dist.requires or []))
 
         return name, deps
 
-    @staticmethod
-    def parse_package_name_from_req(req: str) -> str:
+    def parse_package_name_from_req(self, req: str) -> str:
         """Extract package name from a requirement string.
 
         Uses ``pyrig.src.string_.package_req_name_split_pattern`` to split the
@@ -94,10 +88,9 @@ class DependencyGraph(DiGraph, Singleton):
         # Split on the first non-alphanumeric character (except -, _, and .)
         # Uses module-level compiled pattern for performance
         dep = package_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
-        return DependencyGraph.normalize_package_name(dep)
+        return self.normalize_package_name(dep)
 
-    @staticmethod
-    def normalize_package_name(name: str) -> str:
+    def normalize_package_name(self, name: str) -> str:
         """Normalize a package name (lowercase, hyphens → underscores).
 
         Args:
