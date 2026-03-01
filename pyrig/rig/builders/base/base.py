@@ -37,6 +37,8 @@ from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
+import typer
+
 import pyrig
 from pyrig import main, resources
 from pyrig.rig import builders
@@ -211,7 +213,7 @@ class BuilderConfigFile(ListConfigFile):
         # create the platform-specific path's parent directory if it doesn't exist
         platform_specific_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(artifact), str(platform_specific_path))
-        logger.info("Created artifact: %s", platform_specific_path.name)
+        typer.echo(f"Created artifact: {platform_specific_path.as_posix()}")
 
     def platform_specific_path(self, artifact: Path) -> Path:
         """Get the platform-specific output path for an artifact.

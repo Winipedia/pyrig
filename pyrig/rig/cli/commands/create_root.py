@@ -4,11 +4,7 @@ Generates all configuration files and directory structure by discovering
 and validating `ConfigFile` subclasses.
 """
 
-import logging
-
 from pyrig.rig.configs.base.base import ConfigFile
-
-logger = logging.getLogger(__name__)
 
 
 def make_project_root() -> None:
@@ -17,6 +13,4 @@ def make_project_root() -> None:
     Discovers and validates all `ConfigFile` subclasses to create the complete
     project structure.
     """
-    logger.info("Creating project root")
     ConfigFile.validate_all_subclasses()
-    logger.info("Project root creation complete")

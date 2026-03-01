@@ -22,11 +22,8 @@ def make_test_skeletons() -> None:
     Walks the source package hierarchy and creates corresponding test packages,
     modules, classes, and functions for all untested code.
     """
-    logger.info("Creating test skeletons")
     src_package = import_module(PackageManager.I.package_name())
-    logger.debug("Source package: %s", src_package.__name__)
     create_tests_for_package(src_package)
-    logger.info("Test skeleton creation complete")
 
 
 def create_tests_for_package(package: ModuleType) -> None:

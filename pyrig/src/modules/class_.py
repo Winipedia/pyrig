@@ -6,7 +6,6 @@ implementations and BuilderConfigFile subclasses.
 """
 
 import inspect
-import logging
 from collections.abc import Callable, Generator, Iterable
 from types import ModuleType
 from typing import Any
@@ -18,8 +17,6 @@ from pyrig.src.modules.inspection import (
     obj_members,
     unwrapped_obj,
 )
-
-logger = logging.getLogger(__name__)
 
 
 def all_methods_from_cls(

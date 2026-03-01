@@ -13,7 +13,6 @@ Key functions:
 
 import importlib.machinery
 import importlib.util
-import logging
 import pkgutil
 import sys
 from collections.abc import Generator
@@ -25,8 +24,6 @@ from pyrig.src.modules.module import (
     import_module_with_default,
 )
 from pyrig.src.modules.path import ModulePath
-
-logger = logging.getLogger(__name__)
 
 
 def module_is_package(obj: ModuleType) -> bool:

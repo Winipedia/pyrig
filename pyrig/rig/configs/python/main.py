@@ -94,5 +94,5 @@ class MainConfigFile(CopyModuleConfigFile):
         """
         root_main_path = Path("main.py")
         if root_main_path.exists():
-            logger.info("Deleting root-level main.py file")
+            logger.debug("Deleting root-level main.py file")
             root_main_path.unlink()

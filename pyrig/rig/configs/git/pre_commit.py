@@ -10,7 +10,6 @@ See Also:
     bandit: https://bandit.readthedocs.io/
 """
 
-import logging
 from pathlib import Path
 from typing import Any
 
@@ -23,8 +22,6 @@ from pyrig.rig.tools.type_checker import TypeChecker
 from pyrig.src.processes import (
     Args,
 )
-
-logger = logging.getLogger(__name__)
 
 
 class PrekConfigFile(TomlConfigFile):

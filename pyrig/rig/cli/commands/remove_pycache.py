@@ -4,14 +4,13 @@ This command recursively deletes all __pycache__ directories from the tests
 package and the main package, cleaning up compiled Python files.
 """
 
-import logging
 import shutil
 from pathlib import Path
 
+import typer
+
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
-
-logger = logging.getLogger(__name__)
 
 
 def remove_pycache() -> None:
@@ -31,5 +30,5 @@ def remove_pycache() -> None:
         root = Path(r)
         for pycache in root.rglob("__pycache__"):
             if pycache.is_dir():
-                logger.info("Removing %s", pycache)
+                typer.echo(f"Removing {pycache}")
                 shutil.rmtree(pycache)

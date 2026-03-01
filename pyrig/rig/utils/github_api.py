@@ -57,7 +57,7 @@ def create_or_update_ruleset(
             ...     enforcement="active", rules=[{"type": "deletion"}]
             ... )
     """
-    logger.info("Creating or updating ruleset: %s", ruleset_params["name"])
+    logger.debug("Creating or updating ruleset: %s", ruleset_params["name"])
     ruleset_name: str = ruleset_params["name"]
     logger.debug(
         "Checking if ruleset '%s' exists for %s/%s", ruleset_name, owner, repo_name
@@ -81,7 +81,7 @@ def create_or_update_ruleset(
         method="PUT" if ruleset_id else "POST",
         payload=ruleset_params,
     )
-    logger.info(
+    logger.debug(
         "Ruleset '%s' %s successfully",
         ruleset_name,
         "updated" if ruleset_id else "created",

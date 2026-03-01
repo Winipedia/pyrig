@@ -14,11 +14,10 @@ Key Components:
     make_package_dir: Create __init__.py files up the directory hierarchy.
 """
 
-import logging
 from pathlib import Path
 from types import ModuleType
 
-logger = logging.getLogger(__name__)
+import typer
 
 
 class ModulePath:
@@ -238,7 +237,7 @@ def make_init_module(path: Path) -> None:
     if init_path.exists():
         return
 
-    logger.info("Creating __init__.py file at: %s", init_path)
+    typer.echo(f"Creating: {init_path}")
 
     content = default_init_module_content()
     init_path.write_text(content)

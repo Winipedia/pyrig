@@ -4,11 +4,7 @@ Provides the entry point for building all project artifacts by discovering
 and invoking all BuilderConfigFile subclasses.
 """
 
-import logging
-
 from pyrig.rig.builders.base.base import BuilderConfigFile
-
-logger = logging.getLogger(__name__)
 
 
 def build_artifacts() -> None:
@@ -17,6 +13,4 @@ def build_artifacts() -> None:
     Discovers and validates all non-abstract BuilderConfigFile subclasses to
     create distributable artifacts.
     """
-    logger.info("Building all artifacts")
     BuilderConfigFile.validate_all_subclasses()
-    logger.info("Artifact build complete")
