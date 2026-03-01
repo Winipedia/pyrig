@@ -36,8 +36,8 @@ import pyrig
 from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.src.dependency_graph import DependencyGraph
 from pyrig.src.iterate import generator_length
+from pyrig.src.modules.package import pyrig_dependency_graph
 
 
 class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
@@ -112,8 +112,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Number of hours to offset from base cron hour.
         """
-        graph = DependencyGraph()
-        chain = graph.longest_dependent_chain(pyrig.__name__)
+        chain = pyrig_dependency_graph().longest_dependent_chain(pyrig.__name__)
         chain_without_src = (n for n in chain if n != PackageManager.I.package_name())
         return generator_length(chain_without_src)
 

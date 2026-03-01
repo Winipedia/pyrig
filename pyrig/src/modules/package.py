@@ -14,6 +14,7 @@ from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
+import pyrig
 from pyrig.src.dependency_graph import DependencyGraph
 from pyrig.src.modules.class_ import (
     discover_all_subclasses,
@@ -55,6 +56,16 @@ def create_package(path: Path) -> ModuleType:
 
 
 @cache
+def pyrig_dependency_graph() -> DependencyGraph:
+    """Get the dependency graph of installed packages depending on pyrig.
+
+    Returns:
+        A DependencyGraph instance containing all packages that depend on pyrig.
+    """
+    return DependencyGraph(root=pyrig.__name__)
+
+
+@cache
 def all_deps_depending_on_dep(dep: ModuleType) -> tuple[ModuleType, ...]:
     """Get all packages that depend on the given dependency.
 
@@ -65,7 +76,9 @@ def all_deps_depending_on_dep(dep: ModuleType) -> tuple[ModuleType, ...]:
     Returns:
         Tuple of imported module objects for dependent packages.
     """
-    return tuple(import_modules(DependencyGraph().sorted_ancestors(dep.__name__)))
+    return tuple(
+        import_modules(pyrig_dependency_graph().sorted_ancestors(dep.__name__))
+    )
 
 
 def discover_equivalent_modules_across_dependents(

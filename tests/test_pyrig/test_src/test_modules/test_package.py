@@ -13,6 +13,7 @@ from pyrig.src.modules.package import (
     create_package,
     discover_equivalent_modules_across_dependents,
     discover_subclasses_across_dependents,
+    pyrig_dependency_graph,
 )
 from tests.test_pyrig.test_src import test_modules
 from tests.test_pyrig.test_src.test_modules.test_class_ import (
@@ -56,3 +57,11 @@ def test_all_deps_depending_on_dep() -> None:
     """Test function."""
     packages = [*all_deps_depending_on_dep(pyrig), pyrig]
     assert pyrig in packages, f"Expected pyrig in packages, got {packages}"
+
+
+def test_pyrig_dependency_graph() -> None:
+    """Test function."""
+    graph = pyrig_dependency_graph()
+
+    # should only be pyrig and its dependents, not unrelated packages
+    assert graph.nodes() == {pyrig.__name__}
