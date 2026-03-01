@@ -34,16 +34,40 @@ class DiGraph(ABC):
         _reverse_edges: Reverse adjacency mapping (node → set of incoming neighbors).
     """
 
-    def __init__(self) -> None:
-        """Initialize and build the graph structure."""
+    def __init__(self, root: str | None = None) -> None:
+        """Initialize and build the graph structure.
+
+        Args:
+            root: If provided, prune the graph after building to keep only
+                this node and nodes that depend on it (ancestors).
+        """
+        self.root = root
         self._nodes: set[str] = set()
         self._edges: dict[str, set[str]] = {}  # node -> outgoing neighbors
         self._reverse_edges: dict[str, set[str]] = {}  # node -> incoming neighbors
         self.build()
+        if self.root is not None:
+            self.prune(self.root)
 
     @abstractmethod
     def build(self) -> None:
         """Build the graph structure."""
+
+    def prune(self, root: str) -> None:
+        """Remove all nodes that do not depend on root.
+
+        Keeps ``root`` and all its ancestors (nodes with a directed path to
+        ``root``). All other nodes and their associated edges are removed.
+        Rebuilds the internal data structures from the kept set in a single
+        pass, which is more efficient than removing nodes one at a time.
+
+        Args:
+            root: The root node to prune around.
+        """
+        keep = self.ancestors(root) | {root}
+        self._nodes = keep
+        self._edges = {n: self._edges[n] & keep for n in keep}
+        self._reverse_edges = {n: self._reverse_edges[n] & keep for n in keep}
 
     def add_node(self, node: str) -> None:
         """Add a node to the graph. Idempotent if node already exists.
