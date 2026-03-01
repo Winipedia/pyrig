@@ -3,7 +3,6 @@
 import sys
 from contextlib import chdir
 from pathlib import Path
-from types import ModuleType
 
 import pytest
 
@@ -14,7 +13,6 @@ from pyrig.src.modules.imports import (
     import_package_from_dir,
     import_package_with_dir_fallback,
     iter_modules,
-    module_is_package,
     walk_package,
 )
 from tests.test_pyrig.test_rig.test_tests import test_mirror_test
@@ -50,24 +48,6 @@ def test_walk_package() -> None:
     assert imports in module_types
 
     assert test_mirror_test not in module_types
-
-
-def test_module_is_package() -> None:
-    """Test function."""
-    # Create a mock module with __path__ attribute (package)
-    mock_package = ModuleType("test_package")
-    mock_package.__path__ = ["some/path"]
-
-    # Create a mock module without __path__ attribute (regular module)
-    mock_module = ModuleType("test_module")
-
-    assert module_is_package(mock_package) is True, (
-        "Expected module with __path__ to be identified as package"
-    )
-
-    assert module_is_package(mock_module) is False, (
-        "Expected module without __path__ to not be identified as package"
-    )
 
 
 def test_import_package_with_dir_fallback(tmp_path: Path) -> None:

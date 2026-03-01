@@ -26,23 +26,6 @@ from pyrig.src.modules.module import (
 from pyrig.src.modules.path import ModulePath
 
 
-def module_is_package(obj: ModuleType) -> bool:
-    """Check if a module object represents a package.
-
-    Packages in Python have a ``__path__`` attribute that lists the directories
-    containing the package's submodules. This attribute exists for both regular
-    packages (with ``__init__.py``) and namespace packages.
-
-    Args:
-        obj: Module object to check.
-
-    Returns:
-        True if the module has a ``__path__`` attribute (is a package),
-        False otherwise (is a regular module).
-    """
-    return hasattr(obj, "__path__")
-
-
 def import_package_from_dir(package_dir: Path) -> ModuleType:
     """Import a package directly from a directory path.
 
