@@ -51,9 +51,9 @@ def mktests() -> None:
         Generated test functions raise `NotImplementedError` and must be
         implemented. Test skeletons include minimal docstrings.
     """
-    from pyrig.rig.cli.commands.create_tests import make_test_skeletons  # noqa: PLC0415
+    from pyrig.rig.cli.commands.create_tests import create_tests  # noqa: PLC0415
 
-    make_test_skeletons()
+    create_tests()
 
 
 def mkinits() -> None:

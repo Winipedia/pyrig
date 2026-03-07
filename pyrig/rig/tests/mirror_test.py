@@ -56,6 +56,7 @@ from typing import Any, Self, cast, overload
 from pyrig.rig import tests
 from pyrig.rig.configs.base.base import ConfigList
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.class_ import (
@@ -64,6 +65,7 @@ from pyrig.src.modules.class_ import (
     discard_parent_methods,
 )
 from pyrig.src.modules.function import all_functions_from_module
+from pyrig.src.modules.imports import walk_package
 from pyrig.src.modules.inspection import qualname_of_obj, sorted_by_def_line
 from pyrig.src.modules.module import (
     default_module_content,
@@ -642,6 +644,41 @@ class {test_class_name}:
         """
         subclasses = self.make_subclasses_for_modules(modules)
         self.validate_subclasses(subclasses)
+
+    def create_all_test_modules(self) -> None:
+        """Generate test files for all modules in the projects source package.
+
+        Convenience method that retrieves all modules from the projects source package
+        and creates test files for them. Useful for initializing tests for an
+        entire package without manually listing modules.
+
+        Example:
+            Generate tests for all modules in the source package::
+
+                MirrorTestConfigFile.I.create_all_test_modules()
+        """
+        src_package = import_module(PackageManager.I.package_name())
+        self.create_test_modules_for_package(src_package)
+
+    def create_test_modules_for_package(self, package: ModuleType) -> None:
+        """Generate test files for all modules in a specific source package.
+
+        Retrieves all modules from the specified package and creates test files
+        for them. Useful for initializing tests for a specific package without
+        manually listing modules.
+
+        Args:
+            package: Source package to create test files for.
+
+        Example:
+            Generate tests for all modules in a specific package::
+
+                import myproject.core
+                MirrorTestConfigFile.I.create_test_modules_for_package(myproject.core)
+        """
+        logger.debug("Creating tests for package: %s", package.__name__)
+        modules = (m for m, is_pkg in walk_package(package) if not is_pkg)
+        self.create_test_modules(modules)
 
     @overload
     def obj_from_test_obj(self, test_obj: type) -> type: ...
