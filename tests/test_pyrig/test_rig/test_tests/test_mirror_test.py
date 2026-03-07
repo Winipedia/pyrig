@@ -7,12 +7,15 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
+from pytest_mock import MockFixture
 
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.src.modules.imports import import_package_with_dir_fallback
 from pyrig.src.modules.module import create_module
+from pyrig.src.modules.package import create_package
 
 
 @pytest.fixture
@@ -48,6 +51,55 @@ def mirror_function():
 
 class TestMirrorTestConfigFile:
     """Test class."""
+
+    def test_create_all_test_modules(self, mocker: MockFixture) -> None:
+        """Test method."""
+        mock_create_test_modules_for_package = mocker.patch.object(
+            MirrorTestConfigFile,
+            MirrorTestConfigFile.create_test_modules_for_package.__name__,
+        )
+        MirrorTestConfigFile.I.create_all_test_modules()
+        mock_create_test_modules_for_package.assert_called_once()
+
+    def test_create_test_modules_for_package(self, tmp_path: Path) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            # Create a source package with a module
+            package_path = Path("src_package")
+            subpackage_path = package_path / "subpackage"
+            mod1_path = package_path / "mod1.py"
+            mod2_path = package_path / "mod2.py"
+            sub_mod1_path = subpackage_path / "sub_mod1.py"
+            sub_mod2_path = subpackage_path / "sub_mod2.py"
+
+            # create the package and modules
+            create_package(package_path)
+            create_package(subpackage_path)
+            create_module(mod1_path)
+            create_module(mod2_path)
+            create_module(sub_mod1_path)
+            create_module(sub_mod2_path)
+
+            assert mod1_path.exists()
+            assert mod2_path.exists()
+            assert sub_mod1_path.exists()
+
+            package = import_package_with_dir_fallback(package_path)
+            MirrorTestConfigFile.I.create_test_modules_for_package(package)
+
+            # assert the test modules were created
+            test_mod1_path = Path("tests/test_src_package/test_mod1.py")
+            test_mod2_path = Path("tests/test_src_package/test_mod2.py")
+            test_sub_mod1_path = Path(
+                "tests/test_src_package/test_subpackage/test_sub_mod1.py"
+            )
+            test_sub_mod2_path = Path(
+                "tests/test_src_package/test_subpackage/test_sub_mod2.py"
+            )
+            assert test_mod1_path.exists()
+            assert test_mod2_path.exists()
+            assert test_sub_mod1_path.exists()
+            assert test_sub_mod2_path.exists()
 
     def test__dump(
         self,
