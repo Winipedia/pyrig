@@ -146,6 +146,9 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             Updated content with the current description from pyproject.toml.
         """
         expected_description = PyprojectConfigFile.I.project_description()
+        if expected_description in content:
+            # description is already correct, no need to replace
+            return content
         pattern = r"---\s*\n(.*?)\n---"
         replacement = f"---\n\n> {expected_description}\n\n---"
         # only replace first occurence, as description is expected at the top
@@ -168,9 +171,11 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         expected_badges = (badge for group in self.badges().values() for badge in group)
 
         # only consider content before description
-        actual_badges_content = content.split("---", 1)[0]
-
+        badges_content = content.split("---", 1)[0]
         for badge in expected_badges:
+            if badge in badges_content:
+                # badge is already correct, no need to replace
+                continue
             # extract the alt text (tool cls name) from the badge markdown
             alt_text_match = re.search(r"\[!\[(.*?)\]", badge)
             if not alt_text_match:
@@ -178,6 +183,6 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             alt_text = alt_text_match.group(1)
             # extract the line containing the badge with the same alt text
             pattern = rf".*\[!\[{re.escape(alt_text)}\].*"
-            actual_badges_content = re.sub(pattern, badge, actual_badges_content)
+            badges_content = re.sub(pattern, badge, badges_content)
         # replace the old badges content with the updated one
-        return content.replace(content.split("---", 1)[0], actual_badges_content)
+        return content.replace(content.split("---", 1)[0], badges_content)
