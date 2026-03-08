@@ -293,7 +293,7 @@ class PyprojectConfigFile(TomlConfigFile):
         return adjust_version_to_level(latest_version, level)
 
     def latest_possible_python_version(
-        self, level: Literal["major", "minor", "micro"] = "micro"
+        self, level: Literal["major", "minor", "micro"] = "minor"
     ) -> Version:
         """Get latest Python version allowed by requires-python constraint."""
         constraint = self.load()["project"]["requires-python"]
