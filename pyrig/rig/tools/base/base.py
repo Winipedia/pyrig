@@ -126,7 +126,7 @@ class Tool(DependencySubclass):
         return make_linked_badge_markdown(
             badge_url=badge,
             link_url=page,
-            alt_text=self.name(),
+            alt_text=self.__class__.__name__,
         )
 
     def dev_dependencies(self) -> tuple[str, ...]:
@@ -152,7 +152,7 @@ class Tool(DependencySubclass):
         return Args((self.name(), *args))
 
     @classmethod
-    def grouped_badges(cls) -> dict[str, list[str]]:
+    def grouped_badges(cls) -> defaultdict[str, list[str]]:
         """Get a dict with all badges of tools grouped by their group."""
         subclasses = cls.subclasses_sorted(*cls.subclasses())
         groups: defaultdict[str, list[str]] = defaultdict(list)
