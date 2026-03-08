@@ -30,7 +30,6 @@ from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
-from pyrig.src.string_ import make_linked_badge_markdown
 
 
 class BadgesMarkdownConfigFile(MarkdownConfigFile):
@@ -106,19 +105,12 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             Dict mapping category names (tooling, code-quality, package-info, ci/cd,
             documentation) to lists of badge Markdown strings.
         """
-        python_versions = PyprojectConfigFile.I.supported_python_versions()
-        joined_python_versions = "|".join(str(v) for v in python_versions)
         health_check_wf_name = HealthCheckWorkflowConfigFile.I.filename()
         release_wf_name = ReleaseWorkflowConfigFile.I.filename()
         badge_groups = Tool.grouped_badges()
 
         badge_groups[ToolGroup.PROJECT_INFO].extend(
             [
-                make_linked_badge_markdown(
-                    badge_url=f"https://img.shields.io/badge/python-{joined_python_versions}-blue.svg?logo=python&logoColor=white",
-                    link_url="https://www.python.org",
-                    alt_text="python",
-                ),
                 LicenseConfigFile.I.license_badge(),
             ]
         )

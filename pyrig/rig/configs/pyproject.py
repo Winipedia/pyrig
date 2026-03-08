@@ -269,29 +269,6 @@ class PyprojectConfigFile(TomlConfigFile):
         deps: list[str] = self.load().get("project", {}).get("dependencies", [])
         return deps
 
-    @return_resource_content_on_fetch_error(resource_name="LATEST_PYTHON_VERSION")
-    def fetch_latest_python_version(
-        self, level: Literal["major", "minor", "micro"] = "minor"
-    ) -> str:
-        """Fetch latest stable Python version.
-
-        Fetches from endoflife.date API (cached, with fallback).
-
-        Args:
-            level: Precision level for the version string.
-        """
-        url = "https://endoflife.date/api/python.json"
-        data: list[dict[str, str]] = json.loads(requests_get_text_cached(url))
-        latest_version = data[0]["latest"]
-        return str(adjust_version_to_level(Version(latest_version), level))
-
-    def latest_python_version(
-        self, level: Literal["major", "minor", "micro"] = "minor"
-    ) -> Version:
-        """Get latest stable Python version at precision level (major/minor/micro)."""
-        latest_version = Version(self.fetch_latest_python_version())
-        return adjust_version_to_level(latest_version, level)
-
     def latest_possible_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"
     ) -> Version:
@@ -300,7 +277,7 @@ class PyprojectConfigFile(TomlConfigFile):
         version_constraint = VersionConstraint(constraint)
         version = version_constraint.upper_inclusive()
         if version is None:
-            version = self.latest_python_version()
+            version = self.latest_python_version(level=level)
 
         return adjust_version_to_level(version, level)
 
@@ -323,5 +300,26 @@ class PyprojectConfigFile(TomlConfigFile):
         constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)
         return version_constraint.version_range(
-            level="minor", upper_default=self.latest_python_version()
+            level="minor",
+            upper_default=self.latest_python_version(level="minor"),
         )
+
+    @return_resource_content_on_fetch_error(resource_name="LATEST_PYTHON_VERSION")
+    def fetch_latest_python_version(self) -> str:
+        """Fetch latest stable Python version.
+
+        Fetches from endoflife.date API (cached, with fallback).
+
+        Args:
+            level: Precision level for the version string.
+        """
+        url = "https://endoflife.date/api/python.json"
+        data: list[dict[str, str]] = json.loads(requests_get_text_cached(url))
+        return data[0]["latest"]
+
+    def latest_python_version(
+        self, level: Literal["major", "minor", "micro"] = "minor"
+    ) -> Version:
+        """Get latest stable Python version at precision level (major/minor/micro)."""
+        latest_version = Version(self.fetch_latest_python_version())
+        return adjust_version_to_level(latest_version, level)

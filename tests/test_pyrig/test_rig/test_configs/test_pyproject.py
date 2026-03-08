@@ -40,13 +40,6 @@ class TestPyprojectConfigFile:
         license_id = PyprojectConfigFile.I.detect_project_license()
         assert license_id == "MIT", f"Expected 'MIT', got '{license_id}'"
 
-    def test_latest_python_version(self) -> None:
-        """Test method."""
-        latest_version = PyprojectConfigFile.I.latest_python_version()
-        assert isinstance(latest_version, Version), (
-            f"Expected Version, got {type(latest_version)}"
-        )
-
     def test_requires_python(self) -> None:
         """Test method."""
         requires_python = PyprojectConfigFile.I.requires_python()
@@ -195,15 +188,6 @@ class TestPyprojectConfigFile:
             "Expected latest_possible_python_version to return 3.x"
         )
 
-    def test_fetch_latest_python_version(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
-    ) -> None:
-        """Test method."""
-        latest_version = my_test_pyproject_config_file().fetch_latest_python_version()
-        assert Version(latest_version) >= Version("3.13"), (
-            "Expected fetch_latest_python_version to return a version >= 3.11"
-        )
-
     def test_supported_python_versions(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
@@ -256,4 +240,16 @@ class TestPyprojectConfigFile:
         )
         assert first_version == "3.8.1", (
             "Expected first_supported_python_version to return 3.8.1"
+        )
+
+    def test_fetch_latest_python_version(self) -> None:
+        """Test method."""
+        latest_version = PyprojectConfigFile().fetch_latest_python_version()
+        assert Version(latest_version) >= Version("3.13")
+
+    def test_latest_python_version(self) -> None:
+        """Test method."""
+        latest_version = PyprojectConfigFile().latest_python_version()
+        assert isinstance(latest_version, Version), (
+            f"Expected Version, got {type(latest_version)}"
         )
