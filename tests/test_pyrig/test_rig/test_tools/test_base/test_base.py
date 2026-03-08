@@ -57,10 +57,12 @@ class TestTool:
         """Test method."""
         result = Tool.subclasses_dev_dependencies()
         # should be the same as the dev dependencies in pyproject.toml
-        no_version_from_toml = [
-            PyprojectConfigFile.I.remove_version_from_dep(dep)
-            for dep in PyprojectConfigFile.I.dev_dependencies()
-        ]
+        no_version_from_toml = sorted(
+            [
+                PyprojectConfigFile.I.remove_version_from_dep(dep)
+                for dep in PyprojectConfigFile.I.dev_dependencies()
+            ]
+        )
         assert result == no_version_from_toml
 
     def test_name(self) -> None:
