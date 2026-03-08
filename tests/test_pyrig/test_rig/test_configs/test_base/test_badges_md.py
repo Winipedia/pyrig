@@ -8,6 +8,22 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 class TestBadgesMarkdownConfigFile:
     """Test class."""
 
+    def test_replace_badges(self) -> None:
+        """Test method."""
+        # we take pyrigs actual content and change the some urls
+        content = ReadmeConfigFile.I.make_string_from_lines(ReadmeConfigFile.I.lines())
+        # we replace the actual badge urls with some dummy ones
+        false_https = "https-false://"
+        correct_https = "https://"
+        false_content = content.replace(correct_https, false_https)
+        assert correct_https not in false_content
+        assert false_https in false_content
+        corrected_content = ReadmeConfigFile().replace_badges(false_content)
+        assert correct_https in corrected_content
+        assert false_https not in corrected_content
+
+        assert corrected_content == content
+
     def test_replace_description(self) -> None:
         """Test that replace_description replaces a stale description."""
         expected_description = PyprojectConfigFile.I.project_description()
