@@ -65,10 +65,11 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             return True
         file_content = self.file_content()
         updated_content = self.replace_description(file_content)
+        updated_content = self.replace_badges(updated_content)
         # only dump if content changed
         if updated_content != file_content:
             self.dump(updated_content.splitlines())
-        # note dump clears the cache,
+        # dump clears the cache,
         # and this checks the real file again, which is the wanted behavior
         return super().is_correct()
 
@@ -149,3 +150,34 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         replacement = f"---\n\n> {expected_description}\n\n---"
         # only replace first occurence, as description is expected at the top
         return re.sub(pattern, replacement, content, count=1, flags=re.DOTALL)
+
+    def replace_badges(self, content: str) -> str:
+        """Replace existing badges with the current ones.
+
+        Each badge is in the format:
+            [![ToolClsName](badge-url)](linked-url)
+        The tool cls name is the constant identifier for the badge,
+        so if one the urls for a cls name chnaged we replace it.
+
+        Args:
+            content: Markdown file content to update.
+
+        Returns:
+            Updated content with current badges.
+        """
+        expected_badges = (badge for group in self.badges().values() for badge in group)
+
+        # only consider content before description
+        actual_badges_content = content.split("---", 1)[0]
+
+        for badge in expected_badges:
+            # extract the alt text (tool cls name) from the badge markdown
+            alt_text_match = re.search(r"\[!\[(.*?)\]", badge)
+            if not alt_text_match:
+                continue
+            alt_text = alt_text_match.group(1)
+            # extract the line containing the badge with the same alt text
+            pattern = rf".*\[!\[{re.escape(alt_text)}\].*"
+            actual_badges_content = re.sub(pattern, badge, actual_badges_content)
+        # replace the old badges content with the updated one
+        return content.replace(content.split("---", 1)[0], actual_badges_content)
