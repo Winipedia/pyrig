@@ -46,6 +46,7 @@ from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pre_committer import PreCommitter
+from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_controller import VersionController
@@ -220,7 +221,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             Dict of environment variables.
         """
         return {
-            "PYTHONDONTWRITEBYTECODE": 1,
+            ProgrammingLanguage.I.no_bytecode_env_var(): 1,
             PackageManager.I.no_auto_install_env_var(): 1,
         }
 

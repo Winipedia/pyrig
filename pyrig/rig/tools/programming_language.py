@@ -35,3 +35,7 @@ class ProgrammingLanguage(Tool):
     def dev_dependencies(self) -> tuple[str, ...]:
         """No dev dependencies needed for the programming language itself."""
         return ()
+
+    def no_bytecode_env_var(self) -> str:
+        """Return the environment variable name to disable bytecode generation."""
+        return "PYTHONDONTWRITEBYTECODE"
