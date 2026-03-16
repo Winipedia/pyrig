@@ -7,6 +7,10 @@ from pyrig.rig.tools.programming_language import ProgrammingLanguage
 class TestProgrammingLanguage:
     """Test class."""
 
+    def test_no_bytecode_env_var(self) -> None:
+        """Test method."""
+        assert ProgrammingLanguage().no_bytecode_env_var() == "PYTHONDONTWRITEBYTECODE"
+
     def test_dev_dependencies(self) -> None:
         """Test method."""
         assert ProgrammingLanguage().dev_dependencies() == ()
