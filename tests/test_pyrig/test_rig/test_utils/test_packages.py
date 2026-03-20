@@ -3,11 +3,13 @@
 from contextlib import chdir
 from pathlib import Path
 
+import pyrig
 from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
     find_packages,
+    src_package_is_package,
     src_package_is_pyrig,
 )
 
@@ -69,3 +71,8 @@ def test_find_namespace_packages(tmp_path: Path) -> None:
 def test_src_package_is_pyrig() -> None:
     """Test function."""
     assert src_package_is_pyrig()
+
+
+def test_src_package_is_package() -> None:
+    """Test function."""
+    assert src_package_is_package(pyrig)
