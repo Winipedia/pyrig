@@ -29,6 +29,7 @@ See Also:
 import logging
 from collections.abc import Generator, Iterable
 from functools import cache
+from types import ModuleType
 
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
@@ -113,7 +114,6 @@ def find_packages(
     return package_names
 
 
-@cache
 def src_package_is_pyrig() -> bool:
     """Check if the current project is pyrig itself.
 
@@ -132,8 +132,21 @@ def src_package_is_pyrig() -> bool:
     Note:
         Detects the pyrig repository, not pyrig as an installed dependency.
     """
-    packages = find_packages(depth=0, include_namespace_packages=False)
-    return pyrig.__name__ in packages
+    return src_package_is_package(pyrig)
+
+
+@cache
+def src_package_is_package(package: ModuleType) -> bool:
+    """Check if the given module is the src package of the current project.
+
+    Args:
+        package: The module to check.
+
+    Returns:
+        True if the module's name matches the top-level package of the current project.
+    """
+    top_level_packages = find_packages(depth=0, include_namespace_packages=False)
+    return package.__name__ in top_level_packages
 
 
 def find_namespace_packages() -> Generator[str, None, None]:
