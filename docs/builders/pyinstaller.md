@@ -37,7 +37,7 @@ class MyAppBuilder(PyInstallerBuilder):
 A use case we had was that we needed to add the migrations folder for a database
 once as we had it not located in the resources directory. Resource modules from
 packages depending on pyrig are discovered automatically via
-`default_additional_resource_packages()`.
+`default_resource_packages()`.
 
 ### 2. Add an Icon
 

@@ -46,12 +46,12 @@ def my_test_pyinstaller_builder(
 class TestPyInstallerBuilder:
     """Test class."""
 
-    def test_default_additional_resource_packages(
+    def test_default_resource_packages(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
         # Test that default additional resource packages are discovered
-        result = my_test_pyinstaller_builder().default_additional_resource_packages()
+        result = my_test_pyinstaller_builder().default_resource_packages()
         # All items should be modules
         for package in result:
             assert hasattr(package, "__name__"), f"Expected module, got {package}"
