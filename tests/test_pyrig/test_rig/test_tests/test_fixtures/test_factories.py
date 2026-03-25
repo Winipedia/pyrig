@@ -17,7 +17,7 @@ def sample_config_file(
 ) -> type[ConfigFile[dict[str, Any]]]:
     """Create a sample config file class for testing the factory."""
 
-    class SampleConfigFile(config_file_factory(ConfigFile)):  # type: ignore [misc]
+    class SampleConfigFile(config_file_factory(ConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Sample config file for testing."""
 
         def parent_path(self) -> Path:

@@ -13,7 +13,7 @@ def my_test_zero_test_config_file(
 ) -> type[ZeroTestConfigFile]:
     """Create a test zero test config file class with tmp_path."""
 
-    class MyTestZeroTestConfigFile(config_file_factory(ZeroTestConfigFile)):  # type: ignore [misc]
+    class MyTestZeroTestConfigFile(config_file_factory(ZeroTestConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test zero test config file with tmp_path override."""
 
     return MyTestZeroTestConfigFile

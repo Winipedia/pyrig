@@ -17,7 +17,7 @@ def my_test_yaml_config_file(
 ) -> type[YamlConfigFile[dict[str, Any]]]:
     """Create a test yaml config file class with tmp_path."""
 
-    class MyTestYamlConfigFile(config_file_factory(YamlConfigFile)):  # type: ignore [misc]
+    class MyTestYamlConfigFile(config_file_factory(YamlConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test yaml config file with tmp_path override."""
 
         def parent_path(self) -> Path:

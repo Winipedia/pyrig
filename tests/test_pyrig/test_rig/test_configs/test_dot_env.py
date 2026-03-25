@@ -16,7 +16,7 @@ def my_test_dotenv_config_file(
 ) -> type[DotEnvConfigFile]:
     """Create a test dotenv config file class with tmp_path."""
 
-    class MyTestDotEnvConfigFile(config_file_factory(DotEnvConfigFile)):  # type: ignore [misc]
+    class MyTestDotEnvConfigFile(config_file_factory(DotEnvConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test dotenv config file with tmp_path override."""
 
     return MyTestDotEnvConfigFile
