@@ -13,7 +13,7 @@ def my_test_py_typed_config_file(
 ) -> type[PyTypedConfigFile]:
     """Create a test py.typed config file class with tmp_path."""
 
-    class MyTestPyTypedConfigFile(config_file_factory(PyTypedConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
+    class MyTestPyTypedConfigFile(config_file_factory(PyTypedConfigFile)):  # ty: ignore[unsupported-base]
         """Test py.typed config file with tmp_path override."""
 
     return MyTestPyTypedConfigFile

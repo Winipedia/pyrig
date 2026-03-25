@@ -15,7 +15,7 @@ def my_test_toml_config_file(
 ) -> type[TomlConfigFile]:
     """Create a test toml config file class with tmp_path."""
 
-    class MyTestTomlConfigFile(config_file_factory(TomlConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
+    class MyTestTomlConfigFile(config_file_factory(TomlConfigFile)):  # ty: ignore[unsupported-base]
         """Test toml config file with tmp_path override."""
 
         def parent_path(self) -> Path:
