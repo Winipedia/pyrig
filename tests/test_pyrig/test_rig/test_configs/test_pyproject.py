@@ -22,7 +22,7 @@ def my_test_pyproject_config_file(
 ) -> type[PyprojectConfigFile]:
     """Create a test pyproject config file class with tmp_path."""
 
-    class MyTestPyprojectConfigFile(config_file_factory(PyprojectConfigFile)):  # type: ignore [misc]
+    class MyTestPyprojectConfigFile(config_file_factory(PyprojectConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test pyproject config file with tmp_path override."""
 
     return MyTestPyprojectConfigFile

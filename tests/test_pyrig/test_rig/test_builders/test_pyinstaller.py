@@ -21,7 +21,7 @@ def my_test_pyinstaller_builder(
 ) -> type[PyInstallerBuilder]:
     """Create a test PyInstaller builder class."""
 
-    class MyTestPyInstallerBuilder(config_file_factory(PyInstallerBuilder)):  # type: ignore [misc]
+    class MyTestPyInstallerBuilder(config_file_factory(PyInstallerBuilder)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test PyInstaller builder class."""
 
         def additional_resource_packages(self) -> list[ModuleType]:

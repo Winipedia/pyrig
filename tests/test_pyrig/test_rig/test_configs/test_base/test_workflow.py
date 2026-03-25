@@ -16,7 +16,7 @@ def my_test_workflow(
 ) -> type[WorkflowConfigFile]:
     """Create a test workflow class with tmp_path."""
 
-    class MyTestWorkflowConfigFileClass(config_file_factory(WorkflowConfigFile)):  # type: ignore [misc]
+    class MyTestWorkflowConfigFileClass(config_file_factory(WorkflowConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test workflow class with tmp_path override."""
 
         def workflow_triggers(self) -> dict[str, Any]:

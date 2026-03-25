@@ -38,7 +38,7 @@ def my_test_copy_module_config_file(
     )
     module_path.write_text(test_content)
 
-    class MyTestCopyModuleConfigFile(config_file_factory(CopyModuleConfigFile)):  # type: ignore [misc]
+    class MyTestCopyModuleConfigFile(config_file_factory(CopyModuleConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test copy module config file with tmp_path override."""
 
         def src_module(self) -> ModuleType:

@@ -15,7 +15,7 @@ def my_test_string_config_file(
 ) -> type[StringConfigFile]:
     """Create a test text config file class with tmp_path."""
 
-    class MyTestStringConfigFile(config_file_factory(StringConfigFile)):  # type: ignore [misc]
+    class MyTestStringConfigFile(config_file_factory(StringConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test text config file with tmp_path override."""
 
         def parent_path(self) -> Path:

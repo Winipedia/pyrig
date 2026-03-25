@@ -17,7 +17,7 @@ def my_test_gitignore_config_file(
     """Create a test gitignore config file class with tmp_path."""
 
     class MyTestGitignoreConfigFile(
-        config_file_factory(GitignoreConfigFile)  # type: ignore [misc]
+        config_file_factory(GitignoreConfigFile)  # type: ignore [misc] # ty: ignore[unsupported-base]
     ):
         """Test gitignore config file with tmp_path override."""
 

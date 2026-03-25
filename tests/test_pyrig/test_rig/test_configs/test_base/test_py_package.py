@@ -16,7 +16,7 @@ def my_test_python_package_config_file(
 ) -> type[PythonPackageConfigFile]:
     """Create a test python package config file class with tmp_path."""
 
-    class MyTestPythonPackageConfigFile(config_file_factory(PythonPackageConfigFile)):  # type: ignore [misc]
+    class MyTestPythonPackageConfigFile(config_file_factory(PythonPackageConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
         """Test python package config file with tmp_path override."""
 
         def parent_path(self) -> Path:
