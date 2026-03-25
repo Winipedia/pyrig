@@ -22,7 +22,7 @@ def my_test_config_file(
 ) -> type[ConfigFile[dict[str, Any]]]:
     """Create a test config file class with tmp_path."""
 
-    class MyTestConfigFile(config_file_factory(ConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
+    class MyTestConfigFile(config_file_factory(ConfigFile)):  # ty: ignore[unsupported-base]
         """Test config file with tmp_path override."""
 
         STORAGE_DICT: ClassVar[dict[str, Any]] = {

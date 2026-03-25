@@ -17,7 +17,7 @@ def my_test_prek_config_file(
     """Create a test prek config file class with tmp_path."""
 
     class MyTestPrekConfigFile(
-        config_file_factory(PrekConfigFile)  # type: ignore [misc] # ty: ignore[unsupported-base]
+        config_file_factory(PrekConfigFile)  # ty: ignore[unsupported-base]
     ):
         """Test prek config file with tmp_path override."""
 

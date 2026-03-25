@@ -19,7 +19,7 @@ def my_test_builder_config_file(
     """Create a test builder config file class with tmp_path."""
 
     class MyTestBuilderConfigFile(
-        config_file_factory(BuilderConfigFile)  # type: ignore [misc] # ty: ignore[unsupported-base]
+        config_file_factory(BuilderConfigFile)  # ty: ignore[unsupported-base]
     ):
         """Test builder config file with tmp_path override."""
 
