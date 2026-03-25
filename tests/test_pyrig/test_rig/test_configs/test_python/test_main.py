@@ -17,7 +17,7 @@ def my_test_main_config_file(
 ) -> type[MainConfigFile]:
     """Create a test main config file class with tmp_path."""
 
-    class MyTestMainConfigFile(config_file_factory(MainConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
+    class MyTestMainConfigFile(config_file_factory(MainConfigFile)):  # ty: ignore[unsupported-base]
         """Test main config file with tmp_path override."""
 
     return MyTestMainConfigFile

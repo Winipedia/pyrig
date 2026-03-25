@@ -15,7 +15,7 @@ def my_test_json_config_file(
 ) -> type[DictJsonConfigFile]:
     """Create a test json config file class with tmp_path."""
 
-    class MyTestDictJsonConfigFile(config_file_factory(DictJsonConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
+    class MyTestDictJsonConfigFile(config_file_factory(DictJsonConfigFile)):  # ty: ignore[unsupported-base]
         """Test json config file."""
 
         def parent_path(self) -> Path:

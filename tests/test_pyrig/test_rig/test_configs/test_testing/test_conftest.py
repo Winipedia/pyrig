@@ -13,7 +13,7 @@ def my_test_conftest_config_file(
 ) -> type[ConftestConfigFile]:
     """Create a test conftest config file class with tmp_path."""
 
-    class MyTestConftestConfigFile(config_file_factory(ConftestConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
+    class MyTestConftestConfigFile(config_file_factory(ConftestConfigFile)):  # ty: ignore[unsupported-base]
         """Test conftest config file with tmp_path override."""
 
     return MyTestConftestConfigFile

@@ -48,7 +48,7 @@ def config_file_factory[T: ConfigFile[ConfigData]](
             A subclass with path() redirected to tmp_path.
         """
 
-        class TestConfigFile(base_class):  # type: ignore [misc, valid-type]  # ty: ignore[unsupported-base]
+        class TestConfigFile(base_class):  # ty: ignore[unsupported-base]
             """Test config file with tmp_path override."""
 
             def path(self) -> Path:

@@ -181,7 +181,7 @@ def nested_structure_is_subset(  # noqa: C901
         ):
             all_good = False
             if on_false_action is not None:
-                on_false_action(subset, superset, key_or_index)  # type:ignore[arg-type]  # ty: ignore[invalid-argument-type]
+                on_false_action(subset, superset, key_or_index)  # ty: ignore[invalid-argument-type]
                 all_good = nested_structure_is_subset(subset, superset)
 
                 if not all_good:

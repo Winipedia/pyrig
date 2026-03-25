@@ -31,7 +31,7 @@ def my_test_init_config_file(
     )
     module_path.write_text(test_content)
 
-    class MyTestInitConfigFile(config_file_factory(InitConfigFile)):  # type: ignore [misc]  # ty: ignore[unsupported-base]
+    class MyTestInitConfigFile(config_file_factory(InitConfigFile)):  # ty: ignore[unsupported-base]
         """Test init config file with tmp_path override."""
 
         def src_module(self) -> ModuleType:

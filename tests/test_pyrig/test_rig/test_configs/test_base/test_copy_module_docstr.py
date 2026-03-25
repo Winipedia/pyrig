@@ -36,7 +36,7 @@ def my_test_copy_module_only_docstring_config_file(
     module_path.write_text(mock_module.__doc__)
 
     class MyTestCopyModuleOnlyDocstringConfigFile(
-        config_file_factory(CopyModuleOnlyDocstringConfigFile)  # type: ignore [misc] # ty: ignore[unsupported-base]
+        config_file_factory(CopyModuleOnlyDocstringConfigFile)  # ty: ignore[unsupported-base]
     ):
         """Test copy module only docstring config file with tmp_path override."""
 
