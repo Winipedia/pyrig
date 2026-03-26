@@ -437,8 +437,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
             validate_all_subclasses: validate all discovered subclasses
         """
         grouped: dict[float, list[ConfigFile[Any]]] = defaultdict(list)
-        for subclass in subclasses:
-            cf = subclass()
+        for cf in (cls() for cls in subclasses):
             grouped[cf.priority()].append(cf)
 
         with ThreadPoolExecutor() as executor:
