@@ -208,7 +208,7 @@ false positives from documentation.
 
 ---
 
-### `assert_project_mgt_is_up_to_date`
+### `assert_package_manager_is_up_to_date`
 
 **Purpose**: Ensure project management tool (uv) is latest version.
 
@@ -257,7 +257,7 @@ graph TD
 - `assert_dependencies_are_up_to_date`
 - `assert_src_runs_without_dev_deps`
 - `assert_src_does_not_use_rig`
-- `assert_project_mgt_is_up_to_date` (local only)
+- `assert_package_manager_is_up_to_date` (local only)
 
 ## Creating Custom Autouse Fixtures
 
