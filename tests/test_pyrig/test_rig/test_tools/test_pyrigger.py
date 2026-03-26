@@ -82,7 +82,7 @@ class TestPyrigger:
         res = Pyrigger.I.running_pre_commit_hooks()
         assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
-    def test_init_project(self, tmp_path: Path) -> None:
+    def test_init_project(self, tmp_path: Path) -> None:  # noqa: PLR0915
         """Test function."""
         # on Actions windows-latest temp path is on another drive so add path fails
         # so we use a tmp dir in the current dir
@@ -187,6 +187,10 @@ class TestPyrigger:
         assert (package_dir / "__init__.py").exists(), (
             f"Expected {package_dir / '__init__.py'} to be created"
         )
+
+        # make sure rig folder does not exist
+        rig_dir = package_dir / "rig"
+        assert not rig_dir.exists(), f"Expected {rig_dir} to not exist"
 
     def test_group(self) -> None:
         """Test method."""
