@@ -96,6 +96,9 @@ def walk_package(
     modules are imported so that subclass registration (via ``__subclasses__()``)
     is complete before discovery queries.
 
+    It does not include the given root package itself in the output,
+    only its children and their descendants.
+
     See Also:
         `pyrig.src.modules.class_.discover_all_subclasses`: Subclass discovery.
         `pyrig.rig.cli.commands.create_tests.create_tests_for_package`: Test
@@ -108,9 +111,9 @@ def walk_package(
         Tuples of (package, modules) where modules is the list of direct
         module children (not subpackages) in that package.
     """
-    yield package, True
     for module, is_package in iter_modules(package):
         if is_package:
+            yield module, True
             yield from walk_package(module)
         else:
             yield module, False

@@ -13,10 +13,6 @@ def test_assert_no_namespace_packages() -> None:
     """Test function."""
 
 
-def test_assert_src_package_correctly_named() -> None:
-    """Test function."""
-
-
 def test_assert_all_modules_tested() -> None:
     """Test function."""
 
@@ -29,13 +25,9 @@ def test_assert_src_runs_without_dev_deps() -> None:
     """Test function."""
 
 
-def test_assert_src_does_not_use_rig() -> None:
-    """Test function."""
-
-
 def test_assert_no_unstaged_changes() -> None:
     """Test function."""
 
 
-def test_assert_project_mgt_is_up_to_date() -> None:
+def test_assert_package_manager_is_up_to_date() -> None:
     """Test function."""

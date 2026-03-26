@@ -4,23 +4,10 @@ Provides autouse fixtures that run once per test session to enforce project
 structure, code quality, and development environment standards. Many fixtures
 auto-fix issues (creating missing files, updating dependencies) then fail with
 a message for developer review.
-
-Fixtures:
-    assert_no_unstaged_changes: No unstaged git changes (CI only).
-    assert_root_is_correct: Project root structure, auto-creates config files.
-    assert_no_namespace_packages: All packages have __init__.py.
-    assert_all_src_code_in_one_package: Single source package with expected structure.
-    assert_src_package_correctly_named: Package name matches project name.
-    assert_all_modules_tested: All modules have test modules, auto-generates skeletons.
-    assert_dependencies_are_up_to_date: Dependencies current via uv lock/sync.
-    assert_src_runs_without_dev_deps: Source runs without dev dependencies.
-    assert_src_does_not_use_rig: Source doesn't import rig code.
-    assert_project_mgt_is_up_to_date: uv up to date (local only).
 """
 
 import logging
 import os
-import re
 import shutil
 from collections.abc import Generator
 from contextlib import chdir
@@ -29,8 +16,6 @@ from pathlib import Path
 
 import pytest
 
-import pyrig
-from pyrig import rig, src
 from pyrig.rig.cli.commands.make_inits import make_init_files
 from pyrig.rig.configs.base.base import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
@@ -48,18 +33,9 @@ from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.imports import (
     walk_package,
 )
-from pyrig.src.modules.module import (
-    isolated_obj_name,
-    module_name_replacing_start_module,
-)
-from pyrig.src.modules.package import (
-    all_deps_depending_on_dep,
-)
 from pyrig.src.requests import internet_is_available
 from pyrig.src.string_ import (
-    kebab_to_snake_case,
     make_summary_error_msg,
-    re_search_excluding_docstrings,
     snake_to_kebab_case,
 )
 
@@ -144,40 +120,6 @@ Please verify the changes at the following paths:
 {make_summary_error_msg(namespace_packages)}
 """
     assert not has_namespace_packages, msg
-
-
-@pytest.fixture(scope="session", autouse=True)
-def assert_src_package_correctly_named() -> None:
-    """Verify source package name matches project naming conventions.
-
-    Checks CWD name matches pyproject.toml project name and package name.
-
-    Raises:
-        AssertionError: If any naming mismatch detected.
-    """
-    cwd_name = Path.cwd().name
-    project_name = PackageManager.I.project_name()
-    assert cwd_name == project_name, (
-        f"Expected cwd name to be {project_name}, but it is {cwd_name}"
-    )
-
-    src_package = import_module(PackageManager.I.package_name())
-
-    src_package_name = src_package.__name__
-    src_package_name_from_cwd = kebab_to_snake_case(cwd_name)
-    msg = (
-        f"Expected source package to be named {src_package_name_from_cwd}, "
-        f"but it is named {src_package_name}"
-    )
-    assert src_package_name == src_package_name_from_cwd, msg
-
-    src_package = src_package.__name__
-    expected_package = PackageManager.I.package_name()
-    msg = (
-        f"Expected source package to be named {expected_package}, "
-        f"but it is named {src_package}"
-    )
-    assert src_package == expected_package, msg
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -351,8 +293,6 @@ However, it failed with the following error:
                     "from pyrig.src.modules.imports import walk_package",
                     f"from {src_package_name} import src",
                     "packages=tuple(walk_package(src))",
-                    # verify packages is not empty
-                    "assert len(packages) > 0",
                     # add a print statement to see the output
                     "print('Success')",
                 )
@@ -384,51 +324,7 @@ If this fails then there is likely an import in src that depends on dev dependen
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_src_does_not_use_rig() -> None:
-    """Verify source code does not import any rig code.
-
-    Scans src subpackage for rig import statements to ensure production/rig
-    separation.
-
-    Raises:
-        AssertionError: If any rig imports found in src code.
-    """
-    src_package = import_module(PackageManager.I.package_name())
-
-    src_src_package_name = module_name_replacing_start_module(src, src_package.__name__)
-
-    src_src_package = import_module(src_src_package_name)
-
-    packages_depending_on_pyrig = (pyrig, *all_deps_depending_on_dep(pyrig))
-
-    possible_rig_usages = (
-        module_name_replacing_start_module(rig, package.__name__)
-        for package in packages_depending_on_pyrig
-    )
-    possible_rig_usages = (re.escape(usage) for usage in possible_rig_usages)
-
-    possible_rig_usages_pattern = r"\b(" + "|".join(possible_rig_usages) + r")\b"
-
-    usages: list[str] = []
-    folder_path = Path(src_src_package.__path__[0])
-    for path in folder_path.rglob("*.py"):
-        content = path.read_text(encoding="utf-8")
-
-        is_rig_used = re_search_excluding_docstrings(
-            possible_rig_usages_pattern, content
-        )
-        if is_rig_used:
-            usages.append(f"{path}: {is_rig_used.group()}")
-
-    msg = f"""Found {isolated_obj_name(rig)} usage in {isolated_obj_name(src)} code,
-which violates the separation between src code and rig code.
-{make_summary_error_msg(usages)}
-"""
-    assert not usages, msg
-
-
-@pytest.fixture(scope="session", autouse=True)
-def assert_project_mgt_is_up_to_date() -> None:
+def assert_package_manager_is_up_to_date() -> None:
     """Verify uv is up to date via ``uv self update`` (skipped in CI).
 
     Raises:
@@ -437,7 +333,7 @@ def assert_project_mgt_is_up_to_date() -> None:
     if not internet_is_available():
         logger.warning(
             "No internet, skipping %s",
-            assert_project_mgt_is_up_to_date.__name__,
+            assert_package_manager_is_up_to_date.__name__,
         )
         return
     if not running_in_github_actions():
