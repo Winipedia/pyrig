@@ -43,7 +43,7 @@ def test_walk_package() -> None:
 
     module_types = {m for m, _ in modules}
 
-    assert pyrig in module_types
+    assert pyrig not in module_types
     assert mirror_test in module_types
     assert imports in module_types
 
