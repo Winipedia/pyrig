@@ -285,14 +285,16 @@ However, it failed with the following error:
 
         # run walk_package with src and import all modules to catch dev dep imports
         src_package_name = PackageManager.I.package_name()
+        exclude_rig_pattern = rf"^{src_package_name}\.rig"
         script_args = (
             "python",
             "-c",
             "; ".join(
                 (
                     "from pyrig.src.modules.imports import walk_package",
-                    f"from {src_package_name} import src",
-                    "packages=tuple(walk_package(src))",
+                    f"import {src_package_name}",
+                    f"exclude_rig_pattern = r'{exclude_rig_pattern}'",
+                    f"packages = tuple(walk_package({src_package_name}, exclude=(exclude_rig_pattern,)))",  # noqa: E501
                     # add a print statement to see the output
                     "print('Success')",
                 )

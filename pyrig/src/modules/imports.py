@@ -14,8 +14,9 @@ Key functions:
 import importlib.machinery
 import importlib.util
 import pkgutil
+import re
 import sys
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
@@ -88,6 +89,7 @@ def import_package_with_dir_fallback(path: Path) -> ModuleType:
 
 def walk_package(
     package: ModuleType,
+    exclude: Iterable[str] = (),
 ) -> Generator[tuple[ModuleType, bool], None, None]:
     """Recursively walk and import all modules in a package hierarchy.
 
@@ -106,12 +108,15 @@ def walk_package(
 
     Args:
         package: Root package module to start traversal from.
+        exclude: Optional iterable of regex patterns to exclude from results.
+        Patterns are matched against fully qualified module names
+        (e.g., "pyrig.rig.configs.base").
 
     Yields:
         Tuples of (package, modules) where modules is the list of direct
         module children (not subpackages) in that package.
     """
-    for module, is_package in iter_modules(package):
+    for module, is_package in iter_modules(package, exclude=exclude):
         if is_package:
             yield module, True
             yield from walk_package(module)
@@ -121,6 +126,7 @@ def walk_package(
 
 def iter_modules(
     package: ModuleType,
+    exclude: Iterable[str] = (),
 ) -> Generator[tuple[ModuleType, bool], None, None]:
     """Extract and import all direct subpackages and modules from a package.
 
@@ -139,6 +145,9 @@ def iter_modules(
     Args:
         package: Package module to extract children from. Must have a
             ``__path__`` attribute (i.e., must be a package, not a module).
+        exclude: Optional iterable of regex patterns to exclude from results.
+        Patterns are matched against fully qualified module names
+        (e.g., "pyrig.rig.configs.base").
 
     Returns:
         A tuple of ``(subpackages, modules)`` where:
@@ -148,5 +157,7 @@ def iter_modules(
     for _finder, name, is_package in pkgutil.iter_modules(
         package.__path__, prefix=package.__name__ + "."
     ):
+        if any(re.search(pattern, name) for pattern in exclude):
+            continue
         mod = import_module(name)
         yield mod, is_package
