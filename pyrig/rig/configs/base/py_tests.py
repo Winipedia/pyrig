@@ -20,23 +20,19 @@ Example:
 
 from pathlib import Path
 
-from pyrig.rig.configs.base.python import PythonConfigFile
+from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
 from pyrig.rig.tools.project_tester import ProjectTester
 
 
-class PythonTestsConfigFile(PythonConfigFile):
+class PythonTestsConfigFile(PythonPackageConfigFile):
     """Base class for Python test (.py) files.
 
-    Extends `PythonConfigFile` with parent path automatically set to `tests/`.
-    Inherits `"py"` extension from `PythonConfigFile`.
+    Extends `PythonPackageConfigFile` with parent path automatically set to `tests/`.
+    Inherits `"py"` extension from `PythonPackageConfigFile`.
 
     Subclasses must implement:
         - `lines`: Required test code as list of lines
         - `filename`: Test file name (e.g., "test_myclass")
-
-    See Also:
-        pyrig.rig.configs.base.python.PythonConfigFile: Parent class
-        pyrig.rig.tests.mirror_test.MirrorTestConfigFile: Test naming conventions
     """
 
     def parent_path(self) -> Path:
