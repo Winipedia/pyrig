@@ -82,7 +82,7 @@ class TestPyrigger:
         res = Pyrigger.I.running_pre_commit_hooks()
         assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
-    def test_init_project(self, tmp_path: Path) -> None:  # noqa: PLR0915
+    def test_init_project(self, tmp_path: Path) -> None:
         """Test function."""
         # on Actions windows-latest temp path is on another drive so add path fails
         # so we use a tmp dir in the current dir
@@ -168,14 +168,11 @@ class TestPyrigger:
             assert expected in stdout.lower(), (
                 f"Expected {expected} in stdout, got {stdout}"
             )
-            #  assert running the version command works
+
+            # assert calling version works
             args = PackageManager.I.run_args(project_name, version.__name__)
             res = args.run(env=clean_env)
-            assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
-
-            # asert calling version works
-            args = PackageManager.I.run_args(project_name, "version")
-            res = args.run(env=clean_env)
+            assert res.returncode == 0
             stdout = res.stdout
             expected = f"{project_name} version 0.1.0"
             assert expected in stdout, f"Expected {expected} in stdout, got {stdout}"
