@@ -1,7 +1,7 @@
 """module."""
 
 from pyrig.rig.configs.base.python import PythonConfigFile
-from pyrig.rig.configs.python.main import MainConfigFile
+from pyrig.rig.configs.testing.zero_test import ZeroTestConfigFile
 
 
 class TestPythonConfigFile:
@@ -10,8 +10,6 @@ class TestPythonConfigFile:
     def test_extension(self) -> None:
         """Test method."""
         expected = "py"
-        assert issubclass(MainConfigFile, PythonConfigFile), (
-            "MainConfigFile should inherit from PythonConfigFile"
-        )
-        actual = MainConfigFile().extension()
+        assert issubclass(ZeroTestConfigFile, PythonConfigFile)
+        actual = ZeroTestConfigFile().extension()
         assert actual == expected, f"Expected {expected}, got {actual}"

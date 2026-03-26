@@ -38,7 +38,7 @@ Example:
 import os
 import platform
 from abc import abstractmethod
-from collections.abc import Generator, Iterable
+from collections.abc import Generator
 from pathlib import Path
 from types import ModuleType
 
@@ -49,8 +49,8 @@ from PyInstaller.utils.hooks import collect_data_files
 import pyrig
 from pyrig import resources
 from pyrig.rig.builders.base.base import BuilderConfigFile
-from pyrig.src.iterate import combine_generators
 from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
+from pyrig.src.modules.path import ModulePath
 
 
 class PyInstallerBuilder(BuilderConfigFile):
@@ -99,26 +99,42 @@ class PyInstallerBuilder(BuilderConfigFile):
         run(options)
 
     @abstractmethod
-    def additional_resource_packages(self) -> Iterable[ModuleType]:
-        """Return packages containing additional resources to bundle.
+    def entry_point_module(self) -> ModuleType:
+        """Return the module containing the application's entry point.
 
-        Subclasses must implement this method to specify resource packages beyond
-        the automatically discovered ones. All files in the specified packages will
-        be included in the executable and accessible at runtime.
-
-        Returns:
-            Iterable of module objects representing resource packages.
+        This module should contain run the code and start the application when executed.
+        PyInstaller will use this as the main script.
 
         Example:
-            Subclass implementation:
+            If your main application code is in `myapp/main.py`, this should return
+            the `myapp.main` module.
 
+            Inside the main module, you should have a `main()` function
+            that serves as the entry point:
+                # myapp/main.py
+                def main():
+                    print("Hello, World!")
 
-                def additional_resource_packages(self) -> tuple[ModuleType, ...]:
-                    from pyrig import resources
-                    return (resources,)
+                if __name__ == "__main__":
+                    main()
+
+        Returns:
+            Module object representing the entry point module.
         """
 
-    def default_resource_packages(self) -> Generator[ModuleType, None, None]:
+    def entry_point_path(self) -> Path:
+        """Return the absolute path to the entry point script.
+
+        Converts the module returned by `entry_point_module()` to a file path that
+        PyInstaller can use as the main script.
+
+        Returns:
+            Absolute path to the entry point script (e.g., `myapp/main.py`).
+        """
+        module = self.entry_point_module()
+        return ModulePath.module_type_to_file_path(module)
+
+    def resource_packages(self) -> Generator[ModuleType, None, None]:
         """Get resource packages from all pyrig-dependent packages.
 
         Automatically discovers all `resources` modules from packages that depend
@@ -131,20 +147,6 @@ class PyInstallerBuilder(BuilderConfigFile):
         """
         return discover_equivalent_modules_across_dependents(resources, pyrig)
 
-    def all_resource_packages(self) -> Generator[ModuleType, None, None]:
-        """Get all resource packages to bundle in the executable.
-
-        Combines auto-discovered resource packages with additional packages
-        specified by the subclass.
-
-        Returns:
-            Generator of all resource packages to bundle.
-        """
-        return combine_generators(
-            self.default_resource_packages(),
-            self.additional_resource_packages(),
-        )
-
     def add_datas(self) -> list[tuple[str, str]]:
         """Build the --add-data arguments for PyInstaller.
 
@@ -156,8 +158,7 @@ class PyInstallerBuilder(BuilderConfigFile):
             --add-data argument.
         """
         add_datas: list[tuple[str, str]] = []
-        resources_packages = self.all_resource_packages()
-        for package in resources_packages:
+        for package in self.resource_packages():
             package_datas = collect_data_files(package.__name__, include_py_files=True)
             add_datas.extend(package_datas)
         return add_datas
@@ -177,7 +178,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         temp_dir = temp_artifacts_dir.parent
 
         return (
-            str(self.main_path()),
+            str(self.entry_point_path()),
             "--name",
             self.app_name(),
             "--clean",

@@ -222,13 +222,6 @@ class TestBuilderConfigFile:
         root_path = my_test_builder_config_file().root_path()
         assert root_path == Path.cwd()
 
-    def test_main_path(
-        self, my_test_builder_config_file: type[BuilderConfigFile]
-    ) -> None:
-        """Test method."""
-        main_path = my_test_builder_config_file().main_path()
-        assert main_path == Path.cwd() / "pyrig" / "main.py"
-
     def test_resources_path(
         self, my_test_builder_config_file: type[BuilderConfigFile]
     ) -> None:
@@ -242,13 +235,6 @@ class TestBuilderConfigFile:
         """Test method."""
         src_package_path = my_test_builder_config_file().src_package_path()
         assert src_package_path == Path.cwd() / "pyrig"
-
-    def test_main_path_relative_to_src_package(
-        self, my_test_builder_config_file: type[BuilderConfigFile]
-    ) -> None:
-        """Test method."""
-        main_path = my_test_builder_config_file().main_path_relative_to_src_package()
-        assert main_path == Path("main.py")
 
     def test_resources_path_relative_to_src_package(
         self, my_test_builder_config_file: type[BuilderConfigFile]
