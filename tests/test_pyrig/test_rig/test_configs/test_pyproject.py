@@ -8,10 +8,10 @@ import pytest
 from packaging.version import Version
 from pytest_mock import MockFixture
 
+from pyrig.rig.configs.base.base import Priority
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
 )
-from pyrig.rig.configs.python.configs_init import ConfigsInitConfigFile
 
 
 @pytest.fixture
@@ -33,7 +33,7 @@ class TestPyprojectConfigFile:
 
     def test_priority(self) -> None:
         """Test method."""
-        assert PyprojectConfigFile.I.priority() > ConfigsInitConfigFile.I.priority()
+        assert PyprojectConfigFile.I.priority() > Priority.LOW
 
     def test_detect_project_license(self) -> None:
         """Test method."""
