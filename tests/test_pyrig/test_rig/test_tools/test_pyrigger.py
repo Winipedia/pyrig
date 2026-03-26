@@ -10,7 +10,7 @@ import tomlkit
 from pytest_mock import MockFixture
 
 import pyrig
-from pyrig.main import main
+from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools import pyrigger
@@ -168,8 +168,8 @@ class TestPyrigger:
             assert expected in stdout.lower(), (
                 f"Expected {expected} in stdout, got {stdout}"
             )
-            #  assert running the main command works
-            args = PackageManager.I.run_args(project_name, main.__name__)
+            #  assert running the version command works
+            args = PackageManager.I.run_args(project_name, version.__name__)
             res = args.run(env=clean_env)
             assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
 
