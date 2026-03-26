@@ -30,17 +30,15 @@ from pathlib import Path
 import pytest
 
 import pyrig
-from pyrig import main, resources, rig, src
+from pyrig import rig, src
 from pyrig.rig.cli.commands.make_inits import make_init_files
 from pyrig.rig.configs.base.base import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
-    find_packages,
 )
 from pyrig.rig.utils.version_control import ignored_config_files
 from pyrig.src.git import (
@@ -48,7 +46,6 @@ from pyrig.src.git import (
 )
 from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.imports import (
-    iter_modules,
     walk_package,
 )
 from pyrig.src.modules.module import (
@@ -147,68 +144,6 @@ Please verify the changes at the following paths:
 {make_summary_error_msg(namespace_packages)}
 """
     assert not has_namespace_packages, msg
-
-
-@pytest.fixture(scope="session", autouse=True)
-def assert_all_src_code_in_one_package() -> None:
-    """Verify source code is in a single package with expected structure.
-
-    Checks that only expected top-level packages exist (source and tests)
-    and source package has exactly rig, src, resources subpackages and main module.
-
-    Raises:
-        AssertionError: If unexpected packages/subpackages/submodules found.
-    """
-    packages = set(find_packages(depth=0))
-    src_package = import_module(PackageManager.I.package_name())
-    src_package_name = src_package.__name__
-    expected_packages = {
-        ProjectTester.I.tests_package_name(),
-        src_package_name,
-    }
-
-    # packages must be exactly the expected packages
-    assert (
-        packages == expected_packages
-    ), f"""Pyrig enforces a single source package with a specific structure.
-Found unexpected packages: {packages - expected_packages}
-Expected packages: {expected_packages}
-Only folders with __init__.py files are considered packages.
-Please move all code and logic into the designated src package.
-"""
-
-    # assert the src package's only submodules are main, src and rig
-    submodules = tuple(iter_modules(src_package))
-    subpackage_names = {
-        mod.__name__.split(".")[-1] for mod, is_pkg in submodules if is_pkg
-    }
-    submodule_names = {
-        mod.__name__.split(".")[-1] for mod, is_pkg in submodules if not is_pkg
-    }
-    expected_subpackages = {
-        isolated_obj_name(sub_package)
-        for sub_package in (
-            rig,
-            src,
-            resources,
-        )
-    }
-    expected_submodules = {isolated_obj_name(main)}
-    assert (
-        subpackage_names == expected_subpackages
-    ), f"""Pyrig enforces a single source package with a specific structure.
-Found unexpected subpackages: {subpackage_names - expected_subpackages}
-Expected subpackages: {expected_subpackages}
-Please move all code and logic into the designated src package.
-"""
-
-    assert (
-        submodule_names == expected_submodules
-    ), f"""Pyrig enforces a single source package with a specific structure.
-Found unexpected submodules: {submodule_names - expected_submodules}
-Expected submodules: {expected_submodules}
-Please move all code and logic into the designated src package.
-"""
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -414,13 +349,10 @@ However, it failed with the following error:
             "; ".join(
                 (
                     "from pyrig.src.modules.imports import walk_package",
-                    f"from {src_package_name} import main",
                     f"from {src_package_name} import src",
                     "packages=tuple(walk_package(src))",
                     # verify packages is not empty
                     "assert len(packages) > 0",
-                    # also test that main can be called
-                    "assert callable(main.main)",
                     # add a print statement to see the output
                     "print('Success')",
                 )

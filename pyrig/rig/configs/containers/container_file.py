@@ -11,7 +11,6 @@ See Also:
 import json
 from pathlib import Path
 
-from pyrig.main import main
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
@@ -71,7 +70,6 @@ class ContainerfileConfigFile(StringConfigFile):
         package_name = PackageManager.I.package_name()
         app_user_name = "appuser"
         entrypoint_args = list(PackageManager.I.run_args(project_name))
-        default_cmd_args = [main.__name__]
         return [
             f"FROM python:{latest_python_version}-slim",
             f"WORKDIR /{project_name}",
@@ -84,7 +82,4 @@ class ContainerfileConfigFile(StringConfigFile):
             "RUN uv sync --no-group dev",
             "RUN rm README.md LICENSE pyproject.toml uv.lock",
             f"ENTRYPOINT {json.dumps(entrypoint_args)}",
-            # if the image is provided a different command, it will run that instead
-            # so adding a default is convenient without restricting usage
-            f"CMD {json.dumps(default_cmd_args)}",
         ]

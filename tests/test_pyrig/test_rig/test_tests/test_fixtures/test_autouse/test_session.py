@@ -13,10 +13,6 @@ def test_assert_no_namespace_packages() -> None:
     """Test function."""
 
 
-def test_assert_all_src_code_in_one_package() -> None:
-    """Test function."""
-
-
 def test_assert_src_package_correctly_named() -> None:
     """Test function."""
 

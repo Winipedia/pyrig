@@ -1,7 +1,8 @@
 """Test module."""
 
 import random
-from collections.abc import Callable, Generator
+from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
@@ -11,7 +12,7 @@ from pytest_mock import MockFixture
 
 from pyrig.rig.builders import pyinstaller
 from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
-from pyrig.src.modules.module import make_obj_importpath
+from pyrig.src.modules.module import create_module, make_obj_importpath
 
 
 @pytest.fixture
@@ -20,13 +21,25 @@ def my_test_pyinstaller_builder(
     tmp_path: Path,
 ) -> type[PyInstallerBuilder]:
     """Create a test PyInstaller builder class."""
+    with chdir(tmp_path):
+        path = tmp_path / "entry_point.py"
+        module = create_module(path)
+        path.write_text(
+            """
+def main():
+    print("Hello, PyInstaller!")
+
+
+if __name__ == "__main__":
+    main()
+"""
+        )
 
     class MyTestPyInstallerBuilder(config_file_factory(PyInstallerBuilder)):  # ty: ignore[unsupported-base]
         """Test PyInstaller builder class."""
 
-        def additional_resource_packages(self) -> list[ModuleType]:
-            """Get the resource packages."""
-            return []
+        def entry_point_module(self) -> ModuleType:
+            return module
 
         def app_icon_png_path(self) -> Path:
             """Get the app icon path."""
@@ -46,38 +59,30 @@ def my_test_pyinstaller_builder(
 class TestPyInstallerBuilder:
     """Test class."""
 
-    def test_default_resource_packages(
+    def test_entry_point_module(
+        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
+        """Test method."""
+        module = my_test_pyinstaller_builder().entry_point_module()
+        assert isinstance(module, ModuleType), f"Expected module, got {type(module)}"
+
+    def test_entry_point_path(
+        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
+        """Test method."""
+        path = my_test_pyinstaller_builder().entry_point_path()
+        assert path.exists(), f"Expected path to exist, got {path}"
+        assert "def main():" in path.read_text()
+
+    def test_resource_packages(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
         # Test that default additional resource packages are discovered
-        result = my_test_pyinstaller_builder().default_resource_packages()
+        result = my_test_pyinstaller_builder().resource_packages()
         # All items should be modules
         for package in result:
             assert hasattr(package, "__name__"), f"Expected module, got {package}"
-
-    def test_all_resource_packages(
-        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
-    ) -> None:
-        """Test method."""
-        # Test that all resource packages includes both default and resources
-        result = my_test_pyinstaller_builder().all_resource_packages()
-        # Should return a list of modules
-        assert isinstance(result, Generator), f"Expected Generator, got {type(result)}"
-        # Should include at least the resources package
-        result_list = list(result)
-        assert len(result_list) > 0, (
-            f"Expected at least one resource package, got {result_list}"
-        )
-
-    def test_additional_resource_packages(
-        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
-    ) -> None:
-        """Test method."""
-        additional_packages = tuple(
-            my_test_pyinstaller_builder().additional_resource_packages()
-        )
-        assert len(additional_packages) == 0, "Expected no additional packages"
 
     def test_temp_distpath(
         self, tmp_path: Path, my_test_pyinstaller_builder: type[PyInstallerBuilder]

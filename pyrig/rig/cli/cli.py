@@ -35,7 +35,6 @@ from importlib import import_module
 import typer
 
 import pyrig
-from pyrig import main as pyrig_main
 from pyrig.rig.cli import shared_subcommands, subcommands
 from pyrig.src.cli import package_name_from_argv
 from pyrig.src.modules.function import all_functions_from_module
@@ -145,16 +144,10 @@ def add_subcommands() -> None:
     """
     # extract project name from sys.argv[0]
     package_name = package_name_from_argv()
-
-    main_module_name = module_name_replacing_start_module(pyrig_main, package_name)
-    main_module = import_module(main_module_name)
-    app.command()(main_module.main)
-
     # replace the first parent with package_name
     subcommands_module_name = module_name_replacing_start_module(
         subcommands, package_name
     )
-
     subcommands_module = import_module_with_default(subcommands_module_name)
 
     if subcommands_module is None:
