@@ -182,12 +182,15 @@ class TestPyrigger:
             keywords = pyproject_toml.get("project", {}).get("keywords")
             assert keywords == []
 
-        package_dir = src_project_dir / "src_project"
-        assert package_dir.exists(), f"Expected {package_dir} to be created"
+            package_dir = src_project_dir / "src_project"
+            assert package_dir.exists(), f"Expected {package_dir} to be created"
 
-        # assert package dir is empty except for __init__.py
-        package_files = set(package_dir.glob("*"))
-        assert package_files == {package_dir / "__init__.py", package_dir / "py.typed"}
+            # assert package dir is empty except for __init__.py
+            package_files = set(package_dir.glob("*"))
+            assert package_files == {
+                package_dir / "__init__.py",
+                package_dir / "py.typed",
+            }
 
     def test_group(self) -> None:
         """Test method."""
