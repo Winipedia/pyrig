@@ -39,7 +39,7 @@ import typer
 from requests import RequestException
 from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
-from pyrig import resources
+from pyrig.rig import resources
 from pyrig.rig.utils.packages import src_package_is_pyrig
 from pyrig.src.resource import resource_path
 

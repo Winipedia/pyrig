@@ -47,7 +47,7 @@ from PyInstaller.__main__ import run
 from PyInstaller.utils.hooks import collect_data_files
 
 import pyrig
-from pyrig import resources
+from pyrig.rig import resources
 from pyrig.rig.builders.base.base import BuilderConfigFile
 from pyrig.src.modules.package import discover_equivalent_modules_across_dependents
 from pyrig.src.modules.path import ModulePath
