@@ -1,1 +1,1 @@
-"""root package for the project."""
+"""The top-level package for the project."""
