@@ -40,8 +40,7 @@ from types import ModuleType
 import typer
 
 import pyrig
-from pyrig import resources
-from pyrig.rig import builders
+from pyrig.rig import builders, resources
 from pyrig.rig.configs.base.list_cf import ListConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.src.modules.path import ModulePath

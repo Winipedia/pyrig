@@ -227,7 +227,7 @@ class TestBuilderConfigFile:
     ) -> None:
         """Test method."""
         resources_path = my_test_builder_config_file().resources_path()
-        assert resources_path == Path.cwd() / "pyrig" / "resources"
+        assert resources_path == Path.cwd() / "pyrig" / "rig" / "resources"
 
     def test_src_package_path(
         self, my_test_builder_config_file: type[BuilderConfigFile]
@@ -243,4 +243,4 @@ class TestBuilderConfigFile:
         resources_path = (
             my_test_builder_config_file().resources_path_relative_to_src_package()
         )
-        assert resources_path == Path("resources")
+        assert resources_path == Path("rig/resources")
