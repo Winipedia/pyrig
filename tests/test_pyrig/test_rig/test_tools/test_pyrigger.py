@@ -184,13 +184,10 @@ class TestPyrigger:
 
         package_dir = src_project_dir / "src_project"
         assert package_dir.exists(), f"Expected {package_dir} to be created"
-        assert (package_dir / "__init__.py").exists(), (
-            f"Expected {package_dir / '__init__.py'} to be created"
-        )
 
-        # make sure rig folder does not exist
-        rig_dir = package_dir / "rig"
-        assert not rig_dir.exists(), f"Expected {rig_dir} to not exist"
+        # assert package dir is empty except for __init__.py
+        package_files = set(package_dir.glob("*"))
+        assert package_files == {package_dir / "__init__.py", package_dir / "py.typed"}
 
     def test_group(self) -> None:
         """Test method."""
