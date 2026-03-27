@@ -36,6 +36,11 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     Copy source module content to target location, transforming import paths
     (e.g. `pyrig.src.X` -> `<project>.src.X`).
 
+    It can be important to keep content generic so that copying is not
+    affected by project specific details.
+    For example, copying a docstring with pyrig specific info into
+    another project would be undesirable
+
     Subclasses must implement:
         - `src_module`: Return the source module to copy
 
