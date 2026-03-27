@@ -1,41 +1,43 @@
-"""Configuration for {package_name}/src/__init__.py.
+"""Configuration for {package_name}/__init__.py.
 
-Generates {package_name}/src/__init__.py with pyrig.src docstring for project
+Generates {package_name}/__init__.py with pyrig.src docstring for project
 source code utilities.
-
-See Also:
-    pyrig.src
-    pyrig.rig.configs.base.init.InitConfigFile
 """
 
 from pathlib import Path
 from types import ModuleType
 
-from pyrig import src
+import pyrig
 from pyrig.rig.configs.base.init import InitConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 
 
-class SrcInitConfigFile(InitConfigFile):
-    """Manages {package_name}/src/__init__.py.
+class PackageInitConfigFile(InitConfigFile):
+    '''Manages {package_name}/__init__.py.
 
-    Generates __init__.py with pyrig.src docstring for project source code utilities.
+    Generates __init__.py with pyrig docstring for project source code utilities.
 
     Examples:
-        Generate {package_name}/src/__init__.py::
+        Generate {package_name}/__init__.py::
 
-            SrcInitConfigFile.I.validate()
+            PackageInitConfigFile.I.validate()
 
         Add utilities::
 
-            # In {package_name}/src/utils.py
+            # In {package_name}/utils.py
             def my_utility_function():
-                \"\"\"Utility function.\"\"\"
+                """Utility function."""
                 return "utility"
 
-    See Also:
-        pyrig.src
-        pyrig.rig.configs.base.init.InitConfigFile
-    """
+    '''
+
+    def parent_path(self) -> Path:
+        """Special case to because the parent is the cwd, not a subdir.
+
+        So normal parent path logic would return pyrig anyway instead of
+        the actual current projects package name.
+        """
+        return Path(PackageManager.I.package_name())
 
     def create_file(self) -> None:
         """Create main.py by copying the `pyrig.main` module.
@@ -47,8 +49,8 @@ class SrcInitConfigFile(InitConfigFile):
         self.delete_root_main()
 
     def src_module(self) -> ModuleType:
-        """Return the `pyrig.src` module."""
-        return src
+        """Return the `pyrig` module."""
+        return pyrig
 
     def delete_root_main(self) -> None:
         """Delete root-level main.py if it exists.
