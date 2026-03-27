@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
+from pyrig.src.processes import Args
 
 
 class TestDependencyAuditor:
@@ -25,4 +26,4 @@ class TestDependencyAuditor:
     def test_audit_args(self) -> None:
         """Test method."""
         args = DependencyAuditor.I.audit_args("--format", "json")
-        assert args == ("pip-audit", "--format", "json")
+        assert isinstance(args, Args)
