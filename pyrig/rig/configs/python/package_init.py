@@ -17,6 +17,10 @@ class PackageInitConfigFile(InitConfigFile):
 
     Generates __init__.py with pyrig docstring for project source code utilities.
 
+    We need to make sure the docstring is generic and not pyrig specific
+    since it will be copied into the user's project.
+    The docstring should be minimal and work for any project.
+
     Examples:
         Generate {package_name}/__init__.py::
 
