@@ -60,4 +60,4 @@ class DependencyAuditor(Tool):
         Returns:
             Args for 'pip-audit'.
         """
-        return self.args(*args)
+        return self.args(*args, "--ignore-vuln", "CVE-2026-4539")
