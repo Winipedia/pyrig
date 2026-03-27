@@ -1,6 +1,6 @@
 # src/\_\_init\_\_.py Configuration
 
-The `SrcInitConfigFile` manages the `{package_name}/src/__init__.py` file.
+The `PackageInitConfigFile` manages the `{package_name}/src/__init__.py` file.
 
 ## Overview
 
@@ -21,7 +21,7 @@ graph TD
     E --> F[CopyModuleConfigFile]
     F --> G[CopyModuleOnlyDocstringConfigFile]
     G --> H[InitConfigFile]
-    H --> I[SrcInitConfigFile]
+    H --> I[PackageInitConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
