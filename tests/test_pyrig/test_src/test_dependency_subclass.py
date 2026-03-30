@@ -7,7 +7,7 @@ from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.src.subclass import DependencySubclass
+from pyrig.src.dependency_subclass import DependencySubclass
 
 
 class TestDependencySubclass:

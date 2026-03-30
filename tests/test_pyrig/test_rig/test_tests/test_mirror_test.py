@@ -268,7 +268,7 @@ class TestMirrorTestConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        subclass = MirrorTestConfigFile.I.make_subclass_for_module(mirror_test)
+        subclass = MirrorTestConfigFile.I.generate_subclass(mirror_test)
         assert subclass().is_correct()
 
     def test_test_path(
@@ -411,16 +411,14 @@ class TestMirrorTestConfigFile:
         assert "def test_method" in skeleton
         assert "NotImplementedError" in skeleton
 
-    def test_make_subclasses_for_modules(self) -> None:
+    def test_generate_subclasses(self) -> None:
         """Test method."""
-        subclasses = tuple(
-            MirrorTestConfigFile.I.make_subclasses_for_modules([mirror_test])
-        )
+        subclasses = tuple(MirrorTestConfigFile.I.generate_subclasses([mirror_test]))
         assert len(subclasses) > 0
 
-    def test_make_subclass_for_module(self) -> None:
+    def test_generate_subclass(self) -> None:
         """Test method."""
-        subclass = MirrorTestConfigFile.I.make_subclass_for_module(mirror_test)
+        subclass = MirrorTestConfigFile.I.generate_subclass(mirror_test)
         assert subclass().src_module() == mirror_test
 
     def test_create_test_modules(self) -> None:

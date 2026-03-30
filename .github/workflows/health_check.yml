@@ -49,7 +49,7 @@ jobs:
       run: uv run prek run --all-files
     - name: Run Dependency Audit
       id: run_dependency_audit
-      run: uv run pip-audit --ignore-vuln CVE-2026-4539
+      run: uv run pip-audit
     - name: Protect Repository
       id: protect_repository
       run: uv run pyrig protect-repo

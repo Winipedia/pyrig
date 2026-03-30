@@ -137,7 +137,7 @@ def assert_all_modules_tested() -> None:
     # that there is a corresponding test module
     all_modules = (m for m, is_pkg in walk_package(src_package) if not is_pkg)
 
-    subclasses = MirrorTestConfigFile.I.make_subclasses_for_modules(all_modules)
+    subclasses = MirrorTestConfigFile.I.generate_subclasses(all_modules)
     incorrect_subclasses = tuple(sc for sc in subclasses if not sc().is_correct())
 
     if incorrect_subclasses:

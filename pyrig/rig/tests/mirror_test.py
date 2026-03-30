@@ -101,8 +101,8 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         - `src_module`: Return the source module to mirror
 
     Methods for Batch Processing:
-        - `make_subclasses_for_modules`: Create config subclasses for multiple modules
-        - `make_subclass_for_module`: Create a config subclass for a single module
+        - `generate_subclasses`: Create config subclasses for multiple modules
+        - `generate_subclass`: Create a config subclass for a single module
         - `create_test_modules`: Generate test files for multiple modules at once
 
     Examples:
@@ -115,7 +115,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
         Dynamic subclass creation::
 
-            subclass = MirrorTestConfigFile.I.make_subclass_for_module(my_module)
+            subclass = MirrorTestConfigFile.I.generate_subclass(my_module)
             subclass()  # Triggers test file creation
 
     See Also:
@@ -553,7 +553,7 @@ class {test_class_name}:
         raise {NotImplementedError.__name__}
 '''
 
-    def make_subclasses_for_modules(
+    def generate_subclasses(
         self, modules: Iterable[ModuleType]
     ) -> Generator[type[Self], None, None]:
         """Create config subclasses for multiple modules.
@@ -569,12 +569,12 @@ class {test_class_name}:
             Generator yielding dynamically created subclasses, in input order.
 
         See Also:
-            make_subclass_for_module: Creates individual subclasses
+            generate_subclass: Creates individual subclasses
             validate_subclasses: Orders by priority and validates
         """
-        return (self.make_subclass_for_module(m) for m in modules)
+        return (self.generate_subclass(m) for m in modules)
 
-    def make_subclass_for_module(self, module: ModuleType) -> type[Self]:
+    def generate_subclass(self, module: ModuleType) -> type[Self]:
         """Dynamically create a config subclass for a specific source module.
 
         Creates a new class at runtime that:
@@ -595,7 +595,7 @@ class {test_class_name}:
             Dynamic subclass creation::
 
                 import myproject.utils
-                subclass = MirrorTestConfigFile.I.make_subclass_for_module(
+                subclass = MirrorTestConfigFile.I.generate_subclass(
                     myproject.utils
                 )
                 # subclass.__name__ == "TestUtilsMirrorTestConfigFile"
@@ -639,10 +639,10 @@ class {test_class_name}:
                 MirrorTestConfigFile.I.create_test_modules([core, utils, api])
 
         See Also:
-            make_subclasses_for_modules: Creates and orders subclasses
+            generate_subclasses: Creates and orders subclasses
             validate_subclasses: Inherited method that instantiates config subclasses
         """
-        subclasses = self.make_subclasses_for_modules(modules)
+        subclasses = self.generate_subclasses(modules)
         self.validate_subclasses(subclasses)
 
     def create_all_test_modules(self) -> None:

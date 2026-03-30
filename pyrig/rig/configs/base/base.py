@@ -78,9 +78,9 @@ from typing import Any, Self, TypeVar
 import typer
 
 from pyrig.rig import configs
+from pyrig.src.dependency_subclass import DependencySubclass
 from pyrig.src.iterate import nested_structure_is_subset
 from pyrig.src.string_ import split_on_uppercase
-from pyrig.src.subclass import DependencySubclass
 
 logger = logging.getLogger(__name__)
 
