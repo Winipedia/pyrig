@@ -4,6 +4,8 @@ Add custom CLI commands here as public functions. All public functions are
 automatically discovered and registered as CLI commands.
 """
 
+import typer
+
 
 def mkroot() -> None:
     """Create or update project configuration files and directory structure.
@@ -225,3 +227,43 @@ def rmpyc() -> None:
     from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
 
     remove_pycache()
+
+
+def mkcmd(
+    name: str = typer.Argument(help="Name of the command to create."),
+    *,
+    shared: bool = typer.Option(
+        default=False,
+        help="Whether the command should be shared in subsequent projects.",
+    ),
+) -> None:
+    """Create a new CLI subcommand scaffold.
+
+    This will create the subcommands.py file under the rig package
+    if it doesn't exist yet, and add a new function with the given name
+
+    Args:
+        name: Name of the command to generate.
+        shared: Whether to add the command to the shared subcommands module.
+    """
+    from pyrig.rig.cli.commands.make_subcommand import make_subcommand  # noqa: PLC0415
+
+    make_subcommand(name, shared=shared)
+
+
+def subclass(
+    import_path: str | None = typer.Argument(
+        default=None,
+        help="""The dotted import path to the class to subclass (e.g., 'package.module.ClassName').
+If not given, you can search and choose the class in an interactive session.""",  # noqa: E501
+    ),
+) -> None:
+    """Create a subclass scaffold for a class specified by import path.
+
+    Args:
+        import_path: Optional dotted import path to the class to subclass. If
+            omitted, an interactive selector is used.
+    """
+    from pyrig.rig.cli.commands.make_subclass import make_subclass  # noqa: PLC0415
+
+    make_subclass(import_path)

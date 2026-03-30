@@ -19,6 +19,7 @@ Example:
 from abc import abstractmethod
 from pathlib import Path
 from types import ModuleType
+from typing import Self, cast
 
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
@@ -28,6 +29,7 @@ from pyrig.src.modules.module import (
     module_name_replacing_start_module,
 )
 from pyrig.src.modules.path import ModulePath
+from pyrig.src.string_ import make_name_from_obj
 
 
 class CopyModuleConfigFile(PythonPackageConfigFile):
@@ -66,9 +68,8 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Target directory path for copied module.
         """
-        src_module = self.src_module()
         new_module_name = module_name_replacing_start_module(
-            src_module, PackageManager.I.package_name()
+            self.src_module(), PackageManager.I.package_name()
         )
         new_module_path = ModulePath.module_name_to_relative_file_path(new_module_name)
         return new_module_path.parent
@@ -79,8 +80,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Full source code of the module as list of lines.
         """
-        src_module = self.src_module()
-        return [*module_content(src_module).splitlines()]
+        return [*module_content(self.src_module()).splitlines()]
 
     def filename(self) -> str:
         """Return module's isolated name (last component).
@@ -88,5 +88,34 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Last component of the module's dotted name.
         """
-        src_module = self.src_module()
-        return isolated_obj_name(src_module)
+        return isolated_obj_name(self.src_module())
+
+    @classmethod
+    def generate_subclass(cls, module: ModuleType) -> type[Self]:
+        """Dynamically create a typed subclass bound to a source module.
+
+        The generated subclass implements `src_module` so instances copy content
+        from the provided module without requiring a manually declared class.
+
+        Args:
+            module: Source module to bind as the return value of `src_module`.
+
+        Returns:
+            A subclass of this config class with `src_module` preconfigured.
+        """
+        cls_name = (
+            make_name_from_obj(
+                isolated_obj_name(module), split_on="_", join_on="", capitalize=True
+            )
+            + cls.__name__
+        )
+
+        def src_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
+            return module
+
+        subclass = type(
+            cls_name,
+            (cls,),
+            {cls.src_module.__name__: src_module},
+        )
+        return cast("type[Self]", subclass)

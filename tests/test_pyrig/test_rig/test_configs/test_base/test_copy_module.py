@@ -56,6 +56,20 @@ def my_test_copy_module_config_file(
 class TestCopyModuleConfigFile:
     """Test class."""
 
+    def test_generate_subclass(self) -> None:
+        """Test method."""
+        # Create a mock module to subclass
+        module = ModuleType("test_package.test_subpackage.test_module")
+        module.__file__ = "test_package/test_subpackage/test_module.py"
+
+        # Generate the subclass config file
+        subclass = CopyModuleConfigFile.generate_subclass(module)
+
+        # Verify the generated subclass has the correct src_module method
+        subclass_instance = subclass()
+        assert isinstance(subclass_instance, CopyModuleConfigFile)
+        assert subclass_instance.src_module() == module
+
     def test_src_module(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:

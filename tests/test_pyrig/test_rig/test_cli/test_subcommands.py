@@ -3,6 +3,7 @@
 from pyrig.rig.cli.subcommands import (
     build,
     init,
+    mkcmd,
     mkinits,
     mkroot,
     mktests,
@@ -85,4 +86,21 @@ def test_rmpyc() -> None:
     args = Pyrigger.I.cmd_args("--help", cmd=rmpyc)
     stoud = args.run().stdout
     name = rmpyc.__name__.replace("_", "-")
+    assert name in stoud, f"Expected {name} in stdout, got {stoud}"
+
+
+def test_mkcmd() -> None:
+    """Test function."""
+    # run --help comd to see if its available
+    args = Pyrigger.I.cmd_args("--help", cmd=mkcmd)
+    stoud = args.run().stdout
+    name = mkcmd.__name__.replace("_", "-")
+    assert name in stoud, f"Expected {name} in stdout, got {stoud}"
+
+
+def test_subclass() -> None:
+    """Test function."""
+    args = Pyrigger.I.cmd_args("--help", cmd=mkcmd)
+    stoud = args.run().stdout
+    name = mkcmd.__name__.replace("_", "-")
     assert name in stoud, f"Expected {name} in stdout, got {stoud}"

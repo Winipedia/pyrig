@@ -29,9 +29,9 @@ from types import ModuleType
 from typing import Self
 
 from pyrig.rig import tools
+from pyrig.src.dependency_subclass import DependencySubclass
 from pyrig.src.processes import Args
 from pyrig.src.string_ import make_linked_badge_markdown
-from pyrig.src.subclass import DependencySubclass
 
 
 class ToolGroup:
