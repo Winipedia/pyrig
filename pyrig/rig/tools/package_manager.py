@@ -10,9 +10,16 @@ Example:
     >>> PackageManager.I.add_dependencies_args("requests").run()
 """
 
+from collections.abc import Callable
+from typing import Any
+
 from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.src.processes import Args
-from pyrig.src.string_ import kebab_to_snake_case, project_name_from_cwd
+from pyrig.src.string_ import (
+    kebab_to_snake_case,
+    project_name_from_cwd,
+    snake_to_kebab_case,
+)
 
 
 class PackageManager(Tool):
@@ -63,6 +70,22 @@ class PackageManager(Tool):
     def package_name(self) -> str:
         """Get the main package of the project."""
         return kebab_to_snake_case(self.project_name())
+
+    def project_cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
+        """Construct a project command.
+
+        Uses the project name as the command to run.
+
+
+        Args:
+            *args: Command arguments.
+            cmd: The function of the command
+
+        Returns:
+            project-name cmd-name args...
+        """
+        cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
+        return Args((self.project_name(), cmd_name, *args))
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Get development dependencies for this tool.

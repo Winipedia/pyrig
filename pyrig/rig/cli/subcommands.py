@@ -251,7 +251,7 @@ def mkcmd(
     make_subcommand(name, shared=shared)
 
 
-def subclass(
+def subcls(
     import_path: str | None = typer.Argument(
         default=None,
         help="""The dotted import path to the class to subclass (e.g., 'package.module.ClassName').

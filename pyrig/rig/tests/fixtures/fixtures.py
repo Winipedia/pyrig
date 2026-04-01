@@ -1,21 +1,42 @@
-"""Factory fixtures for creating test-safe ConfigFile instances.
+"""Contains pytest fixtures.
 
-Provides factory fixtures that create dynamic subclasses with file operations
-redirected to pytest's ``tmp_path``, enabling isolated testing without affecting
-real files or build artifacts.
-
-Fixtures:
-    config_file_factory: Creates ConfigFile subclasses with ``path()``
-        redirected to tmp_path. Also works for BuilderConfigFile subclasses.
+Any pytest fixtures defined under the fixtures package in
+any file like this one will be automatically discovered and
+are available in all projects inheriting from this one.
 """
 
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from pyrig.rig.configs.base.base import ConfigData, ConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
+
+
+@pytest.fixture
+def command_works() -> Callable[[Callable[..., Any]], None]:
+    """Fixture to check if a pyrig command is available and works.
+
+    Usage:
+        returns a function that takes a command function (e.g. mkroot) and
+        checks if it can be run with --help without error.
+        This is a basic check to ensure the command is properly registered
+        and can be executed.
+    """
+
+    def check(cmd: Callable[..., Any]) -> None:
+        # run --help comd to see if its available
+        args = PackageManager.I.project_cmd_args("--help", cmd=cmd)
+        completed_process = args.run()
+        assert completed_process.returncode == 0
+        stoud = completed_process.stdout
+        name = cmd.__name__.replace("_", "-")  # ty:ignore[unresolved-attribute]
+        assert name in stoud
+
+    return check
 
 
 @pytest.fixture
