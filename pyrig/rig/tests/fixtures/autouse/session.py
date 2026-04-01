@@ -18,17 +18,18 @@ import pytest
 
 from pyrig.rig.cli.commands.make_inits import make_init_files
 from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.license import LicenseConfigFile
+from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.base import Tool
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
 )
 from pyrig.rig.utils.version_control import ignored_config_files
-from pyrig.src.git import (
-    running_in_github_actions,
-)
 from pyrig.src.iterate import generator_has_items
 from pyrig.src.modules.imports import (
     walk_package,
@@ -52,7 +53,7 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
     Raises:
         AssertionError: If unstaged changes detected in CI.
     """
-    in_github_actions = running_in_github_actions()
+    in_ci = RemoteVersionController.I.running_in_ci()
 
     msg = """Pyrig enforces that no changes are made during tests when running in CI.
 This is to ensure that the tests do not modify any files.
@@ -60,13 +61,13 @@ Found the following unstaged changes:
 {unstaged_changes}
 """
 
-    if in_github_actions:
+    if in_ci:
         unstaged_changes = VersionController.I.has_unstaged_diff()
         assert not unstaged_changes, msg.format(
             unstaged_changes=VersionController.I.diff()
         )
     yield
-    if in_github_actions:
+    if in_ci:
         unstaged_changes = VersionController.I.has_unstaged_diff()
         assert not unstaged_changes, msg.format(
             unstaged_changes=VersionController.I.diff()
@@ -82,7 +83,7 @@ def assert_root_is_correct() -> None:
     """
     # if we are in CI then we must create config files that are gitignored
     # as they are not pushed to the repository
-    running_in_ci = running_in_github_actions()
+    running_in_ci = RemoteVersionController.I.running_in_ci()
     if running_in_ci:
         tuple(cf.validate() for cf in ignored_config_files())
 
@@ -255,9 +256,9 @@ However, it failed with the following error:
 
     # copy pyproject.toml and uv.lock to tmp_path
     configs = (
-        "pyproject.toml",
-        "README.md",
-        "LICENSE",
+        PyprojectConfigFile.I.path().as_posix(),
+        ReadmeConfigFile.I.path().as_posix(),
+        LicenseConfigFile.I.path().as_posix(),
     )
     for config in configs:
         shutil.copy(config, temp_project_path.parent)
@@ -338,7 +339,7 @@ def assert_package_manager_is_up_to_date() -> None:
             assert_package_manager_is_up_to_date.__name__,
         )
         return
-    if not running_in_github_actions():
+    if not RemoteVersionController.I.running_in_ci():
         # update project mgt
         completed_process = PackageManager.I.update_self_args().run(check=False)
         returncode = completed_process.returncode
