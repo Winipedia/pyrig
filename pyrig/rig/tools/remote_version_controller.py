@@ -9,6 +9,8 @@ Example:
     >>> RemoteVersionController.I.repo_url()
 """
 
+import os
+
 from pyrig.rig.tools.base.base import Tool, ToolGroup
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.src.string_ import make_linked_badge_markdown
@@ -136,3 +138,11 @@ class RemoteVersionController(Tool):
             link_url=cicd_url,
             alt_text=label,
         )
+
+    def running_in_ci(self) -> bool:
+        """Detect if code is executing inside a CI environment.
+
+        Returns:
+            True if running in CI, False otherwise.
+        """
+        return os.getenv("GITHUB_ACTIONS", "false") == "true"

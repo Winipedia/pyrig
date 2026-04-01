@@ -6,6 +6,10 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 class TestRemoteVersionController:
     """Test class."""
 
+    def test_running_in_ci(self) -> None:
+        """Test method."""
+        assert isinstance(RemoteVersionController.I.running_in_ci(), bool)
+
     def test_cicd_badge(self) -> None:
         """Test method."""
         result = RemoteVersionController.I.cicd_badge_url("health_check", "CI")
