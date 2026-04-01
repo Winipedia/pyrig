@@ -267,3 +267,12 @@ If not given, you can search and choose the class in an interactive session.""",
     from pyrig.rig.cli.commands.make_subclass import make_subclass  # noqa: PLC0415
 
     make_subclass(import_path)
+
+
+def mkfixture(
+    name: str = typer.Argument(help="Name of the fixture to create."),
+) -> None:
+    """This is a cli subcommand."""
+    from pyrig.rig.cli.commands.make_fixture import make_fixture  # noqa: PLC0415
+
+    make_fixture(name)

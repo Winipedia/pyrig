@@ -7,6 +7,7 @@ from pyrig.rig.cli.subcommands import (
     build,
     init,
     mkcmd,
+    mkfixture,
     mkinits,
     mkroot,
     mktests,
@@ -65,3 +66,8 @@ def test_mkcmd(command_works: Callable[[Callable[..., Any]], None]) -> None:
 def test_subcls(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
     command_works(subcls)
+
+
+def test_mkfixture(command_works: Callable[[Callable[..., Any]], None]) -> None:
+    """Test function."""
+    command_works(mkfixture)
