@@ -272,7 +272,20 @@ If not given, you can search and choose the class in an interactive session.""",
 def mkfixture(
     name: str = typer.Argument(help="Name of the fixture to create."),
 ) -> None:
-    """This is a cli subcommand."""
+    """Create a new pytest fixture scaffold.
+
+    This command creates a new pytest fixture function in the fixtures module.
+
+    Args:
+        name: Name of the fixture to generate.
+    """
     from pyrig.rig.cli.commands.make_fixture import make_fixture  # noqa: PLC0415
 
     make_fixture(name)
+
+
+def resources() -> None:
+    """Scaffolds the resources package for the project."""
+    from pyrig.rig.cli.commands.make_resources import make_resources  # noqa: PLC0415
+
+    make_resources()

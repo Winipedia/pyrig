@@ -12,6 +12,7 @@ from pyrig.rig.cli.subcommands import (
     mkroot,
     mktests,
     protect_repo,
+    resources,
     rmpyc,
     scratch,
     subcls,
@@ -71,3 +72,8 @@ def test_subcls(command_works: Callable[[Callable[..., Any]], None]) -> None:
 def test_mkfixture(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
     command_works(mkfixture)
+
+
+def test_resources(command_works: Callable[[Callable[..., Any]], None]) -> None:
+    """Test function."""
+    command_works(resources)
