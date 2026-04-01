@@ -78,6 +78,7 @@ def test_return_resource_content_on_fetch_error(
     mock.assert_called_once()
 
 
+@skip_if_no_internet
 def test_requests_get_text_cached() -> None:
     """Test function."""
     response_text = requests_get_text_cached("https://httpbin.org/get")

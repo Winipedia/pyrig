@@ -1,5 +1,8 @@
 """module."""
 
+from collections.abc import Callable
+from typing import Any
+
 from pyrig.rig.cli.subcommands import (
     build,
     init,
@@ -10,97 +13,55 @@ from pyrig.rig.cli.subcommands import (
     protect_repo,
     rmpyc,
     scratch,
+    subcls,
 )
-from pyrig.rig.tools.pyrigger import Pyrigger
 
 
-def test_mkroot() -> None:
+def test_mkroot(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=mkroot)
-    stoud = args.run().stdout
-    assert mkroot.__name__ in stoud, (
-        f"Expected {mkroot.__name__} in stdout, got {stoud}"
-    )
+    command_works(mkroot)
 
 
-def test_mktests() -> None:
+def test_mktests(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=mktests)
-    stoud = args.run().stdout
-    assert mktests.__name__ in stoud, (
-        f"Expected {mktests.__name__} in stdout, got {stoud}"
-    )
+    command_works(mktests)
 
 
-def test_mkinits() -> None:
+def test_mkinits(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=mkinits)
-    stoud = args.run().stdout
-
-    assert mkinits.__name__ in stoud, (
-        f"Expected {mkinits.__name__} in stdout, got {stoud}"
-    )
+    command_works(mkinits)
 
 
-def test_init() -> None:
+def test_init(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=init)
-    stoud = args.run().stdout
-    assert init.__name__ in stoud, f"Expected {init.__name__} in stdout, got {stoud}"
+    command_works(init)
 
 
-def test_build() -> None:
+def test_build(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=build)
-    stoud = args.run().stdout
-    assert build.__name__ in stoud, f"Expected {build.__name__} in stdout, got {stoud}"
+    command_works(build)
 
 
-def test_protect_repo() -> None:
+def test_protect_repo(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=protect_repo)
-    stoud = args.run().stdout
-    name = protect_repo.__name__.replace("_", "-")
-    assert name in stoud, f"Expected {name} in stdout, got {stoud}"
+    command_works(protect_repo)
 
 
-def test_scratch() -> None:
+def test_scratch(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=scratch)
-    stoud = args.run().stdout
-    assert scratch.__name__ in stoud, (
-        f"Expected {scratch.__name__} in stdout, got {stoud}"
-    )
+    command_works(scratch)
 
 
-def test_rmpyc() -> None:
+def test_rmpyc(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=rmpyc)
-    stoud = args.run().stdout
-    name = rmpyc.__name__.replace("_", "-")
-    assert name in stoud, f"Expected {name} in stdout, got {stoud}"
+    command_works(rmpyc)
 
 
-def test_mkcmd() -> None:
+def test_mkcmd(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.cmd_args("--help", cmd=mkcmd)
-    stoud = args.run().stdout
-    name = mkcmd.__name__.replace("_", "-")
-    assert name in stoud, f"Expected {name} in stdout, got {stoud}"
+    command_works(mkcmd)
 
 
-def test_subclass() -> None:
+def test_subcls(command_works: Callable[[Callable[..., Any]], None]) -> None:
     """Test function."""
-    args = Pyrigger.I.cmd_args("--help", cmd=mkcmd)
-    stoud = args.run().stdout
-    name = mkcmd.__name__.replace("_", "-")
-    assert name in stoud, f"Expected {name} in stdout, got {stoud}"
+    command_works(subcls)

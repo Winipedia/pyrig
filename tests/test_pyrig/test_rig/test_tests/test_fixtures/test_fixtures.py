@@ -6,6 +6,7 @@ from typing import Any
 
 import pytest
 
+from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.configs.base.base import ConfigFile
 
 
@@ -63,3 +64,8 @@ def test_config_file_factory(
     assert path.name == "sample.test", (
         f"Expected filename 'sample.test', got {path.name}"
     )
+
+
+def test_command_works(command_works: Callable[[Callable[..., Any]], None]) -> None:
+    """Test function."""
+    command_works(version)
