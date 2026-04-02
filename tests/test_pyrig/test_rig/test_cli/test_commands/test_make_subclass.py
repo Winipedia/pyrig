@@ -33,10 +33,9 @@ def test_make_subclass(tmp_path: Path) -> None:
 
 def test_choose_subclass(mocker: MockerFixture) -> None:
     """Test function."""
-    inquirer_mock = mocker.patch(
-        "InquirerPy.inquirer.fuzzy.execute", return_value="module.ClassName"
-    )
+    fuzzy_mock = mocker.patch("InquirerPy.inquirer.fuzzy")
+    fuzzy_mock.return_value.execute.return_value = "module.ClassName"
 
     result = choose_subclass()
     assert result == "module.ClassName"
-    inquirer_mock.assert_called_once()
+    fuzzy_mock.assert_called_once()
