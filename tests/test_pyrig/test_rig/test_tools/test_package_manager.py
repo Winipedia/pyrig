@@ -1,11 +1,25 @@
 """module."""
 
+from pathlib import Path
+
+from pyrig.core.processes import Args
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.src.processes import Args
 
 
 class TestPackageManager:
     """Test class."""
+
+    def test_project_root(self) -> None:
+        """Test method."""
+        assert PackageManager.I.project_root() == Path()
+
+    def test_source_root(self) -> None:
+        """Test method."""
+        assert PackageManager.I.source_root() == Path("src")
+
+    def test_package_root(self) -> None:
+        """Test method."""
+        assert PackageManager.I.package_root() == Path("src/pyrig")
 
     def test_project_cmd_args(self) -> None:
         """Test method."""

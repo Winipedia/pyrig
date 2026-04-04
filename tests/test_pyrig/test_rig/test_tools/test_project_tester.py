@@ -1,10 +1,20 @@
 """module."""
 
+from pathlib import Path
+
 from pyrig.rig.tools.project_tester import ProjectTester
 
 
 class TestProjectTester:
     """Test class."""
+
+    def test_tests_source_root(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.tests_source_root() == Path()
+
+    def test_tests_package_root(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.tests_package_root() == Path("tests")
 
     def test_group(self) -> None:
         """Test method."""

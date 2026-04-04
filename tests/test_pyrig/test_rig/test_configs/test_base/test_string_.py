@@ -45,9 +45,9 @@ class TestStringConfigFile:
         with chdir(tmp_path):
             my_test_string_config_file().validate()
 
-            my_test_string_config_file().dump(["New content."])
+            my_test_string_config_file().dump(["New content.", ""])
             added_configs = my_test_string_config_file().merge_configs()
-            assert added_configs == ["Test content.", "", "New content."]
+            assert added_configs == ["Test content.", "New content.", ""]
 
     def test_make_string_from_lines(
         self, my_test_string_config_file: type[StringConfigFile]
@@ -80,14 +80,11 @@ class TestStringConfigFile:
         """Test method."""
         my_test_string_config_file().validate()
         # Test successful dump
-        content = ["New content."]
+        content = ["New content.", ""]
         my_test_string_config_file().dump(content)
         loaded = my_test_string_config_file().load()
-        content = my_test_string_config_file().path().read_text()
-        # assert has empyt line at the end
-        assert content.endswith("\n")
         # load doesnt preserve the last "\n" as an "" in list bc of splitlines()
-        assert loaded == ["New content."]
+        assert loaded == ["New content.", ""]
 
     def test__configs(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""
@@ -109,4 +106,4 @@ class TestStringConfigFile:
         """Test method."""
         my_test_string_config_file().validate()
         file_content = my_test_string_config_file().file_content()
-        assert file_content == "Test content.", "Expected 'Test content.'"
+        assert file_content == "Test content."

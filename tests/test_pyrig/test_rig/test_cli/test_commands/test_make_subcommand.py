@@ -17,11 +17,9 @@ def test_make_subcommand(tmp_path: Path) -> None:
 
         # check if the file was created and contains the expected content
         subcommands_file = (
-            project_path / "my_project" / "rig" / "cli" / "subcommands.py"
+            project_path / "src" / "my_project" / "rig" / "cli" / "subcommands.py"
         )
-        assert subcommands_file.exists(), f"{subcommands_file} does not exist"
+        assert subcommands_file.exists()
 
         content = subcommands_file.read_text()
-        assert "def my_new_command() -> None:" in content, (
-            "Expected function definition not found in subcommands.py"
-        )
+        assert "def my_new_command() -> None:" in content

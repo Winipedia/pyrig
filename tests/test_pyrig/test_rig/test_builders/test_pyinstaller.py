@@ -10,15 +10,16 @@ import pytest
 from PIL import Image
 from pytest_mock import MockFixture
 
+from pyrig.core.modules.module import make_obj_importpath
 from pyrig.rig.builders import pyinstaller
 from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
-from pyrig.src.modules.module import create_module, make_obj_importpath
 
 
 @pytest.fixture
 def my_test_pyinstaller_builder(
     config_file_factory: Callable[[type[PyInstallerBuilder]], type[PyInstallerBuilder]],
     tmp_path: Path,
+    create_module: Callable[[Path], ModuleType],
 ) -> type[PyInstallerBuilder]:
     """Create a test PyInstaller builder class."""
     with chdir(tmp_path):

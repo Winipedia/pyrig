@@ -1,6 +1,7 @@
 """module."""
 
 from collections.abc import Callable
+from contextlib import chdir
 from pathlib import Path
 
 import pytest
@@ -21,7 +22,7 @@ def my_test_python_package_config_file(
 
         def parent_path(self) -> Path:
             """Get the parent path."""
-            return Path()
+            return Path("parent_package")
 
         def lines(self) -> list[str]:
             """Get the content string."""
@@ -34,10 +35,13 @@ class TestPythonPackageConfigFile:
     """Test class."""
 
     def test__dump(
-        self, my_test_python_package_config_file: type[PythonPackageConfigFile]
+        self,
+        my_test_python_package_config_file: type[PythonPackageConfigFile],
+        tmp_path: Path,
     ) -> None:
         """Test method."""
-        my_test_python_package_config_file().validate()
-        assert (
-            my_test_python_package_config_file().path().parent / "__init__.py"
-        ).exists(), "Expected __init__.py to be created"
+        with chdir(tmp_path):
+            my_test_python_package_config_file().validate()
+            assert (
+                my_test_python_package_config_file().path().parent / "__init__.py"
+            ).exists(), "Expected __init__.py to be created"

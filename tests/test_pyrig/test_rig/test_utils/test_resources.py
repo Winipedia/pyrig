@@ -5,6 +5,7 @@ from pathlib import Path
 from pytest_mock import MockFixture
 from requests import RequestException
 
+from pyrig.core.resource import resource_path
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.utils import resources
 from pyrig.rig.utils.packages import src_package_is_pyrig
@@ -14,7 +15,6 @@ from pyrig.rig.utils.resources import (
     return_resource_file_content_on_exceptions_or_in_dep,
 )
 from pyrig.rig.utils.testing import skip_if_no_internet
-from pyrig.src.resource import resource_path
 
 
 def test_return_resource_file_content_on_exceptions_or_in_dep(

@@ -17,6 +17,6 @@ def test_make_resources(tmp_path: Path) -> None:
 
         # check if the file was created and contains the expected content
         subcommands_file = (
-            project_path / "my_project" / "rig" / "resources" / "__init__.py"
+            project_path / "src" / "my_project" / "rig" / "resources" / "__init__.py"
         )
         assert subcommands_file.exists()
