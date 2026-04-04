@@ -9,7 +9,6 @@ from types import ModuleType
 
 import pyrig
 from pyrig.rig.configs.base.init import InitConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 class PackageInitConfigFile(InitConfigFile):
@@ -34,15 +33,6 @@ class PackageInitConfigFile(InitConfigFile):
                 return "utility"
 
     '''
-
-    def parent_path(self) -> Path:
-        """Get the parent path for the __init__.py file.
-
-        For the top level package __init__.py, the parent path is the package root.
-        So we need to override the method to avoid returning
-        Path("src/pyrig") and return Path("src/<package_name>") instead.
-        """
-        return super().parent_path().parent / PackageManager.I.package_name()
 
     def create_file(self) -> None:
         """Create main.py by copying the `pyrig.main` module.
