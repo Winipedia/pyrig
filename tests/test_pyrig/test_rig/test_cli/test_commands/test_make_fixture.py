@@ -17,7 +17,13 @@ def test_make_fixture(tmp_path: Path) -> None:
 
         # check if the file was created and contains the expected content
         fixtures_file = (
-            project_path / "my_project" / "rig" / "tests" / "fixtures" / "fixtures.py"
+            project_path
+            / "src"
+            / "my_project"
+            / "rig"
+            / "tests"
+            / "fixtures"
+            / "fixtures.py"
         )
         assert fixtures_file.exists(), f"{fixtures_file} does not exist"
 

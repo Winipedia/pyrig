@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "10.3.2"
+version = "11.0.0"
 description = "pyrig is a python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintenance"
 readme = "README.md"
 license = "MIT"
@@ -77,10 +77,6 @@ requires = [
     "uv_build",
 ]
 build-backend = "uv_build"
-
-[tool.uv.build-backend]
-module-name = "pyrig"
-module-root = ""
 
 [tool.ruff]
 exclude = [

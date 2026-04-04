@@ -1,0 +1,302 @@
+"""Module loading, creation, and import path resolution utilities.
+
+Provides utilities for importing modules with fallback strategies, creating new
+module files, reading module source code, constructing and resolving fully qualified
+import paths for objects, and executing functions within modules. Used throughout
+pyrig for dynamic module loading when standard import mechanisms may not suffice.
+"""
+
+import importlib.util
+import logging
+import sys
+from collections.abc import Callable, Generator, Iterable
+from importlib import import_module
+from pathlib import Path
+from types import ModuleType
+from typing import Any
+
+from pyrig.core.modules.inspection import (
+    module_of_obj,
+    qualname_of_obj,
+    unwrapped_obj,
+)
+from pyrig.core.modules.path import ModulePath
+
+logger = logging.getLogger(__name__)
+
+
+def module_content(module: ModuleType) -> str:
+    """Read the source code of a module as a string.
+
+    Args:
+        module: Module to read. Must have a ``__file__`` attribute pointing
+            to a readable ``.py`` file.
+
+    Returns:
+        Complete source code of the module as a UTF-8 encoded string.
+
+    Raises:
+        ValueError: If the module has no ``__file__`` attribute.
+        FileNotFoundError: If the source file does not exist.
+    """
+    path = ModulePath.module_type_to_file_path(module)
+    return path.read_text(encoding="utf-8")
+
+
+def import_module_with_file_fallback(path: Path, root: Path) -> ModuleType:
+    """Import a module, trying standard import first then direct file import.
+
+    First attempts to import the module using Python's standard import mechanism
+    (via ``importlib.import_module``). If that fails, falls back to importing
+    directly from the file path using ``importlib.util``. This fallback is useful
+    for modules that aren't on ``sys.path`` or haven't been installed.
+
+    Args:
+        path: Path to the module file (absolute or relative).
+        root: The relative root directory to use for import path resolution.
+
+    Returns:
+        The imported module.
+
+    Raises:
+        FileNotFoundError: If the file does not exist and standard import fails.
+        ValueError: If the module spec cannot be created.
+    """
+    module_name = ModulePath.absolute_path_to_module_name(path, root)
+    module = import_module_with_default(module_name)
+    if isinstance(module, ModuleType):
+        return module
+    return import_module_from_file(path, root)
+
+
+def import_module_from_file(path: Path, root: Path) -> ModuleType:
+    """Import a module directly from a ``.py`` file using ``importlib.util``.
+
+    Registers the module in ``sys.modules`` with a name derived from its path
+    (relative to the current working directory). If a ``FileNotFoundError``
+    occurs during module execution, the module is removed from ``sys.modules``
+    before re-raising the exception to avoid leaving invalid module entries.
+
+    Args:
+        path: Path to the ``.py`` file (will be resolved to absolute path).
+        root: The relative root directory to use for import path resolution.
+
+    Returns:
+        The imported and executed module.
+
+    Raises:
+        ValueError: If the module spec or loader cannot be created.
+        FileNotFoundError: If the file does not exist or cannot be read.
+    """
+    path = path.resolve()
+    name = ModulePath.absolute_path_to_module_name(path, root=root)
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None:
+        msg = f"Could not create spec for {path}"
+        raise ValueError(msg)
+    module = importlib.util.module_from_spec(spec)
+    if spec.loader is None:
+        msg = f"Could not create loader for {path}"
+        raise ValueError(msg)
+    spec.loader.exec_module(module)
+    sys.modules[name] = module
+    return module
+
+
+def make_obj_importpath(obj: Callable[..., Any] | type | ModuleType) -> str:
+    """Create a fully qualified import path string for an object.
+
+    Constructs a dotted path that can be used with ``import_obj_from_importpath``
+    to re-import the object. For modules, returns the module name directly.
+    For classes and functions, combines the module name with the qualified name.
+
+    Args:
+        obj: Module, class, or function to create an import path for.
+
+    Returns:
+        Fully qualified import path (e.g., ``"package.module.ClassName"`` or
+        ``"package.module.func_name"``).
+
+    Example:
+        >>> make_obj_importpath(Path)
+        'pathlib.Path'
+    """
+    if isinstance(obj, ModuleType):
+        return obj.__name__
+    module: str | None = module_of_obj(obj).__name__
+    obj_name = qualname_of_obj(obj)
+    if not module:
+        return obj_name
+    return module + "." + obj_name
+
+
+def import_obj_from_importpath(
+    importpath: str,
+) -> Callable[..., Any] | type | ModuleType:
+    """Import an object from its fully qualified import path.
+
+    Inverse of ``make_obj_importpath``. First attempts to import the path as a
+    module. If that fails with ``ImportError`` and the path contains dots, splits
+    off the last component and imports it as an attribute of the parent module.
+
+    Args:
+        importpath: Fully qualified import path (e.g., ``"package.module.MyClass"``).
+
+    Returns:
+        The imported module, class, or function.
+
+    Raises:
+        ImportError: If the module portion cannot be imported.
+        AttributeError: If the object is not found in the module.
+
+    Example:
+        >>> cls = import_obj_from_importpath("pathlib.Path")
+        >>> cls is Path
+        True
+    """
+    try:
+        return import_module(importpath)
+    except ImportError:
+        # might be a class or function
+        if "." not in importpath:
+            raise
+        module_name, obj_name = importpath.rsplit(".", 1)
+        module = import_module(module_name)
+        obj: Callable[..., Any] | type = getattr(module, obj_name)
+        return obj
+
+
+def isolated_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
+    """Extract the bare name of an object without its module or class prefix.
+
+    For modules, returns the last component of the dotted name. For classes,
+    returns ``__name__``. For functions (including nested or methods), returns
+    the last component of ``__qualname__``.
+
+    Args:
+        obj: Module, class, or function (may be wrapped by decorators).
+
+    Returns:
+        The bare object name (e.g., ``"MyClass"`` not ``"package.module.MyClass"``).
+
+    Example:
+        >>> isolated_obj_name(Path)
+        'Path'
+    """
+    obj = unwrapped_obj(obj)
+    if isinstance(obj, ModuleType):
+        return obj.__name__.split(".")[-1]
+    if isinstance(obj, type):
+        return obj.__name__
+    return qualname_of_obj(obj).split(".")[-1]
+
+
+def default_module_content() -> str:
+    """Generate default content for a new Python module file.
+
+    Used by ``create_module`` when creating new module files. The content is a
+    minimal valid Python module containing only a placeholder docstring with
+    the text "module.".
+
+    Returns:
+        A string containing a single-line docstring and a trailing newline.
+    """
+    return '''"""module."""
+'''
+
+
+def import_module_with_default(
+    module_name: str, default: Any = None
+) -> ModuleType | Any:
+    """Import a module by name, returning a default value if import fails.
+
+    Logs a debug message when falling back to the default. Only catches
+    ``ImportError``; other exceptions are not handled.
+
+    Args:
+        module_name: Dotted module name (e.g., ``"package.subpackage.module"``).
+        default: Value to return if the module cannot be imported.
+
+    Returns:
+        The imported module, or ``default`` if ``ImportError`` is raised.
+    """
+    try:
+        return import_module(module_name)
+    except ImportError:
+        logger.debug(
+            "Could not import module %s, returning default value %s",
+            module_name,
+            default,
+        )
+        return default
+
+
+def module_name_replacing_start_module(
+    module: ModuleType, new_start_module_name: str
+) -> str:
+    """Replace the root package name in a module's fully qualified name.
+
+    Useful for mapping modules between parallel package hierarchies (e.g.,
+    mapping source modules to their test module equivalents).
+
+    Args:
+        module: Module whose name to transform.
+        new_start_module_name: New root package name to substitute.
+
+    Returns:
+        The module name with the root package replaced.
+
+    Example:
+        >>> # If module.__name__ is "pyrig.src.modules.module"
+        >>> module_name_replacing_start_module(module, "tests")
+        'tests.src.modules.module'
+    """
+    module_current_start = module.__name__.split(".")[0]
+    return module.__name__.replace(module_current_start, new_start_module_name, 1)
+
+
+def module_has_docstring(module: ModuleType) -> bool:
+    """Check if a module has a docstring.
+
+    Args:
+        module: Module to check.
+
+    Returns:
+        True if module has a docstring, False otherwise.
+    """
+    return module.__doc__ is not None
+
+
+def import_modules(module_names: Iterable[str]) -> Generator[ModuleType, None, None]:
+    """Import multiple modules by name.
+
+    Args:
+        module_names: List of dotted module names to import.
+
+    Returns:
+        Generator of imported module objects corresponding to the input names.
+    """
+    return (import_module(name) for name in module_names)
+
+
+def reimport_module(module: ModuleType) -> ModuleType:
+    """Re-import a module by name, bypassing the import cache.
+
+    This function removes the specified module from ``sys.modules`` and then
+    imports it again using the file fallback method. This is useful for refreshing
+    a module's content after it has been modified on disk, ensuring that the latest
+    version is loaded.
+
+    Args:
+        module: Module to reimport
+    """
+    module_name = module.__name__
+    module_path = ModulePath.module_type_to_file_path(module)
+    # Re-import to refresh cache
+    module_name_as_path = ModulePath.module_name_to_relative_file_path(
+        module_name, root=Path()
+    )
+    root = Path(module_path.as_posix().removesuffix(module_name_as_path.as_posix()))
+    # Remove from cache
+    sys.modules.pop(module_name)
+    return import_module_with_file_fallback(module_path, root=root)

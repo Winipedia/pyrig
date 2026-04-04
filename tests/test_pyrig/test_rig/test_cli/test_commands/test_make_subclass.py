@@ -21,7 +21,7 @@ def test_make_subclass(tmp_path: Path) -> None:
 
         make_subclass(import_path)
 
-        path = Path("my_project/rig/tools/pyrigger.py")
+        path = Path("src/my_project/rig/tools/pyrigger.py")
 
         assert path.exists()
         content = path.read_text()

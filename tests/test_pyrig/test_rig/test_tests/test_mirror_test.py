@@ -9,13 +9,18 @@ from types import ModuleType
 import pytest
 from pytest_mock import MockFixture
 
+from pyrig.core.modules.imports import import_package_with_dir_fallback
+from pyrig.core.modules.module import reimport_module
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.tools.project_tester import ProjectTester
-from pyrig.src.modules.imports import import_package_with_dir_fallback
-from pyrig.src.modules.module import create_module
-from pyrig.src.modules.package import create_package
+
+MIRROR_MODULE_PATH = Path("mirror_test_package/mirror_test_module.py")
+MIRROR_MODULE_NAME = "mirror_test_package.mirror_test_module"
+TESTS_MIRROR_MODULE_NAME = "tests.test_mirror_test_package.test_mirror_test_module"
+TESTS_MIRROR_MODULE_PATH = Path(
+    "tests/test_mirror_test_package/test_mirror_test_module.py"
+)
 
 
 @pytest.fixture
@@ -24,12 +29,23 @@ def my_test_mirror_test_config_file(
         [type[MirrorTestConfigFile]], type[MirrorTestConfigFile]
     ],
     tmp_path: Path,
+    create_module: Callable[[Path], ModuleType],
 ) -> type[MirrorTestConfigFile]:
     """Create a test mirror test config file class with tmp_path."""
     with chdir(tmp_path):
-        path = Path("mirror_test_module.py")
+        cached_module = sys.modules.pop(MIRROR_MODULE_NAME, None)
+        if cached_module is not None:
+            # needed for the debugger for some reason
+            Path(cached_module.__file__).unlink()  # ty:ignore[invalid-argument-type]
+
+        cached_tests_module = sys.modules.pop(TESTS_MIRROR_MODULE_NAME, None)
+        if cached_tests_module is not None:
+            # needed for the debugger for some reason
+            Path(cached_tests_module.__file__).unlink()  # ty:ignore[invalid-argument-type]
+
+        module = create_module(MIRROR_MODULE_PATH)
         # write a simple class with one method to the module
-        path.write_text("""
+        MIRROR_MODULE_PATH.write_text("""
 class MirrorClass:
     def mirror_method(self):
         pass
@@ -37,14 +53,14 @@ class MirrorClass:
 def mirror_function():
     pass
 """)
-        mock_module = create_module(path)
+        module = reimport_module(module)
 
     class MyTestMirrorTestConfigFile(config_file_factory(MirrorTestConfigFile)):  # ty:ignore[unsupported-base]
         """Test mirror test config file with tmp_path override."""
 
         def src_module(self) -> ModuleType:
             """Get the source module."""
-            return mock_module
+            return module
 
     return MyTestMirrorTestConfigFile
 
@@ -61,7 +77,12 @@ class TestMirrorTestConfigFile:
         MirrorTestConfigFile.I.create_all_test_modules()
         mock_create_test_modules_for_package.assert_called_once()
 
-    def test_create_test_modules_for_package(self, tmp_path: Path) -> None:
+    def test_create_test_modules_for_package(
+        self,
+        tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
+        create_package: Callable[[Path], ModuleType],
+    ) -> None:
         """Test method."""
         with chdir(tmp_path):
             # Create a source package with a module
@@ -84,7 +105,7 @@ class TestMirrorTestConfigFile:
             assert mod2_path.exists()
             assert sub_mod1_path.exists()
 
-            package = import_package_with_dir_fallback(package_path)
+            package = import_package_with_dir_fallback(package_path, root=Path())
             MirrorTestConfigFile.I.create_test_modules_for_package(package)
 
             # assert the test modules were created
@@ -109,10 +130,6 @@ class TestMirrorTestConfigFile:
         """Test method."""
         with chdir(tmp_path):
             my_test_mirror_test_config_file().validate()
-            # delete file after
-            my_test_mirror_test_config_file().path().unlink()
-            # remove module from cache to avoid interference with other tests
-            sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
 
     def test_create_file(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
@@ -208,6 +225,7 @@ class TestMirrorTestConfigFile:
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
@@ -226,7 +244,7 @@ class TestMirrorTestConfigFile:
     ) -> None:
         """Test method."""
         src_module = my_test_mirror_test_config_file().src_module()
-        assert src_module.__name__ == "mirror_test_module"
+        assert src_module.__name__ == MIRROR_MODULE_NAME
 
     def test_filename(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
@@ -244,17 +262,17 @@ class TestMirrorTestConfigFile:
         # tmp path bc factory of pattern in config_file_factory
         with chdir(tmp_path):
             parent_path = my_test_mirror_test_config_file().parent_path()
-            assert parent_path == Path(ProjectTester.I.tests_package_name())
+            assert parent_path == TESTS_MIRROR_MODULE_PATH.parent
 
     def test_lines(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
             # create the file first to not trigger dump in content_str
-            sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
             create_module(my_test_mirror_test_config_file().test_path())
             lines = my_test_mirror_test_config_file().lines()
             content = "\n".join(lines)
@@ -281,14 +299,14 @@ class TestMirrorTestConfigFile:
         assert test_path == my_test_mirror_test_config_file().path().relative_to(
             tmp_path
         )
-        assert test_path == Path("tests/test_mirror_test_module.py")
+        assert test_path == TESTS_MIRROR_MODULE_PATH
 
     def test_test_module_name(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
         test_module_name = my_test_mirror_test_config_file().test_module_name()
-        assert test_module_name == "tests.test_mirror_test_module"
+        assert test_module_name == TESTS_MIRROR_MODULE_NAME
 
     def test_test_module_name_from_src_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
@@ -299,28 +317,29 @@ class TestMirrorTestConfigFile:
                 my_test_mirror_test_config_file().src_module()
             )
         )
-        assert test_module_name == "tests.test_mirror_test_module"
+        assert test_module_name == TESTS_MIRROR_MODULE_NAME
 
     def test_test_module(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
             create_module(my_test_mirror_test_config_file().test_path())
             test_module = my_test_mirror_test_config_file().test_module()
-            assert test_module.__name__ == "tests.test_mirror_test_module"
+            assert test_module.__name__ == TESTS_MIRROR_MODULE_NAME
 
     def test_test_module_content_with_skeletons(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
     ) -> None:
         """Test method."""
         # create the file first
         with chdir(tmp_path):
-            sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
             create_module(my_test_mirror_test_config_file().test_path())
             content = (
                 my_test_mirror_test_config_file().test_module_content_with_skeletons()
@@ -333,11 +352,11 @@ class TestMirrorTestConfigFile:
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
     ) -> None:
         """Test method."""
         # create the file first
         with chdir(tmp_path):
-            sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
             create_module(my_test_mirror_test_config_file().test_path())
             content = my_test_mirror_test_config_file().test_module_content_with_func_skeletons(  # noqa: E501
                 my_test_mirror_test_config_file().test_module_content_with_skeletons()
@@ -350,11 +369,11 @@ class TestMirrorTestConfigFile:
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
     ) -> None:
         """Test method."""
         # create the file first
         with chdir(tmp_path):
-            sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
             create_module(my_test_mirror_test_config_file().test_path())
             untested_func_names = tuple(
                 my_test_mirror_test_config_file().untested_func_names()
@@ -371,12 +390,12 @@ class TestMirrorTestConfigFile:
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
     ) -> None:
         """Test method."""
         # create the file first
 
         with chdir(tmp_path):
-            sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
             create_module(my_test_mirror_test_config_file().test_path())
             content = my_test_mirror_test_config_file().test_module_content_with_class_skeletons(  # noqa: E501
                 my_test_mirror_test_config_file().test_module_content_with_skeletons()
@@ -389,11 +408,11 @@ class TestMirrorTestConfigFile:
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
         tmp_path: Path,
+        create_module: Callable[[Path], ModuleType],
     ) -> None:
         """Test method."""
         # create the file first
         with chdir(tmp_path):
-            sys.modules.pop(my_test_mirror_test_config_file().test_module_name(), None)
             create_module(my_test_mirror_test_config_file().test_path())
             untested_class_and_method_names = tuple(
                 my_test_mirror_test_config_file().untested_class_and_method_names()

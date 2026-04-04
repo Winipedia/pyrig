@@ -1,7 +1,7 @@
 """module."""
 
+from pyrig.core.processes import Args
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
-from pyrig.src.processes import Args
 
 
 class TestDependencyAuditor:

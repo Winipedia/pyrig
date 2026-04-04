@@ -9,7 +9,7 @@ from pathlib import Path
 import tomlkit
 from pytest_mock import MockFixture
 
-import pyrig
+from pyrig.core.processes import Args
 from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -17,8 +17,6 @@ from pyrig.rig.tools import pyrigger
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.src.modules.path import ModulePath
-from pyrig.src.processes import Args
 
 
 class TestPyrigger:
@@ -82,7 +80,7 @@ class TestPyrigger:
         res = Pyrigger.I.running_pre_commit_hooks()
         assert isinstance(res, Args), f"Expected Args, got {type(res)}"
 
-    def test_init_project(self, tmp_path: Path) -> None:  # noqa: PLR0915
+    def test_init_project(self, tmp_path: Path) -> None:
         """Test function."""
         # on Actions windows-latest temp path is on another drive so add path fails
         # so we use a tmp dir in the current dir
@@ -93,12 +91,10 @@ class TestPyrigger:
         project_name = "src-project"
 
         pyrig_temp_path = tmp_path / PackageManager.I.project_name()
-        pyrig_path = ModulePath.package_type_to_dir_path(pyrig)
         shutil.copytree(
-            pyrig_path.parent,
+            PackageManager.I.project_root(),
             pyrig_temp_path,
         )
-        pyrig_temp_path = pyrig_temp_path.resolve()
         with chdir(pyrig_temp_path):
             # build the package
             args = PackageManager.I.build_args()
@@ -113,19 +109,18 @@ class TestPyrigger:
         # Get the current Python version in major.minor format
         python_version = str(PyprojectConfigFile.I.first_supported_python_version())
 
-        # Initialize git repo in the test project directory
-        with chdir(src_project_dir):
-            VersionController.I.init_args().run()
-            VersionController.I.config_local_user_email_args(
-                email="test@example.com"
-            ).run()
-            VersionController.I.config_local_user_name_args(name="Test User").run()
-
         with chdir(src_project_dir):
             # Create a clean environment dict without VIRTUAL_ENV to force
             # to create a new virtual environment instead of reusing the current one
             clean_env = os.environ.copy()
             clean_env.pop("VIRTUAL_ENV", None)
+
+            # Initialize git repo in the test project directory
+            VersionController.I.init_args().run()
+            VersionController.I.config_local_user_email_args(
+                email="test@example.com"
+            ).run()
+            VersionController.I.config_local_user_name_args(name="Test User").run()
 
             args = PackageManager.I.init_project_args("--python", python_version)
             args.run(env=clean_env)
@@ -182,7 +177,7 @@ class TestPyrigger:
             keywords = pyproject_toml.get("project", {}).get("keywords")
             assert keywords == []
 
-            package_dir = src_project_dir / "src_project"
+            package_dir = src_project_dir / "src" / "src_project"
             assert package_dir.exists(), f"Expected {package_dir} to be created"
 
             # assert package dir is empty except for __init__.py

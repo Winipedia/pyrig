@@ -2,22 +2,27 @@
 
 from contextlib import chdir
 from pathlib import Path
+from types import ModuleType
 
 from pyrig.rig.cli.commands.remove_pycache import remove_pycache
-from pyrig.rig.tools.package_manager import PackageManager
 
 
-def test_remove_pycache(tmp_path: Path) -> None:
+def test_remove_pycache(
+    tmp_project_root_path: Path, tmp_package_root_path: tuple[Path, ModuleType]
+) -> None:
     """Test function."""
-    with chdir(tmp_path):
-        # create __pycache__ directories in tests and package
-        package_name = PackageManager.I.package_name()
-        (tmp_path / "tests" / "__pycache__").mkdir(parents=True)
-        (tmp_path / package_name / "__pycache__").mkdir(parents=True)
-
-        # run remove_pycache command
+    with chdir(tmp_project_root_path):
+        package_root_path, _ = tmp_package_root_path
+        pycache_path = package_root_path / "__pycache__"
+        pycache_path.mkdir()
+        assert pycache_path.exists()
         remove_pycache()
+        assert not pycache_path.exists()
 
-        # assert __pycache__ directories are removed
-        assert not (tmp_path / "tests" / "__pycache__").exists()
-        assert not (tmp_path / package_name / "__pycache__").exists()
+        tests_path = Path("tests")
+        tests_path.mkdir()
+        pycache_tests_path = tests_path / "__pycache__"
+        pycache_tests_path.mkdir()
+        assert pycache_tests_path.exists()
+        remove_pycache()
+        assert not pycache_tests_path.exists()
