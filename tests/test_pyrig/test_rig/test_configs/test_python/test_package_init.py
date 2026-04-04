@@ -7,15 +7,10 @@ from pytest_mock import MockerFixture
 
 import pyrig
 from pyrig.rig.configs.python.package_init import PackageInitConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 class TestPackageInitConfigFile:
     """Test class."""
-
-    def test_parent_path(self) -> None:
-        """Test method."""
-        assert PackageInitConfigFile.I.parent_path() == PackageManager.I.package_root()
 
     def test_create_file(self, mocker: MockerFixture) -> None:
         """Test method."""

@@ -44,8 +44,8 @@ The CLI system automatically discovers and registers three types of commands:
 1. **Main entry point** - The `main()` function from `<package>.main`
 2. **Subcommands** - All public functions from `<package>.rig.cli.subcommands`
 3. **Shared subcommands** - All public functions
-    from `<package>.rig.cli.shared_subcommands` across all packages
-    in the dependency chain (see [Shared Subcommands](shared-subcommands.md))
+   from `<package>.rig.cli.shared_subcommands` across all packages
+   in the dependency chain (see [Shared Subcommands](shared-subcommands.md))
 
 Functions are discovered and registered automatically:
 

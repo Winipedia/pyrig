@@ -17,10 +17,12 @@ Example:
 
 from pathlib import Path
 
+import pyrig
 from pyrig.core.modules.module import isolated_obj_name
 from pyrig.rig.configs.base.copy_module_docstr import (
     CopyModuleOnlyDocstringConfigFile,
 )
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
@@ -54,4 +56,10 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         """
         path = super().parent_path()
         # this path will be parent of the init file
-        return path / isolated_obj_name(self.src_module())
+        copy_module = self.src_module()
+        dir_name = (
+            isolated_obj_name(copy_module)
+            if copy_module is not pyrig
+            else PackageManager.I.package_name()
+        )
+        return path / dir_name
