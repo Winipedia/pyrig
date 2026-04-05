@@ -137,7 +137,7 @@ def return_resource_file_content_on_exceptions_or_in_dep(
             result = decorated_func(*args, **kwargs)
             if src_package_is_pyrig() and overwrite_resource and result != content:
                 path.write_text(result, encoding="utf-8")
-                typer.echo(f"Updated resource file: {path}")
+                typer.echo(f"Updated {path}")
             return result
 
         return wrapper

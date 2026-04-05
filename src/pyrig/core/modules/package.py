@@ -10,7 +10,10 @@ dependency, enabling automatic discovery of ``ConfigFile`` implementations and
 import logging
 from collections.abc import Generator
 from functools import cache
+from pathlib import Path
 from types import ModuleType
+
+import typer
 
 import pyrig
 from pyrig.core.dependency_graph import DependencyGraph
@@ -192,3 +195,53 @@ def discover_subclasses_across_dependents[T: type](
             load_package_before=package,
         )
     )
+
+
+def make_init_module(path: Path, content: str) -> None:
+    """Create an ``__init__.py`` file in the specified directory.
+
+    Creates the file with default content from ``default_init_module_content``.
+    Logs the creation at INFO level.
+
+    Args:
+        path: Directory path where ``__init__.py`` should be created.
+        content: Content to write into the ``__init__.py`` file.
+
+    Note:
+        No-op if ``__init__.py`` already exists in the directory.
+    """
+    path = path / "__init__.py"
+
+    if path.exists():
+        return
+
+    typer.echo(f"Creating: {path}")
+
+    path.write_text(content)
+
+
+def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
+    """Create a directory and add ``__init__.py`` files up the directory tree.
+
+    Creates the target directory (and missing parents), then adds ``__init__.py``
+    files to the target and all parent directories up to (but not including) the
+    current working directory. This ensures the entire path is importable as a
+    Python package hierarchy.
+
+    Args:
+        path: Directory path to create. must be relative to the cwd.
+        until: Directory path to stop at when adding ``__init__.py`` files. The
+            directory specified by ``until`` will not get an __init__.py
+        content: Content to write into each ``__init__.py`` file.
+
+
+    Note:
+        Skips directories that already contain an ``__init__.py`` file.
+        Does not create ``__init__.py`` in the CWD itself.
+    """
+    path.mkdir(parents=True, exist_ok=True)
+    until = (*until, Path(), Path.cwd())
+    for p in (path, *path.parents):
+        if p in until:
+            break
+        make_init_module(p, content=content)

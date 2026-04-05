@@ -8,7 +8,8 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from pyrig.core.iterate import generator_has_items
-from pyrig.core.modules.path import ModulePath, make_init_module
+from pyrig.core.modules.package import make_init_module
+from pyrig.core.modules.path import ModulePath
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.project_tester import ProjectTester
