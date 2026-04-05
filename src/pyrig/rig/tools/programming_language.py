@@ -39,3 +39,7 @@ class ProgrammingLanguage(Tool):
     def no_bytecode_env_var(self) -> str:
         """Return the environment variable name to disable bytecode generation."""
         return "PYTHONDONTWRITEBYTECODE"
+
+    def standard_init_content(self) -> str:
+        """Return the standard content for an __init__.py file."""
+        return '"""Package initialization."""\n'

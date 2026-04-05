@@ -22,6 +22,7 @@ Example:
 from pyrig.core.modules.path import make_package_dir
 from pyrig.rig.configs.base.python import PythonConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.project_tester import ProjectTester
 
 
@@ -54,4 +55,5 @@ class PythonPackageConfigFile(PythonConfigFile):
                 ProjectTester.I.tests_source_root(),
                 PackageManager.I.source_root(),
             ),
+            content=ProgrammingLanguage.I.standard_init_content(),
         )

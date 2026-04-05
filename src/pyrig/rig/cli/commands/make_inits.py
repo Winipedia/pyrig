@@ -5,10 +5,12 @@ packages without `__init__.py`) to ensure proper importability.
 """
 
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.modules.path import ModulePath, make_init_module
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.utils.packages import find_namespace_packages
 
@@ -40,5 +42,13 @@ def make_init_files() -> None:
         )
         for package in namespace_packages
     )
+
+    def make_init_module_with_content(path: Path) -> None:
+        """Make an __init__.py file with standard content."""
+        make_init_module(
+            path,
+            content=ProgrammingLanguage.I.standard_init_content(),
+        )
+
     with ThreadPoolExecutor() as executor:
-        list(executor.map(make_init_module, package_paths))
+        list(executor.map(make_init_module_with_content, package_paths))

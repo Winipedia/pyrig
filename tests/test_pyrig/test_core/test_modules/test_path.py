@@ -7,23 +7,15 @@ from types import ModuleType
 
 from pyrig.core.modules.path import (
     ModulePath,
-    default_init_module_content,
     make_init_module,
     make_package_dir,
 )
 
 
-def test_default_init_module_content() -> None:
-    """Test function."""
-    result = default_init_module_content()
-    # assert is str
-    assert isinstance(result, str), f"Expected str, got {type(result)}"
-
-
 def test_make_init_module(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        make_init_module(Path.cwd())
+        make_init_module(Path.cwd(), content="")
         assert (Path.cwd() / "__init__.py").exists(), (
             "Expected __init__.py file to be created"
         )
@@ -33,7 +25,7 @@ def test_make_package_dir(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         path = Path.cwd() / "test" / "package" / "sub_package"
-        make_package_dir(path, until=(Path.cwd() / "test",))
+        make_package_dir(path, until=(Path.cwd() / "test",), content="")
         assert not (Path.cwd() / "test" / "__init__.py").exists()
         assert (Path.cwd() / "test" / "package" / "__init__.py").exists()
         assert (
