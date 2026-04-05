@@ -68,7 +68,7 @@ class ContainerfileConfigFile(StringConfigFile):
             Python version.
         """
         latest_python_version = PyprojectConfigFile.I.latest_possible_python_version()
-        package_root = PackageManager.I.package_root()
+        package_root = PackageManager.I.package_root().as_posix()
         project_name = PackageManager.I.project_name()
         workdir = Path(project_name)
         app_user_name = "appuser"
