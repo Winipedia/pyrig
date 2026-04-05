@@ -92,7 +92,7 @@ class TestPyrigger:
 
         pyrig_temp_path = tmp_path / PackageManager.I.project_name()
         shutil.copytree(
-            PackageManager.I.project_root(),
+            Path(),
             pyrig_temp_path,
         )
         with chdir(pyrig_temp_path):

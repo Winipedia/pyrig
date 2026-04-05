@@ -21,10 +21,6 @@ class TestPackageManager:
             "/usr/local/bin/uv",
         )
 
-    def test_project_root(self) -> None:
-        """Test method."""
-        assert PackageManager.I.project_root() == Path()
-
     def test_source_root(self) -> None:
         """Test method."""
         assert PackageManager.I.source_root() == Path("src")

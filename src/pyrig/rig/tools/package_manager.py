@@ -70,7 +70,7 @@ class PackageManager(Tool):
         Returns:
             Path to 'uv.lock' in the project root.
         """
-        return self.project_root() / "uv.lock"
+        return Path("uv.lock")
 
     def container_image(self) -> tuple[str, str, str]:
         """Get the container image to copy uv from.
@@ -91,13 +91,9 @@ class PackageManager(Tool):
         """Get the main package of the project."""
         return kebab_to_snake_case(self.project_name())
 
-    def project_root(self) -> Path:
-        """Get the root of the project."""
-        return Path()
-
     def source_root(self) -> Path:
         """Get the source root of the project."""
-        return self.project_root() / "src"
+        return Path("src")
 
     def package_root(self) -> Path:
         """Get the root of the main package."""
