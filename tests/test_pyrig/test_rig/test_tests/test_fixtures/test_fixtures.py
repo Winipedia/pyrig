@@ -95,7 +95,7 @@ def test_create_package(
         package = create_package(package_dir)
         assert isinstance(package, ModuleType), f"Expected package, got {type(package)}"
         assert package.__name__ == test_create_package.__name__
-        assert package.__file__ == str(package_dir / "__init__.py")
+        assert Path(package.__file__) == package_dir / "__init__.py"  # ty:ignore[invalid-argument-type]
 
 
 def test_tmp_project_root_path(tmp_path: Path, tmp_project_root_path: Path) -> None:
