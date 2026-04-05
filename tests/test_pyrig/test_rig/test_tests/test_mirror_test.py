@@ -68,6 +68,11 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
+    def test_test_module_docstring(self) -> None:
+        """Test method."""
+        docstring = MirrorTestConfigFile.I.test_module_docstring()
+        assert isinstance(docstring, str)
+
     def test_create_all_test_modules(self, mocker: MockFixture) -> None:
         """Test method."""
         mock_create_test_modules_for_package = mocker.patch.object(

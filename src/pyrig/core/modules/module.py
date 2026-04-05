@@ -191,20 +191,6 @@ def isolated_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
     return qualname_of_obj(obj).split(".")[-1]
 
 
-def default_module_content() -> str:
-    """Generate default content for a new Python module file.
-
-    Used by ``create_module`` when creating new module files. The content is a
-    minimal valid Python module containing only a placeholder docstring with
-    the text "module.".
-
-    Returns:
-        A string containing a single-line docstring and a trailing newline.
-    """
-    return '''"""module."""
-'''
-
-
 def import_module_with_default(
     module_name: str, default: Any = None
 ) -> ModuleType | Any:
