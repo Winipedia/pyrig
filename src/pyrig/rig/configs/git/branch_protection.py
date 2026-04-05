@@ -9,15 +9,16 @@ See Also:
 """
 
 import logging
+import os
 from pathlib import Path
 
 from pyrig.rig.configs.base.base import ConfigDict
 from pyrig.rig.configs.base.json import DictJsonConfigFile
+from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
-from pyrig.rig.utils.version_control import github_repo_token
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +95,42 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
             ],
         }
 
+    def repo_token(self) -> str:
+        """Retrieve the GitHub repository token for API authentication.
+
+        Searches for REPO_TOKEN in order: environment variable, then .env file.
+
+        Returns:
+            GitHub API token string.
+
+        Raises:
+            ValueError: If REPO_TOKEN not found in environment variables or .env
+                file.
+
+        Example:
+            >>> token = self.repo_token()
+
+        Note:
+            For ruleset management, token needs `repo` scope. Never commit tokens.
+            Use environment variables or .env (gitignored).
+        """
+        # try os env first
+        token = os.getenv("REPO_TOKEN")
+        if token:
+            logger.debug("Using repository token from environment variable")
+            return token
+
+        dotenv = DotEnvConfigFile.I.load()
+        token = dotenv.get("REPO_TOKEN")
+        if token:
+            logger.debug(
+                "Using repository token from %s file", DotEnvConfigFile.I.path()
+            )
+            return token
+
+        msg = f"Expected repository token in {DotEnvConfigFile.I.path()} or as env var."
+        raise ValueError(msg)
+
     def protect_repo(self) -> None:
         """Apply security protections to the GitHub repository.
 
@@ -108,7 +145,7 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
         Applies pyrig's standard protection rules to the main branch. Updates
         existing ruleset if present.
         """
-        token = github_repo_token()
+        token = self.repo_token()
         owner, repo_name = VersionController.I.repo_owner_and_name()
         create_or_update_ruleset(
             token=token,
@@ -125,7 +162,7 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
         """
         logger.debug("Configuring secure repository settings")
         owner, repo_name = VersionController.I.repo_owner_and_name()
-        token = github_repo_token()
+        token = self.repo_token()
         repo = repository(token, owner, repo_name)
 
         toml_description = PyprojectConfigFile.I.project_description()

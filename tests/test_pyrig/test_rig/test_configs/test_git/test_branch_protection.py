@@ -9,6 +9,11 @@ from pyrig.rig.utils.testing import skip_if_no_internet
 class TestRepoProtectionConfigFile:
     """Test class."""
 
+    def test_repo_token(self) -> None:
+        """Test method."""
+        token = RepoProtectionConfigFile.I.repo_token()
+        assert isinstance(token, str), f"Expected token to be str, got {type(token)}"
+
     @skip_if_no_internet
     def test_protect_repo(self) -> None:
         """Test method."""
