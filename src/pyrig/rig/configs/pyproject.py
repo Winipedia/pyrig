@@ -74,7 +74,7 @@ class PyprojectConfigFile(TomlConfigFile):
     def _configs(self) -> ConfigDict:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
         repo_owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
-        tests_package_root = ProjectTester.I.tests_package_root()
+        tests_package_root = ProjectTester.I.tests_package_root().as_posix()
 
         return {
             "project": {
@@ -89,7 +89,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     {"name": repo_owner},
                 ],
                 "license": self.detect_project_license(),
-                "license-files": [LicenseConfigFile.I.path().name],
+                "license-files": [LicenseConfigFile.I.path().as_posix()],
                 "requires-python": self.requires_python(),
                 "classifiers": [
                     *self.make_python_version_classifiers(),
