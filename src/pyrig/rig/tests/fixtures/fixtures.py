@@ -15,7 +15,7 @@ import pytest
 
 from pyrig.core.modules.imports import import_package_with_dir_fallback
 from pyrig.core.modules.module import import_module_with_file_fallback
-from pyrig.core.modules.path import make_package_dir
+from pyrig.core.modules.package import make_package_dir
 from pyrig.rig.configs.base.base import ConfigData, ConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 

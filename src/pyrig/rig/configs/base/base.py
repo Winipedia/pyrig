@@ -258,7 +258,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
     def create_file(self) -> None:
         """Create the config file and its parent directories."""
         path = self.path()
-        typer.echo(f"Creating config file {path}")
+        typer.echo(f"Creating {path}")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
 
@@ -298,7 +298,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         Args:
             config: Configuration to write (dict or list).
         """
-        typer.echo(f"Updating config file {self.path()}")
+        typer.echo(f"Updating {self.path()}")
         self.load.cache_clear()
         self._dump(config)
         self.load.cache_clear()

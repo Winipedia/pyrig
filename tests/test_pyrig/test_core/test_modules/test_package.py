@@ -3,6 +3,9 @@
 tests.test_pyrig.test_modules.test_package
 """
 
+from contextlib import chdir
+from pathlib import Path
+
 import pyrig
 from pyrig import core, rig
 from pyrig.core.dependency_subclass import DependencySubclass
@@ -10,6 +13,8 @@ from pyrig.core.modules.package import (
     all_deps_depending_on_dep,
     discover_equivalent_modules_across_dependents,
     discover_subclasses_across_dependents,
+    make_init_module,
+    make_package_dir,
     pyrig_dependency_graph,
 )
 from pyrig.rig.configs.base.base import ConfigFile
@@ -46,3 +51,25 @@ def test_pyrig_dependency_graph() -> None:
 
     # should only be pyrig and its dependents, not unrelated packages
     assert graph.nodes() == {pyrig.__name__}
+
+
+def test_make_init_module(tmp_path: Path) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        make_init_module(Path.cwd(), content="")
+        assert (Path.cwd() / "__init__.py").exists(), (
+            "Expected __init__.py file to be created"
+        )
+
+
+def test_make_package_dir(tmp_path: Path) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        path = Path.cwd() / "test" / "package" / "sub_package"
+        make_package_dir(path, until=(Path.cwd() / "test",), content="")
+        assert not (Path.cwd() / "test" / "__init__.py").exists()
+        assert (Path.cwd() / "test" / "package" / "__init__.py").exists()
+        assert (
+            Path.cwd() / "test" / "package" / "sub_package" / "__init__.py"
+        ).exists()
+        assert not (Path.cwd() / "__init__.py").exists()
