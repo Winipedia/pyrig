@@ -133,7 +133,7 @@ def re_search_excluding_docstrings(
 
 
 def make_summary_error_msg(
-    errors_locations: Iterable[str],
+    errors_locations: Iterable[str | Path],
 ) -> str:
     """Create formatted error message summarizing multiple error locations.
 

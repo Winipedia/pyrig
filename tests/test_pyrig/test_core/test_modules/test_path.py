@@ -5,13 +5,26 @@ from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
+import pyrig
+from pyrig import rig
 from pyrig.core.modules.path import (
     ModulePath,
 )
+from pyrig.rig.tests import mirror_test
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class TestModulePath:
     """Test class."""
+
+    def test_module_type_to_source_root(self) -> None:
+        """Test method."""
+        modules = (pyrig, rig, mirror_test)
+        source_root = PackageManager.I.source_root().resolve()
+        for module in modules:
+            assert (
+                ModulePath.module_type_to_source_root(module).resolve() == source_root
+            )
 
     def test_module_type_to_file_path(
         self, tmp_path: Path, create_module: Callable[[Path], ModuleType]

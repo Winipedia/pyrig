@@ -90,13 +90,13 @@ def import_module_from_file(path: Path, root: Path) -> ModuleType:
     """
     path = path.resolve()
     name = ModulePath.absolute_path_to_module_name(path, root=root)
-    spec = importlib.util.spec_from_file_location(name, path)
+    spec = importlib.util.spec_from_file_location(name=name, location=path)
     if spec is None:
-        msg = f"Could not create spec for {path.as_posix()}"
+        msg = f"Could not create spec for {path}"
         raise ValueError(msg)
     module = importlib.util.module_from_spec(spec)
     if spec.loader is None:
-        msg = f"Could not create loader for {path.as_posix()}"
+        msg = f"Could not create loader for {path}"
         raise ValueError(msg)
     spec.loader.exec_module(module)
     sys.modules[name] = module
@@ -276,13 +276,8 @@ def reimport_module(module: ModuleType) -> ModuleType:
     Args:
         module: Module to reimport
     """
-    module_name = module.__name__
     module_path = ModulePath.module_type_to_file_path(module)
-    # Re-import to refresh cache
-    module_name_as_path = ModulePath.module_name_to_relative_file_path(
-        module_name, root=Path()
-    )
-    root = Path(module_path.as_posix().removesuffix(module_name_as_path.as_posix()))
+    root = ModulePath.module_type_to_source_root(module)
     # Remove from cache
-    sys.modules.pop(module_name)
+    sys.modules.pop(module.__name__)
     return import_module_with_file_fallback(module_path, root=root)

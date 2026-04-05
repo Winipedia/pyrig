@@ -74,7 +74,7 @@ class ContainerEngine(Tool):
         """
         return self.args("build", "-t", project_name, ".", *args)
 
-    def save_args(self, *args: str, image_file: Path, image_path: Path) -> Args:
+    def save_args(self, *args: str, image_path: Path) -> Args:
         """Construct podman save arguments.
 
         Args:
@@ -90,6 +90,6 @@ class ContainerEngine(Tool):
             "save",
             "-o",
             image_path.as_posix(),
-            image_file.stem,
+            image_path.stem,
             *args,
         )
