@@ -56,7 +56,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         """
         path = super().parent_path()
         # this path will be parent of the init file
-        copy_module = self.src_module()
+        copy_module = self.copy_module()
         dir_name = (
             isolated_obj_name(copy_module)
             if copy_module is not pyrig

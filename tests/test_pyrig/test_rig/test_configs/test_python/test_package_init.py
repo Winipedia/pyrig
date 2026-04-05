@@ -37,9 +37,9 @@ class TestPackageInitConfigFile:
             # Check that the file has been deleted
             assert not main_file.exists(), "main.py should be deleted"
 
-    def test_src_module(self) -> None:
+    def test_copy_module(self) -> None:
         """Test method."""
-        module = PackageInitConfigFile.I.src_module()
+        module = PackageInitConfigFile.I.copy_module()
         assert module == pyrig
 
         # get the docstring of the init file to check

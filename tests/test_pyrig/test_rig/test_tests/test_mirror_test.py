@@ -58,7 +58,7 @@ def mirror_function():
     class MyTestMirrorTestConfigFile(config_file_factory(MirrorTestConfigFile)):  # ty:ignore[unsupported-base]
         """Test mirror test config file with tmp_path override."""
 
-        def src_module(self) -> ModuleType:
+        def mirror_module(self) -> ModuleType:
             """Get the source module."""
             return module
 
@@ -239,12 +239,12 @@ class TestMirrorTestConfigFile:
         """Test method."""
         assert MirrorTestConfigFile.I.definition_package() is tests
 
-    def test_src_module(
+    def test_mirror_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
-        src_module = my_test_mirror_test_config_file().src_module()
-        assert src_module.__name__ == MIRROR_MODULE_NAME
+        mirror_module = my_test_mirror_test_config_file().mirror_module()
+        assert mirror_module.__name__ == MIRROR_MODULE_NAME
 
     def test_filename(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
@@ -308,13 +308,13 @@ class TestMirrorTestConfigFile:
         test_module_name = my_test_mirror_test_config_file().test_module_name()
         assert test_module_name == TESTS_MIRROR_MODULE_NAME
 
-    def test_test_module_name_from_src_module(
+    def test_test_module_name_from_mirror_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
         test_module_name = (
-            my_test_mirror_test_config_file().test_module_name_from_src_module(
-                my_test_mirror_test_config_file().src_module()
+            my_test_mirror_test_config_file().test_module_name_from_mirror_module(
+                my_test_mirror_test_config_file().mirror_module()
             )
         )
         assert test_module_name == TESTS_MIRROR_MODULE_NAME
@@ -438,7 +438,7 @@ class TestMirrorTestConfigFile:
     def test_generate_subclass(self) -> None:
         """Test method."""
         subclass = MirrorTestConfigFile.I.generate_subclass(mirror_test)
-        assert subclass().src_module() == mirror_test
+        assert subclass().mirror_module() == mirror_test
 
     def test_create_test_modules(self) -> None:
         """Test method."""
