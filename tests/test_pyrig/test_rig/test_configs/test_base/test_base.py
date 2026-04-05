@@ -65,6 +65,10 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
+    def test_incorrect_subclasses(self) -> None:
+        """Test method."""
+        assert not any(ConfigFile.incorrect_subclasses())
+
     def test_version_control_ignored(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:

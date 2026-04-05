@@ -477,3 +477,12 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
             Generator of ConfigFile instances whose paths match .gitignore patterns.
         """
         return (cf for cf in cls.subclasses() if cf().version_control_ignored())
+
+    @classmethod
+    def incorrect_subclasses(cls) -> Generator[type[Self], None, None]:
+        """Get config file classes whose files are not correct.
+
+        Returns:
+            Generator of ConfigFile instances whose files exist but are not correct.
+        """
+        return (cf for cf in cls.subclasses() if not cf().is_correct())
