@@ -12,6 +12,8 @@ from pyrig.rig import configs
 from pyrig.rig.configs.base.base import (
     ConfigFile,
 )
+from pyrig.rig.configs.dot_env import DotEnvConfigFile
+from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
 
 
 @pytest.fixture
@@ -62,6 +64,19 @@ def my_test_config_file(
 
 class TestConfigFile:
     """Test class."""
+
+    def test_version_control_ignored(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+    ) -> None:
+        """Test method."""
+        assert not my_test_config_file().version_control_ignored()
+
+    def test_version_control_ignored_subclasses(self) -> None:
+        """Test method."""
+        assert set(ConfigFile.version_control_ignored_subclasses()) == {
+            DotEnvConfigFile,
+            DotScratchConfigFile,
+        }
 
     def test_validate_config_file(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture

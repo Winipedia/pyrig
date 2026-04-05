@@ -1,15 +1,7 @@
 """module."""
 
-from contextlib import chdir
-from pathlib import Path
-
-from pyrig.rig.configs.dot_env import DotEnvConfigFile
-from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
-from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.version_control import (
     github_repo_token,
-    ignored_config_files,
-    path_is_in_ignore,
 )
 
 
@@ -17,32 +9,3 @@ def test_github_repo_token() -> None:
     """Test function."""
     token = github_repo_token()
     assert isinstance(token, str), f"Expected token to be str, got {type(token)}"
-
-
-def test_path_is_in_ignore(tmp_path: Path) -> None:
-    """Test method."""
-    with chdir(tmp_path):
-        content = """# Comment line
-*.pyc
-__pycache__/
-.venv/
-# This is a comment
-build/
-dist/
-*.egg-info/
-.pytest_cache/
-"""
-        VersionController.I.ignore_path().write_text(content)
-        assert path_is_in_ignore("folder/file.pyc")
-        assert path_is_in_ignore("__pycache__/file.pdf")
-        assert path_is_in_ignore(".venv/file.py")
-        assert path_is_in_ignore("build/file.py")
-        assert path_is_in_ignore("dist/file.py")
-        assert path_is_in_ignore("folder/folder.egg-info/file.py")
-
-
-def test_ignored_config_files() -> None:
-    """Test function."""
-    cfs = list(ignored_config_files())
-
-    assert {type(cf) for cf in cfs} == {DotEnvConfigFile, DotScratchConfigFile}

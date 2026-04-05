@@ -8,6 +8,10 @@ from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
 class TestDotScratchConfigFile:
     """Test class."""
 
+    def test_version_control_ignored(self) -> None:
+        """Test method."""
+        assert DotScratchConfigFile.I.version_control_ignored() is True
+
     def test_is_correct(self) -> None:
         """Test method."""
         assert DotScratchConfigFile.I.is_correct()
