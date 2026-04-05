@@ -63,7 +63,6 @@ from pyrig.core.modules.function import all_functions_from_module
 from pyrig.core.modules.imports import walk_package
 from pyrig.core.modules.inspection import qualname_of_obj, sorted_by_def_line
 from pyrig.core.modules.module import (
-    default_module_content,
     import_module_with_file_fallback,
     import_obj_from_importpath,
     isolated_obj_name,
@@ -314,7 +313,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         test_module_content = self.test_module_content()
         # if module content has no docstring, add the default one
         if not module_has_docstring(self.test_module()):
-            test_module_content = default_module_content().strip() + test_module_content
+            test_module_content = self.test_module_docstring() + test_module_content
         test_module_content = self.test_module_content_with_func_skeletons(
             test_module_content
         )
@@ -914,3 +913,11 @@ class {test_class_name}:
             The ``"test_"`` prefix string.
         """
         return "test_"
+
+    def test_module_docstring(self) -> str:
+        """Get default docstring for test modules.
+
+        Returns:
+            Default docstring to use for test modules that lack one.
+        """
+        return '"""Test module."""'

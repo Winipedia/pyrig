@@ -15,7 +15,6 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig.core.modules.module import (
-    default_module_content,
     import_module_from_file,
     import_module_with_default,
     import_module_with_file_fallback,
@@ -127,13 +126,6 @@ def test_isolated_obj_name() -> None:
 
     result = isolated_obj_name(test_function)
     assert result == "test_function", f"Expected 'test_function', got {result}"
-
-
-def test_default_module_content() -> None:
-    """Test function."""
-    result = default_module_content()
-    # assert is str
-    assert isinstance(result, str), f"Expected str, got {type(result)}"
 
 
 def test_import_module_with_default() -> None:
