@@ -25,6 +25,10 @@ def my_test_dotenv_config_file(
 class TestDotEnvConfigFile:
     """Test class."""
 
+    def test_version_control_ignored(self) -> None:
+        """Test method."""
+        assert DotEnvConfigFile.I.version_control_ignored() is True
+
     def test__load(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
         """Test method."""
         # Create the .env file with some content

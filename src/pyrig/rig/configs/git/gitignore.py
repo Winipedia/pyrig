@@ -12,9 +12,8 @@ See Also:
 from pathlib import Path
 
 import pyrig
+from pyrig.rig.configs.base.base import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.configs.dot_env import DotEnvConfigFile
-from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.resources import (
     requests_get_text_cached,
@@ -76,12 +75,14 @@ class GitignoreConfigFile(StringConfigFile):
             Makes HTTP request to GitHub. Uses fallback on failure.
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
+        ignored_config_files = ConfigFile.version_control_ignored_subclasses()
+        ignored_paths = {cf().path().as_posix() for cf in ignored_config_files}
+
         needed = [
             *self.github_python_gitignore_lines(),
             "",
             f"# {pyrig.__name__} stuff",
-            DotScratchConfigFile.I.path().as_posix(),
-            DotEnvConfigFile.I.path().as_posix(),
+            *ignored_paths,
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov
             ".pytest_cache/",  # bc of pytest cache

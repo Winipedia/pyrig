@@ -13,14 +13,8 @@ See Also:
 
 import logging
 import os
-from collections.abc import Generator
-from pathlib import Path
 
-import pathspec
-
-from pyrig.rig.configs.base.base import ConfigData, ConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
-from pyrig.rig.tools.version_controller import VersionController
 
 logger = logging.getLogger(__name__)
 
@@ -58,53 +52,3 @@ def github_repo_token() -> str:
 
     msg = f"Expected repository token in {DotEnvConfigFile.I.path()} or as env var."
     raise ValueError(msg)
-
-
-def path_is_in_ignore(path: str | Path) -> bool:
-    """Check if a path matches any pattern in the .gitignore file.
-
-    Args:
-        path: Path to check (string or Path). Absolute paths are converted
-            to relative. Directories can have an optional trailing slash.
-
-    Returns:
-        True if path matches any pattern and would be ignored by Git.
-
-    Raises:
-        pathspec.PatternError: If .gitignore contains malformed patterns.
-
-    Examples:
-        Check if a directory is ignored:
-
-            >>> path_is_in_ignore("build/")
-            True
-
-    See Also:
-        VersionController.I.loaded_ignore: Load patterns from .gitignore file.
-    """
-    as_path = Path(path)
-    if as_path.is_absolute():
-        as_path = as_path.relative_to(Path.cwd())
-    is_dir = as_path.suffix == "" or as_path.is_dir() or str(as_path).endswith(os.sep)
-    is_dir = is_dir and not as_path.is_file()
-
-    as_posix = as_path.as_posix()
-    if is_dir and not as_posix.endswith("/"):
-        as_posix += "/"
-
-    spec = pathspec.PathSpec.from_lines(
-        "gitignore",
-        VersionController.I.loaded_ignore(),
-    )
-
-    return spec.match_file(as_posix)
-
-
-def ignored_config_files() -> Generator[ConfigFile[ConfigData], None, None]:
-    """Get config file classes that are ignored by .gitignore.
-
-    Returns:
-        Generator of ConfigFile instances whose paths match .gitignore patterns.
-    """
-    config_files = (cf() for cf in ConfigFile.subclasses())
-    return (cf for cf in config_files if path_is_in_ignore(cf.path()))

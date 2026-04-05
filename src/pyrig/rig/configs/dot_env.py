@@ -60,3 +60,7 @@ We highly discourage managing this ConfigFile via subclassing.
     def is_correct(self) -> bool:
         """Check if .env file exists."""
         return super().is_correct()
+
+    def version_control_ignored(self) -> bool:
+        """Indicate that .env is ignored by version control."""
+        return True

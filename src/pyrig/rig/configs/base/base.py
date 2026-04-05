@@ -68,7 +68,7 @@ import inspect
 import logging
 from abc import abstractmethod
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Generator, Iterable
 from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 from pathlib import Path
@@ -206,6 +206,15 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         # sort by priority (higher first),
         # so return negative priority for ascending sort
         return -subclass().priority()
+
+    def version_control_ignored(self) -> bool:
+        """Wether this config file is ignored by version control (e.g., .gitignore).
+
+        Default implementation returns False,
+        meaning the file is tracked by version control.
+        Can be overridden by subclasses to indicate the file is ignored.
+        """
+        return False
 
     @classmethod
     def validate_config_file(cls, config_file_cls: "ConfigFile[ConfigT]") -> None:
@@ -459,3 +468,12 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
             validate_subclasses: validation mechanism
         """
         cls.validate_subclasses(cls.subclasses())
+
+    @classmethod
+    def version_control_ignored_subclasses(cls) -> Generator[type[Self], None, None]:
+        """Get config file classes that are ignored by .gitignore.
+
+        Returns:
+            Generator of ConfigFile instances whose paths match .gitignore patterns.
+        """
+        return (cf for cf in cls.subclasses() if cf().version_control_ignored())

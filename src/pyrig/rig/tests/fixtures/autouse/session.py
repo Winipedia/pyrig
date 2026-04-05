@@ -38,7 +38,6 @@ from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
 )
-from pyrig.rig.utils.version_control import ignored_config_files
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +84,7 @@ def assert_root_is_correct() -> None:
     # as they are not pushed to the repository
     running_in_ci = RemoteVersionController.I.running_in_ci()
     if running_in_ci:
-        tuple(cf.validate() for cf in ignored_config_files())
+        tuple(cf().validate() for cf in ConfigFile.version_control_ignored_subclasses())
 
     subclasses = ConfigFile.subclasses()
     incorrect_cfs = tuple(cf for cf in subclasses if not cf().is_correct())

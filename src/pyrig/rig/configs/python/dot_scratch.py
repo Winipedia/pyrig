@@ -61,3 +61,7 @@ class DotScratchConfigFile(PythonConfigFile):
             bool: True if the file exists.
         """
         return self.path().exists()
+
+    def version_control_ignored(self) -> bool:
+        """Indicate that .scratch.py is ignored by version control."""
+        return True
