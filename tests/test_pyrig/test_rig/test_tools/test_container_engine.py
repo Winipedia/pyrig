@@ -40,7 +40,6 @@ class TestContainerEngine:
         image_file = Path("image.tar")
         image_path = Path("dist") / image_file
         result = ContainerEngine.I.save_args(
-            image_file=image_file,
             image_path=image_path,
         )
         assert result == (
