@@ -11,7 +11,6 @@ from pathlib import Path
 
 from pyrig.core.processes import Args
 from pyrig.rig.tools.base.base import Tool, ToolGroup
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 class ProjectTester(Tool):
@@ -77,7 +76,7 @@ class ProjectTester(Tool):
 
     def tests_source_root(self) -> Path:
         """Get tests source root directory path."""
-        return PackageManager.I.project_root()
+        return Path()
 
     def tests_package_root(self) -> Path:
         """Get tests package root directory path.

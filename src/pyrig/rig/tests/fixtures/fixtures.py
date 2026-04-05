@@ -173,7 +173,7 @@ def create_source_module(
 @pytest.fixture
 def tmp_project_root_path(tmp_path: Path) -> Path:
     """Fixture to provide a temporary project path for testing."""
-    path = tmp_path / PackageManager.I.project_root() / PackageManager.I.project_name()
+    path = tmp_path / PackageManager.I.project_name()
     path.mkdir()
     return path
 
