@@ -13,7 +13,7 @@ Architecture:
 Modules:
     - `init_project`: Complete project initialization
     - `create_root`: Project structure and config file generation
-    - `create_tests`: Test skeleton generation
+    - `make_tests`: Test skeleton generation
     - `make_inits`: __init__.py file creation for namespace packages
     - `build_artifacts`: Artifact build orchestration
     - `protect_repo`: GitHub repository protection configuration

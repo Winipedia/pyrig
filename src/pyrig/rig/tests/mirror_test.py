@@ -43,7 +43,7 @@ Example:
 
 See Also:
     pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
-    pyrig.rig.cli.commands.create_tests: CLI command using this class
+    pyrig.rig.cli.commands.make_tests: CLI command using this class
 """
 
 import logging
@@ -120,7 +120,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
     See Also:
         pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
-        pyrig.rig.cli.commands.create_tests.make_test_skeletons: CLI integration
+        pyrig.rig.cli.commands.make_tests.make_test_skeletons: CLI integration
     """
 
     def mirror_module(self) -> ModuleType:

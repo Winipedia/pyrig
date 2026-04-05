@@ -24,7 +24,7 @@ def mkroot() -> None:
     """
     # local imports in pyrig to avoid cli failure when installing without dev deps
     # as some pyrig commands are dependend on dev deps and can only be used in a dev env
-    from pyrig.rig.cli.commands.create_root import make_project_root  # noqa: PLC0415
+    from pyrig.rig.cli.commands.make_root import make_project_root  # noqa: PLC0415
 
     make_project_root()
 
@@ -53,9 +53,9 @@ def mktests() -> None:
         Generated test functions raise `NotImplementedError` and must be
         implemented. Test skeletons include minimal docstrings.
     """
-    from pyrig.rig.cli.commands.create_tests import create_tests  # noqa: PLC0415
+    from pyrig.rig.cli.commands.make_tests import make_tests  # noqa: PLC0415
 
-    create_tests()
+    make_tests()
 
 
 def mkinits() -> None:

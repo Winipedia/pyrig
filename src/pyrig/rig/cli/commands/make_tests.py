@@ -8,7 +8,7 @@ untested code.
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 
 
-def create_tests() -> None:
+def make_tests() -> None:
     """Generate test skeletons for all source code.
 
     Delegates to `MirrorTestConfigFile.I.create_all_test_modules`, which
