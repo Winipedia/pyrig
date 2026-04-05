@@ -12,6 +12,8 @@ import json
 from pathlib import Path
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
+from pyrig.rig.configs.license import LicenseConfigFile
+from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 
@@ -70,18 +72,32 @@ class ContainerfileConfigFile(StringConfigFile):
         project_name = PackageManager.I.project_name()
         workdir = PackageManager.I.project_root() / project_name
         app_user_name = "appuser"
-        entrypoint_args = list(PackageManager.I.run_args(project_name))
+        entrypoint = json.dumps(list(PackageManager.I.run_args(project_name)))
+        readme_path, license_path, pyproject_path, lock_file_path = (
+            ReadmeConfigFile.I.path(),
+            LicenseConfigFile.I.path(),
+            PyprojectConfigFile.I.path(),
+            PackageManager.I.lock_file(),
+        )
+        copy_files = f"{readme_path} {license_path} {pyproject_path} {lock_file_path}"
+        install_dependencies_no_dev = (
+            PackageManager.I.install_dependencies_no_dev_args()
+        )
+        image_url, image_source_path, image_destination_path = (
+            PackageManager.I.container_image()
+        )
+
         return [
             f"FROM python:{latest_python_version}-slim",
             f"WORKDIR /{workdir}",
-            "COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv",
-            "COPY README.md LICENSE pyproject.toml uv.lock ./",
+            f"COPY --from={image_url} {image_source_path} {image_destination_path}",
+            f"COPY {copy_files} ./",
             f"RUN useradd -m -u 1000 {app_user_name}",
             f"RUN chown -R {app_user_name}:{app_user_name} .",
             f"USER {app_user_name}",
             f"COPY --chown=appuser:appuser {package_root} {package_root}",
-            "RUN uv sync --no-group dev",
-            "RUN rm README.md LICENSE pyproject.toml uv.lock",
-            f"ENTRYPOINT {json.dumps(entrypoint_args)}",
+            f"RUN {install_dependencies_no_dev}",
+            f"RUN rm {copy_files}",
+            f"ENTRYPOINT {entrypoint}",
             "",
         ]

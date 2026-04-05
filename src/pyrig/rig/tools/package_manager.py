@@ -64,6 +64,25 @@ class PackageManager(Tool):
             "https://github.com/astral-sh/uv",
         )
 
+    def lock_file(self) -> Path:
+        """Get the path to the lock file used by this package manager.
+
+        Returns:
+            Path to 'uv.lock' in the project root.
+        """
+        return self.project_root() / "uv.lock"
+
+    def container_image(self) -> tuple[str, str, str]:
+        """Get the container image to copy uv from.
+
+        Gets the image name, source path, and destination path
+        for copying uv in a Containerfile.
+
+        Returns:
+            Tuple of (image_name, source_path, destination_path).
+        """
+        return "ghcr.io/astral-sh/uv:latest", "/uv", "/usr/local/bin/uv"
+
     def project_name(self) -> str:
         """Get the name of the project."""
         return project_name_from_cwd()
