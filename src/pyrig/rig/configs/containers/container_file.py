@@ -74,10 +74,10 @@ class ContainerfileConfigFile(StringConfigFile):
         app_user_name = "appuser"
         entrypoint = json.dumps(list(PackageManager.I.run_args(project_name)))
         readme_path, license_path, pyproject_path, lock_file_path = (
-            ReadmeConfigFile.I.path(),
-            LicenseConfigFile.I.path(),
-            PyprojectConfigFile.I.path(),
-            PackageManager.I.lock_file(),
+            ReadmeConfigFile.I.path().as_posix(),
+            LicenseConfigFile.I.path().as_posix(),
+            PyprojectConfigFile.I.path().as_posix(),
+            PackageManager.I.lock_file().as_posix(),
         )
         copy_files = f"{readme_path} {license_path} {pyproject_path} {lock_file_path}"
         install_dependencies_no_dev = (
