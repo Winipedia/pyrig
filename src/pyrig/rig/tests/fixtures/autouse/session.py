@@ -86,8 +86,7 @@ def assert_root_is_correct() -> None:
     if running_in_ci:
         tuple(cf().validate() for cf in ConfigFile.version_control_ignored_subclasses())
 
-    subclasses = ConfigFile.subclasses()
-    incorrect_cfs = tuple(cf for cf in subclasses if not cf().is_correct())
+    incorrect_cfs = tuple(ConfigFile.incorrect_subclasses())
 
     if incorrect_cfs:
         # init all per test run
