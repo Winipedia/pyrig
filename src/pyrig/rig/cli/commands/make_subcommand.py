@@ -31,6 +31,7 @@ def make_subcommand(name: str, *, shared: bool) -> None:
 
 def {name}() -> None:
     """This is a cli subcommand."""
-'''
+
+'''  # add a line bc splitlines will remove the last empty line
 
     config_file.dump(content.splitlines())
