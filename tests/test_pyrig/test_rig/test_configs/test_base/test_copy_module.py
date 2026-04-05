@@ -41,7 +41,7 @@ def my_test_copy_module_config_file(
     class MyTestCopyModuleConfigFile(config_file_factory(CopyModuleConfigFile)):  # ty: ignore[unsupported-base]
         """Test copy module config file with tmp_path override."""
 
-        def src_module(self) -> ModuleType:
+        def copy_module(self) -> ModuleType:
             """Get the source module."""
             return mock_module
 
@@ -68,13 +68,13 @@ class TestCopyModuleConfigFile:
         # Verify the generated subclass has the correct src_module method
         subclass_instance = subclass()
         assert isinstance(subclass_instance, CopyModuleConfigFile)
-        assert subclass_instance.src_module() == module
+        assert subclass_instance.copy_module() == module
 
-    def test_src_module(
+    def test_copy_module(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method."""
-        src_module = my_test_copy_module_config_file().src_module()
+        src_module = my_test_copy_module_config_file().copy_module()
         assert isinstance(src_module, ModuleType), "Expected ModuleType"
         expected_name = "test_package.test_subpackage.test_module"
         assert src_module.__name__ == expected_name, (

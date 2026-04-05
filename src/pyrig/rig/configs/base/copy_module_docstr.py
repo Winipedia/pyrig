@@ -8,12 +8,12 @@ Example:
     >>> from pyrig.rig.configs.base.copy_module_docstr import (
     ...     CopyModuleOnlyDocstringConfigFile
     ... )
-    >>> import pyrig.src.string_
+    >>> import pyrig.rig.configs.base.string_
     >>>
     >>> class StringDocstringCopy(CopyModuleOnlyDocstringConfigFile):
     ...
-    ...     def src_module(self) -> ModuleType:
-    ...         return pyrig.src.string_
+    ...     def copy_module(self) -> ModuleType:
+    ...         return pyrig.rig.configs.base.string_
     >>>
     >>> StringDocstringCopy()  # Creates file with only docstring
 """
@@ -28,7 +28,7 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
     Extracts and copies only the module docstring, allowing custom implementation.
 
     Subclasses must implement:
-        - `src_module`: Return the source module to copy docstring from
+        - `copy_module`: Return the source module to copy docstring from
 
     See Also:
         pyrig.rig.configs.base.copy_module.CopyModuleConfigFile: Parent class
@@ -44,9 +44,9 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         Raises:
             ValueError: If source module has no docstring.
         """
-        docstring = self.src_module().__doc__
+        docstring = self.copy_module().__doc__
         if docstring is None:
-            msg = f"Source module {self.src_module()} has no docstring"
+            msg = f"Source module {self.copy_module()} has no docstring"
             raise ValueError(msg)
         return [*f'"""{docstring}"""'.splitlines(), ""]
 
@@ -56,4 +56,4 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         Returns:
             True if the source module has a docstring.
         """
-        return module_has_docstring(self.src_module())
+        return module_has_docstring(self.copy_module())

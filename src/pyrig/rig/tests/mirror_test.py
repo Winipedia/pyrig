@@ -31,7 +31,7 @@ Example:
 
         class CoreMirrorTest(MirrorTestConfigFile):
 
-            def src_module(self) -> ModuleType:
+            def mirror_module(self) -> ModuleType:
                 return myproject.core
 
         CoreMirrorTest()  # Creates tests/test_myproject/test_core.py
@@ -98,7 +98,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
     5. Merge new skeletons with existing test file content
 
     Subclasses must implement:
-        - `src_module`: Return the source module to mirror
+        - `mirror_module`: Return the source module to mirror
 
     Methods for Batch Processing:
         - `generate_subclasses`: Create config subclasses for multiple modules
@@ -110,7 +110,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
             class MyModuleMirrorTest(MirrorTestConfigFile):
 
-                def src_module(self) -> ModuleType:
+                def mirror_module(self) -> ModuleType:
                     return my_module
 
         Dynamic subclass creation::
@@ -123,7 +123,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         pyrig.rig.cli.commands.create_tests.make_test_skeletons: CLI integration
     """
 
-    def src_module(self) -> ModuleType:
+    def mirror_module(self) -> ModuleType:
         """Return the source module to mirror with tests.
 
         This abstract method must be implemented by subclasses to specify which
@@ -135,7 +135,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             The source module whose functions, classes, and methods will have
             corresponding test skeletons generated.
         """
-        msg = f"Subclasses must implement '{self.src_module.__name__}'"
+        msg = f"Subclasses must implement '{self.mirror_module.__name__}'"
         raise NotImplementedError(msg)
 
     def _dump(self, config: ConfigList) -> None:
@@ -262,7 +262,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Returns:
             Dotted import path (e.g., "tests.test_mypackage.test_mymodule").
         """
-        return self.test_module_name_from_src_module(self.src_module())
+        return self.test_module_name_from_mirror_module(self.mirror_module())
 
     def test_module_content(self) -> str:
         """Get the current content of the test module as a string.
@@ -272,19 +272,19 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return self.file_content()
 
-    def test_module_name_from_src_module(self, src_module: ModuleType) -> str:
+    def test_module_name_from_mirror_module(self, mirror_module: ModuleType) -> str:
         """Convert source module to its corresponding test module import path.
 
         Applies test naming conventions: prepends "tests" package and adds
         appropriate prefixes to each path component.
 
         Args:
-            src_module: Source module to derive test path from.
+            mirror_module: Source module to derive test path from.
 
         Returns:
             Test module import path (e.g., "tests.test_package.test_mod").
         """
-        return self.test_obj_importpath_from_obj(src_module)
+        return self.test_obj_importpath_from_obj(mirror_module)
 
     def test_module(self) -> ModuleType:
         """Import and return the test module.
@@ -347,7 +347,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Note:
             Logs debug information about the number and names of untested functions.
         """
-        funcs = sorted_by_def_line(all_functions_from_module(self.src_module()))
+        funcs = sorted_by_def_line(all_functions_from_module(self.mirror_module()))
         test_funcs = all_functions_from_module(self.test_module())
 
         supposed_test_func_names = (self.test_name_for_obj(f) for f in funcs)
@@ -462,7 +462,7 @@ def {test_func_name}() -> None:
             Only considers methods defined directly on the class, excluding
             inherited methods from parent classes.
         """
-        classes = sorted_by_def_line(all_cls_from_module(self.src_module()))
+        classes = sorted_by_def_line(all_cls_from_module(self.mirror_module()))
         test_classes = all_cls_from_module(self.test_module())
 
         class_to_methods = (
@@ -585,7 +585,7 @@ class {test_class_name}:
 
         Creates a new class at runtime that:
         1. Inherits from the current class (MirrorTestConfigFile or subclass)
-        2. Implements src_module() to return the specified module
+        2. Implements mirror_module() to return the specified module
         3. Has a descriptive class name based on the test module name
 
         This enables using the config file machinery without manually defining
@@ -607,7 +607,9 @@ class {test_class_name}:
                 # subclass.__name__ == "TestUtilsMirrorTestConfigFile"
                 subclass()  # Creates tests/test_myproject/test_utils.py
         """
-        test_module_name = self.test_module_name_from_src_module(module).split(".")[-1]
+        test_module_name = self.test_module_name_from_mirror_module(module).split(".")[
+            -1
+        ]
 
         test_cls_name = (
             make_name_from_obj(
@@ -616,13 +618,13 @@ class {test_class_name}:
             + self.__class__.__name__
         )
 
-        def src_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
+        def mirror_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
             return module
 
         subclass = type(
             test_cls_name,
             (self.__class__,),
-            {self.src_module.__name__: src_module},
+            {self.mirror_module.__name__: mirror_module},
         )
         return cast("type[Self]", subclass)
 

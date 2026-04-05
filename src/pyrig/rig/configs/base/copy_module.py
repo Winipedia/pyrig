@@ -6,12 +6,12 @@ transformation (e.g. `pyrig.src.X` -> `<project>.src.X`).
 Example:
     >>> from types import ModuleType
     >>> from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
-    >>> import pyrig.src.string_
+    >>> import pyrig.rig.configs.base.string_
     >>>
     >>> class StringModuleCopy(CopyModuleConfigFile):
     ...
-    ...     def src_module(self) -> ModuleType:
-    ...         return pyrig.src.string_
+    ...     def copy_module(self) -> ModuleType:
+    ...         return pyrig.rig.configs.base.string_
     >>>
     >>> StringModuleCopy()  # Copies pyrig/src/string_.py -> <project>/src/string_.py
 """
@@ -44,7 +44,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     another project would be undesirable
 
     Subclasses must implement:
-        - `src_module`: Return the source module to copy
+        - `copy_module`: Return the source module to copy
 
     See Also:
         pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
@@ -53,7 +53,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     """
 
     @abstractmethod
-    def src_module(self) -> ModuleType:
+    def copy_module(self) -> ModuleType:
         """Return the source module to copy.
 
         Returns:
@@ -68,7 +68,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Target directory path for copied module.
         """
-        copy_module = self.src_module()
+        copy_module = self.copy_module()
         new_module_name = module_name_replacing_start_module(
             copy_module, PackageManager.I.package_name()
         )
@@ -84,7 +84,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Full source code of the module as list of lines.
         """
-        return [*module_content(self.src_module()).splitlines(), ""]
+        return [*module_content(self.copy_module()).splitlines(), ""]
 
     def filename(self) -> str:
         """Return module's isolated name (last component).
@@ -92,20 +92,20 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Last component of the module's dotted name.
         """
-        return isolated_obj_name(self.src_module())
+        return isolated_obj_name(self.copy_module())
 
     @classmethod
     def generate_subclass(cls, module: ModuleType) -> type[Self]:
         """Dynamically create a typed subclass bound to a source module.
 
-        The generated subclass implements `src_module` so instances copy content
+        The generated subclass implements `copy_module` so instances copy content
         from the provided module without requiring a manually declared class.
 
         Args:
-            module: Source module to bind as the return value of `src_module`.
+            module: Source module to bind as the return value of `copy_module`.
 
         Returns:
-            A subclass of this config class with `src_module` preconfigured.
+            A subclass of this config class with `copy_module` preconfigured.
         """
         cls_name = (
             make_name_from_obj(
@@ -114,12 +114,12 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             + cls.__name__
         )
 
-        def src_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
+        def copy_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
             return module
 
         subclass = type(
             cls_name,
             (cls,),
-            {cls.src_module.__name__: src_module},
+            {cls.copy_module.__name__: copy_module},
         )
         return cast("type[Self]", subclass)

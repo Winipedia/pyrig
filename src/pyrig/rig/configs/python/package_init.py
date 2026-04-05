@@ -43,7 +43,7 @@ class PackageInitConfigFile(InitConfigFile):
         super().create_file()
         self.delete_root_main()
 
-    def src_module(self) -> ModuleType:
+    def copy_module(self) -> ModuleType:
         """Return the `pyrig` module."""
         return pyrig
 

@@ -34,7 +34,7 @@ def my_test_init_config_file(
     class MyTestInitConfigFile(config_file_factory(InitConfigFile)):  # ty: ignore[unsupported-base]
         """Test init config file with tmp_path override."""
 
-        def src_module(self) -> ModuleType:
+        def copy_module(self) -> ModuleType:
             """Get the source module."""
             return mock_module
 

@@ -43,7 +43,7 @@ def my_test_copy_module_only_docstring_config_file(
     ):
         """Test copy module only docstring config file with tmp_path override."""
 
-        def src_module(self) -> ModuleType:
+        def copy_module(self) -> ModuleType:
             """Get the source module."""
             return module
 
