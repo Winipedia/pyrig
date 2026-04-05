@@ -70,6 +70,21 @@ class ModulePath:
         return ModulePath.module_type_to_file_path(package).parent
 
     @staticmethod
+    def module_type_to_source_root(module: ModuleType) -> Path:
+        """Get the source root directory for an imported module."""
+        path = ModulePath.module_type_to_file_path(module)
+        name = module.__name__
+        # if ends with __init__.py remove that part to get the package directory
+        if path.name == "__init__.py":
+            path = path.parent
+
+        name_as_path = ModulePath.module_name_to_relative_file_path(name, root=Path())
+        # remove the module part to get the source root
+        for _ in name_as_path.parts:
+            path = path.parent
+        return path
+
+    @staticmethod
     def module_name_to_relative_file_path(module_name: str, root: Path) -> Path:
         """Convert a dotted module name to a relative file path.
 

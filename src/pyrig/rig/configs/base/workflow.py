@@ -864,7 +864,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step_func=self.step_save_container_image,
             run=str(
                 ContainerEngine.I.save_args(
-                    image_file=image_file,
                     image_path=image_path,
                 )
             ),

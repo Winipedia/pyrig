@@ -21,4 +21,4 @@ def run_scratch_file() -> None:
         for experimental code, debugging, or one-off scripts related to the
         project.
     """
-    run_path(DotScratchConfigFile.I.path().as_posix())
+    run_path(DotScratchConfigFile.I.path())

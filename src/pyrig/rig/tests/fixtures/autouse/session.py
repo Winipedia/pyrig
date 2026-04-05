@@ -95,7 +95,7 @@ def assert_root_is_correct() -> None:
     msg = f"""Found incorrect ConfigFiles.
 Attempted correcting them automatically.
 Please verify the changes at the following paths.
-{make_summary_error_msg(str(cf().path()) for cf in incorrect_cfs)}
+{make_summary_error_msg(cf().path() for cf in incorrect_cfs)}
 """
     assert not incorrect_cfs, msg
 
@@ -115,7 +115,7 @@ def assert_no_namespace_packages() -> None:
     msg = f"""Pyrig enforces that all packages have __init__.py files.
 Found namespace packages.
 Created __init__.py files for them.
-Please verify the changes at the following paths:
+Please verify the changes at the following locations:
 {make_summary_error_msg(namespace_packages)}
 """
     assert not has_namespace_packages, msg
@@ -144,7 +144,7 @@ def assert_all_modules_tested() -> None:
 
     msg = f"""Found incorrect test modules.
 Test skeletons were automatically created.
-{make_summary_error_msg(str(sc().path()) for sc in incorrect_subclasses)}
+{make_summary_error_msg(sc().path() for sc in incorrect_subclasses)}
 """
     assert not incorrect_subclasses, msg
 
@@ -246,9 +246,9 @@ However, it failed with the following error:
 
     # copy pyproject.toml and uv.lock to tmp_path
     configs = (
-        PyprojectConfigFile.I.path().as_posix(),
-        ReadmeConfigFile.I.path().as_posix(),
-        LicenseConfigFile.I.path().as_posix(),
+        PyprojectConfigFile.I.path(),
+        ReadmeConfigFile.I.path(),
+        LicenseConfigFile.I.path(),
     )
     for config in configs:
         shutil.copy(config, tmp_project_root)
