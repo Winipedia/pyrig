@@ -157,17 +157,7 @@ class ModulePath:
         return ModulePath.relative_path_to_module_name(rel_path, root)
 
 
-def default_init_module_content() -> str:
-    """Generate the default content for new ``__init__.py`` files.
-
-    Returns:
-        A string containing a minimal docstring for the ``__init__`` module.
-    """
-    return '''"""__init__ module."""
-'''
-
-
-def make_init_module(path: Path) -> None:
+def make_init_module(path: Path, content: str) -> None:
     """Create an ``__init__.py`` file in the specified directory.
 
     Creates the file with default content from ``default_init_module_content``.
@@ -175,6 +165,7 @@ def make_init_module(path: Path) -> None:
 
     Args:
         path: Directory path where ``__init__.py`` should be created.
+        content: Content to write into the ``__init__.py`` file.
 
     Note:
         No-op if ``__init__.py`` already exists in the directory.
@@ -186,11 +177,10 @@ def make_init_module(path: Path) -> None:
 
     typer.echo(f"Creating: {path}")
 
-    content = default_init_module_content()
     path.write_text(content)
 
 
-def make_package_dir(path: Path, until: tuple[Path, ...]) -> None:
+def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
     """Create a directory and add ``__init__.py`` files up the directory tree.
 
     Creates the target directory (and missing parents), then adds ``__init__.py``
@@ -202,6 +192,7 @@ def make_package_dir(path: Path, until: tuple[Path, ...]) -> None:
         path: Directory path to create. must be relative to the cwd.
         until: Directory path to stop at when adding ``__init__.py`` files. The
             directory specified by ``until`` will not get an __init__.py
+        content: Content to write into each ``__init__.py`` file.
 
 
     Note:
@@ -213,4 +204,4 @@ def make_package_dir(path: Path, until: tuple[Path, ...]) -> None:
     for p in (path, *path.parents):
         if p in until:
             break
-        make_init_module(p)
+        make_init_module(p, content=content)

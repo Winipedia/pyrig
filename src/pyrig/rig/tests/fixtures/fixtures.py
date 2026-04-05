@@ -122,7 +122,7 @@ def create_module() -> Callable[[Path], ModuleType]:
 
     def create(path: Path) -> ModuleType:
         """Create a module from the given path."""
-        make_package_dir(path.parent, until=())
+        make_package_dir(path.parent, until=(), content="")
         path.touch()
         return import_module_with_file_fallback(path, root=Path())
 
@@ -135,7 +135,7 @@ def create_package() -> Callable[[Path], ModuleType]:
 
     def create(path: Path) -> ModuleType:
         """Create a package from the given path."""
-        make_package_dir(path, until=())
+        make_package_dir(path, until=(), content="")
 
         return import_package_with_dir_fallback(path, root=Path())
 
