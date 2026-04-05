@@ -70,7 +70,7 @@ class ContainerfileConfigFile(StringConfigFile):
         latest_python_version = PyprojectConfigFile.I.latest_possible_python_version()
         package_root = PackageManager.I.package_root().as_posix()
         project_name = PackageManager.I.project_name()
-        workdir = Path(project_name)
+        workdir = Path(project_name).as_posix()
         app_user_name = "appuser"
         entrypoint = json.dumps(list(PackageManager.I.run_args(project_name)))
         readme_path, license_path, pyproject_path, lock_file_path = (

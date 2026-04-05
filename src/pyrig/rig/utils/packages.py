@@ -129,7 +129,7 @@ def find_packages(
         include=(f"{ProjectTester.I.tests_package_name()}*",),
     )
     source_package_names = find_func(
-        where=PackageManager.I.source_root().as_posix(),
+        where=PackageManager.I.source_root(),
     )
 
     package_names = combine_generators(tests_package_names, source_package_names)
