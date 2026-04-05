@@ -107,7 +107,7 @@ def walk_package(
 
     See Also:
         `pyrig.src.modules.class_.discover_all_subclasses`: Subclass discovery.
-        `pyrig.rig.cli.commands.create_tests.create_tests_for_package`: Test
+        `pyrig.rig.cli.commands.make_tests.make_tests_for_package`: Test
             generation.
 
     Args:

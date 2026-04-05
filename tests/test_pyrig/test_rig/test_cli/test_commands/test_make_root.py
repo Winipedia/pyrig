@@ -2,7 +2,7 @@
 
 from pytest_mock import MockFixture
 
-from pyrig.rig.cli.commands.create_root import (
+from pyrig.rig.cli.commands.make_root import (
     make_project_root,
 )
 from pyrig.rig.configs.base.base import ConfigFile
