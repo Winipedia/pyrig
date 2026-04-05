@@ -66,20 +66,22 @@ class ContainerfileConfigFile(StringConfigFile):
             Python version.
         """
         latest_python_version = PyprojectConfigFile.I.latest_possible_python_version()
+        package_root = PackageManager.I.package_root()
         project_name = PackageManager.I.project_name()
-        package_name = PackageManager.I.package_name()
+        workdir = PackageManager.I.project_root() / project_name
         app_user_name = "appuser"
         entrypoint_args = list(PackageManager.I.run_args(project_name))
         return [
             f"FROM python:{latest_python_version}-slim",
-            f"WORKDIR /{project_name}",
+            f"WORKDIR /{workdir}",
             "COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv",
             "COPY README.md LICENSE pyproject.toml uv.lock ./",
             f"RUN useradd -m -u 1000 {app_user_name}",
             f"RUN chown -R {app_user_name}:{app_user_name} .",
             f"USER {app_user_name}",
-            f"COPY --chown=appuser:appuser {package_name} {package_name}",
+            f"COPY --chown=appuser:appuser {package_root} {package_root}",
             "RUN uv sync --no-group dev",
             "RUN rm README.md LICENSE pyproject.toml uv.lock",
             f"ENTRYPOINT {json.dumps(entrypoint_args)}",
+            "",
         ]

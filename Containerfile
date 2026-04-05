@@ -5,7 +5,7 @@ COPY README.md LICENSE pyproject.toml uv.lock ./
 RUN useradd -m -u 1000 appuser
 RUN chown -R appuser:appuser .
 USER appuser
-COPY --chown=appuser:appuser pyrig pyrig
+COPY --chown=appuser:appuser src/pyrig src/pyrig
 RUN uv sync --no-group dev
 RUN rm README.md LICENSE pyproject.toml uv.lock
 ENTRYPOINT ["uv", "run", "pyrig"]
