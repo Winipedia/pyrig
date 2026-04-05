@@ -41,6 +41,8 @@ class ModulePath:
     def module_type_to_file_path(module: ModuleType) -> Path:
         """Convert an imported module object to its source file path.
 
+        Will give you the __init__.py file for packages, and the .py file for modules.
+
         Args:
             module: An imported Python module (e.g., from ``import mymodule``).
 
