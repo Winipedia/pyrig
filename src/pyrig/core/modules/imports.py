@@ -49,10 +49,10 @@ def import_package_from_dir(package_dir: Path, root: Path) -> ModuleType:
     init_path = package_dir / "__init__.py"
 
     package_name = ModulePath.absolute_path_to_module_name(package_dir, root)
-    loader = importlib.machinery.SourceFileLoader(package_name, str(init_path))
+    loader = importlib.machinery.SourceFileLoader(package_name, init_path.as_posix())
     spec = importlib.util.spec_from_loader(package_name, loader, is_package=True)
     if spec is None:
-        msg = f"Could not create spec for {package_dir}"
+        msg = f"Could not create spec for {package_dir.as_posix()}"
         raise ValueError(msg)
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)

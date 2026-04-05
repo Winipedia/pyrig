@@ -122,13 +122,12 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
 
         dotenv = DotEnvConfigFile.I.load()
         token = dotenv.get("REPO_TOKEN")
+        dotenv_path = DotEnvConfigFile.I.path()
         if token:
-            logger.debug(
-                "Using repository token from %s file", DotEnvConfigFile.I.path()
-            )
+            logger.debug("Using repository token from %s file", dotenv_path)
             return token
 
-        msg = f"Expected repository token in {DotEnvConfigFile.I.path()} or as env var."
+        msg = f"Expected repository token in {dotenv_path} or as env var."
         raise ValueError(msg)
 
     def protect_repo(self) -> None:

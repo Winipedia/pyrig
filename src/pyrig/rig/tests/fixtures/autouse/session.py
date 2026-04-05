@@ -95,7 +95,7 @@ def assert_root_is_correct() -> None:
     msg = f"""Found incorrect ConfigFiles.
 Attempted correcting them automatically.
 Please verify the changes at the following paths.
-{make_summary_error_msg(cf().path().as_posix() for cf in incorrect_cfs)}
+{make_summary_error_msg(str(cf().path()) for cf in incorrect_cfs)}
 """
     assert not incorrect_cfs, msg
 
@@ -144,7 +144,7 @@ def assert_all_modules_tested() -> None:
 
     msg = f"""Found incorrect test modules.
 Test skeletons were automatically created.
-{make_summary_error_msg(sc().path().as_posix() for sc in incorrect_subclasses)}
+{make_summary_error_msg(str(sc().path()) for sc in incorrect_subclasses)}
 """
     assert not incorrect_subclasses, msg
 

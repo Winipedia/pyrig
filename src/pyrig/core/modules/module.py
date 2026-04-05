@@ -92,11 +92,11 @@ def import_module_from_file(path: Path, root: Path) -> ModuleType:
     name = ModulePath.absolute_path_to_module_name(path, root=root)
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None:
-        msg = f"Could not create spec for {path}"
+        msg = f"Could not create spec for {path.as_posix()}"
         raise ValueError(msg)
     module = importlib.util.module_from_spec(spec)
     if spec.loader is None:
-        msg = f"Could not create loader for {path}"
+        msg = f"Could not create loader for {path.as_posix()}"
         raise ValueError(msg)
     spec.loader.exec_module(module)
     sys.modules[name] = module

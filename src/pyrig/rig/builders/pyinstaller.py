@@ -178,7 +178,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         temp_dir = temp_artifacts_dir.parent
 
         return (
-            str(self.entry_point_path()),
+            self.entry_point_path().as_posix(),
             "--name",
             self.app_name(),
             "--clean",
@@ -186,13 +186,13 @@ class PyInstallerBuilder(BuilderConfigFile):
             "--onefile",
             "--noconsole",
             "--workpath",
-            str(self.temp_workpath(temp_dir)),
+            self.temp_workpath(temp_dir).as_posix(),
             "--specpath",
-            str(self.temp_specpath(temp_dir)),
+            self.temp_specpath(temp_dir).as_posix(),
             "--distpath",
-            str(self.temp_distpath(temp_dir)),
+            self.temp_distpath(temp_dir).as_posix(),
             "--icon",
-            str(self.app_icon_path(temp_dir)),
+            self.app_icon_path(temp_dir).as_posix(),
             *(
                 arg
                 for src, dest in self.add_datas()

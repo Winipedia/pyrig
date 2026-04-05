@@ -208,11 +208,15 @@ class BuilderConfigFile(ListConfigFile):
             artifact: Path to the artifact in the temporary build directory.
         """
         platform_specific_path = self.platform_specific_path(artifact)
-        logger.debug("Moving artifact: %s to: %s", artifact, platform_specific_path)
+        logger.debug(
+            "Moving artifact: %s to: %s",
+            artifact,
+            platform_specific_path,
+        )
         # create the platform-specific path's parent directory if it doesn't exist
         platform_specific_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(artifact), str(platform_specific_path))
-        typer.echo(f"Created {platform_specific_path.as_posix()}")
+        shutil.move(artifact, platform_specific_path)
+        typer.echo(f"Created {platform_specific_path}")
 
     def platform_specific_path(self, artifact: Path) -> Path:
         """Get the platform-specific output path for an artifact.
