@@ -18,153 +18,74 @@ from pathlib import Path
 from types import ModuleType
 
 
-class ModulePath:
-    """Static utility class for module and package path operations.
+def module_file_path(module: ModuleType) -> Path:
+    """Get the file path of an imported module.
 
-    Provides bidirectional conversions between Python dotted module/package names
-    and filesystem paths. All methods are static and the class is not meant to be
-    instantiated.
+    Args:
+        module: An imported Python module.
 
-    Key Operations:
-        - Module name → file path: ``module_name_to_relative_file_path``
-        - File path → module name: ``relative_path_to_module_name``,
-          ``absolute_path_to_module_name``
-        - Package name → directory path: ``package_name_to_relative_dir_path``
-        - Module/package object → file path: ``module_type_to_file_path``,
-          ``package_type_to_dir_path``
+    Returns:
+        Absolute path to the module's source file.
 
+    Raises:
+        ValueError: If the module has no __file__ attribute (e.g., built-in
+            modules or namespace packages).
     """
+    file = module.__file__
+    if file is None:
+        msg = f"Module {module} has no __file__"
+        raise ValueError(msg)
+    return Path(file)
 
-    @staticmethod
-    def module_type_to_file_path(module: ModuleType) -> Path:
-        """Convert an imported module object to its source file path.
 
-        Will give you the __init__.py file for packages, and the .py file for modules.
+def package_dir_path(package: ModuleType) -> Path:
+    """Get the directory path of an imported package.
 
-        Args:
-            module: An imported Python module (e.g., from ``import mymodule``).
+    Args:
+        package: An imported Python package (a module with an __init__.py).
 
-        Returns:
-            Absolute path to the module's source file.
+    Returns:
+        Absolute path to the package's directory (parent of __init__.py).
 
-        Raises:
-            ValueError: If the module has no ``__file__`` attribute (e.g.,
-                built-in modules or namespace packages).
-        """
-        file = module.__file__
-        if file is None:
-            msg = f"Module {module} has no __file__"
-            raise ValueError(msg)
-        return Path(file)
+    Raises:
+        ValueError: If the module has no __file__ attribute (e.g., built-in
+            modules or namespace packages).
+    """
+    return module_file_path(package).parent
 
-    @staticmethod
-    def package_type_to_dir_path(package: ModuleType) -> Path:
-        """Convert an imported package object to its directory path.
 
-        Args:
-            package: An imported Python package (a module with an ``__init__.py``).
+def package_name_as_path(name: str) -> Path:
+    """Convert a dotted package name to a relative directory path.
 
-        Returns:
-            Absolute path to the package's directory (parent of ``__init__.py``).
-        """
-        return ModulePath.module_type_to_file_path(package).parent
+    Args:
+        name: Dotted Python package name (e.g., "package.subpackage").
 
-    @staticmethod
-    def module_type_to_source_root(module: ModuleType) -> Path:
-        """Get the source root directory for an imported module."""
-        path = ModulePath.module_type_to_file_path(module)
-        name = module.__name__
-        # if ends with __init__.py remove that part to get the package directory
-        if path.name == "__init__.py":
-            path = path.parent
+    Returns:
+        Relative path to the package directory (e.g., "package/subpackage").
+    """
+    return Path(*name.split("."))
 
-        name_as_path = ModulePath.module_name_to_relative_file_path(name, root=Path())
-        # remove the module part to get the source root
-        for _ in name_as_path.parts:
-            path = path.parent
-        return path
 
-    @staticmethod
-    def module_name_to_relative_file_path(module_name: str, root: Path) -> Path:
-        """Convert a dotted module name to a relative file path.
+def module_name_as_path(name: str) -> Path:
+    """Convert a dotted module name to a relative file path.
 
-        Replaces dots with path separators and appends ``.py`` extension.
-        Used across pyrig's subsystems (CLI, configs, tests) to locate module files.
+    Args:
+        name: Dotted Python module name (e.g., "package.subpackage.module").
 
-        Args:
-            module_name: Dotted Python module name
-            (e.g., ``'package.subpackage.module'``).
-            root: The relative root directory to prepend to the path
-                (e.g., ``Path('src')``).
+    Returns:
+        Relative path to the module file (e.g., "package/subpackage/module.py").
+    """
+    return package_name_as_path(name).with_suffix(".py")
 
-        Returns:
-            Relative path to the module file
-            (e.g., ``Path('package/subpackage/module.py')``).
-        """
-        return root / Path(module_name.replace(".", "/") + ".py")
 
-    @staticmethod
-    def package_name_to_relative_dir_path(package_name: str, root: Path) -> Path:
-        """Convert a dotted package name to a relative directory path.
+def path_as_module_name(path: Path) -> str:
+    """Convert a relative file path to a dotted module name.
 
-        Args:
-            package_name: Dotted Python package name (e.g., ``'package.subpackage'``).
-            root: The relative root directory to prepend to the path
-                (e.g., ``Path('src')``).
+    Args:
+        path: Relative file path (e.g., "package/subpackage/module.py").
 
-        Returns:
-            Relative path to the package directory
-            (e.g., ``Path('package/subpackage')``).
-        """
-        return root / Path(package_name.replace(".", "/"))
-
-    @staticmethod
-    def relative_path_to_module_name(path: Path, root: Path) -> str:
-        """Convert a relative file or directory path to a dotted module name.
-
-        Handles both module files (``.py``) and package directories. The file
-        extension is stripped if present.
-
-        Args:
-            path: Relative path to a module file or package directory
-                (e.g., ``Path('package/subpackage/module.py')``
-                or ``Path('package/subpackage')``).
-            root: The relative root directory to remove from the path
-                (e.g., ``Path('src')``).
-
-        Returns:
-            Dotted module name (e.g., ``'package.subpackage.module'``
-            or ``'package.subpackage'``).
-        """
-        path = path.relative_to(root)
-        return path.as_posix().removesuffix(".py").replace("/", ".")
-
-    @staticmethod
-    def absolute_path_to_module_name(path: Path, root: Path) -> str:
-        """Convert an absolute or relative file path to a dotted module name.
-
-        For relative paths, converts directly to a module name (e.g.,
-        ``Path('package/mod.py')`` → ``'package.mod'``).
-
-        For absolute paths, resolves relative to the current working directory
-        (or _MEIPASS in frozen environments) first.
-
-        Args:
-            path: Absolute or relative path to a module file or package
-                directory. Absolute paths must be within the current working
-                directory.
-            root: The relative root directory to remove from the path
-                (e.g., ``Path('src')``).
-
-        Returns:
-            Dotted module name.
-
-        Raises:
-            ValueError: If an absolute path is not relative to the CWD
-                (raised by ``Path.relative_to``).
-        """
-        if not path.is_absolute():
-            return ModulePath.relative_path_to_module_name(path, root)
-        rel_path = path.resolve().relative_to(Path.cwd())
-        root = root.resolve().relative_to(Path.cwd())
-        return ModulePath.relative_path_to_module_name(rel_path, root)
+    Returns:
+        Dotted Python module name (e.g., "package.subpackage.module").
+    """
+    # Remove the .py suffix and convert to dotted name
+    return ".".join(path.with_suffix("").parts)

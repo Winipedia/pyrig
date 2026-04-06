@@ -16,6 +16,7 @@ import pytest
 from pyrig.core.modules.imports import import_package_with_dir_fallback
 from pyrig.core.modules.module import import_module_with_file_fallback
 from pyrig.core.modules.package import make_package_dir
+from pyrig.core.modules.path import path_as_module_name
 from pyrig.rig.configs.base.base import ConfigData, ConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 
@@ -124,7 +125,7 @@ def create_module() -> Callable[[Path], ModuleType]:
         """Create a module from the given path."""
         make_package_dir(path.parent, until=(), content="")
         path.touch()
-        return import_module_with_file_fallback(path, root=Path())
+        return import_module_with_file_fallback(path, name=path_as_module_name(path))
 
     return create
 
@@ -136,8 +137,7 @@ def create_package() -> Callable[[Path], ModuleType]:
     def create(path: Path) -> ModuleType:
         """Create a package from the given path."""
         make_package_dir(path, until=(), content="")
-
-        return import_package_with_dir_fallback(path, root=Path())
+        return import_package_with_dir_fallback(path, name=path_as_module_name(path))
 
     return create
 
@@ -189,10 +189,11 @@ def tmp_source_root_path(tmp_project_root_path: Path) -> Path:
 @pytest.fixture
 def tmp_package_root_path(
     tmp_project_root_path: Path,
+    tmp_source_root_path: Path,
     create_source_package: Callable[[Path], ModuleType],
 ) -> tuple[Path, ModuleType]:
     """Creates the package root."""
     path = tmp_project_root_path / PackageManager.I.package_root()
 
-    package = create_source_package(path)
+    package = create_source_package(path.relative_to(tmp_source_root_path))
     return path, package

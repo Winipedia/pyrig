@@ -25,13 +25,13 @@ See Also:
 
 import pyrig
 from pyrig.core.modules.package import discover_equivalent_modules_across_dependents
-from pyrig.core.modules.path import ModulePath
+from pyrig.core.modules.path import package_dir_path
 from pyrig.rig.tests import fixtures
 
 module_names: list[str] = []
 for package in discover_equivalent_modules_across_dependents(fixtures, pyrig):
     package_name = package.__name__
-    package_path = ModulePath.package_type_to_dir_path(package)
+    package_path = package_dir_path(package)
 
     for path in package_path.rglob("*.py"):
         if path.name == "__init__.py":

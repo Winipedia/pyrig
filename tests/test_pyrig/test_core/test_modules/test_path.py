@@ -5,75 +5,64 @@ from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
-import pyrig
-from pyrig import rig
 from pyrig.core.modules.path import (
-    ModulePath,
+    module_file_path,
+    module_name_as_path,
+    package_dir_path,
+    package_name_as_path,
+    path_as_module_name,
 )
+from pyrig.rig import tools
 from pyrig.rig.tests import mirror_test
-from pyrig.rig.tools.package_manager import PackageManager
 
 
-class TestModulePath:
-    """Test class."""
+def test_module_file_path(
+    create_module: Callable[[Path], ModuleType], tmp_path: Path
+) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        expected_path = Path("package/subpackage/module.py")
+        module = create_module(expected_path)
+        assert module_file_path(module) == expected_path.resolve()
 
-    def test_module_type_to_source_root(self) -> None:
-        """Test method."""
-        modules = (pyrig, rig, mirror_test)
-        source_root = PackageManager.I.source_root().resolve()
-        for module in modules:
-            assert (
-                ModulePath.module_type_to_source_root(module).resolve() == source_root
-            )
+    assert (
+        module_file_path(mirror_test)
+        == Path("src/pyrig/rig/tests/mirror_test.py").resolve()
+    )
 
-    def test_module_type_to_file_path(
-        self, tmp_path: Path, create_module: Callable[[Path], ModuleType]
-    ) -> None:
-        """Test method."""
-        test_module_name = self.test_module_type_to_file_path.__name__
-        with chdir(tmp_path):
-            test_module_name = test_module_name + ".py"
-            module_path = tmp_path / test_module_name
-            module = create_module(module_path)
-            assert ModulePath.module_type_to_file_path(module) == module_path
-            assert module.__file__ == str(module_path)
 
-    def test_package_type_to_dir_path(
-        self, tmp_path: Path, create_package: Callable[[Path], ModuleType]
-    ) -> None:
-        """Test method."""
-        test_package_name = self.test_package_type_to_dir_path.__name__
-        with chdir(tmp_path):
-            package_path = tmp_path / test_package_name
-            package = create_package(package_path)
-            assert ModulePath.package_type_to_dir_path(package) == package_path
+def test_package_dir_path(
+    create_package: Callable[[Path], ModuleType], tmp_path: Path
+) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        expected_dir = Path("package/subpackage")
+        package = create_package(expected_dir)
+        assert package_dir_path(package) == expected_dir.resolve()
 
-    def test_module_name_to_relative_file_path(self) -> None:
-        """Test method."""
-        name = self.test_module_name_to_relative_file_path.__name__ + "." + "module"
-        path = ModulePath.module_name_to_relative_file_path(name, root=Path("src"))
-        assert path == Path("src") / Path(name.replace(".", "/") + ".py")
+    assert package_dir_path(tools) == Path("src/pyrig/rig/tools").resolve()
 
-    def test_package_name_to_relative_dir_path(self) -> None:
-        """Test method."""
-        name = self.test_package_name_to_relative_dir_path.__name__ + "." + "package"
-        path = ModulePath.package_name_to_relative_dir_path(name, root=Path())
-        assert path == Path(name.replace(".", "/"))
 
-    def test_relative_path_to_module_name(self) -> None:
-        """Test method."""
-        path = Path("src/test/package.py")
-        name = ModulePath.relative_path_to_module_name(path, root=Path("src"))
-        assert name == "test.package"
+def test_package_name_as_path() -> None:
+    """Test function."""
+    name = "package.subpackage.module"
+    expected_path = Path("package/subpackage/module")
+    assert package_name_as_path(name) == expected_path
 
-    def test_absolute_path_to_module_name(self, tmp_path: Path) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            path = tmp_path / "test_module.py"
-            name = ModulePath.absolute_path_to_module_name(path, root=Path())
-            assert name == "test_module"
 
-        # Test that relative paths are converted directly without resolving
-        path = Path("project/core/ui/pages/add_downloads.py")
-        name = ModulePath.absolute_path_to_module_name(path, root=Path())
-        assert name == "project.core.ui.pages.add_downloads"
+def test_module_name_as_path() -> None:
+    """Test function."""
+    name = "package.subpackage.module"
+    expected_path = Path("package/subpackage/module.py")
+    assert module_name_as_path(name) == expected_path
+
+
+def test_path_as_module_name() -> None:
+    """Test function."""
+    path = Path("package/subpackage/module.py")
+    expected_name = "package.subpackage.module"
+    assert path_as_module_name(path) == expected_name
+
+    # path with no .py suffix
+    path_no_suffix = Path("package/subpackage/module")
+    assert path_as_module_name(path_no_suffix) == expected_name

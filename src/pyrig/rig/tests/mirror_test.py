@@ -70,13 +70,13 @@ from pyrig.core.modules.module import (
     module_has_docstring,
     reimport_module,
 )
-from pyrig.core.modules.path import ModulePath
 from pyrig.core.string_ import make_name_from_obj
 from pyrig.rig import tests
 from pyrig.rig.configs.base.base import ConfigList
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.utils.path import module_name_as_root_path
 
 logger = logging.getLogger(__name__)
 
@@ -192,9 +192,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
     def create_file(self) -> None:
         """Create the test file and also import it from the file system."""
         super().create_file()
-        import_module_with_file_fallback(
-            self.path(), root=ProjectTester.I.tests_source_root()
-        )
+        import_module_with_file_fallback(self.path(), name=self.test_module_name())
 
     def is_correct(self) -> bool:
         """Check if all source elements have corresponding tests.
@@ -251,9 +249,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Relative path to the test file
             (e.g., Path("tests/test_package/test_mod.py")).
         """
-        return ModulePath.module_name_to_relative_file_path(
-            self.test_module_name(), root=ProjectTester.I.tests_source_root()
-        )
+        return module_name_as_root_path(self.test_module_name())
 
     def test_module_name(self) -> str:
         """Get the fully qualified import name for the test module.
@@ -292,7 +288,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             The test module object, either imported or newly created.
         """
         return import_module_with_file_fallback(
-            self.test_path(), root=ProjectTester.I.tests_source_root()
+            self.test_path(), name=self.test_module_name()
         )
 
     def test_module_content_with_skeletons(self) -> str:

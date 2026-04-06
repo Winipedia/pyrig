@@ -48,7 +48,7 @@ from PyInstaller.utils.hooks import collect_data_files
 
 import pyrig
 from pyrig.core.modules.package import discover_equivalent_modules_across_dependents
-from pyrig.core.modules.path import ModulePath
+from pyrig.core.modules.path import module_file_path
 from pyrig.rig import resources
 from pyrig.rig.builders.base.base import BuilderConfigFile
 
@@ -132,7 +132,7 @@ class PyInstallerBuilder(BuilderConfigFile):
             Absolute path to the entry point script (e.g., `myapp/main.py`).
         """
         module = self.entry_point_module()
-        return ModulePath.module_type_to_file_path(module)
+        return module_file_path(module)
 
     def resource_packages(self) -> Generator[ModuleType, None, None]:
         """Get resource packages from all pyrig-dependent packages.

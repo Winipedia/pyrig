@@ -9,11 +9,9 @@ from pathlib import Path
 
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.modules.package import make_init_module
-from pyrig.core.modules.path import ModulePath
-from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
-from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.utils.packages import find_namespace_packages
+from pyrig.rig.utils.path import package_name_as_root_path
 
 
 def make_init_files() -> None:
@@ -35,13 +33,7 @@ def make_init_files() -> None:
 
     # make init files for all namespace packages
     package_paths = (
-        ModulePath.package_name_to_relative_dir_path(
-            package,
-            root=ProjectTester.I.tests_source_root()
-            if package.startswith(ProjectTester.I.tests_package_name())
-            else PackageManager.I.source_root(),
-        )
-        for package in namespace_packages
+        package_name_as_root_path(package) for package in namespace_packages
     )
 
     def make_init_module_with_content(path: Path) -> None:

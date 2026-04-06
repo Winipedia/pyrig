@@ -24,10 +24,9 @@ from types import ModuleType
 from pyrig.core.modules.module import (
     import_module_with_default,
 )
-from pyrig.core.modules.path import ModulePath
 
 
-def import_package_from_dir(package_dir: Path, root: Path) -> ModuleType:
+def import_package_from_dir(path: Path, name: str) -> ModuleType:
     """Import a package directly from a directory path.
 
     Low-level import that bypasses `sys.modules` caching. Creates a module spec
@@ -35,9 +34,9 @@ def import_package_from_dir(package_dir: Path, root: Path) -> ModuleType:
     ``import_package_with_dir_fallback`` for normal imports with fallback behavior.
 
     Args:
-        package_dir: Directory containing the package (must have ``__init__.py``).
-        root: The relative root directory to remove from the path
-            (e.g., ``Path('src')``).
+        path: Directory containing the package (must have ``__init__.py``).
+        name: The dotted module name for the package.
+
 
     Returns:
         Imported package module.
@@ -46,25 +45,22 @@ def import_package_from_dir(package_dir: Path, root: Path) -> ModuleType:
         FileNotFoundError: If package directory or ``__init__.py`` doesn't exist.
         ValueError: If module spec cannot be created from the path.
     """
-    init_path = package_dir / "__init__.py"
+    init_path = path / "__init__.py"
 
-    package_name = ModulePath.absolute_path_to_module_name(package_dir, root)
     loader = importlib.machinery.SourceFileLoader(
-        fullname=package_name, path=init_path.as_posix()
+        fullname=name, path=init_path.as_posix()
     )
-    spec = importlib.util.spec_from_loader(
-        name=package_name, loader=loader, is_package=True
-    )
+    spec = importlib.util.spec_from_loader(name=name, loader=loader, is_package=True)
     if spec is None:
-        msg = f"Could not create spec for {package_dir}"
+        msg = f"Could not create spec for {init_path}"
         raise ValueError(msg)
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)
-    sys.modules[package_name] = module
+    sys.modules[name] = module
     return module
 
 
-def import_package_with_dir_fallback(path: Path, root: Path) -> ModuleType:
+def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
     """Import a package, falling back to direct directory import if needed.
 
     Primary package import function with two-stage strategy:
@@ -78,8 +74,7 @@ def import_package_with_dir_fallback(path: Path, root: Path) -> ModuleType:
     Args:
         path: Absolute or relative path to the package directory.
             Will be resolved to absolute before deriving module name.
-        root: The relative root directory to remove from the path
-            (e.g., ``Path('src')``).
+        name: The dotted module name for the package.
 
     Returns:
         Imported package module.
@@ -88,11 +83,10 @@ def import_package_with_dir_fallback(path: Path, root: Path) -> ModuleType:
         FileNotFoundError: If fallback fails and package doesn't exist.
     """
     path = path.resolve()
-    module_name = ModulePath.absolute_path_to_module_name(path, root)
-    package = import_module_with_default(module_name)
+    package = import_module_with_default(name)
     if isinstance(package, ModuleType):
         return package
-    return import_package_from_dir(path, root)
+    return import_package_from_dir(path, name)
 
 
 def walk_package(

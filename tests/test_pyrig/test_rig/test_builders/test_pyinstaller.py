@@ -23,7 +23,7 @@ def my_test_pyinstaller_builder(
 ) -> type[PyInstallerBuilder]:
     """Create a test PyInstaller builder class."""
     with chdir(tmp_path):
-        path = tmp_path / "entry_point.py"
+        path = Path("entry_point.py")
         module = create_module(path)
         path.write_text(
             """

@@ -22,10 +22,10 @@ def test_find_packages(
     create_package: Callable[[Path], ModuleType],
 ) -> None:
     """Test function."""
-    package_root_path, root_package = tmp_package_root_path
+    _, root_package = tmp_package_root_path
     with chdir(tmp_project_root_path):
         assert list(find_packages()) == [root_package.__name__]
-        sub_package_path = package_root_path / "subpackage"
+        sub_package_path = Path("subpackage")
         sub_package = create_source_package(sub_package_path)
         assert set(find_packages()) == {root_package.__name__, sub_package.__name__}
         tests_package = create_package(ProjectTester.I.tests_package_root())
@@ -48,7 +48,7 @@ def test_find_namespace_packages(
         Path("docs").mkdir()
         assert list(find_namespace_packages()) == []
 
-        create_source_package(package_root_path / "package")
+        create_source_package(Path("package"))
 
         namespace_package = package_root_path / "namespace_package"
         namespace_package.mkdir()
