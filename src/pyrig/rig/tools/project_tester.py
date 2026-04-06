@@ -7,6 +7,7 @@ Example:
     >>> ProjectTester.I.run_tests_in_ci_args().run()
 """
 
+import os
 from pathlib import Path
 
 from pyrig.core.processes import Args
@@ -85,6 +86,14 @@ class ProjectTester(Tool):
             Path to the tests package root directory (e.g., ``Path("tests")``).
         """
         return self.tests_source_root() / self.tests_package_name()
+
+    def are_tests_running(self) -> bool:
+        """Determine if tests are currently running.
+
+        Returns:
+            True if tests are running, False otherwise.
+        """
+        return os.getenv("PYTEST_VERSION") is not None
 
     def test_args(self, *args: str) -> Args:
         """Construct pytest arguments.
