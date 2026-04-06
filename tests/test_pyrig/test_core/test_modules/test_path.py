@@ -21,7 +21,9 @@ def test_module_file_path(
 ) -> None:
     """Test function."""
     with chdir(tmp_path):
-        expected_path = Path("package/subpackage/module.py")
+        expected_path = Path(test_module_file_path.__name__) / Path(
+            "subpackage/module.py"
+        )
         module = create_module(expected_path)
         assert module_file_path(module) == expected_path.resolve()
 
@@ -36,7 +38,7 @@ def test_package_dir_path(
 ) -> None:
     """Test function."""
     with chdir(tmp_path):
-        expected_dir = Path("package/subpackage")
+        expected_dir = Path(test_package_dir_path.__name__) / "subpackage"
         package = create_package(expected_dir)
         assert package_dir_path(package) == expected_dir.resolve()
 
