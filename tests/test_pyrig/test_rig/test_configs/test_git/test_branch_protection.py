@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from pyrig.rig.configs.git.branch_protection import RepoProtectionConfigFile
-from pyrig.rig.utils.testing import skip_if_no_internet
 
 
 class TestRepoProtectionConfigFile:
@@ -14,17 +13,14 @@ class TestRepoProtectionConfigFile:
         token = RepoProtectionConfigFile.I.repo_token()
         assert isinstance(token, str), f"Expected token to be str, got {type(token)}"
 
-    @skip_if_no_internet
     def test_protect_repo(self) -> None:
         """Test method."""
         RepoProtectionConfigFile.I.protect_repo()
 
-    @skip_if_no_internet
     def test_create_or_update_default_branch_ruleset(self) -> None:
         """Test method."""
         RepoProtectionConfigFile.I.create_or_update_default_branch_ruleset()
 
-    @skip_if_no_internet
     def test_set_secure_repo_settings(self) -> None:
         """Test method."""
         RepoProtectionConfigFile.I.set_secure_repo_settings()
