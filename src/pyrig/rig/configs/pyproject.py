@@ -79,8 +79,10 @@ class PyprojectConfigFile(TomlConfigFile):
         return {
             "project": {
                 "name": PackageManager.I.project_name(),
-                "version": self.project_version(),
-                "description": self.project_description(),
+                "version": self.project_version() or "0.1.0",
+                "description": (
+                    self.project_description() or "Add your description here."
+                ),
                 "readme": "README.md",
                 "authors": [
                     {"name": repo_owner},
