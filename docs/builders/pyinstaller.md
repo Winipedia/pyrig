@@ -49,7 +49,7 @@ myapp/
     └── icon.png  # 256x256 PNG recommended
 ```
 
-Note: You can also override `app_icon_png_path` to use a different icon at a
+Note: You can also override `app_icon_png_location` to use a different icon at a
 custom location. However, it's recommended to keep it in the resources
 directory.
 
@@ -137,7 +137,7 @@ executables do not support embedded icons.
 
 ### Custom Icon Location
 
-Override `app_icon_png_path` to use a different icon:
+Override `app_icon_png_location` to use a different icon:
 
 ```python
 from pathlib import Path
@@ -149,7 +149,7 @@ class MyAppBuilder(PyInstallerBuilder):
     def additional_resource_packages(self) -> list[ModuleType]:
         return [myapp.another_resources_package]
 
-    def app_icon_png_path(self) -> Path:
+    def app_icon_png_location(self) -> Path:
         """Use custom icon location."""
         return self.root_path() / "assets" / "custom-icon.png"
 ```

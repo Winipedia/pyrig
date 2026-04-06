@@ -10,6 +10,7 @@ import pytest
 from PIL import Image
 from pytest_mock import MockFixture
 
+from pyrig.core.modules.imports import import_package_with_dir_fallback
 from pyrig.core.modules.module import make_obj_importpath
 from pyrig.rig.builders import pyinstaller
 from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
@@ -23,8 +24,11 @@ def my_test_pyinstaller_builder(
 ) -> type[PyInstallerBuilder]:
     """Create a test PyInstaller builder class."""
     with chdir(tmp_path):
-        path = Path("entry_point.py")
+        path = Path("builder_package/entry_point.py")
         module = create_module(path)
+        package = import_package_with_dir_fallback(
+            Path("builder_package"), name="builder_package"
+        )  # type: ignore[return-value]
         path.write_text(
             """
 def main():
@@ -42,9 +46,9 @@ if __name__ == "__main__":
         def entry_point_module(self) -> ModuleType:
             return module
 
-        def app_icon_png_path(self) -> Path:
+        def app_icon_png_location(self) -> tuple[str, ModuleType]:
             """Get the app icon path."""
-            path = tmp_path / "icon.png"
+            path = tmp_path / "builder_package" / "icon.png"
             path.parent.mkdir(parents=True, exist_ok=True)
             r = random.randint(0, 255)  # nosec: B311  # noqa: S311
             g = random.randint(0, 255)  # nosec: B311  # noqa: S311
@@ -52,13 +56,23 @@ if __name__ == "__main__":
 
             img = Image.new("RGB", (256, 256), (r, g, b))
             img.save(path, format="PNG")
-            return Path(path)
+            return "icon", package  # type: ignore[return-value]
 
     return MyTestPyInstallerBuilder
 
 
 class TestPyInstallerBuilder:
     """Test class."""
+
+    def test_app_icon_png_path(
+        self, my_test_pyinstaller_builder: type[PyInstallerBuilder], tmp_path: Path
+    ) -> None:
+        """Test method."""
+        assert my_test_pyinstaller_builder().app_icon_png_path().exists()
+        assert (
+            my_test_pyinstaller_builder().app_icon_png_path()
+            == tmp_path / "builder_package" / "icon.png"
+        )
 
     def test_entry_point_module(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
@@ -124,12 +138,17 @@ class TestPyInstallerBuilder:
         options = my_test_pyinstaller_builder().pyinstaller_options(tmp_path)
         assert "--name" in options, "Expected --name option"
 
-    def test_app_icon_png_path(
+    def test_app_icon_png_location(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
         """Test method."""
-        result = my_test_pyinstaller_builder().app_icon_png_path()
-        assert result.name == "icon.png", "Expected icon.ico"
+        name, package = my_test_pyinstaller_builder().app_icon_png_location()
+        assert name == "icon"
+        assert package.__name__ == "builder_package"
+        assert (
+            Path(package.__file__).parent / "icon.png"  # ty:ignore[invalid-argument-type]
+            == my_test_pyinstaller_builder().app_icon_png_path()
+        )
 
     def test_create_artifacts(
         self,
@@ -158,4 +177,4 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method."""
         result = my_test_pyinstaller_builder().app_icon_path(tmp_path)
-        assert result.stem == "icon", "Expected icon"
+        assert result.stem == "icon"

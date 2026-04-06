@@ -49,6 +49,7 @@ from PyInstaller.utils.hooks import collect_data_files
 import pyrig
 from pyrig.core.modules.package import discover_equivalent_modules_across_dependents
 from pyrig.core.modules.path import module_file_path
+from pyrig.core.resource import resource_path
 from pyrig.rig import resources
 from pyrig.rig.builders.base.base import BuilderConfigFile
 
@@ -123,7 +124,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         """
 
     @abstractmethod
-    def app_icon_png_path(self) -> Path:
+    def app_icon_png_location(self) -> tuple[str, ModuleType]:
         """Return the path to the source PNG icon for the application.
 
         This PNG icon will be converted to the appropriate format for each platform
@@ -131,7 +132,8 @@ class PyInstallerBuilder(BuilderConfigFile):
         icon in the generated executable.
 
         Returns:
-            Path to the source PNG icon file.
+            A tuple of the file stem and package where the file is located
+            (e.g., `(resources, "icon")` for `resources/icon.png`).
         """
 
     def entry_point_path(self) -> Path:
@@ -286,3 +288,14 @@ class PyInstallerBuilder(BuilderConfigFile):
         img = Image.open(png_path)
         img.save(output_path, format=file_format.upper())
         return output_path
+
+    def app_icon_png_path(self) -> Path:
+        """Get the path to the source PNG icon file.
+
+        Uses the location package and name to get the path
+
+        Returns:
+            Path to the source PNG icon file.
+        """
+        file_stem, package = self.app_icon_png_location()
+        return resource_path(f"{file_stem}.png", package)

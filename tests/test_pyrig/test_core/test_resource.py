@@ -14,7 +14,7 @@ def test_resource_path(
     """Test function."""
     with chdir(tmp_path):
         # create a package
-        package_path = Path("package")
+        package_path = Path(test_resource_path.__name__) / "subpackage"
         package = create_package(package_path)
         # create a resource
         path = package_path / "resource.txt"
