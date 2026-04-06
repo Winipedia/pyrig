@@ -173,7 +173,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Returns:
             Full test module source code including existing tests and new skeletons.
         """
-        return self.test_module_content_with_skeletons().splitlines()
+        return [*self.test_module_content_with_skeletons().splitlines(), ""]
 
     def should_override_content(self) -> bool:
         """Enable content override mode for skeleton insertion.
