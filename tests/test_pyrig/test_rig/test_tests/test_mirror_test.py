@@ -11,6 +11,7 @@ from pytest_mock import MockFixture
 
 from pyrig.core.modules.imports import import_package_with_dir_fallback
 from pyrig.core.modules.module import reimport_module
+from pyrig.core.modules.path import path_as_module_name
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
@@ -110,7 +111,9 @@ class TestMirrorTestConfigFile:
             assert mod2_path.exists()
             assert sub_mod1_path.exists()
 
-            package = import_package_with_dir_fallback(package_path, root=Path())
+            package = import_package_with_dir_fallback(
+                package_path, name=path_as_module_name(package_path)
+            )
             MirrorTestConfigFile.I.create_test_modules_for_package(package)
 
             # assert the test modules were created

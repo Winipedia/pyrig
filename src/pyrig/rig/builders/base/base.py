@@ -40,10 +40,11 @@ from types import ModuleType
 import typer
 
 import pyrig
-from pyrig.core.modules.path import ModulePath
+from pyrig.core.modules.path import package_dir_path
 from pyrig.rig import builders, resources
 from pyrig.rig.configs.base.list_cf import ListConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.utils.path import package_name_as_root_path
 
 logger = logging.getLogger(__name__)
 
@@ -266,7 +267,7 @@ class BuilderConfigFile(ListConfigFile):
     def root_path(self) -> Path:
         """Return the absolute path to the project root directory."""
         src_package = import_module(PackageManager.I.package_name())
-        src_path = ModulePath.package_type_to_dir_path(src_package)
+        src_path = package_dir_path(src_package)
         return src_path.parent
 
     def resources_path(self) -> Path:
@@ -279,10 +280,6 @@ class BuilderConfigFile(ListConfigFile):
 
     def resources_path_relative_to_src_package(self) -> Path:
         """Return the relative path to the resources directory from the src package."""
-        resources_path = ModulePath.package_name_to_relative_dir_path(
-            resources.__name__, root=PackageManager.I.source_root()
-        )
-        pyrig_package_dir = ModulePath.package_name_to_relative_dir_path(
-            pyrig.__name__, root=PackageManager.I.source_root()
-        )
+        resources_path = package_name_as_root_path(resources.__name__)
+        pyrig_package_dir = package_name_as_root_path(pyrig.__name__)
         return resources_path.relative_to(pyrig_package_dir)

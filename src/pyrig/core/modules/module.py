@@ -20,7 +20,7 @@ from pyrig.core.modules.inspection import (
     qualname_of_obj,
     unwrapped_obj,
 )
-from pyrig.core.modules.path import ModulePath
+from pyrig.core.modules.path import module_file_path
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +39,11 @@ def module_content(module: ModuleType) -> str:
         ValueError: If the module has no ``__file__`` attribute.
         FileNotFoundError: If the source file does not exist.
     """
-    path = ModulePath.module_type_to_file_path(module)
+    path = module_file_path(module)
     return path.read_text(encoding="utf-8")
 
 
-def import_module_with_file_fallback(path: Path, root: Path) -> ModuleType:
+def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
     """Import a module, trying standard import first then direct file import.
 
     First attempts to import the module using Python's standard import mechanism
@@ -53,7 +53,7 @@ def import_module_with_file_fallback(path: Path, root: Path) -> ModuleType:
 
     Args:
         path: Path to the module file (absolute or relative).
-        root: The relative root directory to use for import path resolution.
+        name: The name to use for the imported module.
 
     Returns:
         The imported module.
@@ -62,14 +62,13 @@ def import_module_with_file_fallback(path: Path, root: Path) -> ModuleType:
         FileNotFoundError: If the file does not exist and standard import fails.
         ValueError: If the module spec cannot be created.
     """
-    module_name = ModulePath.absolute_path_to_module_name(path, root)
-    module = import_module_with_default(module_name)
+    module = import_module_with_default(name)
     if isinstance(module, ModuleType):
         return module
-    return import_module_from_file(path, root)
+    return import_module_from_file(path, name=name)
 
 
-def import_module_from_file(path: Path, root: Path) -> ModuleType:
+def import_module_from_file(path: Path, name: str) -> ModuleType:
     """Import a module directly from a ``.py`` file using ``importlib.util``.
 
     Registers the module in ``sys.modules`` with a name derived from its path
@@ -79,7 +78,7 @@ def import_module_from_file(path: Path, root: Path) -> ModuleType:
 
     Args:
         path: Path to the ``.py`` file (will be resolved to absolute path).
-        root: The relative root directory to use for import path resolution.
+        name: The name to use for the imported module.
 
     Returns:
         The imported and executed module.
@@ -89,8 +88,7 @@ def import_module_from_file(path: Path, root: Path) -> ModuleType:
         FileNotFoundError: If the file does not exist or cannot be read.
     """
     path = path.resolve()
-    name = ModulePath.absolute_path_to_module_name(path, root=root)
-    spec = importlib.util.spec_from_file_location(name=name, location=path)
+    spec = importlib.util.spec_from_file_location(name, location=path)
     if spec is None:
         msg = f"Could not create spec for {path}"
         raise ValueError(msg)
@@ -276,8 +274,7 @@ def reimport_module(module: ModuleType) -> ModuleType:
     Args:
         module: Module to reimport
     """
-    module_path = ModulePath.module_type_to_file_path(module)
-    root = ModulePath.module_type_to_source_root(module)
+    module_path = module_file_path(module)
     # Remove from cache
     sys.modules.pop(module.__name__)
-    return import_module_with_file_fallback(module_path, root=root)
+    return import_module_with_file_fallback(module_path, name=module.__name__)

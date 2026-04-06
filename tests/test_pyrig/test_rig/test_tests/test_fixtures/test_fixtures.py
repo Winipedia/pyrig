@@ -79,11 +79,11 @@ def test_create_module(
 ) -> None:
     """Test function."""
     with chdir(tmp_path):
-        module_path = tmp_path / f"{test_create_module.__name__}.py"
+        module_path = Path(f"{test_create_module.__name__}.py")
         module = create_module(module_path)
         assert isinstance(module, ModuleType)
         assert module.__name__ == test_create_module.__name__
-        assert module.__file__ == str(module_path)
+        assert module.__file__ == str(module_path.resolve())
 
 
 def test_create_package(
@@ -91,11 +91,11 @@ def test_create_package(
 ) -> None:
     """Test function."""
     with chdir(tmp_path):
-        package_dir = tmp_path / test_create_package.__name__
+        package_dir = Path(test_create_package.__name__)
         package = create_package(package_dir)
         assert isinstance(package, ModuleType), f"Expected package, got {type(package)}"
         assert package.__name__ == test_create_package.__name__
-        assert Path(package.__file__) == package_dir / "__init__.py"  # ty:ignore[invalid-argument-type]
+        assert Path(package.__file__) == package_dir.resolve() / "__init__.py"  # ty:ignore[invalid-argument-type]
 
 
 def test_tmp_project_root_path(tmp_path: Path, tmp_project_root_path: Path) -> None:

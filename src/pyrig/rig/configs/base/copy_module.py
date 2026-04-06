@@ -26,10 +26,10 @@ from pyrig.core.modules.module import (
     module_content,
     module_name_replacing_start_module,
 )
-from pyrig.core.modules.path import ModulePath
 from pyrig.core.string_ import make_name_from_obj
 from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.utils.path import module_name_as_root_path
 
 
 class CopyModuleConfigFile(PythonPackageConfigFile):
@@ -73,9 +73,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             copy_module, PackageManager.I.package_name()
         )
 
-        new_module_path = ModulePath.module_name_to_relative_file_path(
-            new_module_name, root=PackageManager.I.source_root()
-        )
+        new_module_path = module_name_as_root_path(new_module_name)
         return new_module_path.parent
 
     def lines(self) -> list[str]:

@@ -27,7 +27,7 @@ def test_iter_modules(tmp_path: Path) -> None:
         init_file.write_text('"""Test package."""\n')
         module_file = package_dir / "test_module.py"
         module_file.write_text('"""Test module."""\n')
-        package = import_package_from_dir(package_dir, root=Path())
+        package = import_package_from_dir(package_dir, name="test_package")
 
         modules = iter_modules(package)
         modules_names = [m.__name__ for m, _ in modules]
@@ -42,16 +42,16 @@ def test_import_package_with_dir_fallback(tmp_path: Path) -> None:
         non_existing_dir = tmp_path / "non_existing"
         assert not non_existing_dir.exists()
         with pytest.raises(FileNotFoundError):
-            import_package_with_dir_fallback(non_existing_dir, root=Path())
-        # import nonexisting againto ccheck if somehow cached in sy
+            import_package_with_dir_fallback(non_existing_dir, name="non_existing")
+        # import nonexisting again to check if somehow cached in sys
         with pytest.raises(FileNotFoundError):
-            import_package_with_dir_fallback(non_existing_dir, root=Path())
+            import_package_with_dir_fallback(non_existing_dir, name="non_existing")
 
         existing_dir = tmp_path / "existing"
         existing_dir.mkdir()
         init_file = existing_dir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_package_with_dir_fallback(existing_dir, root=Path())
+        package = import_package_with_dir_fallback(existing_dir, name="existing")
         assert package.__name__ == "existing"
 
 
@@ -61,20 +61,20 @@ def test_import_package_from_dir(tmp_path: Path) -> None:
         non_existing_dir = tmp_path / "non_existing"
         assert not non_existing_dir.exists()
         with pytest.raises(FileNotFoundError):
-            import_package_from_dir(non_existing_dir, root=Path())
+            import_package_from_dir(non_existing_dir, name="non_existing")
 
         package_dir = tmp_path / "test_package"
         package_dir.mkdir()
         init_file = package_dir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_package_from_dir(package_dir, root=Path())
+        package = import_package_from_dir(package_dir, name="test_package")
         assert package.__name__ == "test_package"
 
         subdir = package_dir / "subdir"
         subdir.mkdir()
         init_file = subdir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_package_from_dir(subdir, root=Path())
+        package = import_package_from_dir(subdir, name="test_package.subdir")
         assert package.__name__ == "test_package.subdir"
 
         # check all are now registered in sys.modules

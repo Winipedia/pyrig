@@ -14,10 +14,10 @@ def test_resource_path(
     """Test function."""
     with chdir(tmp_path):
         # create a package
-        package_path = tmp_path / "package"
+        package_path = Path("package")
         package = create_package(package_path)
         # create a resource
         path = package_path / "resource.txt"
         path.write_text("Hello World!")
 
-        assert resource_path("resource.txt", package) == path
+        assert resource_path("resource.txt", package) == path.resolve()
