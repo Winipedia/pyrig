@@ -11,10 +11,8 @@ from pyrig.rig.utils.github_api import (
     repository,
     ruleset_exists,
 )
-from pyrig.rig.utils.testing import skip_if_no_internet
 
 
-@skip_if_no_internet
 def test_repository() -> None:
     """Test function."""
     owner, repo_name = VersionController.I.repo_owner_and_name()
@@ -27,7 +25,6 @@ def test_repository() -> None:
     assert repo.name == repo_name, f"Expected repo name {repo_name}, got {repo.name}"
 
 
-@skip_if_no_internet
 def test_all_rulesets() -> None:
     """Test function."""
     rulesets = all_rulesets(
@@ -37,7 +34,6 @@ def test_all_rulesets() -> None:
     assert isinstance(rulesets, list), "Expected rulesets to be a list"
 
 
-@skip_if_no_internet
 def test_ruleset_exists() -> None:
     """Test function."""
     owner, repo_name = VersionController.I.repo_owner_and_name()
@@ -50,7 +46,6 @@ def test_ruleset_exists() -> None:
     assert ruleset_id > 0, f"Expected ruleset id > 0, got {ruleset_id}"
 
 
-@skip_if_no_internet
 def test_create_or_update_ruleset() -> None:
     """Test function."""
     token = RepoProtectionConfigFile.I.repo_token()
@@ -63,7 +58,6 @@ def test_create_or_update_ruleset() -> None:
     )
 
 
-@skip_if_no_internet
 def test_github_api_request() -> None:
     """Test function."""
     owner, repo_name = VersionController.I.repo_owner_and_name()

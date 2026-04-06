@@ -14,7 +14,6 @@ from pyrig.rig.utils.resources import (
     return_resource_content_on_fetch_error,
     return_resource_file_content_on_exceptions_or_in_dep,
 )
-from pyrig.rig.utils.testing import skip_if_no_internet
 
 
 def test_return_resource_file_content_on_exceptions_or_in_dep(
@@ -42,7 +41,6 @@ def test_return_resource_file_content_on_exceptions_or_in_dep(
     assert test_func() == "Hello World!"
 
 
-@skip_if_no_internet
 def test_return_resource_content_on_fetch_error(
     tmp_path: Path, mocker: MockFixture
 ) -> None:
@@ -78,7 +76,6 @@ def test_return_resource_content_on_fetch_error(
     mock.assert_called_once()
 
 
-@skip_if_no_internet
 def test_requests_get_text_cached() -> None:
     """Test function."""
     response_text = requests_get_text_cached("https://httpbin.org/get")
