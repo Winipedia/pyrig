@@ -122,6 +122,18 @@ class PyInstallerBuilder(BuilderConfigFile):
             Module object representing the entry point module.
         """
 
+    @abstractmethod
+    def app_icon_png_path(self) -> Path:
+        """Return the path to the source PNG icon for the application.
+
+        This PNG icon will be converted to the appropriate format for each platform
+        (ICO for Windows, ICNS for macOS, PNG for Linux) and used as the application
+        icon in the generated executable.
+
+        Returns:
+            Path to the source PNG icon file.
+        """
+
     def entry_point_path(self) -> Path:
         """Return the absolute path to the entry point script.
 
@@ -274,14 +286,3 @@ class PyInstallerBuilder(BuilderConfigFile):
         img = Image.open(png_path)
         img.save(output_path, format=file_format.upper())
         return output_path
-
-    def app_icon_png_path(self) -> Path:
-        """Get the path to the application icon PNG.
-
-        Returns the path to the source PNG icon file. Override this method to
-        use a custom icon location.
-
-        Returns:
-            Absolute path to the PNG icon file (`<src_package>/resources/icon.png`).
-        """
-        return self.resources_path() / "icon.png"

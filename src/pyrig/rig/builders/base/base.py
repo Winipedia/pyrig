@@ -33,18 +33,14 @@ import tempfile
 from abc import abstractmethod
 from collections.abc import Generator, Iterable
 from concurrent.futures import ThreadPoolExecutor
-from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
 import typer
 
-import pyrig
-from pyrig.core.modules.path import package_dir_path
-from pyrig.rig import builders, resources
+from pyrig.rig import builders
 from pyrig.rig.configs.base.list_cf import ListConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.utils.path import package_name_as_root_path
 
 logger = logging.getLogger(__name__)
 
@@ -263,23 +259,3 @@ class BuilderConfigFile(ListConfigFile):
     def app_name(self) -> str:
         """Return the application name from pyproject.toml."""
         return PackageManager.I.project_name()
-
-    def root_path(self) -> Path:
-        """Return the absolute path to the project root directory."""
-        src_package = import_module(PackageManager.I.package_name())
-        src_path = package_dir_path(src_package)
-        return src_path.parent
-
-    def resources_path(self) -> Path:
-        """Return the absolute path to the resources directory."""
-        return self.src_package_path() / self.resources_path_relative_to_src_package()
-
-    def src_package_path(self) -> Path:
-        """Return the absolute path to the source package directory."""
-        return self.root_path() / PackageManager.I.package_name()
-
-    def resources_path_relative_to_src_package(self) -> Path:
-        """Return the relative path to the resources directory from the src package."""
-        resources_path = package_name_as_root_path(resources.__name__)
-        pyrig_package_dir = package_name_as_root_path(pyrig.__name__)
-        return resources_path.relative_to(pyrig_package_dir)
