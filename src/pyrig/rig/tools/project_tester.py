@@ -87,7 +87,7 @@ class ProjectTester(Tool):
         """
         return self.tests_source_root() / self.tests_package_name()
 
-    def are_tests_running(self) -> bool:
+    def is_running_tests(self) -> bool:
         """Determine if tests are currently running.
 
         Returns:

@@ -8,9 +8,9 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
-    def test_are_tests_running(self) -> None:
+    def test_is_running_tests(self) -> None:
         """Test method."""
-        assert ProjectTester.I.are_tests_running() is True
+        assert ProjectTester.I.is_running_tests() is True
 
     def test_tests_source_root(self) -> None:
         """Test method."""
