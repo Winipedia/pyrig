@@ -8,6 +8,10 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
+    def test_are_tests_running(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.are_tests_running() is True
+
     def test_tests_source_root(self) -> None:
         """Test method."""
         assert ProjectTester.I.tests_source_root() == Path()
