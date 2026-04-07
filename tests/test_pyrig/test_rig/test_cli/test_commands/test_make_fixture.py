@@ -31,3 +31,4 @@ def test_make_fixture(tmp_path: Path) -> None:
         assert "def my_new_fixture() -> None:" in content
         assert "@pytest.fixture" in content
         assert "import pytest" in content
+        assert content.endswith("\n")

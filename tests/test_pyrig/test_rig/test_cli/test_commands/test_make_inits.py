@@ -19,6 +19,7 @@ def test_make_init_files(
         ProjectTester.I.tests_package_root().mkdir()
         package_root_path, _ = tmp_package_root_path
         root_init = package_root_path / "__init__.py"
+        # assert ends with empty line
         root_init.unlink()
         assert not root_init.exists()
 
@@ -27,5 +28,5 @@ def test_make_init_files(
             ProjectTester.I.tests_package_name(),
         }
         make_init_files()
-
         assert list(find_namespace_packages()) == []
+        assert root_init.read_text().endswith("\n")

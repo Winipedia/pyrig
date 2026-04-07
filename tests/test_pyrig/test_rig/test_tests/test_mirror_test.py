@@ -138,6 +138,10 @@ class TestMirrorTestConfigFile:
         """Test method."""
         with chdir(tmp_path):
             my_test_mirror_test_config_file().validate()
+            # assert teh file ends with empty line
+            path = my_test_mirror_test_config_file().path()
+            content = path.read_text()
+            assert content.endswith("\n")
 
     def test_create_file(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
