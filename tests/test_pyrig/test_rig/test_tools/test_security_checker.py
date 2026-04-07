@@ -1,10 +1,25 @@
 """module."""
 
+from pathlib import Path
+
 from pyrig.rig.tools.security_checker import SecurityChecker
 
 
 class TestSecurityChecker:
     """Test class."""
+
+    def test_target_paths(self) -> None:
+        """Test method."""
+        assert SecurityChecker.I.target_paths() == (
+            Path("src/pyrig"),
+            Path("tests"),
+        )
+
+    def test_target_posix_paths(self) -> None:
+        """Test method."""
+        assert tuple(SecurityChecker.I.target_posix_paths()) == tuple(
+            path.as_posix() for path in SecurityChecker.I.target_paths()
+        )
 
     def test_group(self) -> None:
         """Test method."""
@@ -31,4 +46,4 @@ class TestSecurityChecker:
     def test_run_with_config_args(self) -> None:
         """Test method."""
         result = SecurityChecker.I.run_with_config_args()
-        assert result == ("bandit", "-c", "pyproject.toml", "-r", ".")
+        assert result == ("bandit", "-c", "pyproject.toml", "-r", "src/pyrig", "tests")

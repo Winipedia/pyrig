@@ -31,6 +31,7 @@ def my_test_mirror_test_config_file(
     ],
     tmp_path: Path,
     create_module: Callable[[Path], ModuleType],
+    create_package: Callable[[Path], ModuleType],
 ) -> type[MirrorTestConfigFile]:
     """Create a test mirror test config file class with tmp_path."""
     with chdir(tmp_path):
@@ -45,6 +46,13 @@ def my_test_mirror_test_config_file(
             Path(cached_tests_module.__file__).unlink()  # ty:ignore[invalid-argument-type]
 
         module = create_module(MIRROR_MODULE_PATH)
+        # create package for each parent dir of the module
+        # needs to be imported bc import_module needs to work with them
+        # specifically for the import_obj_from_importpath
+        for parent in MIRROR_MODULE_PATH.parents:
+            if parent == Path():
+                break
+            create_package(parent)
         # write a simple class with one method to the module
         MIRROR_MODULE_PATH.write_text("""
 class MirrorClass:

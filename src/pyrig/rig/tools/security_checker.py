@@ -9,8 +9,13 @@ Example:
     >>> SecurityChecker.I.run_with_config_args().run()
 """
 
+from collections.abc import Generator
+from pathlib import Path
+
 from pyrig.core.processes import Args
 from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.project_tester import ProjectTester
 
 
 class SecurityChecker(Tool):
@@ -51,6 +56,17 @@ class SecurityChecker(Tool):
             "https://github.com/PyCQA/bandit",
         )
 
+    def target_paths(self) -> tuple[Path, ...]:
+        """Return target paths for security checking."""
+        return (
+            PackageManager.I.package_root(),
+            ProjectTester.I.tests_package_root(),
+        )
+
+    def target_posix_paths(self) -> Generator[str, None, None]:
+        """Return target paths as POSIX strings."""
+        return (path.as_posix() for path in self.target_paths())
+
     def run_args(self, *args: str) -> Args:
         """Construct bandit arguments.
 
@@ -71,4 +87,10 @@ class SecurityChecker(Tool):
         Returns:
             Args for 'bandit -c pyproject.toml -r .'.
         """
-        return self.run_args("-c", "pyproject.toml", "-r", ".", *args)
+        return self.run_args(
+            "-c",
+            "pyproject.toml",
+            "-r",
+            *self.target_posix_paths(),
+            *args,
+        )
