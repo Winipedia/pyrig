@@ -117,12 +117,8 @@ testpaths = [
 ]
 addopts = "--cov=pyrig --cov-report=term-missing --cov-fail-under=90"
 
-[tool.bandit]
-exclude_dirs = [
-    ".*",
-]
-
 [tool.bandit.assert_used]
 skips = [
     "*/tests/*.py",
+    "*/test_*/*.py",
 ]

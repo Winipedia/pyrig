@@ -774,17 +774,14 @@ class {test_class_name}:
             'tests.test_myapp.test_utils.test_calculate_sum'
         """
         parts = make_obj_importpath(obj).split(".")
-        test_name = self.test_name_for_obj(obj)
+        parts_as_objs = [
+            import_obj_from_importpath(".".join(parts[: i + 1]))
+            for i in range(len(parts))
+        ]
         test_parts = (
-            (
-                self.test_module_prefix()
-                if part[0].islower()
-                else self.test_class_prefix()
-            )
-            + part
-            for part in parts[:-1]
+            self.test_name_for_obj(part_as_obj) for part_as_obj in parts_as_objs
         )
-        return ".".join((ProjectTester.I.tests_package_name(), *test_parts, test_name))
+        return ".".join((ProjectTester.I.tests_package_name(), *test_parts))
 
     def obj_importpath_from_test_obj(
         self,
@@ -832,9 +829,7 @@ class {test_class_name}:
             >>> test_name_for_obj(my_function)
             'test_my_function'
         """
-        prefix = self.test_prefix_for_obj(obj)
-        name = isolated_obj_name(obj)
-        return prefix + name
+        return self.test_prefix_for_obj(obj) + isolated_obj_name(obj)
 
     def remove_test_prefix_from_test_name(self, test_name: str) -> str:
         """Remove test prefix from test name.
