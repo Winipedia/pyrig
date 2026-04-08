@@ -37,7 +37,7 @@ graph TD
     D1 --> D1A[BadgesMarkdownConfigFile]
 
     D2 --> D2A[PythonPackageConfigFile]
-    D2 --> D2B[PythonTestsConfigFile]
+    D2 --> D2B[PythonTestConfigFile]
 
     D2A --> D2A1[CopyModuleConfigFile]
     D2A --> D2A2[MirrorTestConfigFile]

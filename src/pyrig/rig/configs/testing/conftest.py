@@ -9,11 +9,11 @@ See Also:
 """
 
 from pyrig.core.modules.module import make_obj_importpath
-from pyrig.rig.configs.base.py_tests import PythonTestsConfigFile
+from pyrig.rig.configs.base.python_test import PythonTestConfigFile
 from pyrig.rig.tests import conftest
 
 
-class ConftestConfigFile(PythonTestsConfigFile):
+class ConftestConfigFile(PythonTestConfigFile):
     '''Manages tests/conftest.py.
 
     Generates conftest.py that imports pyrig's test infrastructure as pytest plugin,
@@ -35,7 +35,7 @@ class ConftestConfigFile(PythonTestsConfigFile):
 
     See Also:
         pyrig.rig.tests.conftest
-        pyrig.rig.configs.base.py_tests.PythonTestsConfigFile
+        pyrig.rig.configs.base.py_tests.PythonTestConfigFile
     '''
 
     def lines(self) -> list[str]:

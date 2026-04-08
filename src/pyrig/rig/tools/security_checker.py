@@ -13,7 +13,7 @@ from collections.abc import Generator
 from pathlib import Path
 
 from pyrig.core.processes import Args
-from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 

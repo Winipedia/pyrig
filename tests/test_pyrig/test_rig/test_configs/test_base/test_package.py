@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
+from pyrig.rig.configs.base.package import PythonPackageConfigFile
 
 
 @pytest.fixture

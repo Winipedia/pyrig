@@ -10,7 +10,7 @@ Example:
     >>> ProjectCoverageTester.I.remote_coverage_url()
 """
 
-from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.version_controller import VersionController
 
 

@@ -27,7 +27,7 @@ from pyrig.core.modules.module import (
     module_name_replacing_start_module,
 )
 from pyrig.core.string_ import make_name_from_obj
-from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
+from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.utils.path import module_name_as_root_path
 

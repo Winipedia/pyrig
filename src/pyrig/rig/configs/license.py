@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from pyrig.core.string_ import make_linked_badge_markdown
-from pyrig.rig.configs.base.base import Priority
+from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController

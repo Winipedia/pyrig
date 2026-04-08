@@ -4,7 +4,7 @@ Generates all configuration files and directory structure by discovering
 and validating `ConfigFile` subclasses.
 """
 
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile
 
 
 def make_project_root() -> None:

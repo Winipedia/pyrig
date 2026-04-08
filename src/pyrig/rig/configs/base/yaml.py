@@ -20,7 +20,7 @@ Example:
 
 import yaml
 
-from pyrig.rig.configs.base.base import ConfigFile, ConfigT
+from pyrig.rig.configs.base.config_file import ConfigFile, ConfigT
 
 
 class YamlConfigFile(ConfigFile[ConfigT]):

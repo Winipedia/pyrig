@@ -7,10 +7,10 @@ See Also:
     pyrig.rig.tests.fixtures
 """
 
-from pyrig.rig.configs.base.py_tests import PythonTestsConfigFile
+from pyrig.rig.configs.base.python_test import PythonTestConfigFile
 
 
-class ZeroTestConfigFile(PythonTestsConfigFile):
+class ZeroTestConfigFile(PythonTestConfigFile):
     '''Manages test_zero.py.
 
     Generates test_zero.py with empty test_zero() function to ensure pytest runs

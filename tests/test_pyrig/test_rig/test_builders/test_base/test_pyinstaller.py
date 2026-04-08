@@ -12,8 +12,8 @@ from pytest_mock import MockFixture
 
 from pyrig.core.modules.imports import import_package_with_dir_fallback
 from pyrig.core.modules.module import make_obj_importpath
-from pyrig.rig.builders import pyinstaller
-from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
+from pyrig.rig.builders.base import pyinstaller
+from pyrig.rig.builders.base.pyinstaller import PyInstallerBuilder
 
 
 @pytest.fixture

@@ -12,7 +12,7 @@ from pathlib import Path
 
 from pyrig.core.processes import Args
 from pyrig.core.string_ import make_linked_badge_markdown
-from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.version_controller import VersionController
 
 

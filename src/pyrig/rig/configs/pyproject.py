@@ -22,11 +22,11 @@ from pyrig.core.string_ import (
     package_req_name_split_pattern,
 )
 from pyrig.rig.cli import cli
-from pyrig.rig.configs.base.base import ConfigData, ConfigDict, Priority
+from pyrig.rig.configs.base.config_file import ConfigData, ConfigDict, Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.tools.base.base import Tool
+from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester

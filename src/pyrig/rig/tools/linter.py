@@ -11,7 +11,7 @@ Example:
 """
 
 from pyrig.core.processes import Args
-from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
 class Linter(Tool):

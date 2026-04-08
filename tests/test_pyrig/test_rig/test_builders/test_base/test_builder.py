@@ -9,7 +9,7 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig.rig import builders
-from pyrig.rig.builders.base.base import BuilderConfigFile
+from pyrig.rig.builders.base.builder import BuilderConfigFile
 
 
 @pytest.fixture

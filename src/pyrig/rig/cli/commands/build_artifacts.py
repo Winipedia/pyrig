@@ -4,7 +4,7 @@ Provides the entry point for building all project artifacts by discovering
 and invoking all BuilderConfigFile subclasses.
 """
 
-from pyrig.rig.builders.base.base import BuilderConfigFile
+from pyrig.rig.builders.base.builder import BuilderConfigFile
 
 
 def build_artifacts() -> None:

@@ -23,8 +23,8 @@ from typing import Any
 import tomlkit
 from tomlkit.items import Table
 
-from pyrig.rig.configs.base.base import ConfigDict
-from pyrig.rig.configs.base.dict_cf import DictConfigFile
+from pyrig.rig.configs.base.config_file import ConfigDict
+from pyrig.rig.configs.base.dict_ import DictConfigFile
 
 
 class TomlConfigFile(DictConfigFile):

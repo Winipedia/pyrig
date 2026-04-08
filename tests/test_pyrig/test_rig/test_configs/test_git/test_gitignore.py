@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
 
 

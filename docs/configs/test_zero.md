@@ -18,7 +18,7 @@ graph TD
     A[ConfigFile] --> B[ListConfigFile]
     B --> C[StringConfigFile]
     C --> D[PythonConfigFile]
-    D --> E[PythonTestsConfigFile]
+    D --> E[PythonTestConfigFile]
     E --> F[ZeroTestConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -29,7 +29,7 @@ graph TD
     style F fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `PythonTestsConfigFile`
+**Inherits from**: `PythonTestConfigFile`
 
 **What this means**:
 

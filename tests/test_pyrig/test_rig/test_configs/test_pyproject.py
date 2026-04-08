@@ -8,7 +8,7 @@ import pytest
 from packaging.version import Version
 from pytest_mock import MockFixture
 
-from pyrig.rig.configs.base.base import Priority
+from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
 )
