@@ -28,8 +28,8 @@ Example:
 from abc import abstractmethod
 from collections.abc import Iterable
 
-from pyrig.rig.configs.base.base import ConfigList
-from pyrig.rig.configs.base.list_cf import ListConfigFile
+from pyrig.rig.configs.base.config_file import ConfigList
+from pyrig.rig.configs.base.list_ import ListConfigFile
 
 
 class StringConfigFile(ListConfigFile):

@@ -38,9 +38,9 @@ from pyrig.core.string_ import (
     make_name_from_obj,
     split_on_uppercase,
 )
-from pyrig.rig.builders.base.base import BuilderConfigFile
+from pyrig.rig.builders.base.builder import BuilderConfigFile
 from pyrig.rig.cli.subcommands import build, protect_repo
-from pyrig.rig.configs.base.base import ConfigDict
+from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.container_engine import (

@@ -26,12 +26,12 @@ from pyrig.core.string_ import (
     make_summary_error_msg,
 )
 from pyrig.rig.cli.commands.make_inits import make_init_files
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.tools.base.base import Tool
+from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController

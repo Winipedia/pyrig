@@ -1,12 +1,12 @@
 """Python test file configuration management.
 
-Provide `PythonTestsConfigFile` base class for test `.py` files with parent path
+Provide `PythonTestConfigFile` base class for test `.py` files with parent path
 automatically set to the `tests/` directory.
 
 Example:
-    >>> from pyrig.rig.configs.base.py_tests import PythonTestsConfigFile
+    >>> from pyrig.rig.configs.base.py_tests import PythonTestConfigFile
     >>>
-    >>> class MyTestFile(PythonTestsConfigFile):
+    >>> class MyTestFile(PythonTestConfigFile):
     ...
     ...     def lines(self) -> list[str]:
     ...         return ["import pytest"]
@@ -20,11 +20,11 @@ Example:
 
 from pathlib import Path
 
-from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
+from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.project_tester import ProjectTester
 
 
-class PythonTestsConfigFile(PythonPackageConfigFile):
+class PythonTestConfigFile(PythonPackageConfigFile):
     """Base class for Python test (.py) files.
 
     Extends `PythonPackageConfigFile` with parent path automatically set to `tests/`.

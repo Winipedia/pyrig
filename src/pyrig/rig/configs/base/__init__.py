@@ -23,7 +23,7 @@ Architecture:
 
     4. **Specialized**:
        - ``PythonPackageConfigFile``: Package files (__init__.py)
-       - ``PythonTestsConfigFile``: Test files in tests/
+       - ``PythonTestConfigFile``: Test files in tests/
        - ``CopyModuleConfigFile``: Replicate module content
        - ``CopyModuleOnlyDocstringConfigFile``: Copy only docstrings
        - ``InitConfigFile``: __init__.py with copied docstrings
@@ -40,7 +40,7 @@ Format Features:
 
 Specialized Classes:
     - **PythonPackageConfigFile**: Ensures parent is valid package, creates __init__.py
-    - **PythonTestsConfigFile**: Auto-places files in tests/
+    - **PythonTestConfigFile**: Auto-places files in tests/
     - **CopyModuleConfigFile**: Replicates module structure, transforms paths
     - **CopyModuleOnlyDocstringConfigFile**: Extracts docstrings, creates stubs
     - **InitConfigFile**: Creates __init__.py with copied docstrings

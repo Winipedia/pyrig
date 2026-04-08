@@ -9,7 +9,7 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig.rig import configs
-from pyrig.rig.configs.base.base import (
+from pyrig.rig.configs.base.config_file import (
     ConfigFile,
 )
 from pyrig.rig.configs.dot_env import DotEnvConfigFile

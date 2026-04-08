@@ -17,8 +17,8 @@ from pyrig.core.modules.package import (
     make_package_dir,
     pyrig_dependency_graph,
 )
-from pyrig.rig.configs.base.base import ConfigFile
-from pyrig.rig.tools.base.base import Tool
+from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.tools.base.tool import Tool
 
 
 def test_discover_equivalent_modules_across_dependents() -> None:

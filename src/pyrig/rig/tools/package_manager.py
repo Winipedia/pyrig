@@ -20,7 +20,7 @@ from pyrig.core.string_ import (
     project_name_from_cwd,
     snake_to_kebab_case,
 )
-from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
 class PackageManager(Tool):

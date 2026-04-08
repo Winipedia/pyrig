@@ -24,7 +24,7 @@ import pyrig
 from pyrig.core.processes import Args
 from pyrig.core.string_ import make_name_from_obj, snake_to_kebab_case
 from pyrig.rig.cli.subcommands import mkroot, mktests
-from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pre_committer import (
     PreCommitter,

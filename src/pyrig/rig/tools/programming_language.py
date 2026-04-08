@@ -6,7 +6,7 @@ consistency across the codebase.
 It also provides the badge urls for the programming language badge.
 """
 
-from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.package_manager import PackageManager
 
 

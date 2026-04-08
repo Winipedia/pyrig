@@ -3,11 +3,11 @@
 from contextlib import chdir
 from pathlib import Path
 
-from pyrig.rig.configs.base.py_tests import PythonTestsConfigFile
+from pyrig.rig.configs.base.python_test import PythonTestConfigFile
 from pyrig.rig.configs.testing.zero_test import ZeroTestConfigFile
 
 
-class TestPythonTestsConfigFile:
+class TestPythonTestConfigFile:
     """Test class."""
 
     def test_parent_path(
@@ -17,8 +17,8 @@ class TestPythonTestsConfigFile:
         """Test method."""
         with chdir(tmp_path):
             expected = Path("tests")
-            assert issubclass(ZeroTestConfigFile, PythonTestsConfigFile), (
-                "ZeroTestConfigFile should inherit from PythonTestsConfigFile"
+            assert issubclass(ZeroTestConfigFile, PythonTestConfigFile), (
+                "ZeroTestConfigFile should inherit from PythonTestConfigFile"
             )
             actual = ZeroTestConfigFile().parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"

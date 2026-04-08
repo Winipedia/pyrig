@@ -3,7 +3,7 @@
 import pyrig
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.rig import configs
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile

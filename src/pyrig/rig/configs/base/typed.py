@@ -18,8 +18,8 @@ See Also:
     PEP 561: https://peps.python.org/pep-0561/
 """
 
-from pyrig.rig.configs.base.base import ConfigDict
-from pyrig.rig.configs.base.dict_cf import DictConfigFile
+from pyrig.rig.configs.base.config_file import ConfigDict
+from pyrig.rig.configs.base.dict_ import DictConfigFile
 
 
 class TypedConfigFile(DictConfigFile):

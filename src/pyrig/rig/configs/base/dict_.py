@@ -30,7 +30,7 @@ Example:
     ...         return {"key": "value"}
 """
 
-from pyrig.rig.configs.base.base import ConfigDict, ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigDict, ConfigFile
 
 
 class DictConfigFile(ConfigFile[ConfigDict]):

@@ -10,7 +10,7 @@ import pytest
 
 import pyrig
 from pyrig.rig.cli.shared_subcommands import version
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile
 
 
 @pytest.fixture

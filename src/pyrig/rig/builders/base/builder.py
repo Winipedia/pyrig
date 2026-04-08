@@ -39,7 +39,7 @@ from types import ModuleType
 import typer
 
 from pyrig.rig import builders
-from pyrig.rig.configs.base.list_cf import ListConfigFile
+from pyrig.rig.configs.base.list_ import ListConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 
 logger = logging.getLogger(__name__)

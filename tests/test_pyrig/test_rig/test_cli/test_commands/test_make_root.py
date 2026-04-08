@@ -5,7 +5,7 @@ from pytest_mock import MockFixture
 from pyrig.rig.cli.commands.make_root import (
     make_project_root,
 )
-from pyrig.rig.configs.base.base import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile
 
 
 def test_make_project_root(mocker: MockFixture) -> None:

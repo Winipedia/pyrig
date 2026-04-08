@@ -2,7 +2,7 @@
 
 from pyrig.rig import tools
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.base.base import Tool
+from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 
 

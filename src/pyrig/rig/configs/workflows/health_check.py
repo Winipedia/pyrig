@@ -35,7 +35,7 @@ from typing import Any
 import pyrig
 from pyrig.core.iterate import generator_length
 from pyrig.core.modules.package import pyrig_dependency_graph
-from pyrig.rig.configs.base.base import ConfigDict
+from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 

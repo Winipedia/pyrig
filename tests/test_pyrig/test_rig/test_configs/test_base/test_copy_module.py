@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
-from pyrig.rig.configs.base.py_package import PythonPackageConfigFile
+from pyrig.rig.configs.base.package import PythonPackageConfigFile
 
 
 @pytest.fixture

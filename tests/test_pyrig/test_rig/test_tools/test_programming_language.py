@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.rig.tools.base.base import ToolGroup
+from pyrig.rig.tools.base.tool import ToolGroup
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 

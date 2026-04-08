@@ -9,7 +9,7 @@ Example:
     'https://pypi.org/project/pyrig'
 """
 
-from pyrig.rig.tools.base.base import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.version_controller import VersionController
 
 
