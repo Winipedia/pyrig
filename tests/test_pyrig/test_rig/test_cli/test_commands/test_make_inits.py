@@ -29,4 +29,5 @@ def test_make_init_files(
         }
         make_init_files()
         assert list(find_namespace_packages()) == []
-        assert root_init.read_text().endswith("\n")
+        content = root_init.read_text()
+        assert content.endswith('"""\n')

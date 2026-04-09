@@ -24,3 +24,4 @@ def test_make_subcommand(tmp_path: Path) -> None:
         content = subcommands_file.read_text()
         assert "def my_new_command() -> None:" in content
         assert content.endswith("\n")
+        assert '"""\n\n\ndef' in content

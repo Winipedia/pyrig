@@ -19,8 +19,8 @@ def make_fixture(name: str) -> None:
     pytest_import = "import pytest"
     if pytest_import not in content:
         content += f"""
-
-{pytest_import}"""
+{pytest_import}
+"""
 
     content += f'''
 
