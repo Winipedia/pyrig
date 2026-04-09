@@ -151,7 +151,8 @@ class TestMirrorTestConfigFile:
             content = path.read_text()
             assert content.endswith("\n")
             # assert two lines between docstring and first class
-            assert '"""\n\n\n' in content
+            assert '"""\n\n\ndef test_mirror_function' in content
+            assert "NotImplementedError\n\n\nclass TestMirrorClass:" in content
 
     def test_create_file(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
