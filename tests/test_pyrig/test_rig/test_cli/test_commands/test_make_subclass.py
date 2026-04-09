@@ -30,6 +30,11 @@ def test_make_subclass(tmp_path: Path) -> None:
             "from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger" in content
         )
         assert content.endswith("\n")
+        assert (
+            '"""\n\nfrom pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger'
+            in content
+        )
+        assert "Pyrigger as BasePyrigger\n\n\nclass Pyrigger(BasePyrigger):" in content
 
 
 def test_choose_subclass(mocker: MockerFixture) -> None:

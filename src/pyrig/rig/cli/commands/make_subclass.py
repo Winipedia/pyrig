@@ -37,7 +37,6 @@ def make_subclass(import_path: str | None) -> None:
     content = config_file.file_content()
 
     content += f'''
-
 from {module_name} import {class_name} as Base{class_name}
 
 

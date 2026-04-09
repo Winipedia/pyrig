@@ -911,4 +911,4 @@ class {test_class_name}:
         Returns:
             Default docstring to use for test modules that lack one.
         """
-        return '"""Test module."""'
+        return '"""Test module."""\n'
