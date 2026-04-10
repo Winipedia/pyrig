@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from pyrig.core.exceptions.base.dump import ConfigFileDumpForbiddenError
+from pyrig.core.exceptions.config_file.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 
 
