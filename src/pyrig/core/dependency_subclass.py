@@ -14,6 +14,12 @@ from types import ModuleType
 from typing import Any, Self, TypeVar
 
 import pyrig
+from pyrig.core.exceptions.dependency_subclass.multiple_found import (
+    MultipleSubclassesFoundError,
+)
+from pyrig.core.exceptions.dependency_subclass.no_found import (
+    NoSubclassesFoundError,
+)
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.modules.class_ import (
     classproperty,
@@ -120,17 +126,12 @@ class DependencySubclass(ABC):
         has_leaf, subclasses = generator_has_items(cls.subclasses())
 
         if not has_leaf:
-            msg = f"No concrete subclasses found for {cls.__name__}"
-            raise TypeError(msg)
+            raise NoSubclassesFoundError(cls)
 
         leaf = next(subclasses)
         second = next(subclasses, None)
         if second is not None:
-            msg = (
-                f"Multiple concrete subclasses found for {cls.__name__}: "
-                f"{', '.join(c.__name__ for c in (leaf, second, *subclasses))}"
-            )
-            raise TypeError(msg)
+            raise MultipleSubclassesFoundError(cls)
         return leaf
 
     @classproperty
