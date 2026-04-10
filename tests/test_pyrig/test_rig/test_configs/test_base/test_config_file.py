@@ -8,6 +8,7 @@ from typing import Any, ClassVar
 import pytest
 from pytest_mock import MockFixture
 
+from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import (
     ConfigFile,
@@ -64,6 +65,13 @@ def my_test_config_file(
 
 class TestConfigFile:
     """Test class."""
+
+    def test___str__(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+    ) -> None:
+        """Test method."""
+        cf = my_test_config_file()
+        assert str(cf) == f"{cf.__class__.__name__} at {cf.path()}"
 
     def test_incorrect_subclasses(self) -> None:
         """Test method."""
@@ -259,7 +267,7 @@ class TestConfigFile:
             my_test_config_file().is_correct.__name__,
             return_value=False,
         )
-        with pytest.raises(ValueError, match="not correct"):
+        with pytest.raises(ConfigFileValidationError):
             my_test_config_file().validate()
 
     def test_path(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
