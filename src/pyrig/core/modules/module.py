@@ -60,7 +60,7 @@ def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
 
     Raises:
         FileNotFoundError: If the file does not exist and standard import fails.
-        ValueError: If the module spec cannot be created.
+        ImportError: If the module spec cannot be created.
     """
     module = import_module_with_default(name)
     if isinstance(module, ModuleType):
@@ -84,18 +84,18 @@ def import_module_from_file(path: Path, name: str) -> ModuleType:
         The imported and executed module.
 
     Raises:
-        ValueError: If the module spec or loader cannot be created.
+        ImportError: If the module spec or loader cannot be created.
         FileNotFoundError: If the file does not exist or cannot be read.
     """
     path = path.resolve()
     spec = importlib.util.spec_from_file_location(name, location=path)
     if spec is None:
         msg = f"Could not create spec for {path}"
-        raise ValueError(msg)
+        raise ImportError(msg)
     module = importlib.util.module_from_spec(spec)
     if spec.loader is None:
         msg = f"Could not create loader for {path}"
-        raise ValueError(msg)
+        raise ImportError(msg)
     spec.loader.exec_module(module)
     sys.modules[name] = module
     return module

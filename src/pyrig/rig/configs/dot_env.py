@@ -32,14 +32,14 @@ class DotEnvConfigFile(DictConfigFile):
         return dotenv_values(self.path())
 
     def _dump(self, config: ConfigDict) -> None:
-        """Prevent writing to .env (raises ValueError if config is non-empty)."""
+        """Prevent writing to .env (raises RuntimeError if config is non-empty)."""
         if config:
             msg = f"""
 Dumping to {self.path()} is not allowed due to security reasons.
 This file is managed manually. Please edit it directly.
 We highly discourage managing this ConfigFile via subclassing.
 """
-            raise ValueError(msg)
+            raise RuntimeError(msg)
 
     def extension(self) -> str:
         """Return 'env' extension."""

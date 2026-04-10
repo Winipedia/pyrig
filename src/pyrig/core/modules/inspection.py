@@ -135,7 +135,7 @@ def module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
         The module object where the callable is defined.
 
     Raises:
-        ValueError: If module cannot be determined and no default is provided.
+        LookupError: If module cannot be determined and no default is provided.
     """
     unwrapped = unwrapped_obj(obj)
     module = inspect.getmodule(unwrapped)
@@ -143,5 +143,5 @@ def module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
         msg = f"Could not determine module of {obj}"
         if default:
             return default
-        raise ValueError(msg)
+        raise LookupError(msg)
     return module

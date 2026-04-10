@@ -45,11 +45,11 @@ class TestDotEnvConfigFile:
 
     def test__dump(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
         """Test method."""
-        # dump should raise ValueError if config is not empty (truthy)
-        with pytest.raises(ValueError, match=r"Dumping to .* is not allowed"):
+        # dump should raise RuntimeError if config is not empty (truthy)
+        with pytest.raises(RuntimeError, match=r"Dumping to .* is not allowed"):
             my_test_dotenv_config_file().dump({"key": "value"})
 
-        # dump with empty dict should NOT raise ValueError (empty dict is falsy)
+        # dump with empty dict should NOT raise RuntimeError (empty dict is falsy)
         # This is the expected behavior based on the implementation
         my_test_dotenv_config_file().dump({})
 

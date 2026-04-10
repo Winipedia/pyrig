@@ -22,7 +22,7 @@ from pyrig.core.string_ import (
     package_req_name_split_pattern,
 )
 from pyrig.rig.cli import cli
-from pyrig.rig.configs.base.config_file import ConfigData, ConfigDict, Priority
+from pyrig.rig.configs.base.config_file import ConfigDict, Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
@@ -56,15 +56,12 @@ class PyprojectConfigFile(TomlConfigFile):
         """Return priority 20 (created early for other configs to read)."""
         return Priority.MEDIUM
 
-    def _dump(self, config: ConfigData) -> None:
+    def _dump(self, config: ConfigDict) -> None:
         """Write config with dependency normalization (modifies in-place).
 
         Raises:
             TypeError: If ``config`` is not a dict.
         """
-        if not isinstance(config, dict):
-            msg = f"Cannot dump {config} to pyproject.toml file."
-            raise TypeError(msg)
         self.remove_wrong_dependencies(config)
         super()._dump(config)
 

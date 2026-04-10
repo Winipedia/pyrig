@@ -43,7 +43,7 @@ def import_package_from_dir(path: Path, name: str) -> ModuleType:
 
     Raises:
         FileNotFoundError: If package directory or ``__init__.py`` doesn't exist.
-        ValueError: If module spec cannot be created from the path.
+        ImportError: If module spec cannot be created from the path.
     """
     init_path = path / "__init__.py"
 
@@ -53,7 +53,7 @@ def import_package_from_dir(path: Path, name: str) -> ModuleType:
     spec = importlib.util.spec_from_loader(name=name, loader=loader, is_package=True)
     if spec is None:
         msg = f"Could not create spec for {init_path}"
-        raise ValueError(msg)
+        raise ImportError(msg)
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)
     sys.modules[name] = module
