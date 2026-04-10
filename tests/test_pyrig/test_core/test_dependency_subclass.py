@@ -1,13 +1,19 @@
 """module."""
 
+import pytest
+
 import pyrig
 from pyrig.core.dependency_subclass import DependencySubclass
+from pyrig.core.exceptions.dependency_subclass.multiple_found import (
+    MultipleSubclassesFoundError,
+)
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.base.tool import Tool
 
 
 class TestDependencySubclass:
@@ -50,3 +56,6 @@ class TestDependencySubclass:
     def test_L(self) -> None:  # noqa: N802
         """Test method."""
         assert MirrorTestConfigFile.I.L.L is MirrorTestConfigFile
+
+        with pytest.raises(MultipleSubclassesFoundError):
+            _ = Tool.L
