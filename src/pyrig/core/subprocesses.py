@@ -21,8 +21,6 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
-from pyrig.core.exceptions.subprocesses.shell import ShellModeForbiddenError
-
 logger = logging.getLogger(__name__)
 
 
@@ -72,7 +70,8 @@ def run_subprocess(  # noqa: PLR0913
         >>> run_subprocess(["false"], check=False).returncode  # 1
     """
     if shell:
-        raise ShellModeForbiddenError
+        msg = "Shell mode is forbidden in for security reasons."
+        raise RuntimeError(msg)
     if cwd is None:
         cwd = Path()
     try:
