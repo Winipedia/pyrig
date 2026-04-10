@@ -13,6 +13,7 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
+from pyrig.core.exceptions.base.config_file import ConfigFileError
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.dict_ import DictConfigFile
 
@@ -39,7 +40,7 @@ Dumping to {self.path()} is not allowed due to security reasons.
 This file is managed manually. Please edit it directly.
 We highly discourage managing this ConfigFile via subclassing.
 """
-            raise RuntimeError(msg)
+            raise ConfigFileError(msg)
 
     def extension(self) -> str:
         """Return 'env' extension."""

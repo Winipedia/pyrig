@@ -65,9 +65,6 @@ class TomlConfigFile(DictConfigFile):
         Raises:
             TypeError: If config is not a dict (TOML requires top-level table).
         """
-        if not isinstance(config, dict):
-            msg = f"Cannot dump {config} to toml file."
-            raise TypeError(msg)
         self.pretty_dump(config)
 
     def prettify_value(self, value: Any) -> Any:

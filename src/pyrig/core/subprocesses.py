@@ -147,16 +147,6 @@ class Args(tuple[str, ...]):
         """
         return " ".join(self)
 
-    def __repr__(self) -> str:
-        """Return space-separated string representation.
-
-        Delegates to __str__ for consistent display in REPL and debugging.
-
-        Returns:
-            Space-separated command string (same as __str__).
-        """
-        return str(self)
-
     def run(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
         """Execute command via subprocess.
 
