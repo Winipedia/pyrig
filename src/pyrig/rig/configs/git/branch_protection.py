@@ -128,7 +128,7 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
             return token
 
         msg = f"Expected repository token in {dotenv_path} or as env var."
-        raise ValueError(msg)
+        raise LookupError(msg)
 
     def protect_repo(self) -> None:
         """Apply security protections to the GitHub repository.
