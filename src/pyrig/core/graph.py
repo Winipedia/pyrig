@@ -15,6 +15,8 @@ import heapq
 from abc import ABC, abstractmethod
 from collections import deque
 
+from pyrig.core.exceptions.graph.cycle import GraphCycleError
+
 
 class DiGraph(ABC):
     """Directed graph data structure with bidirectional edge traversal.
@@ -224,7 +226,6 @@ class DiGraph(ABC):
 
         # Check for cycles
         if len(result) != len(nodes):
-            msg = "Cycle detected in subgraph, cannot topologically sort"
-            raise ValueError(msg)
+            raise GraphCycleError
 
         return result
