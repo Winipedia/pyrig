@@ -1,5 +1,6 @@
 """Tests for pyrig.os.os module."""
 
+import pytest
 from pytest_mock import MockFixture
 
 from pyrig.core.subprocesses import Args, run_subprocess, run_subprocess_cached
@@ -12,6 +13,9 @@ def test_run_subprocess() -> None:
     assert res.returncode == 0, "Expected returncode 0"
     assert res.stdout == "hello\n", f"Expected stdout 'hello\n', got {res.stdout}"
     assert res.stderr == "", f"Expected stderr '', got {res.stderr}"
+
+    with pytest.raises(RuntimeError, match="shell mode is forbidden"):
+        run_subprocess(cmd, shell=True)  # noqa: S604  # nosec: B604
 
 
 class TestArgs:
