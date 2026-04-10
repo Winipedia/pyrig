@@ -18,7 +18,7 @@ See Also:
     PEP 561: https://peps.python.org/pep-0561/
 """
 
-from pyrig.core.exceptions.base.dump import ConfigFileDumpForbiddenError
+from pyrig.core.exceptions.config_file.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.dict_ import DictConfigFile
 

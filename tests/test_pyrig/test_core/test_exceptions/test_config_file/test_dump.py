@@ -2,7 +2,7 @@
 
 import pytest
 
-from pyrig.core.exceptions.base.dump import ConfigFileDumpForbiddenError
+from pyrig.core.exceptions.config_file.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 

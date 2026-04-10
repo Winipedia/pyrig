@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.core.exceptions.base.dump import ConfigFileDumpForbiddenError
+from pyrig.core.exceptions.config_file.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.base.typed import TypedConfigFile
 
 
