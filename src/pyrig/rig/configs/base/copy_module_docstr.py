@@ -44,10 +44,7 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
         Raises:
             ValueError: If source module has no docstring.
         """
-        docstring = self.copy_module().__doc__
-        if docstring is None:
-            msg = f"Source module {self.copy_module()} has no docstring"
-            raise ValueError(msg)
+        docstring = self.copy_module().__doc__ or self.default_docstring()
         return [*f'"""{docstring}"""'.splitlines(), ""]
 
     def is_correct(self) -> bool:
@@ -57,3 +54,11 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
             True if the source module has a docstring.
         """
         return module_has_docstring(self.copy_module())
+
+    def default_docstring(self) -> str:
+        """Default docstring if source module has no docstring.
+
+        Returns:
+            Default docstring string.
+        """
+        return "Module description."
