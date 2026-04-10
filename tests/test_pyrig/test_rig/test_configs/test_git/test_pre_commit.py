@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.core.processes import Args
+from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.git.pre_commit import PrekConfigFile
 
 

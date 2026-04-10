@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.core.processes import Args
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.package_manager import PackageManager
 
 
