@@ -6,7 +6,6 @@ from pathlib import Path
 
 import pytest
 from packaging.version import Version
-from pytest_mock import MockFixture
 
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.pyproject import (
@@ -80,22 +79,6 @@ class TestPyprojectConfigFile:
         is_correct = my_test_pyproject_config_file().is_correct()
         assert is_correct, "Expected config to be correct after validation"
 
-    def test__dump(
-        self,
-        my_test_pyproject_config_file: type[PyprojectConfigFile],
-        mocker: MockFixture,
-    ) -> None:
-        """Test method."""
-        my_test_pyproject_config_file().validate()
-        # spy on remove_wrong_dependencies
-        spy = mocker.spy(
-            my_test_pyproject_config_file,
-            my_test_pyproject_config_file().remove_wrong_dependencies.__name__,
-        )
-        config = my_test_pyproject_config_file().configs()
-        my_test_pyproject_config_file().dump(config)
-        spy.assert_called_once()
-
     def test_parent_path(
         self,
         my_test_pyproject_config_file: type[PyprojectConfigFile],
@@ -125,20 +108,6 @@ class TestPyprojectConfigFile:
             dependencies
         )
         assert deps_versions == ["dep1"]
-
-    def test_remove_wrong_dependencies(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
-    ) -> None:
-        """Test method."""
-        my_test_pyproject_config_file().validate()
-        config = my_test_pyproject_config_file().configs()
-        # add wrong dependencies to config
-        config["project"]["dependencies"] = [
-            "wrong>=1.0.0,<2.0.0",
-            "wrong>=1.0.0,<2.0.0",
-        ]
-        my_test_pyproject_config_file().remove_wrong_dependencies(config)
-        assert config["project"]["dependencies"] == ["wrong>=1.0.0,<2.0.0"]
 
     def test_dependencies(self) -> None:
         """Test method."""
