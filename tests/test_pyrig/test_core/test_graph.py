@@ -3,6 +3,7 @@
 import pytest
 
 from pyrig.core.dependency_graph import DependencyGraph
+from pyrig.core.exceptions.graph.cycle import GraphCycleError
 from pyrig.core.graph import DiGraph
 
 
@@ -222,7 +223,7 @@ class TestDiGraph:
         graph.add_edge("b", "c")
         graph.add_edge("c", "a")
 
-        with pytest.raises(ValueError, match="Cycle detected"):
+        with pytest.raises(GraphCycleError):
             graph.topological_sort_subgraph({"a", "b", "c"})
 
     def test_topological_sort_subgraph_empty(self) -> None:

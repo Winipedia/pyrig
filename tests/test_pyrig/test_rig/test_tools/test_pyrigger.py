@@ -9,7 +9,7 @@ from pathlib import Path
 import tomlkit
 from pytest_mock import MockFixture
 
-from pyrig.core.processes import Args
+from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.pyproject import PyprojectConfigFile

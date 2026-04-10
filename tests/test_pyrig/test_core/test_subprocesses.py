@@ -2,7 +2,7 @@
 
 from pytest_mock import MockFixture
 
-from pyrig.core.processes import Args, run_subprocess, run_subprocess_cached
+from pyrig.core.subprocesses import Args, run_subprocess, run_subprocess_cached
 
 
 def test_run_subprocess() -> None:

@@ -13,7 +13,7 @@ See Also:
 from pathlib import Path
 from typing import Any
 
-from pyrig.core.processes import (
+from pyrig.core.subprocesses import (
     Args,
 )
 from pyrig.rig.configs.base.config_file import ConfigDict

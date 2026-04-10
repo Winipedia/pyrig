@@ -11,7 +11,7 @@ Example:
 
 from pathlib import Path
 
-from pyrig.core.processes import Args
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 

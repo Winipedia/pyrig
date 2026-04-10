@@ -14,12 +14,12 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from pyrig.core.processes import Args
 from pyrig.core.string_ import (
     kebab_to_snake_case,
     project_name_from_cwd,
     snake_to_kebab_case,
 )
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
