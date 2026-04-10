@@ -56,15 +56,6 @@ class PyprojectConfigFile(TomlConfigFile):
         """Return priority 20 (created early for other configs to read)."""
         return Priority.MEDIUM
 
-    def _dump(self, config: ConfigDict) -> None:
-        """Write config with dependency normalization (modifies in-place).
-
-        Raises:
-            TypeError: If ``config`` is not a dict.
-        """
-        self.remove_wrong_dependencies(config)
-        super()._dump(config)
-
     def parent_path(self) -> Path:
         """Return project root."""
         return Path()
@@ -185,15 +176,6 @@ class PyprojectConfigFile(TomlConfigFile):
             msg = "No license detected in LICENSE file."
             raise ValueError(msg)
         return next(iter(licenses))
-
-    def remove_wrong_dependencies(self, config: ConfigDict) -> None:
-        """Normalize dependency versions (modifies in-place)."""
-        config["project"]["dependencies"] = self.make_dependency_versions(
-            config["project"]["dependencies"]
-        )
-        config["dependency-groups"]["dev"] = self.make_dependency_versions(
-            config["dependency-groups"]["dev"]
-        )
 
     def project_description(self) -> str:
         """Get project description from pyproject.toml."""
