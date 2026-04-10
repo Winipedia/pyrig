@@ -29,15 +29,10 @@ See Also:
         Base class for workflow generation
 """
 
-from datetime import UTC, datetime, timedelta
-from typing import Any
+from typing import Any, Literal
 
-import pyrig
-from pyrig.core.iterate import generator_length
-from pyrig.core.modules.package import pyrig_dependency_graph
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
@@ -87,34 +82,24 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         triggers = super().workflow_triggers()
         triggers.update(self.on_pull_request())
         triggers.update(self.on_push())
-        triggers.update(self.on_schedule(cron=self.staggered_cron()))
+        triggers.update(self.on_schedule(cron=" ".join(map(str, self.cron_schedule()))))
         return triggers
 
-    def staggered_cron(self) -> str:
-        """Get a staggered cron schedule based on dependency depth.
-
-        Packages with more dependencies run later to avoid conflicts
-        when dependencies release right before dependent packages.
-
-        Returns:
-            Cron expression with hour offset based on dependency depth.
-        """
-        offset = self.dependency_offset()
-        base_time = datetime.now(tz=UTC).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        scheduled_time = base_time + timedelta(hours=offset)
-        return f"0 {scheduled_time.hour} * * *"
-
-    def dependency_offset(self) -> int:
-        """Calculate hour offset based on dependency depth to pyrig.
+    def cron_schedule(
+        self,
+    ) -> tuple[
+        int | Literal["*"],
+        int | Literal["*"],
+        int | Literal["*"],
+        int | Literal["*"],
+        int | Literal["*"],
+    ]:
+        """Get the cron schedule for daily runs.
 
         Returns:
-            Number of hours to offset from base cron hour.
+            Cron expression for daily execution at midnight.
         """
-        chain = pyrig_dependency_graph().longest_dependent_chain(pyrig.__name__)
-        chain_without_src = (n for n in chain if n != PackageManager.I.package_name())
-        return generator_length(chain_without_src)
+        return 0, 1, "*", "*", "*"
 
     def jobs(self) -> ConfigDict:
         """Get the workflow jobs.

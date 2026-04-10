@@ -172,65 +172,6 @@ class DiGraph(ABC):
 
         return visited
 
-    def longest_dependent_chain(self, node: str) -> tuple[str, ...]:
-        """Return the longest directed path that "belongs to" (is rooted at) a node.
-
-        "Belongs to" in this context means the path of dependents starting from
-        the given node following reverse edges (nodes that depend on the node,
-        their dependents, and so on). For example, if `A` is depended-on by
-        `B` and `C`, and `D` depends on `C`, then
-        `longest_path_belonging_to('A')` -> ``('A', 'C', 'D')``.
-
-        Implementation: depth-first search with memoization (dynamic
-        programming). This runs in O(V + E) time on a DAG. Cycle detection is
-        performed and a ``ValueError`` is raised if a cycle is encountered.
-
-        Args:
-            node: Node identifier to compute longest dependent-path for.
-
-        Returns:
-            Tuple of node identifiers representing the longest path starting
-            with ``node`` and continuing along dependents.
-
-        Raises:
-            ValueError: If the graph contains a cycle,
-                making longest path computation impossible.
-            ValueError: If the specified node does not exist in the graph.
-        """
-        memo: dict[str, tuple[str, ...]] = {}
-        visiting: set[str] = set()
-
-        def dfs(n: str) -> tuple[str, ...]:
-            if n in memo:
-                return memo[n]
-            if n in visiting:
-                msg = "Cycle detected while computing longest path"
-                raise ValueError(msg)
-
-            visiting.add(n)
-
-            # Start with the trivial path (the node itself)
-            best: tuple[str, ...] = (n,)
-
-            # Iterate dependents (nodes that have an edge -> n). Sort for
-            # deterministic tie-breaking when multiple equal-length paths exist.
-            dependents = sorted(self._reverse_edges.get(n, set()))
-            for dep in dependents:
-                candidate_tail = dfs(dep)
-                # candidate_tail begins with dep; prepend current node
-                candidate = (n, *candidate_tail)
-                # Prefer longer paths; break ties deterministically by tuple
-                if len(candidate) > len(best) or (
-                    len(candidate) == len(best) and candidate < best
-                ):
-                    best = candidate
-
-            visiting.remove(n)
-            memo[n] = best
-            return best
-
-        return dfs(node)
-
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
         """Sort a subset of nodes in topological order (dependencies first).
 

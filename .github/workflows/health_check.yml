@@ -10,7 +10,7 @@ name: Health Check
     branches:
     - main
   schedule:
-  - cron: 0 0 * * *
+  - cron: 0 1 * * *
 permissions: {}
 run-name: Health Check
 defaults:
