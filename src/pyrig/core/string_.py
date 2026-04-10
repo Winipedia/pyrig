@@ -85,10 +85,7 @@ def make_name_from_obj(
         identifiers; use `split_on_uppercase` first if needed.
     """
     if not isinstance(obj, str):
-        name = getattr(obj, "__name__", "")
-        if not name:
-            msg = f"Cannot extract name from {obj}"
-            raise ValueError(msg)
+        name = getattr(obj, "__name__", str(obj))
         obj_name: str = name.split(".")[-1]
     else:
         obj_name = obj
