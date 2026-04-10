@@ -78,6 +78,7 @@ from typing import Any, Self, TypeVar
 import typer
 
 from pyrig.core.dependency_subclass import DependencySubclass
+from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.core.iterate import nested_structure_is_subset
 from pyrig.core.string_ import split_on_uppercase
 from pyrig.rig import configs
@@ -132,6 +133,10 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         pyrig.rig.configs.base.yaml.YamlConfigFile: YAML file base class
         pyrig.src.iterate.nested_structure_is_subset: Subset validation
     """
+
+    def __str__(self) -> str:
+        """String representation showing the config file path."""
+        return f"{self.__class__.__name__} at {self.path()}"
 
     @abstractmethod
     def parent_path(self) -> Path:
@@ -233,14 +238,10 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         Idempotent and preserves user customizations.
 
         Raises:
-            ValueError: If file cannot be made correct.
+            ConfigFileValidationError: If file cannot be made correct.
         """
         path = self.path()
-        logger.debug(
-            "Validating config file: %s at: %s",
-            self.__class__.__name__,
-            path,
-        )
+        logger.debug("Validating %s", self)
         if not path.exists():
             self.create_file()
             self.dump(self.configs())
@@ -252,13 +253,12 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         self.dump(config)
 
         if not self.is_correct():
-            msg = f"Config file {path} is not correct after adding missing configs."
-            raise ValueError(msg)
+            raise ConfigFileValidationError(self)
 
     def create_file(self) -> None:
         """Create the config file and its parent directories."""
         path = self.path()
-        typer.echo(f"Creating {path}")
+        typer.echo(f"Creating {self}")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
 
@@ -285,8 +285,9 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
             Parsed configuration as dict or list. Format-specific implementations
             typically return empty dict/list for empty files (opt-out behavior).
         """
-        logger.debug("Loading config file %s", cls.__name__)
-        return cls()._load()  # noqa: SLF001
+        instance = cls()
+        logger.debug("Loading %s", instance)
+        return instance._load()
 
     def dump(self, config: ConfigT) -> None:
         """Write configuration to file.
@@ -298,7 +299,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         Args:
             config: Configuration to write (dict or list).
         """
-        typer.echo(f"Updating {self.path()}")
+        typer.echo(f"Updating {self}")
         self.load.cache_clear()
         self._dump(config)
         self.load.cache_clear()

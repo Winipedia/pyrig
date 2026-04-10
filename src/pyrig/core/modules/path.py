@@ -34,7 +34,7 @@ def module_file_path(module: ModuleType) -> Path:
     file = module.__file__
     if file is None:
         msg = f"Module {module} has no __file__"
-        raise ValueError(msg)
+        raise AttributeError(msg)
     return Path(file)
 
 
