@@ -174,7 +174,7 @@ class PyprojectConfigFile(TomlConfigFile):
         licenses = licenses["licenses"]
         if not licenses:
             msg = "No license detected in LICENSE file."
-            raise ValueError(msg)
+            raise LookupError(msg)
         return next(iter(licenses))
 
     def project_description(self) -> str:
@@ -261,14 +261,14 @@ class PyprojectConfigFile(TomlConfigFile):
         """Get minimum supported Python version from requires-python.
 
         Raises:
-            ValueError: If requires-python has no lower bound.
+            LookupError: If requires-python has no lower bound.
         """
         constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)
         lower = version_constraint.find_lower_inclusive()
         if lower is None:
             msg = "Need a lower bound for python version"
-            raise ValueError(msg)
+            raise LookupError(msg)
         return lower
 
     def supported_python_versions(self) -> tuple[Version, ...]:
