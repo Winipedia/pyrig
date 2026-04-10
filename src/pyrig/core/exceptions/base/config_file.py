@@ -1,7 +1,7 @@
 """Base exception for config file errors."""
 
-from pyrig.core.exceptions.base.error import PyrigError
+from pyrig.core.exceptions.base.dependency_subclass import DependencySubclassError
 
 
-class ConfigFileError(PyrigError):
+class ConfigFileError(DependencySubclassError):
     """Base exception for config file errors."""

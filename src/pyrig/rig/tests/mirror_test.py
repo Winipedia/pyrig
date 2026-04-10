@@ -419,7 +419,7 @@ def {test_func_name}() -> None:
                     f"This likely means the class {test_class_name} "
                     f"is defined multiple times in the test module."
                 )
-                raise ValueError(msg)
+                raise RuntimeError(msg)
             # we simply insert the new class content into the parts
             module_content_parts.insert(1, test_cls_content)
             test_module_content = "".join(module_content_parts)

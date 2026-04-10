@@ -18,6 +18,7 @@ See Also:
     PEP 561: https://peps.python.org/pep-0561/
 """
 
+from pyrig.core.exceptions.base.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.dict_ import DictConfigFile
 
@@ -51,11 +52,11 @@ class TypedConfigFile(DictConfigFile):
             config: Configuration dict. Must be empty.
 
         Raises:
-            ValueError: If config is not empty.
+            ConfigFileDumpError: If config is not empty.
         """
         if config:
-            msg = "Cannot dump to py.typed file."
-            raise ValueError(msg)
+            msg = "this file is a marker for type checkers and should be empty."
+            raise ConfigFileDumpForbiddenError(config_file=self, reason=msg)
 
     def _configs(self) -> ConfigDict:
         """Return expected configuration as empty dict."""

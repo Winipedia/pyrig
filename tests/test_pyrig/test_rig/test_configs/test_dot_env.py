@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from pyrig.core.exceptions.base.config_file import ConfigFileError
+from pyrig.core.exceptions.base.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 
 
@@ -47,7 +47,10 @@ class TestDotEnvConfigFile:
     def test__dump(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
         """Test method."""
         # dump should raise RuntimeError if config is not empty (truthy)
-        with pytest.raises(ConfigFileError, match=r"Dumping to .* is not allowed"):
+        with pytest.raises(
+            ConfigFileDumpForbiddenError,
+            match=r"is forbidden because of security reasons",
+        ):
             my_test_dotenv_config_file().dump({"key": "value"})
 
         # dump with empty dict should NOT raise RuntimeError (empty dict is falsy)

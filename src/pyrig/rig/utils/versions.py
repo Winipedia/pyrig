@@ -332,7 +332,7 @@ class VersionConstraint:
 
         if lower is None or upper is None:
             msg = "No lower or upper bound. Please specify default values."
-            raise ValueError(msg)
+            raise RuntimeError(msg)
 
         major_level, minor_level, micro_level = range(3)
         level_int = {"major": major_level, "minor": minor_level, "micro": micro_level}[

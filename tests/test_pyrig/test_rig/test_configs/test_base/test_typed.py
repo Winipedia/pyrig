@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from pyrig.core.exceptions.base.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.base.typed import TypedConfigFile
 
 
@@ -46,7 +47,7 @@ class TestTypedConfigFile:
             "Expected dump to work with empty dict"
         )
         # assert raises ValueError if config is not empty
-        with pytest.raises(ValueError, match=r"Cannot dump to py\.typed file"):
+        with pytest.raises(ConfigFileDumpForbiddenError):
             my_test_typed_config_file().dump({"key": "value"})
 
     def test__configs(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:

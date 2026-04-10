@@ -53,6 +53,17 @@ def my_test_copy_module_only_docstring_config_file(
 class TestCopyModuleOnlyDocstringConfigFile:
     """Test class."""
 
+    def test_default_docstring(
+        self,
+        my_test_copy_module_only_docstring_config_file: type[
+            CopyModuleOnlyDocstringConfigFile
+        ],
+    ) -> None:
+        """Test method."""
+        assert isinstance(
+            my_test_copy_module_only_docstring_config_file().default_docstring(), str
+        )
+
     def test_lines(
         self,
         my_test_copy_module_only_docstring_config_file: type[
