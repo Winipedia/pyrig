@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 from pytest_mock import MockFixture
 
+from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.rig import builders
 from pyrig.rig.builders.base.builder import BuilderConfigFile
 
@@ -104,7 +105,7 @@ class TestBuilderConfigFile:
             my_test_builder_config_file().create_artifacts.__name__,
             return_value=None,
         )
-        with pytest.raises(ValueError, match="not correct"):
+        with pytest.raises(ConfigFileValidationError, match="Validation failed for"):
             my_test_builder_config_file().validate()
 
     def test_create_file(
