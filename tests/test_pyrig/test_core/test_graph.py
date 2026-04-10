@@ -85,44 +85,6 @@ class TestDiGraph:
         deps = graph.sorted_ancestors("typer")
         assert deps == ["pyrig"]
 
-    def test_longest_dependent_chain(self) -> None:
-        """Test method."""
-        graph = MyTestDiGraph()
-
-        # Build a more complex acyclic graph using letters.
-        # Edges are added as (source, target) meaning "source depends on target".
-        # Graph structure (dependents flow left-to-right):
-        # A <- B <- H <- I
-        # A <- C <- E <- K <- L
-        # A <- C <- J
-        # A <- D <- F
-        # (so the longest dependent chain for A is A -> C -> E -> K -> L)
-
-        graph.add_edge("B", "A")
-        graph.add_edge("C", "A")
-        graph.add_edge("D", "A")
-
-        graph.add_edge("H", "B")
-        graph.add_edge("I", "H")
-
-        graph.add_edge("E", "C")
-        graph.add_edge("K", "E")
-        graph.add_edge("L", "K")
-        graph.add_edge("J", "C")
-
-        graph.add_edge("F", "D")
-
-        # Longest dependent path belonging to A should be A -> C -> E -> K -> L
-        assert graph.longest_dependent_chain("A") == ("A", "C", "E", "K", "L")
-
-        # Shorter chains
-        assert graph.longest_dependent_chain("B") == ("B", "H", "I")
-        assert graph.longest_dependent_chain("D") == ("D", "F")
-
-        # A node with no dependents returns itself
-        graph.add_node("Z")
-        assert graph.longest_dependent_chain("Z") == ("Z",)
-
     def test_build(self) -> None:
         """Test method."""
         graph = MyTestDiGraph()

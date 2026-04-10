@@ -20,6 +20,10 @@ def my_test_health_check_workflow(
 class TestHealthCheckWorkflowConfigFile:
     """Test class."""
 
+    def test_cron_schedule(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile().cron_schedule() == (0, 1, "*", "*", "*")
+
     def test_job_health_checks(self) -> None:
         """Test method."""
         result = HealthCheckWorkflowConfigFile.I.job_health_checks()
@@ -31,20 +35,6 @@ class TestHealthCheckWorkflowConfigFile:
         """Test method."""
         result = HealthCheckWorkflowConfigFile.I.steps_health_checks()
         assert len(result) > 0, "Expected steps to be non-empty"
-
-    def test_staggered_cron(
-        self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_health_check_workflow().staggered_cron()
-        assert len(result) > 0, "Expected cron to be non-empty"
-
-    def test_dependency_offset(
-        self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_health_check_workflow().dependency_offset()
-        assert result >= 0, "Expected offset to be non-negative"
 
     def test_workflow_triggers(
         self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
