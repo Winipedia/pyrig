@@ -11,10 +11,10 @@ if TYPE_CHECKING:
 class NoSubclassesFoundError(DependencySubclassError):
     """Raised when no subclasses are found for a given DependencySubclass."""
 
-    def __init__(self, cls: type["DependencySubclass"]) -> None:
+    def __init__(self, subcls: type["DependencySubclass"]) -> None:
         """Initialize the error with the given subclass type."""
-        cls_name = cls.__name__
-        definition_package_name = cls.definition_package().__name__
+        cls_name = subcls.__name__
+        definition_package_name = subcls.definition_package().__name__
         message = f"""No subclasses found for {cls_name}.
 Subclasses must be concrete and implement all abstract methods.
 They also must be defined under the same relative definition package.
