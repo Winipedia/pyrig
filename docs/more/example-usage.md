@@ -116,10 +116,10 @@ Customize documentation theme with custom branding.
 
 from pathlib import Path
 from pyrig.rig.configs.base.base import ConfigDict
-from pyrig.rig.configs.docs.mkdocs import MkdocsConfigFile as BaseMkdocsCF
+from pyrig.rig.configs.docs.mkdocs import DocsBuilderConfigFile as BaseMkdocsCF
 
 
-class MkdocsConfigFile(BaseMkdocsCF):
+class DocsBuilderConfigFile(BaseMkdocsCF):
     """Custom-branded documentation theme."""
 
 
@@ -158,7 +158,7 @@ class MkdocsConfigFile(BaseMkdocsCF):
 
 **Key mechanism**:
 
-- **Subclass** pyrig's `MkdocsConfigFile` with the same name
+- **Subclass** pyrig's `DocsBuilderConfigFile` with the same name
 - **Leaf class override**: pyrig's discovery system automatically keeps only the
   most-derived (leaf) class when multiple classes are found in the
   inheritance chain

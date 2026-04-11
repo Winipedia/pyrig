@@ -8,5 +8,5 @@ Modules:
     api: docs/api.md API reference configuration.
 
 See Also:
-    pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile
+    pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
 """

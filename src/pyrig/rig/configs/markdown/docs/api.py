@@ -5,7 +5,7 @@ documentation from Python docstrings (Google style, source links, inherited memb
 
 See Also:
     mkdocstrings: https://mkdocstrings.github.io/
-    pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile
+    pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
 """
 
 from pathlib import Path
@@ -34,7 +34,7 @@ class ApiConfigFile(MarkdownConfigFile):
             ::: pyrig
 
     See Also:
-        pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile
+        pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
         pyrig.rig.configs.pyproject.PyprojectConfigFile
     """
 

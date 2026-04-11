@@ -15,5 +15,5 @@ Modules:
 
 See Also:
     pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
-    pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile
+    pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
 """

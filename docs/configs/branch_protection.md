@@ -13,14 +13,14 @@ The `protect-repo` command loads this file and applies it to GitHub via the API.
 It passes the JSON as a dict to the API, so any adjustments must align with
 GitHub's REST API schema. To customize, manually configure settings in GitHub,
 export the ruleset, and use that structure when subclassing
-`RepoProtectionConfigFile`.
+`BranchProtectionConfigFile`.
 
 ## Inheritance
 
 ```mermaid
 graph TD
     A[ConfigFile] --> B[JsonConfigFile]
-    B --> C[RepoProtectionConfigFile]
+    B --> C[BranchProtectionConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
@@ -174,7 +174,7 @@ When initialized via `uv run pyrig mkroot`, the `branch-protection.json` file is
 created by:
 
 1. **Generating ruleset configuration**:
-   `RepoProtectionConfigFile.I.configs()` creates the complete ruleset
+   `BranchProtectionConfigFile.I.configs()` creates the complete ruleset
 2. **Setting required status checks**: Uses health check workflow job IDs
 3. **Configuring bypass actors**: Adds repository admin bypass permissions
 4. **Applying security defaults**: Enforces pyrig's opinionated protection rules
@@ -196,7 +196,7 @@ uv run pyrig protect-repo
 
 This command:
 
-1. Loads `branch-protection.json` using `RepoProtectionConfigFile.I.load()`
+1. Loads `branch-protection.json` using `BranchProtectionConfigFile.I.load()`
 2. Checks if a ruleset with the same name exists
 3. Creates or updates the ruleset via GitHub API
 4. Applies all protection rules to the main branch
@@ -241,13 +241,13 @@ you via the `protect-repo` command.
 
 ### Customization
 
-To customize branch protection rules, subclass `RepoProtectionConfigFile`:
+To customize branch protection rules, subclass `BranchProtectionConfigFile`:
 
 ```python
 from pyrig.rig.configs.base.base import ConfigDict
-from pyrig.rig.configs.git.branch_protection import RepoProtectionConfigFile
+from pyrig.rig.configs.git.branch_protection import BranchProtectionConfigFile
 
-class MyRepoProtectionConfigFile(RepoProtectionConfigFile):
+class MyBranchProtectionConfigFile(BranchProtectionConfigFile):
     def _configs(self) -> ConfigDict:
         """Custom branch protection configuration."""
         config = super()._configs()

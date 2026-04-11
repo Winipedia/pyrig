@@ -8,7 +8,7 @@ Example:
     >>> from typing import Any
     >>> from pyrig.rig.configs.base.yml import YmlConfigFile
     >>>
-    >>> class MkDocsConfigFile(YmlConfigFile):
+    >>> class DocsBuilderConfigFile(YmlConfigFile):
     ...
     ...     def parent_path(self) -> Path:
     ...         return Path()

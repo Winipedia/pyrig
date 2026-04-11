@@ -57,7 +57,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     See Also:
         pyrig.rig.configs.workflows.release.ReleaseWorkflowConfigFile
             Triggers this workflow on completion
-        pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile
+        pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
             Configures the documentation site
         PyPI API tokens: https://pypi.org/help/#apitoken
     """
