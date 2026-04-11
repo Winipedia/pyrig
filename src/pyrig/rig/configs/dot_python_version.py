@@ -23,7 +23,7 @@ class DotPythonVersionConfigFile(StringConfigFile):
         pyrig.rig.configs.pyproject.PyprojectConfigFile.I.first_supported_python_version
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Return empty string to produce '.python-version'."""
         return ""
 

@@ -8,9 +8,9 @@ from pyrig.rig.configs.containers.container_file import ContainerfileConfigFile
 class TestContainerfileConfigFile:
     """Test class."""
 
-    def test_filename(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        assert ContainerfileConfigFile.I.filename() == "Containerfile"
+        assert ContainerfileConfigFile.I.stem() == "Containerfile"
 
     def test_parent_path(self) -> None:
         """Test method."""

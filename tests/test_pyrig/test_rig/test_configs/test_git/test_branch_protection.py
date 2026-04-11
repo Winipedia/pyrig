@@ -29,9 +29,9 @@ class TestRepoProtectionConfigFile:
         """Test method."""
         assert RepoProtectionConfigFile.I.parent_path() == Path()
 
-    def test_filename(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        assert RepoProtectionConfigFile.I.filename() == "branch-protection"
+        assert RepoProtectionConfigFile.I.stem() == "branch-protection"
 
     def test__configs(self) -> None:
         """Test method."""

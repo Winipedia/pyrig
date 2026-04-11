@@ -60,7 +60,7 @@ class SecurityConfigFile(MarkdownConfigFile):
         pyrig.rig.configs.markdown.code_of_conduct.CodeOfConductConfigFile
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Get the SECURITY filename.
 
         Returns:

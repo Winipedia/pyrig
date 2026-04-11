@@ -33,7 +33,7 @@ class ContainerfileConfigFile(StringConfigFile):
         `pyrig.rig.tools.package_manager.PackageManager`
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Return 'Containerfile'."""
         return "Containerfile"
 

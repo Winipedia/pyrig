@@ -53,11 +53,11 @@ class TestGitignoreConfigFile:
         github_gitignore = GitignoreConfigFile.I.github_python_gitignore_lines()
         assert "__pycache__/" in github_gitignore
 
-    def test_filename(
+    def test_stem(
         self, my_test_gitignore_config_file: type[GitignoreConfigFile]
     ) -> None:
         """Test method."""
-        filename = my_test_gitignore_config_file().filename()
+        filename = my_test_gitignore_config_file().stem()
         assert filename == ".gitignore", f"Expected '.gitignore', got {filename}"
 
     def test_parent_path(

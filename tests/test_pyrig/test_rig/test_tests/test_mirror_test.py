@@ -269,11 +269,11 @@ class TestMirrorTestConfigFile:
         mirror_module = my_test_mirror_test_config_file().mirror_module()
         assert mirror_module.__name__ == MIRROR_MODULE_NAME
 
-    def test_filename(
+    def test_stem(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
-        filename = my_test_mirror_test_config_file().filename()
+        filename = my_test_mirror_test_config_file().stem()
         assert filename == "test_mirror_test_module"
 
     def test_parent_path(

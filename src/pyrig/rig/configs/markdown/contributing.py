@@ -71,7 +71,7 @@ class ContributingConfigFile(MarkdownConfigFile):
         pyrig.rig.configs.markdown.code_of_conduct.CodeOfConductConfigFile
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Return "CONTRIBUTING" as the filename."""
         return "CONTRIBUTING"
 

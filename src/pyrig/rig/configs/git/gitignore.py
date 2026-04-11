@@ -45,7 +45,7 @@ class GitignoreConfigFile(StringConfigFile):
         pyrig.rig.configs.dot_env.DotEnvConfigFile
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Get the filename for .gitignore."""
         return VersionController.I.ignore_filename()
 

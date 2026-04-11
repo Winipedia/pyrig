@@ -308,14 +308,14 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
     def path(self) -> Path:
         """Return full path by combining parent path, filename, and extension."""
         return self.parent_path() / (
-            self.filename() + self.extension_separator() + self.extension()
+            self.stem() + self.extension_separator() + self.extension()
         )
 
     def extension_separator(self) -> str:
         """Return extension separator character (always ".")."""
         return "."
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Derive filename from class name (auto-converts to snake_case).
 
         Returns:

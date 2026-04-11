@@ -18,9 +18,9 @@ class TestCodeOfConductConfigFile:
         result = CodeOfConductConfigFile.I.contact_method()
         assert len(result) > 0
 
-    def test_filename(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.I.filename()
+        result = CodeOfConductConfigFile.I.stem()
         assert result == "CODE_OF_CONDUCT"
 
     def test_parent_path(self) -> None:

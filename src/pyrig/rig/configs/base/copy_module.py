@@ -84,7 +84,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         return [*module_content(self.copy_module()).splitlines(), ""]
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Return module's isolated name (last component).
 
         Returns:

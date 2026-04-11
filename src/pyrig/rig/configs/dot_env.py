@@ -45,7 +45,7 @@ We highly discourage managing this ConfigFile via subclassing.
         """Return 'env' extension."""
         return "env"
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Return empty string to produce '.env' (not 'env.env')."""
         return ""
 

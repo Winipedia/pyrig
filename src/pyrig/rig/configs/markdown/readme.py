@@ -28,7 +28,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
         pyrig.rig.configs.pyproject.PyprojectConfigFile
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Get the README filename.
 
         Returns:
