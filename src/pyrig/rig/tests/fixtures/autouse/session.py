@@ -30,7 +30,7 @@ from pyrig.core.string_ import (
 from pyrig.rig.cli.commands.make_inits import (
     make_init_files_for_namespace_packages,
 )
-from pyrig.rig.cli.subcommands import mkinits
+from pyrig.rig.cli.subcommands import mkinits, mktests
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
@@ -131,11 +131,7 @@ Consider using the proper command to create __init__.py files for any namespace 
     '{snake_to_kebab_case(pyrig.__name__)} {snake_to_kebab_case(mkinits.__name__)}'
 
 Please verify the changes at the following paths:
-{
-        make_summary_error_msg(
-            package_name_as_root_path(package) for package in namespace_packages
-        )
-    }
+{make_summary_error_msg(package_name_as_root_path(package) for package in namespace_packages)}
 """  # noqa: E501
     assert not has_namespace_packages, msg
 
@@ -162,9 +158,17 @@ def assert_all_modules_tested() -> None:
         MirrorTestConfigFile.I.validate_subclasses(incorrect_subclasses)
 
     msg = f"""Found incorrect test modules.
-Test skeletons were automatically created.
+It is enforced that every module in src has a corresponding test module in tests.
+The test module should mirror the structure package under the source directory.
+
+Attempted to auto-generate test skeletons for any missing test modules via {MirrorTestConfigFile.__name__}
+
+Consider using the proper command to create test skeletons for any missing test modules:
+    '{snake_to_kebab_case(pyrig.__name__)} {snake_to_kebab_case(mktests.__name__)}'
+
+Please verify the changes at the following paths:
 {make_summary_error_msg(sc().path() for sc in incorrect_subclasses)}
-"""
+"""  # noqa: E501
     assert not incorrect_subclasses, msg
 
 
