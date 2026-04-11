@@ -62,6 +62,10 @@ class PyprojectConfigFile(TomlConfigFile):
         """Return project root."""
         return Path()
 
+    def stem(self) -> str:
+        """Return the filename stem 'pyproject' for 'pyproject.toml'."""
+        return "pyproject"
+
     def _configs(self) -> ConfigDict:
         """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
         repo_owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)

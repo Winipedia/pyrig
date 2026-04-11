@@ -65,6 +65,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             Provides version information for tagging
     """
 
+    def stem(self) -> str:
+        """Get the workflow filename stem."""
+        return "release"
+
     def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 

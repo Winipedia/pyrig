@@ -46,6 +46,10 @@ class ApiConfigFile(MarkdownConfigFile):
         """
         return DocsBuilder.I.docs_dir()
 
+    def stem(self) -> str:
+        """Get the filename stem."""
+        return "api"
+
     def lines(self) -> list[str]:
         """Get the api.md file content.
 

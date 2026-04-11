@@ -8,6 +8,10 @@ from pyrig.rig.configs.issue_templates.bug_report import BugReportConfigFile
 class TestBugReportConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert BugReportConfigFile.I.stem() == "bug_report"
+
     def test_parent_path(self) -> None:
         """Test method."""
         result = BugReportConfigFile.I.parent_path()

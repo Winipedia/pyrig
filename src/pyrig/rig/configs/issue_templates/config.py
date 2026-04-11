@@ -32,6 +32,10 @@ class ConfigConfigFile(DictYmlConfigFile):
         """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
+    def stem(self) -> str:
+        """Return the filename stem."""
+        return "config"
+
     def _configs(self) -> ConfigDict:
         """Return issue template config YAML structure."""
         return {"blank_issues_enabled": False}

@@ -8,6 +8,10 @@ from pyrig.rig.configs.dot_python_version import DotPythonVersionConfigFile
 class TestDotPythonVersionConfigFile:
     """Test class."""
 
+    def test_extension_separator(self) -> None:
+        """Test method."""
+        assert DotPythonVersionConfigFile.I.extension_separator() == ""
+
     def test_stem(self) -> None:
         """Test method."""
         assert DotPythonVersionConfigFile.I.stem() == ""

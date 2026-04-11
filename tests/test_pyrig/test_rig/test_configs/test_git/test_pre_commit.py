@@ -27,6 +27,10 @@ def my_test_prek_config_file(
 class TestPrekConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert PrekConfigFile.I.stem() == "prek"
+
     def test_hook(self) -> None:
         """Test method."""
         hook = PrekConfigFile.I.hook("test", Args(("test",)))

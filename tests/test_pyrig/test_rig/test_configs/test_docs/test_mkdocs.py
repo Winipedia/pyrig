@@ -8,6 +8,10 @@ from pyrig.rig.configs.docs.mkdocs import MkdocsConfigFile
 class TestMkdocsConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert MkdocsConfigFile.I.stem() == "mkdocs"
+
     def test_parent_path(self) -> None:
         """Test method."""
         parent_path = MkdocsConfigFile.I.parent_path()

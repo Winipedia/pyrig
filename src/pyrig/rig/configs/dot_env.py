@@ -42,12 +42,16 @@ We highly discourage managing this ConfigFile via subclassing.
             raise ConfigFileDumpForbiddenError(config_file=self, reason=msg.strip())
 
     def extension(self) -> str:
-        """Return 'env' extension."""
-        return "env"
+        """Return no extension."""
+        return ""
+
+    def extension_separator(self) -> str:
+        """Return empty extension separator to produce '.env' (not 'env.env')."""
+        return ""
 
     def stem(self) -> str:
-        """Return empty string to produce '.env' (not 'env.env')."""
-        return ""
+        """Return '.env' as filename stem to produce '.env' (with empty extension)."""
+        return ".env"
 
     def parent_path(self) -> Path:
         """Return project root."""

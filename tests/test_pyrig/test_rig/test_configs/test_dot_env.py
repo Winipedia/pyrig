@@ -26,6 +26,10 @@ def my_test_dotenv_config_file(
 class TestDotEnvConfigFile:
     """Test class."""
 
+    def test_extension_separator(self) -> None:
+        """Test method."""
+        assert DotEnvConfigFile.I.extension_separator() == ""
+
     def test_version_control_ignored(self) -> None:
         """Test method."""
         assert DotEnvConfigFile.I.version_control_ignored() is True

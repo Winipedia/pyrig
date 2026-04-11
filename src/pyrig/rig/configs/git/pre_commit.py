@@ -52,6 +52,10 @@ class PrekConfigFile(TomlConfigFile):
         """Get parent directory (project root)."""
         return Path()
 
+    def stem(self) -> str:
+        """Get filename stem."""
+        return "prek"
+
     def hook(
         self,
         name: str,

@@ -60,6 +60,10 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             Generates the Containerfile used for image builds
     """
 
+    def stem(self) -> str:
+        """Get the workflow filename stem."""
+        return "build"
+
     def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 

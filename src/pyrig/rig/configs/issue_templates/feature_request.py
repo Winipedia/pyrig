@@ -32,6 +32,10 @@ class FeatureRequestConfigFile(DictYmlConfigFile):
         """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
+    def stem(self) -> str:
+        """Return the filename stem."""
+        return "feature_request"
+
     def _configs(self) -> ConfigDict:
         """Return feature request template YAML structure."""
         return {

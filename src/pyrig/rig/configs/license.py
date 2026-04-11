@@ -46,16 +46,16 @@ class LicenseConfigFile(StringConfigFile):
         """Return 'LICENSE'."""
         return "LICENSE"
 
-    def path(self) -> Path:
-        """Return path to LICENSE in project root."""
-        return Path(self.stem())
-
     def parent_path(self) -> Path:
         """Return project root."""
         return Path()
 
     def extension(self) -> str:
         """Return empty string (no extension)."""
+        return ""
+
+    def extension_separator(self) -> str:
+        """Return empty string (no extension separator)."""
         return ""
 
     def lines(self) -> list[str]:

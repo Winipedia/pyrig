@@ -62,6 +62,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         PyPI API tokens: https://pypi.org/help/#apitoken
     """
 
+    def stem(self) -> str:
+        """Get the workflow filename stem."""
+        return "deploy"
+
     def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 

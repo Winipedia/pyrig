@@ -38,16 +38,8 @@ class ZeroTestConfigFile(PythonTestConfigFile):
     '''
 
     def stem(self) -> str:
-        """Get the test filename with reversed prefix.
-
-        Returns:
-            str: "test_zero" (extension .py added by parent class).
-
-        Note:
-            Reverses class name parts to convert "zero_test" to "test_zero".
-        """
-        filename = super().stem()
-        return "_".join(reversed(filename.split("_")))
+        """Return the filename stem."""
+        return "test_zero"
 
     def lines(self) -> list[str]:
         """Get the placeholder test content.

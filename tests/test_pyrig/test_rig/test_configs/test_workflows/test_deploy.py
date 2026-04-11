@@ -20,6 +20,10 @@ def my_test_deploy_workflow(
 class TestDeployWorkflowConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert DeployWorkflowConfigFile.I.stem() == "deploy"
+
     def test_job_deploy_documentation(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.job_deploy_documentation()

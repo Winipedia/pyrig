@@ -22,6 +22,10 @@ def my_test_conftest_config_file(
 class TestConftestConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert ConftestConfigFile.I.stem() == "conftest"
+
     def test_is_correct(self) -> None:
         """Test method."""
         assert ConftestConfigFile.I.is_correct()

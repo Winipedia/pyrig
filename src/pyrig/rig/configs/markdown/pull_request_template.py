@@ -54,6 +54,10 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         """Return `.github` as parent directory."""
         return Path(".github")
 
+    def stem(self) -> str:
+        """Return the filename stem."""
+        return "pull_request_template"
+
     def lines(self) -> list[str]:
         """Return the pull request template content as lines."""
         return [*PULL_REQUEST_TEMPLATE.strip().splitlines(), ""]

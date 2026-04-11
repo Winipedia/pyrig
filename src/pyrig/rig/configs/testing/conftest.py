@@ -38,6 +38,10 @@ class ConftestConfigFile(PythonTestConfigFile):
         pyrig.rig.configs.base.py_tests.PythonTestConfigFile
     '''
 
+    def stem(self) -> str:
+        """Return the filename stem."""
+        return "conftest"
+
     def lines(self) -> list[str]:
         """Get the conftest.py file content.
 

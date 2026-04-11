@@ -24,12 +24,16 @@ class DotPythonVersionConfigFile(StringConfigFile):
     """
 
     def stem(self) -> str:
-        """Return empty string to produce '.python-version'."""
-        return ""
+        """Return '.python-version' as filename stem."""
+        return ".python-version"
 
     def extension(self) -> str:
-        """Return 'python-version' extension."""
-        return "python-version"
+        """Return no extension."""
+        return ""
+
+    def extension_separator(self) -> str:
+        """Return empty extension separator to produce '.python-version'."""
+        return ""
 
     def parent_path(self) -> Path:
         """Return project root."""
