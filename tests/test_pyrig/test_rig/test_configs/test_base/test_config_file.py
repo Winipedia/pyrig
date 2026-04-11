@@ -10,9 +10,7 @@ from pytest_mock import MockFixture
 
 from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.rig import configs
-from pyrig.rig.configs.base.config_file import (
-    ConfigFile,
-)
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
 

@@ -16,7 +16,7 @@ from typing import Any
 from pyrig.core.subprocesses import (
     Args,
 )
-from pyrig.rig.configs.base.config_file import ConfigDict
+from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.mdlinter import MDLinter

@@ -22,7 +22,7 @@ See Also:
     pyrig.rig.utils.packages.src_package_is_pyrig: Package detection utility
 """
 
-from pyrig.rig.configs.base.config_file import ConfigDict
+from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyprojectConfigFile
 from pyrig.rig.utils.packages import src_package_is_pyrig
 

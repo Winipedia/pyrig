@@ -31,7 +31,7 @@ See Also:
 
 from typing import Any, Literal
 
-from pyrig.rig.configs.base.config_file import ConfigDict
+from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 
 

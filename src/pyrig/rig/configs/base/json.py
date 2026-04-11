@@ -20,7 +20,8 @@ Example:
 
 import json
 
-from pyrig.rig.configs.base.config_file import ConfigDict, ConfigFile, ConfigT
+from pyrig.core.types.config_file import ConfigDict
+from pyrig.rig.configs.base.config_file import ConfigFile, ConfigT
 
 
 class JsonConfigFile(ConfigFile[ConfigT]):
