@@ -21,8 +21,9 @@ from packaging.version import Version
 from pyrig.core.string_ import (
     package_req_name_split_pattern,
 )
+from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.cli import cli
-from pyrig.rig.configs.base.config_file import ConfigDict, Priority
+from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile

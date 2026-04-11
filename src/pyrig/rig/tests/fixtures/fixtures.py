@@ -17,7 +17,8 @@ from pyrig.core.modules.imports import import_package_with_dir_fallback
 from pyrig.core.modules.module import import_module_with_file_fallback
 from pyrig.core.modules.package import make_package_dir
 from pyrig.core.modules.path import path_as_module_name
-from pyrig.rig.configs.base.config_file import ConfigData, ConfigFile
+from pyrig.core.types.config_file import ConfigData
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 
 

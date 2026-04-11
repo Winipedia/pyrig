@@ -28,7 +28,7 @@ Example:
 from abc import abstractmethod
 from collections.abc import Iterable
 
-from pyrig.rig.configs.base.config_file import ConfigList
+from pyrig.core.types.config_file import ConfigList
 from pyrig.rig.configs.base.list_ import ListConfigFile
 
 

@@ -20,7 +20,7 @@ See Also:
 
 from typing import Any
 
-from pyrig.rig.configs.base.config_file import ConfigDict
+from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
 from pyrig.rig.tools.version_controller import VersionController
