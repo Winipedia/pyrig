@@ -106,7 +106,7 @@ def assert_root_is_correct() -> None:
 It was attempted to auto-fix them via their {ConfigFile.validate.__name__} method.
 Which should have created or updated the config files to be correct.
 
-Please verify the changes at the following paths.
+Please verify the changes at the following paths:
 {make_summary_error_msg(cf().path() for cf in incorrect_cfs)}
 """
     assert not incorrect_cfs, msg
@@ -126,7 +126,7 @@ def assert_no_namespace_packages() -> None:
 
     msg = f"""Found namespace packages.
 Namespace packages are packages that do not have an __init__.py file.
-This fixture attempted to auto-fix this by creating __init__.py files for any namespace packages found.
+This fixture attempted to auto-fix this by creating the files for any namespace packages found.
 Consider using the proper command to create __init__.py files for any namespace packages in the source directory:
     '{snake_to_kebab_case(pyrig.__name__)} {snake_to_kebab_case(mkinits.__name__)}'
 
@@ -173,7 +173,7 @@ Please verify the changes at the following paths:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_dependencies_are_up_to_date() -> None:
+def assert_dependencies_are_up_to_date(standard_output_error_template: str) -> None:
     """Verify dependencies are up to date via ``uv lock --upgrade`` and ``uv sync``.
 
     Skipped if no internet connection is available.
@@ -187,52 +187,43 @@ def assert_dependencies_are_up_to_date() -> None:
             assert_dependencies_are_up_to_date.__name__,
         )
         return
+
     # update the dependencies
     args = PackageManager.I.update_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr
     stdout = completed_process.stdout
-    std_msg_updated = stderr + stdout
-    deps_updated_successfully = completed_process.returncode == 0
-    msg_updated = (
-        f"Dependencies were updated successfully by `{args}`."
-        if deps_updated_successfully
-        else f"""Failed to update dependencies.
-This fixture ran `{args}` but it failed.
-Output:
-{std_msg_updated}
-"""
-    )
+    success = completed_process.returncode == 0
+
+    msg = f"""Failed to update dependencies.
+
+This fixture ran `{args}` to automatically update the dependencies to the latest versions.
+However, it failed. See the output below for details.
+
+{standard_output_error_template.format(stdout=stdout, stderr=stderr)}
+"""  # noqa: E501
+    assert success, msg
 
     # sync the dependencies
     args = PackageManager.I.install_dependencies_args()
     completed_process = args.run(check=False)
     stderr = completed_process.stderr
     stdout = completed_process.stdout
-    std_msg_installed = stderr + stdout
-    deps_installed_successfully = completed_process.returncode == 0
-    msg_installed = (
-        f"Dependencies were installed successfully by `{args}`."
-        if deps_installed_successfully
-        else f"""Failed to install dependencies.
-This fixture ran `{args}` but it failed.
-Output:
-{std_msg_installed}
+    success = completed_process.returncode == 0
+    msg = f"""Failed to install dependencies.
+
+This fixture ran `{args}` to automatically install the dependencies.
+However, it failed. See the output below for details.
+
+{standard_output_error_template.format(stdout=stdout, stderr=stderr)}
 """
-    )
-
-    successful = deps_updated_successfully and deps_installed_successfully
-
-    msg = f"""Dependencies are not up to date.
-    {msg_updated}
-    --------------------------------------------------------------------------------
-    {msg_installed}
-    """
-    assert successful, msg
+    assert success, msg
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -> None:
+def assert_src_runs_without_dev_deps(
+    tmp_path_factory: pytest.TempPathFactory, standard_output_error_template: str
+) -> None:
     """Verify source code runs in isolated environment without dev dependencies.
 
     Creates temp environment, installs without dev group, imports all src modules,
@@ -240,11 +231,13 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
 
     Args:
         tmp_path_factory: Session-scoped temp directory factory.
+        standard_output_error_template: Template for formatting
+            standard output and error messages.
 
     Raises:
         AssertionError: If source code cannot run without dev dependencies.
     """
-    base_msg = """Failed to import all source modules without the development dependencies being installed.
+    base_msg = f"""Failed to import all source modules without the development dependencies being installed.
 
 This fixture attempts to create a temporary environment and install the project without
 the development dependencies and to import all modules of the source code.
@@ -254,11 +247,7 @@ This is not allowed as the source code should not depend on any development depe
 
 However, it failed. See the output below for details.
 
-The standard output:
-{stdout}
---------------------------------------------------------------------------------
-The standard error:
-{stderr}
+{standard_output_error_template}
 """  # noqa: E501
     if not internet_is_available():
         logger.warning(
@@ -349,7 +338,7 @@ The standard error:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_package_manager_is_up_to_date() -> None:
+def assert_package_manager_is_up_to_date(standard_output_error_template: str) -> None:
     """Verify uv is up to date via ``uv self update`` (skipped in CI).
 
     Raises:
@@ -384,10 +373,6 @@ def assert_package_manager_is_up_to_date() -> None:
 This fixture ran `{PackageManager.I.update_self_args()}` to automatically update the package manager to the latest version.
 However, it failed. See the output below for details.
 
-The standard output:
-{stdout}
---------------------------------------------------------------------------------
-The standard error:
-{stderr}
+{standard_output_error_template.format(stdout=stdout, stderr=stderr)}
 """  # noqa: E501
         assert is_up_to_date, msg

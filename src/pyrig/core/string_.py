@@ -156,8 +156,7 @@ Found errors at:
 """
     for error_location in paths:
         msg += f"""
-- {error_location}
-"""
+- {error_location}"""
     return msg
 
 
