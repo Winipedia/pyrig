@@ -1,6 +1,6 @@
 # conftest.py Configuration
 
-The `ConftestConfigFile` manages the `tests/conftest.py` file.
+The `ProjectTesterConfigFile` manages the `tests/conftest.py` file.
 
 ## Overview
 
@@ -19,7 +19,7 @@ graph TD
     B --> C[StringConfigFile]
     C --> D[PythonConfigFile]
     D --> E[PythonTestConfigFile]
-    E --> F[ConftestConfigFile]
+    E --> F[ProjectTesterConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff

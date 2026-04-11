@@ -13,7 +13,7 @@ from pyrig.rig.configs.base.python_test import PythonTestConfigFile
 from pyrig.rig.tests import conftest
 
 
-class ConftestConfigFile(PythonTestConfigFile):
+class ProjectTesterConfigFile(PythonTestConfigFile):
     '''Manages tests/conftest.py.
 
     Generates conftest.py that imports pyrig's test infrastructure as pytest plugin,
@@ -22,7 +22,7 @@ class ConftestConfigFile(PythonTestConfigFile):
     Examples:
         Generate tests/conftest.py::
 
-            ConftestConfigFile.I.validate()
+            ProjectTesterConfigFile.I.validate()
 
         Generated file::
 

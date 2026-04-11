@@ -4,34 +4,36 @@ from collections.abc import Callable
 
 import pytest
 
-from pyrig.rig.configs.testing.conftest import ConftestConfigFile
+from pyrig.rig.configs.testing.project_tester import ProjectTesterConfigFile
 
 
 @pytest.fixture
 def my_test_conftest_config_file(
-    config_file_factory: Callable[[type[ConftestConfigFile]], type[ConftestConfigFile]],
-) -> type[ConftestConfigFile]:
+    config_file_factory: Callable[
+        [type[ProjectTesterConfigFile]], type[ProjectTesterConfigFile]
+    ],
+) -> type[ProjectTesterConfigFile]:
     """Create a test conftest config file class with tmp_path."""
 
-    class MyTestConftestConfigFile(config_file_factory(ConftestConfigFile)):  # ty: ignore[unsupported-base]
+    class MyTestProjectTesterConfigFile(config_file_factory(ProjectTesterConfigFile)):  # ty: ignore[unsupported-base]
         """Test conftest config file with tmp_path override."""
 
-    return MyTestConftestConfigFile
+    return MyTestProjectTesterConfigFile
 
 
-class TestConftestConfigFile:
+class TestProjectTesterConfigFile:
     """Test class."""
 
     def test_stem(self) -> None:
         """Test method."""
-        assert ConftestConfigFile.I.stem() == "conftest"
+        assert ProjectTesterConfigFile.I.stem() == "conftest"
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert ConftestConfigFile.I.is_correct()
+        assert ProjectTesterConfigFile.I.is_correct()
 
     def test_lines(
-        self, my_test_conftest_config_file: type[ConftestConfigFile]
+        self, my_test_conftest_config_file: type[ProjectTesterConfigFile]
     ) -> None:
         """Test method."""
         lines = my_test_conftest_config_file().lines()
