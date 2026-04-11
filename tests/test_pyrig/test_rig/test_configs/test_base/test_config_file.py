@@ -325,35 +325,9 @@ class TestConfigFile:
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        expected: dict[str, Any] = {
-            "key0": "value0",
-            "key1": "value1",
-            "key2": {"key3": "value3"},
-            "key4": [
-                ["notvalue4", "extra_value"],
-                {"key5": "notvalue5", "key6": "value6"},
-            ],
-            "key7": "value7",
-        }
-        actual: dict[str, Any] = {
-            "key0": "value0",
-            "key1": "value1",
-            "key2": {"key3": "value3"},
-            "key4": [
-                ["notvalue4", "extra_value", "extra_value2"],
-                {"key5": "notvalue5", "key6": "value6"},
-            ],
-            "key7": "value7",
-            "key8": "value8",
-        }
-        assert my_test_config_file().is_correct_recursively(expected, actual), (
-            "Expected config to be correct"
-        )
-        # change one in actual to not be correct
-        actual["key2"]["key3"] = "notvalue3"
-        assert not my_test_config_file().is_correct_recursively(expected, actual), (
-            "Expected config to be correct"
-        )
+        assert not my_test_config_file().is_correct_recursively()
+        my_test_config_file().validate()
+        assert my_test_config_file().is_correct_recursively()
 
 
 class TestPriority:
