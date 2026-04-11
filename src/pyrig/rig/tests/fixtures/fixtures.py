@@ -197,3 +197,13 @@ def tmp_package_root_path(
 
     package = create_source_package(path.relative_to(tmp_source_root_path))
     return path, package
+
+
+@pytest.fixture(scope="session")
+def standard_output_error_template() -> str:
+    """Fixture to provide a standard template for stdout and stderr in tests."""
+    return """The standard output:
+{stdout}
+--------------------------------------------------------------------------------
+The standard error:
+{stderr}"""
