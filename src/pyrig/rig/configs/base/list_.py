@@ -30,7 +30,8 @@ Example:
     ...         return ["item1", "item2"]
 """
 
-from pyrig.rig.configs.base.config_file import ConfigFile, ConfigList
+from pyrig.core.types.config_file import ConfigList
+from pyrig.rig.configs.base.config_file import ConfigFile
 
 
 class ListConfigFile(ConfigFile[ConfigList]):

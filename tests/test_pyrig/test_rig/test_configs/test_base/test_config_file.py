@@ -305,24 +305,6 @@ class TestConfigFile:
         actual = my_test_config_file().merge_configs()
         assert actual == expected, "Expected config to be correct"
 
-    def test_add_missing_dict_val(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
-    ) -> None:
-        """Test method."""
-        expected: dict[str, Any] = {"key": "value"}
-        actual: dict[str, Any] = {}
-        my_test_config_file().add_missing_dict_val(expected, actual, "key")
-        assert actual["key"] == expected["key"], "Expected config to be correct"
-
-    def test_insert_missing_list_val(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
-    ) -> None:
-        """Test method."""
-        expected: list[Any] = ["value"]
-        actual: list[Any] = []
-        my_test_config_file().insert_missing_list_val(expected, actual, 0)
-        assert actual[0] == expected[0], "Expected config to be correct"
-
     def test_is_correct(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:

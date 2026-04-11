@@ -88,6 +88,59 @@ def generator_length(generator: Generator[Any, None, None]) -> int:
     return sum(1 for _ in generator)
 
 
+def merge_nested_structures[T: dict[Any, Any] | list[Any]](
+    subset: T,
+    superset: T,
+) -> T:
+    """Merge missing values from subset into superset for nested dicts and lists."""
+    nested_structure_is_subset(
+        subset=subset,
+        superset=superset,
+        on_dict_mismatch=add_missing_dict_val,
+        on_list_mismatch=insert_missing_list_val,
+    )
+    return superset
+
+
+def add_missing_dict_val(
+    expected_dict: dict[Any, Any], actual_dict: dict[Any, Any], key: Any
+) -> None:
+    """Merge dict value during config merging (modifies actual_dict in place).
+
+    First calls setdefault to add key if missing. Then:
+    - For dict values: updates actual with expected (overwrites overlapping
+        keys with expected values, preserves actual-only keys, adds
+        expected-only keys)
+    - For non-dict values: replaces actual value with expected value
+
+    Args:
+        expected_dict: Expected configuration dict.
+        actual_dict: Actual configuration dict to update.
+        key: Key to add or update.
+    """
+    expected_val: Any = expected_dict[key]
+    actual_val = actual_dict.get(key)
+    actual_dict.setdefault(key, expected_val)
+
+    if isinstance(expected_val, dict) and isinstance(actual_val, dict):
+        actual_val.update(expected_val)
+    else:
+        actual_dict[key] = expected_val
+
+
+def insert_missing_list_val(
+    expected_list: list[Any], actual_list: list[Any], index: int
+) -> None:
+    """Insert missing list value during config merging (modifies in place).
+
+    Args:
+        expected_list: Expected list.
+        actual_list: Actual list to update.
+        index: Index at which to insert.
+    """
+    actual_list.insert(index, expected_list[index])
+
+
 def nested_structure_is_subset(  # noqa: C901
     subset: dict[Any, Any] | list[Any] | Any,
     superset: dict[Any, Any] | list[Any] | Any,

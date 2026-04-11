@@ -78,8 +78,8 @@ import typer
 
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
-from pyrig.core.iterate import nested_structure_is_subset
-from pyrig.core.types.config_file import ConfigData, ConfigDict, ConfigList
+from pyrig.core.iterate import merge_nested_structures, nested_structure_is_subset
+from pyrig.core.types.config_file import ConfigData
 from pyrig.rig import configs
 
 logger = logging.getLogger(__name__)
@@ -326,52 +326,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         See Also:
             pyrig.src.iterate.nested_structure_is_subset: Subset validation logic
         """
-        current_config = self.load()
-        expected_config = self.configs()
-        nested_structure_is_subset(
-            expected_config,
-            current_config,
-            self.add_missing_dict_val,
-            self.insert_missing_list_val,
-        )
-        return current_config
-
-    def add_missing_dict_val(
-        self, expected_dict: ConfigDict, actual_dict: ConfigDict, key: str
-    ) -> None:
-        """Merge dict value during config merging (modifies actual_dict in place).
-
-        First calls setdefault to add key if missing. Then:
-        - For dict values: updates actual with expected (overwrites overlapping
-          keys with expected values, preserves actual-only keys, adds
-          expected-only keys)
-        - For non-dict values: replaces actual value with expected value
-
-        Args:
-            expected_dict: Expected configuration dict.
-            actual_dict: Actual configuration dict to update.
-            key: Key to add or update.
-        """
-        expected_val = expected_dict[key]
-        actual_val = actual_dict.get(key)
-        actual_dict.setdefault(key, expected_val)
-
-        if isinstance(expected_val, dict) and isinstance(actual_val, dict):
-            actual_val.update(expected_val)
-        else:
-            actual_dict[key] = expected_val
-
-    def insert_missing_list_val(
-        self, expected_list: ConfigList, actual_list: ConfigList, index: int
-    ) -> None:
-        """Insert missing list value during config merging (modifies in place).
-
-        Args:
-            expected_list: Expected list.
-            actual_list: Actual list to update.
-            index: Index at which to insert.
-        """
-        actual_list.insert(index, expected_list[index])
+        return merge_nested_structures(subset=self.load(), superset=self.configs())
 
     def is_correct(self) -> bool:
         """Check if config file is valid (empty or expected is subset of actual).
