@@ -70,6 +70,10 @@ class Tool(DependencySubclass):
         Args(('mytool', 'build', '--verbose'))
     """
 
+    def __str__(self) -> str:
+        """String representation of the tool."""
+        return f"{self.__class__.__name__} ({self.name()})"
+
     @abstractmethod
     def name(self) -> str:
         """Get tool command name.

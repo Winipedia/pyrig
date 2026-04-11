@@ -183,7 +183,7 @@ def assert_dependencies_are_up_to_date() -> None:
     """
     if not internet_is_available():
         logger.warning(
-            "No internet, skipping %s",
+            "No internet, skipping fixture: %s",
             assert_dependencies_are_up_to_date.__name__,
         )
         return
@@ -244,14 +244,25 @@ def assert_src_runs_without_dev_deps(tmp_path_factory: pytest.TempPathFactory) -
     Raises:
         AssertionError: If source code cannot run without dev dependencies.
     """
-    base_msg = """Source code cannot run without dev dependencies.
-This fixture created a temp environment and installed the project without
-the dev group and attempted to import all src modules.
-However, it failed with the following error:
-"""
+    base_msg = """Failed to import all source modules without the development dependencies being installed.
+
+This fixture attempts to create a temporary environment and install the project without
+the development dependencies and to import all modules of the source code.
+The most likely reason for this failure is that there is an import in the source code
+that depends on a development dependency directly or indirectly.
+This is not allowed as the source code should not depend on any development dependencies.
+
+However, it failed. See the output below for details.
+
+The standard output:
+{stdout}
+--------------------------------------------------------------------------------
+The standard error:
+{stderr}
+"""  # noqa: E501
     if not internet_is_available():
         logger.warning(
-            "No internet, skipping %s",
+            "No internet, skipping fixture: %s",
             assert_src_runs_without_dev_deps.__name__,
         )
         return
@@ -291,7 +302,7 @@ However, it failed with the following error:
         std_msg = stderr + stdout
 
         dev_dep = Tool.subclasses_dev_dependencies()[0]
-        assert dev_dep not in std_msg, base_msg + f"{std_msg}"
+        assert dev_dep not in std_msg, base_msg.format(stdout=stdout, stderr=stderr)
 
         # delete pyproject.toml and uv.lock and readme.md
         for config in configs:
@@ -322,10 +333,8 @@ However, it failed with the following error:
         )
         stdout = completed_process.stdout
         stderr = completed_process.stderr
-        msg = f"""Expected Success in stdout, got {stdout} and {stderr}
-If this fails then there is likely an import in src that depends on dev dependencies.
-"""
-        assert "Success" in stdout, base_msg + msg
+
+        assert "Success" in stdout, base_msg.format(stdout=stdout, stderr=stderr)
 
         # run cli without dev deps
         args = PackageManager.I.run_no_dev_args(project_name, "--help")
@@ -336,7 +345,7 @@ If this fails then there is likely an import in src that depends on dev dependen
         stderr = completed_process.stderr
         std_msg = stderr + stdout
         successful = completed_process.returncode == 0
-        assert successful, base_msg + f"Expected {args} to succeed, got {std_msg}"
+        assert successful, base_msg.format(stdout=stdout, stderr=stderr)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -348,12 +357,15 @@ def assert_package_manager_is_up_to_date() -> None:
     """
     if not internet_is_available():
         logger.warning(
-            "No internet, skipping %s",
+            "No internet, skipping fixture: %s",
             assert_package_manager_is_up_to_date.__name__,
         )
         return
+
+    # this only needed locally, in CI the latest version is used automatically
+    # by the CI environment, and running self update can cause issues there
     if not RemoteVersionController.I.running_in_ci():
-        # update project mgt
+        # update the package manager itself
         completed_process = PackageManager.I.update_self_args().run(check=False)
         returncode = completed_process.returncode
 
@@ -367,8 +379,15 @@ def assert_package_manager_is_up_to_date() -> None:
 
         is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
 
-        msg = f"""The tool {PackageManager.I.name()} is not up to date.
-This fixture ran `{PackageManager.I.update_self_args()}` but it failed.
-Output: {std_msg}
-"""
+        msg = f"""The {PackageManager.I} is not up to date.
+
+This fixture ran `{PackageManager.I.update_self_args()}` to automatically update the package manager to the latest version.
+However, it failed. See the output below for details.
+
+The standard output:
+{stdout}
+--------------------------------------------------------------------------------
+The standard error:
+{stderr}
+"""  # noqa: E501
         assert is_up_to_date, msg
