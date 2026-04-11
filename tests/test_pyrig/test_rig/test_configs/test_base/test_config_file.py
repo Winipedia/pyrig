@@ -75,7 +75,8 @@ class TestConfigFile:
 
     def test_incorrect_subclasses(self) -> None:
         """Test method."""
-        assert not any(ConfigFile.incorrect_subclasses())
+        incorrect = tuple(ConfigFile.incorrect_subclasses())
+        assert not incorrect, f"Expected no incorrect subclasses, got {incorrect}"
 
     def test_version_control_ignored(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
