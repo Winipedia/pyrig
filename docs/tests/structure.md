@@ -103,7 +103,7 @@ graph TD
     style G fill:#90be6d,stroke:#333,stroke-width:2px,color:#000
 ```
 
-The `assert_all_modules_tested` session fixture checks that every source module
+The `all_modules_tested` session fixture checks that every source module
 has a corresponding test module with tests for all functions, classes, and
 methods. Missing tests are generated as skeletons with `NotImplementedError`.
 
@@ -148,7 +148,7 @@ uv run pytest --cov-report=html  # Generate HTML report in htmlcov/
 
 ## Validation
 
-The `assert_all_modules_tested` session-level fixture validates that all source
+The `all_modules_tested` session-level fixture validates that all source
 modules have corresponding test modules with complete test coverage for all
 functions, classes, and methods. This happens automatically through autouse
 fixtures.

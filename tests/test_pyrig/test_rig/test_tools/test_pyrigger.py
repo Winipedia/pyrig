@@ -130,7 +130,7 @@ class TestPyrigger:
 
             # uv add converts absolute paths to relative paths, which breaks when
             # the project is copied to a different location (e.g., in the
-            # assert_src_runs_without_dev_deps fixture). We need to replace the
+            # no_dev_deps_in_source_code fixture). We need to replace the
             # relative path with an absolute path.
             pyproject_toml = src_project_dir / "pyproject.toml"
             pyproject_content = pyproject_toml.read_text(encoding="utf-8")

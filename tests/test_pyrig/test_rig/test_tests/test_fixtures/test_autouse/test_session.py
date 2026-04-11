@@ -5,29 +5,29 @@ They are tests themselves and are hard to test due to being session scoped and a
 """
 
 
-def test_assert_no_unstaged_changes() -> None:
+def test_no_unstaged_changes_in_ci() -> None:
     """Test function."""
 
 
-def test_assert_root_is_correct() -> None:
+def test_all_config_files_correct() -> None:
     """Test function."""
 
 
-def test_assert_no_namespace_packages() -> None:
+def test_no_namespace_packages() -> None:
     """Test function."""
 
 
-def test_assert_all_modules_tested() -> None:
+def test_all_modules_tested() -> None:
     """Test function."""
 
 
-def test_assert_dependencies_are_up_to_date() -> None:
+def test_all_dependencies_updated() -> None:
     """Test function."""
 
 
-def test_assert_src_runs_without_dev_deps() -> None:
+def test_no_dev_deps_in_source_code() -> None:
     """Test function."""
 
 
-def test_assert_package_manager_is_up_to_date() -> None:
+def test_package_manager_updated() -> None:
     """Test function."""

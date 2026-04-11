@@ -54,9 +54,9 @@ Use `mkroot` when:
 
 ## Autouse Fixture
 
-The `assert_root_is_correct` autouse fixture runs before tests and triggers this
+The `all_config_files_correct` autouse fixture runs before tests and triggers this
 command if any config files are incorrect. See
-[Autouse Fixtures](../../tests/autouse.md#assert_root_is_correct) for details.
+[Autouse Fixtures](../../tests/autouse.md#all_config_files_correct) for details.
 
 ## Related
 
