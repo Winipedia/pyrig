@@ -1,7 +1,7 @@
 """test module.
 
-We do not test the autouse fixtures directly,
-as it is not easily feasible to basically test a test.
+We do not test the autouse fixtures directly.
+They are tests themselves and are hard to test due to being session scoped and autouse.
 """
 
 
