@@ -1,6 +1,6 @@
 # Prek Configuration
 
-The `PrekConfigFile` manages the `prek.toml` file for
+The `PreCommitterConfigFile` manages the `prek.toml` file for
 automated code quality checks before commits.
 
 ## Overview
@@ -21,7 +21,7 @@ Creates a prek configuration that:
 graph TD
     A[ConfigFile] --> B[DictConfigFile]
     B --> C[TomlConfigFile]
-    C --> D[PrekConfigFile]
+    C --> D[PreCommitterConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff
@@ -45,8 +45,8 @@ graph TD
 
 **Extension**: `.toml` - Standard prek configuration file extension.
 
-**Filename**: Derived automatically from the class name `PrekConfigFile` →
-`prek`.
+**Filename**: Derived automatically from the class name
+`PreCommitterConfigFile` → `prek`.
 
 ## How It Works
 
