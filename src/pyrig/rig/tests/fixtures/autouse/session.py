@@ -351,26 +351,27 @@ def assert_package_manager_is_up_to_date(standard_output_error_template: str) ->
 
     # this only needed locally, in CI the latest version is used automatically
     # by the CI environment, and running self update can cause issues there
-    if not RemoteVersionController.I.running_in_ci():
-        # update the package manager itself
-        completed_process = PackageManager.I.update_self_args().run(check=False)
-        returncode = completed_process.returncode
+    if RemoteVersionController.I.running_in_ci():
+        return
 
-        stderr = completed_process.stderr
-        stdout = completed_process.stdout
-        std_msg = stderr + stdout
+    # update the package manager itself
+    completed_process = PackageManager.I.update_self_args().run(check=False)
+    returncode = completed_process.returncode
 
-        allowed_errors = ("GitHub API rate limit exceeded",)
+    stderr = completed_process.stderr
+    stdout = completed_process.stdout
+    std_msg = stderr + stdout
 
-        allowed_error_in_err_or_out = any(exp in std_msg for exp in allowed_errors)
+    allowed_errors = ("GitHub API rate limit exceeded",)
+    allowed_error_in_err_or_out = any(exp in std_msg for exp in allowed_errors)
 
-        is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
+    is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
 
-        msg = f"""The {PackageManager.I} is not up to date.
+    msg = f"""The {PackageManager.I} is not up to date.
 
 This fixture ran `{PackageManager.I.update_self_args()}` to automatically update the package manager to the latest version.
 However, it failed. See the output below for details.
 
 {standard_output_error_template.format(stdout=stdout, stderr=stderr)}
 """  # noqa: E501
-        assert is_up_to_date, msg
+    assert is_up_to_date, msg
