@@ -326,7 +326,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         See Also:
             pyrig.src.iterate.nested_structure_is_subset: Subset validation logic
         """
-        return merge_nested_structures(subset=self.load(), superset=self.configs())
+        return merge_nested_structures(subset=self.configs(), superset=self.load())
 
     def is_correct(self) -> bool:
         """Check if config file is valid (empty or expected is subset of actual).
@@ -339,8 +339,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
             is_correct_recursively: Perform subset validation
         """
         return self.path().exists() and (
-            self.is_unwanted()
-            or self.is_correct_recursively(self.configs(), self.load())
+            self.is_unwanted() or self.is_correct_recursively()
         )
 
     def is_unwanted(self) -> bool:
@@ -351,10 +350,8 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         """
         return self.path().exists() and self.path().stat().st_size == 0
 
-    @staticmethod
     def is_correct_recursively(
-        expected_config: ConfigT,
-        actual_config: ConfigT,
+        self,
     ) -> bool:
         """Recursively check if expected config is subset of actual.
 
@@ -368,7 +365,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         See Also:
             pyrig.src.iterate.nested_structure_is_subset: Core subset logic
         """
-        return nested_structure_is_subset(expected_config, actual_config)
+        return nested_structure_is_subset(self.configs(), self.load())
 
     @classmethod
     def validate_subclasses(
