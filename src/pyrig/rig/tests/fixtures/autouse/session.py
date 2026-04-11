@@ -104,7 +104,7 @@ def assert_root_is_correct() -> None:
 
     msg = f"""Found incorrect {ConfigFile.__name__}s.
 It was attempted to auto-fix them via their {ConfigFile.validate.__name__} method.
-Which should have created or updated the config files to be correct.
+This should have created or updated the config files to be correct.
 
 Please verify the changes at the following paths:
 {make_summary_error_msg(cf().path() for cf in incorrect_cfs)}
