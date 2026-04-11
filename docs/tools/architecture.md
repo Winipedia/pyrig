@@ -96,7 +96,7 @@ non-abstract implementations** across all dependent packages. This enables:
 graph TD
     subgraph pyrig
         A[PyprojectConfigFile]
-        B[PrekConfigFile]
+        B[PreCommitterConfigFile]
     end
     subgraph myapp
         C[MyAppConfigFile]
