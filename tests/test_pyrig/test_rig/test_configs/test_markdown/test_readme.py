@@ -12,9 +12,9 @@ class TestReadmeConfigFile:
         """Test method."""
         assert not ReadmeConfigFile.I.is_unwanted()
 
-    def test_filename(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        assert ReadmeConfigFile.I.filename() == "README", "Expected README"
+        assert ReadmeConfigFile.I.stem() == "README", "Expected README"
 
     def test_parent_path(self) -> None:
         """Test method."""

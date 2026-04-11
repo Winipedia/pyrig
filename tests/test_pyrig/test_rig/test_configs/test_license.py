@@ -45,10 +45,10 @@ class TestLicenseConfigFile:
         assert "[year]" not in mit_license
         assert "[fullname]" not in mit_license
 
-    def test_filename(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
         # Should return LICENSE
-        assert LicenseConfigFile.I.filename() == "LICENSE", "Expected 'LICENSE'"
+        assert LicenseConfigFile.I.stem() == "LICENSE", "Expected 'LICENSE'"
 
     def test_path(self) -> None:
         """Test method."""

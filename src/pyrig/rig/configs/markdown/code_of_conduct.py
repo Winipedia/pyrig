@@ -41,7 +41,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         pyrig.rig.configs.base.markdown.MarkdownConfigFile
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Return "CODE_OF_CONDUCT" as the filename."""
         return "CODE_OF_CONDUCT"
 

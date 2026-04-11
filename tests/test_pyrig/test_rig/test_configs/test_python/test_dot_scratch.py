@@ -16,9 +16,9 @@ class TestDotScratchConfigFile:
         """Test method."""
         assert DotScratchConfigFile.I.is_correct()
 
-    def test_filename(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        assert DotScratchConfigFile.I.filename() == ".scratch"
+        assert DotScratchConfigFile.I.stem() == ".scratch"
 
     def test_parent_path(
         self,

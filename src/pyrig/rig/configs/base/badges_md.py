@@ -105,8 +105,8 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             Dict mapping category names (tooling, code-quality, package-info, ci/cd,
             documentation) to lists of badge Markdown strings.
         """
-        health_check_wf_name = HealthCheckWorkflowConfigFile.I.filename()
-        release_wf_name = ReleaseWorkflowConfigFile.I.filename()
+        health_check_wf_name = HealthCheckWorkflowConfigFile.I.stem()
+        release_wf_name = ReleaseWorkflowConfigFile.I.stem()
         badge_groups = Tool.grouped_badges()
 
         badge_groups[ToolGroup.PROJECT_INFO].extend(

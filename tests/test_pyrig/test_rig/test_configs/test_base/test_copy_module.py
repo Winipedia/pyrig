@@ -98,9 +98,9 @@ class TestCopyModuleConfigFile:
         # Verify it contains the module content
         assert "Test module content" in content_str, "Expected module content in string"
 
-    def test_filename(
+    def test_stem(
         self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
     ) -> None:
         """Test method."""
-        filename = my_test_copy_module_config_file().filename()
+        filename = my_test_copy_module_config_file().stem()
         assert filename == "test_module", f"Expected 'test_module', got {filename}"

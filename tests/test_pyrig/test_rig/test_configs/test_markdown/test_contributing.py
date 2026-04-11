@@ -8,9 +8,9 @@ from pyrig.rig.configs.markdown.contributing import ContributingConfigFile
 class TestContributingConfigFile:
     """Test class."""
 
-    def test_filename(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        result = ContributingConfigFile.I.filename()
+        result = ContributingConfigFile.I.stem()
         assert result == "CONTRIBUTING"
 
     def test_parent_path(self) -> None:

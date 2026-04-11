@@ -48,8 +48,8 @@ class TestInitConfigFile:
         """Test method."""
         assert isinstance(my_test_init_config_file().parent_path(), Path)
 
-    def test_filename(self, my_test_init_config_file: type[InitConfigFile]) -> None:
+    def test_stem(self, my_test_init_config_file: type[InitConfigFile]) -> None:
         """Test method."""
         expected = "__init__"
-        actual = my_test_init_config_file().filename()
+        actual = my_test_init_config_file().stem()
         assert expected == actual, f"Expected {expected}, got {actual}"

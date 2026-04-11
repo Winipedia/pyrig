@@ -37,7 +37,7 @@ class ZeroTestConfigFile(PythonTestConfigFile):
         pyrig.rig.configs.testing.main_test.MainTestConfigFile
     '''
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Get the test filename with reversed prefix.
 
         Returns:
@@ -46,7 +46,7 @@ class ZeroTestConfigFile(PythonTestConfigFile):
         Note:
             Reverses class name parts to convert "zero_test" to "test_zero".
         """
-        filename = super().filename()
+        filename = super().stem()
         return "_".join(reversed(filename.split("_")))
 
     def lines(self) -> list[str]:

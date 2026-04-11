@@ -42,13 +42,13 @@ class LicenseConfigFile(StringConfigFile):
         """
         return Priority.HIGH
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Return 'LICENSE'."""
         return "LICENSE"
 
     def path(self) -> Path:
         """Return path to LICENSE in project root."""
-        return Path(self.filename())
+        return Path(self.stem())
 
     def parent_path(self) -> Path:
         """Return project root."""
@@ -101,6 +101,6 @@ class LicenseConfigFile(StringConfigFile):
         repo_url = RemoteVersionController.I.repo_url()
         return make_linked_badge_markdown(
             badge_url=badge_url,
-            link_url=f"{repo_url}/blob/main/{self.filename()}",
+            link_url=f"{repo_url}/blob/main/{self.stem()}",
             alt_text="License",
         )

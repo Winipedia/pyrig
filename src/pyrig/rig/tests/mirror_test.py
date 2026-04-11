@@ -151,7 +151,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         super()._dump(config)
         reimport_module(self.test_module())
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Extract test filename from the derived test path.
 
         Returns:

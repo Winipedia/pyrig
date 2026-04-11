@@ -281,12 +281,10 @@ class TestConfigFile:
             f"Expected {expected}, got {actual}"
         )
 
-    def test_filename(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
-    ) -> None:
+    def test_stem(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
         expected = "my"
-        actual = my_test_config_file().filename()
+        actual = my_test_config_file().stem()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_merge_configs(

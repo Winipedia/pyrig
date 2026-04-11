@@ -30,7 +30,7 @@ class DotScratchConfigFile(PythonConfigFile):
         pyrig.rig.configs.git.gitignore.GitignoreConfigFile
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Get the scratch filename.
 
         Returns:

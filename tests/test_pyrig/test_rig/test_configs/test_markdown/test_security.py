@@ -8,9 +8,9 @@ from pyrig.rig.configs.markdown.security import SecurityConfigFile
 class TestSecurityConfigFile:
     """Test class."""
 
-    def test_filename(self) -> None:
+    def test_stem(self) -> None:
         """Test method."""
-        result = SecurityConfigFile.I.filename()
+        result = SecurityConfigFile.I.stem()
         assert result == "SECURITY"
 
     def test_parent_path(self) -> None:

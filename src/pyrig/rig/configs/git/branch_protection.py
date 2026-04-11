@@ -39,7 +39,7 @@ class RepoProtectionConfigFile(DictJsonConfigFile):
         """Get parent directory (project root)."""
         return Path()
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Get filename with hyphens (branch-protection)."""
         return "branch-protection"
 

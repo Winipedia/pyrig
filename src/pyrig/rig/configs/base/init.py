@@ -40,7 +40,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
             For creating __init__.py files that also ensure parent dirs are packages
     """
 
-    def filename(self) -> str:
+    def stem(self) -> str:
         """Return "__init__" for __init__.py files.
 
         Returns:

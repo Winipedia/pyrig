@@ -26,7 +26,7 @@ def my_test_builder_config_file(
 
         def create_artifacts(self, temp_artifacts_dir: Path) -> None:
             """Create the artifacts."""
-            file = temp_artifacts_dir / self.filename()
+            file = temp_artifacts_dir / self.stem()
             file.write_text(self.__class__.__name__)
 
     return MyTestBuilderConfigFile
@@ -49,7 +49,7 @@ class TestBuilderConfigFile:
         my_test_builder_config_file().validate()
         with chdir(tmp_path):
             platform_file = my_test_builder_config_file().platform_specific_path(
-                Path(my_test_builder_config_file().filename())
+                Path(my_test_builder_config_file().stem())
             )
             assert platform_file.exists()
             loaded = my_test_builder_config_file().load()
