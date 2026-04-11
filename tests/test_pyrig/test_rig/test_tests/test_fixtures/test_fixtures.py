@@ -141,3 +141,9 @@ def test_create_source_module(
     assert isinstance(module, ModuleType)
     assert module.__name__ == "pyrig.module"
     assert Path(module.__file__) == package_path / "module.py"  # ty:ignore[invalid-argument-type]
+
+
+def test_standard_output_error_template(standard_output_error_template: str) -> None:
+    """Test function."""
+    assert "{stdout}" in standard_output_error_template
+    assert "{stderr}" in standard_output_error_template
