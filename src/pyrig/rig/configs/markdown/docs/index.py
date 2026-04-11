@@ -4,7 +4,7 @@ Manages docs/index.md (MkDocs home page) with project name + "Documentation"
 header and status badges. Referenced in mkdocs.yml navigation.
 
 See Also:
-    pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile
+    pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
     pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
 """
 
@@ -31,7 +31,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
             # myproject Documentation
 
     See Also:
-        pyrig.rig.configs.docs.mkdocs.MkdocsConfigFile
+        pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
         pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
     """
 

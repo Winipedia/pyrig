@@ -9,7 +9,7 @@ from pyrig.core.exceptions.dependency_subclass.multiple_found import (
 )
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
-from pyrig.rig.configs.git.gitignore import GitignoreConfigFile
+from pyrig.rig.configs.git.version_controller import VersionControllerIgnoreConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
@@ -21,15 +21,23 @@ class TestDependencySubclass:
 
     def test_subclasses_sorted(self) -> None:
         """Test method."""
-        subclasses = (PyprojectConfigFile, LicenseConfigFile, GitignoreConfigFile)
+        subclasses = (
+            PyprojectConfigFile,
+            LicenseConfigFile,
+            VersionControllerIgnoreConfigFile,
+        )
         result = ConfigFile.subclasses_sorted(*subclasses)
-        assert result == [LicenseConfigFile, PyprojectConfigFile, GitignoreConfigFile]
+        assert result == [
+            LicenseConfigFile,
+            PyprojectConfigFile,
+            VersionControllerIgnoreConfigFile,
+        ]
 
     def test_I(self) -> None:  # noqa: N802
         """Test method."""
-        result = GitignoreConfigFile.I
-        assert isinstance(result, GitignoreConfigFile)
-        assert result is GitignoreConfigFile.I.I
+        result = VersionControllerIgnoreConfigFile.I
+        assert isinstance(result, VersionControllerIgnoreConfigFile)
+        assert result is VersionControllerIgnoreConfigFile.I.I
 
     def test_definition_package(self) -> None:
         """Test method."""

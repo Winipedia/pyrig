@@ -21,7 +21,7 @@ from pyrig.rig.utils.resources import (
 )
 
 
-class GitignoreConfigFile(StringConfigFile):
+class VersionControllerIgnoreConfigFile(StringConfigFile):
     """Gitignore configuration manager.
 
     Combines GitHub's standard Python patterns with pyrig-specific patterns
@@ -31,11 +31,11 @@ class GitignoreConfigFile(StringConfigFile):
     Examples:
         validate .gitignore::
 
-            GitignoreConfigFile.I.validate()
+            VersionControllerIgnoreConfigFile.I.validate()
 
         Load patterns::
 
-            patterns = GitignoreConfigFile.I.load()
+            patterns = VersionControllerIgnoreConfigFile.I.load()
 
     Note:
         Makes HTTP request to GitHub for Python.gitignore. Uses fallback on failure.

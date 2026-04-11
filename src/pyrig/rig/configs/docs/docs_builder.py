@@ -19,7 +19,7 @@ from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.package_manager import PackageManager
 
 
-class MkdocsConfigFile(DictYmlConfigFile):
+class DocsBuilderConfigFile(DictYmlConfigFile):
     """MkDocs configuration manager.
 
     Generates mkdocs.yml with Material theme, dark/light mode toggle, navigation
@@ -27,7 +27,7 @@ class MkdocsConfigFile(DictYmlConfigFile):
     docstring API documentation.
 
     Example:
-        >>> MkdocsConfigFile.I.validate()
+        >>> DocsBuilderConfigFile.I.validate()
 
     See Also:
         pyrig.rig.configs.pyproject.PyprojectConfigFile

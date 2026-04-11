@@ -1,7 +1,7 @@
 # GitIgnore Configuration
 
-The `GitignoreConfigFile` manages the project's `.gitignore` file for excluding
-files from version control.
+The `VersionControllerIgnoreConfigFile` manages the project's `.gitignore`
+file for excluding files from version control.
 
 ## Overview
 
@@ -18,7 +18,7 @@ Creates a comprehensive `.gitignore` file that:
 graph TD
     A[ConfigFile] --> B[ListConfigFile]
     B --> C[StringConfigFile]
-    C --> D[GitignoreConfigFile]
+    C --> D[VersionControllerIgnoreConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#457b9d,stroke:#333,stroke-width:2px,color:#fff

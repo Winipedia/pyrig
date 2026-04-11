@@ -79,7 +79,7 @@ By default, the API reference includes **all code in your project**:
 **Note**: This comprehensive approach documents all code, including development
 tools and internal utilities. If you need a more focused API reference (e.g.,
 only public API from `src/`), you should override the `ApiConfigFile` class
-and `MkdocsConfigFile` and customize the content.
+and `DocsBuilderConfigFile` and customize the content.
 
 ## Customizing the API Reference
 

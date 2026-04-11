@@ -23,7 +23,7 @@ from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
 logger = logging.getLogger(__name__)
 
 
-class RepoProtectionConfigFile(DictJsonConfigFile):
+class BranchProtectionConfigFile(DictJsonConfigFile):
     """Manages branch-protection.json for GitHub rulesets.
 
     Creates JSON config with PR requirements (1 approval, code owner review),

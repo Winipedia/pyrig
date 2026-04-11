@@ -1,7 +1,7 @@
 # MkDocs Configuration
 
-The `MkdocsConfigFile` manages the project's `mkdocs.yml` configuration file for
-generating documentation websites with MkDocs.
+The `DocsBuilderConfigFile` manages the project's `mkdocs.yml`
+configuration file for generating documentation websites with MkDocs.
 
 ## Overview
 
@@ -19,7 +19,7 @@ Creates a minimal MkDocs configuration that:
 graph TD
     A[ConfigFile] --> B[YamlConfigFile]
     B --> C[YmlConfigFile]
-    C --> D[MkdocsConfigFile]
+    C --> D[DocsBuilderConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
