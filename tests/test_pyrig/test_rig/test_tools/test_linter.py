@@ -6,6 +6,10 @@ from pyrig.rig.tools.linter import Linter
 class TestLinter:
     """Test class."""
 
+    def test_pydocstyle(self) -> None:
+        """Test method."""
+        assert Linter.I.pydocstyle() == "google"
+
     def test_group(self) -> None:
         """Test method."""
         result = Linter.I.group()
