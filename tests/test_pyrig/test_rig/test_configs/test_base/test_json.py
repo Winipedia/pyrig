@@ -18,6 +18,10 @@ def my_test_json_config_file(
     class MyTestDictJsonConfigFile(config_file_factory(DictJsonConfigFile)):  # ty: ignore[unsupported-base]
         """Test json config file."""
 
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_json"
+
         def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()

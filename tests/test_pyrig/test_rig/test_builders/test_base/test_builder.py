@@ -26,7 +26,7 @@ def my_test_builder_config_file(
 
         def create_artifacts(self, temp_artifacts_dir: Path) -> None:
             """Create the artifacts."""
-            file = temp_artifacts_dir / self.stem()
+            file = temp_artifacts_dir / "my-file.txt"
             file.write_text(self.__class__.__name__)
 
     return MyTestBuilderConfigFile
@@ -35,9 +35,9 @@ def my_test_builder_config_file(
 class TestBuilderConfigFile:
     """Test class."""
 
-    def test_stem(self) -> None:
+    def test_stem(self, my_test_builder_config_file: type[BuilderConfigFile]) -> None:
         """Test method."""
-        assert BuilderConfigFile.I.stem() == ""
+        assert my_test_builder_config_file().stem() == ""
 
     def test_dist_dir_name(self) -> None:
         """Test method."""
@@ -53,7 +53,7 @@ class TestBuilderConfigFile:
         my_test_builder_config_file().validate()
         with chdir(tmp_path):
             platform_file = my_test_builder_config_file().platform_specific_path(
-                Path(my_test_builder_config_file().stem())
+                Path(my_test_builder_config_file().parent_path() / "my-file.txt")
             )
             assert platform_file.exists()
             loaded = my_test_builder_config_file().load()
@@ -119,7 +119,7 @@ class TestBuilderConfigFile:
         """Test method."""
         my_test_builder_config_file().create_file()
         assert my_test_builder_config_file().parent_path().exists()
-        assert not my_test_builder_config_file().path().exists()
+        assert not (my_test_builder_config_file().parent_path() / "test.txt").exists()
 
     def test_definition_package(self) -> None:
         """Test method."""

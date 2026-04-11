@@ -33,6 +33,10 @@ def my_test_config_file(
             "key4": [["value4"], {"key5": "value5", "key6": "value6"}],
         }
 
+        def stem(self) -> str:
+            """Get the stem."""
+            return "my-test-file"
+
         def extension(self) -> str:
             """Get the file extension of the config file."""
             return "txt"
@@ -269,21 +273,17 @@ class TestConfigFile:
         with pytest.raises(ConfigFileValidationError):
             my_test_config_file().validate()
 
-    def test_path(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
+    def test_path(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]], tmp_path: Path
+    ) -> None:
         """Test method."""
-        # will be my.txt not my_test.txt bc the fixture factory
-        # creates a runtime subclass TestConfigFile so filename will removesuffix
-        # see implementation of config_file_factory fixture and filename
-        expected = Path("parent_dir/my.txt")
-        actual = my_test_config_file().path()
-        # assert actual ends with expected
-        assert actual.as_posix().endswith(expected.as_posix()), (
-            f"Expected {expected}, got {actual}"
+        assert (
+            my_test_config_file().path() == tmp_path / "parent_dir" / "my-test-file.txt"
         )
 
     def test_stem(self, my_test_config_file: type[ConfigFile[dict[str, Any]]]) -> None:
         """Test method."""
-        expected = "my"
+        expected = "my-test-file"
         actual = my_test_config_file().stem()
         assert actual == expected, f"Expected {expected}, got {actual}"
 

@@ -24,6 +24,10 @@ def my_test_yaml_config_file(
             """Get the path to the config file."""
             return Path()
 
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_yaml"
+
         def _configs(self) -> dict[str, Any]:
             """Get the config."""
             return {"key": "value"}

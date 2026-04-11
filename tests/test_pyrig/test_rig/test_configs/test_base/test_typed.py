@@ -22,6 +22,10 @@ def my_test_typed_config_file(
             """Get the parent path."""
             return Path()
 
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_typed"
+
     return MyTestTypedConfigFile
 
 
