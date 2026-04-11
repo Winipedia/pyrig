@@ -28,6 +28,10 @@ def sample_config_file(
             """Get the parent path."""
             return Path()
 
+        def stem(self) -> str:
+            """Get the stem."""
+            return "sample"
+
         def _load(self) -> dict[str, Any]:
             """Load the config."""
             return {}

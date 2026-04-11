@@ -19,6 +19,10 @@ def my_test_workflow(
     class MyTestWorkflowConfigFileClass(config_file_factory(WorkflowConfigFile)):  # ty: ignore[unsupported-base]
         """Test workflow class with tmp_path override."""
 
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_workflow"
+
         def workflow_triggers(self) -> dict[str, Any]:
             """Get the workflow triggers."""
             return {"workflow_dispatch": {}}

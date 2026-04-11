@@ -65,14 +65,11 @@ class TestDotEnvConfigFile:
         self, my_test_dotenv_config_file: type[DotEnvConfigFile]
     ) -> None:
         """Test method."""
-        assert my_test_dotenv_config_file().extension() == "env", "Expected env"
+        assert my_test_dotenv_config_file().extension() == ""
 
     def test_stem(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
         """Test method."""
-        # Should return empty string so path becomes .env not env.env
-        expected = ""
-        actual = my_test_dotenv_config_file().stem()
-        assert actual == expected, f"Expected {expected}, got {actual}"
+        assert my_test_dotenv_config_file().stem() == ".env"
 
     def test_parent_path(
         self,

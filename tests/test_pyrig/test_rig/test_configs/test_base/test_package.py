@@ -20,6 +20,10 @@ def my_test_python_package_config_file(
     class MyTestPythonPackageConfigFile(config_file_factory(PythonPackageConfigFile)):  # ty: ignore[unsupported-base]
         """Test python package config file with tmp_path override."""
 
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_package"
+
         def parent_path(self) -> Path:
             """Get the parent path."""
             return Path("parent_package")

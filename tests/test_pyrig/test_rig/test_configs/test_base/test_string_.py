@@ -18,6 +18,10 @@ def my_test_string_config_file(
     class MyTestStringConfigFile(config_file_factory(StringConfigFile)):  # ty: ignore[unsupported-base]
         """Test text config file with tmp_path override."""
 
+        def stem(self) -> str:
+            """Get the stem."""
+            return "test_string"
+
         def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
