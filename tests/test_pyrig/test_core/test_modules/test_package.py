@@ -13,7 +13,7 @@ from pyrig.core.modules.package import (
     all_deps_depending_on_dep,
     discover_equivalent_modules_across_dependents,
     discover_subclasses_across_dependents,
-    make_init_module,
+    make_init_file,
     make_package_dir,
     pyrig_dependency_graph,
 )
@@ -53,10 +53,10 @@ def test_pyrig_dependency_graph() -> None:
     assert graph.nodes() == {pyrig.__name__}
 
 
-def test_make_init_module(tmp_path: Path) -> None:
+def test_make_init_file(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        make_init_module(Path.cwd(), content="")
+        make_init_file(Path.cwd(), content="")
         assert (Path.cwd() / "__init__.py").exists(), (
             "Expected __init__.py file to be created"
         )

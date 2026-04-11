@@ -8,9 +8,9 @@ Part of the ``pyrig.src.modules`` subpackage.
 
 Key Components:
     ModulePath: Static utility class for path/module name conversions.
-    make_init_modules_for_package: Recursively create __init__.py files.
+    make_init_files_for_package: Recursively create __init__.py files.
     make_dir_with_init_file: Create a directory as a Python package.
-    make_init_module: Create a single __init__.py file.
+    make_init_file: Create a single __init__.py file.
     make_package_dir: Create __init__.py files up the directory hierarchy.
 """
 
