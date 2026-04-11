@@ -316,7 +316,7 @@ workflow failed. Then you just need to open your repo in your IDE, run
 
 **What happens automatically**:
 
-1. **`assert_root_is_correct` fixture runs** (session-level autouse)
+1. **`all_config_files_correct` fixture runs** (session-level autouse)
 2. **Detects** `pyproject.toml` is missing `cryptography>=42.0.0`
 3. **Calls** `ConfigFile.validate_subclasses()` to fix it
 4. **Adds** the missing dependency to the file
@@ -418,7 +418,7 @@ configurations across package dependencies. For complete technical details, see:
 
 1. `tests/conftest.py` activates pyrig's test plugins
 2. Discover fixtures from all packages in dependency chain
-3. `assert_root_is_correct` runs on every test session
+3. `all_config_files_correct` runs on every test session
 4. Validates all ConfigFiles are correct
 5. Raises descriptive error if validation fails (prompting you to review the
    changes from `ConfigFile.validate_subclasses` that the autouse fixture did
@@ -433,7 +433,7 @@ dependent services:
 2. **Release new version** - GitHub Actions automatically creates release
 3. **Services update dependency** - Run `uv add service-base --upgrade`
 4. **Run pytest or pyrig mkroot** - Triggers validation
-5. **assert_root_is_correct runs** - Autouse fixture validates all configs
+5. **all_config_files_correct runs** - Autouse fixture validates all configs
 6. **If incorrect** - `ConfigFile.validate_subclasses()` validates all
    incorrect ConfigFiles
 7. **Files created/updated** - Missing configs added, incorrect values fixed

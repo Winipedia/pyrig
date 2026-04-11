@@ -30,7 +30,7 @@ in test signatures.
 
 Run once per test session before any tests execute.
 
-### `assert_no_unstaged_changes`
+### `no_unstaged_changes_in_ci`
 
 **Purpose**: Prevent tests from running with uncommitted changes in CI.
 
@@ -43,7 +43,7 @@ changes.
 
 ---
 
-### `assert_root_is_correct`
+### `all_config_files_correct`
 
 **Purpose**: Validate project configuration files are correct.
 
@@ -60,7 +60,7 @@ changes.
 
 ---
 
-### `assert_no_namespace_packages`
+### `no_namespace_packages`
 
 **Purpose**: Ensure all packages have `__init__.py` files.
 
@@ -115,7 +115,7 @@ projects.
 
 ---
 
-### `assert_all_modules_tested`
+### `all_modules_tested`
 
 **Purpose**: Ensure every source module has a test module with tests for all
 functions, classes, and methods.
@@ -154,7 +154,7 @@ the `ProjectTester` tool.
 
 ---
 
-### `assert_dependencies_are_up_to_date`
+### `all_dependencies_updated`
 
 **Purpose**: Verify dependencies are already up to date.
 
@@ -174,7 +174,7 @@ specified with `>=` constraints.
 
 ---
 
-### `assert_src_runs_without_dev_deps`
+### `no_dev_deps_in_source_code`
 
 **Purpose**: Verify source code has no dev dependencies.
 
@@ -208,7 +208,7 @@ false positives from documentation.
 
 ---
 
-### `assert_package_manager_is_up_to_date`
+### `package_manager_updated`
 
 **Purpose**: Ensure project management tool (uv) is latest version.
 
@@ -236,7 +236,7 @@ graph TD
     --> B[Session-level autouse fixtures run<br/>order not guaranteed]
     B --> C[Run individual tests]
     C --> D[Session End]
-    D --> E[assert_no_unstaged_changes after]
+    D --> E[no_unstaged_changes_in_ci after]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
     style B fill:#9d84b7,stroke:#333,stroke-width:2px,color:#000
@@ -247,17 +247,17 @@ graph TD
 
 **Session-level fixtures** (run once, order not guaranteed):
 
-- `assert_no_unstaged_changes` (before and after)
-- `assert_root_is_correct`
-- `assert_no_namespace_packages`
+- `no_unstaged_changes_in_ci` (before and after)
+- `all_config_files_correct`
+- `no_namespace_packages`
 - `assert_all_src_code_in_one_package`
 - `assert_src_package_correctly_named`
-- `assert_all_modules_tested`
+- `all_modules_tested`
 - `assert_no_unit_test_package_usage`
-- `assert_dependencies_are_up_to_date`
-- `assert_src_runs_without_dev_deps`
+- `all_dependencies_updated`
+- `no_dev_deps_in_source_code`
 - `assert_src_does_not_use_rig`
-- `assert_package_manager_is_up_to_date` (local only)
+- `package_manager_updated` (local only)
 
 ## Creating Custom Autouse Fixtures
 

@@ -49,9 +49,9 @@ Use `mkinits` when:
 
 ## Autouse Fixture
 
-This command **runs automatically** in the `assert_no_namespace_packages`
+This command **runs automatically** in the `no_namespace_packages`
 autouse fixture at session scope. See
-[Autouse Fixtures](../../tests/autouse.md#assert_no_namespace_packages) for
+[Autouse Fixtures](../../tests/autouse.md#no_namespace_packages) for
 details.
 
 The fixture checks for namespace packages and automatically runs `mkinits` to

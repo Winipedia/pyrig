@@ -50,10 +50,10 @@ Use `mktests` when:
 
 ## Autouse Fixture
 
-This command **runs automatically** via the `assert_all_modules_tested`
+This command **runs automatically** via the `all_modules_tested`
 session-scoped fixture, which ensures every source module has a corresponding
 test module with tests for all functions, classes, and methods. See
-[Autouse Fixtures](../../tests/autouse.md#assert_all_modules_tested).
+[Autouse Fixtures](../../tests/autouse.md#all_modules_tested).
 
 The fixture uses `MirrorTestConfigFile` to generate test skeletons for any
 missing tests.

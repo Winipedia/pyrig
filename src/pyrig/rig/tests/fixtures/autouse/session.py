@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_no_unstaged_changes() -> Generator[None, None, None]:
+def no_unstaged_changes_in_ci() -> Generator[None, None, None]:
     """Verify no unstaged git changes before and after tests (CI only).
 
     Yields:
@@ -83,7 +83,7 @@ Found the following unstaged changes:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_root_is_correct() -> None:
+def all_config_files_correct() -> None:
     """Verify project root structure is correct, auto-fixing incorrect config files.
 
     Raises:
@@ -112,7 +112,7 @@ Please verify the changes at the following paths:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_no_namespace_packages() -> None:
+def no_namespace_packages() -> None:
     """Verify all packages have __init__.py, auto-creating missing ones.
 
     Raises:
@@ -135,7 +135,7 @@ Please verify the changes at the following paths:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_all_modules_tested() -> None:
+def all_modules_tested() -> None:
     """Verify every source module has a corresponding test module.
 
     Auto-generates test skeletons for missing test modules/packages.
@@ -171,7 +171,7 @@ Please verify the changes at the following paths:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_dependencies_are_up_to_date(standard_output_error_template: str) -> None:
+def all_dependencies_updated(standard_output_error_template: str) -> None:
     """Verify dependencies are up to date via ``uv lock --upgrade`` and ``uv sync``.
 
     Skipped if no internet connection is available.
@@ -182,7 +182,7 @@ def assert_dependencies_are_up_to_date(standard_output_error_template: str) -> N
     if not internet_is_available():
         logger.warning(
             "No internet, skipping fixture: %s",
-            assert_dependencies_are_up_to_date.__name__,
+            all_dependencies_updated.__name__,
         )
         return
 
@@ -219,7 +219,7 @@ However, it failed. See the output below for details.
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_src_runs_without_dev_deps(
+def no_dev_deps_in_source_code(
     tmp_path_factory: pytest.TempPathFactory, standard_output_error_template: str
 ) -> None:
     """Verify source code runs in isolated environment without dev dependencies.
@@ -250,14 +250,13 @@ However, it failed. See the output below for details.
     if not internet_is_available():
         logger.warning(
             "No internet, skipping fixture: %s",
-            assert_src_runs_without_dev_deps.__name__,
+            no_dev_deps_in_source_code.__name__,
         )
         return
 
     project_name = PackageManager.I.project_name()
     tmp_project_root = (
-        tmp_path_factory.mktemp(assert_src_runs_without_dev_deps.__name__)
-        / project_name
+        tmp_path_factory.mktemp(no_dev_deps_in_source_code.__name__) / project_name
     )
     # copy the project folder to a temp directory
     temp_source_root = tmp_project_root / PackageManager.I.source_root()
@@ -336,7 +335,7 @@ However, it failed. See the output below for details.
 
 
 @pytest.fixture(scope="session", autouse=True)
-def assert_package_manager_is_up_to_date(standard_output_error_template: str) -> None:
+def package_manager_updated(standard_output_error_template: str) -> None:
     """Verify uv is up to date via ``uv self update`` (skipped in CI).
 
     Raises:
@@ -345,7 +344,7 @@ def assert_package_manager_is_up_to_date(standard_output_error_template: str) ->
     if not internet_is_available():
         logger.warning(
             "No internet, skipping fixture: %s",
-            assert_package_manager_is_up_to_date.__name__,
+            package_manager_updated.__name__,
         )
         return
 
