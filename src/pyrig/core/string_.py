@@ -130,7 +130,7 @@ def re_search_excluding_docstrings(
 
 
 def make_summary_error_msg(
-    errors_locations: Iterable[str | Path],
+    paths: Iterable[Path],
 ) -> str:
     """Create formatted error message summarizing multiple error locations.
 
@@ -138,8 +138,7 @@ def make_summary_error_msg(
     multiple validation failures are detected across the codebase.
 
     Args:
-        errors_locations: Collection of error location strings (e.g., file paths,
-            test identifiers, or descriptive location strings).
+        paths: Collection of file paths where errors were found.
 
     Returns:
         Multiline string with "Found errors at:" header followed by a bulleted
@@ -155,7 +154,7 @@ def make_summary_error_msg(
     msg = """
 Found errors at:
 """
-    for error_location in errors_locations:
+    for error_location in paths:
         msg += f"""
 - {error_location}
 """

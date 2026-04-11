@@ -197,10 +197,10 @@ def discover_subclasses_across_dependents[T: type](
     )
 
 
-def make_init_module(path: Path, content: str) -> None:
+def make_init_file(path: Path, content: str) -> None:
     """Create an ``__init__.py`` file in the specified directory.
 
-    Creates the file with default content from ``default_init_module_content``.
+    Creates the file with default content from ``default_init_file_content``.
     Logs the creation at INFO level.
 
     Args:
@@ -244,4 +244,4 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
     for p in (path, *path.parents):
         if p in until:
             break
-        make_init_module(p, content=content)
+        make_init_file(p, content=content)

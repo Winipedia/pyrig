@@ -1,6 +1,7 @@
 """Tests module."""
 
 import re
+from pathlib import Path
 from types import ModuleType
 
 import pyrig
@@ -139,16 +140,20 @@ def test_make_summary_error_msg() -> None:
     assert isinstance(empty_msg, str)
 
     # Test with one item
-    one_item_msg = make_summary_error_msg(["module.function"])
+    one_item_msg = make_summary_error_msg([Path("error_file.py")])
     assert isinstance(one_item_msg, str)
 
     # Test with multiple items
-    items = ["module.function1", "module.class.method", "another_module"]
+    items = [
+        Path("path/to/error_file1.py"),
+        Path("path/to/error_file2.py"),
+        Path("path/to/error_file3.py"),
+    ]
     multi_item_msg = make_summary_error_msg(items)
     assert isinstance(multi_item_msg, str)
 
     for item in items:
-        assert item in multi_item_msg
+        assert str(item) in multi_item_msg
 
 
 def test_make_linked_badge_markdown() -> None:

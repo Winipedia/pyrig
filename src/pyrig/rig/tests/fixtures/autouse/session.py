@@ -16,6 +16,7 @@ from pathlib import Path
 
 import pytest
 
+import pyrig
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.modules import imports
 from pyrig.core.modules.imports import (
@@ -24,8 +25,12 @@ from pyrig.core.modules.imports import (
 from pyrig.core.requests import internet_is_available
 from pyrig.core.string_ import (
     make_summary_error_msg,
+    snake_to_kebab_case,
 )
-from pyrig.rig.cli.commands.make_inits import make_init_files
+from pyrig.rig.cli.commands.make_inits import (
+    make_init_files_for_namespace_packages,
+)
+from pyrig.rig.cli.subcommands import mkinits
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
@@ -38,6 +43,7 @@ from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
 )
+from pyrig.rig.utils.path import package_name_as_root_path
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +60,12 @@ def assert_no_unstaged_changes() -> Generator[None, None, None]:
     """
     in_ci = RemoteVersionController.I.running_in_ci()
 
-    msg = """Pyrig enforces that no changes are made during tests when running in CI.
-This is to ensure that the tests do not modify any files.
+    msg = """Found unstaged changes during tests.
+There should not be made any unstaged changes during tests.
+This chekc only runs in CI to allow a normal development worklfow locally
+where you may have unstaged changes. If xou want make changes during tests
+then you must stage them to avoid this assertion error.
+
 Found the following unstaged changes:
 {unstaged_changes}
 """
@@ -92,8 +102,10 @@ def assert_root_is_correct() -> None:
         # init all per test run
         ConfigFile.validate_subclasses(incorrect_cfs)
 
-    msg = f"""Found incorrect ConfigFiles.
-Attempted correcting them automatically.
+    msg = f"""Found incorrect {ConfigFile.__name__}s.
+It was attempted to auto-fix them via their {ConfigFile.validate.__name__} method.
+Which should have created or updated the config files to be correct.
+
 Please verify the changes at the following paths.
 {make_summary_error_msg(cf().path() for cf in incorrect_cfs)}
 """
@@ -110,14 +122,21 @@ def assert_no_namespace_packages() -> None:
     namespace_packages = find_namespace_packages()
     has_namespace_packages, namespace_packages = generator_has_items(namespace_packages)
     if has_namespace_packages:
-        make_init_files()
+        make_init_files_for_namespace_packages(namespace_packages)
 
-    msg = f"""Pyrig enforces that all packages have __init__.py files.
-Found namespace packages.
-Created __init__.py files for them.
-Please verify the changes at the following locations:
-{make_summary_error_msg(namespace_packages)}
-"""
+    msg = f"""Found namespace packages.
+Namespace packages are packages that do not have an __init__.py file.
+This fixture attempted to auto-fix this by creating __init__.py files for any namespace packages found.
+Consider using the proper command to create __init__.py files for any namespace packages in the source directory:
+    '{snake_to_kebab_case(pyrig.__name__)} {snake_to_kebab_case(mkinits.__name__)}'
+
+Please verify the changes at the following paths:
+{
+        make_summary_error_msg(
+            package_name_as_root_path(package) for package in namespace_packages
+        )
+    }
+"""  # noqa: E501
     assert not has_namespace_packages, msg
 
 
