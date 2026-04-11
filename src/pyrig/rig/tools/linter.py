@@ -53,6 +53,10 @@ class Linter(Tool):
             "https://github.com/astral-sh/ruff",
         )
 
+    def pydocstyle(self) -> str:
+        """Return the pydocstyle."""
+        return "google"
+
     def check_args(self, *args: str) -> Args:
         """Construct ruff check arguments.
 

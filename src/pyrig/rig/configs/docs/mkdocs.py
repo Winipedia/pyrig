@@ -15,6 +15,7 @@ from pathlib import Path
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
+from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.package_manager import PackageManager
 
 
@@ -60,7 +61,7 @@ class MkdocsConfigFile(DictYmlConfigFile):
                         "handlers": {
                             "python": {
                                 "options": {
-                                    "docstring_style": "google",
+                                    "docstring_style": Linter.I.pydocstyle(),
                                     "members": True,
                                     "show_source": True,
                                     "inherited_members": True,

@@ -28,6 +28,7 @@ from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
@@ -120,7 +121,7 @@ class PyprojectConfigFile(TomlConfigFile):
                         "per-file-ignores": {
                             f"**/{tests_package_root}/**/*.py": ["S101"],
                         },
-                        "pydocstyle": {"convention": "google"},
+                        "pydocstyle": {"convention": Linter.I.pydocstyle()},
                     },
                 },
                 "ty": {
