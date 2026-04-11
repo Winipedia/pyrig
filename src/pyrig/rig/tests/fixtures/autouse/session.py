@@ -17,7 +17,6 @@ from pathlib import Path
 import pytest
 
 import pyrig
-from pyrig.core.iterate import generator_has_items
 from pyrig.core.modules import imports
 from pyrig.core.modules.imports import (
     walk_package,
@@ -119,9 +118,8 @@ def assert_no_namespace_packages() -> None:
     Raises:
         AssertionError: If namespace packages were found (lists created paths).
     """
-    namespace_packages = find_namespace_packages()
-    has_namespace_packages, namespace_packages = generator_has_items(namespace_packages)
-    if has_namespace_packages:
+    namespace_packages = tuple(find_namespace_packages())
+    if namespace_packages:
         make_init_files_for_namespace_packages(namespace_packages)
 
     msg = f"""Found namespace packages.
@@ -131,9 +129,9 @@ Consider using the proper command to create __init__.py files for any namespace 
     '{snake_to_kebab_case(pyrig.__name__)} {snake_to_kebab_case(mkinits.__name__)}'
 
 Please verify the changes at the following paths:
-{make_summary_error_msg(package_name_as_root_path(package) for package in namespace_packages)}
+{make_summary_error_msg(package_name_as_root_path(package_name) / "__init__.py" for package_name in namespace_packages)}
 """  # noqa: E501
-    assert not has_namespace_packages, msg
+    assert not namespace_packages, msg
 
 
 @pytest.fixture(scope="session", autouse=True)
