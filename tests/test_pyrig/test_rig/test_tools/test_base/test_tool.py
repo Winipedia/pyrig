@@ -9,6 +9,10 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestTool:
     """Test class."""
 
+    def test___str__(self) -> None:
+        """Test method."""
+        assert str(PackageManager.I) == "PackageManager (uv)"
+
     def test_definition_package(self) -> None:
         """Test method."""
         result = Tool.definition_package()
