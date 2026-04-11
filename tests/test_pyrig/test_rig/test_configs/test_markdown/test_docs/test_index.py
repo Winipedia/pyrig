@@ -8,6 +8,10 @@ from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
 class TestIndexConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert IndexConfigFile.I.stem() == "index"
+
     def test_parent_path(self) -> None:
         """Test method."""
         parent_path = IndexConfigFile.I.parent_path()

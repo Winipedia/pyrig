@@ -20,6 +20,10 @@ def my_test_health_check_workflow(
 class TestHealthCheckWorkflowConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile.I.stem() == "health_check"
+
     def test_cron_schedule(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile().cron_schedule() == (0, 1, "*", "*", "*")

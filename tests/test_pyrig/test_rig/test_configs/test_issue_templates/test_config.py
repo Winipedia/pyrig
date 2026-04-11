@@ -8,6 +8,10 @@ from pyrig.rig.configs.issue_templates.config import ConfigConfigFile
 class TestConfigConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert ConfigConfigFile.I.stem() == "config"
+
     def test_parent_path(self) -> None:
         """Test method."""
         result = ConfigConfigFile.I.parent_path()

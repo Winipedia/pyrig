@@ -20,6 +20,10 @@ def my_test_release_workflow(
 class TestReleaseWorkflowConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.stem() == "release"
+
     def test_workflow_triggers(
         self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
     ) -> None:

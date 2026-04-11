@@ -8,6 +8,10 @@ from pyrig.rig.configs.issue_templates.feature_request import FeatureRequestConf
 class TestFeatureRequestConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert FeatureRequestConfigFile.I.stem() == "feature_request"
+
     def test_parent_path(self) -> None:
         """Test method."""
         result = FeatureRequestConfigFile.I.parent_path()

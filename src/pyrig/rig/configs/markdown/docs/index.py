@@ -39,6 +39,10 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         """Return the docs directory path."""
         return DocsBuilder.I.docs_dir()
 
+    def stem(self) -> str:
+        """Return the filename stem."""
+        return "index"
+
     def lines(self) -> list[str]:
         """Get the index.md file content.
 

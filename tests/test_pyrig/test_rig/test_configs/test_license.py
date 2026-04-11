@@ -9,6 +9,10 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 class TestLicenseConfigFile:
     """Test class."""
 
+    def test_extension_separator(self) -> None:
+        """Test method."""
+        assert LicenseConfigFile.I.extension_separator() == ""
+
     def test_license_badge_url(self) -> None:
         """Test method."""
         result = LicenseConfigFile.I.license_badge_url()
@@ -49,11 +53,6 @@ class TestLicenseConfigFile:
         """Test method."""
         # Should return LICENSE
         assert LicenseConfigFile.I.stem() == "LICENSE", "Expected 'LICENSE'"
-
-    def test_path(self) -> None:
-        """Test method."""
-        # Should return Path("LICENSE")
-        assert LicenseConfigFile.I.path() == Path("LICENSE"), "Expected Path('LICENSE')"
 
     def test_parent_path(self) -> None:
         """Test method."""

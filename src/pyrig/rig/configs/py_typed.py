@@ -24,6 +24,10 @@ class PyTypedConfigFile(TypedConfigFile):
         pyrig.rig.configs.pyproject.PyprojectConfigFile
     """
 
+    def stem(self) -> str:
+        """Return 'py' as filename stem to produce 'py.typed'."""
+        return "py"
+
     def parent_path(self) -> Path:
         """Return package directory path."""
         return PackageManager.I.package_root()

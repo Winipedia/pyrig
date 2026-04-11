@@ -34,6 +34,10 @@ class BugReportConfigFile(DictYmlConfigFile):
         """Return .github/ISSUE_TEMPLATE/."""
         return Path(".github/ISSUE_TEMPLATE")
 
+    def stem(self) -> str:
+        """Return 'bug_report'."""
+        return "bug_report"
+
     def _configs(self) -> ConfigDict:
         """Return bug report template YAML structure."""
         return {

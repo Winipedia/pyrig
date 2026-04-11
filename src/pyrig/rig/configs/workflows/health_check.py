@@ -73,6 +73,10 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Base class with workflow generation utilities
     """
 
+    def stem(self) -> str:
+        """Get the workflow filename stem."""
+        return "health_check"
+
     def workflow_triggers(self) -> ConfigDict:
         """Get the workflow triggers.
 

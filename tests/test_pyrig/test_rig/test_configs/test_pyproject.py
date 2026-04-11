@@ -30,6 +30,10 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.I.stem() == "pyproject"
+
     def test_priority(self) -> None:
         """Test method."""
         assert PyprojectConfigFile.I.priority() > Priority.LOW

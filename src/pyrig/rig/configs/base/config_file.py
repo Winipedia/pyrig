@@ -64,7 +64,6 @@ See Also:
         Subclass discovery mechanism
 """
 
-import inspect
 import logging
 from abc import abstractmethod
 from collections import defaultdict
@@ -80,7 +79,6 @@ import typer
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.core.iterate import nested_structure_is_subset
-from pyrig.core.string_ import split_on_uppercase
 from pyrig.core.types.config_file import ConfigData, ConfigDict, ConfigList
 from pyrig.rig import configs
 
@@ -142,6 +140,10 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         Returns:
             Path to parent directory, relative to project root.
         """
+
+    @abstractmethod
+    def stem(self) -> str:
+        """Return filename stem (name without extension)."""
 
     @abstractmethod
     def _load(self) -> ConfigT:
@@ -314,21 +316,6 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
     def extension_separator(self) -> str:
         """Return extension separator character (always ".")."""
         return "."
-
-    def stem(self) -> str:
-        """Derive filename from class name (auto-converts to snake_case).
-
-        Returns:
-            Filename without extension.
-        """
-        cls = self.__class__
-        name = cls.__name__
-        abstract_parents = [
-            parent.__name__ for parent in cls.__mro__ if inspect.isabstract(parent)
-        ]
-        for parent in abstract_parents:
-            name = name.removesuffix(parent)
-        return "_".join(split_on_uppercase(name)).lower()
 
     def merge_configs(self) -> ConfigT:
         """Merge expected config into current, preserving user customizations.

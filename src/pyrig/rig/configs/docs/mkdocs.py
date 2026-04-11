@@ -38,6 +38,10 @@ class MkdocsConfigFile(DictYmlConfigFile):
         """Return the project root directory."""
         return Path()
 
+    def stem(self) -> str:
+        """Return stem of the configuration file."""
+        return "mkdocs"
+
     def _configs(self) -> ConfigDict:
         """Build the complete mkdocs.yml configuration.
 

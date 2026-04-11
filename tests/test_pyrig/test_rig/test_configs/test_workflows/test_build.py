@@ -20,6 +20,10 @@ def my_test_build_workflow(
 class TestBuildWorkflowConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert BuildWorkflowConfigFile.I.stem() == "build"
+
     def test_job_build_container_image(
         self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:

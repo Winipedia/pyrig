@@ -22,6 +22,10 @@ def my_test_py_typed_config_file(
 class TestPyTypedConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert PyTypedConfigFile.I.stem() == "py.typed"
+
     def test_parent_path(
         self, my_test_py_typed_config_file: type[PyTypedConfigFile]
     ) -> None:

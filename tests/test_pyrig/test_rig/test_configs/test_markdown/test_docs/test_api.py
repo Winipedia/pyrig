@@ -8,6 +8,10 @@ from pyrig.rig.configs.markdown.docs.api import ApiConfigFile
 class TestApiConfigFile:
     """Test class."""
 
+    def test_stem(self) -> None:
+        """Test method."""
+        assert ApiConfigFile.I.stem() == "api"
+
     def test_parent_path(self) -> None:
         """Test method."""
         assert ApiConfigFile.I.parent_path() == Path("docs")

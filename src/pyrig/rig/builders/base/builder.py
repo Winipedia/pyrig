@@ -115,6 +115,10 @@ class BuilderConfigFile(ListConfigFile):
         """
         return Path(self.dist_dir_name())
 
+    def stem(self) -> str:
+        """Return empty string (builders don't use filename stems)."""
+        return ""
+
     def _load(self) -> list[Path]:
         """Get all artifacts from the output directory.
 
