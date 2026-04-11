@@ -4,11 +4,14 @@ from collections.abc import Generator
 from typing import Any
 
 from pyrig.core.iterate import (
+    add_missing_dict_val,
     combine_generators,
     empty_generator,
     generator,
     generator_has_items,
     generator_length,
+    insert_missing_list_val,
+    merge_nested_structures,
     nested_structure_is_subset,
 )
 
@@ -128,3 +131,44 @@ def test_generator_has_items() -> None:
     assert list(items) == iterable_with_items, (
         "Expected generator to yield all items from the iterable"
     )
+
+
+def test_merge_nested_structures() -> None:
+    """Test function."""
+    subset = {
+        "a": 1,
+        "b": [2, 3, {"c": 4}],
+    }
+    superset = {
+        "a": 0,
+        "b": [2, {"c": 5}],
+        "d": 6,
+    }
+    merged = merge_nested_structures(subset, superset)
+    expected_merged = {
+        "a": 1,
+        "b": [2, 3, {"c": 4}],
+        "d": 6,
+    }
+    assert merged == expected_merged
+
+
+def test_add_missing_dict_val() -> None:
+    """Test function."""
+    expected_dict = {"key1": "value1", "key2": {"nested_key": "nested_value"}}
+    actual_dict = {"key2": {"nested_key": "old_value"}, "key3": "value3"}
+    add_missing_dict_val(expected_dict, actual_dict, "key1")
+    add_missing_dict_val(expected_dict, actual_dict, "key2")
+    assert actual_dict == {
+        "key1": "value1",
+        "key2": {"nested_key": "nested_value"},
+        "key3": "value3",
+    }, "Expected actual dict to be updated with missing values from expected dict"
+
+
+def test_insert_missing_list_val() -> None:
+    """Test function."""
+    expected_list = [1, 2, 3]
+    actual_list = [1, 3]
+    insert_missing_list_val(expected_list, actual_list, 1)
+    assert actual_list == [1, 2, 3]
