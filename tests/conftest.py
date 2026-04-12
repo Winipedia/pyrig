@@ -1,7 +1,3 @@
-"""Pytest configuration for tests.
-
-This defines the pyrig pytest plugin that provides access to pyrig's test
-infrastructure, including fixtures, hooks, and test utilities.
-"""
+"""Pytest configuration for tests."""
 
 pytest_plugins = ["pyrig.rig.tests.conftest"]
