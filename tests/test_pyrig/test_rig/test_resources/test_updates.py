@@ -42,8 +42,20 @@ Please update it with the latest content:
 {url_text}"""
 
 
+def on_latest_python_and_linux() -> bool:
+    """Check if the current system is Linux and running the latest Python version."""
+    system = platform.system()
+    if system != "Linux":
+        return False
+    latest_python_version = str(PyprojectConfigFile.I.latest_python_version("micro"))
+    sys_python_version = platform.python_version()
+    return sys_python_version == latest_python_version
+
+
 def test_gitignore() -> None:
     """Test if the github gitignore resource file is up to date."""
+    if not on_latest_python_and_linux():
+        return
     url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
     fetched_text = requests.get(url, timeout=(3, 10)).text
 
@@ -61,6 +73,11 @@ def test_latest_python_version() -> None:
 
 def test_mit_license_template() -> None:
     """Test if the MIT license template resource file is up to date."""
+    # this url has a rate limit so we only test if we are on linux
+    # and the current python version is the latest one to
+    # avoid hitting the rate limit in CI due to the matrix testing
+    if not on_latest_python_and_linux():
+        return
     url = "https://api.github.com/licenses/mit"
     data = json.loads(requests.get(url, timeout=(3, 10)).text)
     assert "body" in data, json.dumps(data, indent=4)
@@ -73,8 +90,7 @@ def test_contributor_covenant_code_of_conduct() -> None:
     # this url has a rate limit so we only test if we are on linux
     # and the current python version is the latest one to
     # avoid hitting the rate limit in CI due to the matrix testing
-    system = platform.system()
-    if system != "Linux":
+    if not on_latest_python_and_linux():
         return
     latest_python_version = str(PyprojectConfigFile.I.latest_python_version("micro"))
     sys_python_version = platform.python_version()
