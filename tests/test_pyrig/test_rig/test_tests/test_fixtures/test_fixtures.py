@@ -151,3 +151,8 @@ def test_standard_output_error_template(standard_output_error_template: str) -> 
     """Test function."""
     assert "{stdout}" in standard_output_error_template
     assert "{stderr}" in standard_output_error_template
+
+
+def test_on_linux_and_latest_python(*, on_linux_and_latest_python: bool) -> None:
+    """Test function."""
+    assert isinstance(on_linux_and_latest_python, bool)

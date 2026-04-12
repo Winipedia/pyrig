@@ -5,6 +5,7 @@ any file like this one will be automatically discovered and
 are available in all projects inheriting from this one.
 """
 
+import platform
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
@@ -19,6 +20,7 @@ from pyrig.core.modules.package import make_package_dir
 from pyrig.core.modules.path import path_as_module_name
 from pyrig.core.types.config_file import ConfigData
 from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 
 
@@ -208,3 +210,14 @@ def standard_output_error_template() -> str:
 --------------------------------------------------------------------------------
 The standard error:
 {stderr}"""
+
+
+@pytest.fixture
+def on_linux_and_latest_python() -> bool:
+    """Check if the current system is Linux and running the latest Python version."""
+    system = platform.system()
+    if system != "Linux":
+        return False
+    latest_python_version = str(PyprojectConfigFile.I.latest_python_version("micro"))
+    sys_python_version = platform.python_version()
+    return sys_python_version == latest_python_version
