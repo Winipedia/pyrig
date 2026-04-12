@@ -49,11 +49,7 @@ class ProjectTesterConfigFile(PythonTestConfigFile):
             List of lines with docstring and pytest_plugins list.
         """
         return [
-            '"""Pytest configuration for tests.',
-            "",
-            "This defines the pyrig pytest plugin that provides access to pyrig's test",
-            "infrastructure, including fixtures, hooks, and test utilities.",
-            '"""',
+            '"""Pytest configuration for tests."""',
             "",
             f'pytest_plugins = ["{make_obj_importpath(conftest)}"]',
             "",
