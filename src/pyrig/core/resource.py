@@ -53,3 +53,9 @@ def resource_path(name: str, package: ModuleType) -> Path:
     resource_path = files(package) / name
     with as_file(resource_path) as path:
         return path
+
+
+def resource_content(resource_name: str, package: ModuleType) -> str:
+    """Get content of a resource file as a string."""
+    path = resource_path(resource_name, package)
+    return path.read_text(encoding="utf-8")

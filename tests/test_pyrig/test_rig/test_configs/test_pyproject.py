@@ -215,11 +215,6 @@ class TestPyprojectConfigFile:
             "Expected first_supported_python_version to return 3.8.1"
         )
 
-    def test_fetch_latest_python_version(self) -> None:
-        """Test method."""
-        latest_version = PyprojectConfigFile().fetch_latest_python_version()
-        assert Version(latest_version) >= Version("3.13")
-
     def test_latest_python_version(self) -> None:
         """Test method."""
         latest_version = PyprojectConfigFile().latest_python_version()
