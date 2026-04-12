@@ -13,6 +13,7 @@ import pyrig
 from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 
 
 @pytest.fixture
@@ -159,7 +160,13 @@ def test_on_linux_and_latest_python_version(
     *, on_linux_and_latest_python_version: bool
 ) -> None:
     """Test function."""
-    assert isinstance(on_linux_and_latest_python_version, bool)
+    current_platform = platform.system()
+    current_version = platform.python_version()
+    latest_version = PyprojectConfigFile.I.latest_python_version("micro")
+    if current_platform == "Linux" and current_version == str(latest_version):
+        assert on_linux_and_latest_python_version is True
+    else:
+        assert on_linux_and_latest_python_version is False
 
 
 def test_on_platform(on_platform: Callable[[str], bool]) -> None:
@@ -191,3 +198,17 @@ def test_on_latest_python_version(*, on_latest_python_version: bool) -> None:
         assert on_latest_python_version is True
     else:
         assert on_latest_python_version is False
+
+
+def test_on_linux_and_latest_python_version_and_in_ci(
+    *, on_linux_and_latest_python_version_and_in_ci: bool
+) -> None:
+    """Test function."""
+    in_ci = RemoteVersionController.I.running_in_ci()
+    current_platform = platform.system()
+    latest_version = PyprojectConfigFile.I.latest_python_version("micro")
+    current_version = platform.python_version()
+    if current_platform == "Linux" and current_version == str(latest_version) and in_ci:
+        assert on_linux_and_latest_python_version_and_in_ci is True
+    else:
+        assert on_linux_and_latest_python_version_and_in_ci is False

@@ -22,6 +22,7 @@ from pyrig.core.types.config_file import ConfigData
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 
 
 @pytest.fixture
@@ -212,7 +213,7 @@ The standard error:
 {stderr}"""
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def on_platform() -> Callable[[str], bool]:
     """Fixture to check if the current system is a specific platform."""
 
@@ -223,13 +224,13 @@ def on_platform() -> Callable[[str], bool]:
     return check
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def on_linux(on_platform: Callable[[str], bool]) -> bool:
     """Check if the current system is Linux."""
     return on_platform("Linux")
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def on_python_version() -> Callable[[str], bool]:
     """Fixture to check if the current Python version matches a specified version."""
 
@@ -240,16 +241,26 @@ def on_python_version() -> Callable[[str], bool]:
     return check
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
     """Check if the current Python version is the latest stable release."""
     latest_version = PyprojectConfigFile.I.latest_python_version("micro")
     return on_python_version(str(latest_version))
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def on_linux_and_latest_python_version(
     *, on_linux: bool, on_latest_python_version: bool
 ) -> bool:
     """Check if the current system is Linux and running the latest Python version."""
     return on_linux and on_latest_python_version
+
+
+@pytest.fixture(scope="session")
+def on_linux_and_latest_python_version_and_in_ci(
+    *, on_linux_and_latest_python_version: bool
+) -> bool:
+    """Check if system is Linux, python is latest version, and running in CI."""
+    return (
+        on_linux_and_latest_python_version
+    ) and RemoteVersionController.I.running_in_ci()
