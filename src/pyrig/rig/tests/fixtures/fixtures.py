@@ -213,11 +213,43 @@ The standard error:
 
 
 @pytest.fixture
-def on_linux_and_latest_python() -> bool:
+def on_platform() -> Callable[[str], bool]:
+    """Fixture to check if the current system is a specific platform."""
+
+    def check(platform_name: str) -> bool:
+        """Check if the current system is the specified platform."""
+        return platform.system() == platform_name
+
+    return check
+
+
+@pytest.fixture
+def on_linux(on_platform: Callable[[str], bool]) -> bool:
+    """Check if the current system is Linux."""
+    return on_platform("Linux")
+
+
+@pytest.fixture
+def on_python_version() -> Callable[[str], bool]:
+    """Fixture to check if the current Python version matches a specified version."""
+
+    def check(version: str) -> bool:
+        """Check if the current Python version matches the specified version."""
+        return platform.python_version() == version
+
+    return check
+
+
+@pytest.fixture
+def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
+    """Check if the current Python version is the latest stable release."""
+    latest_version = PyprojectConfigFile.I.latest_python_version("micro")
+    return on_python_version(str(latest_version))
+
+
+@pytest.fixture
+def on_linux_and_latest_python_version(
+    *, on_linux: bool, on_latest_python_version: bool
+) -> bool:
     """Check if the current system is Linux and running the latest Python version."""
-    system = platform.system()
-    if system != "Linux":
-        return False
-    latest_python_version = str(PyprojectConfigFile.I.latest_python_version("micro"))
-    sys_python_version = platform.python_version()
-    return sys_python_version == latest_python_version
+    return on_linux and on_latest_python_version

@@ -42,9 +42,9 @@ Please update it with the latest content:
 {url_text}"""
 
 
-def test_gitignore(*, on_linux_and_latest_python: bool) -> None:
+def test_gitignore(*, on_linux_and_latest_python_version: bool) -> None:
     """Test if the github gitignore resource file is up to date."""
-    if not on_linux_and_latest_python:
+    if not on_linux_and_latest_python_version:
         return
     url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
     fetched_text = requests.get(url, timeout=(3, 10)).text
@@ -61,12 +61,12 @@ def test_latest_python_version() -> None:
     check_resource_file_is_up_to_date(latest_version, "LATEST_PYTHON_VERSION")
 
 
-def test_mit_license_template(*, on_linux_and_latest_python: bool) -> None:
+def test_mit_license_template(*, on_linux_and_latest_python_version: bool) -> None:
     """Test if the MIT license template resource file is up to date."""
     # this url has a rate limit so we only test if we are on linux
     # and the current python version is the latest one to
     # avoid hitting the rate limit in CI due to the matrix testing
-    if not on_linux_and_latest_python:
+    if not on_linux_and_latest_python_version:
         return
     url = "https://api.github.com/licenses/mit"
     data = json.loads(requests.get(url, timeout=(3, 10)).text)
@@ -76,13 +76,13 @@ def test_mit_license_template(*, on_linux_and_latest_python: bool) -> None:
 
 
 def test_contributor_covenant_code_of_conduct(
-    *, on_linux_and_latest_python: bool
+    *, on_linux_and_latest_python_version: bool
 ) -> None:
     """Test if the Contributor Covenant Code of Conduct resource file is up to date."""
     # this url has a rate limit so we only test if we are on linux
     # and the current python version is the latest one to
     # avoid hitting the rate limit in CI due to the matrix testing
-    if not on_linux_and_latest_python:
+    if not on_linux_and_latest_python_version:
         return
     latest_python_version = str(PyprojectConfigFile.I.latest_python_version("micro"))
     sys_python_version = platform.python_version()
