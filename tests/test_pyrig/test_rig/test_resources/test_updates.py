@@ -6,11 +6,13 @@ If not, the tests will fail prompting the developer to update the resource files
 """
 
 import json
+import platform
 
 import requests
 
 from pyrig.core.resource import resource_path
 from pyrig.rig import resources
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 def check_resource_file_is_up_to_date(
@@ -68,6 +70,17 @@ def test_mit_license_template() -> None:
 
 def test_contributor_covenant_code_of_conduct() -> None:
     """Test if the Contributor Covenant Code of Conduct resource file is up to date."""
+    # this url has a rate limit so we only test if we are on linux
+    # and the current python version is the latest one to
+    # avoid hitting the rate limit in CI due to the matrix testing
+    system = platform.system()
+    if system != "Linux":
+        return
+    latest_python_version = str(PyprojectConfigFile.I.latest_python_version("micro"))
+    sys_python_version = platform.python_version()
+    if sys_python_version != latest_python_version:
+        return
+
     url = (
         "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md"
     )
