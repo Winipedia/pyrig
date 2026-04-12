@@ -27,7 +27,7 @@ class TestDotPythonVersionConfigFile:
     def test_lines(self) -> None:
         """Test method."""
         lines = DotPythonVersionConfigFile.I.lines()
-        assert len(lines) == 1
+        assert lines == ["3.12", ""]
 
     def test_should_override_content(self) -> None:
         """Test method."""
