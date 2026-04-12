@@ -12,13 +12,11 @@ See Also:
 from pathlib import Path
 
 import pyrig
+from pyrig.core.resource import resource_content
+from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.resources import (
-    requests_get_text_cached,
-    return_resource_content_on_fetch_error,
-)
 
 
 class VersionControllerIgnoreConfigFile(StringConfigFile):
@@ -79,7 +77,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         ignored_paths = {cf().path().as_posix() for cf in ignored_config_files}
 
         needed = [
-            *self.github_python_gitignore_lines(),
+            *self.standard_ignore_lines(),
             "",
             f"# {pyrig.__name__} stuff",
             *ignored_paths,
@@ -91,30 +89,17 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             ".venv/",  # bc of uv venv
             "dist/",  # bc of uv publish
             "/site/",  # bc of mkdocs
+            "",  # empty line at end of file
         ]
 
         existing = self.load()
         needed = [p for p in needed if p not in set(existing)]
         return existing + needed
 
-    @return_resource_content_on_fetch_error(resource_name="GITIGNORE")
-    def github_python_gitignore(self) -> str:
-        """Fetch GitHub's standard Python gitignore patterns.
-
-        Returns:
-            str: Python.gitignore content from GitHub.
-
-        Note:
-            Makes HTTP request with 10s timeout. Decorator provides fallback.
-        """
-        url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
-        return requests_get_text_cached(url)
-
-    def github_python_gitignore_lines(self) -> list[str]:
+    def standard_ignore_lines(self) -> list[str]:
         """Fetch GitHub's standard Python gitignore patterns as a list.
 
         Returns:
             list[str]: Python.gitignore patterns (one per line).
         """
-        gitignore_str = self.github_python_gitignore()
-        return gitignore_str.splitlines()
+        return resource_content("GITIGNORE", resources).splitlines()

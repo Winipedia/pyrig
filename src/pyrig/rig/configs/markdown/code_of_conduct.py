@@ -11,13 +11,13 @@ See Also:
 
 from pathlib import Path
 
+from pyrig.core.resource import (
+    resource_content,
+)
+from pyrig.rig import resources
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import src_package_is_pyrig
-from pyrig.rig.utils.resources import (
-    requests_get_text_cached,
-    return_resource_content_on_fetch_error,
-)
 
 
 class CodeOfConductConfigFile(MarkdownConfigFile):
@@ -83,19 +83,9 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             "[INSERT CONTACT METHOD]", contact_method
         )
 
-    @return_resource_content_on_fetch_error(
-        resource_name="CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT.md"
-    )
     def contributor_covenant(self) -> str:
-        """Fetch the Contributor Covenant from GitHub's MVG repository.
-
-        Fall back to a bundled resource template on fetch error.
-
-        Returns:
-            Contributor Covenant 2.1 content.
-        """
-        url = "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md"
-        return requests_get_text_cached(url)
+        """Return the Contributor Covenant content from resources."""
+        return resource_content("CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT", resources)
 
     def contact_method(self) -> str:
         """Return the contact method for the code of conduct.

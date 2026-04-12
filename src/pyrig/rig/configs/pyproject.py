@@ -10,7 +10,6 @@ Utility methods: project info, dependencies, Python versions, license detection,
 classifiers.
 """
 
-import json
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Literal
@@ -18,10 +17,14 @@ from typing import Literal
 import spdx_matcher
 from packaging.version import Version
 
+from pyrig.core.resource import (
+    resource_content,
+)
 from pyrig.core.string_ import (
     package_req_name_split_pattern,
 )
 from pyrig.core.types.config_file import ConfigDict
+from pyrig.rig import resources
 from pyrig.rig.cli import cli
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
@@ -34,10 +37,6 @@ from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.resources import (
-    requests_get_text_cached,
-    return_resource_content_on_fetch_error,
-)
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 
 
@@ -286,22 +285,9 @@ class PyprojectConfigFile(TomlConfigFile):
             upper_default=self.latest_python_version(level="minor"),
         )
 
-    @return_resource_content_on_fetch_error(resource_name="LATEST_PYTHON_VERSION")
-    def fetch_latest_python_version(self) -> str:
-        """Fetch latest stable Python version.
-
-        Fetches from endoflife.date API (cached, with fallback).
-
-        Args:
-            level: Precision level for the version string.
-        """
-        url = "https://endoflife.date/api/python.json"
-        data: list[dict[str, str]] = json.loads(requests_get_text_cached(url))
-        return data[0]["latest"]
-
     def latest_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"
     ) -> Version:
         """Get latest stable Python version at precision level (major/minor/micro)."""
-        latest_version = Version(self.fetch_latest_python_version())
+        latest_version = Version(resource_content("LATEST_PYTHON_VERSION", resources))
         return adjust_version_to_level(latest_version, level)

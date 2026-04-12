@@ -48,11 +48,9 @@ class TestVersionControllerIgnoreConfigFile:
         github_gitignore = VersionControllerIgnoreConfigFile.I.github_python_gitignore()
         assert "__pycache__/" in github_gitignore
 
-    def test_github_python_gitignore_lines(self) -> None:
+    def test_standard_ignore_lines(self) -> None:
         """Test method."""
-        github_gitignore = (
-            VersionControllerIgnoreConfigFile.I.github_python_gitignore_lines()
-        )
+        github_gitignore = VersionControllerIgnoreConfigFile.I.standard_ignore_lines()
         assert "__pycache__/" in github_gitignore
 
     def test_stem(
