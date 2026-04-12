@@ -5,7 +5,7 @@ from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.core.resource import resource_path
+from pyrig.core.resource import resource_content, resource_path
 
 
 def test_resource_path(
@@ -21,3 +21,18 @@ def test_resource_path(
         path.write_text("Hello World!")
 
         assert resource_path("resource.txt", package) == path.resolve()
+
+
+def test_resource_content(
+    tmp_path: Path, create_package: Callable[[Path], ModuleType]
+) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        # create a package
+        package_path = Path(test_resource_content.__name__) / "subpackage"
+        package = create_package(package_path)
+        # create a resource
+        path = package_path / "resource.txt"
+        path.write_text("Hello World!")
+
+        assert resource_content("resource.txt", package) == "Hello World!"
