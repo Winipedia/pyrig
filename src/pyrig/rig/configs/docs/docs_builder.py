@@ -14,7 +14,9 @@ from pathlib import Path
 
 from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
+from pyrig.rig.configs.markdown.docs.api import ApiConfigFile
 from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
+from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.package_manager import PackageManager
 
@@ -54,8 +56,16 @@ class DocsBuilderConfigFile(DictYmlConfigFile):
         return {
             "site_name": PackageManager.I.project_name(),
             "nav": [
-                {"Home": IndexConfigFile.I.path().name},
-                {"API": "api.md"},
+                {
+                    "Home": IndexConfigFile.I.path()
+                    .relative_to(DocsBuilder.I.docs_dir())
+                    .as_posix()
+                },
+                {
+                    "API": ApiConfigFile.I.path()
+                    .relative_to(DocsBuilder.I.docs_dir())
+                    .as_posix()
+                },
             ],
             "plugins": [
                 "search",
