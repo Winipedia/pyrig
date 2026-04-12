@@ -61,6 +61,7 @@ def test_mit_license_template() -> None:
     """Test if the MIT license template resource file is up to date."""
     url = "https://api.github.com/licenses/mit"
     data = json.loads(requests.get(url, timeout=(3, 10)).text)
+    assert "body" in data, json.dumps(data, indent=4)
     mit_license: str = data["body"]
     check_resource_file_is_up_to_date(mit_license, "MIT_LICENSE")
 
