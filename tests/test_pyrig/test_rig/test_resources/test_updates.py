@@ -6,13 +6,11 @@ If not, the tests will fail prompting the developer to update the resource files
 """
 
 import json
-import platform
 
 import requests
 
 from pyrig.core.resource import resource_path
 from pyrig.rig import resources
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 def check_resource_file_is_up_to_date(
@@ -31,20 +29,18 @@ def check_resource_file_is_up_to_date(
     resource_file = resource_path(resource_filename, resources)
     resource_text = resource_file.read_text()
 
-    correct = resource_text == url_text
-
-    if not correct:
+    if resource_text != url_text:
         resource_file.write_text(url_text)
 
-    assert correct, f"""Resource file {resource_filename} is outdated.
-Please update it with the latest content:
+    # using comparison again to allow pytest to show the diff in the test output
+    assert resource_text == url_text, f"""Resource file {resource_filename} is outdated.
+An update has been made to the resource file with the latest content from the URL.
+Please review the changes to the resource file and commit the updated file."""
 
-{url_text}"""
 
-
-def test_gitignore(*, on_linux_and_latest_python_version_and_in_ci: bool) -> None:
+def test_gitignore(*, on_linux_and_latest_python_version_or_not_in_ci: bool) -> None:
     """Test if the github gitignore resource file is up to date."""
-    if not on_linux_and_latest_python_version_and_in_ci:
+    if not on_linux_and_latest_python_version_or_not_in_ci:
         return
     url = "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
     fetched_text = requests.get(url, timeout=(3, 10)).text
@@ -62,13 +58,13 @@ def test_latest_python_version() -> None:
 
 
 def test_mit_license_template(
-    *, on_linux_and_latest_python_version_and_in_ci: bool
+    *, on_linux_and_latest_python_version_or_not_in_ci: bool
 ) -> None:
     """Test if the MIT license template resource file is up to date."""
     # this url has a rate limit so we only test if we are on linux
     # and the current python version is the latest one to
     # avoid hitting the rate limit in CI due to the matrix testing
-    if not on_linux_and_latest_python_version_and_in_ci:
+    if not on_linux_and_latest_python_version_or_not_in_ci:
         return
     url = "https://api.github.com/licenses/mit"
     data = json.loads(requests.get(url, timeout=(3, 10)).text)
@@ -78,17 +74,13 @@ def test_mit_license_template(
 
 
 def test_contributor_covenant_code_of_conduct(
-    *, on_linux_and_latest_python_version_and_in_ci: bool
+    *, on_linux_and_latest_python_version_or_not_in_ci: bool
 ) -> None:
     """Test if the Contributor Covenant Code of Conduct resource file is up to date."""
     # this url has a rate limit so we only test if we are on linux
     # and the current python version is the latest one to
     # avoid hitting the rate limit in CI due to the matrix testing
-    if not on_linux_and_latest_python_version_and_in_ci:
-        return
-    latest_python_version = str(PyprojectConfigFile.I.latest_python_version("micro"))
-    sys_python_version = platform.python_version()
-    if sys_python_version != latest_python_version:
+    if not on_linux_and_latest_python_version_or_not_in_ci:
         return
 
     url = (

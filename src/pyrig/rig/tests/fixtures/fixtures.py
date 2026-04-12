@@ -257,10 +257,10 @@ def on_linux_and_latest_python_version(
 
 
 @pytest.fixture(scope="session")
-def on_linux_and_latest_python_version_and_in_ci(
+def on_linux_and_latest_python_version_or_not_in_ci(
     *, on_linux_and_latest_python_version: bool
 ) -> bool:
-    """Check if system is Linux, python is latest version, and running in CI."""
+    """Check if is Linux and on latest Python version, or not running in CI."""
     return (
         on_linux_and_latest_python_version
-    ) and RemoteVersionController.I.running_in_ci()
+    ) or not RemoteVersionController.I.running_in_ci()

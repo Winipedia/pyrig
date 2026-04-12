@@ -200,15 +200,17 @@ def test_on_latest_python_version(*, on_latest_python_version: bool) -> None:
         assert on_latest_python_version is False
 
 
-def test_on_linux_and_latest_python_version_and_in_ci(
-    *, on_linux_and_latest_python_version_and_in_ci: bool
+def test_on_linux_and_latest_python_version_or_not_in_ci(
+    *, on_linux_and_latest_python_version_or_not_in_ci: bool
 ) -> None:
     """Test function."""
     in_ci = RemoteVersionController.I.running_in_ci()
     current_platform = platform.system()
     latest_version = PyprojectConfigFile.I.latest_python_version("micro")
     current_version = platform.python_version()
-    if current_platform == "Linux" and current_version == str(latest_version) and in_ci:
-        assert on_linux_and_latest_python_version_and_in_ci is True
+    if (
+        current_platform == "Linux" and current_version == str(latest_version)
+    ) or not in_ci:
+        assert on_linux_and_latest_python_version_or_not_in_ci is True
     else:
-        assert on_linux_and_latest_python_version_and_in_ci is False
+        assert on_linux_and_latest_python_version_or_not_in_ci is False
