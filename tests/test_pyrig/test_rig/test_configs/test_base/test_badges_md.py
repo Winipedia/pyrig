@@ -11,7 +11,7 @@ class TestBadgesMarkdownConfigFile:
     def test_replace_badges(self) -> None:
         """Test method."""
         # we take pyrigs actual content and change the some urls
-        content = ReadmeConfigFile.I.make_string_from_lines(ReadmeConfigFile.I.lines())
+        content = ReadmeConfigFile.I.join_lines(ReadmeConfigFile.I.lines())
         # we replace the actual badge urls with some dummy ones
         false_https = "https-false://"
         correct_https = "https://"

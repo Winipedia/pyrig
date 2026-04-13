@@ -59,7 +59,7 @@ class LicenseConfigFile(StringConfigFile):
 
     def lines(self) -> list[str]:
         """Get MIT license with year and owner."""
-        return self.mit_license_with_year_and_owner().splitlines()
+        return self.split_lines(self.mit_license_with_year_and_owner())
 
     def is_correct(self) -> bool:
         """Check if LICENSE exists and is non-empty."""

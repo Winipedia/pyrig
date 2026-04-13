@@ -67,7 +67,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         updated_content = self.replace_badges(updated_content)
         # only dump if content changed
         if updated_content != file_content:
-            self.dump(updated_content.splitlines())
+            self.dump(self.split_lines(updated_content))
         # dump clears the cache,
         # and this checks the real file again, which is the wanted behavior
         return super().is_correct()

@@ -81,7 +81,7 @@ class ContributingConfigFile(MarkdownConfigFile):
 
     def lines(self) -> list[str]:
         """Return the contributing template content as lines."""
-        return [*CONTRIBUTING_TEMPLATE.splitlines(), ""]
+        return self.split_lines(CONTRIBUTING_TEMPLATE)
 
     def is_correct(self) -> bool:
         """Check if CONTRIBUTING.md exists and is non-empty.

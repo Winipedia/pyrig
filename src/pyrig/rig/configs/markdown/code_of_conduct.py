@@ -51,7 +51,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
 
     def lines(self) -> list[str]:
         """Return Contributor Covenant Code of Conduct content as lines."""
-        return [*self.contributor_covenant_with_contact_method().splitlines(), ""]
+        return self.split_lines(self.contributor_covenant_with_contact_method())
 
     def is_correct(self) -> bool:
         """Check if CODE_OF_CONDUCT.md exists and is non-empty.

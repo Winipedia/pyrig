@@ -492,14 +492,6 @@ class VersionController(Tool):
         """
         return Path(self.ignore_filename())
 
-    def loaded_ignore(self) -> list[str]:
-        """Get the loaded gitignore patterns.
-
-        Returns:
-            List of gitignore patterns.
-        """
-        return self.ignore_path().read_text(encoding="utf-8").splitlines()
-
     def email(self) -> str:
         """Get the email from git config.
 

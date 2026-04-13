@@ -102,4 +102,4 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         Returns:
             list[str]: Python.gitignore patterns (one per line).
         """
-        return resource_content("GITIGNORE", resources).splitlines()
+        return self.split_lines(resource_content("GITIGNORE", resources))
