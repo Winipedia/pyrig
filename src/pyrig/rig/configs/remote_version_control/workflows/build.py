@@ -22,7 +22,9 @@ from typing import Any
 
 from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
+from pyrig.rig.configs.remote_version_control.workflows.health_check import (
+    HealthCheckWorkflowConfigFile,
+)
 from pyrig.rig.tools.version_controller import VersionController
 
 

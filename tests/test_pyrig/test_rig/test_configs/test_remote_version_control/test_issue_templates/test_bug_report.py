@@ -2,26 +2,28 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.issue_templates.feature_request import FeatureRequestConfigFile
+from pyrig.rig.configs.remote_version_control.issue_templates.bug_report import (
+    BugReportConfigFile,
+)
 
 
-class TestFeatureRequestConfigFile:
+class TestBugReportConfigFile:
     """Test class."""
 
     def test_stem(self) -> None:
         """Test method."""
-        assert FeatureRequestConfigFile.I.stem() == "feature_request"
+        assert BugReportConfigFile.I.stem() == "bug_report"
 
     def test_parent_path(self) -> None:
         """Test method."""
-        result = FeatureRequestConfigFile.I.parent_path()
+        result = BugReportConfigFile.I.parent_path()
         assert result == Path(".github/ISSUE_TEMPLATE")
 
     def test__configs(self) -> None:
         """Test method."""
-        result = FeatureRequestConfigFile.I._configs()  # noqa: SLF001
+        result = BugReportConfigFile.I._configs()  # noqa: SLF001
         assert isinstance(result, dict)
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert FeatureRequestConfigFile.I.is_correct()
+        assert BugReportConfigFile.I.is_correct()

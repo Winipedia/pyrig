@@ -4,7 +4,9 @@ from collections.abc import Callable
 
 import pytest
 
-from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
+from pyrig.rig.configs.remote_version_control.workflows.health_check import (
+    HealthCheckWorkflowConfigFile,
+)
 
 
 @pytest.fixture

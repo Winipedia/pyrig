@@ -24,8 +24,12 @@ import re
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.configs.workflows.health_check import HealthCheckWorkflowConfigFile
-from pyrig.rig.configs.workflows.release import ReleaseWorkflowConfigFile
+from pyrig.rig.configs.remote_version_control.workflows.health_check import (
+    HealthCheckWorkflowConfigFile,
+)
+from pyrig.rig.configs.remote_version_control.workflows.release import (
+    ReleaseWorkflowConfigFile,
+)
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager

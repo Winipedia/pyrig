@@ -21,7 +21,9 @@ from typing import Any
 
 from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.workflows.release import ReleaseWorkflowConfigFile
+from pyrig.rig.configs.remote_version_control.workflows.release import (
+    ReleaseWorkflowConfigFile,
+)
 
 
 class DeployWorkflowConfigFile(WorkflowConfigFile):

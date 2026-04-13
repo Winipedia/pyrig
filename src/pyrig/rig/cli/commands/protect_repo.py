@@ -4,7 +4,9 @@ Configures secure repository settings and branch protection rulesets on GitHub,
 implementing pyrig's opinionated security defaults.
 """
 
-from pyrig.rig.configs.git.branch_protection import BranchProtectionConfigFile
+from pyrig.rig.configs.remote_version_control.branch_protection import (
+    BranchProtectionConfigFile,
+)
 
 
 def protect_repository() -> None:
