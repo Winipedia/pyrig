@@ -13,8 +13,10 @@ from pyrig.core.string_ import (
     package_req_name_split_pattern,
     project_name_from_cwd,
     re_search_excluding_docstrings,
+    read_text_utf8,
     snake_to_kebab_case,
     split_on_uppercase,
+    write_text_utf8,
 )
 
 
@@ -173,3 +175,23 @@ def test_package_req_name_split_pattern() -> None:
     assert isinstance(result, re.Pattern), (
         f"Expected a compiled regex pattern, got {type(result)}"
     )
+
+
+def test_read_text_utf8(tmp_path: Path) -> None:
+    """Test function."""
+    text = "Hello, world! 👋"
+    file_path = tmp_path / "test.txt"
+    file_path.write_text(text, encoding="utf-8")
+
+    result = read_text_utf8(file_path)
+    assert result == text
+
+
+def test_write_text_utf8(tmp_path: Path) -> None:
+    """Test function."""
+    text = "Hello, world! 👋"
+    file_path = tmp_path / "test_write.txt"
+    write_text_utf8(file_path, text)
+
+    result = file_path.read_text(encoding="utf-8")
+    assert result == text
