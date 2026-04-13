@@ -60,7 +60,7 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
 
     def lines(self) -> list[str]:
         """Return the pull request template content as lines."""
-        return [*PULL_REQUEST_TEMPLATE.strip().splitlines(), ""]
+        return self.split_lines(PULL_REQUEST_TEMPLATE)
 
     def is_correct(self) -> bool:
         """Check if pull_request_template.md exists and is non-empty.

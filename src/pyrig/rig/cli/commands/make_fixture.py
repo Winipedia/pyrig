@@ -27,7 +27,6 @@ def make_fixture(name: str) -> None:
 @pytest.fixture
 def {name}() -> None:
     """This is a pytest fixture."""
+'''
 
-'''  # add a line bc splitlines will remove the last empty line
-
-    config_file.dump(content.splitlines())
+    config_file.dump(config_file.split_lines(content))

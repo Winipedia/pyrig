@@ -82,7 +82,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Full source code of the module as list of lines.
         """
-        return [*module_content(self.copy_module()).splitlines(), ""]
+        return self.split_lines(module_content(self.copy_module()))
 
     def stem(self) -> str:
         """Return module's isolated name (last component).

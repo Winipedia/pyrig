@@ -42,9 +42,8 @@ from {module_name} import {class_name} as Base{class_name}
 
 class {class_name}(Base{class_name}):
     """You can override methods from the base class to customize behavior."""
-
 '''
-    config_file.dump(content.splitlines())
+    config_file.dump(config_file.split_lines(content))
 
 
 def choose_subclass() -> str:

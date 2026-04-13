@@ -40,6 +40,15 @@ def my_test_string_config_file(
 class TestStringConfigFile:
     """Test class."""
 
+    def test_split_lines(
+        self, my_test_string_config_file: type[StringConfigFile]
+    ) -> None:
+        """Test method."""
+        text = "Line 1.\nLine 2.\n"
+        expected_lines = ["Line 1.", "Line 2.", ""]
+        lines = my_test_string_config_file().split_lines(text)
+        assert lines == expected_lines
+
     def test_merge_configs(
         self,
         my_test_string_config_file: type[StringConfigFile],
@@ -53,12 +62,12 @@ class TestStringConfigFile:
             added_configs = my_test_string_config_file().merge_configs()
             assert added_configs == ["Test content.", "New content.", ""]
 
-    def test_make_string_from_lines(
+    def test_join_lines(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
         """Test method."""
         lines = ["Test content.", "Second line."]
-        string = my_test_string_config_file().make_string_from_lines(lines)
+        string = my_test_string_config_file().join_lines(lines)
         assert string == "Test content.\nSecond line."
 
     def test_should_override_content(

@@ -61,11 +61,7 @@ class StringConfigFile(ListConfigFile):
         Returns:
             List of lines from the file.
         """
-        text = self.path().read_text(encoding="utf-8")
-        lines = text.splitlines()
-        if text.endswith("\n"):
-            lines.append("")
-        return lines
+        return self.split_lines(self.path().read_text(encoding="utf-8"))
 
     def _dump(self, config: list[str]) -> None:
         r"""Write content to file.
@@ -76,8 +72,7 @@ class StringConfigFile(ListConfigFile):
         Note:
             User additions are preserved via `merge_configs()`, not here.
         """
-        string = self.make_string_from_lines(config)
-        self.path().write_text(string, encoding="utf-8")
+        self.path().write_text(self.join_lines(config), encoding="utf-8")
 
     def merge_configs(self) -> ConfigList:
         """Merge expected config lines with existing file content.
@@ -124,8 +119,17 @@ class StringConfigFile(ListConfigFile):
 
     def file_content(self) -> str:
         r"""Return file content as a single string by joining lines from `load()`."""
-        return self.make_string_from_lines(self.load())
+        return self.join_lines(self.load())
 
-    def make_string_from_lines(self, lines: Iterable[str]) -> str:
+    def join_lines(self, lines: Iterable[str]) -> str:
         """Join lines with newline."""
         return "\n".join(lines)
+
+    def split_lines(self, text: str) -> list[str]:
+        """Split text into lines, preserving trailing newline as empty string."""
+        lines = text.splitlines()
+        if text.endswith("\n"):
+            # to preserve the lineending for join_lines
+            # we add an empty string if the text ends with a newline
+            lines.append("")
+        return lines

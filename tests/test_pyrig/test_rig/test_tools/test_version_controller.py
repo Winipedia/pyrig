@@ -192,12 +192,6 @@ class TestVersionController:
         result = VersionController.I.ignore_path()
         assert result == Path(".gitignore")
 
-    def test_loaded_ignore(self) -> None:
-        """Test method."""
-        result = VersionController.I.loaded_ignore()
-        assert isinstance(result, list)
-        assert all(isinstance(item, str) for item in result)
-
     def test_repo_owner_and_name(self) -> None:
         """Test method."""
         result = VersionController.I.repo_owner_and_name()

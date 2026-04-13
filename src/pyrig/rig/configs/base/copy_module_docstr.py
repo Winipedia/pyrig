@@ -45,7 +45,7 @@ class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
             ValueError: If source module has no docstring.
         """
         docstring = self.copy_module().__doc__ or self.default_docstring()
-        return [*f'"""{docstring}"""'.splitlines(), ""]
+        return self.split_lines(f'"""{docstring}"""\n')
 
     def is_correct(self) -> bool:
         """Check if the source module has a docstring.

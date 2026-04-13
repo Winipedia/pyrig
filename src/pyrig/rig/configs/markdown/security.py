@@ -82,7 +82,7 @@ class SecurityConfigFile(MarkdownConfigFile):
         Returns:
             list[str]: Security template lines with contact method inserted.
         """
-        return [*self.template_with_contact_method().splitlines(), ""]
+        return self.split_lines(self.template_with_contact_method())
 
     def is_correct(self) -> bool:
         """Check if SECURITY.md exists and is non-empty.

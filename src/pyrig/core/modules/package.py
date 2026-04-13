@@ -217,7 +217,7 @@ def make_init_file(path: Path, content: str) -> None:
 
     typer.echo(f"Creating: {path}")
 
-    path.write_text(content)
+    path.write_text(content, encoding="utf-8")
 
 
 def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
