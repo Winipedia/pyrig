@@ -49,6 +49,11 @@ class TestStringConfigFile:
         lines = my_test_string_config_file().split_lines(text)
         assert lines == expected_lines
 
+        text_no_newline = "Line 1.\nLine 2."
+        expected_lines_no_newline = ["Line 1.", "Line 2."]
+        lines_no_newline = my_test_string_config_file().split_lines(text_no_newline)
+        assert lines_no_newline == expected_lines_no_newline
+
     def test_merge_configs(
         self,
         my_test_string_config_file: type[StringConfigFile],
