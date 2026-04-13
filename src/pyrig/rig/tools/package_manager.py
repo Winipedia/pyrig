@@ -99,6 +99,15 @@ class PackageManager(Tool):
         """Get the root of the main package."""
         return self.source_root() / self.package_name()
 
+    def readme_path(self) -> Path:
+        """Get the path to the README.md file.
+
+        Is defined here to avoid circular import with ReadmeConfigFile
+        and PyprojectConfigFile as both need information from each other.
+        Readme needs the project description and pyproject needs the readme path.
+        """
+        return Path("README.md")
+
     def project_cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct a project command.
 

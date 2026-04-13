@@ -10,6 +10,7 @@ See Also:
 from pathlib import Path
 
 from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class ReadmeConfigFile(BadgesMarkdownConfigFile):
@@ -34,7 +35,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
         Returns:
             str: "README" (extension added by parent).
         """
-        return "README"
+        return PackageManager.I.readme_path().stem
 
     def parent_path(self) -> Path:
         """Get the parent directory for README.md.
@@ -42,7 +43,7 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
         Returns:
             Path: Project root.
         """
-        return Path()
+        return PackageManager.I.readme_path().parent
 
     def is_unwanted(self) -> bool:
         """Check if README.md is unwanted.

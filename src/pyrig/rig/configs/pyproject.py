@@ -30,7 +30,6 @@ from pyrig.rig.cli import cli
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
-from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
@@ -76,8 +75,8 @@ class PyprojectConfigFile(TomlConfigFile):
             "project": {
                 "name": PackageManager.I.project_name(),
                 "version": self.project_version(),
-                "description": (self.project_description()),
-                "readme": ReadmeConfigFile.I.path().as_posix(),
+                "description": self.project_description(),
+                "readme": PackageManager.I.readme_path().as_posix(),
                 "authors": [
                     {"name": repo_owner},
                 ],

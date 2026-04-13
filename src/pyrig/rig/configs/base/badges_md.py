@@ -105,8 +105,6 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             Dict mapping category names (tooling, code-quality, package-info, ci/cd,
             documentation) to lists of badge Markdown strings.
         """
-        health_check_wf_name = HealthCheckWorkflowConfigFile.I.stem()
-        release_wf_name = ReleaseWorkflowConfigFile.I.stem()
         badge_groups = Tool.grouped_badges()
 
         badge_groups[ToolGroup.PROJECT_INFO].extend(
@@ -116,8 +114,12 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         )
         badge_groups[ToolGroup.CI_CD].extend(
             [
-                RemoteVersionController.I.cicd_badge(health_check_wf_name, "CI"),
-                RemoteVersionController.I.cicd_badge(release_wf_name, "CD"),
+                RemoteVersionController.I.cicd_badge(
+                    HealthCheckWorkflowConfigFile.I.stem(), "CI"
+                ),
+                RemoteVersionController.I.cicd_badge(
+                    ReleaseWorkflowConfigFile.I.stem(), "CD"
+                ),
             ]
         )
 
