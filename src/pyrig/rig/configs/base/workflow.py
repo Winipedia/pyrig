@@ -36,6 +36,7 @@ from typing import Any
 
 from pyrig.core.string_ import (
     make_name_from_obj,
+    read_text_utf8,
     split_on_uppercase,
 )
 from pyrig.core.types.config_file import ConfigDict
@@ -150,7 +151,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         correct = super().is_correct()
 
-        if self.path().read_text(encoding="utf-8") == "":
+        if read_text_utf8(self.path()) == "":
             config = self.configs()
             jobs = config["jobs"]
             for job in jobs.values():

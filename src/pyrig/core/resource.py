@@ -9,6 +9,8 @@ from importlib.resources import as_file, files
 from pathlib import Path
 from types import ModuleType
 
+from pyrig.core.string_ import read_text_utf8
+
 
 def resource_path(name: str, package: ModuleType) -> Path:
     """Get filesystem path to a resource file within a package.
@@ -58,4 +60,4 @@ def resource_path(name: str, package: ModuleType) -> Path:
 def resource_content(resource_name: str, package: ModuleType) -> str:
     """Get content of a resource file as a string."""
     path = resource_path(resource_name, package)
-    return path.read_text(encoding="utf-8")
+    return read_text_utf8(path)

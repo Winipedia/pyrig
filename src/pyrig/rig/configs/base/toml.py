@@ -23,6 +23,7 @@ from typing import Any
 import tomlkit
 from tomlkit.items import Table
 
+from pyrig.core.string_ import read_text_utf8
 from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.configs.base.dict_ import DictConfigFile
 
@@ -54,7 +55,7 @@ class TomlConfigFile(DictConfigFile):
         Returns:
             Parsed TOML as `tomlkit.TOMLDocument` (dict-like with formatting info).
         """
-        return tomlkit.parse(self.path().read_text(encoding="utf-8"))
+        return tomlkit.parse(read_text_utf8(self.path()))
 
     def _dump(self, config: ConfigDict) -> None:
         """Validate and write configuration to TOML file.

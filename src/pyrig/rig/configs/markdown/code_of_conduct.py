@@ -14,6 +14,7 @@ from pathlib import Path
 from pyrig.core.resource import (
     resource_content,
 )
+from pyrig.core.string_ import read_text_utf8
 from pyrig.rig import resources
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
@@ -67,9 +68,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             # if in pyrig just run get contributor covenant
             # to trigger resource update if needed
             self.contributor_covenant()
-        return self.path().exists() and bool(
-            self.path().read_text(encoding="utf-8").strip()
-        )
+        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
 
     def contributor_covenant_with_contact_method(self) -> str:
         """Return the Contributor Covenant with the contact method inserted.

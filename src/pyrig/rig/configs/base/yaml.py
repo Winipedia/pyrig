@@ -20,6 +20,7 @@ Example:
 
 import yaml
 
+from pyrig.core.string_ import read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigFile, ConfigT
 
 
@@ -50,7 +51,7 @@ class YamlConfigFile(ConfigFile[ConfigT]):
         Returns:
             Parsed YAML content as dict or list. Empty dict if file is empty.
         """
-        return yaml.safe_load(self.path().read_text(encoding="utf-8"))
+        return yaml.safe_load(read_text_utf8(self.path()))
 
     def _dump(self, config: ConfigT) -> None:
         """Write configuration to YAML file using safe_dump.
