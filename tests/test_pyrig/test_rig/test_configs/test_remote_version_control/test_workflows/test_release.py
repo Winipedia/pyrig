@@ -4,7 +4,9 @@ from collections.abc import Callable
 
 import pytest
 
-from pyrig.rig.configs.workflows.release import ReleaseWorkflowConfigFile
+from pyrig.rig.configs.remote_version_control.workflows.release import (
+    ReleaseWorkflowConfigFile,
+)
 
 
 @pytest.fixture

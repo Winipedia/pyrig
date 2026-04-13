@@ -2,7 +2,9 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.git.branch_protection import BranchProtectionConfigFile
+from pyrig.rig.configs.remote_version_control.branch_protection import (
+    BranchProtectionConfigFile,
+)
 
 
 class TestBranchProtectionConfigFile:

@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.configs.git.pre_committer import PreCommitterConfigFile
+from pyrig.rig.configs.version_control.pre_committer import PreCommitterConfigFile
 
 
 @pytest.fixture

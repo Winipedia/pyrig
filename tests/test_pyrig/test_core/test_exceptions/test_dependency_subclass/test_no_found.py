@@ -3,7 +3,9 @@
 import pytest
 
 from pyrig.core.exceptions.dependency_subclass.no_found import NoSubclassesFoundError
-from pyrig.rig.configs.git.version_controller import VersionControllerIgnoreConfigFile
+from pyrig.rig.configs.version_control.ignore import (
+    VersionControllerIgnoreConfigFile,
+)
 
 
 class TestNoSubclassesFoundError:

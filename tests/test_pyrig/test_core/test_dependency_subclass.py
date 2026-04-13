@@ -9,9 +9,11 @@ from pyrig.core.exceptions.dependency_subclass.multiple_found import (
 )
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
-from pyrig.rig.configs.git.version_controller import VersionControllerIgnoreConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.configs.version_control.ignore import (
+    VersionControllerIgnoreConfigFile,
+)
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 

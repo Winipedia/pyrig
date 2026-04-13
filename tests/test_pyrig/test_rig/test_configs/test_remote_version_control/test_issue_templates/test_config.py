@@ -2,7 +2,9 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.issue_templates.config import ConfigConfigFile
+from pyrig.rig.configs.remote_version_control.issue_templates.config import (
+    ConfigConfigFile,
+)
 
 
 class TestConfigConfigFile:

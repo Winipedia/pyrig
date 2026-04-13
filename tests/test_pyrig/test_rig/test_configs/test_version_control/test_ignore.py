@@ -7,7 +7,9 @@ from pathlib import Path
 import pytest
 
 from pyrig.rig.configs.base.config_file import ConfigFile
-from pyrig.rig.configs.git.version_controller import VersionControllerIgnoreConfigFile
+from pyrig.rig.configs.version_control.ignore import (
+    VersionControllerIgnoreConfigFile,
+)
 
 
 @pytest.fixture
