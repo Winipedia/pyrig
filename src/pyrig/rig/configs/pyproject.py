@@ -10,6 +10,7 @@ Utility methods: project info, dependencies, Python versions, license detection,
 classifiers.
 """
 
+import platform
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Literal
@@ -29,6 +30,7 @@ from pyrig.rig.cli import cli
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
+from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
@@ -73,11 +75,9 @@ class PyprojectConfigFile(TomlConfigFile):
         return {
             "project": {
                 "name": PackageManager.I.project_name(),
-                "version": self.project_version() or "0.1.0",
-                "description": (
-                    self.project_description() or "Add your description here."
-                ),
-                "readme": "README.md",
+                "version": self.project_version(),
+                "description": (self.project_description()),
+                "readme": ReadmeConfigFile.I.path().as_posix(),
                 "authors": [
                     {"name": repo_owner},
                 ],
@@ -182,13 +182,20 @@ class PyprojectConfigFile(TomlConfigFile):
             raise LookupError(msg)
         return next(iter(licenses))
 
-    def project_description(self) -> str:
-        """Get project description from pyproject.toml."""
-        return str(self.load().get("project", {}).get("description", ""))
+    def project_description(self, default: str = "Add your description here") -> str:
+        """Get project description from pyproject.toml.
 
-    def project_version(self) -> str:
-        """Get project version from pyproject.toml."""
-        return str(self.load().get("project", {}).get("version", ""))
+        If not specified, default to "Add your description here"
+        (same as uv's initial default).
+        """
+        return str(self.load().get("project", {}).get("description", default))
+
+    def project_version(self, default: str = "0.1.0") -> str:
+        """Get project version from pyproject.toml.
+
+        If not specified, default to "0.1.0" (same as uv's initial default).
+        """
+        return str(self.load().get("project", {}).get("version", default))
 
     def make_python_version_classifiers(self) -> list[str]:
         """Generate PyPI classifiers (Python versions, OS Independent, Typed)."""
@@ -205,8 +212,16 @@ class PyprojectConfigFile(TomlConfigFile):
 
         return [*python_version_classifiers, *os_classifiers, *typing_classifiers]
 
-    def requires_python(self, default: str = ">=3.12") -> str:
-        """Get requires-python constraint from pyproject.toml."""
+    def requires_python(self, default: str | None = None) -> str:
+        """Get requires-python constraint from pyproject.toml.
+
+        If not specified, default to ">=<current minor version>" (e.g., ">=3.10").
+        """
+        if default is None:
+            current_version = adjust_version_to_level(
+                Version(platform.python_version()), level="minor"
+            )
+            default = f">={current_version}"
         return str(self.load().get("project", {}).get("requires-python", default))
 
     def make_dependency_versions(
