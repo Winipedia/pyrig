@@ -17,6 +17,28 @@ from types import ModuleType
 from typing import Any
 
 
+def read_text_utf8(path: Path) -> str:
+    """Read text from file using UTF-8 encoding.
+
+    Args:
+        path: Path to the file to read.
+
+    Returns:
+        Content of the file as a string.
+    """
+    return path.read_text(encoding="utf-8")
+
+
+def write_text_utf8(path: Path, content: str) -> int:
+    """Write text to file using UTF-8 encoding.
+
+    Args:
+        path: Path to the file to write.
+        content: Text content to write to the file.
+    """
+    return path.write_text(content, encoding="utf-8")
+
+
 def split_on_uppercase(string: str) -> Generator[str, None, None]:
     """Split string at uppercase letter boundaries.
 

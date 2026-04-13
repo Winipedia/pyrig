@@ -15,7 +15,7 @@ from pathlib import Path
 from pyrig.core.resource import (
     resource_content,
 )
-from pyrig.core.string_ import make_linked_badge_markdown
+from pyrig.core.string_ import make_linked_badge_markdown, read_text_utf8
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -66,9 +66,7 @@ class LicenseConfigFile(StringConfigFile):
         if src_package_is_pyrig():
             # if in pyrig just run get mit licence to trigger resource update if needed
             self.mit_license()
-        return self.path().exists() and bool(
-            self.path().read_text(encoding="utf-8").strip()
-        )
+        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
 
     def mit_license(self) -> str:
         """Get MIT license template from the resources."""

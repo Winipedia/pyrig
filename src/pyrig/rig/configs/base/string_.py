@@ -28,6 +28,7 @@ Example:
 from abc import abstractmethod
 from collections.abc import Iterable
 
+from pyrig.core.string_ import read_text_utf8
 from pyrig.core.types.config_file import ConfigList
 from pyrig.rig.configs.base.list_ import ListConfigFile
 
@@ -61,7 +62,7 @@ class StringConfigFile(ListConfigFile):
         Returns:
             List of lines from the file.
         """
-        return self.split_lines(self.path().read_text(encoding="utf-8"))
+        return self.split_lines(read_text_utf8(self.path()))
 
     def _dump(self, config: list[str]) -> None:
         r"""Write content to file.

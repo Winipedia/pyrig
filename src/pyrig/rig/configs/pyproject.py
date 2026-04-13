@@ -173,7 +173,7 @@ class PyprojectConfigFile(TomlConfigFile):
             May raise additional exceptions from spdx_matcher if license
             analysis fails.
         """
-        content = Path("LICENSE").read_text(encoding="utf-8")
+        content = LicenseConfigFile.I.file_content()
         licenses: dict[str, ConfigDict]
         licenses, _ = spdx_matcher.analyse_license_text(content)
         licenses = licenses["licenses"]

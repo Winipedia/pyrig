@@ -9,6 +9,7 @@ See Also:
 
 from pathlib import Path
 
+from pyrig.core.string_ import read_text_utf8
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 
@@ -90,9 +91,7 @@ class SecurityConfigFile(MarkdownConfigFile):
         Returns:
             bool: True if file exists with content, False otherwise.
         """
-        return self.path().exists() and bool(
-            self.path().read_text(encoding="utf-8").strip()
-        )
+        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
 
     def template_with_contact_method(self) -> str:
         """Get the security template content with email inserted.

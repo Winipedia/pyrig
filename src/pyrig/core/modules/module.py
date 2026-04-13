@@ -21,6 +21,7 @@ from pyrig.core.modules.inspection import (
     unwrapped_obj,
 )
 from pyrig.core.modules.path import module_file_path
+from pyrig.core.string_ import read_text_utf8
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ def module_content(module: ModuleType) -> str:
         FileNotFoundError: If the source file does not exist.
     """
     path = module_file_path(module)
-    return path.read_text(encoding="utf-8")
+    return read_text_utf8(path)
 
 
 def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:

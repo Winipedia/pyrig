@@ -10,6 +10,7 @@ See Also:
 
 from pathlib import Path
 
+from pyrig.core.string_ import read_text_utf8
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 
 CONTRIBUTING_TEMPLATE = """# Contributing
@@ -89,6 +90,4 @@ class ContributingConfigFile(MarkdownConfigFile):
         Returns:
             True if file exists with content, False otherwise.
         """
-        return self.path().exists() and bool(
-            self.path().read_text(encoding="utf-8").strip()
-        )
+        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
