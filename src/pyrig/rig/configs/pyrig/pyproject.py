@@ -67,6 +67,12 @@ if src_package_is_pyrig():
             )
             return [*dev_statuses, *intended_audiences, *topics, *classifiers]
 
+        def dependencies(self, default: list[str] | None = None) -> list[str]:
+            """Get runtime dependencies with pyrig-specific defaults."""
+            if default is None:
+                default = ["typer"]
+            return super().dependencies(default)
+
         def _configs(self) -> ConfigDict:
             """Generate complete pyproject.toml config with pyrig-specific keywords.
 
