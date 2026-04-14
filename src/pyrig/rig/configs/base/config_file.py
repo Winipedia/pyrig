@@ -72,7 +72,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Self, TypeVar
+from typing import Any, Self
 
 import typer
 
@@ -83,8 +83,6 @@ from pyrig.core.types.config_file import ConfigData
 from pyrig.rig import configs
 
 logger = logging.getLogger(__name__)
-
-ConfigT = TypeVar("ConfigT", bound=ConfigData)
 
 
 class Priority:

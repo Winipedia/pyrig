@@ -21,7 +21,8 @@ Example:
 import yaml
 
 from pyrig.core.string_ import read_text_utf8
-from pyrig.rig.configs.base.config_file import ConfigFile, ConfigT
+from pyrig.core.types.config_file import ConfigT
+from pyrig.rig.configs.base.config_file import ConfigFile
 
 
 class YamlConfigFile(ConfigFile[ConfigT]):
