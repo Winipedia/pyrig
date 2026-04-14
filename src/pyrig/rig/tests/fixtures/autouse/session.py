@@ -16,7 +16,6 @@ from pathlib import Path
 
 import pytest
 
-import pyrig
 from pyrig.core.modules import imports
 from pyrig.core.modules.imports import (
     walk_package,
@@ -24,6 +23,7 @@ from pyrig.core.modules.imports import (
 from pyrig.core.requests import internet_is_available
 from pyrig.core.string_ import (
     make_summary_error_msg,
+    pyrig_project_name,
     snake_to_kebab_case,
 )
 from pyrig.rig.cli.commands.make_inits import (
@@ -126,7 +126,7 @@ def no_namespace_packages() -> None:
 Namespace packages are packages that do not have an __init__.py file.
 This fixture attempted to auto-fix this by creating the files for any namespace packages found.
 Consider using the proper command to create __init__.py files for any namespace packages in the source directory:
-    '{snake_to_kebab_case(pyrig.__name__)} {snake_to_kebab_case(mkinits.__name__)}'
+    '{pyrig_project_name()} {snake_to_kebab_case(mkinits.__name__)}'
 
 Please verify the changes at the following paths:
 {make_summary_error_msg(package_name_as_root_path(package_name) / "__init__.py" for package_name in namespace_packages)}
@@ -162,7 +162,7 @@ The test module should mirror the structure package under the source directory.
 Attempted to auto-generate test skeletons for any missing test modules via {MirrorTestConfigFile.__name__}
 
 Consider using the proper command to create test skeletons for any missing test modules:
-    '{snake_to_kebab_case(pyrig.__name__)} {snake_to_kebab_case(mktests.__name__)}'
+    '{pyrig_project_name()} {snake_to_kebab_case(mktests.__name__)}'
 
 Please verify the changes at the following paths:
 {make_summary_error_msg(sc().path() for sc in incorrect_subclasses)}

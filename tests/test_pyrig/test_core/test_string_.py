@@ -4,7 +4,6 @@ import re
 from pathlib import Path
 from types import ModuleType
 
-import pyrig
 from pyrig.core.string_ import (
     kebab_to_snake_case,
     make_linked_badge_markdown,
@@ -12,6 +11,7 @@ from pyrig.core.string_ import (
     make_summary_error_msg,
     package_req_name_split_pattern,
     project_name_from_cwd,
+    pyrig_project_name,
     re_search_excluding_docstrings,
     read_text_utf8,
     snake_to_kebab_case,
@@ -43,7 +43,7 @@ def test_snake_to_kebab_case() -> None:
 def test_project_name_from_cwd() -> None:
     """Test function."""
     project_name = project_name_from_cwd()
-    expected_project_name = pyrig.__name__
+    expected_project_name = pyrig_project_name()
     assert project_name == expected_project_name, (
         f"Expected {expected_project_name}, got {project_name}"
     )
@@ -195,3 +195,8 @@ def test_write_text_utf8(tmp_path: Path) -> None:
 
     result = file_path.read_text(encoding="utf-8")
     assert result == text
+
+
+def test_pyrig_project_name() -> None:
+    """Test function."""
+    assert pyrig_project_name() == "pyrig"

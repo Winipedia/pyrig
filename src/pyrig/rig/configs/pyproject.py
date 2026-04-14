@@ -23,6 +23,7 @@ from pyrig.core.resource import (
 )
 from pyrig.core.string_ import (
     package_req_name_split_pattern,
+    pyrig_project_name,
 )
 from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig import resources
@@ -77,6 +78,8 @@ class PyprojectConfigFile(TomlConfigFile):
                 "version": self.project_version(),
                 "description": self.project_description(),
                 "readme": PackageManager.I.readme_path().as_posix(),
+                "requires-python": self.requires_python(),
+                "dependencies": self.make_dependency_versions(self.dependencies()),
                 "authors": [
                     {"name": repo_owner},
                 ],
@@ -85,7 +88,6 @@ class PyprojectConfigFile(TomlConfigFile):
                 ],
                 "license": self.detect_project_license(),
                 "license-files": [LicenseConfigFile.I.path().as_posix()],
-                "requires-python": self.requires_python(),
                 "classifiers": [
                     *self.make_python_version_classifiers(),
                 ],
@@ -102,7 +104,6 @@ class PyprojectConfigFile(TomlConfigFile):
                         f"{cli.__name__}:{cli.main.__name__}"
                     )
                 },
-                "dependencies": self.make_dependency_versions(self.dependencies()),
             },
             "dependency-groups": {
                 "dev": self.make_dependency_versions(
@@ -259,9 +260,11 @@ class PyprojectConfigFile(TomlConfigFile):
         dev_deps: list[str] = self.load().get("dependency-groups", {}).get("dev", [])
         return dev_deps
 
-    def dependencies(self) -> list[str]:
+    def dependencies(self, default: list[str] | None = None) -> list[str]:
         """Get runtime dependencies from pyproject.toml."""
-        deps: list[str] = self.load().get("project", {}).get("dependencies", [])
+        if default is None:
+            default = [pyrig_project_name()]
+        deps: list[str] = self.load().get("project", {}).get("dependencies", default)
         return deps
 
     def latest_possible_python_version(
