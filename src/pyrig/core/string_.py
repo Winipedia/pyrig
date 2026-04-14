@@ -16,6 +16,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+import pyrig
+
 
 def read_text_utf8(path: Path) -> str:
     """Read text from file using UTF-8 encoding.
@@ -260,3 +262,12 @@ def project_name_from_cwd() -> str:
         Current directory name.
     """
     return Path.cwd().name
+
+
+def pyrig_project_name() -> str:
+    """Get pyrig's project name from its package name.
+
+    Returns:
+        Project name derived from pyrig's package name.
+    """
+    return snake_to_kebab_case(pyrig.__name__)

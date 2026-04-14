@@ -11,9 +11,8 @@ See Also:
 
 from pathlib import Path
 
-import pyrig
 from pyrig.core.resource import resource_content
-from pyrig.core.string_ import snake_to_kebab_case
+from pyrig.core.string_ import pyrig_project_name
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -80,7 +79,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         }
 
         needed = [
-            f"# {snake_to_kebab_case(pyrig.__name__)} stuff",
+            f"# {pyrig_project_name()} stuff",
             "__pycache__/",  # bc of python bytecode cache
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov
