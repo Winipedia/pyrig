@@ -18,8 +18,7 @@ Example:
     ...         return {"site_name": "My Project", "theme": {"name": "material"}}
 """
 
-from pyrig.core.types.config_file import ConfigDict
-from pyrig.rig.configs.base.config_file import ConfigT
+from pyrig.core.types.config_file import ConfigDict, ConfigT
 from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 
