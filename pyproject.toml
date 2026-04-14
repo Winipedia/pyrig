@@ -3,11 +3,14 @@ name = "pyrig"
 version = "11.1.20"
 description = "pyrig is a python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintenance"
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "typer>=0.21.1",
+]
 license = "MIT"
 license-files = [
     "LICENSE",
 ]
-requires-python = ">=3.12"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -32,9 +35,6 @@ keywords = [
     "ci-cd",
     "devops",
     "packaging",
-]
-dependencies = [
-    "typer>=0.21.1",
 ]
 
 [[project.authors]]
