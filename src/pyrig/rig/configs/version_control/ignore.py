@@ -13,6 +13,7 @@ from pathlib import Path
 
 import pyrig
 from pyrig.core.resource import resource_content
+from pyrig.core.string_ import snake_to_kebab_case
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -73,14 +74,14 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             Makes HTTP request to GitHub. Uses fallback on failure.
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
-        ignored_config_files = ConfigFile.version_control_ignored_subclasses()
-        ignored_paths = {cf().path().as_posix() for cf in ignored_config_files}
+        ignored_paths = {
+            cf().path().as_posix()
+            for cf in ConfigFile.version_control_ignored_subclasses()
+        }
 
         needed = [
-            *self.standard_ignore_lines(),
-            "",
-            f"# {pyrig.__name__} stuff",
-            *ignored_paths,
+            f"# {snake_to_kebab_case(pyrig.__name__)} stuff",
+            "__pycache__/",  # bc of python bytecode cache
             ".coverage",  # bc of pytest-cov
             "coverage.xml",  # bc of pytest-cov
             ".pytest_cache/",  # bc of pytest cache
@@ -89,12 +90,13 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             ".venv/",  # bc of uv venv
             "dist/",  # bc of uv publish
             "/site/",  # bc of mkdocs
-            "",  # empty line at end of file
+            *ignored_paths,  # ignored config files (e.g. .scratch.py, .env)
         ]
+        standard = self.standard_ignore_lines()
+        standard_set = set(standard)
+        needed = [line for line in needed if line not in standard_set]
 
-        existing = self.load()
-        needed = [p for p in needed if p not in set(existing)]
-        return existing + needed
+        return [*standard, *needed, ""]
 
     def standard_ignore_lines(self) -> list[str]:
         """Fetch GitHub's standard Python gitignore patterns as a list.
