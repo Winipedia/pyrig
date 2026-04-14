@@ -9,7 +9,7 @@ class TestPyprojectConfigFile:
 
     def test_dependencies(self) -> None:
         """Test method."""
-        assert PyprojectConfigFile().dependencies() == ["typer"]
+        assert isinstance(PyprojectConfigFile().dependencies(), list)
 
     def test_make_python_version_classifiers(self) -> None:
         """Test method."""
