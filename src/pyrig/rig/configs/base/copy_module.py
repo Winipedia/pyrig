@@ -22,7 +22,7 @@ from types import ModuleType
 from typing import Self, cast
 
 from pyrig.core.modules.module import (
-    isolated_obj_name,
+    leaf_module_name,
     module_content,
     module_name_replacing_start_module,
 )
@@ -90,7 +90,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Last component of the module's dotted name.
         """
-        return isolated_obj_name(self.copy_module())
+        return leaf_module_name(self.copy_module())
 
     @classmethod
     def generate_subclass(cls, module: ModuleType) -> type[Self]:
@@ -107,7 +107,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         cls_name = (
             make_name_from_obj(
-                isolated_obj_name(module), split_on="_", join_on="", capitalize=True
+                leaf_module_name(module), split_on="_", join_on="", capitalize=True
             )
             + cls.__name__
         )

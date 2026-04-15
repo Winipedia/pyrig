@@ -11,7 +11,6 @@ from PIL import Image
 from pytest_mock import MockFixture
 
 from pyrig.core.modules.imports import import_package_with_dir_fallback
-from pyrig.core.modules.module import make_obj_importpath
 from pyrig.rig.builders.base import pyinstaller
 from pyrig.rig.builders.base.pyinstaller import PyInstallerBuilder
 
@@ -157,7 +156,7 @@ class TestPyInstallerBuilder:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        mock_run = mocker.patch(make_obj_importpath(pyinstaller) + ".run")
+        mock_run = mocker.patch(pyinstaller.__name__ + ".run")
         my_test_pyinstaller_builder().create_artifacts(tmp_path)
         mock_run.assert_called_once()
 

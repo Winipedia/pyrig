@@ -19,9 +19,6 @@ from pyrig.core.modules.module import (
     import_module_with_default,
     import_module_with_file_fallback,
     import_modules,
-    import_obj_from_importpath,
-    isolated_obj_name,
-    make_obj_importpath,
     module_content,
     module_has_docstring,
     module_name_replacing_start_module,
@@ -43,89 +40,6 @@ def test_module_content(tmp_path: Path) -> None:
 
         content = module_content(module)
         assert content == '"""Test module."""\n'
-
-
-def test_make_obj_importpath() -> None:
-    """Test function."""
-
-    # Test with a function
-    def test_func() -> None:
-        pass
-
-    result = make_obj_importpath(test_func)
-    expected = f"{test_func.__module__}.{test_func.__qualname__}"
-    assert result == expected, f"Expected {expected}, got {result}"
-
-    # Test with a class
-    class TestClass:
-        def test_method(self) -> None:
-            pass
-
-    result = make_obj_importpath(TestClass)
-    expected = f"{TestClass.__module__}.{TestClass.__qualname__}"
-    assert result == expected, f"Expected {expected}, got {result}"
-
-    result = make_obj_importpath(TestClass.test_method)
-    expected = f"{TestClass.__module__}.{TestClass.test_method.__qualname__}"
-    assert result == expected, f"Expected {expected}, got {result}"
-
-    # Test with a module
-    result = make_obj_importpath(sys)
-    assert result == "sys", f"Expected 'sys', got {result}"
-
-
-def test_import_obj_from_importpath() -> None:
-    """Test function."""
-    # Test importing a module
-
-    result = import_obj_from_importpath("sys")
-
-    assert result == sys, f"Expected sys module, got {result}"
-    assert hasattr(result, "path"), f"Expected sys module, got {result}"
-
-    # Test importing a function from a module
-    result = import_obj_from_importpath("os.path.join")
-
-    assert result is os.path.join, f"Expected os.path.join function, got {result}"
-
-    # Test importing a class
-    result = import_obj_from_importpath("pathlib.Path")
-
-    assert result is Path, f"Expected pathlib.Path class, got {result}"
-
-    # Test error cases
-    with pytest.raises(ImportError):
-        import_obj_from_importpath("nonexistent.module")
-
-    with pytest.raises(AttributeError):
-        import_obj_from_importpath("sys.nonexistent_attr")
-
-
-def test_isolated_obj_name() -> None:
-    """Test function."""
-    # Test with a module
-    result = isolated_obj_name(sys)
-    assert result == "sys", f"Expected 'sys', got {result}"
-
-    # Test with a nested module
-    result = isolated_obj_name(os.path)
-    # On Windows, os.path is ntpath; on Unix, it's posixpath
-    expected_names = ["path", "ntpath", "posixpath"]
-    assert result in expected_names, f"Expected one of {expected_names}, got {result}"
-
-    # Test with a class
-    class TestClass:
-        pass
-
-    result = isolated_obj_name(TestClass)
-    assert result == "TestClass", f"Expected 'TestClass', got {result}"
-
-    # Test with a function
-    def test_function() -> None:
-        pass
-
-    result = isolated_obj_name(test_function)
-    assert result == "test_function", f"Expected 'test_function', got {result}"
 
 
 def test_import_module_with_default() -> None:

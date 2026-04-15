@@ -52,7 +52,7 @@ from collections.abc import Callable, Generator, Iterable
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Self, cast, overload
+from typing import Any, Self, cast
 
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.modules.class_ import (
@@ -65,9 +65,6 @@ from pyrig.core.modules.imports import walk_package
 from pyrig.core.modules.inspection import qualname_of_obj, sorted_by_def_line
 from pyrig.core.modules.module import (
     import_module_with_file_fallback,
-    import_obj_from_importpath,
-    isolated_obj_name,
-    make_obj_importpath,
     module_has_docstring,
     reimport_module,
 )
@@ -255,7 +252,13 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Returns:
             Dotted import path (e.g., "tests.test_mypackage.test_mymodule").
         """
-        return self.test_module_name_from_mirror_module(self.mirror_module())
+        return ".".join(
+            [ProjectTester.I.tests_package_name()]
+            + [
+                ProjectTester.I.test_module_prefix() + part
+                for part in self.mirror_module().__name__.split(".")
+            ]
+        )
 
     def test_module_content(self) -> str:
         """Get the current content of the test module as a string.
@@ -264,20 +267,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             The source code of the test module as a single string.
         """
         return self.file_content()
-
-    def test_module_name_from_mirror_module(self, mirror_module: ModuleType) -> str:
-        """Convert source module to its corresponding test module import path.
-
-        Applies test naming conventions: prepends "tests" package and adds
-        appropriate prefixes to each path component.
-
-        Args:
-            mirror_module: Source module to derive test path from.
-
-        Returns:
-            Test module import path (e.g., "tests.test_package.test_mod").
-        """
-        return self.test_obj_importpath_from_obj(mirror_module)
 
     def test_module(self) -> ModuleType:
         """Import and return the test module.
@@ -343,7 +332,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         funcs = sorted_by_def_line(all_functions_from_module(self.mirror_module()))
         test_funcs = all_functions_from_module(self.test_module())
 
-        supposed_test_func_names = (self.test_name_for_obj(f) for f in funcs)
+        supposed_test_func_names = (self.test_func_name(f) for f in funcs)
         actual_test_func_names = {qualname_of_obj(f) for f in test_funcs}
 
         return (f for f in supposed_test_func_names if f not in actual_test_func_names)
@@ -471,11 +460,11 @@ def {test_func_name}() -> None:
         )
 
         supposed_test_class_to_test_methods_names = (
-            (self.test_name_for_obj(c), (self.test_name_for_obj(m) for m in ms))
+            (self.test_cls_name(c), (self.test_func_name(m) for m in ms))
             for c, ms in class_to_methods
         )
         actual_test_class_to_test_methods_names = {
-            isolated_obj_name(tc): {isolated_obj_name(tm) for tm in tms}
+            tc.__name__: {tm.__name__ for tm in tms}  # ty:ignore[unresolved-attribute]
             for tc, tms in test_class_to_test_methods
         }
 
@@ -680,203 +669,37 @@ class {test_class_name}:
         modules = (m for m, is_pkg in walk_package(package) if not is_pkg)
         cls.create_test_modules(modules)
 
-    @overload
-    def obj_from_test_obj(self, test_obj: type) -> type: ...
-
-    @overload
-    def obj_from_test_obj(self, test_obj: Callable[..., Any]) -> Callable[..., Any]: ...
-
-    @overload
-    def obj_from_test_obj(self, test_obj: ModuleType) -> ModuleType: ...
-
-    def obj_from_test_obj(
-        self, test_obj: Callable[..., Any] | type | ModuleType
-    ) -> Callable[..., Any] | type | ModuleType:
-        """Get original object corresponding to test object.
-
-        Dynamically imports the source object by reversing the test naming
-        conventions to reconstruct the original import path.
+    def test_func_name(self, func: Callable[..., Any]) -> str:
+        """Get test function name for a source function.
 
         Args:
-            test_obj: Test object (module, class, or function).
+            func: Source function to get test function name for.
 
         Returns:
-            Corresponding original object (same type as input).
-
-        Raises:
-            ImportError: If source object doesn't exist or can't be imported.
-            AttributeError: If source object path is invalid.
-
-        Example:
-            >>> from tests.test_myapp.test_utils import test_calculate_sum
-            >>> source_func = obj_from_test_obj(test_calculate_sum)
-            >>> source_func.__name__
-            'calculate_sum'
-        """
-        obj_importpath = self.obj_importpath_from_test_obj(test_obj)
-        return import_obj_from_importpath(obj_importpath)
-
-    @overload
-    def test_obj_from_obj(self, obj: type) -> type: ...
-
-    @overload
-    def test_obj_from_obj(self, obj: Callable[..., Any]) -> Callable[..., Any]: ...
-
-    @overload
-    def test_obj_from_obj(self, obj: ModuleType) -> ModuleType: ...
-
-    def test_obj_from_obj(self, obj: Callable[..., Any] | type | ModuleType) -> Any:
-        """Get test object corresponding to original object.
-
-        Dynamically imports the test object by applying test naming conventions
-        to reconstruct the test import path.
-
-        Args:
-            obj: Original object (module, class, or function).
-
-        Returns:
-            Corresponding test object (same type as input).
-
-        Raises:
-            ImportError: If test object doesn't exist or can't be imported.
-            AttributeError: If test object path is invalid.
-
-        Example:
-            >>> from myapp.utils import calculate_sum
-            >>> test_func = test_obj_from_obj(calculate_sum)
-            >>> test_func.__name__
-            'test_calculate_sum'
-        """
-        test_obj_path = self.test_obj_importpath_from_obj(obj)
-        return import_obj_from_importpath(test_obj_path)
-
-    def test_obj_importpath_from_obj(
-        self, obj: Callable[..., Any] | type | ModuleType
-    ) -> str:
-        """Create test import path from original object.
-
-        Converts source object's import path to test naming conventions:
-        prepends "tests" package and adds test prefixes to all components.
-        It assumes classes start with a capital letter and modules with a lowercase.
-
-        Args:
-            obj: Original object (module, class, or function).
-
-        Returns:
-            Test import path (e.g., "tests.test_myapp.test_utils.test_calculate").
-
-        Example:
-            >>> from myapp.utils import calculate_sum
-            >>> test_obj_importpath_from_obj(calculate_sum)
-            'tests.test_myapp.test_utils.test_calculate_sum'
-        """
-        parts = make_obj_importpath(obj).split(".")
-        parts_as_objs = [
-            import_obj_from_importpath(".".join(parts[: i + 1]))
-            for i in range(len(parts))
-        ]
-        test_parts = (
-            self.test_name_for_obj(part_as_obj) for part_as_obj in parts_as_objs
-        )
-        return ".".join((ProjectTester.I.tests_package_name(), *test_parts))
-
-    def obj_importpath_from_test_obj(
-        self,
-        test_obj: Callable[..., Any] | type | ModuleType,
-    ) -> str:
-        """Create original import path from test object.
-
-        Reverses test_obj_importpath_from_obj by removing "tests" prefix
-        and stripping test prefixes from all components.
-
-        Args:
-            test_obj: Test object (module, class, or function).
-
-        Returns:
-            Original import path (e.g., "myapp.utils.calculate").
-
-        Example:
-            >>> from tests.test_myapp.test_utils import test_calculate_sum
-            >>> obj_importpath_from_test_obj(test_calculate_sum)
-            'myapp.utils.calculate_sum'
-        """
-        test_importpath = make_obj_importpath(test_obj)
-        # remove tests prefix
-        test_importpath = test_importpath.removeprefix(
-            ProjectTester.I.tests_package_name() + "."
-        )
-        test_parts = test_importpath.split(".")
-        parts = [
-            self.remove_test_prefix_from_test_name(test_name)
-            for test_name in test_parts
-        ]
-        return ".".join(parts)
-
-    def test_name_for_obj(self, obj: Callable[..., Any] | type | ModuleType) -> str:
-        """Get test name for object based on type.
-
-        Args:
-            obj: Object to get test name for (ModuleType, type, or Callable).
-
-        Returns:
-            Test name with appropriate prefix.
+            Test function name with appropriate prefix.
 
         Example:
             >>> def my_function(): pass
-            >>> test_name_for_obj(my_function)
+            >>> test_func_name(my_function)
             'test_my_function'
         """
-        return self.test_prefix_for_obj(obj) + isolated_obj_name(obj)
+        return self.test_func_prefix() + func.__name__  # ty:ignore[unresolved-attribute]
 
-    def remove_test_prefix_from_test_name(self, test_name: str) -> str:
-        """Remove test prefix from test name.
-
-        Args:
-            test_name: Test name to remove prefix from.
-
-        Returns:
-            Test name without prefix.
-
-        Example:
-            >>> remove_test_prefix_from_test_name("test_my_function")
-            'my_function'
-        """
-        for prefix in self.test_prefixes():
-            if test_name.startswith(prefix):
-                return test_name.removeprefix(prefix)
-        return test_name
-
-    def test_prefix_for_obj(self, obj: Callable[..., Any] | type | ModuleType) -> str:
-        """Get appropriate test prefix for object based on type.
+    def test_cls_name(self, cls: type) -> str:
+        """Get test class name for a source class.
 
         Args:
-            obj: Object to get prefix for (ModuleType, type, or Callable).
+            cls: Source class to get test class name for.
 
         Returns:
-            Test prefix: "test_" for modules/functions, "Test" for classes.
+            Test class name with appropriate prefix.
 
         Example:
             >>> class MyClass: pass
-            >>> test_prefix_for_obj(MyClass)
-            'Test'
+            >>> test_cls_name(MyClass)
+            'TestClass'
         """
-        if isinstance(obj, ModuleType):
-            return ProjectTester.I.test_module_prefix()
-        if isinstance(obj, type):
-            return self.test_class_prefix()
-        return self.test_func_prefix()
-
-    def test_prefixes(self) -> tuple[str, ...]:
-        """Get all test prefixes.
-
-        Returns:
-            Tuple of all test prefixes (function, class, and module).
-        """
-        return (
-            self.test_func_prefix(),
-            self.test_class_prefix(),
-            ProjectTester.I.test_module_prefix(),
-        )
+        return self.test_cls_prefix() + cls.__name__
 
     def test_func_prefix(self) -> str:
         """Get test function prefix.
@@ -886,7 +709,7 @@ class {test_class_name}:
         """
         return "test_"
 
-    def test_class_prefix(self) -> str:
+    def test_cls_prefix(self) -> str:
         """Get test class prefix.
 
         Returns:
