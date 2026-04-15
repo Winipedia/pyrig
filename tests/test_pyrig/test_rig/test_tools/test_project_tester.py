@@ -8,6 +8,10 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
+    def test_test_module_prefix(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.test_module_prefix() == "test_"
+
     def test_is_running_tests(self) -> None:
         """Test method."""
         assert ProjectTester.I.is_running_tests() is True
