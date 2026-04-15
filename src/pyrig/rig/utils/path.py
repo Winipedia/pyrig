@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.core.modules.path import module_name_as_path, package_name_as_path
+from pyrig.core.introspection.paths import module_name_as_path, package_name_as_path
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 

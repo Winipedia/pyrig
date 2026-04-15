@@ -15,8 +15,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-from pyrig.core.modules.path import module_file_path
-from pyrig.core.string_ import read_text_utf8
+from pyrig.core.introspection.paths import module_file_path
+from pyrig.core.strings import read_text_utf8
 
 logger = logging.getLogger(__name__)
 

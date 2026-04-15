@@ -7,10 +7,13 @@ from InquirerPy import inquirer
 import pyrig
 from pyrig import rig
 from pyrig.core.dependency_subclass import DependencySubclass
+from pyrig.core.introspection.classes import (
+    discard_abstract_classes,
+    discard_parent_classes,
+)
+from pyrig.core.introspection.modules import callable_obj_import_path
+from pyrig.core.introspection.packages import discover_subclasses_across_dependents
 from pyrig.core.iterate import combine_generators
-from pyrig.core.modules.class_ import discard_abstract_classes, discard_parent_classes
-from pyrig.core.modules.module import callable_obj_import_path
-from pyrig.core.modules.package import discover_subclasses_across_dependents
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
 
 

@@ -10,7 +10,7 @@ See Also:
 
 from pathlib import Path
 
-from pyrig.core.string_ import read_text_utf8
+from pyrig.core.strings import read_text_utf8
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 
 PULL_REQUEST_TEMPLATE = """<!--

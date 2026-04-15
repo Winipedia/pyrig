@@ -1,7 +1,7 @@
 """Base exception for errors related to DependencySubclass in Pyrig."""
 
 from pyrig.core.exceptions.base.dependency import DependencyError
-from pyrig.core.string_ import pyrig_project_name, snake_to_kebab_case
+from pyrig.core.strings import pyrig_project_name, snake_to_kebab_case
 from pyrig.rig.cli.subcommands import subcls
 
 

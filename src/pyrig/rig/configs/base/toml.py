@@ -23,7 +23,7 @@ from typing import Any
 import tomlkit
 from tomlkit.items import Table
 
-from pyrig.core.string_ import read_text_utf8
+from pyrig.core.strings import read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.dict_ import DictConfigFile
 

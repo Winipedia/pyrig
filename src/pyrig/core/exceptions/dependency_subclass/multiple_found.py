@@ -4,7 +4,7 @@ import json
 from typing import TYPE_CHECKING
 
 from pyrig.core.exceptions.base.dependency_subclass import DependencySubclassError
-from pyrig.core.modules.package import all_deps_depending_on_dep
+from pyrig.core.introspection.packages import all_deps_depending_on_dep
 
 if TYPE_CHECKING:
     from pyrig.core.dependency_subclass import DependencySubclass

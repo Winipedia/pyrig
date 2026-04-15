@@ -34,7 +34,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from pyrig.core.string_ import (
+from pyrig.core.strings import (
     make_name_from_obj,
     read_text_utf8,
     split_on_uppercase,

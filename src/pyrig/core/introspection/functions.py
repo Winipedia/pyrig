@@ -9,7 +9,7 @@ from collections.abc import Callable, Generator
 from types import ModuleType
 from typing import Any
 
-from pyrig.core.modules.inspection import (
+from pyrig.core.introspection.inspection import (
     module_of_obj,
     obj_members,
     unwrapped_obj,

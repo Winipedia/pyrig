@@ -10,9 +10,9 @@ from collections.abc import Callable, Generator, Iterable
 from types import ModuleType
 from typing import Any
 
-from pyrig.core.modules.function import is_func
-from pyrig.core.modules.imports import walk_package
-from pyrig.core.modules.inspection import (
+from pyrig.core.introspection.functions import is_func
+from pyrig.core.introspection.imports import walk_package
+from pyrig.core.introspection.inspection import (
     module_of_obj,
     obj_members,
     unwrapped_obj,

@@ -9,7 +9,7 @@ import json
 
 import requests
 
-from pyrig.core.resource import resource_path
+from pyrig.core.resources import resource_path
 from pyrig.rig import resources
 
 

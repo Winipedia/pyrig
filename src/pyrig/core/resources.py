@@ -9,7 +9,7 @@ from importlib.resources import as_file, files
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.core.string_ import read_text_utf8
+from pyrig.core.strings import read_text_utf8
 
 
 def resource_path(name: str, package: ModuleType) -> Path:

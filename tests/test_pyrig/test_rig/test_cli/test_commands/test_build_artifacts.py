@@ -2,7 +2,7 @@
 
 from pytest_mock import MockFixture
 
-from pyrig.core.modules.module import callable_obj_import_path
+from pyrig.core.introspection.modules import callable_obj_import_path
 from pyrig.rig.builders.base.builder import BuilderConfigFile
 from pyrig.rig.cli.commands.build_artifacts import build_artifacts
 

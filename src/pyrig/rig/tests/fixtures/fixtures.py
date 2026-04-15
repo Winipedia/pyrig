@@ -14,10 +14,10 @@ from typing import Any
 
 import pytest
 
-from pyrig.core.modules.imports import import_package_with_dir_fallback
-from pyrig.core.modules.module import import_module_with_file_fallback
-from pyrig.core.modules.package import make_package_dir
-from pyrig.core.modules.path import path_as_module_name
+from pyrig.core.introspection.imports import import_package_with_dir_fallback
+from pyrig.core.introspection.modules import import_module_with_file_fallback
+from pyrig.core.introspection.packages import make_package_dir
+from pyrig.core.introspection.paths import path_as_module_name
 from pyrig.rig.configs.base.config_file import ConfigData, ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager

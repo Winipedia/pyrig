@@ -9,9 +9,9 @@ from types import ModuleType
 import pytest
 from pytest_mock import MockFixture
 
-from pyrig.core.modules.imports import import_package_with_dir_fallback
-from pyrig.core.modules.module import reimport_module
-from pyrig.core.modules.path import path_as_module_name
+from pyrig.core.introspection.imports import import_package_with_dir_fallback
+from pyrig.core.introspection.modules import reimport_module
+from pyrig.core.introspection.paths import path_as_module_name
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile

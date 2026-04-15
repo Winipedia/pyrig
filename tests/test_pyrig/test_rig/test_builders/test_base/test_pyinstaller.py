@@ -10,7 +10,7 @@ import pytest
 from PIL import Image
 from pytest_mock import MockFixture
 
-from pyrig.core.modules.imports import import_package_with_dir_fallback
+from pyrig.core.introspection.imports import import_package_with_dir_fallback
 from pyrig.rig.builders.base import pyinstaller
 from pyrig.rig.builders.base.pyinstaller import PyInstallerBuilder
 

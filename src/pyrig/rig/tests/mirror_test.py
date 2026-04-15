@@ -54,25 +54,25 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Self, cast
 
-from pyrig.core.iterate import generator_has_items
-from pyrig.core.modules.class_ import (
+from pyrig.core.introspection.classes import (
     all_cls_from_module,
     all_methods_from_cls,
     discard_parent_methods,
 )
-from pyrig.core.modules.function import all_functions_from_module
-from pyrig.core.modules.imports import walk_package
-from pyrig.core.modules.inspection import (
+from pyrig.core.introspection.functions import all_functions_from_module
+from pyrig.core.introspection.imports import walk_package
+from pyrig.core.introspection.inspection import (
     qualname_of_obj,
     sorted_by_def_line,
     unwrapped_obj,
 )
-from pyrig.core.modules.module import (
+from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
     module_has_docstring,
     reimport_module,
 )
-from pyrig.core.string_ import make_name_from_obj
+from pyrig.core.iterate import generator_has_items
+from pyrig.core.strings import make_name_from_obj
 from pyrig.rig import tests
 from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.package import PythonPackageConfigFile

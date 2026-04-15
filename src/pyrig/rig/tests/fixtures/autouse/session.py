@@ -16,12 +16,12 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.core.modules import imports
-from pyrig.core.modules.imports import (
+from pyrig.core.introspection import imports
+from pyrig.core.introspection.imports import (
     walk_package,
 )
 from pyrig.core.requests import internet_is_available
-from pyrig.core.string_ import (
+from pyrig.core.strings import (
     make_summary_error_msg,
     pyrig_project_name,
     snake_to_kebab_case,

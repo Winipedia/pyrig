@@ -14,7 +14,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from pyrig.core.string_ import (
+from pyrig.core.strings import (
     kebab_to_snake_case,
     project_name_from_cwd,
     snake_to_kebab_case,

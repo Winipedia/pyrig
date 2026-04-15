@@ -17,12 +17,12 @@ import pyrig
 from pyrig.core.exceptions.dependency_subclass.multiple_found import (
     MultipleSubclassesFoundError,
 )
-from pyrig.core.modules.class_ import (
+from pyrig.core.introspection.classes import (
     classproperty,
     discard_abstract_classes,
     discard_parent_classes,
 )
-from pyrig.core.modules.package import (
+from pyrig.core.introspection.packages import (
     discover_subclasses_across_dependents,
 )
 
