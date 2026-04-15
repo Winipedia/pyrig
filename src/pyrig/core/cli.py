@@ -22,7 +22,7 @@ Example:
 import sys
 from pathlib import Path
 
-from pyrig.core.string_ import kebab_to_snake_case
+from pyrig.core.strings import kebab_to_snake_case
 
 
 def project_name_from_argv() -> str:

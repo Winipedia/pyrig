@@ -11,8 +11,8 @@ See Also:
 
 from pathlib import Path
 
-from pyrig.core.resource import resource_content
-from pyrig.core.string_ import pyrig_project_name
+from pyrig.core.resources import resource_content
+from pyrig.core.strings import pyrig_project_name
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile

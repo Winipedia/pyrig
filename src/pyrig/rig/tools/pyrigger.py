@@ -20,7 +20,7 @@ from rich.progress import (
     TextColumn,
 )
 
-from pyrig.core.string_ import (
+from pyrig.core.strings import (
     make_name_from_obj,
     pyrig_project_name,
     snake_to_kebab_case,

@@ -8,7 +8,7 @@ from types import ModuleType
 
 import pytest
 
-from pyrig.core.modules.module import reimport_module
+from pyrig.core.introspection.modules import reimport_module
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile

@@ -18,7 +18,7 @@ Example:
     >>> StringDocstringCopy()  # Creates file with only docstring
 """
 
-from pyrig.core.modules.module import module_has_docstring
+from pyrig.core.introspection.modules import module_has_docstring
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 
 

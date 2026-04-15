@@ -20,7 +20,7 @@ Example:
 
 import json
 
-from pyrig.core.string_ import read_text_utf8
+from pyrig.core.strings import read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigData, ConfigDict, ConfigFile
 
 

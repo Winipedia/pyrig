@@ -18,7 +18,7 @@ Example:
 from pathlib import Path
 
 import pyrig
-from pyrig.core.modules.module import leaf_module_name
+from pyrig.core.introspection.modules import leaf_module_name
 from pyrig.rig.configs.base.copy_module_docstr import (
     CopyModuleOnlyDocstringConfigFile,
 )

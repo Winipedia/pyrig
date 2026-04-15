@@ -14,7 +14,7 @@ from types import ModuleType
 import pytest
 from pytest_mock import MockFixture
 
-from pyrig.core.modules.module import (
+from pyrig.core.introspection.modules import (
     callable_obj_import_path,
     import_module_from_file,
     import_module_with_default,

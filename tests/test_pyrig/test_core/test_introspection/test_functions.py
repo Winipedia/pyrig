@@ -2,9 +2,9 @@
 
 import functools
 
-from pyrig.core.modules import function as func_module
-from pyrig.core.modules.class_ import classproperty
-from pyrig.core.modules.function import (
+from pyrig.core.introspection import functions
+from pyrig.core.introspection.classes import classproperty
+from pyrig.core.introspection.functions import (
     all_functions_from_module,
     is_func,
     is_func_or_method,
@@ -152,17 +152,17 @@ def test_all_functions_from_module() -> None:
     """Test function."""
     # Test with pyrigmodules.function module
 
-    functions = tuple(all_functions_from_module(func_module))
+    funcs = tuple(all_functions_from_module(functions))
 
     # Verify we got some functions
-    assert len(functions) > 0, f"Expected at least 1 function, got {len(functions)}"
+    assert len(funcs) > 0, f"Expected at least 1 function, got {len(funcs)}"
 
     # Verify all returned objects are callable
-    for func in functions:
+    for func in funcs:
         assert callable(func), f"Expected function {func} to be callable"
 
     # Verify functions have __name__ attribute
-    function_names = [getattr(func, "__name__", None) for func in functions]
+    function_names = [getattr(func, "__name__", None) for func in funcs]
     expected_functions = [
         is_func_or_method.__name__,
         is_func.__name__,
@@ -170,8 +170,8 @@ def test_all_functions_from_module() -> None:
     ]
 
     expected_count = len(expected_functions)
-    assert len(functions) >= expected_count, (
-        f"Expected {expected_count} functions, got {len(functions)}"
+    assert len(funcs) >= expected_count, (
+        f"Expected {expected_count} functions, got {len(funcs)}"
     )  # >= because there could be more functions added in the future
 
     for expected_name in expected_functions:

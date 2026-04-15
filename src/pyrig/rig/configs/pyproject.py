@@ -18,10 +18,10 @@ from typing import Literal
 import spdx_matcher
 from packaging.version import Version
 
-from pyrig.core.resource import (
+from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.string_ import (
+from pyrig.core.strings import (
     package_req_name_split_pattern,
     pyrig_project_name,
 )

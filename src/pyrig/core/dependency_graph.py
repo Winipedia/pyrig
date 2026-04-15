@@ -11,7 +11,7 @@ import logging
 from collections.abc import Generator
 
 from pyrig.core.graph import DiGraph
-from pyrig.core.string_ import (
+from pyrig.core.strings import (
     kebab_to_snake_case,
     package_req_name_split_pattern,
 )

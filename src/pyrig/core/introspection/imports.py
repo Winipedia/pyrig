@@ -21,7 +21,7 @@ from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.core.modules.module import (
+from pyrig.core.introspection.modules import (
     import_module_with_default,
 )
 

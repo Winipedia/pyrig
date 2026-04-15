@@ -36,12 +36,14 @@ import typer
 
 import pyrig
 from pyrig.core.cli import package_name_from_argv
-from pyrig.core.modules.function import all_functions_from_module
-from pyrig.core.modules.module import (
+from pyrig.core.introspection.functions import all_functions_from_module
+from pyrig.core.introspection.modules import (
     import_module_with_default,
     module_name_replacing_start_module,
 )
-from pyrig.core.modules.package import discover_equivalent_modules_across_dependents
+from pyrig.core.introspection.packages import (
+    discover_equivalent_modules_across_dependents,
+)
 from pyrig.rig.cli import shared_subcommands, subcommands
 
 app = typer.Typer(no_args_is_help=True)

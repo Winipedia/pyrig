@@ -1,6 +1,6 @@
 """Helpers to scaffold new shared pytest fixture."""
 
-from pyrig.core.string_ import kebab_to_snake_case
+from pyrig.core.strings import kebab_to_snake_case
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
 from pyrig.rig.tests.fixtures import fixtures
 

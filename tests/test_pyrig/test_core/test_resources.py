@@ -5,7 +5,7 @@ from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.core.resource import resource_content, resource_path
+from pyrig.core.resources import resource_content, resource_path
 
 
 def test_resource_path(

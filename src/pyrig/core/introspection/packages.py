@@ -17,10 +17,10 @@ import typer
 
 import pyrig
 from pyrig.core.dependency_graph import DependencyGraph
-from pyrig.core.modules.class_ import (
+from pyrig.core.introspection.classes import (
     discover_all_subclasses,
 )
-from pyrig.core.modules.module import (
+from pyrig.core.introspection.modules import (
     import_module_with_default,
     import_modules,
 )

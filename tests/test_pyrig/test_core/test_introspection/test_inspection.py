@@ -7,14 +7,14 @@ import os
 from collections.abc import Callable
 from functools import wraps
 
-from pyrig.core.iterate import generator_length
-from pyrig.core.modules.inspection import (
+from pyrig.core.introspection.inspection import (
     def_line,
     module_of_obj,
     obj_members,
     qualname_of_obj,
     unwrapped_obj,
 )
+from pyrig.core.iterate import generator_length
 
 
 def test_obj_members() -> None:

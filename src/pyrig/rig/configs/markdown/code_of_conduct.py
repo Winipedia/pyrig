@@ -11,10 +11,10 @@ See Also:
 
 from pathlib import Path
 
-from pyrig.core.resource import (
+from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.string_ import read_text_utf8
+from pyrig.core.strings import read_text_utf8
 from pyrig.rig import resources
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController

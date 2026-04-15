@@ -9,7 +9,7 @@ from pathlib import Path
 import pyrig
 from pyrig import core, rig
 from pyrig.core.dependency_subclass import DependencySubclass
-from pyrig.core.modules.package import (
+from pyrig.core.introspection.packages import (
     all_deps_depending_on_dep,
     discover_equivalent_modules_across_dependents,
     discover_subclasses_across_dependents,

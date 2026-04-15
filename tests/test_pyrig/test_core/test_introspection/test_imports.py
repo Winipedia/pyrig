@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 
 import pyrig
-from pyrig.core.modules import imports
-from pyrig.core.modules.imports import (
+from pyrig.core.introspection import imports
+from pyrig.core.introspection.imports import (
     import_package_from_dir,
     import_package_with_dir_fallback,
     iter_modules,

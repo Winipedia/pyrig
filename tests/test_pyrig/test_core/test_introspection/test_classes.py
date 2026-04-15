@@ -9,7 +9,7 @@ from functools import wraps
 from importlib import import_module
 from typing import Any, ClassVar
 
-from pyrig.core.modules.class_ import (
+from pyrig.core.introspection.classes import (
     all_cls_from_module,
     all_methods_from_cls,
     classproperty,
@@ -18,7 +18,7 @@ from pyrig.core.modules.class_ import (
     discard_parent_methods,
     discover_all_subclasses,
 )
-from pyrig.core.modules.inspection import unwrapped_obj
+from pyrig.core.introspection.inspection import unwrapped_obj
 
 
 def decorator(func: Callable[..., Any]) -> Callable[..., Any]:

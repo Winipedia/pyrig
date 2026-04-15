@@ -5,7 +5,7 @@ from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.core.modules.path import (
+from pyrig.core.introspection.paths import (
     module_file_path,
     module_name_as_path,
     package_dir_path,

@@ -12,10 +12,10 @@ See Also:
 from datetime import UTC, datetime
 from pathlib import Path
 
-from pyrig.core.resource import (
+from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.string_ import make_linked_badge_markdown, read_text_utf8
+from pyrig.core.strings import make_linked_badge_markdown, read_text_utf8
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile

@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.core.string_ import (
+from pyrig.core.strings import (
     kebab_to_snake_case,
     make_linked_badge_markdown,
     make_name_from_obj,
