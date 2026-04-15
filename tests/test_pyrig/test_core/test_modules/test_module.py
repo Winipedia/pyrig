@@ -15,10 +15,12 @@ import pytest
 from pytest_mock import MockFixture
 
 from pyrig.core.modules.module import (
+    callable_obj_import_path,
     import_module_from_file,
     import_module_with_default,
     import_module_with_file_fallback,
     import_modules,
+    leaf_module_name,
     module_content,
     module_has_docstring,
     module_name_replacing_start_module,
@@ -126,3 +128,15 @@ def test_reimport_module() -> None:
     mod1 = import_module(subcommands.__name__)
     mod2 = reimport_module(subcommands)
     assert mod1 is not mod2
+
+
+def test_leaf_module_name() -> None:
+    """Test function."""
+    assert leaf_module_name(subcommands) == "subcommands"
+
+
+def test_callable_obj_import_path() -> None:
+    """Test function."""
+    assert (
+        callable_obj_import_path(subcommands.build) == "pyrig.rig.cli.subcommands.build"
+    )

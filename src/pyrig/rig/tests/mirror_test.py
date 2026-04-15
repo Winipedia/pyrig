@@ -62,7 +62,11 @@ from pyrig.core.modules.class_ import (
 )
 from pyrig.core.modules.function import all_functions_from_module
 from pyrig.core.modules.imports import walk_package
-from pyrig.core.modules.inspection import qualname_of_obj, sorted_by_def_line
+from pyrig.core.modules.inspection import (
+    qualname_of_obj,
+    sorted_by_def_line,
+    unwrapped_obj,
+)
 from pyrig.core.modules.module import (
     import_module_with_file_fallback,
     module_has_docstring,
@@ -683,7 +687,7 @@ class {test_class_name}:
             >>> test_func_name(my_function)
             'test_my_function'
         """
-        return self.test_func_prefix() + func.__name__  # ty:ignore[unresolved-attribute]
+        return self.test_func_prefix() + unwrapped_obj(func).__name__
 
     def test_cls_name(self, cls: type) -> str:
         """Get test class name for a source class.
