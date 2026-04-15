@@ -39,9 +39,9 @@ from pyrig.core.string_ import (
     read_text_utf8,
     split_on_uppercase,
 )
-from pyrig.core.types.config_file import ConfigDict
 from pyrig.rig.builders.base.builder import BuilderConfigFile
 from pyrig.rig.cli.subcommands import build, protect_repo
+from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.container_engine import (

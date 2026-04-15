@@ -11,7 +11,7 @@ See Also:
 from pathlib import Path
 
 from pyrig.core.string_ import read_text_utf8
-from pyrig.core.types.config_file import ConfigDict
+from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 
 
