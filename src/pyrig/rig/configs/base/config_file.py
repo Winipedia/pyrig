@@ -133,7 +133,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
 
     def __str__(self) -> str:
         """String representation showing the config file path."""
-        return f"{super().__str__()} at {self.path()}"
+        return f"{super().__str__()} ({self.path()})"
 
     @abstractmethod
     def parent_path(self) -> Path:
