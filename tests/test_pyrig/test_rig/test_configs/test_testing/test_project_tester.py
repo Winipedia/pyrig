@@ -1,28 +1,28 @@
 """module."""
 
-from collections.abc import Callable
-
-import pytest
+from pathlib import Path
 
 from pyrig.rig.configs.testing.project_tester import ProjectTesterConfigFile
-
-
-@pytest.fixture
-def my_test_conftest_config_file(
-    config_file_factory: Callable[
-        [type[ProjectTesterConfigFile]], type[ProjectTesterConfigFile]
-    ],
-) -> type[ProjectTesterConfigFile]:
-    """Create a test conftest config file class with tmp_path."""
-
-    class MyTestProjectTesterConfigFile(config_file_factory(ProjectTesterConfigFile)):  # ty: ignore[unsupported-base]
-        """Test conftest config file with tmp_path override."""
-
-    return MyTestProjectTesterConfigFile
+from pyrig.rig.tests import conftest
 
 
 class TestProjectTesterConfigFile:
     """Test class."""
+
+    def test_parent_path(self) -> None:
+        """Test method."""
+        assert ProjectTesterConfigFile.I.parent_path() == Path("tests")
+
+    def test_copy_module(self) -> None:
+        """Test method."""
+        assert ProjectTesterConfigFile.I.copy_module() is conftest
+
+    def test_plugin_definition(self) -> None:
+        """Test method."""
+        assert (
+            ProjectTesterConfigFile.I.plugin_definition()
+            == f'pytest_plugins = ["{conftest.__name__}"]'
+        )
 
     def test_stem(self) -> None:
         """Test method."""
@@ -32,12 +32,8 @@ class TestProjectTesterConfigFile:
         """Test method."""
         assert ProjectTesterConfigFile.I.is_correct()
 
-    def test_lines(
-        self, my_test_conftest_config_file: type[ProjectTesterConfigFile]
-    ) -> None:
+    def test_lines(self) -> None:
         """Test method."""
-        lines = my_test_conftest_config_file().lines()
+        lines = ProjectTesterConfigFile.I.lines()
         content_str = "\n".join(lines)
-        assert "pytest_plugins" in content_str, (
-            "Expected 'pytest_plugins' in conftest content"
-        )
+        assert ProjectTesterConfigFile.I.plugin_definition() in content_str
