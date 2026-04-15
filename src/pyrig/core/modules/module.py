@@ -15,15 +15,35 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-from pyrig.core.modules.inspection import (
-    module_of_obj,
-    qualname_of_obj,
-    unwrapped_obj,
-)
 from pyrig.core.modules.path import module_file_path
 from pyrig.core.string_ import read_text_utf8
 
 logger = logging.getLogger(__name__)
+
+
+def leaf_module_name(module: ModuleType) -> str:
+    """Get the leaf name of a module (the last part of its dotted name).
+
+    Args:
+        module: Module to get the leaf name from.
+
+    Returns:
+        The leaf name of the module.
+    """
+    return module.__name__.split(".")[-1]
+
+
+def callable_obj_import_path(obj: Callable[..., Any]) -> str:
+    """Get the fully qualified import path for a callable object.
+
+    Args:
+        obj: Callable object (function, method, class, etc.) to get the import path for.
+
+    Returns:
+        The fully qualified import path for the object
+        (e.g., "package.module.ClassName.method").
+    """
+    return f"{obj.__module__}.{obj.__qualname__}"  # ty:ignore[unresolved-attribute]
 
 
 def module_content(module: ModuleType) -> str:
@@ -100,94 +120,6 @@ def import_module_from_file(path: Path, name: str) -> ModuleType:
     spec.loader.exec_module(module)
     sys.modules[name] = module
     return module
-
-
-def make_obj_importpath(obj: Callable[..., Any] | type | ModuleType) -> str:
-    """Create a fully qualified import path string for an object.
-
-    Constructs a dotted path that can be used with ``import_obj_from_importpath``
-    to re-import the object. For modules, returns the module name directly.
-    For classes and functions, combines the module name with the qualified name.
-
-    Args:
-        obj: Module, class, or function to create an import path for.
-
-    Returns:
-        Fully qualified import path (e.g., ``"package.module.ClassName"`` or
-        ``"package.module.func_name"``).
-
-    Example:
-        >>> make_obj_importpath(Path)
-        'pathlib.Path'
-    """
-    if isinstance(obj, ModuleType):
-        return obj.__name__
-    module: str | None = module_of_obj(obj).__name__
-    obj_name = qualname_of_obj(obj)
-    if not module:
-        return obj_name
-    return module + "." + obj_name
-
-
-def import_obj_from_importpath(
-    importpath: str,
-) -> Callable[..., Any] | type | ModuleType:
-    """Import an object from its fully qualified import path.
-
-    Inverse of ``make_obj_importpath``. First attempts to import the path as a
-    module. If that fails with ``ImportError`` and the path contains dots, splits
-    off the last component and imports it as an attribute of the parent module.
-
-    Args:
-        importpath: Fully qualified import path (e.g., ``"package.module.MyClass"``).
-
-    Returns:
-        The imported module, class, or function.
-
-    Raises:
-        ImportError: If the module portion cannot be imported.
-        AttributeError: If the object is not found in the module.
-
-    Example:
-        >>> cls = import_obj_from_importpath("pathlib.Path")
-        >>> cls is Path
-        True
-    """
-    try:
-        return import_module(importpath)
-    except ImportError:
-        # might be a class or function
-        if "." not in importpath:
-            raise
-        module_name, obj_name = importpath.rsplit(".", 1)
-        module = import_module(module_name)
-        obj: Callable[..., Any] | type = getattr(module, obj_name)
-        return obj
-
-
-def isolated_obj_name(obj: Callable[..., Any] | type | ModuleType) -> str:
-    """Extract the bare name of an object without its module or class prefix.
-
-    For modules, returns the last component of the dotted name. For classes,
-    returns ``__name__``. For functions (including nested or methods), returns
-    the last component of ``__qualname__``.
-
-    Args:
-        obj: Module, class, or function (may be wrapped by decorators).
-
-    Returns:
-        The bare object name (e.g., ``"MyClass"`` not ``"package.module.MyClass"``).
-
-    Example:
-        >>> isolated_obj_name(Path)
-        'Path'
-    """
-    obj = unwrapped_obj(obj)
-    if isinstance(obj, ModuleType):
-        return obj.__name__.split(".")[-1]
-    if isinstance(obj, type):
-        return obj.__name__
-    return qualname_of_obj(obj).split(".")[-1]
 
 
 def import_module_with_default(

@@ -48,7 +48,6 @@ def my_test_mirror_test_config_file(
         module = create_module(MIRROR_MODULE_PATH)
         # create package for each parent dir of the module
         # needs to be imported bc import_module needs to work with them
-        # specifically for the import_obj_from_importpath
         for parent in MIRROR_MODULE_PATH.parents:
             if parent == Path():
                 break
@@ -181,82 +180,6 @@ class TestMirrorTestConfigFile:
             assert "def test_mirror_method" in content
             assert "def test_mirror_function" in content
 
-    def test_obj_from_test_obj(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_mirror_test_config_file().obj_from_test_obj(
-            TestMirrorTestConfigFile
-        )
-        assert result.__name__ == MirrorTestConfigFile.__name__
-
-    def test_test_obj_from_obj(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_mirror_test_config_file().test_obj_from_obj(
-            MirrorTestConfigFile
-        )
-        assert result.__name__ == TestMirrorTestConfigFile.__name__
-
-    def test_test_obj_importpath_from_obj(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_mirror_test_config_file().test_obj_importpath_from_obj(
-            MirrorTestConfigFile
-        )
-        expected = "tests.test_pyrig.test_rig.test_tests.test_mirror_test.TestMirrorTestConfigFile"  # noqa: E501
-        assert result == expected
-
-    def test_obj_importpath_from_test_obj(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_mirror_test_config_file().obj_importpath_from_test_obj(
-            TestMirrorTestConfigFile
-        )
-        assert result == "pyrig.rig.tests.mirror_test.MirrorTestConfigFile"
-
-    def test_test_name_for_obj(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_mirror_test_config_file().test_name_for_obj(
-            MirrorTestConfigFile
-        )
-        assert result == "TestMirrorTestConfigFile"
-
-    def test_remove_test_prefix_from_test_name(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        test_name = "test_mirror_method"
-        obj_name = my_test_mirror_test_config_file().remove_test_prefix_from_test_name(
-            test_name
-        )
-        assert obj_name == "mirror_method"
-
-    def test_test_prefix_for_obj(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_mirror_test_config_file().test_prefix_for_obj(
-            my_test_mirror_test_config_file().test_prefix_for_obj
-        )
-        assert result == "test_"
-        result = my_test_mirror_test_config_file().test_prefix_for_obj(
-            MirrorTestConfigFile
-        )
-        assert result == "Test"
-
-    def test_test_prefixes(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_mirror_test_config_file().test_prefixes()
-        assert result == ("test_", "Test", "test_")
-
     def test_test_func_prefix(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
@@ -264,11 +187,11 @@ class TestMirrorTestConfigFile:
         result = my_test_mirror_test_config_file().test_func_prefix()
         assert result == "test_"
 
-    def test_test_class_prefix(
+    def test_test_cls_prefix(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_mirror_test_config_file().test_class_prefix()
+        result = my_test_mirror_test_config_file().test_cls_prefix()
         assert result == "Test"
 
     def test_merge_configs(
@@ -360,17 +283,6 @@ class TestMirrorTestConfigFile:
     ) -> None:
         """Test method."""
         test_module_name = my_test_mirror_test_config_file().test_module_name()
-        assert test_module_name == TESTS_MIRROR_MODULE_NAME
-
-    def test_test_module_name_from_mirror_module(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        test_module_name = (
-            my_test_mirror_test_config_file().test_module_name_from_mirror_module(
-                my_test_mirror_test_config_file().mirror_module()
-            )
-        )
         assert test_module_name == TESTS_MIRROR_MODULE_NAME
 
     def test_test_module(

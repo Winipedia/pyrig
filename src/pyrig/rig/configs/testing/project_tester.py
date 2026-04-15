@@ -8,7 +8,6 @@ See Also:
     pytest conftest: https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py
 """
 
-from pyrig.core.modules.module import make_obj_importpath
 from pyrig.rig.configs.base.python_test import PythonTestConfigFile
 from pyrig.rig.tests import conftest
 
@@ -51,7 +50,7 @@ class ProjectTesterConfigFile(PythonTestConfigFile):
         return [
             '"""Pytest configuration for tests."""',
             "",
-            f'pytest_plugins = ["{make_obj_importpath(conftest)}"]',
+            f'pytest_plugins = ["{conftest.__name__}"]',
             "",
         ]
 
@@ -65,6 +64,5 @@ class ProjectTesterConfigFile(PythonTestConfigFile):
             Reads file from disk to check content.
         """
         return super().is_correct() or (
-            f'pytest_plugins = ["{make_obj_importpath(conftest)}"]'
-            in self.file_content()
+            f'pytest_plugins = ["{conftest.__name__}"]' in self.file_content()
         )

@@ -18,7 +18,7 @@ Example:
 from pathlib import Path
 
 import pyrig
-from pyrig.core.modules.module import isolated_obj_name
+from pyrig.core.modules.module import leaf_module_name
 from pyrig.rig.configs.base.copy_module_docstr import (
     CopyModuleOnlyDocstringConfigFile,
 )
@@ -58,7 +58,7 @@ class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
         # this path will be parent of the init file
         copy_module = self.copy_module()
         dir_name = (
-            isolated_obj_name(copy_module)
+            leaf_module_name(copy_module)
             if copy_module is not pyrig
             else PackageManager.I.package_name()
         )

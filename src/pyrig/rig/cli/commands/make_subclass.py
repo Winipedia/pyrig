@@ -7,7 +7,9 @@ from InquirerPy import inquirer
 import pyrig
 from pyrig import rig
 from pyrig.core.dependency_subclass import DependencySubclass
-from pyrig.core.modules.class_ import discard_parent_classes
+from pyrig.core.iterate import combine_generators
+from pyrig.core.modules.class_ import discard_abstract_classes, discard_parent_classes
+from pyrig.core.modules.module import callable_obj_import_path
 from pyrig.core.modules.package import discover_subclasses_across_dependents
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
 
@@ -26,9 +28,13 @@ def make_subclass(import_path: str | None) -> None:
             is selected interactively.
     """
     if import_path is None:
-        import_path = choose_subclass()
+        subclass = choose_subclass()
+    else:
+        module_name, cls_name = import_path.rsplit(".", 1)
+        module = import_module(module_name)
+        subclass: type[DependencySubclass] = getattr(module, cls_name)
 
-    module_name, class_name = import_path.rsplit(".", 1)
+    module_name, class_name = subclass.__module__, subclass.__name__
     module = import_module(module_name)
 
     config_file = CopyModuleOnlyDocstringConfigFile.generate_subclass(module)()
@@ -46,30 +52,46 @@ class {class_name}(Base{class_name}):
     config_file.dump(config_file.split_lines(content))
 
 
-def choose_subclass() -> str:
+def choose_subclass() -> type[DependencySubclass]:
     """Interactively select a class and return its dotted import path.
 
     Returns:
         Dotted import path in the form ``module.ClassName`` for the selected
         subclass target.
     """
-    subclass_choices = discard_parent_classes(
-        discover_subclasses_across_dependents(
-            DependencySubclass,
-            dep=pyrig,
-            load_package_before=rig,
+    subclass_choices = set(
+        discard_parent_classes(
+            discover_subclasses_across_dependents(
+                DependencySubclass,
+                dep=pyrig,
+                load_package_before=rig,
+            )
         )
     )
 
-    choices = [
+    concrete_subclass_choices = set(discard_abstract_classes(subclass_choices))
+    abstract_subclass_choices = subclass_choices - concrete_subclass_choices
+
+    concrete_choices = (
         {
-            "name": f"{cls_name} ({module_name})",
-            "value": f"{module_name}.{cls_name}",
+            "name": str(cls()),
+            "value": cls,
         }
-        for cls_name, module_name in (
-            (cls.__name__, cls.__module__) for cls in subclass_choices
-        )
-    ]
+        for cls in concrete_subclass_choices
+    )
+
+    abstract_choices = (
+        {
+            "name": f"{cls.__module__}.{cls.__name__}",
+            "value": cls,
+        }
+        for cls in abstract_subclass_choices
+    )
+
+    choices = sorted(
+        combine_generators(concrete_choices, abstract_choices),
+        key=lambda c: callable_obj_import_path(c["value"]),
+    )
 
     return inquirer.fuzzy(
         message="Select a class to subclass:",
