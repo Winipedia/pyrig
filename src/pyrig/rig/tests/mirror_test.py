@@ -39,7 +39,7 @@ Example:
     Batch process multiple modules::
 
         modules = [myproject.core, myproject.utils, myproject.api]
-        MirrorTestConfigFile.I.create_test_modules(modules)
+        MirrorTestConfigFile.L.create_test_modules(modules)
 
 See Also:
     pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
@@ -47,6 +47,7 @@ See Also:
 """
 
 import logging
+from abc import abstractmethod
 from collections.abc import Callable, Generator, Iterable
 from importlib import import_module
 from pathlib import Path
@@ -114,7 +115,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
         Dynamic subclass creation::
 
-            subclass = MirrorTestConfigFile.I.generate_subclass(my_module)
+            subclass = MirrorTestConfigFile.L.generate_subclass(my_module)
             subclass()  # Triggers test file creation
 
     See Also:
@@ -122,20 +123,17 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         pyrig.rig.cli.commands.make_tests.make_test_skeletons: CLI integration
     """
 
+    @abstractmethod
     def mirror_module(self) -> ModuleType:
         """Return the source module to mirror with tests.
 
         This abstract method must be implemented by subclasses to specify which
         module's structure should be analyzed and mirrored in the test file.
-        It is not implemented as an abstract method to allow the .I property
-        to work on the base class for dynamic subclass creation.
 
         Returns:
             The source module whose functions, classes, and methods will have
             corresponding test skeletons generated.
         """
-        msg = f"Subclasses must implement '{self.mirror_module.__name__}'"
-        raise NotImplementedError(msg)
 
     def _dump(self, config: ConfigList) -> None:
         """Forcing reload after dump.
@@ -554,8 +552,9 @@ class {test_class_name}:
         raise {NotImplementedError.__name__}
 '''
 
+    @classmethod
     def generate_subclasses(
-        self, modules: Iterable[ModuleType]
+        cls, modules: Iterable[ModuleType]
     ) -> Generator[type[Self], None, None]:
         """Create config subclasses for multiple modules.
 
@@ -573,9 +572,10 @@ class {test_class_name}:
             generate_subclass: Creates individual subclasses
             validate_subclasses: Orders by priority and validates
         """
-        return (self.generate_subclass(m) for m in modules)
+        return (cls.generate_subclass(m) for m in modules)
 
-    def generate_subclass(self, module: ModuleType) -> type[Self]:
+    @classmethod
+    def generate_subclass(cls, module: ModuleType) -> type[Self]:
         """Dynamically create a config subclass for a specific source module.
 
         Creates a new class at runtime that:
@@ -596,21 +596,15 @@ class {test_class_name}:
             Dynamic subclass creation::
 
                 import myproject.utils
-                subclass = MirrorTestConfigFile.I.generate_subclass(
+                subclass = MirrorTestConfigFile.L.generate_subclass(
                     myproject.utils
                 )
                 # subclass.__name__ == "TestUtilsMirrorTestConfigFile"
                 subclass()  # Creates tests/test_myproject/test_utils.py
         """
-        test_module_name = self.test_module_name_from_mirror_module(module).split(".")[
-            -1
-        ]
-
         test_cls_name = (
-            make_name_from_obj(
-                test_module_name, split_on="_", join_on="", capitalize=True
-            )
-            + self.__class__.__name__
+            make_name_from_obj(obj=module, split_on="_", join_on="", capitalize=True)
+            + cls.__name__
         )
 
         def mirror_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
@@ -618,12 +612,13 @@ class {test_class_name}:
 
         subclass = type(
             test_cls_name,
-            (self.__class__,),
-            {self.mirror_module.__name__: mirror_module},
+            (cls,),
+            {cls.mirror_module.__name__: mirror_module},
         )
         return cast("type[Self]", subclass)
 
-    def create_test_modules(self, modules: Iterable[ModuleType]) -> None:
+    @classmethod
+    def create_test_modules(cls, modules: Iterable[ModuleType]) -> None:
         """Generate test files for multiple source modules at once.
 
         High-level convenience method that orchestrates the complete test
@@ -639,16 +634,17 @@ class {test_class_name}:
             Generate tests for an entire package::
 
                 from myproject import core, utils, api
-                MirrorTestConfigFile.I.create_test_modules([core, utils, api])
+                MirrorTestConfigFile.L.create_test_modules([core, utils, api])
 
         See Also:
             generate_subclasses: Creates and orders subclasses
             validate_subclasses: Inherited method that instantiates config subclasses
         """
-        subclasses = self.generate_subclasses(modules)
-        self.validate_subclasses(subclasses)
+        subclasses = cls.generate_subclasses(modules)
+        cls.validate_subclasses(subclasses)
 
-    def create_all_test_modules(self) -> None:
+    @classmethod
+    def create_all_test_modules(cls) -> None:
         """Generate test files for all modules in the projects source package.
 
         Convenience method that retrieves all modules from the projects source package
@@ -658,12 +654,13 @@ class {test_class_name}:
         Example:
             Generate tests for all modules in the source package::
 
-                MirrorTestConfigFile.I.create_all_test_modules()
+                MirrorTestConfigFile.L.create_all_test_modules()
         """
         src_package = import_module(PackageManager.I.package_name())
-        self.create_test_modules_for_package(src_package)
+        cls.create_test_modules_for_package(src_package)
 
-    def create_test_modules_for_package(self, package: ModuleType) -> None:
+    @classmethod
+    def create_test_modules_for_package(cls, package: ModuleType) -> None:
         """Generate test files for all modules in a specific source package.
 
         Retrieves all modules from the specified package and creates test files
@@ -677,11 +674,11 @@ class {test_class_name}:
             Generate tests for all modules in a specific package::
 
                 import myproject.core
-                MirrorTestConfigFile.I.create_test_modules_for_package(myproject.core)
+                MirrorTestConfigFile.L.create_test_modules_for_package(myproject.core)
         """
         logger.debug("Creating tests for package: %s", package.__name__)
         modules = (m for m, is_pkg in walk_package(package) if not is_pkg)
-        self.create_test_modules(modules)
+        cls.create_test_modules(modules)
 
     @overload
     def obj_from_test_obj(self, test_obj: type) -> type: ...
@@ -864,7 +861,7 @@ class {test_class_name}:
             'Test'
         """
         if isinstance(obj, ModuleType):
-            return self.test_module_prefix()
+            return ProjectTester.I.test_module_prefix()
         if isinstance(obj, type):
             return self.test_class_prefix()
         return self.test_func_prefix()
@@ -878,7 +875,7 @@ class {test_class_name}:
         return (
             self.test_func_prefix(),
             self.test_class_prefix(),
-            self.test_module_prefix(),
+            ProjectTester.I.test_module_prefix(),
         )
 
     def test_func_prefix(self) -> str:
@@ -896,14 +893,6 @@ class {test_class_name}:
             The ``"Test"`` prefix string.
         """
         return "Test"
-
-    def test_module_prefix(self) -> str:
-        """Get test module prefix.
-
-        Returns:
-            The ``"test_"`` prefix string.
-        """
-        return "test_"
 
     def test_module_docstring(self) -> str:
         """Get default docstring for test modules.

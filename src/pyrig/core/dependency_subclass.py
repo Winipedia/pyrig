@@ -23,7 +23,6 @@ from pyrig.core.exceptions.dependency_subclass.no_found import (
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.modules.class_ import (
     classproperty,
-    discard_abstract_classes,
     discard_parent_classes,
 )
 from pyrig.core.modules.package import (
@@ -103,12 +102,10 @@ class DependencySubclass(ABC):
             Sorted tuple of concrete subclass types.
         """
         return discard_parent_classes(
-            discard_abstract_classes(
-                discover_subclasses_across_dependents(
-                    cls,
-                    dep=cls.base_dependency(),
-                    load_package_before=cls.definition_package(),
-                )
+            discover_subclasses_across_dependents(
+                cls,
+                dep=cls.base_dependency(),
+                load_package_before=cls.definition_package(),
             )
         )
 

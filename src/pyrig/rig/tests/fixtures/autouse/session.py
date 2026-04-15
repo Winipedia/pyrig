@@ -149,17 +149,17 @@ def all_modules_tested() -> None:
     # that there is a corresponding test module
     all_modules = (m for m, is_pkg in walk_package(src_package) if not is_pkg)
 
-    subclasses = MirrorTestConfigFile.I.generate_subclasses(all_modules)
+    subclasses = MirrorTestConfigFile.L.generate_subclasses(all_modules)
     incorrect_subclasses = tuple(sc for sc in subclasses if not sc().is_correct())
 
     if incorrect_subclasses:
-        MirrorTestConfigFile.I.validate_subclasses(incorrect_subclasses)
+        MirrorTestConfigFile.L.validate_subclasses(incorrect_subclasses)
 
     msg = f"""Found incorrect test modules.
 It is enforced that every module in src has a corresponding test module in tests.
 The test module should mirror the structure package under the source directory.
 
-Attempted to auto-generate test skeletons for any missing test modules via {MirrorTestConfigFile.__name__}
+Attempted to auto-generate test skeletons for any missing test modules via {MirrorTestConfigFile.L.__name__}
 
 Consider using the proper command to create test skeletons for any missing test modules:
     '{pyrig_project_name()} {snake_to_kebab_case(mktests.__name__)}'
