@@ -75,6 +75,14 @@ class ProjectTester(Tool):
         """
         return "tests"
 
+    def test_module_prefix(self) -> str:
+        """Get test module filename prefix.
+
+        Returns:
+            The test module filename prefix string (e.g., "test_").
+        """
+        return "test_"
+
     def tests_source_root(self) -> Path:
         """Get tests source root directory path."""
         return Path()

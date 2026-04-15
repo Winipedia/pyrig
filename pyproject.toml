@@ -78,11 +78,6 @@ requires = [
 ]
 build-backend = "uv_build"
 
-[tool.ruff]
-exclude = [
-    ".*",
-]
-
 [tool.ruff.lint]
 select = [
     "ALL",
@@ -107,9 +102,6 @@ convention = "google"
 
 [tool.ty.terminal]
 error-on-warning = true
-
-[tool.rumdl]
-respect_gitignore = true
 
 [tool.pytest.ini_options]
 testpaths = [
