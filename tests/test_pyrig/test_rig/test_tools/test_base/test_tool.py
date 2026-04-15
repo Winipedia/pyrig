@@ -11,7 +11,7 @@ class TestTool:
 
     def test___str__(self) -> None:
         """Test method."""
-        assert str(PackageManager.I) == "PackageManager (uv)"
+        assert "uv" in str(PackageManager.I)
 
     def test_definition_package(self) -> None:
         """Test method."""

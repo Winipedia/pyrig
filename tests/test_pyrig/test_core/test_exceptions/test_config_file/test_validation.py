@@ -1,5 +1,7 @@
 """Test module."""
 
+import re
+
 import pytest
 
 from pyrig.core.exceptions.base.config_file import ConfigFileError
@@ -14,7 +16,7 @@ class TestConfigFileValidationError:
         """Test method."""
         with pytest.raises(
             ConfigFileValidationError,
-            match=f"Validation failed for {PyprojectConfigFile.I}",
+            match=re.escape(f"Validation failed for {PyprojectConfigFile.I}"),
         ):
             raise ConfigFileValidationError(PyprojectConfigFile.I)
 
