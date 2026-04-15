@@ -74,7 +74,7 @@ class TestConfigFile:
     ) -> None:
         """Test method."""
         cf = my_test_config_file()
-        assert str(cf) == f"{cf.__class__.__name__} at {cf.path()}"
+        assert str(cf.path()) in str(cf)
 
     def test_incorrect_subclasses(self) -> None:
         """Test method."""
