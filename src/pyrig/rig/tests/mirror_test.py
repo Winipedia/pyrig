@@ -468,7 +468,7 @@ def {test_func_name}() -> None:
             for c, ms in class_to_methods
         )
         actual_test_class_to_test_methods_names = {
-            tc.__name__: {tm.__name__ for tm in tms}  # ty:ignore[unresolved-attribute]
+            unwrapped_obj(tc).__name__: {unwrapped_obj(tm).__name__ for tm in tms}
             for tc, tms in test_class_to_test_methods
         }
 
