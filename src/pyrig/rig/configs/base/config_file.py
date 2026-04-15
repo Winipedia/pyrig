@@ -79,10 +79,14 @@ import typer
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.core.iterate import merge_nested_structures, nested_structure_is_subset
-from pyrig.core.types.config_file import ConfigData
 from pyrig.rig import configs
 
 logger = logging.getLogger(__name__)
+
+
+type ConfigDict = dict[str, Any]
+type ConfigList = list[Any]
+type ConfigData = ConfigDict | ConfigList
 
 
 class Priority:

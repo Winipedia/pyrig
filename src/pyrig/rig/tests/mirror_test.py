@@ -72,8 +72,8 @@ from pyrig.core.modules.module import (
     reimport_module,
 )
 from pyrig.core.string_ import make_name_from_obj
-from pyrig.core.types.config_file import ConfigList
 from pyrig.rig import tests
+from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester

@@ -12,7 +12,7 @@ See Also:
 
 from pathlib import Path
 
-from pyrig.core.types.config_file import ConfigDict
+from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.markdown.docs.api import ApiConfigFile
 from pyrig.rig.configs.markdown.docs.index import IndexConfigFile

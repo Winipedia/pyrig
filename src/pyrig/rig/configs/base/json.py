@@ -21,8 +21,7 @@ Example:
 import json
 
 from pyrig.core.string_ import read_text_utf8
-from pyrig.core.types.config_file import ConfigData, ConfigDict
-from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigData, ConfigDict, ConfigFile
 
 
 class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
