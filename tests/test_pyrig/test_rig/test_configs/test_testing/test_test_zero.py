@@ -1,10 +1,12 @@
 """module."""
 
 from collections.abc import Callable
+from pathlib import Path
 
 import pytest
 
 from pyrig.rig.configs.testing.test_zero import ZeroTestConfigFile
+from pyrig.rig.tests import test_zero
 
 
 @pytest.fixture
@@ -22,20 +24,10 @@ def my_test_zero_test_config_file(
 class TestZeroTestConfigFile:
     """Test class."""
 
-    def test_stem(
-        self, my_test_zero_test_config_file: type[ZeroTestConfigFile]
-    ) -> None:
+    def test_parent_path(self) -> None:
         """Test method."""
-        filename = my_test_zero_test_config_file().stem()
-        # ZeroTestConfigFile reverses the filename
-        assert filename.startswith("test_"), (
-            f"Expected filename to start with 'test_', got {filename}"
-        )
+        assert ZeroTestConfigFile().parent_path() == Path("tests")
 
-    def test_lines(
-        self, my_test_zero_test_config_file: type[ZeroTestConfigFile]
-    ) -> None:
+    def test_copy_module(self) -> None:
         """Test method."""
-        lines = my_test_zero_test_config_file().lines()
-        content_str = "\n".join(lines)
-        assert "test_zero" in content_str, "Expected 'test_zero' in content"
+        assert ZeroTestConfigFile().copy_module() is test_zero

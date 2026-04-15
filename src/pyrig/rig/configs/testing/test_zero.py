@@ -21,6 +21,9 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
     Generates test_zero.py with empty test_zero() function to ensure pytest runs
     successfully even when no other tests exist. Triggers pyrig's scoped fixtures.
 
+    The class name is inverted so that pytest does not attempt
+    to collect it as a test class when its imported into a real test file.
+
     Examples:
         Generate test_zero.py::
 
