@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 import pytest
 
-from pyrig.rig.configs.testing.zero_test import ZeroTestConfigFile
+from pyrig.rig.configs.testing.test_zero import ZeroTestConfigFile
 
 
 @pytest.fixture
