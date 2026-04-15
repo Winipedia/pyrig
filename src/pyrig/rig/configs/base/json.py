@@ -21,11 +21,11 @@ Example:
 import json
 
 from pyrig.core.string_ import read_text_utf8
-from pyrig.core.types.config_file import ConfigDict, ConfigT
+from pyrig.core.types.config_file import ConfigData, ConfigDict
 from pyrig.rig.configs.base.config_file import ConfigFile
 
 
-class JsonConfigFile(ConfigFile[ConfigT]):
+class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     """Base class for JSON configuration files.
 
     Uses Python's json module with 4-space indentation. Supports both dict and

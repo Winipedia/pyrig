@@ -21,11 +21,11 @@ Example:
 import yaml
 
 from pyrig.core.string_ import read_text_utf8
-from pyrig.core.types.config_file import ConfigT
+from pyrig.core.types.config_file import ConfigData
 from pyrig.rig.configs.base.config_file import ConfigFile
 
 
-class YamlConfigFile(ConfigFile[ConfigT]):
+class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     """Base class for YAML configuration files.
 
     Uses PyYAML's safe methods to prevent code execution. Preserves key order

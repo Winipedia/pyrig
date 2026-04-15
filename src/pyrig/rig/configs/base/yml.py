@@ -18,11 +18,11 @@ Example:
     ...         return {"site_name": "My Project", "theme": {"name": "material"}}
 """
 
-from pyrig.core.types.config_file import ConfigDict, ConfigT
+from pyrig.core.types.config_file import ConfigData, ConfigDict
 from pyrig.rig.configs.base.yaml import YamlConfigFile
 
 
-class YmlConfigFile(YamlConfigFile[ConfigT]):
+class YmlConfigFile[ConfigT: ConfigData](YamlConfigFile[ConfigT]):
     """Base class for .yml files.
 
     Extends YamlConfigFile with "yml" extension. All functionality inherited.
