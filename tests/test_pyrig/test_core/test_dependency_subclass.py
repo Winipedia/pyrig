@@ -65,7 +65,7 @@ class TestDependencySubclass:
 
     def test_L(self) -> None:  # noqa: N802
         """Test method."""
-        assert MirrorTestConfigFile.I.L.L is MirrorTestConfigFile
+        assert MirrorTestConfigFile.L.L is MirrorTestConfigFile
 
         with pytest.raises(MultipleSubclassesFoundError):
             _ = Tool.L
