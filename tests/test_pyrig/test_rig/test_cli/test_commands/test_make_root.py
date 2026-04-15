@@ -10,7 +10,7 @@ from pyrig.rig.configs.base.config_file import ConfigFile
 
 def test_make_project_root(mocker: MockFixture) -> None:
     """Test function."""
-    num_config_file = tuple(ConfigFile.subclasses())
+    num_config_file = tuple(ConfigFile.concrete_subclasses())
     mock = mocker.patch.object(
         ConfigFile, ConfigFile.validate.__name__, return_value=None
     )

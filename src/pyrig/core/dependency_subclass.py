@@ -17,12 +17,9 @@ import pyrig
 from pyrig.core.exceptions.dependency_subclass.multiple_found import (
     MultipleSubclassesFoundError,
 )
-from pyrig.core.exceptions.dependency_subclass.no_found import (
-    NoSubclassesFoundError,
-)
-from pyrig.core.iterate import generator_has_items
 from pyrig.core.modules.class_ import (
     classproperty,
+    discard_abstract_classes,
     discard_parent_classes,
 )
 from pyrig.core.modules.package import (
@@ -39,6 +36,14 @@ class DependencySubclass(ABC):
     where implementations live, and `sorting_key()` to provide a stable sort
     key for ordering discovered subclasses.
     """
+
+    def __str__(self) -> str:
+        """String representation of the class.
+
+        Adds the dotted module name to the class name for clarity
+        regarding the dependency context of the class.
+        """
+        return f"{self.__module__}.{self.__class__.__name__}"
 
     @classmethod
     @abstractmethod
@@ -82,9 +87,8 @@ class DependencySubclass(ABC):
     def subclasses_sorted(cls, *subclasses: type[Self]) -> list[type[Self]]:
         """Discover and return all concrete subclasses, sorted by sorting key.
 
-        Discovers all non-abstract subclasses across dependent packages, scoped to
-        the definition package. Returns them as a tuple sorted by the value
-        returned from `sorting_key()`.
+        Sorts the given subclasses using the `sorting_key` method.
+        This is used to order the results of `subclasses()`.
 
         Returns:
             List of concrete subclass types, sorted by sorting key.
@@ -92,14 +96,19 @@ class DependencySubclass(ABC):
         return sorted(subclasses, key=cls.sorting_key)
 
     @classmethod
+    def concrete_subclasses(cls) -> Generator[type[Self], None, None]:
+        """Discover and return all concrete subclasses."""
+        return discard_abstract_classes(cls.subclasses())
+
+    @classmethod
     def subclasses(cls) -> Generator[type[Self], None, None]:
-        """Discover all non-abstract subclasses.
+        """Discover all subclasses.
 
         Search all dependent packages of the base dependency, scoped to the
         definition package, and return the results sorted by `sorting_key`.
 
         Returns:
-            Sorted tuple of concrete subclass types.
+            Sorted tuple of subclass types.
         """
         return discard_parent_classes(
             discover_subclasses_across_dependents(
@@ -120,11 +129,7 @@ class DependencySubclass(ABC):
         See Also:
             subclasses: Discover all concrete subclasses, sorted by sorting key.
         """
-        has_leaf, subclasses = generator_has_items(cls.subclasses())
-
-        if not has_leaf:
-            raise NoSubclassesFoundError(cls)
-
+        subclasses = cls.subclasses()
         leaf = next(subclasses)
         second = next(subclasses, None)
         if second is not None:

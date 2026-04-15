@@ -17,15 +17,13 @@ class MultipleSubclassesFoundError(DependencySubclassError):
         """Initialize the error with the given subclass type."""
         cls_name = subcls.__name__
         subclasses = subcls.subclasses()
-        subclass_names = json.dumps(
-            [subcls.__name__ for subcls in subclasses], indent=4
-        )
+        subclass_names = json.dumps([str(subcls) for subcls in subclasses], indent=4)
         pyrig_dependecies = ", ".join(
             dep.__name__ for dep in all_deps_depending_on_dep(subcls.base_dependency())
         )
         msg = f"""Multiple subclasses found for {cls_name}.
-Defining multiple concrete final subclasses for {cls_name} is ambiguous.
-This can happen if more than one final subclass of {cls_name} is defined
+Defining multiple leaf subclasses for {cls_name} is ambiguous.
+This can happen if more than one leaf subclass of {cls_name} is defined
 across the dependent packages: {pyrig_dependecies}.
 
 {self.command_recommendation()}
