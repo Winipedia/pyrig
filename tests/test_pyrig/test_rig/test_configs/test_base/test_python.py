@@ -1,7 +1,7 @@
 """module."""
 
 from pyrig.rig.configs.base.python import PythonConfigFile
-from pyrig.rig.configs.testing.zero_test import ZeroTestConfigFile
+from pyrig.rig.configs.testing.test_zero import ZeroTestConfigFile
 
 
 class TestPythonConfigFile:
