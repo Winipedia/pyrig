@@ -133,7 +133,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
 
     def __str__(self) -> str:
         """String representation showing the config file path."""
-        return f"{self.__class__.__name__} at {self.path()}"
+        return f"{super().__str__()} at {self.path()}"
 
     @abstractmethod
     def parent_path(self) -> Path:
@@ -406,7 +406,7 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
             subclasses: Discovery mechanism
             validate_subclasses: validation mechanism
         """
-        cls.validate_subclasses(cls.subclasses())
+        cls.validate_subclasses(cls.concrete_subclasses())
 
     @classmethod
     def version_control_ignored_subclasses(cls) -> Generator[type[Self], None, None]:
@@ -415,7 +415,9 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         Returns:
             Generator of ConfigFile instances whose paths match .gitignore patterns.
         """
-        return (cf for cf in cls.subclasses() if cf().version_control_ignored())
+        return (
+            cf for cf in cls.concrete_subclasses() if cf().version_control_ignored()
+        )
 
     @classmethod
     def incorrect_subclasses(cls) -> Generator[type[Self], None, None]:
@@ -424,4 +426,4 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         Returns:
             Generator of ConfigFile instances whose files exist but are not correct.
         """
-        return (cf for cf in cls.subclasses() if not cf().is_correct())
+        return (cf for cf in cls.concrete_subclasses() if not cf().is_correct())

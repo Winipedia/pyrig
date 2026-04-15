@@ -1,5 +1,7 @@
 """module."""
 
+import inspect
+
 import pytest
 
 import pyrig
@@ -20,6 +22,17 @@ from pyrig.rig.tools.base.tool import Tool
 
 class TestDependencySubclass:
     """Test class."""
+
+    def test___str__(self) -> None:
+        """Test method."""
+        assert isinstance(str(ConfigFile), str)
+
+    def test_concrete_subclasses(self) -> None:
+        """Test method."""
+        result = tuple(ConfigFile.concrete_subclasses())
+        assert len(result) > 0
+        assert all(issubclass(subclass, ConfigFile) for subclass in result)
+        assert all(not inspect.isabstract(subclass) for subclass in result)
 
     def test_subclasses_sorted(self) -> None:
         """Test method."""

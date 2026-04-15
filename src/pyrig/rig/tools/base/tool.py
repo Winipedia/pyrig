@@ -72,7 +72,7 @@ class Tool(DependencySubclass):
 
     def __str__(self) -> str:
         """String representation of the tool."""
-        return f"{self.__class__.__name__} ({self.name()})"
+        return f"{super().__str__()} ({self.name()})"
 
     @abstractmethod
     def name(self) -> str:
@@ -158,7 +158,7 @@ class Tool(DependencySubclass):
     @classmethod
     def grouped_badges(cls) -> defaultdict[str, list[str]]:
         """Get a dict with all badges of tools grouped by their group."""
-        subclasses = cls.subclasses_sorted(*cls.subclasses())
+        subclasses = cls.subclasses_sorted(*cls.concrete_subclasses())
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:
             t = tool()
@@ -183,6 +183,6 @@ class Tool(DependencySubclass):
         """
         return sorted(
             dep
-            for subclass in cls.subclasses()
+            for subclass in cls.concrete_subclasses()
             for dep in subclass().dev_dependencies()
         )

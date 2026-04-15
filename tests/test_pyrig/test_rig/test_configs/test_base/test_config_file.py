@@ -10,6 +10,7 @@ from pytest_mock import MockFixture
 
 from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.rig import configs
+from pyrig.rig.builders.base.builder import BuilderConfigFile
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
@@ -180,14 +181,11 @@ class TestConfigFile:
         my_test_config_file.validate_subclasses([my_test_config_file])
         mock.assert_called_once()
 
-    def test_validate_all_subclasses(self, mocker: MockFixture) -> None:
+    def test_validate_all_subclasses(self) -> None:
         """Test method."""
-        num_subclasses = tuple(ConfigFile.subclasses())
-        mock = mocker.patch.object(
-            ConfigFile, ConfigFile.validate.__name__, return_value=None
-        )
-        ConfigFile.validate_all_subclasses()
-        assert mock.call_count == len(num_subclasses)
+        with pytest.raises(TypeError, match="Can't instantiate abstract class"):
+            _ = BuilderConfigFile.I
+        BuilderConfigFile.L.validate_all_subclasses()
 
     def test_extension_separator(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
