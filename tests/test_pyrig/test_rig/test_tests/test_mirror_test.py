@@ -76,6 +76,26 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
+    def test_test_func_name(
+        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_mirror_test_config_file().test_func_name(
+                MirrorTestConfigFile.L.test_func_name
+            )
+            == self.test_test_func_name.__name__
+        )
+
+    def test_test_cls_name(
+        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_mirror_test_config_file().test_cls_name(MirrorTestConfigFile)
+            == "TestMirrorTestConfigFile"
+        )
+
     def test_test_module_docstring(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
