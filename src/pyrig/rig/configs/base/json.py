@@ -21,7 +21,12 @@ Example:
 import json
 
 from pyrig.core.strings import read_text_utf8
-from pyrig.rig.configs.base.config_file import ConfigData, ConfigDict, ConfigFile
+from pyrig.rig.configs.base.config_file import (
+    ConfigData,
+    ConfigDict,
+    ConfigFile,
+    ConfigList,
+)
 
 
 class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
@@ -84,3 +89,7 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
 
 class DictJsonConfigFile(JsonConfigFile[ConfigDict]):
     """JsonConfigFile subclass for dict-based JSON configurations."""
+
+
+class ListJsonConfigFile(JsonConfigFile[ConfigList]):
+    """JsonConfigFile subclass for list-based JSON configurations."""

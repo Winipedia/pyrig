@@ -19,9 +19,9 @@ class TestBranchProtectionConfigFile:
         """Test method."""
         BranchProtectionConfigFile.I.protect_repo()
 
-    def test_create_or_update_default_branch_ruleset(self) -> None:
+    def test_create_or_update_branch_rulesets(self) -> None:
         """Test method."""
-        BranchProtectionConfigFile.I.create_or_update_default_branch_ruleset()
+        BranchProtectionConfigFile.I.create_or_update_branch_rulesets()
 
     def test_set_secure_repo_settings(self) -> None:
         """Test method."""

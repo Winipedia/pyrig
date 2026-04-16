@@ -58,3 +58,7 @@ class TestJsonConfigFile:
 
 class TestDictJsonConfigFile:
     """Test class."""
+
+
+class TestListJsonConfigFile:
+    """Test class."""
