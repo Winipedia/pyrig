@@ -38,4 +38,6 @@ class TestBranchProtectionConfigFile:
     def test__configs(self) -> None:
         """Test method."""
         configs = BranchProtectionConfigFile.I.configs()
-        assert isinstance(configs, dict)
+        assert isinstance(configs, list)
+        for config in configs:
+            assert isinstance(config, dict)

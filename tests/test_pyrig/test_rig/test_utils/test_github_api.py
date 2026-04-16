@@ -56,7 +56,7 @@ def test_create_or_update_ruleset() -> None:
         token=token,
         owner=owner,
         repo_name=repo_name,
-        **BranchProtectionConfigFile.I.load(),
+        **BranchProtectionConfigFile.I.load()[0],
     )
 
 
