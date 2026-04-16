@@ -24,6 +24,7 @@ from pyrig.core.introspection.modules import (
     import_module_with_default,
     import_modules,
 )
+from pyrig.core.strings import write_text_utf8
 
 logger = logging.getLogger(__name__)
 
@@ -217,7 +218,7 @@ def make_init_file(path: Path, content: str) -> None:
 
     typer.echo(f"Creating: {path}")
 
-    path.write_text(content, encoding="utf-8")
+    write_text_utf8(path, content)
 
 
 def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:

@@ -121,38 +121,6 @@ def make_name_from_obj(
     return join_on.join(parts)
 
 
-def re_search_excluding_docstrings(
-    pattern: str | re.Pattern[str], content: str
-) -> re.Match[str] | None:
-    """Search for regex pattern in Python source code, excluding docstrings.
-
-    Used by pyrig's test fixtures to detect forbidden patterns (e.g., unittest
-    usage) in source code without false positives from documentation strings.
-
-    Args:
-        pattern: Regex pattern (string or compiled Pattern object) to search for.
-        content: Python source code as a string.
-
-    Returns:
-        Match object if pattern is found outside of triple-quoted strings,
-        None if not found or only found within docstrings.
-
-    Warning:
-        Match positions (`span()`, `start()`, `end()`) reference the
-        stripped content where docstrings have been removed, not the original.
-        Do not use these positions for slicing or indexing the original content.
-
-    Note:
-        Removes all triple-quoted strings (both `\"\"\"` and `'''`) using
-        regex heuristics. Cannot distinguish docstrings from triple-quoted
-        string literals used for other purposes. Unclosed triple-quoted strings
-        are not removed, so their content will be searched.
-    """
-    content = re.sub(r'"""[\s\S]*?"""', "", content)
-    content = re.sub(r"'''[\s\S]*?'''", "", content)
-    return re.search(pattern, content)
-
-
 def make_summary_error_msg(
     paths: Iterable[Path],
 ) -> str:

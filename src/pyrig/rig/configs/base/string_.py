@@ -28,7 +28,7 @@ Example:
 from abc import abstractmethod
 from collections.abc import Iterable
 
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import read_text_utf8, write_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.list_ import ListConfigFile
 
@@ -73,7 +73,7 @@ class StringConfigFile(ListConfigFile):
         Note:
             User additions are preserved via `merge_configs()`, not here.
         """
-        self.path().write_text(self.join_lines(config), encoding="utf-8")
+        write_text_utf8(self.path(), self.join_lines(config))
 
     def merge_configs(self) -> ConfigList:
         """Merge expected config lines with existing file content.

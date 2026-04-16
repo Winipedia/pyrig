@@ -34,7 +34,7 @@ def resource_path(name: str, package: ModuleType) -> Path:
     Example:
         >>> from pyrig import resources
         >>> path = resource_path("GITIGNORE", resources)
-        >>> content = path.read_text()
+        # this will be a pathlib Path
 
     Warning:
         For file-based packages (typical development and PyInstaller builds), the
