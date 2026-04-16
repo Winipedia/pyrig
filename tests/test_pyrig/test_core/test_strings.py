@@ -12,12 +12,12 @@ from pyrig.core.strings import (
     package_req_name_split_pattern,
     project_name_from_cwd,
     pyrig_project_name,
-    re_search_excluding_docstrings,
     read_text_utf8,
     snake_to_kebab_case,
     split_on_uppercase,
     write_text_utf8,
 )
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 def test_kebab_to_snake_case() -> None:
@@ -98,43 +98,6 @@ def test_make_name_from_obj() -> None:
     assert result == expected, f"Expected '{expected}', got '{result}'"
 
 
-def test_re_search_excluding_docstrings() -> None:
-    """Test function."""
-    content = '''"""Test module."""
-
-def test_function() -> str:
-    """Test function."""
-    return "test"
-'''
-    # first pattern is: Test module.
-    pattern = r"Test\s+module\."
-    result = re_search_excluding_docstrings(pattern, content)
-    # should not find bc it is in docstring
-    assert result is None, f"Expected no match for '{pattern}', got {result}"
-
-    # second pattern is: Test function.
-    pattern = r"Test\s+function\."
-    result = re_search_excluding_docstrings(pattern, content)
-    # should not find bc it is in docstring
-    assert result is None, f"Expected no match for '{pattern}', got {result}"
-
-    # third pattern is: return "test"
-    pattern = r'return\s+"test"'
-    result = re_search_excluding_docstrings(pattern, content)
-    # should find it
-    assert result is not None, f"Expected match for '{pattern}', got {result}"
-
-    # Unclosed docstring - content inside will NOT be excluded
-    unclosed_content = '''"""This docstring is never closed
-some_code = True
-'''
-    pattern = r"some_code"
-    result = re_search_excluding_docstrings(pattern, unclosed_content)
-    # This WILL match because the unclosed docstring is not stripped
-    # This is documented behavior, not a bug
-    assert result is not None, "Expected match in unclosed docstring (known limitation)"
-
-
 def test_make_summary_error_msg() -> None:
     """Test func."""
     # Test with empty list
@@ -186,6 +149,20 @@ def test_read_text_utf8(tmp_path: Path) -> None:
     result = read_text_utf8(file_path)
     assert result == text
 
+    # assert the function .read_text is not used in this project
+    # to ensure consistent UTF-8 encoding handling
+    source_path = PackageManager.I.source_root()
+    for source_file in source_path.rglob("*.py"):
+        content = source_file.read_text(encoding="utf-8")
+        # skip the file if def read_text_utf8 is defined in it,
+        # since it is the only one supposed to use .read_text internally
+        if "def read_text_utf8(path: Path) -> str:" in content:
+            continue
+        assert ".read_text(" not in content, (
+            f"Direct use of .read_text detected in {source_file}. "
+            "Use read_text_utf8() instead for consistent UTF-8 handling."
+        )
+
 
 def test_write_text_utf8(tmp_path: Path) -> None:
     """Test function."""
@@ -195,6 +172,20 @@ def test_write_text_utf8(tmp_path: Path) -> None:
 
     result = file_path.read_text(encoding="utf-8")
     assert result == text
+
+    # assert the function .write_text is not used in this project
+    # to ensure consistent UTF-8 encoding handling
+    source_path = PackageManager.I.source_root()
+    for source_file in source_path.rglob("*.py"):
+        content = source_file.read_text(encoding="utf-8")
+        # skip the file if def write_text_utf8 is defined in it,
+        # since it is the only one supposed to use .write_text internally
+        if "def write_text_utf8(path: Path, content: str) -> int:" in content:
+            continue
+        assert ".write_text(" not in content, (
+            f"Direct use of .write_text detected in {source_file}. "
+            "Use write_text_utf8() instead for consistent UTF-8 handling."
+        )
 
 
 def test_pyrig_project_name() -> None:

@@ -92,7 +92,7 @@ class BuilderConfigFile(ListConfigFile):
 
                 def create_artifacts(self, temp_artifacts_dir: Path) -> None:
                     output = temp_artifacts_dir / "docs.zip"
-                    output.write_text("documentation")
+                    # and the write to the output file
         """
 
     @classmethod
