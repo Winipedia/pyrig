@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.json import DictJsonConfigFile
+from pyrig.rig.configs.base.json import ListJsonConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.remote_version_control.workflows.health_check import (
@@ -25,7 +25,7 @@ from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
 logger = logging.getLogger(__name__)
 
 
-class BranchProtectionConfigFile(DictJsonConfigFile):
+class BranchProtectionConfigFile(ListJsonConfigFile):
     """Manages branch-protection.json for GitHub rulesets.
 
     Creates JSON config with PR requirements (1 approval, code owner review),
@@ -45,57 +45,64 @@ class BranchProtectionConfigFile(DictJsonConfigFile):
         """Get filename with hyphens (branch-protection)."""
         return "branch-protection"
 
-    def _configs(self) -> ConfigDict:
+    def _configs(self) -> list[ConfigDict]:
         """Get GitHub ruleset config.
 
+        Each item in the list is a ruleset dict with for a branch protection ruleset
+        targeting a branch (e.g. main) with PR review, status check,
+        and protection rules.
+
         Returns:
-            Dict with PR requirements, status checks, and protections.
+            a List of Dicts with PR requirements, status checks, and protections.
         """
         status_check_id = HealthCheckWorkflowConfigFile.I.make_id_from_func(
             HealthCheckWorkflowConfigFile.I.job_health_check
         )
-        bypass_id = 5  # GitHubs standard id for repo owner
-        return {
-            "name": VersionController.I.default_ruleset_name(),
-            "target": "branch",
-            "enforcement": "active",
-            "conditions": {"ref_name": {"exclude": [], "include": ["~DEFAULT_BRANCH"]}},
-            "rules": [
-                {"type": "creation"},
-                {"type": "update"},
-                {"type": "deletion"},
-                {"type": "required_linear_history"},
-                {"type": "required_signatures"},
-                {
-                    "type": "pull_request",
-                    "parameters": {
-                        "required_approving_review_count": 1,
-                        "dismiss_stale_reviews_on_push": True,
-                        "required_reviewers": [],
-                        "require_code_owner_review": True,
-                        "require_last_push_approval": True,
-                        "required_review_thread_resolution": True,
-                        "allowed_merge_methods": ["squash", "rebase"],
-                    },
+        return [
+            {
+                "name": VersionController.I.default_ruleset_name(),
+                "target": "branch",
+                "enforcement": "active",
+                "conditions": {
+                    "ref_name": {"exclude": [], "include": ["~DEFAULT_BRANCH"]}
                 },
-                {
-                    "type": "required_status_checks",
-                    "parameters": {
-                        "strict_required_status_checks_policy": True,
-                        "do_not_enforce_on_create": True,
-                        "required_status_checks": [{"context": status_check_id}],
+                "rules": [
+                    {"type": "creation"},
+                    {"type": "update"},
+                    {"type": "deletion"},
+                    {"type": "required_linear_history"},
+                    {"type": "required_signatures"},
+                    {
+                        "type": "pull_request",
+                        "parameters": {
+                            "required_approving_review_count": 1,
+                            "dismiss_stale_reviews_on_push": True,
+                            "required_reviewers": [],
+                            "require_code_owner_review": True,
+                            "require_last_push_approval": True,
+                            "required_review_thread_resolution": True,
+                            "allowed_merge_methods": ["squash", "rebase"],
+                        },
                     },
-                },
-                {"type": "non_fast_forward"},
-            ],
-            "bypass_actors": [
-                {
-                    "actor_id": bypass_id,
-                    "actor_type": "RepositoryRole",
-                    "bypass_mode": "always",
-                }
-            ],
-        }
+                    {
+                        "type": "required_status_checks",
+                        "parameters": {
+                            "strict_required_status_checks_policy": True,
+                            "do_not_enforce_on_create": True,
+                            "required_status_checks": [{"context": status_check_id}],
+                        },
+                    },
+                    {"type": "non_fast_forward"},
+                ],
+                "bypass_actors": [
+                    {
+                        "actor_id": 5,  # GitHub's standard ID for repository owner
+                        "actor_type": "RepositoryRole",
+                        "bypass_mode": "always",
+                    }
+                ],
+            }
+        ]
 
     def repo_token(self) -> str:
         """Retrieve the GitHub repository token for API authentication.
@@ -138,9 +145,9 @@ class BranchProtectionConfigFile(DictJsonConfigFile):
         Configures repository-level settings and branch protection rulesets.
         """
         self.set_secure_repo_settings()
-        self.create_or_update_default_branch_ruleset()
+        self.create_or_update_branch_rulesets()
 
-    def create_or_update_default_branch_ruleset(self) -> None:
+    def create_or_update_branch_rulesets(self) -> None:
         """Create or update branch protection ruleset for the default branch.
 
         Applies pyrig's standard protection rules to the main branch. Updates
@@ -148,12 +155,14 @@ class BranchProtectionConfigFile(DictJsonConfigFile):
         """
         token = self.repo_token()
         owner, repo_name = VersionController.I.repo_owner_and_name()
-        create_or_update_ruleset(
-            token=token,
-            owner=owner,
-            repo_name=repo_name,
-            **self.load(),
-        )
+        rulesets = self.load()
+        for ruleset in rulesets:
+            create_or_update_ruleset(
+                token=token,
+                owner=owner,
+                repo_name=repo_name,
+                **ruleset,
+            )
 
     def set_secure_repo_settings(self) -> None:
         """Configure repository-level security and merge settings.
