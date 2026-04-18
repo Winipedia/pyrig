@@ -181,10 +181,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             True to enable override mode, allowing lines() to provide
             the complete merged content (existing tests plus new skeletons).
 
-        Note:
-            The "override" refers to the parent class file-writing behavior.
-            The actual content returned by lines() is additive -
-            new skeletons are appended/inserted while preserving existing tests.
         """
         return True
 

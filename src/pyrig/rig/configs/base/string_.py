@@ -84,10 +84,11 @@ class StringConfigFile(ListConfigFile):
         Returns:
             Merged list of lines (expected lines first, then existing lines).
         """
-        expected_lines = self.configs()
-        if not self.should_override_content() and (actual_lines := self.load()):
-            expected_lines = [*expected_lines, *actual_lines]
-        return expected_lines
+        return (
+            self.configs()
+            if self.should_override_content()
+            else super().merge_configs()
+        )
 
     def should_override_content(self) -> bool:
         """Return whether existing content should be replaced entirely.
