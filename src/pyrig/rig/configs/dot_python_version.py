@@ -44,5 +44,5 @@ class DotPythonVersionConfigFile(StringConfigFile):
         return [str(PyprojectConfigFile.I.first_supported_python_version()), ""]
 
     def should_override_content(self) -> bool:
-        """Override content; only one .python-version is needed."""
+        """Override content; only one python-version is needed in the file."""
         return True
