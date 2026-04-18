@@ -219,6 +219,4 @@ __marimo__/
 
 # pyrig stuff
 .rumdl_cache/
-.venv/
-/site/
 .scratch.py

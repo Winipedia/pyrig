@@ -86,9 +86,9 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             ".pytest_cache/",  # bc of pytest cache
             ".ruff_cache/",  # bc of ruff cache
             ".rumdl_cache/",  # bc of rumdl cache
-            ".venv/",  # bc of uv venv
+            ".venv",  # bc of uv venv
             "dist/",  # bc of uv publish
-            "/site/",  # bc of mkdocs
+            "/site",  # bc of mkdocs
             *ignored_paths,  # ignored config files (e.g. .scratch.py, .env)
         ]
         standard = self.standard_ignore_lines()
