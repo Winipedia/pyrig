@@ -12,7 +12,7 @@ from pyrig.core.introspection.packages import make_init_file
 from pyrig.core.iterate import generator_has_items
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.utils.packages import find_namespace_packages
-from pyrig.rig.utils.path import package_name_as_root_path
+from pyrig.rig.utils.paths import package_name_as_root_path
 
 
 def make_init_files() -> None:
