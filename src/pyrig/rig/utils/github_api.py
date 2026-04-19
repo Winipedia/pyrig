@@ -16,11 +16,13 @@ See Also:
 """
 
 import logging
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from github import Github
 from github.Auth import Token
-from github.Repository import Repository
+
+if TYPE_CHECKING:
+    from github.Repository import Repository
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +122,7 @@ def all_rulesets(token: str, owner: str, repo_name: str) -> Any:
     )
 
 
-def repository(token: str, owner: str, repo_name: str) -> Repository:
+def repository(token: str, owner: str, repo_name: str) -> "Repository":
     """Get a PyGithub Repository object for API operations.
 
     Creates an authenticated PyGithub client and retrieves a Repository object.
