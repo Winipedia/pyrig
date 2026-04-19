@@ -16,9 +16,9 @@ from pyrig.core.introspection.classes import (
     discard_abstract_classes,
     discard_parent_classes,
     discard_parent_methods,
-    discover_all_subclasses,
 )
 from pyrig.core.introspection.inspection import unwrapped_obj
+from pyrig.core.introspection.packages import discover_all_subclasses
 
 
 def decorator(func: Callable[..., Any]) -> Callable[..., Any]:

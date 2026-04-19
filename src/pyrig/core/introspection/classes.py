@@ -11,7 +11,6 @@ from types import ModuleType
 from typing import Any
 
 from pyrig.core.introspection.functions import is_func
-from pyrig.core.introspection.imports import walk_package
 from pyrig.core.introspection.inspection import (
     module_of_obj,
     obj_members,
@@ -62,7 +61,7 @@ def all_cls_from_module(module: ModuleType) -> Generator[type]:
         Handles edge cases like Rust-backed classes (e.g., cryptography's AESGCM).
     """
     # necessary for bindings packages like AESGCM from cryptography._rust backend
-    default = ModuleType("default")
+    default = ModuleType(all_cls_from_module.__name__)  # to not match any real module
     return (
         obj
         for _, obj in obj_members(module, inspect.isclass)
@@ -70,70 +69,23 @@ def all_cls_from_module(module: ModuleType) -> Generator[type]:
     )
 
 
-def discover_all_subclasses[T: type](
-    cls: T,
-    load_package_before: ModuleType | None = None,
-) -> set[T]:
-    """Recursively discover all subclasses of a class.
+def discover_all_subclasses[T: type](cls: T) -> set[T]:
+    """Discover all subclasses of a class without loading any packages.
 
-    Python's ``__subclasses__()`` method only returns classes that have been
-    imported into the interpreter. This function addresses that limitation by
-    optionally walking (importing) a package before discovery, ensuring all
-    subclasses defined in that package are visible.
-
-    The discovery process:
-        1. If ``load_package_before`` is provided, recursively imports all
-           modules in that package (triggering class registration)
-        2. Recursively collects all subclasses via ``__subclasses__()``
-        3. If ``load_package_before`` was provided, filters results to only
-           include classes whose ``__module__`` contains the package name
-        4. Optionally removes parent classes (keeping only leaves)
-        5. Optionally removes abstract classes
+    Uses only the existing class registry (``__subclasses__()``) without
+    importing any new modules. This is useful when you want to discover
+    subclasses that are already loaded, without triggering imports.
 
     Args:
         cls: Base class to find subclasses of. The base class itself is
             included in the results.
-        load_package_before: Package to walk (import) before discovery.
-            When provided, all modules in this package are imported to ensure
-            subclasses are registered with Python. Results are then filtered
-            to only include classes from this package.
 
     Returns:
-        Set of discovered subclass types (including ``cls`` itself unless
-        filtered out by other options).
-
-    Example:
-        >>> # Discover all ConfigFile subclasses in pyrig.rig.configs
-        >>> from pyrig.rig.configs.base.base import ConfigFile
-        >>> from pyrig.rig import configs
-        >>> discovered = discover_all_subclasses(
-        ...     ConfigFile,
-        ...     load_package_before=configs,
-        ... )
-
-    Note:
-        The recursive ``__subclasses__()`` traversal finds the complete
-        inheritance tree, not just direct children. This is essential for
-        discovering deeply nested subclasses.
-
-    See Also:
-        `discard_parent_classes`: Logic for filtering to leaf classes only.
-        `pyrig.src.modules.imports.walk_package`: Package traversal that
-            triggers imports.
+        Set of discovered subclass types (including ``cls`` itself).
     """
-    if load_package_before:
-        # loads the classes for .__subclasses__()__ to find
-        _ = tuple(walk_package(load_package_before))
-    subclasses: set[T] = {cls, *cls.__subclasses__()}
+    subclasses = {cls, *cls.__subclasses__()}
     for subclass in cls.__subclasses__():
         subclasses.update(discover_all_subclasses(subclass))
-    if load_package_before is not None:
-        # remove all not in the package
-        subclasses = {
-            subclass
-            for subclass in subclasses
-            if load_package_before.__name__ in subclass.__module__
-        }
     return subclasses
 
 

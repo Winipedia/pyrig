@@ -22,7 +22,7 @@ from pyrig.core.introspection.classes import (
     discard_abstract_classes,
     discard_parent_classes,
 )
-from pyrig.core.introspection.packages import (
+from pyrig.core.introspection.dependencies import (
     discover_subclasses_across_dependents,
 )
 
@@ -113,8 +113,8 @@ class DependencySubclass(ABC):
         return discard_parent_classes(
             discover_subclasses_across_dependents(
                 cls,
-                dep=cls.base_dependency(),
-                load_package_before=cls.definition_package(),
+                dependency=cls.base_dependency(),
+                package=cls.definition_package(),
             )
         )
 

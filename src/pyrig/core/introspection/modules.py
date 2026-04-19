@@ -6,12 +6,14 @@ import paths for objects, and executing functions within modules. Used throughou
 pyrig for dynamic module loading when standard import mechanisms may not suffice.
 """
 
-import importlib.util
 import logging
+import re
 import sys
 from collections.abc import Callable, Generator, Iterable
 from importlib import import_module
+from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
+from pkgutil import iter_modules as pkgutil_iter_modules
 from types import ModuleType
 from typing import Any
 
@@ -109,15 +111,16 @@ def import_module_from_file(path: Path, name: str) -> ModuleType:
         FileNotFoundError: If the file does not exist or cannot be read.
     """
     path = path.resolve()
-    spec = importlib.util.spec_from_file_location(name, location=path)
+    spec = spec_from_file_location(name, location=path)
     if spec is None:
         msg = f"Could not create spec for {path}"
         raise ImportError(msg)
-    module = importlib.util.module_from_spec(spec)
-    if spec.loader is None:
+    module = module_from_spec(spec)
+    loader = spec.loader
+    if loader is None:
         msg = f"Could not create loader for {path}"
         raise ImportError(msg)
-    spec.loader.exec_module(module)
+    loader.exec_module(module)
     sys.modules[name] = module
     return module
 
@@ -211,3 +214,42 @@ def reimport_module(module: ModuleType) -> ModuleType:
     # Remove from cache
     sys.modules.pop(module.__name__)
     return import_module_with_file_fallback(module_path, name=module.__name__)
+
+
+def iter_modules(
+    package: ModuleType,
+    exclude: Iterable[str | re.Pattern[str]] = (),
+) -> Generator[tuple[ModuleType, bool], None, None]:
+    """Extract and import all direct subpackages and modules from a package.
+
+    Uses ``pkgutil.iter_modules`` to discover direct children of the package,
+    then imports each one. Subpackages and modules are returned in separate lists,
+    sorted alphabetically by their fully qualified names.
+
+    Note:
+        This function imports all discovered modules as a side effect. This is
+        intentional — it enables pyrig's class discovery mechanisms to find
+        subclasses defined in those modules (e.g., ``ConfigFile`` implementations).
+
+        Only includes direct children, not recursive descendants. For full
+        package tree traversal, use ``walk_package``.
+
+    Args:
+        package: Package module to extract children from. Must have a
+            ``__path__`` attribute (i.e., must be a package, not a module).
+        exclude: Optional iterable of regex patterns to exclude from results.
+        Patterns are matched against fully qualified module names
+        (e.g., "pyrig.rig.configs.base").
+
+    Returns:
+        A tuple of ``(subpackages, modules)`` where:
+            - ``subpackages``: List of imported subpackage modules, sorted by name
+            - ``modules``: List of imported module objects, sorted by name
+    """
+    for _finder, name, is_package in pkgutil_iter_modules(
+        package.__path__, prefix=package.__name__ + "."
+    ):
+        if any(re.search(pattern, name) for pattern in exclude):
+            continue
+        mod = import_module(name)
+        yield mod, is_package

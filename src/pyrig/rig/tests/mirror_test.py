@@ -60,7 +60,6 @@ from pyrig.core.introspection.classes import (
     discard_parent_methods,
 )
 from pyrig.core.introspection.functions import all_functions_from_module
-from pyrig.core.introspection.imports import walk_package
 from pyrig.core.introspection.inspection import (
     qualname_of_obj,
     sorted_by_def_line,
@@ -71,6 +70,7 @@ from pyrig.core.introspection.modules import (
     module_has_docstring,
     reimport_module,
 )
+from pyrig.core.introspection.packages import walk_package
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.strings import make_name_from_obj
 from pyrig.rig import tests

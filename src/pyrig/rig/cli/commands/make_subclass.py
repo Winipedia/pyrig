@@ -11,8 +11,8 @@ from pyrig.core.introspection.classes import (
     discard_abstract_classes,
     discard_parent_classes,
 )
+from pyrig.core.introspection.dependencies import discover_subclasses_across_dependents
 from pyrig.core.introspection.modules import callable_obj_import_path
-from pyrig.core.introspection.packages import discover_subclasses_across_dependents
 from pyrig.core.iterate import combine_generators
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
 
@@ -66,8 +66,8 @@ def choose_subclass() -> type[DependencySubclass]:
         discard_parent_classes(
             discover_subclasses_across_dependents(
                 DependencySubclass,
-                dep=pyrig,
-                load_package_before=rig,
+                dependency=pyrig,
+                package=rig,
             )
         )
     )
