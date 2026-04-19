@@ -34,6 +34,7 @@ from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
@@ -133,7 +134,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "pytest": {
                     "ini_options": {
                         "testpaths": [f"{tests_package_root}"],
-                        "addopts": f"--cov={PackageManager.I.package_name()} --cov-report=term-missing --cov-fail-under={ProjectTester.I.coverage_threshold()}",  # noqa: E501
+                        "addopts": f"--cov={PackageManager.I.package_name()} --cov-report=term-missing --cov-fail-under={ProjectCoverageTester.I.coverage_threshold()}",  # noqa: E501
                     }
                 },
                 "bandit": {
