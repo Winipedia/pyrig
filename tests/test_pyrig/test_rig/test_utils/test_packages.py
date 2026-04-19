@@ -5,13 +5,10 @@ from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
-import pyrig
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
     find_packages,
-    src_package_is_package,
-    src_package_is_pyrig,
 )
 
 
@@ -55,13 +52,3 @@ def test_find_namespace_packages(
         assert list(find_namespace_packages()) == [
             f"{root_package.__name__}.namespace_package"
         ]
-
-
-def test_src_package_is_pyrig() -> None:
-    """Test function."""
-    assert src_package_is_pyrig()
-
-
-def test_src_package_is_package() -> None:
-    """Test function."""
-    assert src_package_is_package(pyrig)

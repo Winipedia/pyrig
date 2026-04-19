@@ -28,52 +28,15 @@ See Also:
 
 import logging
 from collections.abc import Generator
-from functools import cache
-from types import ModuleType
 
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
-import pyrig
 from pyrig.core.iterate import combine_generators
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 
 logger = logging.getLogger(__name__)
-
-
-def src_package_is_pyrig() -> bool:
-    """Check if the current project is pyrig itself.
-
-    Determines whether the current working directory is the pyrig project by
-    checking if "pyrig" is among the top-level packages.
-
-    Returns:
-        True if "pyrig" is a top-level package in the current directory.
-
-    Examples:
-        Conditional logic for pyrig development:
-
-            >>> if src_package_is_pyrig():
-            ...     print("Running in pyrig development mode")
-
-    Note:
-        Detects the pyrig repository, not pyrig as an installed dependency.
-    """
-    return src_package_is_package(pyrig)
-
-
-@cache
-def src_package_is_package(package: ModuleType) -> bool:
-    """Check if the given module is the src package of the current project.
-
-    Args:
-        package: The module to check.
-
-    Returns:
-        True if the module's name matches the top-level package of the current project.
-    """
-    return (PackageManager.I.source_root() / package.__name__).exists()
 
 
 def find_packages(

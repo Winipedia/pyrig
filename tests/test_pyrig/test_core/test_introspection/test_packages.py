@@ -6,6 +6,8 @@ tests.test_pyrig.test_modules.test_package
 from contextlib import chdir
 from pathlib import Path
 
+import typer
+
 import pyrig
 from pyrig import core, rig
 from pyrig.core.dependency_subclass import DependencySubclass
@@ -16,6 +18,8 @@ from pyrig.core.introspection.packages import (
     make_init_file,
     make_package_dir,
     pyrig_dependency_graph,
+    src_package_is_package,
+    src_package_is_pyrig,
 )
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tools.base.tool import Tool
@@ -73,3 +77,14 @@ def test_make_package_dir(tmp_path: Path) -> None:
             Path.cwd() / "test" / "package" / "sub_package" / "__init__.py"
         ).exists()
         assert not (Path.cwd() / "__init__.py").exists()
+
+
+def test_src_package_is_pyrig() -> None:
+    """Test function."""
+    assert src_package_is_pyrig()
+
+
+def test_src_package_is_package() -> None:
+    """Test function."""
+    assert src_package_is_package(pyrig)
+    assert not src_package_is_package(typer)
