@@ -47,11 +47,6 @@ from pyrig.core.introspection.packages import (
 from pyrig.rig.cli import shared_subcommands, subcommands
 
 app = typer.Typer(no_args_is_help=True)
-"""Main Typer application instance.
-
-Root Typer app that all commands are registered to. Configured with
-`no_args_is_help=True` to display help when invoked without a command.
-"""
 
 
 @app.callback()
