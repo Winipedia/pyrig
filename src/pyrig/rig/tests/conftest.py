@@ -24,7 +24,7 @@ See Also:
 """
 
 import pyrig
-from pyrig.core.introspection.packages import (
+from pyrig.core.introspection.dependencies import (
     discover_equivalent_modules_across_dependents,
 )
 from pyrig.core.introspection.paths import package_dir_path

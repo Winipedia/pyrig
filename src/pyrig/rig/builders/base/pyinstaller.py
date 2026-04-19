@@ -47,7 +47,7 @@ from PyInstaller.__main__ import run
 from PyInstaller.utils.hooks import collect_data_files
 
 import pyrig
-from pyrig.core.introspection.packages import (
+from pyrig.core.introspection.dependencies import (
     discover_equivalent_modules_across_dependents,
 )
 from pyrig.core.introspection.paths import module_file_path

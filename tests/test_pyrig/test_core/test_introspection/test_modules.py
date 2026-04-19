@@ -4,6 +4,7 @@ tests.test_pyrig.test_modules.test_module
 """
 
 import os
+import re
 import sys
 from collections.abc import Callable
 from contextlib import chdir
@@ -20,12 +21,14 @@ from pyrig.core.introspection.modules import (
     import_module_with_default,
     import_module_with_file_fallback,
     import_modules,
+    iter_modules,
     leaf_module_name,
     module_content,
     module_has_docstring,
     module_name_replacing_start_module,
     reimport_module,
 )
+from pyrig.core.introspection.packages import import_package_from_dir
 from pyrig.rig.cli import subcommands
 
 
@@ -140,3 +143,26 @@ def test_callable_obj_import_path() -> None:
     assert (
         callable_obj_import_path(subcommands.build) == "pyrig.rig.cli.subcommands.build"
     )
+
+
+def test_iter_modules(tmp_path: Path) -> None:
+    """Test function."""
+    # Create a temporary package with known content
+    with chdir(tmp_path):
+        package_dir = tmp_path / "test_package"
+        package_dir.mkdir()
+        init_file = package_dir / "__init__.py"
+        init_file.write_text('"""Test package."""\n')
+        module_file = package_dir / "test_module.py"
+        module_file.write_text('"""Test module."""\n')
+        package = import_package_from_dir(package_dir, name="test_package")
+
+        modules = iter_modules(package)
+        modules_names = [m.__name__ for m, _ in modules]
+        assert modules_names == [package.__name__ + ".test_module"], (
+            f"Expected [package.test_module], got {modules}"
+        )
+
+        exclude_pattern = re.compile(r"^test_package\.test_module$")
+        modules = iter_modules(package, exclude=(exclude_pattern,))
+        assert list(modules) == [], f"Expected no modules, got {modules}"

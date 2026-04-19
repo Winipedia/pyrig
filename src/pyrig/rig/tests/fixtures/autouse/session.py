@@ -16,8 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrig.core.introspection import imports
-from pyrig.core.introspection.imports import (
+from pyrig.core.introspection.packages import (
     walk_package,
 )
 from pyrig.core.requests import internet_is_available
@@ -302,7 +301,7 @@ However, it failed. See the output below for details.
             "-c",
             "; ".join(
                 (
-                    f"from {imports.__name__} import {walk_package.__name__}",
+                    f"from {walk_package.__module__} import {walk_package.__name__}",
                     f"import {src_package_name}",
                     f"exclude_rig_pattern = r'{exclude_rig_pattern}'",
                     f"packages = tuple(walk_package({src_package_name}, exclude=(exclude_rig_pattern,)))",  # noqa: E501
