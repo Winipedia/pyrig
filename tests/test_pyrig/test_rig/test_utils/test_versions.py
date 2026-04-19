@@ -1,5 +1,6 @@
 """module."""
 
+import pytest
 from packaging.version import Version
 
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
@@ -19,6 +20,10 @@ def test_adjust_version_to_level() -> None:
     assert new_version == expected
 
     assert str(new_version) == "3.8"
+
+    new_version = adjust_version_to_level(version, "micro")
+    expected = Version("3.8.1")
+    assert new_version == expected
 
 
 class TestVersionConstraint:
@@ -60,12 +65,12 @@ class TestVersionConstraint:
         version_constraint = VersionConstraint(constraint)
         upper = version_constraint.find_upper_exclusive()
         expected = "3.12"
-        assert str(upper) == expected, f"Expected {expected}, got {upper}"
+        assert str(upper) == expected
         constraint = ">=3.8, <=3.12"
         version_constraint = VersionConstraint(constraint)
         upper = version_constraint.find_upper_exclusive()
         expected = "3.12.1"
-        assert str(upper) == expected, f"Expected {expected}, got {upper}"
+        assert str(upper) == expected
 
         constraint = ">=3.8"
         version_constraint = VersionConstraint(constraint)
@@ -73,7 +78,7 @@ class TestVersionConstraint:
         assert upper is None, f"Expected None, got {upper}"
         upper = version_constraint.find_upper_exclusive("3.12")
         expected = "3.12"
-        assert str(upper) == expected, f"Expected {expected}, got {upper}"
+        assert str(upper) == expected
 
     def test_upper_inclusive(self) -> None:
         """Test method."""
@@ -81,17 +86,17 @@ class TestVersionConstraint:
         version_constraint = VersionConstraint(constraint)
         upper = version_constraint.upper_inclusive()
         expected = "3.11"
-        assert str(upper) == expected, f"Expected {expected}, got {upper}"
+        assert str(upper) == expected
         constraint = ">=3.8, <=3.12"
         version_constraint = VersionConstraint(constraint)
         upper = version_constraint.upper_inclusive()
         expected = "3.12.0"
-        assert str(upper) == expected, f"Expected {expected}, got {upper}"
+        assert str(upper) == expected
         constraint = ">=3.8, <3.12.1"
         version_constraint = VersionConstraint(constraint)
         upper = version_constraint.upper_inclusive()
         expected = "3.12.0"
-        assert str(upper) == expected, f"Expected {expected}, got {upper}"
+        assert str(upper) == expected
 
         constraint = ">=3.8"
         version_constraint = VersionConstraint(constraint)
@@ -102,7 +107,13 @@ class TestVersionConstraint:
         version_constraint = VersionConstraint(constraint)
         upper = version_constraint.upper_inclusive()
         expected = "3.11"
-        assert str(upper) == expected, f"Expected {expected}, got {upper}"
+        assert str(upper) == expected
+
+        constraint = ">=2.8, <3.0.0"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.upper_inclusive()
+        expected = "2"
+        assert str(upper) == expected
 
     def test_version_range(self) -> None:
         """Test method."""
@@ -200,3 +211,10 @@ class TestVersionConstraint:
             ]
         )
         assert versions == expected, f"Expected {expected}, got {versions}"
+
+        # make so that find_lower_inclusive and upper_inclusive return both None
+        # should raise RuntimeError
+        constraint = "<3.12"
+        version_constraint = VersionConstraint(constraint)
+        with pytest.raises(RuntimeError):
+            version_constraint.version_range(level="minor")

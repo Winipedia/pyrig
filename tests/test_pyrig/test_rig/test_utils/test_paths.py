@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.utils.path import module_name_as_root_path, package_name_as_root_path
+from pyrig.rig.utils.paths import module_name_as_root_path, package_name_as_root_path
 
 
 def test_module_name_as_root_path() -> None:

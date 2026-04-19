@@ -78,7 +78,7 @@ from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
-from pyrig.rig.utils.path import module_name_as_root_path
+from pyrig.rig.utils.paths import module_name_as_root_path
 
 logger = logging.getLogger(__name__)
 

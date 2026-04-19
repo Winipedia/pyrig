@@ -41,7 +41,7 @@ from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
 )
-from pyrig.rig.utils.path import package_name_as_root_path
+from pyrig.rig.utils.paths import package_name_as_root_path
 
 logger = logging.getLogger(__name__)
 
