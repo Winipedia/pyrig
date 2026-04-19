@@ -52,6 +52,14 @@ class ProjectCoverageTester(Tool):
             self.remote_coverage_url(),
         )
 
+    def coverage_threshold(self) -> int:
+        """Get minimum test coverage percentage threshold.
+
+        Returns:
+            Coverage percentage (90).
+        """
+        return 90
+
     def remote_coverage_url(self) -> str:
         """Construct Codecov dashboard URL.
 

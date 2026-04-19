@@ -6,6 +6,11 @@ from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 class TestProjectCoverageTester:
     """Test class."""
 
+    def test_coverage_threshold(self) -> None:
+        """Test method."""
+        coverage_threshold = 90
+        assert ProjectCoverageTester().coverage_threshold() == coverage_threshold
+
     def test_name(self) -> None:
         """Test method."""
         result = ProjectCoverageTester.I.name()
