@@ -32,7 +32,6 @@ from collections.abc import Generator
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
 
-from pyrig.core.iterate import combine_generators
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 
@@ -41,9 +40,8 @@ logger = logging.getLogger(__name__)
 
 def find_packages(
     *,
-    depth: int | None = None,
     include_namespace_packages: bool = False,
-) -> Generator[str, None, None]:
+) -> tuple[str, ...]:
     """Discover Python packages in the specified directory.
 
     Wraps setuptools' package discovery with additional filtering. Automatically
@@ -51,37 +49,12 @@ def find_packages(
     virtual environments and build directories.
 
     Args:
-        depth: Maximum package nesting depth. Examples:
-            - depth=0: Only top-level packages ("myproject", "tests")
-            - depth=1: Top-level plus one level ("myproject.utils")
-            - None: Unlimited depth (all nested packages)
         include_namespace_packages: If True, includes PEP 420 namespace packages
             (without `__init__.py`). If False, only regular packages.
-        where: Root directory to search. Defaults to current directory (".").
-        exclude: Glob patterns for package names to exclude. If None, automatically
-            reads .gitignore and converts directory patterns to package patterns
-            (e.g., "build/" becomes "build").
-        include: Glob patterns for package names to include. Defaults to all ("*").
 
     Returns:
-        List of discovered package names as dot-separated strings. Returns empty
-        list if no packages found.
-
-    Examples:
-        Find only top-level packages:
-
-            >>> find_packages(depth=0)
-            ['myproject', 'tests']
-
-        Find all packages including namespace packages:
-
-            >>> find_packages(include_namespace_packages=True)
-            ['myproject', 'myproject.utils', 'myproject.core']
-
-        Find packages excluding tests:
-
-            >>> find_packages(exclude=['tests*'])
-            ['myproject', 'myproject.utils']
+        Tuple of discovered package names as dot-separated strings. Returns empty
+        tuple if no packages found.
     """
     find_func = (
         _find_namespace_packages if include_namespace_packages else _find_packages
@@ -95,11 +68,7 @@ def find_packages(
         where=PackageManager.I.source_root(),
     )
 
-    package_names = combine_generators(tests_package_names, source_package_names)
-    if depth is not None:
-        package_names = (p for p in package_names if p.count(".") <= depth)
-
-    return package_names
+    return (*tests_package_names, *source_package_names)
 
 
 def find_namespace_packages() -> Generator[str, None, None]:
@@ -125,9 +94,8 @@ def find_namespace_packages() -> Generator[str, None, None]:
     """
     logger.debug("Discovering namespace packages")
     namespace_packages = find_packages(
-        depth=None,
         include_namespace_packages=True,
     )
 
-    packages = set(find_packages(depth=None))
+    packages = set(find_packages())
     return (p for p in namespace_packages if p not in packages)
