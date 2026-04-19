@@ -12,6 +12,7 @@ See Also:
 from datetime import UTC, datetime
 from pathlib import Path
 
+from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.core.resources import (
     resource_content,
 )
@@ -21,7 +22,6 @@ from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.packages import src_package_is_pyrig
 
 
 class LicenseConfigFile(StringConfigFile):

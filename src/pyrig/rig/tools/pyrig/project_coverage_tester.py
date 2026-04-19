@@ -1,9 +1,9 @@
 """Override ProjectCoverageTester for pyrig project."""
 
+from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.rig.tools.project_coverage_tester import (
     ProjectCoverageTester as BaseProjectCoverageTester,
 )
-from pyrig.rig.utils.packages import src_package_is_pyrig
 
 if src_package_is_pyrig():
 

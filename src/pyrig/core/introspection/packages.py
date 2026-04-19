@@ -25,6 +25,7 @@ from pyrig.core.introspection.modules import (
     import_modules,
 )
 from pyrig.core.strings import write_text_utf8
+from pyrig.rig.tools.package_manager import PackageManager
 
 logger = logging.getLogger(__name__)
 
@@ -246,3 +247,37 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
         if p in until:
             break
         make_init_file(p, content=content)
+
+
+@cache
+def src_package_is_package(package: ModuleType) -> bool:
+    """Check if the given module is the src package of the current project.
+
+    Args:
+        package: The module to check.
+
+    Returns:
+        True if the module's name matches the top-level package of the current project.
+    """
+    return (PackageManager.I.source_root() / package.__name__).exists()
+
+
+def src_package_is_pyrig() -> bool:
+    """Check if the current project is pyrig itself.
+
+    Determines whether the current working directory is the pyrig project by
+    checking if "pyrig" is among the top-level packages.
+
+    Returns:
+        True if "pyrig" is a top-level package in the current directory.
+
+    Examples:
+        Conditional logic for pyrig development:
+
+            >>> if src_package_is_pyrig():
+            ...     print("Running in pyrig development mode")
+
+    Note:
+        Detects the pyrig repository, not pyrig as an installed dependency.
+    """
+    return src_package_is_package(pyrig)

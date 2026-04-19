@@ -34,6 +34,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.core.strings import (
     make_name_from_obj,
     read_text_utf8,
@@ -55,7 +56,6 @@ from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.packages import src_package_is_pyrig
 
 
 class WorkflowConfigFile(DictYmlConfigFile):

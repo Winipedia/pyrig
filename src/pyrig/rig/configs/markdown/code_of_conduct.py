@@ -11,6 +11,7 @@ See Also:
 
 from pathlib import Path
 
+from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.core.resources import (
     resource_content,
 )
@@ -18,7 +19,6 @@ from pyrig.core.strings import read_text_utf8
 from pyrig.rig import resources
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
-from pyrig.rig.utils.packages import src_package_is_pyrig
 
 
 class CodeOfConductConfigFile(MarkdownConfigFile):
