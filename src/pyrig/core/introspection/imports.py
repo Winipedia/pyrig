@@ -128,7 +128,7 @@ def walk_package(
 
 def iter_modules(
     package: ModuleType,
-    exclude: Iterable[str] = (),
+    exclude: Iterable[str | re.Pattern[str]] = (),
 ) -> Generator[tuple[ModuleType, bool], None, None]:
     """Extract and import all direct subpackages and modules from a package.
 
