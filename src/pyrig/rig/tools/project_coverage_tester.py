@@ -11,6 +11,7 @@ Example:
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_controller import VersionController
 
 
@@ -59,6 +60,26 @@ class ProjectCoverageTester(Tool):
             Coverage percentage (90).
         """
         return 90
+
+    def additional_args(self) -> tuple[str, ...]:
+        """Get additional pytest-cov arguments for coverage analysis.
+
+        Returns:
+            Tuple of additional pytest-cov arguments.
+        """
+        return (
+            f"--cov={PackageManager.I.package_name()}",
+            "--cov-report=term-missing",
+            f"--cov-fail-under={self.coverage_threshold()}",
+        )
+
+    def additional_ci_args(self) -> tuple[str, ...]:
+        """Get additional pytest-cov arguments for CI coverage analysis.
+
+        Returns:
+            Tuple of additional pytest-cov arguments for CI.
+        """
+        return ("--cov-report=xml",)
 
     def remote_coverage_url(self) -> str:
         """Construct Codecov dashboard URL.

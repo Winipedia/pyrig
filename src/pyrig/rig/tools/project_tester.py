@@ -12,6 +12,7 @@ from pathlib import Path
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 
 
 class ProjectTester(Tool):
@@ -115,4 +116,6 @@ class ProjectTester(Tool):
         Returns:
             Args for 'pytest' with CI flags (log level INFO, XML coverage).
         """
-        return self.test_args("--log-cli-level=INFO", "--cov-report=xml", *args)
+        return self.test_args(
+            "--log-cli-level=INFO", *ProjectCoverageTester.I.additional_ci_args(), *args
+        )
