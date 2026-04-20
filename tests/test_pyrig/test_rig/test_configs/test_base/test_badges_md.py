@@ -1,14 +1,57 @@
 """module."""
 
+from contextlib import chdir
+from pathlib import Path
+
 from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
+from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class TestBadgesMarkdownConfigFile:
     """Test class."""
+
+    def test_merge_configs(self, tmp_project_root_path: Path) -> None:
+        """Test method."""
+        assert issubclass(ReadmeConfigFile, BadgesMarkdownConfigFile)
+        assert ReadmeConfigFile.I.is_correct()
+
+        with chdir(tmp_project_root_path):
+            LicenseConfigFile.I.validate()
+            PyprojectConfigFile.I.validate()
+            ReadmeConfigFile.I.validate()
+            assert ReadmeConfigFile.I.is_correct()
+
+            # change the description in readme to a false one
+            false_description = "False description"
+            correct_description = PyprojectConfigFile.I.project_description()
+            content = ReadmeConfigFile.I.file_content()
+            # we replace the actual description with a false one
+            false_content = content.replace(correct_description, false_description)
+            assert correct_description not in false_content
+            assert false_description in false_content
+            # we write the false content to the readme file
+            ReadmeConfigFile.I.dump(ReadmeConfigFile.I.split_lines(false_content))
+            # now the is correct method should correct the mistakes
+            merged_lines = ReadmeConfigFile.I.merge_configs()
+            merged_content = ReadmeConfigFile.I.join_lines(merged_lines)
+            assert correct_description in merged_content
+            assert false_description not in merged_content
+            assert merged_content == content
+
+            # now dump smth completly false and check
+            # that configs are inserted at beginning
+            false_content = "Completely false content"
+            ReadmeConfigFile.I.dump([false_content])
+            merged_lines = ReadmeConfigFile.I.merge_configs()
+            merged_content = ReadmeConfigFile.I.join_lines(merged_lines)
+            assert merged_content.endswith(false_content)
+            assert merged_content.startswith(
+                ReadmeConfigFile.I.join_lines(ReadmeConfigFile.I.configs())
+            )
 
     def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""
@@ -46,12 +89,6 @@ class TestBadgesMarkdownConfigFile:
         lines = ReadmeConfigFile().lines()
         content_str = "\n".join(lines)
         assert isinstance(content_str, str)
-
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert issubclass(ReadmeConfigFile, BadgesMarkdownConfigFile)
-
-        assert ReadmeConfigFile.I.is_correct()
 
     def test_badges(self) -> None:
         """Test method."""

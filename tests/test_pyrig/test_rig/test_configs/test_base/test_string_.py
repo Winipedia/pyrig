@@ -40,6 +40,19 @@ def my_test_string_config_file(
 class TestStringConfigFile:
     """Test class."""
 
+    def test_all_lines_in_content(
+        self, my_test_string_config_file: type[StringConfigFile]
+    ) -> None:
+        """Test method."""
+        lines = ["Line 1", "Line 2"]
+        content = "This is Line 1 and this is Line 2."
+        assert my_test_string_config_file().all_lines_in_content(lines, content)
+
+        content_missing_line = "This is Line 1."
+        assert not my_test_string_config_file().all_lines_in_content(
+            lines, content_missing_line
+        )
+
     def test_split_lines(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
