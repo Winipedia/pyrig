@@ -2,32 +2,72 @@
 
 import logging
 
-from pyrig.rig.cli.cli import configure_logging
-from pyrig.rig.tools.pyrigger import Pyrigger
+import pytest
+from pytest_mock import MockerFixture
+
+from pyrig.core.cli import package_name_from_argv
+from pyrig.core.introspection.modules import import_module_with_default
+from pyrig.rig.cli import cli, subcommands
+from pyrig.rig.cli.cli import (
+    add_shared_subcommands,
+    add_subcommands,
+    app,
+    configure_logging,
+    main,
+)
 
 
-def test_add_subcommands() -> None:
+def test_add_subcommands(mocker: MockerFixture) -> None:
     """Test for the add_subcommands func."""
-    # run --help comd to see if its available
-    args = Pyrigger.I.args("--help")
-    result = args.run()
-    stdout = result.stdout
-    assert "pyrig" in stdout, f"Expected pyrig in stdout, got {stdout}"
+    argv_mock = mocker.patch(
+        cli.__name__ + "." + package_name_from_argv.__name__, return_value="pyrig"
+    )
+    add_subcommands()
+    argv_mock.assert_called_once()
+    # check that mkroot is in the app commands
+    commands = {cmd.callback.__name__ for cmd in app.registered_commands}  # ty:ignore[unresolved-attribute]
+    assert {"mkroot", "mkcmd", "mktests"}.issubset(commands)
+
+    # reset registered commands for other tests
+    app.registered_commands = []
+
+    # mock import_module_with_default to return None
+    import_module_mock = mocker.patch(
+        cli.__name__ + "." + import_module_with_default.__name__,
+        return_value=None,
+    )
+    add_subcommands()
+    import_module_mock.assert_called_once_with(subcommands.__name__)
+
+    # assert registered commands is empty since subcommands module could not be imported
+    assert len(app.registered_commands) == 0
 
 
-def test_add_shared_subcommands() -> None:
+def test_add_shared_subcommands(mocker: MockerFixture) -> None:
     """Test function."""
-    args = Pyrigger.I.args("--help")
-    result = args.run()
-    stdout = result.stdout
-    assert "version" in stdout, f"Expected version in stdout, got {stdout}"
+    # mock package_name_from_argv to return pyrig for testing
+    # bc in pytest it would return pytest instead of pyrig
+    argv_mock = mocker.patch(
+        cli.__name__ + "." + package_name_from_argv.__name__, return_value="pyrig"
+    )
+    add_shared_subcommands()
+    argv_mock.assert_called_once()
+    # check that version is in the app commands
+    commands = {cmd.callback.__name__ for cmd in app.registered_commands}  # ty:ignore[unresolved-attribute]
+    assert {"version"}.issubset(commands)
 
 
-def test_main() -> None:
+def test_main(mocker: MockerFixture) -> None:
     """Test for the main cli entrypoint."""
-    args = Pyrigger.I.args("--help")
-    result = args.run()
-    assert result.returncode == 0, "Expected returncode 0"
+    # mock package_name_from_argv to return pyrig for testing
+    argv_mock = mocker.patch(
+        cli.__name__ + "." + package_name_from_argv.__name__, return_value="pyrig"
+    )
+    with pytest.raises(SystemExit):
+        main()
+    argv_mock.assert_called()
+    commands = {cmd.callback.__name__ for cmd in app.registered_commands}  # ty:ignore[unresolved-attribute]
+    assert {"mkroot", "mkcmd", "mktests", "version"}.issubset(commands)
 
 
 def test_configure_logging() -> None:
@@ -42,4 +82,12 @@ def test_configure_logging() -> None:
 
     # Test verbose mode (DEBUG level)
     configure_logging(verbose=1, quiet=False)
+    assert logging.root.level == logging.DEBUG
+
+    # Test very verbose mode (DEBUG level with module names)
+    configure_logging(verbose=2, quiet=False)
+    assert logging.root.level == logging.DEBUG
+
+    # Test very verbose mode (DEBUG level with timestamps)
+    configure_logging(verbose=3, quiet=False)
     assert logging.root.level == logging.DEBUG
