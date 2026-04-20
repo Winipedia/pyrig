@@ -162,9 +162,6 @@ class Tool(DependencySubclass):
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:
             t = tool()
-            if not any(t.badge_urls()):
-                # if tuple has empty strings, skip it
-                continue
             groups[t.group()].append(t.badge())
         return groups
 
