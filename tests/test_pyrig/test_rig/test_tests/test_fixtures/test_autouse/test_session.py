@@ -10,12 +10,15 @@ from pytest_mock import MockerFixture
 from pyrig.core.introspection.inspection import unwrapped_obj
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
+from pyrig.rig.tests import fixtures
 from pyrig.rig.tests.fixtures.autouse.session import (
     all_config_files_correct,
+    no_namespace_packages,
     no_unstaged_changes_in_ci,
 )
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.utils.packages import find_namespace_packages
 
 
 def test_no_unstaged_changes_in_ci(mocker: MockerFixture) -> None:
@@ -51,17 +54,33 @@ def test_all_config_files_correct(mocker: MockerFixture) -> None:
         ConfigFile.incorrect_subclasses.__name__,
         return_value=[ReadmeConfigFile],
     )
+    running_in_ci_mock = mocker.patch.object(
+        RemoteVersionController,
+        RemoteVersionController.running_in_ci.__name__,
+        return_value=True,
+    )
     with pytest.raises(AssertionError, match=r"Found incorrect ConfigFiles."):
         unwrapped_func()
 
     incorrect_mock.assert_called_once()
+    running_in_ci_mock.assert_called_once()
 
 
-def test_no_namespace_packages() -> None:
+def test_no_namespace_packages(mocker: MockerFixture) -> None:
     """Test function."""
+    unwrapped_func = unwrapped_obj(no_namespace_packages)
+
+    find_mock = mocker.patch(
+        no_namespace_packages.__module__ + "." + find_namespace_packages.__name__,
+        return_value=[fixtures.__name__],
+    )
+    with pytest.raises(AssertionError, match=r"Found namespace packages."):
+        unwrapped_func()
+
+    find_mock.assert_called_once()
 
 
-def test_all_modules_tested() -> None:
+def test_all_modules_tested(mocker: MockerFixture) -> None:
     """Test function."""
 
 

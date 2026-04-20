@@ -171,6 +171,21 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
     return import_package_from_dir(path, name)
 
 
+def all_modules_from_package(package: ModuleType) -> Generator[ModuleType, None, None]:
+    """Recursively discover all modules in a package.
+
+    Uses ``walk_package`` to traverse the package hierarchy and yields only
+    modules (not subpackages).
+
+    Args:
+        package: The root package module to discover modules from.
+
+    Yields:
+        All modules found within the package and its subpackages.
+    """
+    return (module for module, is_pkg in walk_package(package) if not is_pkg)
+
+
 def walk_package(
     package: ModuleType,
     exclude: Iterable[str] = (),

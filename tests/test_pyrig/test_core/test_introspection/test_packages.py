@@ -9,9 +9,11 @@ import typer
 from pytest_mock import MockerFixture
 
 import pyrig
+from pyrig.core import introspection
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.introspection import packages
 from pyrig.core.introspection.packages import (
+    all_modules_from_package,
     discover_all_subclasses_across_package,
     import_package_from_dir,
     import_package_with_dir_fallback,
@@ -146,3 +148,14 @@ def test_discover_all_subclasses_across_package() -> None:
     assert Tool in subclasses
 
     assert all(issubclass(subcls, DependencySubclass) for subcls in subclasses)
+
+
+def test_all_modules_from_package() -> None:
+    """Test function."""
+    modules = list(all_modules_from_package(pyrig))
+    assert pyrig not in modules
+    # modules should be included, but not the package itself
+    assert mirror_test in modules
+    assert packages in modules
+    # is a package module, not a regular module, so should be excluded
+    assert introspection not in modules

@@ -70,7 +70,7 @@ from pyrig.core.introspection.modules import (
     module_has_docstring,
     reimport_module,
 )
-from pyrig.core.introspection.packages import walk_package
+from pyrig.core.introspection.packages import all_modules_from_package
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.strings import make_name_from_obj
 from pyrig.rig import tests
@@ -231,6 +231,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Package module where the ConfigFile subclass is defined.
         """
         return tests
+
+    @classmethod
+    def concrete_subclasses(cls) -> Generator[type[Self], None, None]:
+        """Override to return all dynamically generated subclasses."""
+        return cls.generate_subclasses(cls.all_mirror_modules())
 
     def test_path(self) -> Path:
         """Compute the file path for the test module.
@@ -594,67 +599,16 @@ class {test_class_name}:
         return cast("type[Self]", subclass)
 
     @classmethod
-    def create_test_modules(cls, modules: Iterable[ModuleType]) -> None:
-        """Generate test files for multiple source modules at once.
+    def all_mirror_modules(cls) -> Generator[ModuleType, None, None]:
+        """Get all modules from the project's source package.
 
-        High-level convenience method that orchestrates the complete test
-        generation workflow for a list of modules:
-        1. Creates a subclass for each module
-        2. Orders subclasses by priority
-        3. Initializes all subclasses (triggering file creation)
+        Retrieves all modules from the source package defined in the project tester.
 
-        Args:
-            modules: List of source modules to generate test files for.
-
-        Example:
-            Generate tests for an entire package::
-
-                from myproject import core, utils, api
-                MirrorTestConfigFile.L.create_test_modules([core, utils, api])
-
-        See Also:
-            generate_subclasses: Creates and orders subclasses
-            validate_subclasses: Inherited method that instantiates config subclasses
+        Returns:
+            Generator of all modules in the source package.
         """
-        subclasses = cls.generate_subclasses(modules)
-        cls.validate_subclasses(subclasses)
-
-    @classmethod
-    def create_all_test_modules(cls) -> None:
-        """Generate test files for all modules in the projects source package.
-
-        Convenience method that retrieves all modules from the projects source package
-        and creates test files for them. Useful for initializing tests for an
-        entire package without manually listing modules.
-
-        Example:
-            Generate tests for all modules in the source package::
-
-                MirrorTestConfigFile.L.create_all_test_modules()
-        """
-        src_package = import_module(PackageManager.I.package_name())
-        cls.create_test_modules_for_package(src_package)
-
-    @classmethod
-    def create_test_modules_for_package(cls, package: ModuleType) -> None:
-        """Generate test files for all modules in a specific source package.
-
-        Retrieves all modules from the specified package and creates test files
-        for them. Useful for initializing tests for a specific package without
-        manually listing modules.
-
-        Args:
-            package: Source package to create test files for.
-
-        Example:
-            Generate tests for all modules in a specific package::
-
-                import myproject.core
-                MirrorTestConfigFile.L.create_test_modules_for_package(myproject.core)
-        """
-        logger.debug("Creating tests for package: %s", package.__name__)
-        modules = (m for m, is_pkg in walk_package(package) if not is_pkg)
-        cls.create_test_modules(modules)
+        package = import_module(PackageManager.I.package_name())
+        return all_modules_from_package(package)
 
     def test_func_name(self, func: Callable[..., Any]) -> str:
         """Get test function name for a source function.
