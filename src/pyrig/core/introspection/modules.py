@@ -115,11 +115,11 @@ def import_module_from_file(path: Path, name: str) -> ModuleType:
     if spec is None:
         msg = f"Could not create spec for {path}"
         raise ImportError(msg)
-    module = module_from_spec(spec)
     loader = spec.loader
     if loader is None:
         msg = f"Could not create loader for {path}"
         raise ImportError(msg)
+    module = module_from_spec(spec)
     loader.exec_module(module)
     sys.modules[name] = module
     return module
