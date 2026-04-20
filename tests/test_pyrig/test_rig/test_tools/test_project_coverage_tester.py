@@ -6,10 +6,24 @@ from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 class TestProjectCoverageTester:
     """Test class."""
 
+    def test_additional_args(self) -> None:
+        """Test method."""
+        assert ProjectCoverageTester.I.additional_args() == (
+            "--cov=pyrig",
+            "--cov-report=term-missing",
+            "--cov-fail-under=100",
+        )
+
+    def test_additional_ci_args(self) -> None:
+        """Test method."""
+        assert ProjectCoverageTester.I.additional_ci_args() == ("--cov-report=xml",)
+
     def test_coverage_threshold(self) -> None:
         """Test method."""
         coverage_threshold = 90
         assert ProjectCoverageTester().coverage_threshold() == coverage_threshold
+        override_threshold = 100
+        assert ProjectCoverageTester.I.coverage_threshold() == override_threshold
 
     def test_name(self) -> None:
         """Test method."""
