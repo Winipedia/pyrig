@@ -30,6 +30,20 @@ class TestVersionController:
 
         remote_mock.assert_called_once()
 
+        # make it return a https remote url
+        remote_mock.return_value = "https://github.com/OWNER/REPO.git"
+        result = VersionController()._repo_owner_and_name(  # noqa: SLF001
+            check_repo_url=False, url_encode=False
+        )
+        assert result == ("OWNER", "REPO")
+
+        # make it return a ssh remote url
+        remote_mock.return_value = "git@github.com:OWNER/REPO.git"
+        result = VersionController()._repo_owner_and_name(  # noqa: SLF001
+            check_repo_url=False, url_encode=False
+        )
+        assert result == ("OWNER", "REPO")
+
     def test_ignore_filename(self) -> None:
         """Test method."""
         result = VersionController.I.ignore_filename()
