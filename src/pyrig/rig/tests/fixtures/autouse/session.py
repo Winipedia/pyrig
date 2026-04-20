@@ -59,9 +59,9 @@ def no_unstaged_changes_in_ci() -> Generator[None, None, None]:
     in_ci = RemoteVersionController.I.running_in_ci()
 
     msg = """Found unstaged changes during tests.
-There should not be made any unstaged changes during tests.
-This chekc only runs in CI to allow a normal development worklfow locally
-where you may have unstaged changes. If xou want make changes during tests
+There should not be made any unstaged changes during tests in CI.
+This check only runs in CI to allow a normal development workflow locally
+where you may have unstaged changes. If you want to make changes during tests
 then you must stage them to avoid this assertion error.
 
 Found the following unstaged changes:
@@ -90,15 +90,10 @@ def all_config_files_correct() -> None:
     """
     # if we are in CI then we must create config files that are gitignored
     # as they are not pushed to the repository
-    running_in_ci = RemoteVersionController.I.running_in_ci()
-    if running_in_ci:
-        tuple(cf().validate() for cf in ConfigFile.version_control_ignored_subclasses())
+    tuple(cf().validate() for cf in ConfigFile.version_control_ignored_subclasses())
 
     incorrect_cfs = tuple(ConfigFile.incorrect_subclasses())
-
-    if incorrect_cfs:
-        # init all per test run
-        ConfigFile.validate_subclasses(incorrect_cfs)
+    ConfigFile.validate_subclasses(incorrect_cfs)
 
     msg = f"""Found incorrect {ConfigFile.__name__}s.
 It was attempted to auto-fix them via their {ConfigFile.validate.__name__} method.
@@ -118,8 +113,7 @@ def no_namespace_packages() -> None:
         AssertionError: If namespace packages were found (lists created paths).
     """
     namespace_packages = tuple(find_namespace_packages())
-    if namespace_packages:
-        make_init_files_for_namespace_packages(namespace_packages)
+    make_init_files_for_namespace_packages(namespace_packages)
 
     msg = f"""Found namespace packages.
 Namespace packages are packages that do not have an __init__.py file.
@@ -150,9 +144,7 @@ def all_modules_tested() -> None:
 
     subclasses = MirrorTestConfigFile.L.generate_subclasses(all_modules)
     incorrect_subclasses = tuple(sc for sc in subclasses if not sc().is_correct())
-
-    if incorrect_subclasses:
-        MirrorTestConfigFile.L.validate_subclasses(incorrect_subclasses)
+    MirrorTestConfigFile.L.validate_subclasses(incorrect_subclasses)
 
     msg = f"""Found incorrect test modules.
 It is enforced that every module in src has a corresponding test module in tests.
