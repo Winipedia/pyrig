@@ -173,7 +173,20 @@ class TestPyInstallerBuilder:
         self,
         my_test_pyinstaller_builder: type[PyInstallerBuilder],
         tmp_path: Path,
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         result = my_test_pyinstaller_builder().app_icon_path(tmp_path)
         assert result.stem == "icon"
+
+        # mock platform.system to return each platform once
+        platforms = ["Windows", "Darwin", "Linux"]
+        for platform in platforms:
+            mocker.patch("platform.system", return_value=platform)
+            result = my_test_pyinstaller_builder().app_icon_path(tmp_path)
+            if platform == "Windows":
+                assert result.suffix == ".ico", "Expected .ico for Windows"
+            elif platform == "Darwin":
+                assert result.suffix == ".icns", "Expected .icns for macOS"
+            else:
+                assert result.suffix == ".png", "Expected .png for Linux"
