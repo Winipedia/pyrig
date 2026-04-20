@@ -13,7 +13,7 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.modules import (
     callable_obj_import_path,
@@ -58,7 +58,7 @@ def test_import_module_with_default() -> None:
     assert result == "default", f"Expected default, got {result}"
 
 
-def test_module_name_replacing_start_module(mocker: MockFixture) -> None:
+def test_module_name_replacing_start_module(mocker: MockerFixture) -> None:
     """Test function."""
     mock_module = mocker.MagicMock(spec=ModuleType)
     mock_module.__name__ = "some.module.name"

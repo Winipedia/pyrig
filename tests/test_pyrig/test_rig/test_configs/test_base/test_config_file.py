@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 import pytest
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.rig import configs
@@ -95,7 +95,9 @@ class TestConfigFile:
         }
 
     def test_validate_config_file(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         mock_validate = mocker.patch.object(
@@ -170,7 +172,9 @@ class TestConfigFile:
         assert my_test_config_file().priority() == 0
 
     def test_validate_subclasses(
-        self, mocker: MockFixture, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        mocker: MockerFixture,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         mock = mocker.patch.object(
@@ -229,7 +233,9 @@ class TestConfigFile:
         assert isinstance(my_test_config_file().configs(), dict), "Expected dict"
 
     def test_validate(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]], mocker: MockFixture
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         # create file first to not trigger dump in init

@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 from packaging.version import Version
+from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.pyproject import (
@@ -41,7 +42,14 @@ class TestPyprojectConfigFile:
     def test_detect_project_license(self) -> None:
         """Test method."""
         license_id = PyprojectConfigFile.I.detect_project_license()
-        assert license_id == "MIT", f"Expected 'MIT', got '{license_id}'"
+        assert license_id == "MIT"
+
+    def test_detect_project_licence_from_content(self) -> None:
+        """Test method."""
+        with pytest.raises(LookupError):
+            _license_id = PyprojectConfigFile.I.detect_project_licence_from_content(
+                "No license here"
+            )
 
     def test_requires_python(self) -> None:
         """Test method."""
@@ -193,7 +201,9 @@ class TestPyprojectConfigFile:
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_first_supported_python_version(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         my_test_pyproject_config_file().validate()
@@ -214,6 +224,17 @@ class TestPyprojectConfigFile:
         assert first_version == "3.8.1", (
             "Expected first_supported_python_version to return 3.8.1"
         )
+
+        # mock requires_python to return an version without lower bound
+        requires_mock = mocker.patch.object(
+            PyprojectConfigFile,
+            PyprojectConfigFile.requires_python.__name__,
+            return_value="<3.8",
+        )
+        with pytest.raises(LookupError):
+            my_test_pyproject_config_file().first_supported_python_version()
+
+        requires_mock.assert_called_once()
 
     def test_latest_python_version(self) -> None:
         """Test method."""

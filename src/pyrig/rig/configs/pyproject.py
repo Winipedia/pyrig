@@ -169,11 +169,24 @@ class PyprojectConfigFile(TomlConfigFile):
             analysis fails.
         """
         content = LicenseConfigFile.I.file_content()
+        return self.detect_project_licence_from_content(content)
+
+    def detect_project_licence_from_content(self, content: str) -> str:
+        """Detect the project's license from given content.
+
+        Uses spdx_matcher to identify the license type and return its SPDX identifier.
+
+        Args:
+            content: The text content to analyze for license detection.
+
+        Returns:
+            SPDX license identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
+        """
         licenses: dict[str, ConfigDict]
         licenses, _ = spdx_matcher.analyse_license_text(content)
         licenses = licenses["licenses"]
         if not licenses:
-            msg = "No license detected in LICENSE file."
+            msg = "No license detected in provided content."
             raise LookupError(msg)
         return next(iter(licenses))
 

@@ -1,6 +1,6 @@
 """module."""
 
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools import pyrigger
@@ -68,7 +68,7 @@ class TestPyrigger:
         res = Pyrigger.I.running_pre_commit_hooks()
         assert isinstance(res, Args)
 
-    def test_init_project(self, mocker: MockFixture) -> None:
+    def test_init_project(self, mocker: MockerFixture) -> None:
         """Test function."""
         # mock the Args run method to prevent actual
         # execution of commands during testing
@@ -99,7 +99,7 @@ class TestPyrigger:
         result = Pyrigger.I.name()
         assert result == "pyrig"
 
-    def test_cmd_args(self, mocker: MockFixture) -> None:
+    def test_cmd_args(self, mocker: MockerFixture) -> None:
         """Test method."""
         # Mock the snake_to_kebab_case function
         mocker.patch(

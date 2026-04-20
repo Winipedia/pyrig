@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.remote_version_control.branch_protection import (
@@ -14,7 +14,7 @@ from pyrig.rig.configs.remote_version_control.branch_protection import (
 class TestBranchProtectionConfigFile:
     """Test class."""
 
-    def test_repo_token(self, mocker: MockFixture) -> None:
+    def test_repo_token(self, mocker: MockerFixture) -> None:
         """Test method."""
         fake_token = "ghp_fakeTokenForTestingPurposesOnly"  # noqa: S105  # nosec: B105
         token = BranchProtectionConfigFile.I.repo_token()
