@@ -143,9 +143,12 @@ class TestWorkflowConfigFile:
     def test_run_if_condition(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         run = "echo test"
-        condition = my_test_workflow().insert_var("true")
+        condition = "condition"
         result = my_test_workflow().run_if_condition(run, condition)
-        assert f"if [ {condition} ]; then {run}" in result
+        assert (
+            result
+            == 'if [ ${{ condition }} ]; then echo test; else echo "Skipping step due to failed condition: condition."; fi'  # noqa: E501
+        )
 
     def test_if_pypi_token_configured(
         self, my_test_workflow: type[WorkflowConfigFile]
