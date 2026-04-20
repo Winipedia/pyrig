@@ -2,6 +2,10 @@
 
 from pathlib import Path
 
+import pytest
+from pytest_mock import MockFixture
+
+from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.remote_version_control.branch_protection import (
     BranchProtectionConfigFile,
 )
@@ -10,10 +14,37 @@ from pyrig.rig.configs.remote_version_control.branch_protection import (
 class TestBranchProtectionConfigFile:
     """Test class."""
 
-    def test_repo_token(self) -> None:
+    def test_repo_token(self, mocker: MockFixture) -> None:
         """Test method."""
+        fake_token = "ghp_fakeTokenForTestingPurposesOnly"  # noqa: S105  # nosec: B105
         token = BranchProtectionConfigFile.I.repo_token()
-        assert isinstance(token, str), f"Expected token to be str, got {type(token)}"
+        assert isinstance(token, str)
+        assert token != fake_token
+
+        # mock os.getenv to return the fake token for testing
+        env_mock = mocker.patch("os.getenv", return_value=fake_token)
+        token = BranchProtectionConfigFile.I.repo_token()
+        assert token == fake_token
+        env_mock.assert_called_with("REPO_TOKEN")
+
+        # mock getenv to return None and
+        # mock DotEnvConfigFile.load to return a dict with the fake token
+        env_mock.return_value = None
+        dotenv_mock = mocker.patch.object(
+            DotEnvConfigFile,
+            DotEnvConfigFile.load.__name__,
+            return_value={"REPO_TOKEN": fake_token},
+        )
+        token = BranchProtectionConfigFile.I.repo_token()
+        assert token == fake_token
+        env_mock.assert_called_with("REPO_TOKEN")
+        dotenv_mock.assert_called_once()
+
+        # mock both to return None to test the error case
+        env_mock.return_value = None
+        dotenv_mock.return_value = {}
+        with pytest.raises(LookupError):
+            BranchProtectionConfigFile.I.repo_token()
 
     def test_protect_repo(self) -> None:
         """Test method."""
