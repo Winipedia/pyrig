@@ -1,5 +1,8 @@
 """Test module."""
 
+import typer
+from pytest_mock import MockerFixture
+
 import pyrig
 from pyrig import core, rig
 from pyrig.core.dependency_subclass import DependencySubclass
@@ -13,16 +16,24 @@ from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tools.base.tool import Tool
 
 
-def test_discover_equivalent_modules_across_dependents() -> None:
+def test_discover_equivalent_modules_across_dependents(mocker: MockerFixture) -> None:
     """Test function."""
     # Test getting the same module from all packages depending on pyrig
-    # until_package is only defined to get 100% test coverage
-    # practically its only needed for subsequent dependent projects
-    modules = discover_equivalent_modules_across_dependents(
-        core, pyrig, until_package=pyrig
-    )
+    modules = discover_equivalent_modules_across_dependents(core, pyrig)
     # Should at least include pyrig.src itself
-    assert core in modules, f"Expected pyrig.src in modules, got {modules}"
+    assert core in modules
+
+    # mock all_deps_depending_on_dep to return a fake dependent package
+    # the following is mostly to get 100% test coverage
+    mock_all_deps = mocker.patch(
+        all_deps_depending_on_dep.__module__ + "." + all_deps_depending_on_dep.__name__,
+        return_value=[typer],
+    )
+    modules = tuple(
+        discover_equivalent_modules_across_dependents(core, pyrig, until_package=typer)
+    )
+    assert core in modules
+    mock_all_deps.assert_called_once()
 
 
 def test_discover_subclasses_across_dependents() -> None:
