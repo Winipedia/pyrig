@@ -1,10 +1,14 @@
 """test module."""
 
+import re
+from subprocess import CompletedProcess  # nosec B404
+
 import pytest
 from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.inspection import unwrapped_obj
 from pyrig.core.requests import internet_is_available
+from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.tests import fixtures
@@ -19,6 +23,7 @@ from pyrig.rig.tests.fixtures.autouse.session import (
     package_manager_updated,
 )
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import find_namespace_packages
@@ -152,3 +157,21 @@ def test_package_manager_updated(
     )
     unwrapped_func(standard_output_error_template=standard_output_error_template)
     ci_mock.assert_called_once()
+
+    # mock ci to be false so it gets executed in ci as well
+    ci_mock.return_value = False
+
+    # make Args.run to return a non-zero exit code
+    # to simulate an outdated package manager
+    run_mock = mocker.patch.object(
+        Args,
+        Args.run.__name__,
+        return_value=CompletedProcess(args=(), returncode=1, stdout="", stderr=""),
+    )
+
+    with pytest.raises(
+        AssertionError, match=re.escape(rf"The {PackageManager.I} is not up to date")
+    ):
+        unwrapped_func(standard_output_error_template=standard_output_error_template)
+
+    run_mock.assert_called_once()
