@@ -17,7 +17,7 @@ from pyrig.core.iterate import combine_generators
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
 
 
-def make_subclass(import_path: str | None) -> None:
+def make_subclass() -> None:
     """Create a subclass scaffold module for a selected class.
 
     If `import_path` is not provided, an interactive fuzzy prompt is shown to
@@ -30,12 +30,7 @@ def make_subclass(import_path: str | None) -> None:
             (for example: ``package.module.ClassName``). If ``None``, the class
             is selected interactively.
     """
-    if import_path is None:
-        subclass = choose_subclass()
-    else:
-        module_name, cls_name = import_path.rsplit(".", 1)
-        module = import_module(module_name)
-        subclass: type[DependencySubclass] = getattr(module, cls_name)
+    subclass = choose_subclass()
 
     module_name, class_name = subclass.__module__, subclass.__name__
     module = import_module(module_name)

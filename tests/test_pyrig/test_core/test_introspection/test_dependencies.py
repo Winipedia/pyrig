@@ -16,8 +16,11 @@ from pyrig.rig.tools.base.tool import Tool
 def test_discover_equivalent_modules_across_dependents() -> None:
     """Test function."""
     # Test getting the same module from all packages depending on pyrig
-
-    modules = discover_equivalent_modules_across_dependents(core, pyrig)
+    # until_package is only defined to get 100% test coverage
+    # practically its only needed for subsequent dependent projects
+    modules = discover_equivalent_modules_across_dependents(
+        core, pyrig, until_package=pyrig
+    )
     # Should at least include pyrig.src itself
     assert core in modules, f"Expected pyrig.src in modules, got {modules}"
 

@@ -7,6 +7,8 @@ import os
 from collections.abc import Callable
 from functools import wraps
 
+import pytest
+
 from pyrig.core.introspection.inspection import (
     def_line,
     module_of_obj,
@@ -179,6 +181,10 @@ def test_module_of_obj() -> None:
     assert "posixpath" in os_module.__name__ or "ntpath" in os_module.__name__, (
         f"Expected posixpath or ntpath module, got {os_module.__name__}"
     )
+
+    # take an obj without a module and check if raises LookupError
+    with pytest.raises(LookupError):
+        module_of_obj("string without module")
 
 
 def test_sorted_by_def_line() -> None:

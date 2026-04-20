@@ -251,22 +251,17 @@ def mkcmd(
     make_subcommand(name, shared=shared)
 
 
-def subcls(
-    import_path: str | None = typer.Argument(
-        default=None,
-        help="""The dotted import path to the class to subclass (e.g., 'package.module.ClassName').
-If not given, you can search and choose the class in an interactive session.""",  # noqa: E501
-    ),
-) -> None:
+def subcls() -> None:
     """Create a subclass scaffold for a class specified by import path.
 
-    Args:
-        import_path: Optional dotted import path to the class to subclass. If
-            omitted, an interactive selector is used.
+    Opens an interactive prompt to select a class from pyrig dependents, then creates
+    a new module with a subclass scaffold for the selected class. The target module
+    is created (or validated) via config generation and then extended with a subclass
+    skeleton.
     """
     from pyrig.rig.cli.commands.make_subclass import make_subclass  # noqa: PLC0415
 
-    make_subclass(import_path)
+    make_subclass()
 
 
 def mkfixture(
