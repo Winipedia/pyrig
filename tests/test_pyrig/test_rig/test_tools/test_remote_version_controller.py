@@ -6,6 +6,10 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 class TestRemoteVersionController:
     """Test class."""
 
+    def test_access_token_key(self) -> None:
+        """Test method."""
+        assert RemoteVersionController.I.access_token_key() == "REPO_TOKEN"
+
     def test_running_in_ci(self) -> None:
         """Test method."""
         assert isinstance(RemoteVersionController.I.running_in_ci(), bool)

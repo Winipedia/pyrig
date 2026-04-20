@@ -6,6 +6,10 @@ from pyrig.rig.tools.package_index import PackageIndex
 class TestPackageIndex:
     """Test class."""
 
+    def test_access_token_key(self) -> None:
+        """Test method."""
+        assert PackageIndex.I.access_token_key() == "PYPI_TOKEN"
+
     def test_name(self) -> None:
         """Test method."""
         result = PackageIndex.I.name()

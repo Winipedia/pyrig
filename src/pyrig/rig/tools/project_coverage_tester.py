@@ -91,3 +91,10 @@ class ProjectCoverageTester(Tool):
             check_repo_url=False, url_encode=True
         )
         return f"https://codecov.io/gh/{owner}/{repo}"
+
+    def access_token_key(self) -> str:
+        """Get the environment variable key for the Codecov access token.
+
+        Used in CI/CD contexts for authentication when uploading coverage reports.
+        """
+        return "CODECOV_TOKEN"

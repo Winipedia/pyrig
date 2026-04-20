@@ -8,6 +8,9 @@ from typing import Any
 import pytest
 
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
+from pyrig.rig.configs.remote_version_control.workflows.health_check import (
+    HealthCheckWorkflowConfigFile,
+)
 
 
 @pytest.fixture
@@ -45,6 +48,34 @@ def my_test_workflow(
 
 class TestWorkflowConfigFile:
     """Test class."""
+
+    def test_repo_token_var(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile.I.repo_token_var() == "secrets.REPO_TOKEN"
+
+    def test_github_token_var(self) -> None:
+        """Test method."""
+        assert (
+            HealthCheckWorkflowConfigFile.I.github_token_var() == "secrets.GITHUB_TOKEN"
+        )
+
+    def test_codecov_token_var(self) -> None:
+        """Test method."""
+        assert (
+            HealthCheckWorkflowConfigFile.I.codecov_token_var()
+            == "secrets.CODECOV_TOKEN"
+        )
+
+    def test_pypi_token_var(self) -> None:
+        """Test method."""
+        assert HealthCheckWorkflowConfigFile.I.pypi_token_var() == "secrets.PYPI_TOKEN"
+
+    def test_secrets_var(self) -> None:
+        """Test method."""
+        assert (
+            HealthCheckWorkflowConfigFile.I.secrets_var("TEST_TOKEN")
+            == "secrets.TEST_TOKEN"
+        )
 
     def test_if_workflow_run_is_not_cron_triggered(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -122,13 +153,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().if_pypi_token_configured()
         assert result == "${{ secrets.PYPI_TOKEN != '' }}"
-
-    def test_if_codecov_token_configured(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().if_codecov_token_configured()
-        assert result == "${{ secrets.CODECOV_TOKEN != '' }}"
 
     def test_step_save_container_image(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -590,9 +614,7 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().insert_repo_token()
-        assert result == "${{ secrets.REPO_TOKEN }}", (
-            f"Expected '${{{{ secrets.REPO_TOKEN }}}}', got {result}"
-        )
+        assert result == "${{ secrets.REPO_TOKEN }}"
 
     def test_insert_codecov_token(
         self, my_test_workflow: type[WorkflowConfigFile]

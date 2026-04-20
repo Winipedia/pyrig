@@ -74,3 +74,10 @@ class PackageIndex(Tool):
             Empty tuple.
         """
         return ()
+
+    def access_token_key(self) -> str:
+        """Get the environment variable key for the access token.
+
+        Used in CI/CD contexts for authentication when publishing to PyPI.
+        """
+        return "PYPI_TOKEN"
