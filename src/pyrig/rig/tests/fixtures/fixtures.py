@@ -13,6 +13,7 @@ from types import ModuleType
 from typing import Any
 
 import pytest
+from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.modules import import_module_with_file_fallback
 from pyrig.core.introspection.packages import (
@@ -45,6 +46,21 @@ def command_works() -> Callable[[Callable[..., Any]], None]:
         stoud = completed_process.stdout
         name = cmd.__name__.replace("_", "-")  # ty:ignore[unresolved-attribute]
         assert name in stoud
+
+    return check
+
+
+@pytest.fixture
+def command_calls_function(
+    mocker: MockerFixture,
+) -> Callable[[Callable[..., Any], Callable[..., Any]], None]:
+    """Fixture to check if a command calls the expected function."""
+
+    def check(cmd: Callable[..., Any], function: Callable[..., Any]) -> None:
+        """Check if the command calls the expected function."""
+        mock = mocker.patch(function.__module__ + "." + function.__name__)  # ty:ignore[unresolved-attribute]
+        cmd()
+        mock.assert_called_once()
 
     return check
 

@@ -5,12 +5,6 @@ This means that any function defined in this module becomes a CLI command that i
 available in all dependent projects as a shared command.
 """
 
-from importlib.metadata import version as _version
-
-import typer
-
-from pyrig.core.cli import project_name_from_argv
-
 
 def version() -> None:
     """Display the current project's version.
@@ -32,5 +26,6 @@ def version() -> None:
         The package must be installed (even in editable mode) for version
         retrieval to work.
     """
-    project_name = project_name_from_argv()
-    typer.echo(f"{project_name} version {_version(project_name)}")
+    from pyrig.rig.cli.commands.version import project_version  # noqa: PLC0415
+
+    project_version()
