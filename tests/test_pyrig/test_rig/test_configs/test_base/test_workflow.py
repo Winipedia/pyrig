@@ -361,9 +361,22 @@ class TestWorkflowConfigFile:
         def step_test() -> None:
             pass
 
-        result = my_test_workflow().step(step_test, run="echo test")
-        assert "name" in result, "Expected 'name' in step"
-        assert "id" in result, "Expected 'id' in step"
+        result = my_test_workflow().step(
+            step_func=step_test,
+            run="echo test",
+            if_condition="condition",
+            uses="action/checkout@v2",
+            with_={"param": "value"},
+            env={"ENV_VAR": "value"},
+            step={"existing": "config"},
+        )
+        assert "name" in result
+        assert "id" in result
+        assert "run" in result
+        assert "if" in result
+        assert "uses" in result
+        assert "with" in result
+        assert "env" in result
 
     def test_strategy_matrix_os_and_python_version(
         self, my_test_workflow: type[WorkflowConfigFile]
