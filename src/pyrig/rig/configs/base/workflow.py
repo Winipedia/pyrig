@@ -400,6 +400,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         self,
         step_func: Callable[..., Any],
         run: str | None = None,
+        if_condition: str | None = None,
         uses: str | None = None,
         with_: dict[str, Any] | None = None,
         env: dict[str, Any] | None = None,
@@ -414,6 +415,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             with_: Input parameters for the action.
             env: Environment variables for the step.
             step: Existing step dict to update.
+            if_condition: Condition for the step.
 
         Returns:
             Step configuration dict.
@@ -428,6 +430,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step_config["run"] = run
         if uses is not None:
             step_config["uses"] = uses
+        if if_condition is not None:
+            step_config["if"] = if_condition
         if with_ is not None:
             step_config["with"] = with_
         if env is not None:
