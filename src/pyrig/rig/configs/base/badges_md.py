@@ -21,6 +21,7 @@ Example:
 
 import re
 
+from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -52,7 +53,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             Repository related badges and more
     """
 
-    def is_correct(self) -> bool:
+    def merge_configs(self) -> ConfigList:
         """Check correctness, replacing a stale description if needed.
 
         Normally `StringConfigFile.I.merge_configs` prepends the expected lines to
@@ -64,15 +65,12 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         Returns:
             True if the file contains all expected content.
         """
-        file_content = self.file_content()
-        updated_content = self.replace_description(file_content)
+        updated_content = self.replace_description(self.file_content())
         updated_content = self.replace_badges(updated_content)
-        # only dump if content changed
-        if updated_content != file_content:
-            self.dump(self.split_lines(updated_content))
-        # dump clears the cache,
-        # and this checks the real file again, which is the wanted behavior
-        return super().is_correct()
+        if self.all_lines_in_content(lines=self.configs(), content=updated_content):
+            return self.split_lines(updated_content)
+
+        return super().merge_configs()
 
     def lines(self) -> list[str]:
         """Generate Markdown with project name, categorized badges, and description.
@@ -142,9 +140,6 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             Updated content with the current description from pyproject.toml.
         """
         expected_description = PyprojectConfigFile.I.project_description()
-        if expected_description in content:
-            # description is already correct, no need to replace
-            return content
         pattern = r"---\s*\n(.*?)\n---"
         replacement = f"---\n\n> {expected_description}\n\n---"
         # only replace first occurence, as description is expected at the top
@@ -169,9 +164,6 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         # only consider content before description
         badges_content = content.split("---", 1)[0]
         for badge in expected_badges:
-            if badge in badges_content:
-                # badge is already correct, no need to replace
-                continue
             # extract the alt text (tool cls name) from the badge markdown
             alt_text_match = re.search(r"\[!\[(.*?)\]", badge)
             if not alt_text_match:

@@ -115,8 +115,13 @@ class StringConfigFile(ListConfigFile):
             ``True`` if parent validation passes or all required lines found
             in file content.
         """
-        all_lines_in_file = all(line in self.file_content() for line in self.lines())
-        return super().is_correct() or all_lines_in_file
+        return super().is_correct() or self.all_lines_in_content(
+            lines=self.configs(), content=self.file_content()
+        )
+
+    def all_lines_in_content(self, lines: Iterable[str], content: str) -> bool:
+        """Check if all lines are present in content via substring matching."""
+        return all(line in content for line in lines)
 
     def file_content(self) -> str:
         r"""Return file content as a single string by joining lines from `load()`."""
