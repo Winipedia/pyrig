@@ -577,13 +577,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_build_artifacts()
         assert "run" in result, "Expected 'run' in step"
 
-    def test_step_download_artifacts(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_download_artifacts()
-        assert "uses" in result, "Expected 'uses' in step"
-
     def test_step_download_artifacts_from_workflow_run(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:

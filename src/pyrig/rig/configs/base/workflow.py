@@ -400,7 +400,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         self,
         step_func: Callable[..., Any],
         run: str | None = None,
-        if_condition: str | None = None,
         uses: str | None = None,
         with_: dict[str, Any] | None = None,
         env: dict[str, Any] | None = None,
@@ -411,7 +410,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Args:
             step_func: Function representing the step, used to generate name/ID.
             run: Shell command to execute.
-            if_condition: Conditional expression for step execution.
             uses: GitHub Action to use.
             with_: Input parameters for the action.
             env: Environment variables for the step.
@@ -428,8 +426,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         step_config: dict[str, Any] = {"name": name, "id": id_}
         if run is not None:
             step_config["run"] = run
-        if if_condition is not None:
-            step_config["if"] = if_condition
         if uses is not None:
             step_config["uses"] = uses
         if with_ is not None:
@@ -980,7 +976,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         self,
         *,
         step: dict[str, Any] | None = None,
-        fetch_depth: int | None = None,
         repo_token: bool = False,
     ) -> dict[str, Any]:
         """Create a step that checks out the repository.
@@ -995,8 +990,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         if step is None:
             step = {}
-        if fetch_depth is not None:
-            step.setdefault("with", {})["fetch-depth"] = fetch_depth
         if repo_token:
             step.setdefault("with", {})["token"] = self.insert_repo_token()
         return self.step(
@@ -1419,38 +1412,9 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_download_artifacts(
-        self,
-        *,
-        name: str | None = None,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that downloads build artifacts.
-
-        Args:
-            name: Artifact name to download. None downloads all.
-            path: Path to download to. Defaults to artifacts directory.
-            step: Existing step dict to update.
-
-        Returns:
-            Step using actions/download-artifact.
-        """
-        # omit name downloads all by default
-        with_: dict[str, Any] = {"path": BuilderConfigFile.dist_dir_name()}
-        if name is not None:
-            with_["name"] = name
-        with_["merge-multiple"] = "true"
-        return self.step(
-            step_func=self.step_download_artifacts,
-            uses="actions/download-artifact@main",
-            with_=with_,
-            step=step,
-        )
-
     def step_download_artifacts_from_workflow_run(
         self,
         *,
-        name: str | None = None,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a step that downloads artifacts from triggering workflow run.
@@ -1459,7 +1423,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         the workflow that triggered this workflow (via workflow_run event).
 
         Args:
-            name: Artifact name to download. None downloads all.
             path: Path to download to. Defaults to artifacts directory.
             step: Existing step dict to update.
 
@@ -1471,8 +1434,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             "run-id": self.insert_workflow_run_id(),
             "github-token": self.insert_github_token(),
         }
-        if name is not None:
-            with_["name"] = name
+
         with_["merge-multiple"] = "true"
         return self.step(
             step_func=self.step_download_artifacts_from_workflow_run,
