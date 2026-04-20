@@ -395,15 +395,6 @@ def {test_func_name}() -> None:
             # if the class already exists we need to insert the new methods
             # rather than overwrite the class
             module_content_parts = test_module_content.split(test_cls_skeleton)
-            expected_parts = 2  # bc there should be only one or zero class definition
-            num_parts = len(module_content_parts)
-            if num_parts > expected_parts:
-                msg = (
-                    f"Found {num_parts} parts, expected {expected_parts}. "
-                    f"This likely means the class {test_class_name} "
-                    f"is defined multiple times in the test module."
-                )
-                raise RuntimeError(msg)
             # we simply insert the new class content into the parts
             module_content_parts.insert(1, test_cls_content)
             test_module_content = "".join(module_content_parts)
