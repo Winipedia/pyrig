@@ -125,14 +125,14 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
         """
         # try os env first
         token = os.getenv("REPO_TOKEN")
-        if token:
+        if token is not None:
             logger.debug("Using repository token from environment variable")
             return token
 
         dotenv = DotEnvConfigFile.I.load()
         token = dotenv.get("REPO_TOKEN")
         dotenv_path = DotEnvConfigFile.I.path()
-        if token:
+        if token is not None:
             logger.debug("Using repository token from %s file", dotenv_path)
             return token
 
