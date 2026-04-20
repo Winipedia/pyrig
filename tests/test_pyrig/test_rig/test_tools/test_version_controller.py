@@ -24,7 +24,10 @@ class TestVersionController:
         result = VersionController()._repo_owner_and_name(  # noqa: SLF001
             check_repo_url=False, url_encode=False
         )
-        assert result == ("Winipedia", "pyrig")
+        owner, name = result
+        assert isinstance(owner, str)  # in ci its github actions bot
+        assert name == "pyrig"
+
         remote_mock.assert_called_once()
 
     def test_ignore_filename(self) -> None:
