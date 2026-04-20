@@ -19,6 +19,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.remote_version_control.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
+from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
 
@@ -124,13 +125,13 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
             Use environment variables or .env (gitignored).
         """
         # try os env first
-        token = os.getenv("REPO_TOKEN")
+        token = os.getenv(RemoteVersionController.I.access_token_key())
         if token is not None:
             logger.debug("Using repository token from environment variable")
             return token
 
         dotenv = DotEnvConfigFile.I.load()
-        token = dotenv.get("REPO_TOKEN")
+        token = dotenv.get(RemoteVersionController.I.access_token_key())
         dotenv_path = DotEnvConfigFile.I.path()
         if token is not None:
             logger.debug("Using repository token from %s file", dotenv_path)

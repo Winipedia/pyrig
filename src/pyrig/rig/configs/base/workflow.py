@@ -50,11 +50,14 @@ from pyrig.rig.tools.container_engine import (
 )
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.package_index import PackageIndex
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pre_committer import PreCommitter
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
+from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 
 
@@ -168,7 +171,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
     # Overridable WorkflowConfigFile Parts
     # ----------------------------------------------------------------------------
-
     @abstractmethod
     def jobs(self) -> ConfigDict:
         """Get the workflow jobs.
@@ -228,7 +230,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
     # WorkflowConfigFile Conventions
     # ----------------------------------------------------------------------------
-
     def workflow_name(self) -> str:
         """Generate a human-readable workflow name from the class name.
 
@@ -248,7 +249,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
     # Build Utilities
     # ----------------------------------------------------------------------------
-
     def job(  # noqa: PLR0913
         self,
         job_func: Callable[..., Any],
@@ -331,7 +331,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return name.removeprefix(f"{prefix}_")
 
     # triggers
-
     def on_workflow_dispatch(self) -> dict[str, Any]:
         """Create a manual workflow dispatch trigger.
 
@@ -395,7 +394,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return {"workflow_run": config}
 
     # permissions
-
     def permission_content(self, permission: str = "read") -> dict[str, Any]:
         """Create a contents permission configuration.
 
@@ -408,7 +406,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return {"contents": permission}
 
     # Steps
-
     def step(  # noqa: PLR0913
         self,
         step_func: Callable[..., Any],
@@ -455,7 +452,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return step_config
 
     # Strategy
-
     def strategy_matrix_os_and_python_version(
         self,
         os: list[str] | None = None,
@@ -648,7 +644,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
     # WorkflowConfigFile Steps
     # ----------------------------------------------------------------------------
     # Combined Steps
-
     def steps_core_setup(
         self,
         python_version: str | None = None,
@@ -887,7 +882,9 @@ class WorkflowConfigFile(DictYmlConfigFile):
         if step is None:
             step = {}
         if src_package_is_pyrig():
-            step.setdefault("env", {})["REPO_TOKEN"] = self.insert_repo_token()
+            step.setdefault("env", {})[RemoteVersionController.I.access_token_key()] = (
+                self.insert_repo_token()
+            )
         run = str(PackageManager.I.run_args(*ProjectTester.I.run_tests_in_ci_args()))
         return self.step(
             step_func=self.step_run_tests,
@@ -919,7 +916,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         #  make fail_ci_if_error true if token exists and false if it doesn't
         fail_ci_if_error = self.insert_var(
-            "${{ secrets.CODECOV_TOKEN && 'true' || 'false' }}"
+            f"{self.codecov_token_var()} && 'true' || 'false'"
         )
         return self.step(
             step_func=self.step_upload_coverage_report,
@@ -1133,7 +1130,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             Step that runs uv publish with PYPI_TOKEN.
         """
         run = str(PackageManager.I.publish_args(token=self.insert_pypi_token()))
-        run_if = self.run_if_condition(run, self.insert_pypi_token())
+        run_if = self.run_if_condition(run, self.pypi_token_var())
         return self.step(
             step_func=self.step_publish_to_pypi,
             run=run_if,
@@ -1279,7 +1276,9 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return self.step(
             step_func=self.step_protect_repository,
             run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=protect_repo))),
-            env={"REPO_TOKEN": self.insert_repo_token()},
+            env={
+                RemoteVersionController.I.access_token_key(): self.insert_repo_token()
+            },
             step=step,
         )
 
@@ -1557,9 +1556,38 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    # Insertions
+    # Variables
     # ----------------------------------------------------------------------------
 
+    def repo_token_var(self) -> str:
+        """Get the GitHub expression for the REPO_TOKEN secret."""
+        return self.secrets_var(RemoteVersionController.I.access_token_key())
+
+    def github_token_var(self) -> str:
+        """Get the GitHub expression for the GITHUB_TOKEN secret."""
+        return self.secrets_var("GITHUB_TOKEN")
+
+    def codecov_token_var(self) -> str:
+        """Get the GitHub expression for the CODECOV_TOKEN secret."""
+        return self.secrets_var(ProjectCoverageTester.I.access_token_key())
+
+    def pypi_token_var(self) -> str:
+        """Get the GitHub expression for the PYPI_TOKEN secret."""
+        return self.secrets_var(PackageIndex.I.access_token_key())
+
+    def secrets_var(self, name: str) -> str:
+        """Get the GitHub expression for a secrets variable.
+
+        Args:
+            name: Name of the secret variable.
+
+        Returns:
+            secrets.NAME
+        """
+        return f"secrets.{name}"
+
+    # Insertions
+    # ----------------------------------------------------------------------------
     def insert_var(self, var: str) -> str:
         """Wrap a variable in GitHub Actions expression syntax.
 
@@ -1570,24 +1598,15 @@ class WorkflowConfigFile(DictYmlConfigFile):
             GitHub Actions expression for the variable.
         """
         # remove existing wrapping if it exists
-        var = var.strip().removeprefix("${{").removesuffix("}}").strip()
         return f"${{{{ {var} }}}}"
 
     def insert_repo_token(self) -> str:
-        """Get the GitHub expression for REPO_TOKEN secret.
-
-        Returns:
-            GitHub Actions expression for secrets.REPO_TOKEN.
-        """
-        return self.insert_var("secrets.REPO_TOKEN")
+        """Get the GitHub expression for REPO_TOKEN secret."""
+        return self.insert_var(self.repo_token_var())
 
     def insert_pypi_token(self) -> str:
-        """Get the GitHub expression for PYPI_TOKEN secret.
-
-        Returns:
-            GitHub Actions expression for secrets.PYPI_TOKEN.
-        """
-        return self.insert_var("secrets.PYPI_TOKEN")
+        """Get the GitHub expression for PYPI_TOKEN secret."""
+        return self.insert_var(self.pypi_token_var())
 
     def insert_version(self) -> str:
         """Get a shell expression for the current version.
@@ -1625,7 +1644,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             GitHub Actions expression for secrets.GITHUB_TOKEN.
         """
-        return self.insert_var("secrets.GITHUB_TOKEN")
+        return self.insert_var(self.github_token_var())
 
     def insert_codecov_token(self) -> str:
         """Get the GitHub expression for CODECOV_TOKEN.
@@ -1633,7 +1652,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             GitHub Actions expression for secrets.CODECOV_TOKEN.
         """
-        return self.insert_var("secrets.CODECOV_TOKEN")
+        return self.insert_var(self.codecov_token_var())
 
     def insert_repository_name(self) -> str:
         """Get the GitHub expression for repository name.
@@ -1704,7 +1723,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
     # ifs
     # ----------------------------------------------------------------------------
-
     def combined_if(self, *conditions: str, operator: str) -> str:
         """Combine multiple conditions with a logical operator.
 
@@ -1762,19 +1780,10 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             GitHub Actions expression checking for PYPI_TOKEN.
         """
-        return self.insert_var("secrets.PYPI_TOKEN != ''")
-
-    def if_codecov_token_configured(self) -> str:
-        """Create a condition for CODECOV_TOKEN being configured.
-
-        Returns:
-            GitHub Actions expression checking for CODECOV_TOKEN.
-        """
-        return self.insert_var("secrets.CODECOV_TOKEN != ''")
+        return self.insert_var(f"{self.pypi_token_var()} != ''")
 
     # Runs
     # ----------------------------------------------------------------------------
-
     def run_if_condition(self, run: str, condition: str) -> str:
         """Return a run command that only runs if condition is true.
 

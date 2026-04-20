@@ -146,3 +146,10 @@ class RemoteVersionController(Tool):
             True if running in CI, False otherwise.
         """
         return os.getenv("GITHUB_ACTIONS", "false") == "true"
+
+    def access_token_key(self) -> str:
+        """Get the environment variable key for the repository access token.
+
+        Used for CI/CD authentication.
+        """
+        return "REPO_TOKEN"

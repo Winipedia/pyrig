@@ -6,6 +6,10 @@ from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 class TestProjectCoverageTester:
     """Test class."""
 
+    def test_access_token_key(self) -> None:
+        """Test method."""
+        assert ProjectCoverageTester.I.access_token_key() == "CODECOV_TOKEN"
+
     def test_additional_args(self) -> None:
         """Test method."""
         assert ProjectCoverageTester.I.additional_args() == (
