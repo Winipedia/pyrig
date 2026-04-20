@@ -134,7 +134,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "pytest": {
                     "ini_options": {
                         "testpaths": [f"{tests_package_root}"],
-                        "addopts": f"--cov={PackageManager.I.package_name()} --cov-report=term-missing --cov-fail-under={ProjectCoverageTester.I.coverage_threshold()}",  # noqa: E501
+                        "addopts": " ".join(ProjectCoverageTester.I.additional_args()),
                     }
                 },
                 "bandit": {
