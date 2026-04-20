@@ -2,24 +2,35 @@
 
 from pathlib import Path
 
+from pytest_mock import MockFixture
+
 from pyrig.rig.tools.version_controller import VersionController
 
 
 class TestVersionController:
     """Test class."""
 
-    def test__repo_owner_and_name(self) -> None:
+    def test__repo_owner_and_name(self, mocker: MockFixture) -> None:
         """Test method."""
         result = VersionController()._repo_owner_and_name(  # noqa: SLF001
             check_repo_url=False, url_encode=False
         )
-        assert isinstance(result, tuple)
-        assert all(isinstance(item, str) for item in result)
+        assert result == ("Winipedia", "pyrig")
+
+        # mock repo_remote to return empty string
+        remote_mock = mocker.patch.object(
+            VersionController, VersionController.repo_remote.__name__, return_value=""
+        )
+        result = VersionController()._repo_owner_and_name(  # noqa: SLF001
+            check_repo_url=False, url_encode=False
+        )
+        assert result == ("Winipedia", "pyrig")
+        remote_mock.assert_called_once()
 
     def test_ignore_filename(self) -> None:
         """Test method."""
         result = VersionController.I.ignore_filename()
-        assert result == ".gitignore", f"Expected '.gitignore', got {result}"
+        assert result == ".gitignore"
 
     def test_group(self) -> None:
         """Test method."""

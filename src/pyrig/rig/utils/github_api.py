@@ -70,10 +70,10 @@ def create_or_update_ruleset(
 
     endpoint = "rulesets"
     if ruleset_id:
-        logger.debug("Updating existing ruleset: %s (ID: %s)", ruleset_name, ruleset_id)
         endpoint += f"/{ruleset_id}"
-    else:
-        logger.debug("Creating new ruleset: %s", ruleset_name)
+
+    action = "Updating" if ruleset_id else "Creating"
+    logger.debug("%s ruleset: %s", action, ruleset_name)
 
     result = github_api_request(
         token,
