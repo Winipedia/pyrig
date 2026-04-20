@@ -28,11 +28,14 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/health_check.yml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/release.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig/actions/workflows/release.yml)
 
+<!-- rumdl-disable MD013 -->
 ---
 
-> pyrig is a python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintenance <!-- rumdl-disable-line MD013 -->
+> pyrig is a python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintenance
 
 ---
+
+<!-- rumdl-enable MD013 -->
 
 ## Philosophy
 

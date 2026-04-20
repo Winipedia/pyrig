@@ -53,6 +53,11 @@ class TestBadgesMarkdownConfigFile:
                 ReadmeConfigFile.I.join_lines(ReadmeConfigFile.I.configs())
             )
 
+            # dump configs and check file is correct
+            ReadmeConfigFile.I.dump(ReadmeConfigFile.I.configs())
+            assert ReadmeConfigFile.I.is_correct()
+            assert ReadmeConfigFile.I.file_content() == content
+
     def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""
         # we take pyrigs actual content and change the some urls
