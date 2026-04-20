@@ -5,6 +5,8 @@ from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
 
+import pytest
+
 from pyrig.core.introspection.paths import (
     module_file_path,
     module_name_as_path,
@@ -31,6 +33,12 @@ def test_module_file_path(
         module_file_path(mirror_test)
         == Path("src/pyrig/rig/tests/mirror_test.py").resolve()
     )
+
+    # make ModuleType with __file__ attribute as None
+    module_no_file = ModuleType("module_no_file")
+    module_no_file.__file__ = None
+    with pytest.raises(AttributeError, match=r"Module .* has no __file__"):
+        module_file_path(module_no_file)
 
 
 def test_package_dir_path(

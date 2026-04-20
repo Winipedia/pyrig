@@ -1,12 +1,17 @@
 """Tests for pyrig.os.os module."""
 
+import logging
+from subprocess import CalledProcessError  # nosec: B404
+
 import pytest
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args, run_subprocess, run_subprocess_cached
 
 
-def test_run_subprocess() -> None:
+def test_run_subprocess(
+    mocker: MockerFixture, caplog: pytest.LogCaptureFixture
+) -> None:
     """Test function."""
     cmd = ["echo", "hello"]
     res = run_subprocess(cmd)
@@ -16,6 +21,17 @@ def test_run_subprocess() -> None:
 
     with pytest.raises(RuntimeError, match="Shell mode is forbidden"):
         run_subprocess(cmd, shell=True)  # noqa: S604  # nosec: B604
+
+    # mock run to raise CalledProcessError
+    mock_run = mocker.patch("subprocess.run", side_effect=CalledProcessError(1, cmd))
+    with caplog.at_level(logging.ERROR), pytest.raises(CalledProcessError):
+        run_subprocess(cmd)
+    mock_run.assert_called_once()
+    # Check that the error was logged
+    assert any(
+        "Command failed: ['echo', 'hello'] (exit code 1)" in record.message
+        for record in caplog.records
+    )
 
 
 class TestArgs:

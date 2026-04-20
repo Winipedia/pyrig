@@ -15,6 +15,7 @@ from types import ModuleType
 import pytest
 from pytest_mock import MockerFixture
 
+from pyrig.core.introspection import modules as modules_module
 from pyrig.core.introspection.modules import (
     callable_obj_import_path,
     import_module_from_file,
@@ -81,7 +82,7 @@ def test_import_module_with_file_fallback(tmp_path: Path) -> None:
         assert module.__name__ == "test_module"
 
 
-def test_import_module_from_file(tmp_path: Path) -> None:
+def test_import_module_from_file(tmp_path: Path, mocker: MockerFixture) -> None:
     """Test function."""
     with chdir(tmp_path):
         non_existing_file = tmp_path / Path("non_existing.py")
@@ -100,6 +101,24 @@ def test_import_module_from_file(tmp_path: Path) -> None:
             module_package_path, name="test_package.test_module"
         )
         assert module.__name__ == "test_package.test_module"
+
+        # mock spec_from_file_location to return spec that has attr loader as None
+        spec_mock = mocker.MagicMock()
+        spec_mock.loader = None
+        spec_from_file_location_mock = mocker.patch(
+            modules_module.__name__ + ".spec_from_file_location", return_value=spec_mock
+        )
+        with pytest.raises(ImportError, match="Could not create loader for"):
+            import_module_from_file(module_path, name="test_module")
+        spec_from_file_location_mock.assert_called_once()
+
+        # mock spec_from_file_location to return None
+        spec_mock = mocker.patch(
+            modules_module.__name__ + ".spec_from_file_location", return_value=None
+        )
+        with pytest.raises(ImportError, match="Could not create spec for"):
+            import_module_from_file(module_path, name="test_module")
+        spec_mock.assert_called_once_with("test_module", location=module_path)
 
 
 def test_module_has_docstring(
