@@ -10,7 +10,9 @@ from typing import Any
 import pytest
 
 import pyrig
+from pyrig.rig.cli.commands.make_root import make_project_root
 from pyrig.rig.cli.shared_subcommands import version
+from pyrig.rig.cli.subcommands import mkroot
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
@@ -214,3 +216,10 @@ def test_on_linux_and_latest_python_version_or_not_in_ci(
         assert on_linux_and_latest_python_version_or_not_in_ci is True
     else:
         assert on_linux_and_latest_python_version_or_not_in_ci is False
+
+
+def test_command_calls_function(
+    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
+) -> None:
+    """Test function."""
+    command_calls_function(mkroot, make_project_root)
