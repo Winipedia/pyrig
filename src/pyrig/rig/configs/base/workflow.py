@@ -257,9 +257,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         permissions: dict[str, Any] | None = None,
         runs_on: str = UBUNTU_LATEST,
         if_condition: str | None = None,
-        outputs: dict[str, str] | None = None,
         steps: list[dict[str, Any]] | None = None,
-        environment: str | None = None,
         job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a job configuration.
@@ -273,7 +271,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             if_condition: Conditional expression for job execution.
             outputs: Job outputs mapping output names to step output references.
             steps: List of step configurations.
-            environment: Environment name for registering deployments on GitHub.
             job: Existing job dict to update.
 
         Returns:
@@ -292,10 +289,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         job_config["runs-on"] = runs_on
         if if_condition is not None:
             job_config["if"] = if_condition
-        if environment is not None:
-            job_config["environment"] = environment
-        if outputs is not None:
-            job_config["outputs"] = outputs
         if steps is not None:
             job_config["steps"] = steps
         job_config.update(job)
@@ -323,10 +316,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             Function name with prefix removed.
         """
-        name = getattr(func, "__name__", "")
-        if not name:
-            msg = f"Cannot extract name from {func}"
-            raise AttributeError(msg)
+        name = func.__name__  # ty:ignore[unresolved-attribute]
         prefix = name.split("_")[0]
         return name.removeprefix(f"{prefix}_")
 
