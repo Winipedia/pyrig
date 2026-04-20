@@ -7,11 +7,8 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
-from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.modules import reimport_module
-from pyrig.core.introspection.packages import import_package_with_dir_fallback
-from pyrig.core.introspection.paths import path_as_module_name
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
@@ -76,6 +73,19 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
+    def test_concrete_subclasses(self) -> None:
+        """Test method."""
+        subclasses = tuple(MirrorTestConfigFile.concrete_subclasses())
+        assert len(subclasses) > 0
+        assert all(
+            issubclass(subclass, MirrorTestConfigFile) for subclass in subclasses
+        )
+
+    def test_all_mirror_modules(self) -> None:
+        """Test method."""
+        modules = tuple(MirrorTestConfigFile.L.all_mirror_modules())
+        assert mirror_test in modules
+
     def test_test_func_name(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
@@ -102,62 +112,6 @@ class TestMirrorTestConfigFile:
         """Test method."""
         docstring = my_test_mirror_test_config_file().test_module_docstring()
         assert isinstance(docstring, str)
-
-    def test_create_all_test_modules(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        mock_create_test_modules_for_package = mocker.patch.object(
-            MirrorTestConfigFile,
-            MirrorTestConfigFile.create_test_modules_for_package.__name__,
-        )
-        MirrorTestConfigFile.L.create_all_test_modules()
-        mock_create_test_modules_for_package.assert_called_once()
-
-    def test_create_test_modules_for_package(
-        self,
-        tmp_path: Path,
-        create_module: Callable[[Path], ModuleType],
-        create_package: Callable[[Path], ModuleType],
-    ) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            # Create a source package with a module
-            package_path = Path("src_package")
-            subpackage_path = package_path / "subpackage"
-            mod1_path = package_path / "mod1.py"
-            mod2_path = package_path / "mod2.py"
-            sub_mod1_path = subpackage_path / "sub_mod1.py"
-            sub_mod2_path = subpackage_path / "sub_mod2.py"
-
-            # create the package and modules
-            create_package(package_path)
-            create_package(subpackage_path)
-            create_module(mod1_path)
-            create_module(mod2_path)
-            create_module(sub_mod1_path)
-            create_module(sub_mod2_path)
-
-            assert mod1_path.exists()
-            assert mod2_path.exists()
-            assert sub_mod1_path.exists()
-
-            package = import_package_with_dir_fallback(
-                package_path, name=path_as_module_name(package_path)
-            )
-            MirrorTestConfigFile.L.create_test_modules_for_package(package)
-
-            # assert the test modules were created
-            test_mod1_path = Path("tests/test_src_package/test_mod1.py")
-            test_mod2_path = Path("tests/test_src_package/test_mod2.py")
-            test_sub_mod1_path = Path(
-                "tests/test_src_package/test_subpackage/test_sub_mod1.py"
-            )
-            test_sub_mod2_path = Path(
-                "tests/test_src_package/test_subpackage/test_sub_mod2.py"
-            )
-            assert test_mod1_path.exists()
-            assert test_mod2_path.exists()
-            assert test_sub_mod1_path.exists()
-            assert test_sub_mod2_path.exists()
 
     def test__dump(
         self,
@@ -431,7 +385,3 @@ class TestMirrorTestConfigFile:
         """Test method."""
         subclass = MirrorTestConfigFile.L.generate_subclass(mirror_test)
         assert subclass().mirror_module() == mirror_test
-
-    def test_create_test_modules(self) -> None:
-        """Test method."""
-        MirrorTestConfigFile.L.create_test_modules([mirror_test])

@@ -11,7 +11,6 @@ import os
 import shutil
 from collections.abc import Generator
 from contextlib import chdir
-from importlib import import_module
 from pathlib import Path
 
 import pytest
@@ -90,7 +89,8 @@ def all_config_files_correct() -> None:
     """
     # if we are in CI then we must create config files that are gitignored
     # as they are not pushed to the repository
-    tuple(cf().validate() for cf in ConfigFile.version_control_ignored_subclasses())
+    if RemoteVersionController.I.running_in_ci():
+        tuple(cf().validate() for cf in ConfigFile.version_control_ignored_subclasses())
 
     incorrect_cfs = tuple(ConfigFile.incorrect_subclasses())
     ConfigFile.validate_subclasses(incorrect_cfs)
@@ -136,14 +136,7 @@ def all_modules_tested() -> None:
     Raises:
         AssertionError: If any source modules lack corresponding tests.
     """
-    src_package = import_module(PackageManager.I.package_name())
-
-    # we will now go through all the modules in the src package and check
-    # that there is a corresponding test module
-    all_modules = (m for m, is_pkg in walk_package(src_package) if not is_pkg)
-
-    subclasses = MirrorTestConfigFile.L.generate_subclasses(all_modules)
-    incorrect_subclasses = tuple(sc for sc in subclasses if not sc().is_correct())
+    incorrect_subclasses = tuple(MirrorTestConfigFile.L.incorrect_subclasses())
     MirrorTestConfigFile.L.validate_subclasses(incorrect_subclasses)
 
     msg = f"""Found incorrect test modules.

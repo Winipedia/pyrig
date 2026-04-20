@@ -402,9 +402,8 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
     def validate_all_subclasses(cls) -> None:
         """Validate all discovered ConfigFile subclasses in priority order.
 
-        See Also:
-            subclasses: Discovery mechanism
-            validate_subclasses: validation mechanism
+        Discovers all concrete subclasses across dependents, sorts by priority,
+        and validates each. This is the main entry point for validating config files.
         """
         cls.validate_subclasses(cls.concrete_subclasses())
 
