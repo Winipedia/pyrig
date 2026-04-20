@@ -391,7 +391,6 @@ def {test_func_name}() -> None:
             test_cls_content = test_cls_skeleton + "".join(
                 self.test_method_skeleton(name) for name in test_method_names
             )
-
             # if the class already exists we need to insert the new methods
             # rather than overwrite the class
             module_content_parts = test_module_content.split(test_cls_skeleton)
