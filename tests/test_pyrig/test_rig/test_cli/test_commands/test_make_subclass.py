@@ -9,7 +9,7 @@ from pyrig.rig.cli.commands.make_subclass import choose_subclass, make_subclass
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
-def test_make_subclass(tmp_path: Path) -> None:
+def test_make_subclass(tmp_path: Path, mocker: MockerFixture) -> None:
     """Test function."""
     project_dir = tmp_path / "my-project"
     project_dir.mkdir()
@@ -17,9 +17,14 @@ def test_make_subclass(tmp_path: Path) -> None:
     with chdir(project_dir):
         cls = Pyrigger
 
-        import_path = f"{cls.__module__}.{cls.__name__}"
+        choose_subclass_mock = mocker.patch(
+            choose_subclass.__module__ + "." + choose_subclass.__name__,
+            return_value=cls,
+        )
 
-        make_subclass(import_path)
+        make_subclass()
+
+        choose_subclass_mock.assert_called_once()
 
         path = Path("src/my_project/rig/tools/pyrigger.py")
 

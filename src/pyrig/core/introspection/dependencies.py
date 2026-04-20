@@ -109,10 +109,7 @@ def discover_equivalent_modules_across_dependents(
         package_module = import_module_with_default(package_module_name)
         if package_module is not None:
             yield package_module
-        if (
-            isinstance(until_package, ModuleType)
-            and package.__name__ == until_package.__name__
-        ):
+        if package is until_package:
             break
 
 

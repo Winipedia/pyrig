@@ -9,7 +9,6 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from pyrig.core.introspection.packages import make_init_file
-from pyrig.core.iterate import generator_has_items
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.utils.packages import find_namespace_packages
 from pyrig.rig.utils.paths import package_name_as_root_path
@@ -28,9 +27,6 @@ def make_init_files() -> None:
         directory is excluded from scanning.
     """
     namespace_packages = find_namespace_packages()
-    has_namespace_packages, namespace_packages = generator_has_items(namespace_packages)
-    if not has_namespace_packages:
-        return
 
     # make init files for all namespace packages
     package_paths = (

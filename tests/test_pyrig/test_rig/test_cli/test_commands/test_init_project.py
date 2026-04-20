@@ -7,13 +7,24 @@ from contextlib import chdir
 from pathlib import Path
 
 import tomlkit
+from pytest_mock import MockFixture
 
+from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_controller import VersionController
+
+
+def test_init_project_calls_pyrigger(mocker: MockFixture) -> None:
+    """This test exists only to get to 100% test coverage."""
+    pyrigger_init_project_mock = mocker.patch.object(
+        Pyrigger, Pyrigger.init_project.__name__
+    )
+    init_project()
+    pyrigger_init_project_mock.assert_called_once()
 
 
 def test_init_project(tmp_path: Path) -> None:
