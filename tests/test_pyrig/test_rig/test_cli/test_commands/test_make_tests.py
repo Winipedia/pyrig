@@ -1,12 +1,12 @@
 """Tests module."""
 
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.rig.cli.commands.make_tests import make_tests
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 
 
-def test_make_tests(mocker: MockFixture) -> None:
+def test_make_tests(mocker: MockerFixture) -> None:
     """Test function."""
     mock_make_tests = mocker.patch.object(
         MirrorTestConfigFile, MirrorTestConfigFile.create_all_test_modules.__name__

@@ -8,7 +8,7 @@ from types import ModuleType
 
 import pytest
 from PIL import Image
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.packages import import_package_with_dir_fallback
 from pyrig.rig.builders.base import pyinstaller
@@ -152,7 +152,7 @@ class TestPyInstallerBuilder:
     def test_create_artifacts(
         self,
         my_test_pyinstaller_builder: type[PyInstallerBuilder],
-        mocker: MockFixture,
+        mocker: MockerFixture,
         tmp_path: Path,
     ) -> None:
         """Test method."""

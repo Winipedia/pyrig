@@ -1,6 +1,6 @@
 """Tests module."""
 
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.rig.cli.commands.make_root import (
     make_project_root,
@@ -8,7 +8,7 @@ from pyrig.rig.cli.commands.make_root import (
 from pyrig.rig.configs.base.config_file import ConfigFile
 
 
-def test_make_project_root(mocker: MockFixture) -> None:
+def test_make_project_root(mocker: MockerFixture) -> None:
     """Test function."""
     num_config_file = tuple(ConfigFile.concrete_subclasses())
     mock = mocker.patch.object(

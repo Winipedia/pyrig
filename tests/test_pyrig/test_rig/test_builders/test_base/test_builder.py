@@ -6,7 +6,7 @@ from contextlib import chdir
 from pathlib import Path
 
 import pytest
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.rig import builders
@@ -74,7 +74,9 @@ class TestBuilderConfigFile:
         assert all(isinstance(item, Path) for item in loaded)
 
     def test__dump(
-        self, mocker: MockFixture, my_test_builder_config_file: type[BuilderConfigFile]
+        self,
+        mocker: MockerFixture,
+        my_test_builder_config_file: type[BuilderConfigFile],
     ) -> None:
         """Test method."""
         # assert calls build
@@ -99,7 +101,7 @@ class TestBuilderConfigFile:
     def test_is_correct(
         self,
         my_test_builder_config_file: type[BuilderConfigFile],
-        mocker: MockFixture,
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         assert not my_test_builder_config_file().is_correct()
@@ -128,7 +130,7 @@ class TestBuilderConfigFile:
     def test_build(
         self,
         my_test_builder_config_file: type[BuilderConfigFile],
-        mocker: MockFixture,
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         spy = mocker.spy(

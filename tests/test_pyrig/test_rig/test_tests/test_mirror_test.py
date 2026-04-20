@@ -7,7 +7,7 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.modules import reimport_module
 from pyrig.core.introspection.packages import import_package_with_dir_fallback
@@ -103,7 +103,7 @@ class TestMirrorTestConfigFile:
         docstring = my_test_mirror_test_config_file().test_module_docstring()
         assert isinstance(docstring, str)
 
-    def test_create_all_test_modules(self, mocker: MockFixture) -> None:
+    def test_create_all_test_modules(self, mocker: MockerFixture) -> None:
         """Test method."""
         mock_create_test_modules_for_package = mocker.patch.object(
             MirrorTestConfigFile,

@@ -1,7 +1,7 @@
 """Tests for pyrig.os.os module."""
 
 import pytest
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args, run_subprocess, run_subprocess_cached
 
@@ -39,7 +39,7 @@ class TestArgs:
         result = str(args)
         assert result == "uv run pytest"
 
-    def test_run(self, mocker: MockFixture) -> None:
+    def test_run(self, mocker: MockerFixture) -> None:
         """Test method."""
         mock_run_subprocess = mocker.patch("subprocess.run")
         args = Args(("uv", "--version"))

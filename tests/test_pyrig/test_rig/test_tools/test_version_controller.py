@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pytest_mock import MockFixture
+from pytest_mock import MockerFixture
 
 from pyrig.rig.tools.version_controller import VersionController
 
@@ -10,7 +10,7 @@ from pyrig.rig.tools.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
-    def test__repo_owner_and_name(self, mocker: MockFixture) -> None:
+    def test__repo_owner_and_name(self, mocker: MockerFixture) -> None:
         """Test method."""
         result = VersionController()._repo_owner_and_name(  # noqa: SLF001
             check_repo_url=False, url_encode=False
