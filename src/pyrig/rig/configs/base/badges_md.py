@@ -64,8 +64,6 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         Returns:
             True if the file contains all expected content.
         """
-        if super().is_correct():
-            return True
         file_content = self.file_content()
         updated_content = self.replace_description(file_content)
         updated_content = self.replace_badges(updated_content)

@@ -1,5 +1,7 @@
 """module."""
 
+from pytest_mock import MockerFixture
+
 from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -8,7 +10,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 class TestBadgesMarkdownConfigFile:
     """Test class."""
 
-    def test_replace_badges(self) -> None:
+    def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""
         # we take pyrigs actual content and change the some urls
         content = ReadmeConfigFile.I.join_lines(ReadmeConfigFile.I.lines())
@@ -23,6 +25,12 @@ class TestBadgesMarkdownConfigFile:
         assert false_https not in corrected_content
 
         assert corrected_content == content
+
+        # mock re.search to return None to test that the method handles it gracefully
+        search_mock = mocker.patch("re.search", return_value=None)
+        result = ReadmeConfigFile().replace_badges(false_content)
+        search_mock.assert_called()
+        assert result == false_content
 
     def test_replace_description(self) -> None:
         """Test that replace_description replaces a stale description."""
@@ -41,9 +49,9 @@ class TestBadgesMarkdownConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        badges_md_config_cls = ReadmeConfigFile
-        assert issubclass(badges_md_config_cls, BadgesMarkdownConfigFile)
-        assert badges_md_config_cls.I.is_correct()
+        assert issubclass(ReadmeConfigFile, BadgesMarkdownConfigFile)
+
+        assert ReadmeConfigFile.I.is_correct()
 
     def test_badges(self) -> None:
         """Test method."""
