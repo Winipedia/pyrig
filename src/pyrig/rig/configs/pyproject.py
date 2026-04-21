@@ -71,12 +71,17 @@ class PyprojectConfigFile(TomlConfigFile):
         repo_owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
         tests_package_root = ProjectTester.I.tests_package_root().as_posix()
 
+        # local import as ReadmeConfigFile inherits from BadgesMarkdownConfigFile
+        # which needs pyproject info for badges, and pyproject needs the
+        # readme path for metadata. This avoids circular import issues.
+        from pyrig.rig.configs.markdown.readme import ReadmeConfigFile  # noqa: PLC0415
+
         return {
             "project": {
                 "name": PackageManager.I.project_name(),
                 "version": self.project_version(),
                 "description": self.project_description(),
-                "readme": PackageManager.I.readme_path().as_posix(),
+                "readme": ReadmeConfigFile.I.path().as_posix(),
                 "requires-python": self.requires_python(),
                 "dependencies": self.make_dependency_versions(self.dependencies()),
                 "authors": [

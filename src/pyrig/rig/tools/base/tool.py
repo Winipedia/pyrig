@@ -102,14 +102,6 @@ class Tool(DependencySubclass):
             a tuple of two str that are urls.
         """
 
-    @abstractmethod
-    def configs(self) -> dict:
-        """Get tool configuration options.
-
-        The data returned is used in their respective config files
-        like pyproject.toml to configure the tool.
-        """
-
     @classmethod
     def definition_package(cls) -> ModuleType:
         """Get the package where the tool subclasses are supposed to be defined."""

@@ -336,3 +336,11 @@ class TestConfigFile:
 
 class TestPriority:
     """Test class."""
+
+
+class TestListConfigFile:
+    """Test class."""
+
+
+class TestDictConfigFile:
+    """Test class."""
