@@ -37,6 +37,8 @@ from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
+from pyrig.rig.tools.security_checker import SecurityChecker
+from pyrig.rig.tools.type_checker import TypeChecker
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 
@@ -120,7 +122,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "build-backend": PackageManager.I.build_backend(),
             },
             "tool": {
-                "ruff": {
+                Linter.I.name(): {
                     "lint": {
                         "select": ["ALL"],
                         "ignore": ["D203", "D213", "COM812", "ANN401"],
@@ -131,18 +133,18 @@ class PyprojectConfigFile(TomlConfigFile):
                         "pydocstyle": {"convention": Linter.I.pydocstyle()},
                     },
                 },
-                "ty": {
+                TypeChecker.I.name(): {
                     "terminal": {
                         "error-on-warning": True,
                     },
                 },
-                "pytest": {
+                ProjectTester.I.name(): {
                     "ini_options": {
                         "testpaths": [f"{tests_package_root}"],
                         "addopts": " ".join(ProjectCoverageTester.I.additional_args()),
                     }
                 },
-                "bandit": {
+                SecurityChecker.I.name(): {
                     "assert_used": {
                         "skips": [
                             # to ignore asserts for the rig tests package
