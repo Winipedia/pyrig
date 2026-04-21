@@ -57,7 +57,6 @@ class DependencySubclass(ABC):
         """
 
     @classmethod
-    @abstractmethod
     def sorting_key(cls, subclass: type[T]) -> Any:
         """Return a sort key for the given subclass.
 
@@ -65,12 +64,16 @@ class DependencySubclass(ABC):
         should return a value that sorts subclasses in the intended order
         (for example, by priority or by name).
 
+        Default implementation returns the subclass's name, providing a stable
+        alphabetical ordering.
+
         Args:
             subclass: The subclass to compute a key for.
 
         Returns:
-            A value suitable for use as a sort key.
+            A value suitable for use as a sort key for builtin: sorted
         """
+        return subclass.__name__
 
     @classmethod
     def base_dependency(cls) -> ModuleType:

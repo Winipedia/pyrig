@@ -426,3 +426,33 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
             Generator of ConfigFile instances whose files exist but are not correct.
         """
         return (cf for cf in cls.concrete_subclasses() if not cf().is_correct())
+
+
+class ListConfigFile(ConfigFile[ConfigList]):
+    """Abstract base class for list-based configuration files.
+
+    Specifies `ConfigList` as the configuration type. Subclasses inherit
+    proper typing for `load()`, `dump()`, `configs()`, etc.
+
+    Subclasses must implement:
+        - `parent_path`: Directory containing the config file
+        - `extension`: File extension without leading dot
+        - `_configs`: Expected configuration as list
+        - `_load`: Load and parse the file
+        - `_dump`: Write configuration to file
+    """
+
+
+class DictConfigFile(ConfigFile[ConfigDict]):
+    """Abstract base class for dict-based configuration files.
+
+    Specifies ConfigDict as the configuration type. Subclasses inherit
+    proper typing for load(), dump(), configs(), etc.
+
+    Subclasses must implement:
+        - `parent_path`: Directory containing the config file
+        - `extension`: File extension without leading dot
+        - `_configs`: Expected configuration as dict
+        - `_load`: Load and parse the file
+        - `_dump`: Write configuration to file
+    """

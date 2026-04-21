@@ -29,8 +29,7 @@ from abc import abstractmethod
 from collections.abc import Iterable
 
 from pyrig.core.strings import read_text_utf8, write_text_utf8
-from pyrig.rig.configs.base.config_file import ConfigList
-from pyrig.rig.configs.base.list_ import ListConfigFile
+from pyrig.rig.configs.base.config_file import ConfigList, ListConfigFile
 
 
 class StringConfigFile(ListConfigFile):
