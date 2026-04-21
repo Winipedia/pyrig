@@ -42,7 +42,7 @@ class DocsBuilderConfigFile(DictYmlConfigFile):
 
     def stem(self) -> str:
         """Return stem of the configuration file."""
-        return "mkdocs"
+        return DocsBuilder.I.name()
 
     def _configs(self) -> ConfigDict:
         """Build the complete mkdocs.yml configuration.

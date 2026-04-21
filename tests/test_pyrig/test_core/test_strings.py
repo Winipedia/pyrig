@@ -11,13 +11,13 @@ from pyrig.core.strings import (
     make_summary_error_msg,
     package_req_name_split_pattern,
     project_name_from_cwd,
-    pyrig_project_name,
     read_text_utf8,
     snake_to_kebab_case,
     split_on_uppercase,
     write_text_utf8,
 )
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.pyrigger import Pyrigger
 
 
 def test_kebab_to_snake_case() -> None:
@@ -25,9 +25,7 @@ def test_kebab_to_snake_case() -> None:
     project_name = "test-project"
     package_name = kebab_to_snake_case(project_name)
     expected_package_name = "test_project"
-    assert package_name == expected_package_name, (
-        f"Expected {expected_package_name}, got {package_name}"
-    )
+    assert package_name == expected_package_name
 
 
 def test_snake_to_kebab_case() -> None:
@@ -35,25 +33,21 @@ def test_snake_to_kebab_case() -> None:
     package_name = "test_project"
     project_name = snake_to_kebab_case(package_name)
     expected_project_name = "test-project"
-    assert project_name == expected_project_name, (
-        f"Expected {expected_project_name}, got {project_name}"
-    )
+    assert project_name == expected_project_name
 
 
 def test_project_name_from_cwd() -> None:
     """Test function."""
     project_name = project_name_from_cwd()
-    expected_project_name = pyrig_project_name()
-    assert project_name == expected_project_name, (
-        f"Expected {expected_project_name}, got {project_name}"
-    )
+    expected_project_name = Pyrigger.I.name()
+    assert project_name == expected_project_name
 
 
 def test_split_on_uppercase() -> None:
     """Test function."""
     # Test with simple string
     result = list(split_on_uppercase("HelloWorld"))
-    assert result == ["Hello", "World"], f"Expected ['Hello', 'World'], got {result}"
+    assert result == ["Hello", "World"]
 
     # Test with multiple uppercase letters
     result = list(split_on_uppercase("SplitCamelCase"))
@@ -69,7 +63,7 @@ def test_split_on_uppercase() -> None:
 
     # Test with all lowercase
     result = list(split_on_uppercase("alllowercase"))
-    assert result == ["alllowercase"], f"Expected ['alllowercase'], got {result}"
+    assert result == ["alllowercase"]
 
     # test with numbers
     result = list(split_on_uppercase("split1Camel2Case"))
@@ -80,7 +74,7 @@ def test_split_on_uppercase() -> None:
     # entire sentence
     result = list(split_on_uppercase("Split some Camel Case"))
     expected = ["Split some ", "Camel ", "Case"]
-    assert result == expected, f"Expected {expected}, got {result}"
+    assert result == expected
 
 
 def test_make_name_from_obj() -> None:
@@ -186,8 +180,3 @@ def test_write_text_utf8(tmp_path: Path) -> None:
             f"Direct use of .write_text detected in {source_file}. "
             "Use write_text_utf8() instead for consistent UTF-8 handling."
         )
-
-
-def test_pyrig_project_name() -> None:
-    """Test function."""
-    assert pyrig_project_name() == "pyrig"

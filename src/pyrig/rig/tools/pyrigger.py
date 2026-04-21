@@ -20,9 +20,9 @@ from rich.progress import (
     TextColumn,
 )
 
+import pyrig
 from pyrig.core.strings import (
     make_name_from_obj,
-    pyrig_project_name,
     snake_to_kebab_case,
 )
 from pyrig.core.subprocesses import Args
@@ -60,7 +60,7 @@ class Pyrigger(Tool):
         Returns:
             'pyrig'
         """
-        return pyrig_project_name()
+        return snake_to_kebab_case(pyrig.__name__)
 
     def group(self) -> str:
         """Returns the group the tool belongs to.

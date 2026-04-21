@@ -21,13 +21,11 @@ from pyrig.core.introspection.packages import (
 from pyrig.core.requests import internet_is_available
 from pyrig.core.strings import (
     make_summary_error_msg,
-    pyrig_project_name,
-    snake_to_kebab_case,
 )
 from pyrig.rig.cli.commands.make_inits import (
     make_init_files_for_namespace_packages,
 )
-from pyrig.rig.cli.subcommands import mkinits, mktests
+from pyrig.rig.cli.subcommands import mkinits, mkroot, mktests
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
@@ -35,6 +33,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import (
@@ -98,6 +97,8 @@ def all_config_files_correct() -> None:
     msg = f"""Found incorrect {ConfigFile.__name__}s.
 It was attempted to auto-fix them via their {ConfigFile.validate.__name__} method.
 This should have created or updated the config files to be correct.
+Consider using the proper command to create or update the config files:
+    '{Pyrigger.I.cmd_args(cmd=mkroot)}'
 
 Please verify the changes at the following paths:
 {make_summary_error_msg(cf().path() for cf in incorrect_cfs)}
@@ -119,7 +120,7 @@ def no_namespace_packages() -> None:
 Namespace packages are packages that do not have an __init__.py file.
 This fixture attempted to auto-fix this by creating the files for any namespace packages found.
 Consider using the proper command to create __init__.py files for any namespace packages in the source directory:
-    '{pyrig_project_name()} {snake_to_kebab_case(mkinits.__name__)}'
+    '{Pyrigger.I.cmd_args(cmd=mkinits)}'
 
 Please verify the changes at the following paths:
 {make_summary_error_msg(package_name_as_root_path(package_name) / "__init__.py" for package_name in namespace_packages)}
@@ -146,7 +147,7 @@ The test module should mirror the structure package under the source directory.
 Attempted to auto-generate test skeletons for any missing test modules via {MirrorTestConfigFile.L.__name__}
 
 Consider using the proper command to create test skeletons for any missing test modules:
-    '{pyrig_project_name()} {snake_to_kebab_case(mktests.__name__)}'
+    '{Pyrigger.I.cmd_args(cmd=mktests)}'
 
 Please verify the changes at the following paths:
 {make_summary_error_msg(sc().path() for sc in incorrect_subclasses)}

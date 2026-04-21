@@ -23,7 +23,6 @@ from pyrig.core.resources import (
 )
 from pyrig.core.strings import (
     package_req_name_split_pattern,
-    pyrig_project_name,
 )
 from pyrig.rig import resources
 from pyrig.rig.cli import cli
@@ -36,6 +35,7 @@ from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.type_checker import TypeChecker
@@ -278,7 +278,7 @@ class PyprojectConfigFile(TomlConfigFile):
     def dependencies(self, default: list[str] | None = None) -> list[str]:
         """Get runtime dependencies from pyproject.toml."""
         if default is None:
-            default = [pyrig_project_name()]
+            default = [Pyrigger.I.name()]
         deps: list[str] = self.load().get("project", {}).get("dependencies", default)
         return deps
 
