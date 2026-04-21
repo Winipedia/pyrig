@@ -20,6 +20,7 @@ from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.tools.linter import Linter
 from pyrig.rig.tools.mdlinter import MDLinter
+from pyrig.rig.tools.pre_committer import PreCommitter
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.type_checker import TypeChecker
 
@@ -54,7 +55,7 @@ class PreCommitterConfigFile(TomlConfigFile):
 
     def stem(self) -> str:
         """Get filename stem."""
-        return "prek"
+        return PreCommitter.I.name()
 
     def hook(
         self,
