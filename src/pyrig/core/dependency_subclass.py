@@ -136,7 +136,7 @@ class DependencySubclass(ABC):
         if second is None:
             return leaf
 
-        msg = f"""Multiple subclasses found for {cls}.
+        msg = f"""Multiple leaf subclasses found for {cls}.
 Defining multiple leaf subclasses is ambiguous.
 This can happen if more than one leaf subclass is defined
 across all the dependent packages.

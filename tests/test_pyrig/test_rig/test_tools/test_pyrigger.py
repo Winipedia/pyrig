@@ -3,7 +3,6 @@
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools import pyrigger
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
@@ -99,13 +98,8 @@ class TestPyrigger:
         result = Pyrigger.I.name()
         assert result == "pyrig"
 
-    def test_cmd_args(self, mocker: MockerFixture) -> None:
+    def test_cmd_args(self) -> None:
         """Test method."""
-        # Mock the snake_to_kebab_case function
-        mocker.patch(
-            pyrigger.__name__ + ".snake_to_kebab_case",
-            return_value="my-command",
-        )
 
         def my_command() -> None:
             """Sample command."""
