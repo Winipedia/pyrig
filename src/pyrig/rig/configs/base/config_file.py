@@ -77,9 +77,10 @@ from typing import Any, Self
 import typer
 
 from pyrig.core.dependency_subclass import DependencySubclass
-from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.core.iterate import merge_nested_structures, nested_structure_is_subset
 from pyrig.rig import configs
+from pyrig.rig.cli.subcommands import mkroot
+from pyrig.rig.tools.pyrigger import Pyrigger
 
 logger = logging.getLogger(__name__)
 
@@ -254,7 +255,10 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
         self.dump(config)
 
         if not self.is_correct():
-            raise ConfigFileValidationError(self)
+            msg = f"""Failed to validate {self} after merging and dumping configs.
+Please check the file for issues and fix manually if needed.
+You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it."""
+            raise RuntimeError(msg)
 
     def create_file(self) -> None:
         """Create the config file and its parent directories."""

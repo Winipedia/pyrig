@@ -6,9 +6,6 @@ import pytest
 
 import pyrig
 from pyrig.core.dependency_subclass import DependencySubclass
-from pyrig.core.exceptions.dependency_subclass.multiple_found import (
-    MultipleSubclassesFoundError,
-)
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
@@ -82,5 +79,7 @@ class TestDependencySubclass:
         """Test method."""
         assert MirrorTestConfigFile.L.L is MirrorTestConfigFile
 
-        with pytest.raises(MultipleSubclassesFoundError):
+        with pytest.raises(
+            RuntimeError, match=r"Multiple leaf subclasses found for .*."
+        ):
             _ = Tool.L

@@ -13,7 +13,6 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
-from pyrig.core.exceptions.config_file.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
 
 
@@ -34,11 +33,10 @@ class DotEnvConfigFile(DictConfigFile):
     def _dump(self, config: ConfigDict) -> None:
         """Prevent writing to .env (raises RuntimeError if config is non-empty)."""
         if config:
-            msg = """of security reasons.
-This file is managed manually. Please edit it directly.
-We highly discourage managing this ConfigFile via subclassing.
-"""
-            raise ConfigFileDumpForbiddenError(config_file=self, reason=msg.strip())
+            msg = f"""Dumping to {self} is forbidden.
+For security reasons this file is managed manually by the user.
+Please edit it directly."""
+            raise PermissionError(msg)
 
     def extension(self) -> str:
         """Return no extension."""
