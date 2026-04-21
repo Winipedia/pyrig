@@ -7,6 +7,7 @@ so different subsystems (tools, config files, builders) can share a
 consistent discovery API.
 """
 
+import json
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 from functools import cache
@@ -14,9 +15,6 @@ from types import ModuleType
 from typing import Any, Self, TypeVar
 
 import pyrig
-from pyrig.core.exceptions.dependency_subclass.multiple_found import (
-    MultipleSubclassesFoundError,
-)
 from pyrig.core.introspection.classes import (
     classproperty,
     discard_abstract_classes,
@@ -135,9 +133,17 @@ class DependencySubclass(ABC):
         subclasses = cls.subclasses()
         leaf = next(subclasses)
         second = next(subclasses, None)
-        if second is not None:
-            raise MultipleSubclassesFoundError(cls)
-        return leaf
+        if second is None:
+            return leaf
+
+        msg = f"""Multiple subclasses found for {cls}.
+Defining multiple leaf subclasses is ambiguous.
+This can happen if more than one leaf subclass is defined
+across all the dependent packages.
+
+Found subclasses:
+{json.dumps([str(subcls) for subcls in (leaf, second, *subclasses)], indent=4)}"""
+        raise RuntimeError(msg)
 
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator

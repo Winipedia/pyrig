@@ -50,7 +50,7 @@ def run_subprocess(  # noqa: PLR0913
         timeout: Maximum seconds to wait. None (default) means no timeout.
         check: If True (default), raises `CalledProcessError` on non-zero exit.
         cwd: Working directory. Defaults to current directory.
-        shell: Must be False. Raises `RuntimeError` if True (shell mode is
+        shell: Must be False. Raises `ValueError` if True (shell mode is
             forbidden in pyrig for security reasons).
         text: If True (default), stdout and stderr are decoded as text.
         **kwargs: Additional arguments passed to `subprocess.run()`.
@@ -59,7 +59,7 @@ def run_subprocess(  # noqa: PLR0913
         `CompletedProcess` with args, returncode, stdout, stderr.
 
     Raises:
-        RuntimeError: If `shell=True` is passed.
+        ValueError: If `shell=True` is passed.
         subprocess.CalledProcessError:
             If process returns non-zero exit and `check=True`.
             Error details are logged before re-raising.
@@ -70,8 +70,8 @@ def run_subprocess(  # noqa: PLR0913
         >>> run_subprocess(["false"], check=False).returncode  # 1
     """
     if shell:
-        msg = "Shell mode is forbidden in for security reasons."
-        raise RuntimeError(msg)
+        msg = f"{shell=} is forbidden for security reasons."
+        raise ValueError(msg)
     if cwd is None:
         cwd = Path()
     try:

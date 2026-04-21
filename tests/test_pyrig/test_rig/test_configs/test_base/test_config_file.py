@@ -8,7 +8,6 @@ from typing import Any, ClassVar
 import pytest
 from pytest_mock import MockerFixture
 
-from pyrig.core.exceptions.config_file.validation import ConfigFileValidationError
 from pyrig.rig import configs
 from pyrig.rig.builders.base.builder import BuilderConfigFile
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -274,7 +273,10 @@ class TestConfigFile:
             my_test_config_file().is_correct.__name__,
             return_value=False,
         )
-        with pytest.raises(ConfigFileValidationError):
+        with pytest.raises(
+            RuntimeError,
+            match=r"Failed to validate .* after merging and dumping configs",
+        ):
             my_test_config_file().validate()
 
     def test_path(

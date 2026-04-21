@@ -18,7 +18,6 @@ See Also:
     PEP 561: https://peps.python.org/pep-0561/
 """
 
-from pyrig.core.exceptions.config_file.dump import ConfigFileDumpForbiddenError
 from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
 
 
@@ -54,8 +53,9 @@ class TypedConfigFile(DictConfigFile):
             ConfigFileDumpError: If config is not empty.
         """
         if config:
-            msg = "this file is a marker for type checkers and should be empty."
-            raise ConfigFileDumpForbiddenError(config_file=self, reason=msg)
+            msg = f"""Dumping to {self} is forbidden.
+It is a marker for type checkers and should be empty."""
+            raise PermissionError(msg)
 
     def _configs(self) -> ConfigDict:
         """Return expected configuration as empty dict."""
