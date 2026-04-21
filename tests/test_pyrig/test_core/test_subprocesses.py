@@ -19,7 +19,9 @@ def test_run_subprocess(
     assert res.stdout == "hello\n", f"Expected stdout 'hello\n', got {res.stdout}"
     assert res.stderr == "", f"Expected stderr '', got {res.stderr}"
 
-    with pytest.raises(RuntimeError, match="Shell mode is forbidden"):
+    with pytest.raises(
+        ValueError, match=r"shell=True is forbidden for security reasons."
+    ):
         run_subprocess(cmd, shell=True)  # noqa: S604  # nosec: B604
 
     # mock run to raise CalledProcessError
