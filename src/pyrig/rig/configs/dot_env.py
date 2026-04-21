@@ -14,8 +14,7 @@ from pathlib import Path
 from dotenv import dotenv_values
 
 from pyrig.core.exceptions.config_file.dump import ConfigFileDumpForbiddenError
-from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.dict_ import DictConfigFile
+from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
 
 
 class DotEnvConfigFile(DictConfigFile):
