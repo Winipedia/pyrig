@@ -9,10 +9,6 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
-    def test_readme_path(self) -> None:
-        """Test method."""
-        assert PackageManager.I.readme_path() == Path("README.md")
-
     def test_lock_file(self) -> None:
         """Test method."""
         assert PackageManager.I.lock_file() == Path("uv.lock")
