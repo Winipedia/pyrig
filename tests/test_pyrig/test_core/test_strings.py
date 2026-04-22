@@ -10,7 +10,6 @@ from pyrig.core.strings import (
     make_name_from_obj,
     make_summary_error_msg,
     package_req_name_split_pattern,
-    project_name_from_cwd,
     read_text_utf8,
     snake_to_kebab_case,
     split_on_uppercase,
@@ -38,7 +37,7 @@ def test_snake_to_kebab_case() -> None:
 
 def test_project_name_from_cwd() -> None:
     """Test function."""
-    project_name = project_name_from_cwd()
+    project_name = PackageManager.I.project_name()
     expected_project_name = Pyrigger.I.name()
     assert project_name == expected_project_name
 

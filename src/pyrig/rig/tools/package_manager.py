@@ -16,7 +16,6 @@ from typing import Any
 
 from pyrig.core.strings import (
     kebab_to_snake_case,
-    project_name_from_cwd,
     snake_to_kebab_case,
 )
 from pyrig.core.subprocesses import Args
@@ -85,7 +84,7 @@ class PackageManager(Tool):
 
     def project_name(self) -> str:
         """Get the name of the project."""
-        return project_name_from_cwd()
+        return Path.cwd().name
 
     def package_name(self) -> str:
         """Get the main package of the project."""

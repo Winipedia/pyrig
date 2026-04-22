@@ -219,12 +219,3 @@ def snake_to_kebab_case(value: str) -> str:
         Project name.
     """
     return value.replace("_", "-")
-
-
-def project_name_from_cwd() -> str:
-    """Get project name from current directory name.
-
-    Returns:
-        Current directory name.
-    """
-    return Path.cwd().name
