@@ -34,8 +34,8 @@ always_run = true
 pass_filenames = false
 
 [[repos.hooks]]
-id = "check-markdown"
-name = "check-markdown"
+id = "lint-markdown"
+name = "lint-markdown"
 entry = "rumdl check --fix"
 language = "system"
 always_run = true

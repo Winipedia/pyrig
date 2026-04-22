@@ -122,7 +122,7 @@ class PreCommitterConfigFile(TomlConfigFile):
                 SecurityChecker.I.run_with_config_args(),
             ),
             self.hook(
-                "check-markdown",
+                "lint-markdown",
                 MDLinter.I.check_fix_args(),
             ),
         ]
