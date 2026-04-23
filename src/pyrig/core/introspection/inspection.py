@@ -104,7 +104,7 @@ def unwrapped_obj(obj: Any) -> Any:
     return obj
 
 
-def qualname_of_obj(obj: Callable[..., Any] | type) -> str:
+def obj_qualname(obj: Callable[..., Any] | type) -> str:
     """Get the qualified name of a callable or type.
 
     Includes class name for methods (e.g., "MyClass.my_method").
@@ -119,7 +119,7 @@ def qualname_of_obj(obj: Callable[..., Any] | type) -> str:
     return cast("str", unwrapped.__qualname__)
 
 
-def module_of_obj(obj: Any, default: ModuleType | None = None) -> ModuleType:
+def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
     """Return the module where a method-like object is defined.
 
     Unwraps the object first to handle decorated functions, then uses

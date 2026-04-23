@@ -11,9 +11,9 @@ import pytest
 
 from pyrig.core.introspection.inspection import (
     def_line,
-    module_of_obj,
     obj_members,
-    qualname_of_obj,
+    obj_module,
+    obj_qualname,
     unwrapped_obj,
 )
 from pyrig.core.iterate import generator_length
@@ -57,15 +57,15 @@ def test_def_line() -> None:
     )
 
 
-def test_qualname_of_obj() -> None:
+def test_obj_qualname() -> None:
     """Test function."""
 
     # Test with a function
     def test_function() -> None:
         pass
 
-    name = qualname_of_obj(test_function)
-    assert name == "test_qualname_of_obj.<locals>.test_function", (
+    name = obj_qualname(test_function)
+    assert name == "test_obj_qualname.<locals>.test_function", (
         f"Expected 'test_function', got {name}"
     )
 
@@ -73,8 +73,8 @@ def test_qualname_of_obj() -> None:
     class TestClass:
         pass
 
-    name = qualname_of_obj(TestClass)
-    assert name == "test_qualname_of_obj.<locals>.TestClass", (
+    name = obj_qualname(TestClass)
+    assert name == "test_obj_qualname.<locals>.TestClass", (
         f"Expected 'TestClass', got {name}"
     )
 
@@ -83,8 +83,8 @@ def test_qualname_of_obj() -> None:
         def test_method(self) -> None:
             pass
 
-    name = qualname_of_obj(TestClass2.test_method)
-    assert name == "test_qualname_of_obj.<locals>.TestClass2.test_method", (
+    name = obj_qualname(TestClass2.test_method)
+    assert name == "test_obj_qualname.<locals>.TestClass2.test_method", (
         f"Expected 'test_method', got {name}"
     )
 
@@ -144,14 +144,14 @@ def test_unwrapped_obj() -> None:
     )
 
 
-def test_module_of_obj() -> None:
+def test_obj_module() -> None:
     """Test function."""
 
     # Test with a function
     def test_function() -> None:
         pass
 
-    module = module_of_obj(test_function)
+    module = obj_module(test_function)
     assert module.__name__ == __name__, (
         f"Expected module name {__name__}, got {module.__name__}"
     )
@@ -165,26 +165,26 @@ def test_module_of_obj() -> None:
         def test_property(self) -> str:
             return "test"
 
-    method_module = module_of_obj(TestClass.test_method)
+    method_module = obj_module(TestClass.test_method)
     assert method_module.__name__ == __name__, (
         f"Expected module name {__name__}, got {method_module.__name__}"
     )
 
     # Test with a property
-    prop_module = module_of_obj(TestClass.test_property)
+    prop_module = obj_module(TestClass.test_property)
     assert prop_module.__name__ == __name__, (
         f"Expected module name {__name__}, got {prop_module.__name__}"
     )
 
     # Test with built-in function
-    os_module = module_of_obj(os.path.join)
+    os_module = obj_module(os.path.join)
     assert "posixpath" in os_module.__name__ or "ntpath" in os_module.__name__, (
         f"Expected posixpath or ntpath module, got {os_module.__name__}"
     )
 
     # take an obj without a module and check if raises LookupError
     with pytest.raises(LookupError):
-        module_of_obj("string without module")
+        obj_module("string without module")
 
 
 def test_sorted_by_def_line() -> None:
@@ -203,14 +203,14 @@ def test_sorted_by_def_line() -> None:
         test_func_b,
         test_func_c,
         test_func_a,
-        test_module_of_obj,
-        test_qualname_of_obj,
+        test_obj_module,
+        test_obj_qualname,
         test_sorted_by_def_line,
     ]
     sorted_funcs = sorted(funcs, key=def_line)
     assert sorted_funcs == [
-        test_qualname_of_obj,
-        test_module_of_obj,
+        test_obj_qualname,
+        test_obj_module,
         test_sorted_by_def_line,
         test_func_a,
         test_func_b,
