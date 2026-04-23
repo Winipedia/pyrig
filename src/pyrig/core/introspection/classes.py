@@ -12,8 +12,8 @@ from typing import Any
 
 from pyrig.core.introspection.functions import is_func
 from pyrig.core.introspection.inspection import (
-    module_of_obj,
     obj_members,
+    obj_module,
     unwrapped_obj,
 )
 
@@ -43,7 +43,7 @@ def discard_parent_methods(
     return (
         method
         for method in methods
-        if module_of_obj(method).__name__ == cls.__module__
+        if obj_module(method).__name__ == cls.__module__
         and unwrapped_obj(method).__name__ in cls.__dict__
     )
 
@@ -65,7 +65,7 @@ def all_cls_from_module(module: ModuleType) -> Generator[type]:
     return (
         obj
         for _, obj in obj_members(module, inspect.isclass)
-        if module_of_obj(obj, default).__name__ == module.__name__
+        if obj_module(obj, default).__name__ == module.__name__
     )
 
 

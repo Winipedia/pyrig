@@ -10,8 +10,8 @@ from types import ModuleType
 from typing import Any
 
 from pyrig.core.introspection.inspection import (
-    module_of_obj,
     obj_members,
+    obj_module,
     unwrapped_obj,
 )
 
@@ -67,5 +67,5 @@ def all_functions_from_module(
         func
         for _name, func in obj_members(module)
         if is_func(func)
-        if module_of_obj(func).__name__ == module.__name__
+        if obj_module(func).__name__ == module.__name__
     )
