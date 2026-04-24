@@ -5,8 +5,6 @@ packages without `__init__.py`) to ensure proper importability.
 """
 
 from collections.abc import Iterable
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
 
 from pyrig.core.introspection.packages import make_init_file
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
@@ -26,22 +24,7 @@ def make_init_files() -> None:
         Created `__init__.py` files contain a minimal docstring. The docs
         directory is excluded from scanning.
     """
-    namespace_packages = find_namespace_packages()
-
-    # make init files for all namespace packages
-    package_paths = (
-        package_name_as_root_path(package) for package in namespace_packages
-    )
-
-    def make_init_file_with_content(path: Path) -> None:
-        """Make an __init__.py file with standard content."""
-        make_init_file(
-            path,
-            content=ProgrammingLanguage.I.standard_init_content(),
-        )
-
-    with ThreadPoolExecutor() as executor:
-        list(executor.map(make_init_file_with_content, package_paths))
+    make_init_files_for_namespace_packages(find_namespace_packages())
 
 
 def make_init_files_for_namespace_packages(namespace_packages: Iterable[str]) -> None:
@@ -55,13 +38,5 @@ def make_init_files_for_namespace_packages(namespace_packages: Iterable[str]) ->
         package_name_as_root_path(package) for package in namespace_packages
     )
 
-    with ThreadPoolExecutor() as executor:
-        list(executor.map(make_init_file_with_standard_content, package_paths))
-
-
-def make_init_file_with_standard_content(path: Path) -> None:
-    """Make an __init__.py file with standard content."""
-    make_init_file(
-        path,
-        content=ProgrammingLanguage.I.standard_init_content(),
-    )
+    content = ProgrammingLanguage.I.standard_init_content()
+    tuple(make_init_file(path=path, content=content) for path in package_paths)
