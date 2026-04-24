@@ -38,7 +38,7 @@ class TestDependencySubclass:
             LicenseConfigFile,
             VersionControllerIgnoreConfigFile,
         )
-        result = ConfigFile.subclasses_sorted(*subclasses)
+        result = ConfigFile.subclasses_sorted(subclasses)
         assert result == [
             LicenseConfigFile,
             PyprojectConfigFile,

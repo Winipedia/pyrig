@@ -9,7 +9,7 @@ consistent discovery API.
 
 import json
 from abc import ABC, abstractmethod
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
 from functools import cache
 from types import ModuleType
 from typing import Any, Self, TypeVar
@@ -84,7 +84,7 @@ class DependencySubclass(ABC):
         """
 
     @classmethod
-    def subclasses_sorted(cls, *subclasses: type[Self]) -> list[type[Self]]:
+    def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
         """Discover and return all concrete subclasses, sorted by sorting key.
 
         Sorts the given subclasses using the `sorting_key` method.
