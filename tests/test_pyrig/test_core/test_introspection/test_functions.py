@@ -6,8 +6,8 @@ from pyrig.core.introspection import functions
 from pyrig.core.introspection.classes import classproperty
 from pyrig.core.introspection.functions import (
     all_functions_from_module,
-    is_func,
     is_func_or_method,
+    is_funclike,
 )
 
 
@@ -65,14 +65,14 @@ def test_is_func_or_method() -> None:
     )
 
 
-def test_is_func() -> None:
+def test_is_funclike() -> None:
     """Test function."""
 
     # Test with regular function
     def regular_function() -> None:
         """Regular function."""
 
-    assert is_func(regular_function), (
+    assert is_funclike(regular_function), (
         "Expected regular function to be identified as func"
     )
 
@@ -100,27 +100,27 @@ def test_is_func() -> None:
             return "test"
 
     # Test staticmethod descriptor
-    assert is_func(TestClass.__dict__["static_method"]), (
+    assert is_funclike(TestClass.__dict__["static_method"]), (
         "Expected staticmethod descriptor to be identified as func"
     )
 
     # Test classmethod descriptor
-    assert is_func(TestClass.__dict__["class_method"]), (
+    assert is_funclike(TestClass.__dict__["class_method"]), (
         "Expected classmethod descriptor to be identified as func"
     )
 
     # Test property descriptor
-    assert is_func(TestClass.__dict__["test_property"]), (
+    assert is_funclike(TestClass.__dict__["test_property"]), (
         "Expected property descriptor to be identified as func"
     )
 
     # Test instance method (unbound function)
-    assert is_func(TestClass.__dict__["instance_method"]), (
+    assert is_funclike(TestClass.__dict__["instance_method"]), (
         "Expected instance method to be identified as func"
     )
 
     # Test classproperty descriptor
-    assert is_func(TestClass.__dict__["class_property"]), (
+    assert is_funclike(TestClass.__dict__["class_property"]), (
         "Expected classproperty descriptor to be identified as func"
     )
 
@@ -130,20 +130,20 @@ def test_is_func() -> None:
         """Return result from decorated function."""
         return regular_function()
 
-    assert is_func(decorated_function), (
+    assert is_funclike(decorated_function), (
         "Expected decorated function to be identified as func"
     )
 
     # Test with non-function objects
-    assert not is_func("string"), "Expected string to not be identified as func"
+    assert not is_funclike("string"), "Expected string to not be identified as func"
 
-    assert not is_func(42), "Expected integer to not be identified as func"
+    assert not is_funclike(42), "Expected integer to not be identified as func"
 
-    assert not is_func([1, 2, 3]), "Expected list to not be identified as func"
+    assert not is_funclike([1, 2, 3]), "Expected list to not be identified as func"
 
     # Test bound method (should still return True)
     test_instance = TestClass()
-    assert is_func(test_instance.instance_method), (
+    assert is_funclike(test_instance.instance_method), (
         "Expected bound method to be identified as func"
     )
 
@@ -165,7 +165,7 @@ def test_all_functions_from_module() -> None:
     function_names = [getattr(func, "__name__", None) for func in funcs]
     expected_functions = [
         is_func_or_method.__name__,
-        is_func.__name__,
+        is_funclike.__name__,
         all_functions_from_module.__name__,
     ]
 
