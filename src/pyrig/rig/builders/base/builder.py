@@ -32,7 +32,6 @@ import shutil
 import tempfile
 from abc import abstractmethod
 from collections.abc import Generator, Iterable
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from types import ModuleType
 
@@ -199,8 +198,7 @@ class BuilderConfigFile(ListConfigFile):
         Args:
             artifacts: Iterable of artifact paths from the temporary directory.
         """
-        with ThreadPoolExecutor() as executor:
-            tuple(executor.map(self.rename_artifact, artifacts))
+        tuple(self.rename_artifact(artifact) for artifact in artifacts)
 
     def rename_artifact(self, artifact: Path) -> None:
         """Move a single artifact to the output directory with a platform-specific name.
