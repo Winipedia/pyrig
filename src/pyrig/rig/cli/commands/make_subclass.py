@@ -4,17 +4,14 @@ from importlib import import_module
 
 from InquirerPy import inquirer
 
-import pyrig
-from pyrig import rig
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.introspection.classes import (
     discard_abstract_classes,
-    discard_parent_classes,
 )
-from pyrig.core.introspection.dependencies import discover_subclasses_across_dependents
 from pyrig.core.introspection.modules import callable_obj_import_path
 from pyrig.core.iterate import combine_generators
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
+from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
 def make_subclass() -> None:
@@ -57,15 +54,7 @@ def choose_subclass() -> type[DependencySubclass]:
         Dotted import path in the form ``module.ClassName`` for the selected
         subclass target.
     """
-    subclass_choices = set(
-        discard_parent_classes(
-            discover_subclasses_across_dependents(
-                DependencySubclass,
-                dependency=pyrig,
-                package=rig,
-            )
-        )
-    )
+    subclass_choices = set(RigDependencySubclass.subclasses())
 
     concrete_subclass_choices = set(discard_abstract_classes(subclass_choices))
     abstract_subclass_choices = subclass_choices - concrete_subclass_choices

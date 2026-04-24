@@ -76,11 +76,11 @@ from typing import Any, Self
 
 import typer
 
-from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.iterate import merge_nested_structures, nested_structure_is_subset
 from pyrig.rig import configs
 from pyrig.rig.cli.subcommands import mkroot
 from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ class Priority:
     HIGH = MEDIUM + 10
 
 
-class ConfigFile[ConfigT: ConfigData](DependencySubclass):
+class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
     """Abstract base class for declarative configuration file management.
 
     Declarative, idempotent system for managing config files. Preserves user
