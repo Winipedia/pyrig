@@ -58,7 +58,7 @@ class ParentClass:
         return "parent_property"
 
 
-class TestClass(ParentClass):
+class ChildTestClass(ParentClass):
     """Test class."""
 
     class_var: ClassVar[str] = "test_class_var"
@@ -90,6 +90,14 @@ class TestClass(ParentClass):
     def decorated_method(self) -> str:
         """Decorate with @decorator."""
         return "decorated_method"
+
+
+class GrandchildTestClass(ChildTestClass):
+    """Grandchild class for testing multiple levels of inheritance."""
+
+    def grandchild_method(self) -> str:
+        """Grandchild method."""
+        return "grandchild_method"
 
 
 class DecoratedClass:
@@ -131,7 +139,7 @@ class AnotherAbstractChild(AbstractParent):
 
 def test_cls_methods() -> None:
     """Test function."""
-    cls = TestClass
+    cls = ChildTestClass
     methods = cls_methods(cls)
     method_names = [unwrapped_obj(m).__name__ for m in methods]
     expected_method_names = {
@@ -139,12 +147,12 @@ def test_cls_methods() -> None:
         ParentClass.parent_static_method.__name__,
         ParentClass.parent_class_method.__name__,
         unwrapped_obj(ParentClass.parent_property).__name__,
-        TestClass.instance_method.__name__,
-        TestClass.static_method.__name__,
-        TestClass.class_method.__name__,
-        unwrapped_obj(TestClass.prop).__name__,
-        TestClass._private_method.__name__,  # noqa: SLF001
-        TestClass.decorated_method.__name__,
+        ChildTestClass.instance_method.__name__,
+        ChildTestClass.static_method.__name__,
+        ChildTestClass.class_method.__name__,
+        unwrapped_obj(ChildTestClass.prop).__name__,
+        ChildTestClass._private_method.__name__,  # noqa: SLF001
+        ChildTestClass.decorated_method.__name__,
     }
     assert set(method_names) == expected_method_names
 
@@ -159,7 +167,8 @@ def test_module_classes() -> None:
     # expected classes in order of definition
     expected_classes: list[type] = [
         ParentClass,
-        TestClass,
+        ChildTestClass,
+        GrandchildTestClass,
         DecoratedClass,
         AbstractParent,
         ConcreteChild,
@@ -178,21 +187,28 @@ def test_discover_all_subclasses() -> None:
     # Test with ParentClass - should find TestClass as subclass
     subclasses = set(discover_all_subclasses(ParentClass))
 
-    expected_subclasses: set[type] = {TestClass}
+    expected_subclasses: set[type] = {ChildTestClass, GrandchildTestClass}
 
     assert subclasses == expected_subclasses
 
     # Test with TestClass - should have no subclasses
-    subclasses = set(discover_all_subclasses(TestClass))
+    subclasses = set(discover_all_subclasses(ChildTestClass))
+
+    expected_subclasses: set[type] = {GrandchildTestClass}
+
+    assert subclasses == expected_subclasses
+
+    # Test with GrandchildTestClass - should have no subclasses
+    subclasses = set(discover_all_subclasses(GrandchildTestClass))
 
     assert subclasses == set()
 
 
 def test_discard_parent_classes() -> None:
     """Test function."""
-    classes = tuple(discard_parent_classes([ParentClass, TestClass]))
+    classes = tuple(discard_parent_classes([ParentClass, ChildTestClass]))
     assert ParentClass not in classes, f"Expected ParentClass not in {classes}"
-    assert TestClass in classes, f"Expected TestClass in {classes}"
+    assert ChildTestClass in classes, f"Expected TestClass in {classes}"
 
 
 class Testclassproperty:
@@ -235,13 +251,13 @@ def test_discard_abstract_classes() -> None:
 
 def test_discard_parent_methods() -> None:
     """Test function."""
-    cls = TestClass
+    cls = ChildTestClass
     methods = list(cls_methods(cls))
     # check a parent method is in the list of methods before discarding
     assert ParentClass.parent_class_method.__name__ in [
         unwrapped_obj(m).__name__ for m in methods
     ]
-    assert TestClass.class_method.__name__ in [
+    assert ChildTestClass.class_method.__name__ in [
         unwrapped_obj(m).__name__ for m in methods
     ]
     # discard parent methods
@@ -249,4 +265,4 @@ def test_discard_parent_methods() -> None:
     method_names = [unwrapped_obj(m).__name__ for m in methods]
     assert ParentClass.parent_class_method.__name__ not in method_names
 
-    assert TestClass.class_method.__name__ in method_names
+    assert ChildTestClass.class_method.__name__ in method_names
