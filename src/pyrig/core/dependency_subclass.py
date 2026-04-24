@@ -14,7 +14,6 @@ from functools import cache
 from types import ModuleType
 from typing import Any, Self, TypeVar
 
-import pyrig
 from pyrig.core.introspection.classes import (
     classproperty,
     discard_abstract_classes,
@@ -74,6 +73,7 @@ class DependencySubclass(ABC):
         return subclass.__name__
 
     @classmethod
+    @abstractmethod
     def base_dependency(cls) -> ModuleType:
         """Return the base dependency module for this subclass.
 
@@ -82,7 +82,6 @@ class DependencySubclass(ABC):
         Returns:
             The base dependency module.
         """
-        return pyrig
 
     @classmethod
     def subclasses_sorted(cls, *subclasses: type[Self]) -> list[type[Self]]:
@@ -131,7 +130,7 @@ class DependencySubclass(ABC):
             subclasses: Discover all concrete subclasses, sorted by sorting key.
         """
         subclasses = cls.subclasses()
-        leaf = next(subclasses)
+        leaf = next(subclasses, cls)
         second = next(subclasses, None)
         if second is None:
             return leaf

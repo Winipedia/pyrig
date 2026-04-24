@@ -1,10 +1,4 @@
-"""Utilities for classes.
-
-This module provides functionality to introspect classes,
-discover their methods, filter out inherited methods,
-and identify classes defined in a module.
-It also includes a custom descriptor for class-level properties.
-"""
+"""Utilities for introspecting and filtering Python classes."""
 
 import inspect
 from collections.abc import Callable, Generator, Iterable
@@ -31,8 +25,8 @@ def cls_methods(
     Args:
         cls: Class to extract methods from.
 
-    Returns:
-        Generator of method objects in alphabetical name order.
+    Yields:
+        Method objects in alphabetical name order.
     """
     return (method for _name, method in obj_members(cls) if is_funclike(method))
 
@@ -78,8 +72,8 @@ def module_classes(module: ModuleType) -> Generator[type]:
     Args:
         module: Module to inspect.
 
-    Returns:
-        Generator of class types that are defined in ``module``.
+    Yields:
+        Class types defined directly in ``module``.
     """
     # necessary for bindings packages like AESGCM from cryptography._rust backend
     default = ModuleType(module_classes.__name__)  # to not match any real module
@@ -91,20 +85,19 @@ def module_classes(module: ModuleType) -> Generator[type]:
 
 
 def discover_all_subclasses[T: type](cls: T) -> set[T]:
-    """Discover all subclasses of a class without loading any packages.
+    """Recursively discover all subclasses of a class already loaded in memory.
 
-    Uses only the existing class registry (``__subclasses__()``) without
-    importing any new modules. This is useful when you want to discover
-    subclasses that are already loaded, without triggering imports.
+    Traverses the live subclass registry via ``__subclasses__()`` without
+    triggering any imports. Only subclasses whose modules are already loaded
+    will appear in the result.
 
     Args:
-        cls: Base class to find subclasses of. The base class itself is
-            included in the results.
+        cls: Base class to find subclasses of.
 
     Returns:
-        Set of discovered subclass types (including ``cls`` itself).
+        Set of all discovered subclass types, excluding ``cls`` itself.
     """
-    subclasses = {cls, *cls.__subclasses__()}
+    subclasses = set(cls.__subclasses__())
     for subclass in cls.__subclasses__():
         subclasses.update(discover_all_subclasses(subclass))
     return subclasses
@@ -142,8 +135,8 @@ def discard_parent_classes[T: type](
 def discard_abstract_classes[T: type](classes: Iterable[T]) -> Generator[T, None, None]:
     """Filter out abstract classes from a collection.
 
-    Uses ``inspect.isabstract`` to detect classes that still have unimplemented
-    abstract methods (i.e., classes with ``ABCMeta`` that cannot be instantiated).
+    Uses ``inspect.isabstract`` to detect classes that have one or more
+    unimplemented abstract methods and therefore cannot be instantiated directly.
 
     Args:
         classes: Iterable of class types to filter.

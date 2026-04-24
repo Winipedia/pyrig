@@ -28,10 +28,10 @@ from collections import defaultdict
 from types import ModuleType
 from typing import Self
 
-from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
 from pyrig.rig import tools
+from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
 class ToolGroup:
@@ -46,7 +46,7 @@ class ToolGroup:
     TESTING = "testing"
 
 
-class Tool(DependencySubclass):
+class Tool(RigDependencySubclass):
     """Abstract base for tool command argument construction.
 
     Provides consistent interface for constructing command-line arguments.

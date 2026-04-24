@@ -274,5 +274,7 @@ def discover_all_subclasses_across_package[T: type](
     subclasses = discover_all_subclasses(cls)
     # remove all not in the package
     return {
-        subclass for subclass in subclasses if package.__name__ in subclass.__module__
+        subclass
+        for subclass in subclasses
+        if subclass.__module__.startswith(package.__name__)
     }
