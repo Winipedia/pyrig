@@ -176,21 +176,16 @@ def test_module_classes() -> None:
 def test_discover_all_subclasses() -> None:
     """Test func."""
     # Test with ParentClass - should find TestClass as subclass
-    subclasses = discover_all_subclasses(ParentClass)
+    subclasses = set(discover_all_subclasses(ParentClass))
 
-    expected_subclasses: set[type] = {ParentClass, TestClass}
+    expected_subclasses: set[type] = {TestClass}
 
-    for expected_subclass in expected_subclasses:
-        assert expected_subclass in subclasses, (
-            f"Expected {expected_subclass} in subclasses, got {subclasses}"
-        )
+    assert subclasses == expected_subclasses
 
     # Test with TestClass - should have no subclasses
-    subclasses = discover_all_subclasses(TestClass)
+    subclasses = set(discover_all_subclasses(TestClass))
 
-    assert subclasses == {TestClass}, (
-        f"Expected no subclasses for TestClass, got {subclasses}"
-    )
+    assert subclasses == set()
 
 
 def test_discard_parent_classes() -> None:
