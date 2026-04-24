@@ -66,9 +66,7 @@ See Also:
 
 import logging
 from abc import abstractmethod
-from collections import defaultdict
 from collections.abc import Generator, Iterable
-from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 from pathlib import Path
 from types import ModuleType
@@ -76,7 +74,10 @@ from typing import Any, Self
 
 import typer
 
-from pyrig.core.iterate import merge_nested_structures, nested_structure_is_subset
+from pyrig.core.iterate import (
+    merge_nested_structures,
+    nested_structure_is_subset,
+)
 from pyrig.rig import configs
 from pyrig.rig.cli.subcommands import mkroot
 from pyrig.rig.tools.pyrigger import Pyrigger
@@ -222,15 +223,6 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         Can be overridden by subclasses to indicate the file is ignored.
         """
         return False
-
-    @classmethod
-    def validate_config_file(cls, config_file_cls: "ConfigFile[ConfigT]") -> None:
-        """Validate a single config file class.
-
-        Args:
-            config_file_cls: The ConfigFile subclass to validate.
-        """
-        config_file_cls.validate()
 
     def validate(self) -> None:
         """Validate config file, creating or updating as needed.
@@ -388,19 +380,7 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
         See Also:
             validate_all_subclasses: validate all discovered subclasses
         """
-        grouped: dict[float, list[ConfigFile[Any]]] = defaultdict(list)
-        for cf in (cls() for cls in subclasses):
-            grouped[cf.priority()].append(cf)
-
-        with ThreadPoolExecutor() as executor:
-            for priority in sorted(grouped.keys(), reverse=True):
-                cf_group = grouped[priority]
-                logger.debug(
-                    "Validating %d config files with priority: %s",
-                    len(cf_group),
-                    priority,
-                )
-                tuple(executor.map(cls.validate_config_file, cf_group))
+        tuple(cf().validate() for cf in cls.subclasses_sorted(subclasses))
 
     @classmethod
     def validate_all_subclasses(cls) -> None:

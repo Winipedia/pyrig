@@ -158,7 +158,7 @@ class Tool(RigDependencySubclass):
     @classmethod
     def grouped_badges(cls) -> defaultdict[str, list[str]]:
         """Get a dict with all badges of tools grouped by their group."""
-        subclasses = cls.subclasses_sorted(*cls.concrete_subclasses())
+        subclasses = cls.subclasses_sorted(cls.concrete_subclasses())
         groups: defaultdict[str, list[str]] = defaultdict(list)
         for tool in subclasses:
             t = tool()

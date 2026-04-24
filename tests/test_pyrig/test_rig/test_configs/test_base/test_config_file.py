@@ -93,20 +93,6 @@ class TestConfigFile:
             DotScratchConfigFile,
         }
 
-    def test_validate_config_file(
-        self,
-        my_test_config_file: type[ConfigFile[dict[str, Any]]],
-        mocker: MockerFixture,
-    ) -> None:
-        """Test method."""
-        mock_validate = mocker.patch.object(
-            ConfigFile,
-            ConfigFile.validate.__name__,
-            return_value=None,
-        )
-        my_test_config_file().validate()
-        mock_validate.assert_called_once()
-
     def test_sorting_key(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
