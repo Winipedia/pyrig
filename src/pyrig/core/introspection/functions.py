@@ -26,12 +26,13 @@ def is_func_or_method(obj: Any) -> bool:
         True if function or method, False otherwise.
 
     Note:
-        Does NOT detect staticmethod/classmethod/property. Use `is_func()` for those.
+        Does NOT detect staticmethod/classmethod/property.
+        Use `is_funclike()` for those.
     """
     return inspect.isfunction(obj) or inspect.ismethod(obj)
 
 
-def is_func(obj: Any) -> bool:
+def is_funclike(obj: Any) -> bool:
     """Check if an object is any kind of callable method-like attribute.
 
     Detects plain functions, staticmethod, classmethod, property, and decorators.
@@ -66,6 +67,6 @@ def all_functions_from_module(
     return (
         func
         for _name, func in obj_members(module)
-        if is_func(func)
+        if is_funclike(func)
         if obj_module(func).__name__ == module.__name__
     )

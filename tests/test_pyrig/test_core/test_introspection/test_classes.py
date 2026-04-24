@@ -10,12 +10,12 @@ from importlib import import_module
 from typing import Any, ClassVar
 
 from pyrig.core.introspection.classes import (
-    all_cls_from_module,
-    all_methods_from_cls,
     classproperty,
+    cls_methods,
     discard_abstract_classes,
     discard_parent_classes,
     discard_parent_methods,
+    module_classes,
 )
 from pyrig.core.introspection.inspection import unwrapped_obj
 from pyrig.core.introspection.packages import discover_all_subclasses
@@ -32,7 +32,7 @@ def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
-# Test classes for all_methods_from_cls
+# Test classes for cls_methods
 class ParentClass:
     """Parent class for testing inheritance."""
 
@@ -129,10 +129,10 @@ class AnotherAbstractChild(AbstractParent):
         """Another abstract method."""
 
 
-def test_all_methods_from_cls() -> None:
+def test_cls_methods() -> None:
     """Test function."""
     cls = TestClass
-    methods = all_methods_from_cls(cls)
+    methods = cls_methods(cls)
     method_names = [unwrapped_obj(m).__name__ for m in methods]
     expected_method_names = {
         ParentClass.parent_method.__name__,
@@ -149,12 +149,12 @@ def test_all_methods_from_cls() -> None:
     assert set(method_names) == expected_method_names
 
 
-def test_all_cls_from_module() -> None:
+def test_module_classes() -> None:
     """Test function."""
     # use this file as the module
-    module = import_module(test_all_cls_from_module.__module__)
+    module = import_module(test_module_classes.__module__)
 
-    classes = all_cls_from_module(module)
+    classes = module_classes(module)
 
     # expected classes in order of definition
     expected_classes: list[type] = [
@@ -241,7 +241,7 @@ def test_discard_abstract_classes() -> None:
 def test_discard_parent_methods() -> None:
     """Test function."""
     cls = TestClass
-    methods = list(all_methods_from_cls(cls))
+    methods = list(cls_methods(cls))
     # check a parent method is in the list of methods before discarding
     assert ParentClass.parent_class_method.__name__ in [
         unwrapped_obj(m).__name__ for m in methods

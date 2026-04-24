@@ -55,9 +55,9 @@ from types import ModuleType
 from typing import Any, Self, cast
 
 from pyrig.core.introspection.classes import (
-    all_cls_from_module,
-    all_methods_from_cls,
+    cls_methods,
     discard_parent_methods,
+    module_classes,
 )
 from pyrig.core.introspection.functions import all_functions_from_module
 from pyrig.core.introspection.inspection import (
@@ -436,19 +436,18 @@ def {test_func_name}() -> None:
             Only considers methods defined directly on the class, excluding
             inherited methods from parent classes.
         """
-        classes = sorted_by_def_line(all_cls_from_module(self.mirror_module()))
-        test_classes = all_cls_from_module(self.test_module())
+        classes = sorted_by_def_line(module_classes(self.mirror_module()))
+        test_classes = module_classes(self.test_module())
 
         class_to_methods = (
             (
                 c,
-                sorted_by_def_line(discard_parent_methods(c, all_methods_from_cls(c))),
+                sorted_by_def_line(discard_parent_methods(c, cls_methods(c))),
             )
             for c in classes
         )
         test_class_to_test_methods = (
-            (tc, (discard_parent_methods(tc, all_methods_from_cls(tc))))
-            for tc in test_classes
+            (tc, (discard_parent_methods(tc, cls_methods(tc)))) for tc in test_classes
         )
 
         supposed_test_class_to_test_methods_names = (
