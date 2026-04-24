@@ -1,1 +1,1 @@
-"""__init__ module."""
+"""Package initialization."""
