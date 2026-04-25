@@ -1,24 +1,9 @@
 """CLI command implementation functions.
 
-Core implementation logic for pyrig's CLI commands, separated from the CLI
-interface layer for testability and reusability.
-
-Architecture:
-    Command implementations are separated from CLI wrappers in
-    `pyrig.rig.cli.subcommands` to enable:
-    - Independent testing without the CLI framework
-    - Programmatic usage without CLI overhead
-    - Lazy imports to avoid dev dependency errors
-
-Modules:
-    - `init_project`: Complete project initialization
-    - `create_root`: Project structure and config file generation
-    - `make_tests`: Test skeleton generation
-    - `make_inits`: __init__.py file creation for namespace packages
-    - `build_artifacts`: Artifact build orchestration
-    - `protect_repo`: GitHub repository protection configuration
-
-Note:
-    Modules may import dev dependencies, so CLI wrappers use local imports
-    to avoid errors when dev dependencies are not installed.
+Contains the core implementation logic for pyrig's CLI commands. Each module
+implements a single command and is intentionally separated from the CLI
+interface layer in `pyrig.rig.cli.subcommands`. This separation allows each
+command to be tested and called programmatically without any CLI framework
+overhead, and allows the CLI layer to use local (lazy) imports, preventing
+import errors in environments where optional dev dependencies are not installed.
 """

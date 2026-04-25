@@ -1,26 +1,61 @@
 """Project-specific CLI commands.
 
-Add custom CLI commands here as public functions. All public functions are
-automatically discovered and registered as CLI commands.
+All functions in this module are automatically discovered and registered
+as CLI commands for this project.
 """
 
 import typer
 
 
+def init() -> None:
+    """Initialize a complete pyrig project from scratch.
+
+    Transforms a basic Python project into a fully-configured, production-ready
+    pyrig project through a comprehensive automated sequence.
+
+    The initialization steps execute in the following order:
+
+        1. Initialize version control (``git init``)
+        2. Add development dependencies (``uv add --group dev``)
+        3. Sync virtual environment (``uv sync``)
+        4. Create project root (``mkroot``)
+        5. Sync virtual environment again to apply updated configs
+        6. Generate test skeletons (``mktests``)
+        7. Install pre-commit hooks (``prek install``)
+        8. Stage all files (``git add .``)
+        9. Run pre-commit hooks to format and lint all files
+        10. Run the test suite (``pytest``)
+        11. Create the initial git commit
+
+    Each step executes sequentially and is tracked with a progress bar. If any
+    step fails, the process stops immediately.
+
+    Example:
+        $ cd my-project
+        $ uv init
+        $ uv add pyrig
+        $ uv run pyrig init
+    """
+    from pyrig.rig.cli.commands.init_project import init_project  # noqa: PLC0415
+
+    init_project()
+
+
 def mkroot() -> None:
-    """Create or update project configuration files and directory structure.
+    """Create or update all project configuration files and directory structure.
 
-    Discovers all ConfigFile subclasses across the project and its dependencies,
-    then validates each one to create or update configuration files. Generates
-    the complete project structure including pyproject.toml, .gitignore, GitHub
-    workflows, prek hooks, and other configuration files.
+    Discovers all ``ConfigFile`` subclasses across the project and its
+    dependencies, then validates each one to create or update the corresponding
+    file. This generates the complete project structure, including
+    ``pyproject.toml``, ``.gitignore``, GitHub Actions workflows, prek hooks,
+    and all other managed configuration files.
 
-    The command is idempotent: safe to run multiple times, overwrites incorrect
-    files but respects opt-out markers.
+    Idempotent: safe to run multiple times. Existing files are updated only
+    when their content is incorrect; user customizations are preserved where
+    possible.
 
     Example:
         $ uv run pyrig mkroot
-
     """
     # local imports in pyrig to avoid cli failure when installing without dev deps
     # as some pyrig commands are dependend on dev deps and can only be used in a dev env
@@ -33,25 +68,24 @@ def mktests() -> None:
     """Generate test skeleton files for all source code.
 
     Creates test files mirroring the source package structure. For each module,
-    class, function, and method in the source code, generates corresponding test
-    skeletons with `NotImplementedError` placeholders.
+    class, function, and method in the source code, generates a corresponding
+    test skeleton with a ``NotImplementedError`` placeholder.
 
-    Naming Conventions:
-        - Test modules: `test_<module_name>.py`
-        - Test classes: `Test<ClassName>`
-        - Test functions: `test_<function_name>`
-        - Test methods: `test_<method_name>`
+    Naming conventions:
+        - Test modules: ``test_<module_name>.py``
+        - Test classes: ``Test<ClassName>``
+        - Test functions: ``test_<function_name>``
+        - Test methods: ``test_<method_name>``
 
-    The command is idempotent and non-destructive: safe to run multiple times,
-    only adds new test skeletons for untested code, preserves all existing tests.
-    Uses parallel execution for performance.
+    Idempotent and non-destructive: only adds skeletons for untested code;
+    all existing test implementations are preserved.
 
     Example:
         $ uv run pyrig mktests
 
     Note:
-        Generated test functions raise `NotImplementedError` and must be
-        implemented. Test skeletons include minimal docstrings.
+        Generated test functions raise ``NotImplementedError`` and must be
+        implemented before the test suite will pass.
     """
     from pyrig.rig.cli.commands.make_tests import make_tests  # noqa: PLC0415
 
@@ -59,90 +93,53 @@ def mktests() -> None:
 
 
 def mkinits() -> None:
-    """Create missing __init__.py files for all namespace packages.
+    """Create missing ``__init__.py`` files for all namespace packages.
 
-    Scans the project for namespace packages (directories with Python files but
-    no __init__.py) and creates minimal __init__.py files for them. Ensures all
-    packages follow traditional Python package conventions and are properly
-    importable.
+    Scans the project for namespace packages (directories that contain Python
+    files but no ``__init__.py``) and creates a minimal ``__init__.py`` for
+    each. This ensures all packages follow standard Python package conventions
+    and are properly importable.
 
-    The command is idempotent and non-destructive: safe to run multiple times,
-    only creates missing files, never modifies existing ones. Uses parallel
-    execution for performance.
+    Idempotent and non-destructive: only creates missing files, never modifies
+    existing ones. The ``docs`` directory and paths matched by ``.gitignore``
+    are excluded from scanning.
 
     Example:
         $ uv run pyrig mkinits
 
     Note:
-        The `docs` directory is excluded from scanning. Created __init__.py
-        files contain a minimal docstring.
+        Created ``__init__.py`` files contain only a minimal module docstring.
     """
     from pyrig.rig.cli.commands.make_inits import make_init_files  # noqa: PLC0415
 
     make_init_files()
 
 
-def init() -> None:
-    """Initialize a complete pyrig project from scratch.
-
-    Transforms a basic Python project into a fully-configured, production-ready
-    pyrig project through a comprehensive automated sequence.
-
-    The initialization steps execute in the following order:
-        - Initialize version control (git init)
-        - Add development dependencies (uv add --group dev)
-        - Sync virtual environment (uv sync)
-        - Create project root (mkroot)
-        - Sync virtual environment again (apply new configs)
-        - Generate test skeletons (mktests)
-        - Install prek hooks (prek install)
-        - Add all files to version control (git add .)
-        - Run prek hooks (format/lint all files)
-        - Run test suite (pytest)
-        - Create initial git commit
-
-    The process is automated and logged. Each step executes sequentially; if any
-    step fails, the process stops immediately.
-
-    Example:
-        $ cd my-project
-        $ uv init
-        $ uv add pyrig
-        $ uv run pyrig init
-
-    Note:
-        Run once when setting up a new project. Individual steps are idempotent,
-        but the full sequence is designed for initial setup.
-    """
-    from pyrig.rig.cli.commands.init_project import init_project  # noqa: PLC0415
-
-    init_project()
-
-
 def build() -> None:
     """Build all distributable artifacts for the project.
 
-    Discovers and invokes all BuilderConfigFile subclasses across the project and
-    its dependencies to create distributable artifacts (e.g., PyInstaller
-    executables, documentation archives, custom build processes).
+    Discovers all concrete ``BuilderConfigFile`` subclasses across the project
+    and its dependencies, then validates each one to trigger the build process.
+    Typical outputs include PyInstaller executables, documentation archives, and
+    any other custom build artifacts defined as ``BuilderConfigFile`` subclasses.
 
-    Build Process:
-        1. Discovers all non-abstract BuilderConfigFile subclasses
-        2. Validates each builder (triggers build via ``dump()``)
-        3. Creates artifacts in temporary directories
-        4. Renames with platform-specific suffixes (e.g., ``-Linux``, ``-Windows``)
-        5. Moves artifacts to ``dist/`` directory
+    Build process per builder:
 
-    Builders within the same priority group execute in parallel. Priority groups
-    are processed sequentially (highest first).
+        1. Generates the build configuration file (e.g., a ``.spec`` file)
+        2. Runs the build tool in a temporary directory
+        3. Renames each output with a platform-specific suffix
+           (e.g., ``app-Linux.zip``, ``app-Windows.zip``)
+        4. Moves the renamed artifact to the ``dist/`` directory
+
+    Builders that share the same priority level run in parallel; priority
+    groups are processed sequentially from highest to lowest.
 
     Example:
         $ uv run pyrig build
 
     Note:
-        Artifacts are placed in ``dist/`` by default. Platform-specific naming
-        uses ``platform.system()``. Only non-abstract BuilderConfigFile subclasses
-        are executed.
+        Artifacts are written to ``dist/`` by default. The platform suffix is
+        derived from ``platform.system()``.
     """
     from pyrig.rig.cli.commands.build_artifacts import build_artifacts  # noqa: PLC0415
 
@@ -150,83 +147,60 @@ def build() -> None:
 
 
 def protect_repo() -> None:
-    """Configure GitHub repository protection rules and security settings.
+    """Apply security protections to the GitHub repository.
 
-    Applies comprehensive security protections to the GitHub repository,
-    including repository-level settings and branch protection rulesets. Enforces
-    pyrig's opinionated security defaults to maintain code quality and prevent
-    accidental destructive operations.
+    Configures repository-level settings and branch protection rulesets on
+    GitHub, enforcing pyrig's opinionated security defaults to maintain code
+    quality and prevent accidental destructive operations.
 
-    Repository Settings:
-        - Description from pyproject.toml
-        - Default branch set to 'main'
-        - Delete branches on merge enabled
-        - Merge commits disabled (squash and rebase only)
+    Repository settings applied:
+        - Repository description synced from ``pyproject.toml``
+        - Default branch set to ``main``
+        - Branches deleted automatically after merge
+        - Merge commits disabled (squash and rebase merges only)
 
-    Branch Protection Rules:
-        - Required pull request reviews with code owner approval
-        - Required status checks (health check workflow must pass)
-        - Linear commit history required
+    Branch protection rules applied:
+        - Pull request reviews required, including code owner approval
+        - Status checks required (health check workflow must pass)
+        - Linear commit history enforced
         - Signed commits required
         - Force pushes and branch deletions disabled
 
-    Protection rules are loaded from `branch-protection.json` and can be
+    Protection rules are read from ``branch-protection.json`` and can be
     customized for your project.
+
+    Idempotent: safe to run multiple times; existing rulesets are updated in
+    place.
 
     Example:
         $ uv run pyrig protect-repo
 
-    Note:
-        Requires `REPO_TOKEN` environment variable with `repo` scope permissions.
-        Idempotent: safe to run multiple times, updates existing rulesets.
-
     Raises:
-        ValueError: If REPO_TOKEN is not found in environment or .env file.
+        ValueError: If ``REPO_TOKEN`` is not found in the environment or
+            ``.env`` file.
     """
     from pyrig.rig.cli.commands.protect_repo import protect_repository  # noqa: PLC0415
 
     protect_repository()
 
 
-def scratch() -> None:
-    """Execute the .scratch file for temporary, ad-hoc code.
+def resources() -> None:
+    """Create the resources package for the project.
 
-    The .scratch file is a Python script located at the project root, intended
-    for temporary, experimental code that doesn't belong in the main source
-    files. This command checks for the existence of .scratch and executes it in
-    a clean namespace.
+    Generates the ``resources`` package (an ``__init__.py`` file under the rig
+    resources directory) if it does not already exist. The resources package is
+    the conventional location for static assets such as templates, data files,
+    and other non-code resources bundled with the project.
 
-    Example usage:
-        $ uv run pyrig scratch
+    Idempotent: safe to run multiple times; does nothing if the package already
+    exists.
 
-    Note:
-        The .scratch file is not tracked by version control and should be used
-        for one-off scripts, debugging, or experimental code related to the
-        project.
+    Example:
+        $ uv run pyrig resources
     """
-    from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
+    from pyrig.rig.cli.commands.make_resources import make_resources  # noqa: PLC0415
 
-    run_scratch_file()
-
-
-def rmpyc() -> None:
-    """Remove all __pycache__ directories and their contents from the project.
-
-    This command recursively searches the project directory for any __pycache__
-    directories and deletes them along with their contents. Useful for cleaning up
-    compiled Python files that may be causing issues or taking up unnecessary
-    space.
-
-    Example usage:
-        $ uv run pyrig rmpyc
-    Note:
-        Use with caution, as this will permanently delete all __pycache__ directories
-        and their contents. Safe to run multiple times, as it only targets existing
-        __pycache__ directories.
-    """
-    from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
-
-    remove_pycache()
+    make_resources()
 
 
 def mkcmd(
@@ -239,12 +213,20 @@ def mkcmd(
 ) -> None:
     """Create a new CLI subcommand scaffold.
 
-    This will create the subcommands.py file under the rig package
-    if it doesn't exist yet, and add a new function with the given name
+    Appends a new stub function to the project-specific subcommands module
+    (``rig/cli/subcommands.py``) or, when ``shared=True``, to the shared
+    subcommands module. The target module is created first if it does not yet
+    exist. The command name is normalized from kebab-case to snake_case before
+    being written as a Python function name.
 
     Args:
-        name: Name of the command to generate.
-        shared: Whether to add the command to the shared subcommands module.
+        name: Name of the command to create (kebab-case accepted,
+            e.g. ``my-command`` becomes ``my_command``).
+        shared: When ``True``, the stub is added to the shared subcommands
+            module instead of the project-specific one.
+
+    Example:
+        $ uv run pyrig mkcmd my-command
     """
     from pyrig.rig.cli.commands.make_subcommand import make_subcommand  # noqa: PLC0415
 
@@ -252,12 +234,16 @@ def mkcmd(
 
 
 def subcls() -> None:
-    """Create a subclass scaffold for a class specified by import path.
+    """Create a subclass scaffold for an interactively selected pyrig class.
 
-    Opens an interactive prompt to select a class from pyrig dependents, then creates
-    a new module with a subclass scaffold for the selected class. The target module
-    is created (or validated) via config generation and then extended with a subclass
-    skeleton.
+    Presents a fuzzy-search prompt listing all concrete and abstract
+    ``DependencySubclass`` subclasses discovered from pyrig and its dependents.
+    After a class is chosen, the corresponding source module is mirrored as a
+    new config-managed file and a subclass skeleton is appended, ready for
+    method overrides.
+
+    Example:
+        $ uv run pyrig subcls
     """
     from pyrig.rig.cli.commands.make_subclass import make_subclass  # noqa: PLC0415
 
@@ -267,20 +253,56 @@ def subcls() -> None:
 def mkfixture(
     name: str = typer.Argument(help="Name of the fixture to create."),
 ) -> None:
-    """Create a new pytest fixture scaffold.
+    """Create a new pytest fixture scaffold in the shared fixtures module.
 
-    This command creates a new pytest fixture function in the fixtures module.
+    Appends a new ``@pytest.fixture`` stub to the shared fixtures module. The
+    fixture name is normalized from kebab-case to snake_case. ``import pytest``
+    is added to the module automatically if it is not already present.
 
     Args:
-        name: Name of the fixture to generate.
+        name: Name of the fixture to create (kebab-case accepted,
+            e.g. ``my-fixture`` becomes ``my_fixture``).
+
+    Example:
+        $ uv run pyrig mkfixture my-fixture
     """
     from pyrig.rig.cli.commands.make_fixture import make_fixture  # noqa: PLC0415
 
     make_fixture(name)
 
 
-def resources() -> None:
-    """Scaffolds the resources package for the project."""
-    from pyrig.rig.cli.commands.make_resources import make_resources  # noqa: PLC0415
+def scratch() -> None:
+    """Execute the ``.scratch`` file at the project root.
 
-    make_resources()
+    Runs the ``.scratch`` Python script in a clean namespace using
+    ``runpy.run_path``. The ``.scratch`` file is intended for temporary,
+    experimental code that does not belong in the main source tree.
+
+    Example:
+        $ uv run pyrig scratch
+
+    Note:
+        The ``.scratch`` file is excluded from version control. If the file
+        does not exist, a ``FileNotFoundError`` is raised.
+    """
+    from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
+
+    run_scratch_file()
+
+
+def rmpyc() -> None:
+    """Remove all ``__pycache__`` directories from the source and tests packages.
+
+    Recursively deletes every ``__pycache__`` directory found under the main
+    package root and the tests package root. Useful for clearing stale bytecode
+    that may cause import or test-isolation issues.
+
+    Idempotent: safe to run multiple times; only targets directories that
+    currently exist.
+
+    Example:
+        $ uv run pyrig rmpyc
+    """
+    from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
+
+    remove_pycache()

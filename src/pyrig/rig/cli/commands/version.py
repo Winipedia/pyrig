@@ -1,4 +1,4 @@
-"""Contains the command to echo the version of a project."""
+"""Version display command for pyrig-based project CLIs."""
 
 from importlib.metadata import version
 
@@ -8,17 +8,16 @@ from pyrig.core.cli import project_name_from_argv
 
 
 def project_version() -> None:
-    """Display the current project's version.
+    """Display the invoking project's version.
 
-    Retrieves and displays the version of the project being run (not pyrig's
-    version) from installed package metadata.
+    Prints the version of the project whose CLI entry point was used to call
+    this command, not pyrig's own version. The project name is derived from
+    ``sys.argv[0]``, so this command adapts automatically to whichever
+    pyrig-based project invokes it.
 
-    The project name is automatically determined from `sys.argv[0]`, enabling
-    this command to work in any pyrig-based project without modification.
-
-    Note:
-        The package must be installed (even in editable mode) for version
-        retrieval to work.
+    The version is read from installed package metadata via
+    ``importlib.metadata.version``. The project must be installed (editable
+    installs are sufficient) for this to work.
     """
     project_name = project_name_from_argv()
     typer.echo(f"{project_name} version {version(project_name)}")

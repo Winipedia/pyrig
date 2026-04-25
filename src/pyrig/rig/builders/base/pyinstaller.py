@@ -1,38 +1,7 @@
 """PyInstaller-based artifact builder for creating standalone executables.
 
-Provides the `PyInstallerBuilder` abstract base class for creating platform-specific
-standalone executables from pyrig projects using PyInstaller.
-
-Extends the `BuilderConfigFile` base class with PyInstaller-specific functionality
-including resource bundling, icon conversion, and PyInstaller configuration.
-Features include single-file executables (`--onefile`), automatic resource bundling
-from multiple packages, platform-specific icon conversion (PNG to ICO/ICNS),
-multi-package resource discovery, and no console window (`--noconsole`).
-
-Resources are collected from two sources: default resources (all `resources` modules
-from packages depending on pyrig, discovered automatically) and additional resources
-(packages specified by `additional_resource_packages()`). All resources are bundled
-using PyInstaller's `--add-data` option and are accessible at runtime via
-`importlib.resources` or `pyrig.src.resource`.
-
-Icon conversion expects an `icon.png` file in the resources directory and converts
-it to the appropriate format per platform (Windows: ICO, macOS: ICNS, Linux: PNG).
-
-Example:
-    Create a builder for your application:
-
-        from types import ModuleType
-        from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
-        from pyrig import resources
-
-        class AppBuilder(PyInstallerBuilder):
-
-            def additional_resource_packages(self) -> list[ModuleType]:
-                return [resources]
-
-    Build the executable:
-
-        $ uv run pyrig build
+Provides the abstract ``PyInstallerBuilder`` base class for building
+platform-specific standalone executables from pyrig projects using PyInstaller.
 """
 
 import os
@@ -59,137 +28,65 @@ from pyrig.rig.builders.base.builder import BuilderConfigFile
 class PyInstallerBuilder(BuilderConfigFile):
     """Abstract builder for creating PyInstaller standalone executables.
 
-    Extends `BuilderConfigFile` to provide PyInstaller-specific functionality for
-    creating single-file executables. Handles PyInstaller configuration, resource
-    bundling, and icon conversion.
+    Extends ``BuilderConfigFile`` to produce single-file executables using
+    PyInstaller. Handles command-line configuration, resource bundling across
+    the full pyrig dependency chain, and platform-specific icon conversion.
 
-    Creates executables with:
+    Built executables are configured with:
 
-    - Single-file executable (`--onefile`)
-    - No console window (`--noconsole`)
-    - Platform-specific icon (ICO/ICNS/PNG)
-    - All resources bundled and accessible at runtime
-    - Clean build (`--clean`)
+    - Single-file mode (``--onefile``)
+    - No console window (``--noconsole``)
+    - Platform-specific icon (ICO on Windows, ICNS on macOS, PNG on Linux)
+    - All resources bundled and accessible at runtime via ``importlib.resources``
+    - Clean workspace for each build (``--clean``)
 
-    Resources are automatically discovered from packages depending on pyrig, plus
-    additional packages specified by `additional_resource_packages()`. Subclasses
-    must implement `additional_resource_packages()` to return a list of additional
-    resource packages.
+    Subclasses must implement ``entry_point_module()`` and
+    ``app_icon_png_location()``.
 
     Example:
-        Basic PyInstaller builder:
+        Minimal concrete subclass:
 
             from types import ModuleType
-            from pyrig.rig.builders.pyinstaller import PyInstallerBuilder
-            from pyrig import resources
+            from pyrig.rig.builders.base.pyinstaller import PyInstallerBuilder
+            from myapp import main, resources
 
             class AppBuilder(PyInstallerBuilder):
 
-                def additional_resource_packages(self) -> list[ModuleType]:
-                    return [resources]
+                def entry_point_module(self) -> ModuleType:
+                    return main
+
+                def app_icon_png_location(self) -> tuple[str, ModuleType]:
+                    return "icon", resources
     """
 
     def create_artifacts(self, temp_artifacts_dir: Path) -> None:
         """Build a PyInstaller executable.
 
-        Constructs PyInstaller command-line options and invokes PyInstaller to
-        create the executable.
+        Assembles the PyInstaller command-line options and runs PyInstaller.
+        The resulting executable is written to ``temp_artifacts_dir``.
 
         Args:
-            temp_artifacts_dir: Temporary directory where the exe will be created.
+            temp_artifacts_dir: Temporary directory where the executable is created.
         """
         options = self.pyinstaller_options(temp_artifacts_dir)
         run(options)
 
-    @abstractmethod
-    def entry_point_module(self) -> ModuleType:
-        """Return the module containing the application's entry point.
-
-        This module should contain run the code and start the application when executed.
-        PyInstaller will use this as the main script.
-
-        Example:
-            If your main application code is in `myapp/main.py`, this should return
-            the `myapp.main` module.
-
-            Inside the main module, you should have a `main()` function
-            that serves as the entry point:
-                # myapp/main.py
-                def main():
-                    print("Hello, World!")
-
-                if __name__ == "__main__":
-                    main()
-
-        Returns:
-            Module object representing the entry point module.
-        """
-
-    @abstractmethod
-    def app_icon_png_location(self) -> tuple[str, ModuleType]:
-        """Return the path to the source PNG icon for the application.
-
-        This PNG icon will be converted to the appropriate format for each platform
-        (ICO for Windows, ICNS for macOS, PNG for Linux) and used as the application
-        icon in the generated executable.
-
-        Returns:
-            A tuple of the file stem and package where the file is located
-            (e.g., `(resources, "icon")` for `resources/icon.png`).
-        """
-
-    def entry_point_path(self) -> Path:
-        """Return the absolute path to the entry point script.
-
-        Converts the module returned by `entry_point_module()` to a file path that
-        PyInstaller can use as the main script.
-
-        Returns:
-            Absolute path to the entry point script (e.g., `myapp/main.py`).
-        """
-        module = self.entry_point_module()
-        return module_file_path(module)
-
-    def resource_packages(self) -> Generator[ModuleType, None, None]:
-        """Get resource packages from all pyrig-dependent packages.
-
-        Automatically discovers all `resources` modules from packages that depend
-        on pyrig, enabling multi-package applications to bundle resources from
-        their entire dependency chain.
-
-        Returns:
-             Generator of module objects representing resources packages from all
-            packages in the dependency chain.
-        """
-        return discover_equivalent_modules_across_dependents(resources, pyrig)
-
-    def add_datas(self) -> list[tuple[str, str]]:
-        """Build the --add-data arguments for PyInstaller.
-
-        Collects all data files from all resource packages and formats them as
-        PyInstaller --add-data arguments.
-
-        Returns:
-            List of (source_path, destination_path) tuples for PyInstaller's
-            --add-data argument.
-        """
-        add_datas: list[tuple[str, str]] = []
-        for package in self.resource_packages():
-            package_datas = collect_data_files(package.__name__, include_py_files=True)
-            add_datas.extend(package_datas)
-        return add_datas
-
     def pyinstaller_options(self, temp_artifacts_dir: Path) -> tuple[str, ...]:
-        """Build the complete PyInstaller command-line options.
+        """Build the complete set of PyInstaller command-line arguments.
 
-        Constructs the full list of command-line arguments for PyInstaller,
-        including entry point, flags, paths, icon, and resource files.
+        Assembles all flags and paths required to invoke PyInstaller: the entry
+        point script, output name, build paths, icon, and ``--add-data`` entries
+        for every resource package. Uses ``temp_artifacts_dir.parent`` as the
+        root for PyInstaller's internal workpath and specpath subdirectories so
+        they remain within the same temporary workspace as the executable.
 
         Args:
-            temp_artifacts_dir: Temporary directory for the executable.
+            temp_artifacts_dir: Temporary directory where the executable will be
+                written. Its parent is used as the root for workpath and specpath.
 
         Returns:
-            Tuple of command-line arguments for PyInstaller.
+            Tuple of string arguments suitable for passing directly to
+            ``PyInstaller.__main__.run``.
         """
         temp_dir = temp_artifacts_dir.parent
 
@@ -216,51 +113,88 @@ class PyInstallerBuilder(BuilderConfigFile):
             ),
         )
 
-    def temp_distpath(self, temp_dir: Path) -> Path:
-        """Get the temporary distribution output path.
+    def entry_point_path(self) -> Path:
+        """Return the absolute path to the application's entry point script.
 
-        Args:
-            temp_dir: Parent temporary directory.
-
-        Returns:
-            Path where PyInstaller will write the executable.
-        """
-        return self.temp_artifacts_path(temp_dir)
-
-    def temp_workpath(self, temp_dir: Path) -> Path:
-        """Get the temporary work directory for PyInstaller.
-
-        Args:
-            temp_dir: Parent temporary directory.
+        Resolves the source file path of the module returned by
+        ``entry_point_module()``. PyInstaller uses this path as its main script.
 
         Returns:
-            Path to the workpath subdirectory.
+            Absolute path to the entry point ``.py`` file.
         """
-        path = temp_dir / "workpath"
-        path.mkdir(parents=True, exist_ok=True)
-        return path
+        module = self.entry_point_module()
+        return module_file_path(module)
 
-    def temp_specpath(self, temp_dir: Path) -> Path:
-        """Get the temporary spec file directory.
+    @abstractmethod
+    def entry_point_module(self) -> ModuleType:
+        """Return the module that serves as the application's entry point.
 
-        Args:
-            temp_dir: Parent temporary directory.
+        PyInstaller uses this module as the main script. The module should run
+        the application when executed directly (i.e., contain an
+        ``if __name__ == "__main__"`` block or equivalent).
 
         Returns:
-            Path to the specpath subdirectory.
+            Module object for the entry point script.
+
+        Example:
+            If your application entry point is in ``myapp/main.py``:
+
+                def entry_point_module(self) -> ModuleType:
+                    from myapp import main
+                    return main
+
+            Where ``myapp/main.py`` contains:
+
+                def main():
+                    ...
+
+                if __name__ == "__main__":
+                    main()
         """
-        path = temp_dir / "specpath"
-        path.mkdir(parents=True, exist_ok=True)
-        return path
+
+    def add_datas(self) -> list[tuple[str, str]]:
+        """Build the list of ``--add-data`` arguments for PyInstaller.
+
+        Collects all data files from every resource package returned by
+        ``resource_packages()``, including Python source files. Each entry is
+        a ``(source_path, destination_path)`` tuple in the format expected by
+        PyInstaller's ``--add-data`` option.
+
+        Returns:
+            List of ``(source, destination)`` tuples for PyInstaller's
+            ``--add-data`` flag.
+        """
+        add_datas: list[tuple[str, str]] = []
+        for package in self.resource_packages():
+            package_datas = collect_data_files(package.__name__, include_py_files=True)
+            add_datas.extend(package_datas)
+        return add_datas
+
+    def resource_packages(self) -> Generator[ModuleType, None, None]:
+        """Yield resource packages from all pyrig-dependent packages.
+
+        Discovers all ``resources`` modules from packages in the pyrig dependency
+        chain, starting with ``pyrig.rig.resources`` itself. This allows
+        multi-package applications to bundle resources from their entire
+        dependency chain without explicit configuration.
+
+        Yields:
+            Module objects for each discovered ``resources`` package.
+        """
+        return discover_equivalent_modules_across_dependents(resources, pyrig)
 
     def app_icon_path(self, temp_dir: Path) -> Path:
-        """Get the platform-appropriate icon path.
+        """Return the path to the converted, platform-appropriate icon file.
 
-        Converts the PNG icon to the appropriate format for the current platform:
-        Windows (ICO), macOS (ICNS), or Linux (PNG).
+        Converts the source PNG icon to the format required by the current
+        platform before returning the path:
+
+        - Windows: ``.ico``
+        - macOS: ``.icns``
+        - Linux: ``.png``
 
         Args:
-            temp_dir: Temporary directory for the converted icon.
+            temp_dir: Directory where the converted icon file is written.
 
         Returns:
             Path to the converted icon file.
@@ -272,15 +206,19 @@ class PyInstallerBuilder(BuilderConfigFile):
         return self.convert_png_to_format("png", temp_dir)
 
     def convert_png_to_format(self, file_format: str, temp_dir_path: Path) -> Path:
-        """Convert the application icon PNG to another format.
+        """Convert the application's PNG icon to the specified image format.
 
-        Uses PIL/Pillow to convert the source PNG icon to the specified format
-        (ico, icns, or png). Note that ICNS conversion may require specific icon
-        sizes (e.g., 16x16, 32x32, 128x128, 256x256, 512x512) for best results.
+        Opens the source PNG returned by ``app_icon_png_path()`` and saves a
+        copy in the requested format using Pillow. The output file is named
+        ``icon.<file_format>`` and written to ``temp_dir_path``.
+
+        ICNS conversion typically requires specific icon sizes (16x16, 32x32,
+        128x128, 256x256, 512x512) for best results on macOS.
 
         Args:
-            file_format: Target format extension ("ico", "icns", or "png").
-            temp_dir_path: Directory where the converted icon should be written.
+            file_format: Target format extension without the dot
+                (e.g., ``"ico"``, ``"icns"``, or ``"png"``).
+            temp_dir_path: Directory where the converted icon is written.
 
         Returns:
             Path to the converted icon file.
@@ -292,12 +230,70 @@ class PyInstallerBuilder(BuilderConfigFile):
         return output_path
 
     def app_icon_png_path(self) -> Path:
-        """Get the path to the source PNG icon file.
+        """Return the filesystem path to the source PNG icon.
 
-        Uses the location package and name to get the path
+        Resolves the PNG file identified by ``app_icon_png_location()`` using
+        ``pyrig.core.resources.resource_path``, which works in both development
+        environments and PyInstaller-bundled executables.
 
         Returns:
-            Path to the source PNG icon file.
+            Absolute path to the source ``icon.png`` file.
         """
         file_stem, package = self.app_icon_png_location()
         return resource_path(f"{file_stem}.png", package)
+
+    @abstractmethod
+    def app_icon_png_location(self) -> tuple[str, ModuleType]:
+        """Return the location of the source PNG icon as a ``(stem, package)`` pair.
+
+        Identifies the PNG icon file so it can be resolved via
+        ``importlib.resources``. The file must exist within the given package as
+        ``<file_stem>.png``. The PNG is then converted to the platform-appropriate
+        format (ICO, ICNS, or PNG) before being passed to PyInstaller.
+
+        Returns:
+            A ``(file_stem, package)`` tuple where ``file_stem`` is the filename
+            without extension and ``package`` is the module containing the
+            resource (e.g., ``("icon", resources)`` for ``resources/icon.png``).
+        """
+
+    def temp_distpath(self, temp_dir: Path) -> Path:
+        """Return the temporary directory where PyInstaller writes the executable.
+
+        Args:
+            temp_dir: Root temporary directory for the build.
+
+        Returns:
+            Path to the dist subdirectory inside ``temp_dir``.
+        """
+        return self.temp_artifacts_path(temp_dir)
+
+    def temp_workpath(self, temp_dir: Path) -> Path:
+        """Return the PyInstaller work directory for intermediate build files.
+
+        Creates the directory if it does not already exist.
+
+        Args:
+            temp_dir: Root temporary directory for the build.
+
+        Returns:
+            Path to the ``workpath`` subdirectory inside ``temp_dir``.
+        """
+        path = temp_dir / "workpath"
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    def temp_specpath(self, temp_dir: Path) -> Path:
+        """Return the directory where PyInstaller writes the ``.spec`` file.
+
+        Creates the directory if it does not already exist.
+
+        Args:
+            temp_dir: Root temporary directory for the build.
+
+        Returns:
+            Path to the ``specpath`` subdirectory inside ``temp_dir``.
+        """
+        path = temp_dir / "specpath"
+        path.mkdir(parents=True, exist_ok=True)
+        return path

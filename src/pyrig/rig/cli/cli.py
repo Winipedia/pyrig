@@ -1,32 +1,7 @@
-"""CLI entry point and dynamic command registration system.
+"""CLI entry point and dynamic command registration for pyrig and pyrig-based projects.
 
-Implements the main CLI entry point for pyrig and all pyrig-based projects with
-dynamic command discovery and registration from multiple sources across the
-package dependency chain.
-
-Built on Typer with pyrig's multi-package architecture for extensibility.
-Projects depending on pyrig can define their own commands that are automatically
-discovered and integrated.
-
-Command Discovery:
-    Discovers and registers commands from three sources:
-    1. Main entry point: `main()` from `<package>.main`
-    2. Project-specific commands: Functions from `<package>.rig.cli.subcommands`
-    3. Shared commands: Functions from `<package>.rig.cli.shared_subcommands`
-       across all packages in the dependency chain
-
-Logging Configuration:
-    Flexible logging control through global options:
-    - Default: INFO level with clean formatting
-    - `-q/--quiet`: WARNING level (errors and warnings only)
-    - `-v`: DEBUG level with level prefix
-    - `-vv`: DEBUG level with module names
-    - `-vvv`: DEBUG level with timestamps and full details
-
-Example:
-    $ uv run pyrig init
-    $ uv run pyrig -v mkroot  # Debug output
-    $ uv run myproject deploy  # Custom command in dependent project
+Provides the main entry point with runtime command discovery from project-specific
+and shared sources across the package dependency chain. Built on Typer.
 """
 
 import logging
@@ -65,25 +40,26 @@ def configure_logging(
         help="Only show warnings and errors",
     ),
 ) -> None:
-    """Configure logging based on verbosity flags.
+    """Configure logging before any command executes.
 
-    Typer callback that runs before any command executes. Configures the
-    Python logging system based on user-provided verbosity flags.
+    Typer callback that runs before every command. Adjusts the Python logging
+    level and format based on the verbosity flags supplied by the user.
 
-    Logging Levels:
-        - Default: INFO level, clean formatting (just messages)
-        - `-q/--quiet`: WARNING level (only warnings and errors)
-        - `-v`: DEBUG level with level prefix
-        - `-vv`: DEBUG level with module names
-        - `-vvv+`: DEBUG level with timestamps and full details
+    Logging levels and formats:
+        - Default (no flags): INFO, messages only.
+        - ``-q``/``--quiet``: WARNING, ``LEVEL: message``.
+        - ``-v``: DEBUG, ``LEVEL: message``.
+        - ``-vv``: DEBUG, ``LEVEL [module] message``.
+        - ``-vvv`` or more: DEBUG, ``timestamp LEVEL [module] message``.
 
     Args:
-        verbose: Verbosity level from number of `-v` flags (0=INFO, 1=DEBUG,
-            2=DEBUG with modules, 3+=DEBUG with timestamps). Count option.
-        quiet: If True, sets WARNING level. Takes precedence over verbose.
+        verbose: Number of ``-v`` flags. 0 = INFO, 1 = DEBUG, 2 = DEBUG with
+            module names, 3+ = DEBUG with timestamps. Count option.
+        quiet: If ``True``, sets WARNING level. Takes precedence over verbose.
 
     Note:
-        Uses `force=True` in `logging.basicConfig()` to override existing config.
+        Uses ``force=True`` in ``logging.basicConfig`` to override any logging
+        configuration already applied by imported modules.
     """
     if quiet:
         # --quiet: only show warnings and errors
@@ -109,22 +85,27 @@ def configure_logging(
     logging.basicConfig(level=level, format=fmt, force=True)
 
 
+def main() -> None:
+    """Run the CLI application.
+
+    Registers all project-specific and shared commands, then invokes the Typer
+    app to parse arguments and dispatch the requested command. Called automatically
+    by the console script entry point defined in ``pyproject.toml``.
+    """
+    add_subcommands()
+    add_shared_subcommands()
+    app()
+
+
 def add_subcommands() -> None:
-    """Discover and register project-specific CLI commands.
+    """Discover and register project-specific commands from the calling package.
 
-    Dynamically discovers and registers two types of commands:
-    1. Main entry point: `main()` from `<package>.main`
-    2. Subcommands: All functions from `<package>.rig.cli.subcommands`
+    Derives the calling package from ``sys.argv[0]``, constructs the module
+    name ``<package>.rig.cli.subcommands``, and registers every function
+    defined in that module as a Typer command.
 
-    Discovery Process:
-        1. Extracts package name from `sys.argv[0]`
-        2. Replaces root module name in pyrig's paths with current package
-        3. Converts module names to file paths and imports with fallback
-        4. Extracts all functions from subcommands module
-        5. Registers each function as a Typer command
-
-    This enables dependent projects to define their own commands by creating
-    `<package>.rig.cli.subcommands` with functions.
+    This allows any pyrig-based project to define its own CLI commands simply
+    by adding functions to ``<package>.rig.cli.subcommands``.
 
     Example:
         # myproject/rig/cli/subcommands.py
@@ -135,9 +116,9 @@ def add_subcommands() -> None:
         $ uv run myproject deploy
 
     Note:
-        Package name is extracted from `sys.argv[0]`, not working directory.
-        Only functions defined in the module are registered (imported functions
-        are excluded).
+        Only functions defined directly in the subcommands module are registered;
+        imported functions are excluded. If the module cannot be imported,
+        registration is silently skipped.
     """
     # extract project name from sys.argv[0]
     package_name = package_name_from_argv()
@@ -157,23 +138,16 @@ def add_subcommands() -> None:
 
 
 def add_shared_subcommands() -> None:
-    """Discover and register shared CLI commands from the dependency chain.
+    """Discover and register shared commands from the full dependency chain.
 
-    Discovers and registers shared commands available across all pyrig-based
-    projects. Commands are defined in `<package>.rig.cli.shared_subcommands`
-    modules and automatically available in all dependent projects.
+    Searches every package between ``pyrig`` and the calling package for a
+    ``<package>.rig.cli.shared_subcommands`` module and registers all functions
+    found there as Typer commands. These commands are available in every
+    pyrig-based project and can adapt their behavior to the calling project
+    at runtime.
 
-    Discovery Process:
-        1. Extracts current package name from `sys.argv[0]`
-        2. Imports current package
-        3. Finds all packages in dependency chain from pyrig to current package
-        4. For each package, looks for `rig.cli.shared_subcommands` module
-        5. Extracts all public functions from each module
-        6. Registers each function as a Typer command
-
-    This enables creating commands that work consistently across an ecosystem
-    while adapting to each project's context. For example, the `version` command
-    displays the version of the project being run, not pyrig's version.
+    For example, a ``version`` command defined once in pyrig automatically
+    reports the version of whichever project invokes it.
 
     Example:
         $ uv run pyrig version
@@ -183,9 +157,9 @@ def add_shared_subcommands() -> None:
         myproject version 1.2.3
 
     Note:
-        Commands are registered in dependency order (pyrig first). If multiple
-        packages define the same command name, the last one registered takes
-        precedence.
+        Commands are registered in dependency order (pyrig first, calling
+        package last). When two packages define a command with the same name,
+        the last registration takes precedence.
     """
     package_name = package_name_from_argv()
     package = import_module(package_name)
@@ -198,27 +172,3 @@ def add_shared_subcommands() -> None:
         sub_cmds = all_functions_from_module(shared_subcommands_module)
         for sub_cmd in sub_cmds:
             app.command()(sub_cmd)
-
-
-def main() -> None:
-    """Run the pyrig CLI.
-
-    Orchestrate command discovery and registration before invoking the Typer app.
-    Registered as a console script entry point in `pyproject.toml`.
-
-    Steps:
-        1. Discovers and registers project-specific commands
-        2. Discovers and registers shared commands
-        3. Invokes Typer app to parse arguments and execute command
-
-    Example:
-        $ uv run pyrig mkroot
-
-    Note:
-        Called automatically by console script entry point. Takes no arguments;
-        all CLI arguments are parsed by Typer. Logging is configured by the
-        `configure_logging` callback before command execution.
-    """
-    add_subcommands()
-    add_shared_subcommands()
-    app()

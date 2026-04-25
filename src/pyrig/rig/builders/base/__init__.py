@@ -1,8 +1,8 @@
-"""Base class for artifact builders.
+"""Base classes for artifact builders.
 
-Provides the abstract `BuilderConfigFile` base class that defines the interface
-and orchestration logic for all artifact builders. The `BuilderConfigFile` class
-handles the complete build lifecycle including temporary directory management,
-artifact creation, platform-specific renaming, and automatic cleanup. Subclasses
-must implement `create_artifacts(self, temp_artifacts_dir: Path) -> None`.
+Provides the abstract foundation for all artifact builders in pyrig. Builders
+extend the configuration file framework to produce build artifacts such as
+executables and packages using a standardized build lifecycle: temporary
+workspace management, artifact creation, platform-specific naming, and
+output directory management.
 """

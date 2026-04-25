@@ -1,8 +1,4 @@
-"""Command to remove __pycache__ directories from tests and package.
-
-This command recursively deletes all __pycache__ directories from the tests
-package and the main package, cleaning up compiled Python files.
-"""
+"""Cleanup command for removing compiled Python bytecode cache directories."""
 
 import shutil
 
@@ -13,16 +9,10 @@ from pyrig.rig.tools.project_tester import ProjectTester
 
 
 def remove_pycache() -> None:
-    """Remove all __pycache__ directories from tests and package.
+    """Remove all __pycache__ directories in the project.
 
-    This function searches for __pycache__ directories within the tests package
-    and the main package defined in pyproject.toml, and removes them along with
-    their contents.
-
-    Note:
-        Use with caution, as this will permanently delete all __pycache__
-        directories and their contents. Safe to run multiple times, as it only
-        targets existing __pycache__ directories.
+    Recursively scans the src and tests roots and deletes every __pycache__
+    directory found, printing each path to standard output before removal.
     """
     roots = (ProjectTester.I.tests_package_root(), PackageManager.I.package_root())
     for root in roots:
