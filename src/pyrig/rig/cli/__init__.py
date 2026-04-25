@@ -1,20 +1,7 @@
-"""Command-line interface package for pyrig.
+"""CLI package for pyrig and projects that depend on pyrig.
 
-Provides complete CLI infrastructure for pyrig and pyrig-based projects with
-dynamic command discovery from multiple sources:
-
-1. Project-specific commands from `<package>.rig.cli.subcommands`
-2. Shared commands from `<package>.rig.cli.shared_subcommands` across the
-   dependency chain
-3. Main entry point from `<package>.main`
-
-Built on Typer with automatic command discovery through pyrig's multi-package
-architecture, enabling dependent projects to define their own commands that are
-automatically integrated.
-
-Modules:
-    cli: Main entry point, command registration, and Typer app
-    subcommands: Project-specific command wrappers
-    shared_subcommands: Shared commands across all pyrig-based projects
-    commands: Command implementation functions (separate from CLI interface)
+Provides the complete command-line infrastructure built on Typer, with dynamic
+command discovery and registration across the package dependency chain. Commands
+are automatically discovered from project-specific and shared subcommand modules,
+enabling dependent projects to extend the CLI without modifying pyrig directly.
 """

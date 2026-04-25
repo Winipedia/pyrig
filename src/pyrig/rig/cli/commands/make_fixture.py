@@ -1,4 +1,4 @@
-"""Helpers to scaffold new shared pytest fixture."""
+"""Scaffold shared pytest fixtures for a pyrig-managed project."""
 
 from pyrig.core.strings import kebab_to_snake_case
 from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
@@ -6,7 +6,20 @@ from pyrig.rig.tests.fixtures import fixtures
 
 
 def make_fixture(name: str) -> None:
-    """Create a new pytest fixture scaffold in the shared fixtures module."""
+    """Scaffold a new pytest fixture in the project's shared fixtures module.
+
+    Ensures the shared ``fixtures.py`` file exists, then appends a new
+    ``@pytest.fixture``-decorated function with the given name. If
+    ``import pytest`` is not already present in the file, it is added
+    before the new fixture.
+
+    The name is normalized from kebab-case to snake_case so it forms a
+    valid Python identifier (e.g. ``"my-new-fixture"`` becomes
+    ``"my_new_fixture"``).
+
+    Args:
+        name: Name of the fixture in kebab-case or snake_case.
+    """
     # create the file if not existent yet
     config_file = CopyModuleOnlyDocstringConfigFile.generate_subclass(fixtures)()
     config_file.validate()

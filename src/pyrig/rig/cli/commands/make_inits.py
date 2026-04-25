@@ -1,8 +1,4 @@
-"""`__init__.py` file creation for namespace packages.
-
-Automatically creates `__init__.py` files for namespace packages (PEP 420
-packages without `__init__.py`) to ensure proper importability.
-"""
+"""`__init__.py` file creation for namespace packages."""
 
 from collections.abc import Iterable
 
@@ -13,16 +9,11 @@ from pyrig.rig.utils.paths import package_name_as_root_path
 
 
 def make_init_files() -> None:
-    """Create `__init__.py` files for all namespace packages.
+    """Create `__init__.py` files for all namespace packages in the project.
 
-    Scans the project for namespace packages (directories with Python files
-    but no `__init__.py`) and creates minimal `__init__.py` files for them.
-
-    Idempotent. Uses parallel execution for performance.
-
-    Note:
-        Created `__init__.py` files contain a minimal docstring. The docs
-        directory is excluded from scanning.
+    Discovers namespace packages by scanning the project (excluding the docs
+    directory) and creates a minimal `__init__.py` in each. Idempotent:
+    packages that already have an `__init__.py` are skipped.
     """
     make_init_files_for_namespace_packages(find_namespace_packages())
 
@@ -30,9 +21,13 @@ def make_init_files() -> None:
 def make_init_files_for_namespace_packages(namespace_packages: Iterable[str]) -> None:
     """Create `__init__.py` files for the given namespace packages.
 
+    Resolves each dotted package name to its filesystem path and writes a
+    minimal `__init__.py` containing a standard package initialization
+    docstring. Skips any package that already has an `__init__.py`.
+
     Args:
-        namespace_packages: An iterable of namespace package names.
-            These are the dotted package names (e.g. `myproject.mypackage`).
+        namespace_packages: Dotted package names of namespace packages to
+            initialize (e.g. ``"myproject.subpackage"``).
     """
     package_paths = (
         package_name_as_root_path(package) for package in namespace_packages

@@ -1,4 +1,4 @@
-"""Helpers to scaffold subclass extension modules for pyrig classes."""
+"""Scaffolding helpers for creating subclass extension modules."""
 
 from importlib import import_module
 
@@ -15,17 +15,12 @@ from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
 def make_subclass() -> None:
-    """Create a subclass scaffold module for a selected class.
+    """Interactively scaffold a subclass module for a selected pyrig class.
 
-    If `import_path` is not provided, an interactive fuzzy prompt is shown to
-    select a discoverable class from pyrig dependents. The target module file is
-    created (or validated) via config generation and then extended with a
-    subclass skeleton.
-
-    Args:
-        import_path: Dotted import path to the class to subclass
-            (for example: ``package.module.ClassName``). If ``None``, the class
-            is selected interactively.
+    Prompts the user to pick a class from all discovered ``RigDependencySubclass``
+    subclasses, then creates (or validates) the corresponding module file in the
+    current project. The file is populated with the source module's docstring and
+    a ready-to-use subclass skeleton that imports and extends the chosen class.
     """
     subclass = choose_subclass()
 
@@ -48,11 +43,15 @@ class {class_name}(Base{class_name}):
 
 
 def choose_subclass() -> type[DependencySubclass]:
-    """Interactively select a class and return its dotted import path.
+    """Present an interactive fuzzy prompt and return the chosen class.
+
+    Discovers all concrete and abstract ``RigDependencySubclass`` subclasses,
+    formats them for display (concrete classes use their string representation,
+    abstract classes use their qualified name), sorts them alphabetically by
+    import path, and delegates selection to an InquirerPy fuzzy prompt.
 
     Returns:
-        Dotted import path in the form ``module.ClassName`` for the selected
-        subclass target.
+        The class chosen by the user.
     """
     subclass_choices = set(RigDependencySubclass.subclasses())
 
