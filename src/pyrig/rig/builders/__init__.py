@@ -1,5 +1,7 @@
-"""Custom artifact builders for creating distributable packages.
+"""Package for defining custom artifact builders.
 
-Add custom `BuilderConfigFile` subclasses here to create project-specific artifacts.
-Builders are automatically discovered and executed when running `pyrig build`.
+Add `BuilderConfigFile` subclasses here to create project-specific build artifacts.
+Each subclass must implement `create_artifacts()` to define its build logic.
+Non-abstract subclasses are automatically discovered and executed when running
+`pyrig build`.
 """
