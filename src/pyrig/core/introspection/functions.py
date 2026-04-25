@@ -1,8 +1,4 @@
-"""Function detection and extraction utilities.
-
-Utilities for identifying callable objects and extracting functions from modules.
-Handles functions, methods, staticmethods, classmethods, properties, and decorators.
-"""
+"""Utilities for detecting and extracting callable objects from modules."""
 
 import inspect
 from collections.abc import Callable, Generator
@@ -16,53 +12,22 @@ from pyrig.core.introspection.inspection import (
 )
 
 
-def is_func_or_method(obj: Any) -> bool:
-    """Check if an object is a plain function or bound method.
-
-    Args:
-        obj: Object to check.
-
-    Returns:
-        True if function or method, False otherwise.
-
-    Note:
-        Does NOT detect staticmethod/classmethod/property.
-        Use `is_funclike()` for those.
-    """
-    return inspect.isfunction(obj) or inspect.ismethod(obj)
-
-
-def is_funclike(obj: Any) -> bool:
-    """Check if an object is any kind of callable method-like attribute.
-
-    Detects plain functions, staticmethod, classmethod, property, and decorators.
-
-    Args:
-        obj: Object to check.
-
-    Returns:
-        True if method-like callable, False otherwise.
-    """
-    if is_func_or_method(obj):
-        return True
-
-    unwrapped = unwrapped_obj(obj)
-
-    return is_func_or_method(unwrapped)
-
-
 def all_functions_from_module(
     module: ModuleType,
 ) -> Generator[Callable[..., Any], None, None]:
-    """Extract all functions defined directly in a module.
+    """Yield all functions defined directly in a module, excluding imports.
 
-    Excludes imported functions.
+    A function is included only when its ``__module__`` attribute matches the
+    module being inspected, which filters out any names that were imported from
+    other modules. All callable forms are covered: plain functions, staticmethods,
+    classmethods, properties, and decorated callables.
 
     Args:
-        module: Module to extract from (object or name string).
+        module: The module object to extract functions from.
 
-    Returns:
-        Generator of functions
+    Yields:
+        Each function defined in ``module`` in the order returned by
+        ``inspect.getmembers_static``.
     """
     return (
         func
@@ -70,3 +35,45 @@ def all_functions_from_module(
         if is_funclike(func)
         if obj_module(func).__name__ == module.__name__
     )
+
+
+def is_funclike(obj: Any) -> bool:
+    """Return True if an object is any callable method-like attribute.
+
+    Covers all forms that may appear as a method or function in a class or
+    module namespace:
+
+    - Plain functions and bound/unbound methods (via ``is_func_or_method``)
+    - ``staticmethod`` and ``classmethod`` descriptors
+    - ``property`` descriptors (and custom descriptor subclasses)
+    - Functions wrapped with ``functools.wraps`` or similar decorators
+
+    The check works by unwrapping the object to its original
+    function (if it is a decorated callable) and then checking if that
+    unwrapped object is a plain function or method.
+
+    Args:
+        obj: The object to test.
+
+    Returns:
+        True if the object is a function or any method-like descriptor,
+        False otherwise.
+    """
+    return is_func_or_method(unwrapped_obj(obj))
+
+
+def is_func_or_method(obj: Any) -> bool:
+    """Return True if an object is a plain function or a bound/unbound method.
+
+    Uses ``inspect.isfunction`` and ``inspect.ismethod`` directly. This does
+    not detect ``staticmethod``, ``classmethod``, or ``property`` descriptors
+    when accessed through a class ``__dict__``; use ``is_funclike`` for those.
+
+    Args:
+        obj: The object to test.
+
+    Returns:
+        True if ``obj`` is a plain function or a bound/unbound method,
+        False otherwise.
+    """
+    return inspect.isfunction(obj) or inspect.ismethod(obj)
