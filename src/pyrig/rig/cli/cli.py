@@ -25,7 +25,7 @@ app = typer.Typer(no_args_is_help=True)
 
 
 @app.callback()
-def configure_logging(
+def callback(
     verbose: int = typer.Option(
         0,
         "--verbose",
@@ -44,17 +44,36 @@ def configure_logging(
     # cli is inherited by dependent projects, so the callback docstring is
     # intentionally left blank to avoid confusion in help messages
     """"""  # noqa: D419
+    configure_logging(verbose, quiet)
+
+
+def configure_logging(verbose: int, quiet: int) -> None:
+    """Configure logging based on verbosity and quietness levels.
+
+    The logging level is determined by the difference between `verbose` and `quiet`
+    counts, with `verbose` decreasing the level (more verbose) and `quiet`
+    increasing it (less verbose). The log format also adapts to the verbosity level,
+    showing more contextual information at higher verbosity.
+
+    Args:
+        verbose: The count of `--verbose` flags, increasing verbosity.
+        quiet: The count of `--quiet` flags, decreasing verbosity.
+
+    Note:
+        Uses `logging.basicConfig` with `force=True` to ensure
+        that the configuration is applied even if logging has already been configured
+        by the calling project or other dependencies.
+    """
     level = logging.INFO
     step = logging.INFO - logging.DEBUG
     level -= step * verbose
     level += step * quiet
-    level = max(logging.DEBUG, min(logging.CRITICAL, level))
 
     if verbose >= 3:  # noqa: PLR2004
         fmt = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
     elif verbose == 2:  # noqa: PLR2004
         fmt = "%(levelname)s [%(name)s] %(message)s"
-    elif verbose >= 1 or quiet >= 1:
+    elif verbose == 1:
         fmt = "%(levelname)s: %(message)s"
     else:
         fmt = "%(message)s"

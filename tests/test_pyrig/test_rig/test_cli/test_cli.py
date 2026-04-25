@@ -12,6 +12,7 @@ from pyrig.rig.cli.cli import (
     add_shared_subcommands,
     add_subcommands,
     app,
+    callback,
     configure_logging,
     main,
 )
@@ -73,21 +74,30 @@ def test_main(mocker: MockerFixture) -> None:
 def test_configure_logging() -> None:
     """Test that configure_logging sets the correct logging level."""
     # Test default (INFO level)
-    configure_logging(verbose=0, quiet=False)
+    configure_logging(verbose=0, quiet=0)
     assert logging.root.level == logging.INFO
 
     # Test quiet mode (WARNING level)
-    configure_logging(verbose=0, quiet=True)
+    configure_logging(verbose=1, quiet=2)
     assert logging.root.level == logging.WARNING
 
     # Test verbose mode (DEBUG level)
-    configure_logging(verbose=1, quiet=False)
+    configure_logging(verbose=3, quiet=2)
     assert logging.root.level == logging.DEBUG
 
     # Test very verbose mode (DEBUG level with module names)
-    configure_logging(verbose=2, quiet=False)
-    assert logging.root.level == logging.DEBUG
+    configure_logging(verbose=2, quiet=0)
+    assert logging.root.level < logging.DEBUG
 
     # Test very verbose mode (DEBUG level with timestamps)
-    configure_logging(verbose=3, quiet=False)
-    assert logging.root.level == logging.DEBUG
+    configure_logging(verbose=3, quiet=0)
+    assert logging.root.level < logging.DEBUG
+
+
+def test_callback(mocker: MockerFixture) -> None:
+    """Test function."""
+    configure_logging_mock = mocker.patch(
+        cli.__name__ + "." + configure_logging.__name__
+    )
+    callback()
+    configure_logging_mock.assert_called()
