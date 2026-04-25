@@ -1,13 +1,11 @@
 """module."""
 
-from collections.abc import Generator
 from typing import Any
 
 from pyrig.core.iterate import (
     add_missing_dict_val,
     combine_generators,
     empty_generator,
-    generator,
     generator_has_items,
     generator_length,
     insert_missing_list_val,
@@ -114,18 +112,10 @@ def test_empty_generator() -> None:
     assert list(empty_generator()) == [], "Expected empty generator to yield no items"
 
 
-def test_generator() -> None:
-    """Test function."""
-    items = [1, 2, 3]
-    gen = generator(items)
-    assert isinstance(gen, Generator)
-    assert list(gen) == items, "Expected generator to yield all items from the iterable"
-
-
 def test_generator_has_items() -> None:
     """Test function."""
     iterable_with_items = [1, 2, 3]
-    gen = generator(iterable_with_items)
+    gen = (x for x in iterable_with_items)
     has_items, items = generator_has_items(gen)
     assert has_items is True
     assert list(items) == iterable_with_items, (
