@@ -198,7 +198,8 @@ class BuilderConfigFile(ListConfigFile):
         Args:
             artifacts: Iterable of artifact paths from the temporary directory.
         """
-        tuple(self.rename_artifact(artifact) for artifact in artifacts)
+        for artifact in artifacts:
+            self.rename_artifact(artifact)
 
     def rename_artifact(self, artifact: Path) -> None:
         """Move a single artifact to the output directory with a platform-specific name.

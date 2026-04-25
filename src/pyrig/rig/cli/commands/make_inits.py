@@ -39,4 +39,5 @@ def make_init_files_for_namespace_packages(namespace_packages: Iterable[str]) ->
     )
 
     content = ProgrammingLanguage.I.standard_init_content()
-    tuple(make_init_file(path=path, content=content) for path in package_paths)
+    for package_path in package_paths:
+        make_init_file(package_path, content)
