@@ -26,7 +26,6 @@ Example:
 from abc import abstractmethod
 from collections import defaultdict
 from types import ModuleType
-from typing import Self
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
@@ -108,7 +107,7 @@ class Tool(RigDependencySubclass):
         return tools
 
     @classmethod
-    def sorting_key(cls, subclass: type[Self]) -> str:
+    def sorting_key(cls) -> str:
         """Return a sort key for the given tool subclass.
 
         The returned value is used to order discovered tool subclasses. The
@@ -122,7 +121,7 @@ class Tool(RigDependencySubclass):
         Returns:
             str: A value suitable for use as a sort key.
         """
-        return subclass().name()
+        return cls().name()
 
     def badge(self) -> str:
         """Returns the badge string for a markdown file."""

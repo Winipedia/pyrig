@@ -20,7 +20,7 @@ class TestTool:
 
     def test_sorting_key(self) -> None:
         """Test method."""
-        result = Tool.sorting_key(PackageManager)
+        result = PackageManager.sorting_key()
         assert isinstance(result, str)
 
     def test_group(self) -> None:
