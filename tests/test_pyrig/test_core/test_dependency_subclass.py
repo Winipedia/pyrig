@@ -64,12 +64,12 @@ class TestDependencySubclass:
         assert issubclass(ConfigFile, DependencySubclass)
         assert result == configs
 
-    def test_sorting_key(self) -> None:
+    def test_sort_key(self) -> None:
         """Test method."""
-        result = PyprojectConfigFile.sorting_key()
+        result = PyprojectConfigFile.sort_key()
         assert isinstance(result, (float, int))
 
-        assert DependencySubclass.sorting_key() == DependencySubclass.__name__
+        assert DependencySubclass.sort_key() == DependencySubclass.__name__
 
     def test_base_dependency(self) -> None:
         """Test method."""

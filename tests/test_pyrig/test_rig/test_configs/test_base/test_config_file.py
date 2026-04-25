@@ -93,11 +93,11 @@ class TestConfigFile:
             DotScratchConfigFile,
         }
 
-    def test_sorting_key(
+    def test_sort_key(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        result = my_test_config_file.sorting_key()
+        result = my_test_config_file.sort_key()
         assert isinstance(result, (float, int))
 
     def test_configs(
