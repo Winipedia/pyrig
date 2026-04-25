@@ -65,7 +65,7 @@ class DependencySubclass(ABC):
         """
 
     @classmethod
-    def sorting_key(cls, subclass: type[T]) -> Any:
+    def sorting_key(cls) -> Any:
         """Return a sort key for the given subclass.
 
         This key is used when ordering discovered subclasses. Implementations
@@ -81,7 +81,7 @@ class DependencySubclass(ABC):
         Returns:
             A value suitable for use as a sort key for builtin: sorted
         """
-        return subclass.__name__
+        return cls.__name__
 
     @classmethod
     def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
@@ -93,7 +93,7 @@ class DependencySubclass(ABC):
         Returns:
             List of concrete subclass types, sorted by sorting key.
         """
-        return sorted(subclasses, key=cls.sorting_key)
+        return sorted(subclasses, key=lambda subclass: subclass.sorting_key())
 
     @classmethod
     def concrete_subclasses(cls) -> Generator[type[Self], None, None]:

@@ -97,7 +97,7 @@ class TestConfigFile:
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
-        result = my_test_config_file.sorting_key(my_test_config_file)
+        result = my_test_config_file.sorting_key()
         assert isinstance(result, (float, int))
 
     def test_configs(

@@ -195,7 +195,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         return configs
 
     @classmethod
-    def sorting_key(cls, subclass: type[Self]) -> float:
+    def sorting_key(cls) -> float:
         """Return a numeric sort key for the given config-file subclass.
 
         Subclasses may define priorities via `priority()`. This method
@@ -213,7 +213,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         """
         # sort by priority (higher first),
         # so return negative priority for ascending sort
-        return -subclass().priority()
+        return -cls().priority()
 
     def version_control_ignored(self) -> bool:
         """Wether this config file is ignored by version control (e.g., .gitignore).

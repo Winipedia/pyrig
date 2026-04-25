@@ -66,10 +66,10 @@ class TestDependencySubclass:
 
     def test_sorting_key(self) -> None:
         """Test method."""
-        result = ConfigFile.sorting_key(PyprojectConfigFile)
+        result = PyprojectConfigFile.sorting_key()
         assert isinstance(result, (float, int))
 
-        assert DependencySubclass.sorting_key(ConfigFile) == ConfigFile.__name__
+        assert DependencySubclass.sorting_key() == DependencySubclass.__name__
 
     def test_base_dependency(self) -> None:
         """Test method."""
