@@ -1,22 +1,8 @@
-"""CLI utilities for extracting project and package names from command-line arguments.
+"""Utilities for extracting the invoking project and package names from sys.argv.
 
-Provides context-aware CLI behavior by determining which project is being invoked
-from `sys.argv[0]`. This is the foundation for pyrig's dynamic command discovery
-system, allowing shared commands to adapt behavior based on the invoking project.
-
-These utilities are used internally by pyrig's CLI infrastructure
-(`pyrig.rig.cli.cli`) and are available for shared commands that need to know
-which project invoked them.
-
-Example:
-    A shared `version` command that displays the invoking project's version:
-
-        from importlib.metadata import version
-        from pyrig.src.cli import project_name_from_argv
-
-        def show_version() -> None:
-            project_name = project_name_from_argv()
-            print(f"{project_name} version {version(project_name)}")
+Pyrig uses these utilities to support context-aware CLI behavior: shared commands
+can inspect which project's entry point was used to invoke them, allowing a single
+command implementation to adapt its behavior to the calling project.
 """
 
 import sys
@@ -26,47 +12,41 @@ from pyrig.core.strings import kebab_to_snake_case
 
 
 def project_name_from_argv() -> str:
-    """Extract the project name from the command-line invocation.
+    """Extract the invoking project name from the command-line entry point.
 
-    Extracts the basename of `sys.argv[0]`, which contains the console script
-    entry point name when invoked via a registered CLI command. This enables
-    shared commands to behave differently based on which project invoked them.
+    Reads ``sys.argv[0]`` and returns its basename. When a project is invoked
+    through a registered console-script entry point (e.g. ``uv run my-project``),
+    ``sys.argv[0]`` is the path to that entry point script, so its basename is
+    the project name as it was registered.
 
     Returns:
-        Project name extracted from the console script entry point.
-        For `uv run my-project cmd`, returns `"my-project"`.
+        The basename of ``sys.argv[0]``, which is the project name as registered
+        in the console-scripts entry point.
 
     Example:
         >>> # When invoked as: uv run my-project build
         >>> project_name_from_argv()
         'my-project'
-
-    See Also:
-        package_name_from_argv: Converts the result to a Python package name.
     """
     return Path(sys.argv[0]).name
 
 
 def package_name_from_argv() -> str:
-    """Extract the Python package name from the command-line invocation.
+    """Extract the invoking Python package name from the command-line entry point.
 
-    Combines `project_name_from_argv` with hyphen-to-underscore conversion
-    to produce a valid Python package name. This is used by pyrig's CLI command
-    discovery to locate the invoking package's modules (e.g., subcommands).
+    Converts the project name from ``project_name_from_argv`` into a valid
+    Python identifier by replacing hyphens with underscores. This produces the
+    importable package name that corresponds to the invoked project, which is
+    used to locate that project's CLI modules (e.g. subcommands) at runtime.
 
     Returns:
-        Python package name corresponding to the invoked project.
-        For `uv run my-project cmd`, returns `"my_project"`.
+        The Python package name corresponding to the invoked project, with
+        hyphens replaced by underscores.
 
     Example:
         >>> # When invoked as: uv run my-project build
         >>> package_name_from_argv()
         'my_project'
-
-    See Also:
-        project_name_from_argv: Returns the raw project name without conversion.
-        pyrig.src.modules.package.kebab_to_snake_case: The underlying
-            conversion function.
     """
     project_name = project_name_from_argv()
     return kebab_to_snake_case(project_name)
