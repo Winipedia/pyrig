@@ -1,9 +1,7 @@
 """Dependency graph of installed Python packages.
 
-Defines the ``DependencyGraph`` class, which builds a directed graph of
-installed Python packages and their dependencies using
-``importlib.metadata``. Provides methods to query which packages depend
-on a given package, facilitating pyrig's multi-package discovery system.
+Builds and queries a directed graph of installed package dependency
+relationships to support cross-package discovery in the pyrig ecosystem.
 """
 
 import importlib.metadata
@@ -22,11 +20,14 @@ logger = logging.getLogger(__name__)
 class DependencyGraph(DiGraph):
     """Directed graph of installed Python package dependencies.
 
-    Nodes are package names, edges represent dependency relationships.
-    Built automatically on first instantiation by scanning installed distributions.
-    As a ``Singleton``, the graph is constructed once and shared across the
-    application for the lifetime of the process.
-    Central to pyrig's multi-package discovery system.
+    Nodes are package names; an edge A → B means "A depends on B".
+    The graph is built automatically at instantiation by scanning all
+    installed distributions via ``importlib.metadata``.
+
+    When a ``root`` package is given, the graph is pruned to contain only
+    that package and every package that depends on it (directly or
+    transitively). This is the primary usage in pyrig's multi-package
+    discovery system.
     """
 
     def __init__(self, root: str | None = None) -> None:
@@ -54,17 +55,20 @@ class DependencyGraph(DiGraph):
     def parse_name_and_deps(
         self, dist: importlib.metadata.Distribution
     ) -> tuple[str, Generator[str, None, None]]:
-        """Extract package name and dependencies from a distribution.
+        """Extract the package name and dependencies from a distribution.
 
-        Uses the public ``importlib.metadata`` API (``dist.metadata`` and
-        ``dist.requires``) to read the package name and dependency list.
+        Reads the package name from ``dist.name`` and constructs a lazy
+        generator of normalized dependency names from ``dist.requires``.
 
         Args:
             dist: Distribution object to extract metadata from.
 
         Returns:
-            Tuple of (normalized_name, list_of_normalized_dependency_names).
-            Name is empty string if not found. Dependencies list may be empty.
+            A two-tuple of ``(normalized_name, deps_generator)`` where
+            ``normalized_name`` is the normalized package name (empty string
+            if the distribution has no name) and ``deps_generator`` is a
+            generator that yields normalized names of each declared dependency
+            (yields nothing if the package declares no dependencies).
         """
         raw_name = dist.name
         name = self.normalize_package_name(raw_name) if raw_name else ""
@@ -74,16 +78,20 @@ class DependencyGraph(DiGraph):
         return name, deps
 
     def parse_package_name_from_req(self, req: str) -> str:
-        """Extract package name from a requirement string.
+        """Extract the package name from a PEP 508 requirement string.
 
-        Uses ``pyrig.src.string_.package_req_name_split_pattern`` to split the
-        requirement string at the first non-name character.
+        Uses ``pyrig.core.strings.package_req_name_split_pattern`` to split
+        the requirement string at the first character that is not a valid
+        package-name character (i.e., not alphanumeric, hyphen, underscore,
+        period, or bracket). The leading segment is taken as the raw package
+        name and then normalized.
 
         Args:
-            req: Requirement string (e.g., "requests>=2.0,<3.0").
+            req: Requirement string (e.g., ``"requests>=2.0,<3.0"`` or
+                ``"package-name[extra]>=1.0"``).
 
         Returns:
-            Normalized package name
+            Normalized package name extracted from the requirement.
         """
         # Split on the first non-alphanumeric character (except -, _, and .)
         # Uses module-level compiled pattern for performance
@@ -91,12 +99,12 @@ class DependencyGraph(DiGraph):
         return self.normalize_package_name(dep)
 
     def normalize_package_name(self, name: str) -> str:
-        """Normalize a package name (lowercase, hyphens → underscores).
+        """Normalize a package name by converting hyphens to underscores.
 
         Args:
             name: Package name to normalize.
 
         Returns:
-            Normalized package name.
+            Package name with hyphens replaced by underscores.
         """
         return kebab_to_snake_case(name)
