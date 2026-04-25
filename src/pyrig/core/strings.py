@@ -111,8 +111,7 @@ def make_name_from_obj(
         obj_name: str = name.split(".")[-1]
     else:
         obj_name = obj
-    parts = obj_name.split(split_on)
-    parts = (part for part in parts if part)
+    parts = (part for part in obj_name.split(split_on) if part)
 
     if capitalize:
         parts = (part.capitalize() for part in parts)
