@@ -1,9 +1,9 @@
-"""Module loading, creation, and import path resolution utilities.
+"""Utilities for dynamically importing, introspecting, and traversing Python modules.
 
-Provides utilities for importing modules with fallback strategies, creating new
-module files, reading module source code, constructing and resolving fully qualified
-import paths for objects, and executing functions within modules. Used throughout
-pyrig for dynamic module loading when standard import mechanisms may not suffice.
+Covers importing by name or file path (with fallback strategies), reading module
+source, resolving callable import paths, and iterating direct package children.
+Used throughout pyrig where standard import mechanisms are insufficient, such as
+loading user project modules not yet on ``sys.path``.
 """
 
 import logging
@@ -59,11 +59,30 @@ def module_content(module: ModuleType) -> str:
         Complete source code of the module as a UTF-8 encoded string.
 
     Raises:
-        ValueError: If the module has no ``__file__`` attribute.
+        AttributeError: If the module has no ``__file__`` attribute.
         FileNotFoundError: If the source file does not exist.
     """
     path = module_file_path(module)
     return read_text_utf8(path)
+
+
+def reimport_module(module: ModuleType) -> ModuleType:
+    """Re-import a module, bypassing the import cache.
+
+    Evicts the module from ``sys.modules`` and re-imports it via
+    ``import_module_with_file_fallback``. Use this to pick up on-disk changes
+    to a module's source without restarting the interpreter.
+
+    Args:
+        module: Module to re-import.
+
+    Returns:
+        A freshly imported module object, distinct from the original.
+    """
+    module_path = module_file_path(module)
+    # Remove from cache
+    sys.modules.pop(module.__name__)
+    return import_module_with_file_fallback(module_path, name=module.__name__)
 
 
 def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
@@ -94,10 +113,10 @@ def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
 def import_module_from_file(path: Path, name: str) -> ModuleType:
     """Import a module directly from a ``.py`` file using ``importlib.util``.
 
-    Registers the module in ``sys.modules`` with a name derived from its path
-    (relative to the current working directory). If a ``FileNotFoundError``
-    occurs during module execution, the module is removed from ``sys.modules``
-    before re-raising the exception to avoid leaving invalid module entries.
+    Resolves the path to absolute, builds a module spec from the file location,
+    and executes the module loader. The module is registered in ``sys.modules``
+    under the provided ``name`` only after successful execution, so failures
+    during loading do not leave invalid cache entries.
 
     Args:
         path: Path to the ``.py`` file (will be resolved to absolute path).
@@ -167,9 +186,9 @@ def module_name_replacing_start_module(
         The module name with the root package replaced.
 
     Example:
-        >>> # If module.__name__ is "pyrig.src.modules.module"
-        >>> module_name_replacing_start_module(module, "tests")
-        'tests.src.modules.module'
+        >>> # module.__name__ == "pyrig.rig.configs.base"
+        >>> module_name_replacing_start_module(module, "my_project")
+        'my_project.rig.configs.base'
     """
     module_current_start = module.__name__.split(".")[0]
     return module.__name__.replace(module_current_start, new_start_module_name, 1)
@@ -191,7 +210,7 @@ def import_modules(module_names: Iterable[str]) -> Generator[ModuleType, None, N
     """Import multiple modules by name.
 
     Args:
-        module_names: List of dotted module names to import.
+        module_names: Iterable of dotted module names to import.
 
     Returns:
         Generator of imported module objects corresponding to the input names.
@@ -199,52 +218,34 @@ def import_modules(module_names: Iterable[str]) -> Generator[ModuleType, None, N
     return (import_module(name) for name in module_names)
 
 
-def reimport_module(module: ModuleType) -> ModuleType:
-    """Re-import a module by name, bypassing the import cache.
-
-    This function removes the specified module from ``sys.modules`` and then
-    imports it again using the file fallback method. This is useful for refreshing
-    a module's content after it has been modified on disk, ensuring that the latest
-    version is loaded.
-
-    Args:
-        module: Module to reimport
-    """
-    module_path = module_file_path(module)
-    # Remove from cache
-    sys.modules.pop(module.__name__)
-    return import_module_with_file_fallback(module_path, name=module.__name__)
-
-
 def iter_modules(
     package: ModuleType,
     exclude: Iterable[str | re.Pattern[str]] = (),
 ) -> Generator[tuple[ModuleType, bool], None, None]:
-    """Extract and import all direct subpackages and modules from a package.
+    """Iterate over and import all direct children of a package.
 
-    Uses ``pkgutil.iter_modules`` to discover direct children of the package,
-    then imports each one. Subpackages and modules are returned in separate lists,
-    sorted alphabetically by their fully qualified names.
+    Uses ``pkgutil.iter_modules`` to discover the direct children of ``package``
+    and imports each one in discovery order.
 
     Note:
-        This function imports all discovered modules as a side effect. This is
-        intentional — it enables pyrig's class discovery mechanisms to find
-        subclasses defined in those modules (e.g., ``ConfigFile`` implementations).
+        Importing is a deliberate side effect — it lets pyrig's class discovery
+        mechanisms register subclasses defined in those modules
+        (e.g., ``ConfigFile`` implementations).
 
-        Only includes direct children, not recursive descendants. For full
-        package tree traversal, use ``walk_package``.
+        Only the direct children are visited. For full recursive traversal use
+        ``walk_package`` from ``pyrig.core.introspection.packages``.
 
     Args:
-        package: Package module to extract children from. Must have a
-            ``__path__`` attribute (i.e., must be a package, not a module).
-        exclude: Optional iterable of regex patterns to exclude from results.
-        Patterns are matched against fully qualified module names
-        (e.g., "pyrig.rig.configs.base").
+        package: Package to iterate. Must have a ``__path__`` attribute
+            (i.e., must be a package, not a plain module).
+        exclude: String or compiled regex patterns matched against fully
+            qualified child names (e.g., ``"pyrig.rig.configs.base"``).
+            Matching children are skipped.
 
     Returns:
-        A tuple of ``(subpackages, modules)`` where:
-            - ``subpackages``: List of imported subpackage modules, sorted by name
-            - ``modules``: List of imported module objects, sorted by name
+        Generator of ``(module, is_package)`` pairs where ``module`` is the
+        imported child and ``is_package`` is ``True`` when the child is itself
+        a sub-package.
     """
     for _finder, name, is_package in pkgutil_iter_modules(
         package.__path__, prefix=package.__name__ + "."
