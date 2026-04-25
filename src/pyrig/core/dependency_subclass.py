@@ -145,7 +145,7 @@ Found subclasses:
 
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator
-    def L(cls: type[Self]) -> type[Self]:  # noqa: N802, N805
+    def L(cls) -> type[Self]:  # noqa: N802, N805
         """Get the final leaf subclass (deepest in the inheritance tree).
 
         Returns:
@@ -158,6 +158,6 @@ Found subclasses:
 
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator
-    def I(cls: type[Self]) -> Self:  # noqa: E743, N802, N805
+    def I(cls) -> Self:  # noqa: E743, N802, N805
         """Get an instance of the final leaf subclass."""
         return cls.L()
