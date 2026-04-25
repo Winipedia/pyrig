@@ -16,11 +16,15 @@ from pyrig.core.introspection.inspection import (
 def cls_methods(
     cls: type,
 ) -> Generator[Callable[..., Any], None, None]:
-    """Extract all methods from a class.
+    """Extract all methods from a class, including inherited ones.
 
-    Includes instance methods, static methods, class methods, and properties.
-    Results are yielded in alphabetical order by method name, as determined by
-    the underlying ``inspect.getmembers_static`` call.
+    Covers instance methods, static methods, class methods, and properties
+    from the class itself and all ancestor classes. Results are yielded in
+    alphabetical order by method name, as determined by
+    ``inspect.getmembers_static``.
+
+    To restrict results to methods defined directly on ``cls``, pass the
+    output to ``discard_parent_methods``.
 
     Args:
         cls: Class to extract methods from.
@@ -35,10 +39,8 @@ def discard_parent_methods(
     cls: type,
     methods: Iterable[Callable[..., Any]],
 ) -> Generator[Callable[..., Any], None, None]:
-    """Filter methods to exclude inherited ones.
+    """Filter methods to keep only those defined directly on a class.
 
-    This leaves only methods that are defined directly on the given class,
-    excluding any methods that are inherited from parent classes.
     A method passes the filter only when both of the following hold:
 
     - Its defining module matches the module where ``cls`` is defined.
@@ -177,5 +179,11 @@ class classproperty[T]:  # noqa: N801
         self.fget = fget
 
     def __get__(self, obj: object, owner: type) -> T:
-        """Invoke the getter with the owner class and return the result."""
+        """Invoke the getter with the owner class and return the result.
+
+        Args:
+            obj: The instance the attribute was accessed from, or ``None``
+                when accessed directly on the class. Not used.
+            owner: The class through which the attribute is accessed.
+        """
         return self.fget(owner)
