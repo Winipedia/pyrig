@@ -3,8 +3,6 @@
 Provides foundational utilities for inspecting Python objects, unwrapping decorated
 methods, and accessing object metadata. Handles properties, staticmethods, classmethods,
 and decorator chains.
-Used by higher-level modules (``class_``, ``function``, ``module``)
-for method extraction, subclass discovery, and test generation throughout pyrig.
 """
 
 import inspect
@@ -18,15 +16,19 @@ def obj_members(
 ) -> Generator[tuple[str, Any], None, None]:
     """Get all members of an object as name-value pairs using static introspection.
 
-    Uses ``inspect.getmembers_static`` to retrieve members without invoking descriptors,
-    making it safe for introspecting classes with properties that have side effects.
+    Uses ``inspect.getmembers_static`` to retrieve members without invoking
+    descriptors, making it safe for classes with properties that have side effects.
+    Filters out ``__annotate__`` and ``__annotate_func__``, which are CPython
+    implementation attributes introduced in Python 3.14 and not meaningful for
+    general introspection.
 
     Args:
         obj: Object to inspect (class, module, or any Python object).
-        predicate: Optional predicate function to filter members.
+        predicate: Optional callable to filter members. Only members for which
+            the predicate returns ``True`` are included.
 
-    Returns:
-        Generator of (name, value) tuples for all object members.
+    Yields:
+        ``(name, value)`` tuples for all matching members of ``obj``.
     """
     return (
         (member, value)
@@ -35,60 +37,118 @@ def obj_members(
     )
 
 
-def def_line(obj: Any) -> int:
-    """Get the source line number where an object is defined.
-
-    Handles functions, methods, properties, staticmethods, classmethods, and decorators
-    by first unwrapping to the underlying function. Used for sorting functions and
-    methods by their definition order in source code.
+def sorted_by_def_line(objs: Iterable[Any]) -> list[Any]:
+    """Sort objects by their source definition line number.
 
     Args:
-        obj: Callable object (function, method, property, staticmethod, classmethod,
-            or decorated callable).
+        objs: Iterable of objects to sort (functions, methods, properties, etc.).
 
     Returns:
-        1-based source line number. Returns 0 only if the object has no
-        ``__code__`` attribute and is running inside a PyInstaller frozen
-        bundle where source introspection is unavailable.
+        New list of objects sorted ascending by their definition line number.
+    """
+    return sorted(objs, key=def_line)
+
+
+def def_line(obj: Any) -> int:
+    """Return the 1-based source line number where an object is defined.
+
+    Handles the full range of method-like forms before resolving the line:
+
+    - ``property`` descriptors: reads the line of the getter (``fget``) first.
+    - All other forms: delegates to ``unwrapped_obj`` to strip classmethod,
+      staticmethod, and ``functools.wraps`` decorator layers.
+
+    After unwrapping, the line number is read from ``__code__.co_firstlineno``
+    when available (all pure-Python callables). If that attribute is absent,
+    ``inspect.getsourcelines`` is used as a fallback.
+
+    Args:
+        obj: Callable object (function, method, property, staticmethod,
+            classmethod, or decorated callable).
+
+    Returns:
+        1-based line number of the first line of the object's definition.
+
+    Raises:
+        OSError: If source lines cannot be retrieved, for example for built-in
+            or C extension callables that lack ``__code__``.
     """
     if isinstance(obj, property):
         obj = obj.fget
     unwrapped = unwrapped_obj(obj)
     if hasattr(unwrapped, "__code__"):
         return int(unwrapped.__code__.co_firstlineno)
-
     return inspect.getsourcelines(unwrapped)[1]
 
 
-def sorted_by_def_line(objs: Iterable[Any]) -> list[Any]:
-    """Sort a list of objects by their source definition line number.
+def obj_qualname(obj: Callable[..., Any] | type) -> str:
+    """Return the qualified name of a callable or type.
 
-    Uses ``def_line`` to determine the line number for each object, allowing for
-    sorting functions, methods, properties, staticmethods, classmethods, and decorated
-    callables in the order they are defined in source code.
+    Unwraps the object first so that the name of the original function is
+    returned rather than the name of a wrapper or descriptor. For methods,
+    the qualified name includes the enclosing class, for example
+    ``"MyClass.my_method"``.
 
     Args:
-        objs: List of objects to sort (functions, methods, properties, etc.).
+        obj: Callable or type, optionally wrapped by a descriptor or decorator.
 
     Returns:
-        New list of objects sorted by their definition line number.
+        The ``__qualname__`` of the underlying callable or type.
     """
-    return sorted(objs, key=def_line)
+    unwrapped = unwrapped_obj(obj)
+    return cast("str", unwrapped.__qualname__)
+
+
+def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
+    """Return the module where a method-like object is defined.
+
+    Unwraps the object before calling ``inspect.getmodule``, so decorated
+    functions, properties, classmethods, and staticmethods are all resolved
+    to their defining module correctly. Used to distinguish objects defined
+    in a module from those that were merely imported into it.
+
+    Args:
+        obj: Method-like object (function, method, property, staticmethod,
+            classmethod, or decorated callable).
+        default: Module to return when ``inspect.getmodule`` cannot determine
+            the origin. If ``None`` and the module cannot be determined, a
+            ``LookupError`` is raised.
+
+    Returns:
+        The ``ModuleType`` where ``obj`` is defined.
+
+    Raises:
+        LookupError: If the defining module cannot be determined and
+            ``default`` is not provided.
+    """
+    unwrapped = unwrapped_obj(obj)
+    module = inspect.getmodule(unwrapped)
+    if not module:
+        msg = f"Could not determine module of {obj}"
+        if default:
+            return default
+        raise LookupError(msg)
+    return module
 
 
 def unwrapped_obj(obj: Any) -> Any:
     """Unwrap a method-like object to its underlying function.
 
-    Iteratively unwraps layers of wrapping until reaching the original function:
-        1. Extracts ``__func__`` from bound methods and classmethod/staticmethod
-        2. Extracts ``fget`` from property objects
-        3. Uses ``inspect.unwrap`` to traverse ``functools.wraps`` decorator chains
+    Iteratively strips wrapping layers until the object is fully unwrapped,
+    applying each of the following steps on every iteration:
 
-    Continues until no further unwrapping is possible.
+    1. ``__func__``: present on bound methods, ``classmethod``, and
+       ``staticmethod`` descriptors; extracts the raw function.
+    2. ``fget``: present on ``property`` objects; extracts the getter function.
+    3. ``inspect.unwrap``: traverses ``functools.wraps`` (and any other
+       ``__wrapped__``-based) decorator chains.
+
+    The loop exits when a full iteration produces no change, meaning no further
+    layers can be removed.
 
     Args:
-        obj: Callable that may be wrapped (method, property, staticmethod, classmethod,
-            or decorated function).
+        obj: Callable that may be wrapped (bound method, property,
+            staticmethod, classmethod, or any decorated function).
 
     Returns:
         The underlying unwrapped function object.
@@ -102,46 +162,3 @@ def unwrapped_obj(obj: Any) -> Any:
             obj = obj.fget
         obj = inspect.unwrap(obj)
     return obj
-
-
-def obj_qualname(obj: Callable[..., Any] | type) -> str:
-    """Get the qualified name of a callable or type.
-
-    Includes class name for methods (e.g., "MyClass.my_method").
-
-    Args:
-        obj: Callable or type.
-
-    Returns:
-        Qualified name string.
-    """
-    unwrapped = unwrapped_obj(obj)
-    return cast("str", unwrapped.__qualname__)
-
-
-def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
-    """Return the module where a method-like object is defined.
-
-    Unwraps the object first to handle decorated functions, then uses
-    ``inspect.getmodule`` to determine the defining module. Essential for filtering
-    functions/classes to only those defined directly in a module (excluding imports).
-
-    Args:
-        obj: Method-like object (function, method, property, staticmethod, classmethod,
-            or decorated callable).
-        default: Fallback module to return if the module cannot be determined.
-
-    Returns:
-        The module object where the callable is defined.
-
-    Raises:
-        LookupError: If module cannot be determined and no default is provided.
-    """
-    unwrapped = unwrapped_obj(obj)
-    module = inspect.getmodule(unwrapped)
-    if not module:
-        msg = f"Could not determine module of {obj}"
-        if default:
-            return default
-        raise LookupError(msg)
-    return module
