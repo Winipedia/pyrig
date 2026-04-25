@@ -54,6 +54,17 @@ class DependencySubclass(ABC):
         """
 
     @classmethod
+    @abstractmethod
+    def base_dependency(cls) -> ModuleType:
+        """Return the base dependency module for this subclass.
+
+        This is used to discover subclasses across dependent packages.
+
+        Returns:
+            The base dependency module.
+        """
+
+    @classmethod
     def sorting_key(cls, subclass: type[T]) -> Any:
         """Return a sort key for the given subclass.
 
@@ -71,17 +82,6 @@ class DependencySubclass(ABC):
             A value suitable for use as a sort key for builtin: sorted
         """
         return subclass.__name__
-
-    @classmethod
-    @abstractmethod
-    def base_dependency(cls) -> ModuleType:
-        """Return the base dependency module for this subclass.
-
-        This is used to discover subclasses across dependent packages.
-
-        Returns:
-            The base dependency module.
-        """
 
     @classmethod
     def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
@@ -118,9 +118,8 @@ class DependencySubclass(ABC):
             )
         )
 
-    @classproperty
-    @cache  # noqa: B019  # false warning bc of custom classproperty decorator
-    def L(cls: type[Self]) -> type[Self]:  # noqa: N802, N805
+    @classmethod
+    def leaf(cls) -> type[Self]:
         """Get the final leaf subclass (deepest in the inheritance tree).
 
         Returns:
@@ -143,6 +142,19 @@ across all the dependent packages.
 Found subclasses:
 {json.dumps([str(subcls) for subcls in (leaf, second, *subclasses)], indent=4)}"""
         raise RuntimeError(msg)
+
+    @classproperty
+    @cache  # noqa: B019  # false warning bc of custom classproperty decorator
+    def L(cls: type[Self]) -> type[Self]:  # noqa: N802, N805
+        """Get the final leaf subclass (deepest in the inheritance tree).
+
+        Returns:
+            Final leaf subclass type. Can be abstract.
+
+        See Also:
+            subclasses: Discover all concrete subclasses, sorted by sorting key.
+        """
+        return cls.leaf()
 
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator

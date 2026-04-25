@@ -15,10 +15,17 @@ from pyrig.rig.configs.version_control.ignore import (
 )
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
+from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 
 class TestDependencySubclass:
     """Test class."""
+
+    def test_leaf(self) -> None:
+        """Test method."""
+        leaf = ProgrammingLanguage.leaf()
+        assert issubclass(leaf, ProgrammingLanguage)
+        assert ProgrammingLanguage.leaf() is ProgrammingLanguage.leaf().leaf()
 
     def test___str__(self) -> None:
         """Test method."""
