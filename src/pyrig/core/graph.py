@@ -1,14 +1,8 @@
-"""Directed graph implementation for package dependency analysis.
+"""Generic directed graph with bidirectional edge traversal.
 
-Provides the ``DiGraph`` class, a generic directed graph with bidirectional
-traversal optimized for analyzing dependency relationships. ``DiGraph`` is the
-base class for ``pyrig.src.dependency_graph.DependencyGraph``, which builds a
-graph of installed Python packages to enable pyrig's multi-package discovery
-system.
-
-The graph maintains both forward and reverse edges, enabling efficient traversal
-in both directions: finding what a node depends on, and finding what depends on
-a node (ancestors).
+Maintains forward and reverse adjacency mappings to support efficient traversal
+in both directions: from a node to its outgoing neighbors (dependencies) and
+from a node to all nodes that transitively point to it (ancestors).
 """
 
 import heapq
@@ -17,21 +11,15 @@ from collections import deque
 
 
 class DiGraph(ABC):
-    """Directed graph data structure with bidirectional edge traversal.
+    """Abstract base class for a directed graph with bidirectional edge traversal.
 
-    A generic directed graph implementation optimized for dependency analysis.
-    Maintains both forward edges (node → targets) and reverse edges (node ← sources)
-    for O(1) neighbor lookups in either direction.
+    Maintains forward and reverse adjacency mappings, enabling O(1) neighbor
+    lookups in either direction: outgoing neighbors via ``__getitem__`` and
+    incoming neighbors (all nodes that can reach a given node) via ``ancestors``.
 
-    This class provides the foundation for ``DependencyGraph``, which extends it
-    to build a graph of installed Python package dependencies. The bidirectional
-    design enables efficient queries like "find all packages that depend on X"
-    (via ``ancestors``) and "find what X depends on" (via ``__getitem__``).
-
-    Attributes:
-        _nodes: Set of all node identifiers in the graph.
-        _edges: Forward adjacency mapping (node → set of outgoing neighbors).
-        _reverse_edges: Reverse adjacency mapping (node → set of incoming neighbors).
+    Subclasses must implement ``build`` to populate the graph at construction
+    time. If a ``root`` node is provided, the graph is automatically pruned after
+    building to retain only that node and all nodes that transitively point to it.
     """
 
     def __init__(self, root: str | None = None) -> None:
@@ -51,7 +39,12 @@ class DiGraph(ABC):
 
     @abstractmethod
     def build(self) -> None:
-        """Build the graph structure."""
+        """Populate the graph with nodes and edges.
+
+        Called automatically during ``__init__`` before any optional pruning.
+        Subclasses must implement this method to define the graph structure
+        using ``add_node`` and ``add_edge``.
+        """
 
     def prune(self, root: str) -> None:
         """Remove all nodes that do not depend on root.
@@ -69,23 +62,10 @@ class DiGraph(ABC):
         self._edges = {n: self._edges[n] & keep for n in keep}
         self._reverse_edges = {n: self._reverse_edges[n] & keep for n in keep}
 
-    def add_node(self, node: str) -> None:
-        """Add a node to the graph. Idempotent if node already exists.
-
-        Args:
-            node: Node identifier to add.
-        """
-        self._nodes.add(node)
-        if node not in self._edges:
-            self._edges[node] = set()
-        if node not in self._reverse_edges:
-            self._reverse_edges[node] = set()
-
     def add_edge(self, source: str, target: str) -> None:
         """Add a directed edge from source to target.
 
-        Creates both nodes if they don't exist. In dependency graph context,
-        an edge source → target means "source depends on target".
+        Creates both nodes if they do not already exist.
 
         Args:
             source: Edge origin node.
@@ -96,8 +76,27 @@ class DiGraph(ABC):
         self._edges[source].add(target)
         self._reverse_edges[target].add(source)
 
+    def add_node(self, node: str) -> None:
+        """Add a node to the graph. No-op if the node already exists.
+
+        Args:
+            node: Node identifier to add.
+        """
+        self._nodes.add(node)
+        if node not in self._edges:
+            self._edges[node] = set()
+        if node not in self._reverse_edges:
+            self._reverse_edges[node] = set()
+
     def __contains__(self, node: str) -> bool:
-        """Check if a node exists in the graph."""
+        """Check whether a node exists in the graph.
+
+        Args:
+            node: Node identifier to look up.
+
+        Returns:
+            ``True`` if the node is present, ``False`` otherwise.
+        """
         return node in self._nodes
 
     def __getitem__(self, node: str) -> set[str]:
@@ -112,51 +111,59 @@ class DiGraph(ABC):
         return self._edges.get(node, set())
 
     def nodes(self) -> set[str]:
-        """Return all node identifiers in the graph."""
+        """Return all node identifiers in the graph.
+
+        Returns:
+            Set of every node currently in the graph.
+        """
         return self._nodes
 
     def has_edge(self, source: str, target: str) -> bool:
-        """Check if a directed edge exists from source to target."""
+        """Check whether a directed edge exists from source to target.
+
+        Args:
+            source: The origin node.
+            target: The destination node.
+
+        Returns:
+            ``True`` if the edge exists, ``False`` if either node is absent
+            or no edge connects them.
+        """
         return target in self._edges.get(source, set())
 
     def sorted_ancestors(self, target: str) -> list[str]:
-        """Return all ancestors of the target node, sorted in topological order.
+        """Return all ancestors of the target node sorted in topological order.
 
-        Ancestors are nodes that have a directed path to the target (i.e., depend
-        on it directly or transitively). The result is sorted in topological
-        order (dependencies before dependents) using Kahn's algorithm.
+        Ancestors are nodes that have a directed path to the target (i.e., nodes
+        that depend on it directly or transitively). The result is sorted so that
+        dependencies appear before their dependents.
 
         Args:
             target: Node to find ancestors of.
 
         Returns:
-            List of ancestor node identifiers, sorted with dependencies first.
-            Returns empty list if target is not in the graph.
+            List of ancestor node identifiers, with dependencies first.
+            Returns an empty list if the target is not in the graph.
 
         Raises:
-            ValueError: If the subgraph of ancestors contains a cycle, making
+            RuntimeError: If the ancestor subgraph contains a cycle, making
                 topological sorting impossible.
         """
         return self.topological_sort_subgraph(self.ancestors(target))
 
     def ancestors(self, target: str) -> set[str]:
-        """Find all nodes that have a path to the target node.
+        """Find all nodes that have a directed path to the target node.
 
-        Traverses reverse edges using BFS to find all nodes that can reach
-        the target. In dependency graph context (where edge A → B means
-        "A depends on B"), this returns all packages that depend on the target,
-        either directly or transitively.
-
-        Used by ``DependencyGraph.all_depending_on`` to discover all packages
-        in the ecosystem that depend on a given package (e.g., finding all packages
-        that depend on pyrig).
+        Performs a BFS over reverse edges to collect every node that can reach
+        the target directly or transitively. The target itself is excluded from
+        the result.
 
         Args:
             target: Node to find ancestors for.
 
         Returns:
-            Set of all nodes with a directed path to target (excludes target itself).
-            Returns empty set if target is not in the graph.
+            Set of all nodes with a directed path to the target, excluding the
+            target itself. Returns an empty set if the target is not in the graph.
         """
         visited: set[str] = set()
         queue: deque[str] = deque(self._reverse_edges.get(target, set()))
@@ -173,27 +180,24 @@ class DiGraph(ABC):
         return visited
 
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
-        """Sort a subset of nodes in topological order (dependencies first).
+        """Sort a subset of nodes in topological order.
 
-        Uses Kahn's algorithm with a min-heap for deterministic ordering when
-        multiple nodes have no remaining dependencies. An edge A → B means
-        "A depends on B", so B appears before A in the result.
+        Uses Kahn's algorithm with a min-heap to produce a deterministic result
+        when multiple nodes are ready to be emitted at the same step. An edge
+        A → B means "A depends on B", so B appears before A in the output.
 
-        Used by ``DependencyGraph.all_depending_on`` to ensure packages are
-        processed in the correct order: base dependencies before dependents.
-        This is critical for discovering plugin implementations where a child
-        package's class extends a parent package's class.
+        Only edges whose both endpoints are in ``nodes`` are considered; edges
+        to or from nodes outside the subset are ignored.
 
         Args:
-            nodes: Set of nodes to sort. Only edges between nodes in this set
-                are considered; edges to/from nodes outside the set are ignored.
+            nodes: The subset of nodes to sort.
 
         Returns:
-            List of nodes in topological order, with dependencies appearing
-            before their dependents.
+            List of nodes in topological order, with each node's dependencies
+            appearing before the node itself.
 
         Raises:
-            ValueError: If the subgraph contains a cycle, making topological
+            RuntimeError: If the subgraph contains a cycle, making topological
                 sorting impossible.
         """
         # Count outgoing edges (dependencies) for each node in the subgraph
