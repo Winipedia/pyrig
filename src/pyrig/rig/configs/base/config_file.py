@@ -195,7 +195,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         return configs
 
     @classmethod
-    def sorting_key(cls) -> float:
+    def sort_key(cls) -> float:
         """Return a numeric sort key for the given config-file subclass.
 
         Subclasses may define priorities via `priority()`. This method

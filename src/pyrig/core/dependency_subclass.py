@@ -2,7 +2,7 @@
 
 This module provides an abstract base `DependencySubclass` that standardizes how
 classes discover their concrete implementations across dependent packages.
-It centralizes the `definition_package`, `sorting_key`, and discovery helpers
+It centralizes the `definition_package`, `sort_key`, and discovery helpers
 so different subsystems (tools, config files, builders) can share a
 consistent discovery API.
 """
@@ -30,7 +30,7 @@ class DependencySubclass(ABC):
     """Abstract base providing a subclass-discovery contract.
 
     Subclasses must implement `definition_package()` to indicate the package
-    where implementations live, and `sorting_key()` to provide a stable sort
+    where implementations live, and `sort_key()` to provide a stable sort
     key for ordering discovered subclasses.
     """
 
@@ -65,7 +65,7 @@ class DependencySubclass(ABC):
         """
 
     @classmethod
-    def sorting_key(cls) -> Any:
+    def sort_key(cls) -> Any:
         """Return a sort key for the given subclass.
 
         This key is used when ordering discovered subclasses. Implementations
@@ -87,13 +87,13 @@ class DependencySubclass(ABC):
     def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
         """Discover and return all concrete subclasses, sorted by sorting key.
 
-        Sorts the given subclasses using the `sorting_key` method.
+        Sorts the given subclasses using the `sort_key` method.
         This is used to order the results of `subclasses()`.
 
         Returns:
             List of concrete subclass types, sorted by sorting key.
         """
-        return sorted(subclasses, key=lambda subclass: subclass.sorting_key())
+        return sorted(subclasses, key=lambda subclass: subclass.sort_key())
 
     @classmethod
     def concrete_subclasses(cls) -> Generator[type[Self], None, None]:
@@ -105,7 +105,7 @@ class DependencySubclass(ABC):
         """Discover all subclasses.
 
         Search all dependent packages of the base dependency, scoped to the
-        definition package, and return the results sorted by `sorting_key`.
+        definition package, and return the results sorted by `sort_key`.
 
         Returns:
             Sorted tuple of subclass types.

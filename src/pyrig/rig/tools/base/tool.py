@@ -107,7 +107,7 @@ class Tool(RigDependencySubclass):
         return tools
 
     @classmethod
-    def sorting_key(cls) -> str:
+    def sort_key(cls) -> str:
         """Return a sort key for the given tool subclass.
 
         The returned value is used to order discovered tool subclasses. The
