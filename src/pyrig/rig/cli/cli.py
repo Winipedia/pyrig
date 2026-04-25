@@ -33,54 +33,31 @@ def configure_logging(
         count=True,
         help="Increase verbosity: -v (DEBUG), -vv (modules), -vvv (timestamps)",
     ),
-    quiet: bool = typer.Option(  # noqa: FBT001
-        False,  # noqa: FBT003
+    quiet: int = typer.Option(
+        0,
         "--quiet",
         "-q",
-        help="Only show warnings and errors",
+        count=True,
+        help="Decrease verbosity: -q (WARNING), -qq (ERROR), -qqq (CRITICAL)",
     ),
 ) -> None:
-    """Configure logging before any command executes.
+    # cli is inherited by dependent projects, so the callback docstring is
+    # intentionally left blank to avoid confusion in help messages
+    """"""  # noqa: D419
+    level = logging.INFO
+    step = logging.INFO - logging.DEBUG
+    level -= step * verbose
+    level += step * quiet
+    level = max(logging.DEBUG, min(logging.CRITICAL, level))
 
-    Typer callback that runs before every command. Adjusts the Python logging
-    level and format based on the verbosity flags supplied by the user.
-
-    Logging levels and formats:
-        - Default (no flags): INFO, messages only.
-        - ``-q``/``--quiet``: WARNING, ``LEVEL: message``.
-        - ``-v``: DEBUG, ``LEVEL: message``.
-        - ``-vv``: DEBUG, ``LEVEL [module] message``.
-        - ``-vvv`` or more: DEBUG, ``timestamp LEVEL [module] message``.
-
-    Args:
-        verbose: Number of ``-v`` flags. 0 = INFO, 1 = DEBUG, 2 = DEBUG with
-            module names, 3+ = DEBUG with timestamps. Count option.
-        quiet: If ``True``, sets WARNING level. Takes precedence over verbose.
-
-    Note:
-        Uses ``force=True`` in ``logging.basicConfig`` to override any logging
-        configuration already applied by imported modules.
-    """
-    if quiet:
-        # --quiet: only show warnings and errors
-        level = logging.WARNING
-        fmt = "%(levelname)s: %(message)s"
-    elif verbose == 0:
-        # Default: show info messages with clean formatting
-        level = logging.INFO
-        fmt = "%(message)s"
-    elif verbose == 1:
-        # -v: show debug messages with level prefix
-        level = logging.DEBUG
-        fmt = "%(levelname)s: %(message)s"
-    elif verbose == 2:  # noqa: PLR2004
-        # -vv: show debug messages with module names
-        level = logging.DEBUG
-        fmt = "%(levelname)s [%(name)s] %(message)s"
-    else:
-        # -vvv+: show debug messages with timestamps and full details
-        level = logging.DEBUG
+    if verbose >= 3:  # noqa: PLR2004
         fmt = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
+    elif verbose == 2:  # noqa: PLR2004
+        fmt = "%(levelname)s [%(name)s] %(message)s"
+    elif verbose >= 1 or quiet >= 1:
+        fmt = "%(levelname)s: %(message)s"
+    else:
+        fmt = "%(message)s"
 
     logging.basicConfig(level=level, format=fmt, force=True)
 
