@@ -366,10 +366,7 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
         return nested_structure_is_subset(self.configs(), self.load())
 
     @classmethod
-    def validate_subclasses(
-        cls,
-        subclasses: Iterable[type[Self]],
-    ) -> None:
+    def validate_subclasses(cls, subclasses: Iterable[type[Self]]) -> None:
         """Validate specific ConfigFile subclasses with priority-based ordering.
 
         Group by priority, validate in the given order, parallel within groups.
@@ -380,7 +377,8 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
         See Also:
             validate_all_subclasses: validate all discovered subclasses
         """
-        tuple(cf().validate() for cf in cls.subclasses_sorted(subclasses))
+        for cf in cls.subclasses_sorted(subclasses):
+            cf().validate()
 
     @classmethod
     def validate_all_subclasses(cls) -> None:

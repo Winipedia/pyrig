@@ -89,7 +89,7 @@ def all_config_files_correct() -> None:
     # if we are in CI then we must create config files that are gitignored
     # as they are not pushed to the repository
     if RemoteVersionController.I.running_in_ci():
-        tuple(cf().validate() for cf in ConfigFile.version_control_ignored_subclasses())
+        ConfigFile.validate_subclasses(ConfigFile.version_control_ignored_subclasses())
 
     incorrect_cfs = tuple(ConfigFile.incorrect_subclasses())
     ConfigFile.validate_subclasses(incorrect_cfs)

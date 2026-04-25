@@ -13,7 +13,6 @@ from pathlib import Path
 
 from pyrig.core.resources import resource_content
 from pyrig.rig import resources
-from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_controller import VersionController
@@ -73,10 +72,8 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             Makes HTTP request to GitHub. Uses fallback on failure.
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
-        ignored_paths = {
-            cf().path().as_posix()
-            for cf in ConfigFile.version_control_ignored_subclasses()
-        }
+        ignored_subclasses = self.version_control_ignored_subclasses()
+        ignored_paths = {cf().path().as_posix() for cf in ignored_subclasses}
 
         needed = [
             f"# {Pyrigger.I.name()} stuff",
