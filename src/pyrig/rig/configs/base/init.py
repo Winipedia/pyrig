@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pyrig
 from pyrig.core.introspection.modules import leaf_module_name
-from pyrig.rig.configs.base.copy_module_docstr import (
+from pyrig.rig.configs.base.copy_module_docstring import (
     CopyModuleDocstringConfigFile,
 )
 from pyrig.rig.tools.package_manager import PackageManager

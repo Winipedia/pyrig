@@ -8,7 +8,7 @@ hooks without explicit imports in each test file.
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.rig.configs.base.copy_module_docstr import CopyModuleDocstringConfigFile
+from pyrig.rig.configs.base.copy_module_docstring import CopyModuleDocstringConfigFile
 from pyrig.rig.tests import conftest
 from pyrig.rig.tools.project_tester import ProjectTester
 
