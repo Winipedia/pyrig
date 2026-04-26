@@ -1,0 +1,20 @@
+"""Pyrig specific dependency auditor override."""
+
+from pyrig.core.subprocesses import Args
+from pyrig.rig.tools.dependency_auditor import (
+    DependencyAuditor as BaseDependencyAuditor,
+)
+
+
+class DependencyAuditor(BaseDependencyAuditor):
+    """Pyrig-specific dependency auditor.
+
+    Overrides the base DependencyAuditor to apply pyrig-specific overrides.
+    """
+
+    def audit_args(self, *args: str) -> Args:
+        """Build pip-audit command arguments with pyrig-specific overrides.
+
+        Sometimes used to ignore irrelevant vulnerabilities dependencies.
+        """
+        return super().audit_args(*args, "--ignore-vuln", "CVE-2026-3219")
