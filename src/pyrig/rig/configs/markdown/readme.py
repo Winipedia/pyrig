@@ -42,15 +42,3 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
             (the project root).
         """
         return Path()
-
-    def is_unwanted(self) -> bool:
-        """Return ``False`` unconditionally, marking README.md as always required.
-
-        Overrides the base implementation, which treats an empty file as an
-        explicit opt-out signal. README.md is a mandatory project artifact and
-        cannot be opted out of; the system will always validate and update it.
-
-        Returns:
-            bool: Always ``False``.
-        """
-        return False

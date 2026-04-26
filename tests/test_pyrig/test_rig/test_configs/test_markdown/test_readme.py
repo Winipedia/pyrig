@@ -8,10 +8,6 @@ from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 class TestReadmeConfigFile:
     """Test class."""
 
-    def test_is_unwanted(self) -> None:
-        """Test method."""
-        assert not ReadmeConfigFile.I.is_unwanted()
-
     def test_stem(self) -> None:
         """Test method."""
         assert ReadmeConfigFile.I.stem() == "README", "Expected README"

@@ -4,7 +4,10 @@ import re
 from pathlib import Path
 from types import ModuleType
 
+import pytest
+
 from pyrig.core.strings import (
+    file_has_content,
     kebab_to_snake_case,
     make_linked_badge_markdown,
     make_name_from_obj,
@@ -179,3 +182,18 @@ def test_write_text_utf8(tmp_path: Path) -> None:
             f"Direct use of .write_text detected in {source_file}. "
             "Use write_text_utf8() instead for consistent UTF-8 handling."
         )
+
+
+def test_file_has_content(tmp_path: Path) -> None:
+    """Test function."""
+    content = "Non-empty content"
+    empty_content = ""
+
+    file_path = tmp_path / "test_file.txt"
+    file_path.write_text(content, encoding="utf-8")
+    assert file_has_content(file_path) is True
+    file_path.write_text(empty_content, encoding="utf-8")
+    assert file_has_content(file_path) is False
+
+    with pytest.raises(FileNotFoundError):
+        file_has_content(tmp_path / "non_existent_file.txt")

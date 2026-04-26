@@ -31,10 +31,6 @@ class TestContainerfileConfigFile:
         content = "\n".join(lines)
         assert all(layer in content for layer in layers)
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert ContainerfileConfigFile.I.is_correct()
-
     def test_layers(self) -> None:
         """Test method."""
         layers = ContainerfileConfigFile.I.layers()

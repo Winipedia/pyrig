@@ -6,7 +6,7 @@ covers vulnerability reporting, response timeline, and supported versions.
 
 from pathlib import Path
 
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import file_has_content
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
 
@@ -67,7 +67,7 @@ class SecurityConfigFile(MarkdownConfigFile):
         return Path()
 
     def is_correct(self) -> bool:
-        """Return whether SECURITY.md exists and contains non-empty content.
+        """Return whether SECURITY.md has non-empty content.
 
         Overrides the parent's content-subset validation with a simpler check.
         Any non-empty SECURITY.md is accepted as correct, allowing users to
@@ -75,9 +75,13 @@ class SecurityConfigFile(MarkdownConfigFile):
         triggering validation failures.
 
         Returns:
-            bool: True if the file exists and its content is not blank.
+            bool: ``True`` if the file has non-empty content; ``False`` if
+            the file is empty.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
         """
-        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
+        return file_has_content(self.path())
 
     def lines(self) -> list[str]:
         """Return the security policy template as a list of lines.

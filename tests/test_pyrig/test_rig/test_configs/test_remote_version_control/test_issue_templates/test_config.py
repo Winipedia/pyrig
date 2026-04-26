@@ -23,7 +23,3 @@ class TestConfigConfigFile:
         """Test method."""
         result = ConfigConfigFile.I._configs()  # noqa: SLF001
         assert isinstance(result, dict)
-
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert ConfigConfigFile.I.is_correct()

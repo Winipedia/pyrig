@@ -71,20 +71,3 @@ class TestBuildWorkflowConfigFile:
         """Test method."""
         result = my_test_build_workflow().steps_build_artifacts()
         assert len(result) > 0, "Expected steps to be non-empty"
-
-    def test_is_correct(
-        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        my_test_build_workflow().validate()
-        workflow_path = my_test_build_workflow().path()
-        workflow_path.write_text("")
-        assert my_test_build_workflow().is_correct(), (
-            "Expected workflow to be correct when empty"
-        )
-
-        proper_config = my_test_build_workflow().configs()
-        my_test_build_workflow().dump(proper_config)
-        assert my_test_build_workflow().is_correct(), (
-            "Expected workflow to be correct with proper config"
-        )

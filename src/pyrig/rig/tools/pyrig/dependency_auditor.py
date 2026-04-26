@@ -19,4 +19,4 @@ if src_package_is_pyrig():
 
             Sometimes used to ignore irrelevant vulnerabilities dependencies.
             """
-            return super().audit_args(*args, "--ignore-vuln", "CVE-2026-3219")
+            return super().audit_args(*args)

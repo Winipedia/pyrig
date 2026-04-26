@@ -110,15 +110,14 @@ class StringConfigFile(ListConfigFile):
     def is_correct(self) -> bool:
         r"""Check whether the file contains all required content.
 
-        Extends the parent validation by also accepting files where every
-        required line is present anywhere in the file content via substring
-        matching, rather than requiring an exact structural match.
+        Validates by checking that every required line is present anywhere
+        in the file content via substring matching.
 
         Returns:
-            ``True`` if the parent validation passes or all required lines
-            are found within the file content via substring matching.
+            ``True`` if all required lines are found within the file content
+            via substring matching.
         """
-        return super().is_correct() or self.all_lines_in_content(
+        return self.all_lines_in_content(
             lines=self.configs(), content=self.file_content()
         )
 

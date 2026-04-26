@@ -44,6 +44,22 @@ def write_text_utf8(path: Path, content: str) -> int:
     return path.write_text(content, encoding="utf-8")
 
 
+def file_has_content(path: Path) -> bool:
+    """Check whether a file has non-empty content.
+
+    Args:
+        path: Path to the file to check.
+
+    Returns:
+        ``True`` if the file has non-empty content; ``False`` if the file is
+        empty (zero bytes).
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+    """
+    return path.stat().st_size > 0
+
+
 def kebab_to_snake_case(value: str) -> str:
     """Convert a kebab-case string to snake_case by replacing hyphens with underscores.
 

@@ -305,14 +305,6 @@ class TestConfigFile:
         my_test_config_file().validate()
         assert my_test_config_file().is_correct(), "Expected config to be correct"
 
-    def test_is_unwanted(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
-    ) -> None:
-        """Test method."""
-        my_test_config_file().validate()
-        my_test_config_file().path().write_text("")
-        assert my_test_config_file().is_unwanted(), "Expected config to be unwanted"
-
     def test_is_correct_recursively(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:

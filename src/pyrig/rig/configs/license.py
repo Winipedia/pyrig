@@ -3,11 +3,13 @@
 from datetime import UTC, datetime
 from pathlib import Path
 
-from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.strings import make_linked_badge_markdown, read_text_utf8
+from pyrig.core.strings import (
+    file_has_content,
+    make_linked_badge_markdown,
+)
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
@@ -71,21 +73,16 @@ class LicenseConfigFile(StringConfigFile):
         return self.split_lines(self.mit_license_with_year_and_owner())
 
     def is_correct(self) -> bool:
-        """Check whether the LICENSE file exists and contains non-empty text.
-
-        When pyrig is running inside its own repository (detected via
-        ``src_package_is_pyrig``), ``mit_license`` is called first. This is a
-        deliberate side effect that triggers the resource-update check for the
-        bundled ``MIT_LICENSE`` template, keeping it in sync with upstream.
+        """Check whether the LICENSE file has non-empty content.
 
         Returns:
-            ``True`` if the LICENSE file exists and its contents are not blank,
-            ``False`` otherwise.
+            ``True`` if the LICENSE file has non-empty content; ``False`` if
+            the file is empty.
+
+        Raises:
+            FileNotFoundError: If the LICENSE file does not exist.
         """
-        if src_package_is_pyrig():
-            # Trigger the resource-update check for the bundled MIT_LICENSE template.
-            self.mit_license()
-        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
+        return file_has_content(self.path())
 
     def mit_license_with_year_and_owner(self) -> str:
         """Return the MIT license text with year and owner substituted.

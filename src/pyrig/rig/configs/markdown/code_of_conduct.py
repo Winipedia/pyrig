@@ -7,11 +7,10 @@ template when the upstream source is unavailable.
 
 from pathlib import Path
 
-from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import file_has_content
 from pyrig.rig import resources
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.tools.version_controller import VersionController
@@ -44,21 +43,19 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return self.split_lines(self.contributor_covenant_with_contact_method())
 
     def is_correct(self) -> bool:
-        """Check if CODE_OF_CONDUCT.md exists and is non-empty.
+        """Check if CODE_OF_CONDUCT.md has non-empty content.
 
         Overrides the default content-comparison check with a simpler
-        existence and non-emptiness test. When running inside the pyrig
-        development repository, ``contributor_covenant()`` is also called
-        to confirm the bundled resource is readable.
+        non-emptiness test.
 
         Returns:
-            bool: True if the file exists and has non-empty content.
+            bool: ``True`` if the file has non-empty content; ``False`` if
+            the file is empty.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
         """
-        if src_package_is_pyrig():
-            # if in pyrig just run get contributor covenant
-            # to trigger resource update if needed
-            self.contributor_covenant()
-        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
+        return file_has_content(self.path())
 
     def contributor_covenant_with_contact_method(self) -> str:
         """Return the Contributor Covenant with the contact method substituted.
