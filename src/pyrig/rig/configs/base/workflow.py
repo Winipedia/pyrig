@@ -380,10 +380,10 @@ class WorkflowConfigFile(DictYmlConfigFile):
             Trigger configuration for ``workflow_run`` events with
             ``types: [completed]``.
         """
-        config: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
+        configs: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
         if branches is not None:
-            config["branches"] = branches
-        return {"workflow_run": config}
+            configs["branches"] = branches
+        return {"workflow_run": configs}
 
     # Strategy
     def strategy_matrix_os_and_python_version(
