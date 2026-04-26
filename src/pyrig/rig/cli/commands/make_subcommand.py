@@ -2,7 +2,7 @@
 
 from pyrig.core.strings import kebab_to_snake_case
 from pyrig.rig.cli import shared_subcommands, subcommands
-from pyrig.rig.configs.base.copy_module_docstr import CopyModuleDocstringConfigFile
+from pyrig.rig.configs.base.copy_module_docstring import CopyModuleDocstringConfigFile
 
 
 def make_subcommand(name: str, *, shared: bool) -> None:

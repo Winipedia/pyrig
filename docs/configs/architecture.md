@@ -537,7 +537,7 @@ Copies only the docstring, allowing custom implementation:
 
 ```python
 from types import ModuleType
-from pyrig.rig.configs.base.copy_module_docstr import (
+from pyrig.rig.configs.base.copy_module_docstring import (
     CopyModuleDocstringConfigFile,
 )
 from pyrig.rig.cli import shared_subcommands

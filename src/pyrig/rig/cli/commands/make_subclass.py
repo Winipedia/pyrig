@@ -10,7 +10,7 @@ from pyrig.core.introspection.classes import (
 )
 from pyrig.core.introspection.modules import callable_obj_import_path
 from pyrig.core.iterate import combine_generators
-from pyrig.rig.configs.base.copy_module_docstr import CopyModuleDocstringConfigFile
+from pyrig.rig.configs.base.copy_module_docstring import CopyModuleDocstringConfigFile
 from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
