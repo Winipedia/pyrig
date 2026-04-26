@@ -32,7 +32,7 @@ def make_subcommand(name: str, *, shared: bool) -> None:
     # now add a function with the same name as given to the module
     name = kebab_to_snake_case(name)
 
-    content = config_file.file_content()
+    content = config_file.read_content()
 
     content += f'''
 
@@ -40,4 +40,4 @@ def {name}() -> None:
     """This is a cli subcommand."""
 '''
 
-    config_file.dump(config_file.split_lines(content))
+    config_file.write_content(content)

@@ -58,4 +58,4 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
 
     def is_correct(self) -> bool:
         """Conisdered correct if def test_zero() exists in the target file."""
-        return f"def {test_zero.__name__}()" in self.file_content()
+        return f"def {test_zero.__name__}()" in self.read_content()

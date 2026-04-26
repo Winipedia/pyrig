@@ -28,7 +28,7 @@ class TestBadgesMarkdownConfigFile:
             # change the description in readme to a false one
             false_description = "False description"
             correct_description = PyprojectConfigFile.I.project_description()
-            content = ReadmeConfigFile.I.file_content()
+            content = ReadmeConfigFile.I.read_content()
             # we replace the actual description with a false one
             false_content = content.replace(correct_description, false_description)
             assert correct_description not in false_content
@@ -56,7 +56,7 @@ class TestBadgesMarkdownConfigFile:
             # dump configs and check file is correct
             ReadmeConfigFile.I.dump(ReadmeConfigFile.I.configs())
             assert ReadmeConfigFile.I.is_correct()
-            assert ReadmeConfigFile.I.file_content() == content
+            assert ReadmeConfigFile.I.read_content() == content
 
     def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""

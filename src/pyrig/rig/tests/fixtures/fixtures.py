@@ -132,10 +132,10 @@ def config_file_factory[T: ConfigFile[ConfigData]](
                     path = tmp_path / path
                 return path
 
-            def _dump(self, config: ConfigData) -> None:
+            def _dump(self, configs: ConfigData) -> None:
                 """Write config to tmp_path, ensuring isolated test execution."""
                 with chdir(tmp_path):
-                    super()._dump(config)
+                    super()._dump(configs)
 
             def _load(self) -> ConfigData:
                 """Load config from tmp_path, ensuring isolated test execution."""

@@ -40,6 +40,15 @@ def my_test_string_config_file(
 class TestStringConfigFile:
     """Test class."""
 
+    def test_write_content(
+        self, my_test_string_config_file: type[StringConfigFile]
+    ) -> None:
+        """Test method."""
+        content = "New content.\n"
+        my_test_string_config_file().write_content(content)
+        read_content = my_test_string_config_file().read_content()
+        assert read_content == content
+
     def test_all_lines_in_content(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
@@ -131,10 +140,10 @@ class TestStringConfigFile:
         is_correct = my_test_string_config_file().is_correct()
         assert is_correct, "Expected config to be correct after validation"
 
-    def test_file_content(
+    def test_read_content(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
         """Test method."""
         my_test_string_config_file().validate()
-        file_content = my_test_string_config_file().file_content()
-        assert file_content == "Test content."
+        read_content = my_test_string_config_file().read_content()
+        assert read_content == "Test content."

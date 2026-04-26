@@ -111,7 +111,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return cls.generate_subclasses(cls.all_mirror_modules())
 
-    def _dump(self, config: ConfigList) -> None:
+    def _dump(self, configs: ConfigList) -> None:
         """Write the test file and reimport the test module to pick up the new content.
 
         Extends the parent dump by reimporting the test module after writing. This
@@ -120,9 +120,9 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         cached version.
 
         Args:
-            config: Lines of content to write to the test file.
+            configs: Lines of content to write to the test file.
         """
-        super()._dump(config)
+        super()._dump(configs)
         reimport_module(self.test_module())
 
     def stem(self) -> str:
@@ -242,7 +242,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Source code of the test file, or an empty string if the file does not
             exist yet.
         """
-        return self.file_content()
+        return self.read_content()
 
     def test_module_content_with_skeletons(self) -> str:
         """Build the complete test module content with skeletons for untested code.

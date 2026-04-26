@@ -84,13 +84,13 @@ class StringConfigFile(ListConfigFile):
         """
         return self.split_lines(read_text_utf8(self.path()))
 
-    def _dump(self, config: list[str]) -> None:
+    def _dump(self, configs: list[str]) -> None:
         r"""Write a list of lines to the file as UTF-8 text.
 
         Args:
-            config: Lines to write to the file.
+            configs: Lines to write to the file.
         """
-        write_text_utf8(self.path(), self.join_lines(config))
+        write_text_utf8(self.path(), self.join_lines(configs))
 
     def merge_configs(self) -> ConfigList:
         """Merge required lines with existing file content.
@@ -118,7 +118,7 @@ class StringConfigFile(ListConfigFile):
             via substring matching.
         """
         return self.all_lines_in_content(
-            lines=self.configs(), content=self.file_content()
+            lines=self.configs(), content=self.read_content()
         )
 
     def all_lines_in_content(self, lines: Iterable[str], content: str) -> bool:
@@ -136,9 +136,13 @@ class StringConfigFile(ListConfigFile):
         """
         return all(line in content for line in lines)
 
-    def file_content(self) -> str:
-        r"""Return the current file content as a single joined string."""
+    def read_content(self) -> str:
+        """Return the current file content as a single joined string."""
         return self.join_lines(self.load())
+
+    def write_content(self, content: str) -> None:
+        """Write the given content string to the file, replacing existing content."""
+        self.dump(self.split_lines(content))
 
     def join_lines(self, lines: Iterable[str]) -> str:
         """Join lines with a newline character."""

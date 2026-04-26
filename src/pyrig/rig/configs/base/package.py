@@ -48,7 +48,7 @@ class PythonPackageConfigFile(PythonConfigFile):
         - ``lines``: Python source lines that form the file content.
     """
 
-    def _dump(self, config: list[str]) -> None:
+    def _dump(self, configs: list[str]) -> None:
         """Write the file and initialise any uninitialised ancestor packages.
 
         First delegates to the parent ``_dump`` to write the file content, then
@@ -63,9 +63,9 @@ class PythonPackageConfigFile(PythonConfigFile):
         init content (``ProgrammingLanguage.standard_init_content``).
 
         Args:
-            config: Lines of Python source code to write to the target file.
+            configs: Lines of Python source code to write to the target file.
         """
-        super()._dump(config)
+        super()._dump(configs)
         make_package_dir(
             self.path().parent,
             until=(

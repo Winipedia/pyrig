@@ -144,14 +144,14 @@ class BuilderConfigFile(ListConfigFile):
         """
         return list(self.parent_path().glob("*"))
 
-    def _dump(self, config: list[Path]) -> None:  # noqa: ARG002
+    def _dump(self, configs: list[Path]) -> None:  # noqa: ARG002
         """Trigger the build process.
 
-        The ``config`` parameter is required by the parent class interface but
+        The ``configs`` parameter is required by the parent class interface but
         is not used here; the build is fully driven by ``create_artifacts()``.
 
         Args:
-            config: Ignored.
+            configs: Ignored.
         """
         self.build()
 

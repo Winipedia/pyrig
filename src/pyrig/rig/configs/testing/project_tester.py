@@ -74,7 +74,7 @@ class ProjectTesterConfigFile(CopyModuleDocstringConfigFile):
             ``True`` if the ``pytest_plugins`` assignment is present in the
             file on disk.
         """
-        return self.plugin_definition() in self.file_content()
+        return self.plugin_definition() in self.read_content()
 
     def plugin_definition(self) -> str:
         """Return the ``pytest_plugins`` assignment line for the generated file.

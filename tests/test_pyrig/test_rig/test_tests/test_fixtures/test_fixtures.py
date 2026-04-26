@@ -42,7 +42,7 @@ def sample_config_file(
             """Load the config."""
             return {}
 
-        def _dump(self, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(self, configs: dict[str, Any] | list[Any]) -> None:
             """Dump the config."""
 
         def extension(self) -> str:

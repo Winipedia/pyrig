@@ -27,7 +27,7 @@ def make_fixture(name: str) -> None:
     # now add a function with the same name as given to the module
     name = kebab_to_snake_case(name)
 
-    content = config_file.file_content()
+    content = config_file.read_content()
 
     pytest_import = "import pytest"
     if pytest_import not in content:
@@ -42,4 +42,4 @@ def {name}() -> None:
     """This is a pytest fixture."""
 '''
 
-    config_file.dump(config_file.split_lines(content))
+    config_file.write_content(content)

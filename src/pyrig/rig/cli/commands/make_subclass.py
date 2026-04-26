@@ -30,7 +30,7 @@ def make_subclass() -> None:
     config_file = CopyModuleDocstringConfigFile.generate_subclass(module)()
     config_file.validate()
 
-    content = config_file.file_content()
+    content = config_file.read_content()
 
     content += f'''
 from {module_name} import {class_name} as Base{class_name}
@@ -39,7 +39,7 @@ from {module_name} import {class_name} as Base{class_name}
 class {class_name}(Base{class_name}):
     """You can override methods from the base class to customize behavior."""
 '''
-    config_file.dump(config_file.split_lines(content))
+    config_file.write_content(content)
 
 
 def choose_subclass() -> type[DependencySubclass]:

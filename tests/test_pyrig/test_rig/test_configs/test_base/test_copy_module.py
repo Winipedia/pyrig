@@ -45,10 +45,10 @@ def my_test_copy_module_config_file(
             """Get the source module."""
             return mock_module
 
-        def _dump(self, config: dict[str, Any] | list[Any]) -> None:
+        def _dump(self, configs: list[Any]) -> None:
             """Dump the config file."""
             with chdir(tmp_path):
-                super()._dump(config)
+                super()._dump(configs)
 
     return MyTestCopyModuleConfigFile
 

@@ -53,7 +53,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             or the full expected content prepended to existing content if an
             in-place update was insufficient.
         """
-        updated_content = self.replace_description(self.file_content())
+        updated_content = self.replace_description(self.read_content())
         updated_content = self.replace_badges(updated_content)
         if self.all_lines_in_content(lines=self.configs(), content=updated_content):
             return self.split_lines(updated_content)
