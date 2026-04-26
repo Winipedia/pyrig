@@ -10,7 +10,7 @@ from pyrig.core.introspection.classes import (
 )
 from pyrig.core.introspection.modules import callable_obj_import_path
 from pyrig.core.iterate import combine_generators
-from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
+from pyrig.rig.configs.base.copy_module_docstr import CopyModuleDocstringConfigFile
 from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
@@ -27,7 +27,7 @@ def make_subclass() -> None:
     module_name, class_name = subclass.__module__, subclass.__name__
     module = import_module(module_name)
 
-    config_file = CopyModuleOnlyDocstringConfigFile.generate_subclass(module)()
+    config_file = CopyModuleDocstringConfigFile.generate_subclass(module)()
     config_file.validate()
 
     content = config_file.file_content()

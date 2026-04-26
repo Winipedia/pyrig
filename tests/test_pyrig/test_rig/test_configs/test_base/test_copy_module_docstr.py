@@ -9,7 +9,7 @@ from types import ModuleType
 import pytest
 
 from pyrig.core.introspection.modules import reimport_module
-from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
+from pyrig.rig.configs.base.copy_module_docstr import CopyModuleDocstringConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
@@ -17,12 +17,12 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 @pytest.fixture
 def my_test_copy_module_only_docstring_config_file(
     config_file_factory: Callable[
-        [type[CopyModuleOnlyDocstringConfigFile]],
-        type[CopyModuleOnlyDocstringConfigFile],
+        [type[CopyModuleDocstringConfigFile]],
+        type[CopyModuleDocstringConfigFile],
     ],
     tmp_path: Path,
     create_module: Callable[[Path], ModuleType],
-) -> type[CopyModuleOnlyDocstringConfigFile]:
+) -> type[CopyModuleDocstringConfigFile]:
     """Create a test copy module only docstring config file class with tmp_path."""
     path = Path("test_package") / "test_subpackage" / "test_module.py"
     with chdir(tmp_path):
@@ -38,8 +38,8 @@ def my_test_copy_module_only_docstring_config_file(
 
         module = reimport_module(module)
 
-    class MyTestCopyModuleOnlyDocstringConfigFile(
-        config_file_factory(CopyModuleOnlyDocstringConfigFile)  # ty: ignore[unsupported-base]
+    class MyTestCopyModuleDocstringConfigFile(
+        config_file_factory(CopyModuleDocstringConfigFile)  # ty: ignore[unsupported-base]
     ):
         """Test copy module only docstring config file with tmp_path override."""
 
@@ -47,16 +47,16 @@ def my_test_copy_module_only_docstring_config_file(
             """Get the source module."""
             return module
 
-    return MyTestCopyModuleOnlyDocstringConfigFile
+    return MyTestCopyModuleDocstringConfigFile
 
 
-class TestCopyModuleOnlyDocstringConfigFile:
+class TestCopyModuleDocstringConfigFile:
     """Test class."""
 
     def test_default_docstring(
         self,
         my_test_copy_module_only_docstring_config_file: type[
-            CopyModuleOnlyDocstringConfigFile
+            CopyModuleDocstringConfigFile
         ],
     ) -> None:
         """Test method."""
@@ -67,7 +67,7 @@ class TestCopyModuleOnlyDocstringConfigFile:
     def test_lines(
         self,
         my_test_copy_module_only_docstring_config_file: type[
-            CopyModuleOnlyDocstringConfigFile
+            CopyModuleDocstringConfigFile
         ],
     ) -> None:
         """Test method."""
@@ -81,7 +81,7 @@ class TestCopyModuleOnlyDocstringConfigFile:
     def test_is_correct(
         self,
         my_test_copy_module_only_docstring_config_file: type[
-            CopyModuleOnlyDocstringConfigFile
+            CopyModuleDocstringConfigFile
         ],
         tmp_path: Path,
     ) -> None:

@@ -1,7 +1,7 @@
 """Scaffold shared pytest fixtures for a pyrig-managed project."""
 
 from pyrig.core.strings import kebab_to_snake_case
-from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
+from pyrig.rig.configs.base.copy_module_docstr import CopyModuleDocstringConfigFile
 from pyrig.rig.tests.fixtures import fixtures
 
 
@@ -21,7 +21,7 @@ def make_fixture(name: str) -> None:
         name: Name of the fixture in kebab-case or snake_case.
     """
     # create the file if not existent yet
-    config_file = CopyModuleOnlyDocstringConfigFile.generate_subclass(fixtures)()
+    config_file = CopyModuleDocstringConfigFile.generate_subclass(fixtures)()
     config_file.validate()
 
     # now add a function with the same name as given to the module

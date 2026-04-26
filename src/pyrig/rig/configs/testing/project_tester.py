@@ -8,12 +8,12 @@ hooks without explicit imports in each test file.
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
+from pyrig.rig.configs.base.copy_module_docstr import CopyModuleDocstringConfigFile
 from pyrig.rig.tests import conftest
 from pyrig.rig.tools.project_tester import ProjectTester
 
 
-class ProjectTesterConfigFile(CopyModuleOnlyDocstringConfigFile):
+class ProjectTesterConfigFile(CopyModuleDocstringConfigFile):
     r"""Generates ``tests/conftest.py`` for the target project.
 
     The generated file has two parts: the module-level docstring of
