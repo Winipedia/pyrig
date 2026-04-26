@@ -40,20 +40,20 @@ class TypedConfigFile(DictConfigFile):
         """Return an empty dict, reflecting that the file has no content."""
         return {}
 
-    def _dump(self, config: ConfigDict) -> None:
+    def _dump(self, configs: ConfigDict) -> None:
         """Write configuration to the marker file, enforcing the empty-file contract.
 
-        A no-op when ``config`` is empty (the normal case). Raises
+        A no-op when ``configs`` is empty (the normal case). Raises
         ``PermissionError`` when called with a non-empty dict, because
         ``py.typed`` must never contain data.
 
         Args:
-            config: Configuration dict to write. Must be empty.
+            configs: Configuration dict to write. Must be empty.
 
         Raises:
-            PermissionError: If ``config`` is not empty.
+            PermissionError: If ``configs`` is not empty.
         """
-        if config:
+        if configs:
             msg = f"""Dumping to {self} is forbidden.
 It is a marker for type checkers and should be empty."""
             raise PermissionError(msg)

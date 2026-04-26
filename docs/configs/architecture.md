@@ -645,7 +645,7 @@ its own config files:
 ```python
 def is_correct(self) -> bool:
     """Check if config contains required structure."""
-    content = self.file_content()
+    content = self.read_content()
     return super().is_correct() or (
         "required_string" in content
         and "another_required_string" in content

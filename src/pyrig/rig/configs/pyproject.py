@@ -192,7 +192,7 @@ class PyprojectConfigFile(TomlConfigFile):
             FileNotFoundError: If the LICENSE file does not exist.
             LookupError: If no license can be identified in the LICENSE file.
         """
-        content = LicenseConfigFile.I.file_content()
+        content = LicenseConfigFile.I.read_content()
         return self.detect_project_licence_from_content(content)
 
     def detect_project_licence_from_content(self, content: str) -> str:

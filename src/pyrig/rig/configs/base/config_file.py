@@ -129,22 +129,20 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         """Load and parse the configuration file from disk.
 
         Internal implementation called by the public ``load()`` cached wrapper.
-        Return an empty dict or list for an empty file so that
-        ``is_unwanted()`` can correctly detect the user opt-out case.
 
         Returns:
             Parsed configuration as a dict or list.
         """
 
     @abstractmethod
-    def _dump(self, config: ConfigT) -> None:
+    def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the file on disk.
 
         Internal implementation called by the public ``dump()``
         cache-invalidating wrapper.
 
         Args:
-            config: Configuration data to write.
+            configs: Configuration data to write.
         """
 
     @classmethod
@@ -303,7 +301,7 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
 
-    def dump(self, config: ConfigT) -> None:
+    def dump(self, configs: ConfigT) -> None:
         """Write configuration to disk and keep the load cache consistent.
 
         Clears the ``load()`` cache before and after calling ``_dump()`` to
@@ -311,11 +309,11 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
         during or after the write.
 
         Args:
-            config: Configuration data to write.
+            configs: Configuration data to write.
         """
         typer.echo(f"Updating {self}")
         self.load.cache_clear()
-        self._dump(config)
+        self._dump(configs)
         self.load.cache_clear()
 
     def merge_configs(self) -> ConfigT:

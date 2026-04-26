@@ -44,16 +44,16 @@ class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         """
         return yaml.safe_load(read_text_utf8(self.path()))
 
-    def _dump(self, config: ConfigT) -> None:
+    def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the YAML file using safe_dump.
 
         Key insertion order is preserved (sort_keys=False).
 
         Args:
-            config: Configuration dict or list to write.
+            configs: Configuration dict or list to write.
         """
         with self.path().open("w") as f:
-            yaml.safe_dump(config, f, sort_keys=False)
+            yaml.safe_dump(configs, f, sort_keys=False)
 
     def extension(self) -> str:
         """Return "yaml"."""

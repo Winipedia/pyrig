@@ -37,7 +37,7 @@ class DotEnvConfigFile(DictConfigFile):
         """
         return dotenv_values(self.path())
 
-    def _dump(self, config: ConfigDict) -> None:
+    def _dump(self, configs: ConfigDict) -> None:
         """Block all non-empty writes to the .env file.
 
         Pyrig never overwrites .env content because the file holds user
@@ -46,12 +46,12 @@ class DotEnvConfigFile(DictConfigFile):
         triggering this guard.
 
         Args:
-            config: Configuration to write. Must be empty.
+            configs: Configuration to write. Must be empty.
 
         Raises:
-            PermissionError: When config is non-empty.
+            PermissionError: When configs is non-empty.
         """
-        if config:
+        if configs:
             msg = f"""Dumping to {self} is forbidden.
 For security reasons this file is managed manually by the user.
 Please edit it directly."""

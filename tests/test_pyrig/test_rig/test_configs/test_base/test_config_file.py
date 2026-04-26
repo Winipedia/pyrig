@@ -45,9 +45,9 @@ def my_test_config_file(
             """Load the config file."""
             return copy.deepcopy(self.STORAGE_DICT)
 
-        def _dump(self, config: dict[str, Any]) -> None:
+        def _dump(self, configs: dict[str, Any]) -> None:
             """Dump the config file."""
-            self.__class__.STORAGE_DICT = config
+            self.__class__.STORAGE_DICT = configs
 
         def parent_path(self) -> Path:
             """Get the path to the config file."""

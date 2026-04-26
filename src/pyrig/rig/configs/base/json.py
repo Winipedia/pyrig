@@ -55,7 +55,7 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         data: ConfigT = json.loads(read_text_utf8(path))
         return data
 
-    def _dump(self, config: ConfigT) -> None:
+    def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the JSON file with 4-space indentation.
 
         Opens the file at ``self.path()`` for writing and serializes ``config``
@@ -64,10 +64,10 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         invalidates the load cache before delegating here.
 
         Args:
-            config: Configuration dict or list to serialize and write.
+            configs: Configuration dict or list to serialize and write.
         """
         with self.path().open("w") as f:
-            json.dump(config, f, indent=4)
+            json.dump(configs, f, indent=4)
 
     def extension(self) -> str:
         """Return the file extension for JSON files.

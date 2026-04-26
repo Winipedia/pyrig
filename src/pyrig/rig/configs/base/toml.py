@@ -49,45 +49,45 @@ class TomlConfigFile(DictConfigFile):
         """
         return tomlkit.parse(read_text_utf8(self.path()))
 
-    def _dump(self, config: ConfigDict) -> None:
+    def _dump(self, configs: ConfigDict) -> None:
         """Write configuration to the TOML file.
 
-        Delegates to ``pretty_dump()``, which converts the config to tomlkit
+        Delegates to ``pretty_dump()``, which converts the configs to tomlkit
         types before writing.
 
         Args:
-            config: Configuration dict to write.
+            configs: Configuration dict to write.
         """
-        self.pretty_dump(config)
+        self.pretty_dump(configs)
 
-    def pretty_dump(self, config: ConfigDict) -> None:
+    def pretty_dump(self, configs: ConfigDict) -> None:
         """Convert and write configuration to the TOML file.
 
-        Converts the config dict to tomlkit types via ``prettify_dict()``, then
+        Converts the configs dict to tomlkit types via ``prettify_dict()``, then
         writes the result to the file. Lists are rendered as multiline arrays and
         key order is preserved.
 
         Args:
-            config: Configuration dict to write.
+            configs: Configuration dict to write.
         """
-        config = self.prettify_dict(config)
+        configs = self.prettify_dict(configs)
         with self.path().open("w") as f:
-            tomlkit.dump(config, f, sort_keys=False)
+            tomlkit.dump(configs, f, sort_keys=False)
 
-    def prettify_dict(self, config: ConfigDict) -> Table:
+    def prettify_dict(self, configs: ConfigDict) -> Table:
         """Convert a dict to a tomlkit ``Table`` with prettified values.
 
         Iterates over every key-value pair and applies ``prettify_value()`` to each
         value, building a tomlkit ``Table`` ready for serialization.
 
         Args:
-            config: Configuration dict to convert.
+            configs: Configuration dict to convert.
 
         Returns:
             A tomlkit ``Table`` containing all values formatted for TOML output.
         """
         t = tomlkit.table()
-        for k, v in config.items():
+        for k, v in configs.items():
             t.add(k, self.prettify_value(v))
         return t
 
