@@ -4,7 +4,7 @@ from contextlib import chdir
 from pathlib import Path
 
 from pyrig.rig import resources
-from pyrig.rig.cli.commands.make_resources import make_resources
+from pyrig.rig.cli.commands.make_resources_package import make_resources_package
 
 
 def test_make_resources(tmp_path: Path) -> None:
@@ -14,7 +14,7 @@ def test_make_resources(tmp_path: Path) -> None:
 
     with chdir(project_path):
         # create a new subcommand
-        make_resources()
+        make_resources_package()
 
         # check if the file was created and contains the expected content
         subcommands_file = (

@@ -4,7 +4,7 @@ from pyrig.rig import resources
 from pyrig.rig.configs.base.init import InitConfigFile
 
 
-def make_resources() -> None:
+def make_resources_package() -> None:
     """Scaffold the resources package ``__init__.py`` for the active project.
 
     Dynamically generates an ``InitConfigFile`` subclass bound to
