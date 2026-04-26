@@ -15,6 +15,7 @@ from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.cli.subcommands import mkroot
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tests.fixtures import fixtures
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 
 
@@ -210,3 +211,16 @@ def test_command_calls_function(
 ) -> None:
     """Test function."""
     command_calls_function(mkroot, make_project_root)
+
+
+def test_module_docstring() -> None:
+    """Test function."""
+    assert (
+        fixtures.__doc__
+        == """Shared pytest fixtures for pyrig and all projects built with it.
+
+Fixtures defined here or any other file in the same package
+are automatically discovered by pytest and made available to any pytest suite
+that inherits from this project.
+"""
+    )

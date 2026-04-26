@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from pyrig.rig.tools import container_engine
 from pyrig.rig.tools.container_engine import ContainerEngine
 
 
@@ -49,3 +50,14 @@ class TestContainerEngine:
             image_path.as_posix(),
             image_file.stem,
         )
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        container_engine.__doc__
+        == """Container engine wrapper.
+
+Wraps container engine commands and information.
+"""
+    )

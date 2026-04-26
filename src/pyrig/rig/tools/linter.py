@@ -1,4 +1,7 @@
-"""Ruff-based Python linter and formatter tool wrapper."""
+"""Wrapper around the Linter tool.
+
+Wraps Linter commands and information.
+"""
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup

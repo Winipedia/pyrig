@@ -1,21 +1,6 @@
 """Mirror test configuration management for automatic test skeleton generation.
 
-Ensures every source module has a corresponding test module, every function has a
-test function, and every class and method has a test counterpart. Test skeletons
-raise ``NotImplementedError`` to mark them as pending implementation.
-
-Example:
-    Subclass ``MirrorTestConfigFile`` to mirror a specific module::
-
-        from types import ModuleType
-        from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-
-        class CoreMirrorTest(MirrorTestConfigFile):
-
-            def mirror_module(self) -> ModuleType:
-                return myproject.core
-
-        CoreMirrorTest()
+Ensures every source module, class, function and method has a test counterpart.
 """
 
 import logging

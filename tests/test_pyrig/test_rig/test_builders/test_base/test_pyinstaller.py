@@ -190,3 +190,11 @@ class TestPyInstallerBuilder:
                 assert result.suffix == ".icns", "Expected .icns for macOS"
             else:
                 assert result.suffix == ".png", "Expected .png for Linux"
+
+
+def test_module_docstring() -> None:
+    """Test function."""
+    assert (
+        pyinstaller.__doc__
+        == """PyInstaller-based artifact builder for creating standalone executables."""
+    )

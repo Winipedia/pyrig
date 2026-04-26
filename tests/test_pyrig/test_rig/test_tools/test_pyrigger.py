@@ -3,6 +3,7 @@
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args
+from pyrig.rig.tools import pyrigger
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
@@ -106,3 +107,14 @@ class TestPyrigger:
 
         result = Pyrigger.I.cmd_args("--help", cmd=my_command)
         assert result == ("pyrig", "my-command", "--help")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        pyrigger.__doc__
+        == """Wrapper around pyrig.
+
+Provides a type-safe wrapper for pyrig commands and information.
+"""
+    )

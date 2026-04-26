@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from pyrig.core.subprocesses import Args
+from pyrig.rig.tools import package_manager
 from pyrig.rig.tools.package_manager import PackageManager
 
 
@@ -152,3 +153,14 @@ class TestPackageManager:
         """Test method."""
         result = PackageManager.I.version_short_args()
         assert result == ("uv", "version", "--short")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        package_manager.__doc__
+        == """Package manager wrapper.
+
+Wraps PackageManager commands and information.
+"""
+    )

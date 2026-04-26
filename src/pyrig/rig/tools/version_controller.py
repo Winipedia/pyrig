@@ -1,7 +1,6 @@
-"""Git version control operations for the pyrig toolchain.
+"""Version controller wrapper.
 
-Wraps common git commands as typed argument builders, covering repository
-setup, staging, committing, pushing, tagging, and configuration reads and writes.
+Wraps VersionController commands and information.
 """
 
 import logging

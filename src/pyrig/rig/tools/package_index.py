@@ -1,7 +1,6 @@
-"""PyPI package index tool.
+"""Package index tool wrapper.
 
-Wraps PyPI project URL construction and version badge generation
-for use in documentation, CI/CD pipelines, and README badges.
+Wraps PackageIndex commands and information.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup

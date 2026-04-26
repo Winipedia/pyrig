@@ -1,4 +1,7 @@
-"""Python programming language tool wrapper."""
+"""Programming language tool wrapper.
+
+Wraps ProgrammingLanguage commands and information.
+"""
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.package_manager import PackageManager

@@ -1,6 +1,6 @@
-"""Podman container engine wrapper.
+"""Container engine wrapper.
 
-Wraps podman CLI commands to build and export container images.
+Wraps container engine commands and information.
 """
 
 from pathlib import Path
@@ -10,7 +10,7 @@ from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
 class ContainerEngine(Tool):
-    """Podman container engine wrapper.
+    """Container engine wrapper.
 
     Constructs podman command arguments for building and saving container images.
     Typical usage: call ``build_args`` to build the image, then ``save_args``

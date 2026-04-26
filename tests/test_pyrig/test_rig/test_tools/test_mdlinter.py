@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools import mdlinter
 from pyrig.rig.tools.mdlinter import MDLinter
 
 
@@ -32,3 +33,14 @@ class TestMDLinter:
         """Test method."""
         result = MDLinter.I.check_fix_args()
         assert result == ("rumdl", "check", "--fix")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        mdlinter.__doc__
+        == """Wrapper around the Markdown Linter tool.
+
+Wraps Markdown Linter commands and information.
+"""
+    )

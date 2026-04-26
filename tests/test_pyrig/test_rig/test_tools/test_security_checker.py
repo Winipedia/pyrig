@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from pyrig.rig.tools import security_checker
 from pyrig.rig.tools.security_checker import SecurityChecker
 
 
@@ -47,3 +48,14 @@ class TestSecurityChecker:
         """Test method."""
         result = SecurityChecker.I.run_with_config_args()
         assert result == ("bandit", "-c", "pyproject.toml", "-r", "src/pyrig", "tests")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        security_checker.__doc__
+        == """Security checker tool wrapper.
+
+Wraps SecurityChecker commands and information.
+"""
+    )

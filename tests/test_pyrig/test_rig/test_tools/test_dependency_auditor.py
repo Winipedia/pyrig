@@ -1,6 +1,7 @@
 """module."""
 
 from pyrig.core.subprocesses import Args
+from pyrig.rig.tools import dependency_auditor
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 
 
@@ -27,3 +28,14 @@ class TestDependencyAuditor:
         """Test method."""
         args = DependencyAuditor.I.audit_args("--format", "json")
         assert isinstance(args, Args)
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        dependency_auditor.__doc__
+        == """Dependency vulnerability auditor for Python packages.
+
+Wraps the dependency auditor commands and information.
+"""
+    )

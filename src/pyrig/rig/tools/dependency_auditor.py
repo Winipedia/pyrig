@@ -1,16 +1,6 @@
 """Dependency vulnerability auditor for Python packages.
 
-Wraps ``pip-audit`` to check installed dependencies for known
-vulnerabilities using public security advisories (CVEs).
-
-Note:
-    This complements source-code security tools like Bandit: Bandit scans
-    your own source code for insecure patterns, while pip-audit scans your
-    installed *dependencies* for known vulnerabilities.
-
-Example:
-    >>> from pyrig.rig.tools.dependency_auditor import DependencyAuditor
-    >>> DependencyAuditor.I.audit_args().run()
+Wraps the dependency auditor commands and information.
 """
 
 from pyrig.core.subprocesses import Args

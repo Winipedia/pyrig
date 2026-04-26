@@ -1,4 +1,7 @@
-"""GitHub remote version control wrapper."""
+"""Remote version controller wrapper.
+
+Wraps RemoteVersionController commands and information.
+"""
 
 import os
 
