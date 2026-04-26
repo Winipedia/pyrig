@@ -4,6 +4,7 @@ from pathlib import Path
 
 from pyrig.core.resources import resource_content
 from pyrig.rig import resources
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.pyrigger import Pyrigger
 
@@ -82,8 +83,10 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             the baseline, and a trailing empty string.
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
-        ignored_subclasses = self.version_control_ignored_subclasses()
-        ignored_paths = {cf().path().as_posix() for cf in ignored_subclasses}
+        ignored_paths = {
+            cf().path().as_posix()
+            for cf in ConfigFile.version_control_ignored_subclasses()
+        }
 
         needed = [
             f"# {Pyrigger.I.name()} stuff",
