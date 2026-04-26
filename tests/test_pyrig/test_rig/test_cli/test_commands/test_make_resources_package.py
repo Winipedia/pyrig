@@ -7,7 +7,7 @@ from pyrig.rig import resources
 from pyrig.rig.cli.commands.make_resources_package import make_resources_package
 
 
-def test_make_resources(tmp_path: Path) -> None:
+def test_make_resources_package(tmp_path: Path) -> None:
     """Test function."""
     project_path = tmp_path / "my-project"
     project_path.mkdir()
