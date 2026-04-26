@@ -1,11 +1,7 @@
 """Configuration management for CONTRIBUTING.md files.
 
-Manages CONTRIBUTING.md using a minimal best practices template. The template
-covers essential contribution guidelines: issues, pull requests, and code of
-conduct reference.
-
-See Also:
-    pyrig.rig.configs.base.markdown.MarkdownConfigFile
+Provides a configuration file class for generating and managing CONTRIBUTING.md
+with a minimal best practices contribution guide template.
 """
 
 from pathlib import Path
@@ -50,26 +46,17 @@ Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
 
 
 class ContributingConfigFile(MarkdownConfigFile):
-    """CONTRIBUTING.md configuration manager.
+    """Manages the CONTRIBUTING.md file for the project.
 
-    Generates CONTRIBUTING.md using a minimal best practices template that
-    covers essential contribution guidelines. Works for both private and
-    public repositories.
-
-    The template includes:
-        - How to open issues (ideas, problems, questions)
-        - Pull request workflow (fork, branch, commit, PR)
-        - PR guidelines (reference issues, atomic changes, tests)
-        - Code of Conduct reference
+    Generates a standard contribution guide covering issue reporting, pull
+    request workflow, and code of conduct reference. Suitable for both private
+    and public repositories. Users may customize the file content after initial
+    generation.
 
     Examples:
-        Generate CONTRIBUTING.md::
+        Generate or validate CONTRIBUTING.md::
 
             ContributingConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.base.markdown.MarkdownConfigFile
-        pyrig.rig.configs.markdown.code_of_conduct.CodeOfConductConfigFile
     """
 
     def stem(self) -> str:
@@ -85,9 +72,14 @@ class ContributingConfigFile(MarkdownConfigFile):
         return self.split_lines(CONTRIBUTING_TEMPLATE)
 
     def is_correct(self) -> bool:
-        """Check if CONTRIBUTING.md exists and is non-empty.
+        """Check whether CONTRIBUTING.md exists and contains non-empty content.
+
+        Overrides the inherited line-matching validation so that user-modified
+        content is still considered correct. Any non-empty file at the expected
+        path passes, because the template is a starting point that projects are
+        expected to customise.
 
         Returns:
-            True if file exists with content, False otherwise.
+            True if the file exists and contains non-empty content, False otherwise.
         """
         return self.path().exists() and bool(read_text_utf8(self.path()).strip())

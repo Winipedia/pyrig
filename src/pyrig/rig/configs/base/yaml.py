@@ -1,11 +1,10 @@
 """YAML configuration file management.
 
-Provides YamlConfigFile base class for YAML files using PyYAML's safe_load and
-safe_dump for secure parsing.
+Provides a base class for managing YAML configuration files. Uses PyYAML's
+safe_load and safe_dump for secure parsing and serialization.
 
 Example:
     >>> from pathlib import Path
-    >>> from typing import Any
     >>> from pyrig.rig.configs.base.yaml import YamlConfigFile
     >>>
     >>> class MyWorkflowConfigFile(YamlConfigFile):
@@ -14,7 +13,7 @@ Example:
     ...         return Path(".github/workflows")
     ...
     ...
-    ...     def _configs(self) -> ConfigDict:
+    ...     def _configs(self) -> dict:
     ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
 """
 
@@ -27,34 +26,28 @@ from pyrig.rig.configs.base.config_file import ConfigData, ConfigFile
 class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     """Base class for YAML configuration files.
 
-    Uses PyYAML's safe methods to prevent code execution. Preserves key order
+    Implements YAML-specific load and dump operations for the ConfigFile
+    framework. Uses PyYAML's safe_load and safe_dump to prevent arbitrary
+    code execution during parsing. Key insertion order is preserved in output
     (sort_keys=False).
 
     Subclasses must implement:
         - `parent_path`: Directory containing the YAML file
         - `_configs`: Expected YAML configuration structure
-
-    Example:
-        >>> class MyConfigFile(YamlConfigFile):
-        ...
-        ...     def parent_path(self) -> Path:
-        ...         return Path()
-        ...
-        ...
-        ...     def _configs(self) -> ConfigDict:
-        ...         return {"setting": "value"}
     """
 
     def _load(self) -> ConfigT:
         """Load and parse the YAML file using safe_load.
 
         Returns:
-            Parsed YAML content as dict or list. Empty dict if file is empty.
+            Parsed YAML content as a dict or list.
         """
         return yaml.safe_load(read_text_utf8(self.path()))
 
     def _dump(self, config: ConfigT) -> None:
-        """Write configuration to YAML file using safe_dump.
+        """Write configuration to the YAML file using safe_dump.
+
+        Key insertion order is preserved (sort_keys=False).
 
         Args:
             config: Configuration dict or list to write.

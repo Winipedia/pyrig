@@ -1,7 +1,5 @@
 """module."""
 
-from pathlib import Path
-
 from pytest_mock import MockerFixture
 
 from pyrig.rig.tools.version_controller import VersionController
@@ -43,11 +41,6 @@ class TestVersionController:
             check_repo_url=False, url_encode=False
         )
         assert result == ("OWNER", "REPO")
-
-    def test_ignore_filename(self) -> None:
-        """Test method."""
-        result = VersionController.I.ignore_filename()
-        assert result == ".gitignore"
 
     def test_group(self) -> None:
         """Test method."""
@@ -214,11 +207,6 @@ class TestVersionController:
         """Test method."""
         result = VersionController.I.config_global_user_name_args(name="Test User")
         assert result == ("git", "config", "--global", "user.name", "Test User")
-
-    def test_ignore_path(self) -> None:
-        """Test method."""
-        result = VersionController.I.ignore_path()
-        assert result == Path(".gitignore")
 
     def test_repo_owner_and_name(self) -> None:
         """Test method."""

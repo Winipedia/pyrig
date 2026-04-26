@@ -1,12 +1,7 @@
-"""Prek hook manager wrapper.
+"""Pre-commit hook manager wrapper.
 
-Provides type-safe wrapper for prek commands (install, run).
-Enforces code quality standards via linters, formatters, and checks.
-
-Example:
-    >>> from pyrig.rig.tools.pre_committer import PreCommitter
-    >>> PreCommitter.I.install_args().run()
-    >>> PreCommitter.I.run_all_files_args().run()
+Wraps the prek tool to provide type-safe argument construction for
+installing and running pre-commit hooks.
 """
 
 from pyrig.core.subprocesses import Args
@@ -14,72 +9,90 @@ from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
 class PreCommitter(Tool):
-    """Prek hook manager wrapper.
+    """Wrapper for the prek pre-commit hook manager.
 
-    Constructs prek command arguments for installing hooks and running checks.
+    Builds Args objects for the two primary prek operations: installing
+    hooks into the local git repository and running hooks against files.
 
-    Operations:
-        - Installation: Install hooks into git
-        - Execution: Run hooks on staged/all files
-        - Verbosity: Control output detail
+    Pre-commit hooks enforce code quality by running configured linters,
+    formatters, and static checks before each commit is accepted.
 
     Example:
+        Install hooks once during project setup:
+
         >>> PreCommitter.I.install_args().run()
+
+        Run all hooks against the full project (e.g., in CI):
+
         >>> PreCommitter.I.run_all_files_args().run()
     """
 
     def name(self) -> str:
-        """Get tool name.
+        """Return the prek command name.
 
         Returns:
-            'prek'
+            The string 'prek'.
         """
         return "prek"
 
     def group(self) -> str:
-        """Returns the group the tool belongs to.
+        """Return the tool group used for badge grouping.
 
         Returns:
-            'code-quality'
+            ToolGroup.CODE_QUALITY.
         """
         return ToolGroup.CODE_QUALITY
 
     def badge_urls(self) -> tuple[str, str]:
-        """Get prek badge image URL and project page URL."""
+        """Return the prek badge image URL and project page URL.
+
+        Returns:
+            A tuple of (badge_image_url, project_page_url).
+        """
         return (
             "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json",
             "https://github.com/j178/prek",
         )
 
     def install_args(self, *args: str) -> Args:
-        """Construct prek install arguments.
+        """Construct arguments to install prek hooks into the local git repository.
+
+        Runs ``prek install``, which writes hook scripts into ``.git/hooks/`` so
+        that configured checks run automatically on each commit attempt.
 
         Args:
-            *args: Install command arguments.
+            *args: Additional arguments forwarded to ``prek install``.
 
         Returns:
-            Args for 'prek install'.
+            Args for 'prek install [args]'.
         """
         return self.args("install", *args)
 
-    def run_args(self, *args: str) -> Args:
-        """Construct prek run arguments.
-
-        Args:
-            *args: Run command arguments.
-
-        Returns:
-            Args for 'prek run'.
-        """
-        return self.args("run", *args)
-
     def run_all_files_args(self, *args: str) -> Args:
-        """Construct prek run arguments for all files.
+        """Construct arguments to run all prek hooks against every file in the project.
+
+        Passes ``--all-files`` to ``prek run`` so hooks apply to the entire
+        project rather than only staged files. Typically used in CI to
+        validate all files regardless of staging state.
 
         Args:
-            *args: Run command arguments.
+            *args: Additional arguments forwarded to ``prek run``.
 
         Returns:
-            Args for 'prek run --all-files'.
+            Args for 'prek run --all-files [args]'.
         """
         return self.run_args("--all-files", *args)
+
+    def run_args(self, *args: str) -> Args:
+        """Construct base arguments to run prek hooks.
+
+        By default, prek checks only staged files. Use ``run_all_files_args``
+        to run hooks against the full project instead.
+
+        Args:
+            *args: Additional arguments forwarded to ``prek run``.
+
+        Returns:
+            Args for 'prek run [args]'.
+        """
+        return self.args("run", *args)

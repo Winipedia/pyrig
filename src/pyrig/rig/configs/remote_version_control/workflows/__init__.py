@@ -1,13 +1,5 @@
-"""GitHub Actions workflow configuration management.
+"""GitHub Actions workflow configuration generators for the CI/CD pipeline.
 
-Manages GitHub Actions workflows for CI/CD:
-    HealthCheckWorkflowConfigFile (quality checks),
-    BuildWorkflowConfigFile (artifacts/images),
-    ReleaseWorkflowConfigFile (GitHub releases),
-    DeployWorkflowConfigFile (PyPI/docs).
-    Pipeline: Health Check → Build → Release → Deploy.
-
-See Also:
-    GitHub Actions: https://docs.github.com/en/actions
-    pyrig.rig.configs.pyproject.PyprojectConfigFile
+Each module in this package defines a workflow configuration file generator for one
+stage of the automated pipeline: Health Check, Build, Release, and Deploy.
 """

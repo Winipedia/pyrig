@@ -1,11 +1,8 @@
-"""Configuration for pytest conftest.py.
+"""Configuration for the generated ``tests/conftest.py`` file.
 
-Generates tests/conftest.py that imports pyrig's conftest module as pytest plugin,
-providing access to pyrig's test fixtures and hooks.
-
-See Also:
-    pyrig.rig.tests.conftest
-    pytest conftest: https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py
+Manages a conftest file that registers pyrig's test infrastructure as a
+pytest plugin, giving the target project access to pyrig's fixtures and
+hooks without explicit imports in each test file.
 """
 
 from pathlib import Path
@@ -17,57 +14,75 @@ from pyrig.rig.tools.project_tester import ProjectTester
 
 
 class ProjectTesterConfigFile(CopyModuleOnlyDocstringConfigFile):
-    '''Manages tests/conftest.py.
+    r"""Generates ``tests/conftest.py`` for the target project.
 
-    Generates conftest.py that imports pyrig's test infrastructure as pytest plugin,
-    providing access to pyrig's fixtures, hooks, and test utilities.
+    The generated file has two parts: the module-level docstring of
+    ``pyrig.rig.tests.conftest`` as its own module docstring, followed by a
+    ``pytest_plugins`` assignment that registers that module as a pytest plugin.
+    This gives the target project automatic access to all of pyrig\'s test
+    fixtures and hooks without needing explicit imports in each test file.
 
-    Examples:
-        Generate tests/conftest.py::
+    Example:
+        Generate or update ``tests/conftest.py``::
 
             ProjectTesterConfigFile.I.validate()
-
-        Generated file::
-
-            """Pytest configuration for tests.
-
-            This module configures pytest plugins for the test suite...
-            """
-
-            pytest_plugins = ["pyrig.rig.tests.conftest"]
-    '''
+    """
 
     def parent_path(self) -> Path:
-        """Override to set parent path to the tests package root."""
+        """Return the root directory of the tests package.
+
+        Returns:
+            Path to the tests package root, e.g. ``Path("tests")``.
+        """
         return ProjectTester.I.tests_package_root()
 
     def stem(self) -> str:
-        """Return the filename stem."""
+        """Return the filename stem for the generated file.
+
+        Returns:
+            ``'conftest'``
+        """
         return "conftest"
 
     def copy_module(self) -> ModuleType:
-        """Return the module to copy docstring from."""
+        """Return the source module whose docstring is written to the generated file.
+
+        Returns:
+            ``pyrig.rig.tests.conftest``
+        """
         return conftest
 
     def lines(self) -> list[str]:
-        """Get the conftest.py file content.
+        """Return the content of the generated conftest.py as a list of lines.
+
+        Extends the parent output (the conftest module's docstring) with the
+        ``pytest_plugins`` assignment and a trailing blank line.
 
         Returns:
-            List of lines with docstring and pytest_plugins list.
+            Lines comprising the module docstring followed by the
+            ``pytest_plugins`` assignment.
         """
         return [*super().lines(), self.plugin_definition(), ""]
 
     def is_correct(self) -> bool:
-        """Check if the conftest.py file is valid.
+        """Return whether the generated conftest.py is considered valid.
+
+        Extends the parent check with a fallback: the file is valid if the
+        source module (``pyrig.rig.tests.conftest``) has a docstring, or if
+        the ``pytest_plugins`` assignment is already present in the file on
+        disk. Since the conftest module always has a docstring, the parent
+        check short-circuits and the file content check is never evaluated.
 
         Returns:
-            bool: True if file contains required pytest_plugins import.
-
-        Note:
-            Reads file from disk to check content.
+            ``True`` if the source module has a docstring, or if the
+            ``pytest_plugins`` assignment is present in the file on disk.
         """
         return super().is_correct() or (self.plugin_definition() in self.file_content())
 
     def plugin_definition(self) -> str:
-        """Return the pytest_plugins definition line."""
+        """Return the ``pytest_plugins`` assignment line for the generated file.
+
+        Returns:
+            String of the form ``'pytest_plugins = ["<conftest_module_name>"]'``.
+        """
         return f'pytest_plugins = ["{conftest.__name__}"]'

@@ -1,49 +1,21 @@
 """Mirror test configuration management for automatic test skeleton generation.
 
-Provides MirrorTestConfigFile for creating and maintaining test files that mirror
-source module structure. This is a core component of pyrig's testing infrastructure,
-enabling automatic discovery of untested code and generation of test skeletons.
-
-The mirror testing pattern ensures every source module has a corresponding test module,
-every function has a test function, and every class/method has test counterparts.
-Test skeletons are generated with NotImplementedError to mark them as pending
-implementation.
-
-Key Features:
-    - Automatic test file path derivation from source module paths
-    - Detection of untested functions, classes, and methods
-    - Non-destructive skeleton generation (preserves existing tests)
-    - Dynamic subclass creation for batch processing of modules
-    - Idempotent operation (safe to run multiple times)
-
-Naming Conventions:
-    - Source module `foo.py` → Test module `test_foo.py`
-    - Source function `bar()` → Test function `test_bar()`
-    - Source class `Baz` → Test class `TestBaz`
-    - Source method `qux()` → Test method `test_qux()`
+Ensures every source module has a corresponding test module, every function has a
+test function, and every class and method has a test counterpart. Test skeletons
+raise ``NotImplementedError`` to mark them as pending implementation.
 
 Example:
-    Create a mirror test config for a specific module::
+    Subclass ``MirrorTestConfigFile`` to mirror a specific module::
 
         from types import ModuleType
         from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-        import myproject.core
 
         class CoreMirrorTest(MirrorTestConfigFile):
 
             def mirror_module(self) -> ModuleType:
                 return myproject.core
 
-        CoreMirrorTest()  # Creates tests/test_myproject/test_core.py
-
-    Batch process multiple modules::
-
-        modules = [myproject.core, myproject.utils, myproject.api]
-        MirrorTestConfigFile.L.create_test_modules(modules)
-
-See Also:
-    pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
-    pyrig.rig.cli.commands.make_tests: CLI command using this class
+        CoreMirrorTest()
 """
 
 import logging
@@ -86,25 +58,21 @@ logger = logging.getLogger(__name__)
 class MirrorTestConfigFile(PythonPackageConfigFile):
     """Base class for creating test files that mirror source module structure.
 
-    MirrorTestConfigFile analyzes a source module, identifies all functions, classes,
-    and methods, then generates corresponding test skeletons in the appropriate test
-    module. It detects which source elements lack tests and appends skeleton
-    implementations without disturbing existing test code.
+    Analyzes a source module, identifies all functions, classes, and methods, then
+    generates corresponding test skeletons in the appropriate test module. Detects
+    which source elements lack tests and appends skeleton code without modifying
+    existing test code.
 
-    The class handles the complete workflow:
-    1. Derive test file path from source module path
-    2. Analyze source module for functions, classes, and methods
-    3. Compare against existing tests to find untested elements
-    4. Generate skeleton code for missing tests
-    5. Merge new skeletons with existing test file content
+    The complete workflow on instantiation:
+
+    1. Derive the test file path from the source module's import path.
+    2. Analyze the source module for all functions, classes, and methods.
+    3. Compare against existing tests to find untested elements.
+    4. Generate skeleton code for each missing test.
+    5. Write the merged content (existing tests + new skeletons) to the test file.
 
     Subclasses must implement:
-        - `mirror_module`: Return the source module to mirror
-
-    Methods for Batch Processing:
-        - `generate_subclasses`: Create config subclasses for multiple modules
-        - `generate_subclass`: Create a config subclass for a single module
-        - `create_test_modules`: Generate test files for multiple modules at once
+        mirror_module: Return the source module whose structure should be mirrored.
 
     Examples:
         Subclass for a specific module::
@@ -117,87 +85,113 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Dynamic subclass creation::
 
             subclass = MirrorTestConfigFile.L.generate_subclass(my_module)
-            subclass()  # Triggers test file creation
-
-    See Also:
-        pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
-        pyrig.rig.cli.commands.make_tests.make_test_skeletons: CLI integration
+            subclass()  # Creates the test file
     """
 
     @abstractmethod
     def mirror_module(self) -> ModuleType:
-        """Return the source module to mirror with tests.
+        """Return the source module whose structure will be mirrored in the test file.
 
-        This abstract method must be implemented by subclasses to specify which
-        module's structure should be analyzed and mirrored in the test file.
+        Must be implemented by every subclass. The returned module's functions,
+        classes, and methods are inspected to determine which test skeletons to
+        generate.
 
         Returns:
-            The source module whose functions, classes, and methods will have
-            corresponding test skeletons generated.
+            The source module to mirror.
         """
 
-    def _dump(self, config: ConfigList) -> None:
-        """Forcing reload after dump.
+    @classmethod
+    def definition_package(cls) -> ModuleType:
+        """Return the package where this ConfigFile subclass hierarchy is defined.
 
-        This is needed because modules are cached and after adding new test skeletons,
-        we want to ensure that the next time we access the test module,
-        we get the updated version with the new skeletons included.
-        By reloading the module after dumping the new content,
-        we ensure that any subsequent introspection of the test module
-        reflects the latest changes. Needed by is_correct() to work properly
-        after skeleton generation.
+        Overrides the default (``pyrig.rig.configs``) to ``pyrig.rig.tests``,
+        placing mirror-test subclasses in the testing infrastructure rather than in
+        the configuration infrastructure.
+
+        Returns:
+            The ``pyrig.rig.tests`` package.
+        """
+        return tests
+
+    @classmethod
+    def concrete_subclasses(cls) -> Generator[type[Self], None, None]:
+        """Yield dynamically generated subclasses for all source modules.
+
+        Overrides the default discovery mechanism: instead of scanning for manually
+        defined subclasses, creates one subclass per module returned by
+        ``all_mirror_modules()``.
+
+        Returns:
+            Generator of dynamically created subclasses, one per source module.
+        """
+        return cls.generate_subclasses(cls.all_mirror_modules())
+
+    def _dump(self, config: ConfigList) -> None:
+        """Write the test file and reimport the test module to pick up the new content.
+
+        Extends the parent dump by reimporting the test module after writing. This
+        clears the module cache so that subsequent introspection (e.g., by
+        ``is_correct()``) reflects the newly written skeletons rather than the stale
+        cached version.
+
+        Args:
+            config: Lines of content to write to the test file.
         """
         super()._dump(config)
         reimport_module(self.test_module())
 
     def stem(self) -> str:
-        """Extract test filename from the derived test path.
+        """Return the test file's base name without its extension.
 
         Returns:
-            Test module filename without extension (e.g., "test_utils").
+            Filename stem (e.g., ``"test_utils"``).
         """
         return self.test_path().stem  # filename without extension
 
     def parent_path(self) -> Path:
-        """Get parent directory for the test file.
+        """Return the directory where the test file lives.
 
         Returns:
-            Directory path where the test file will be created.
+            Parent directory of the test file path.
         """
         return self.test_path().parent
 
     def lines(self) -> ConfigList:
-        """Generate complete test module content with skeletons for untested code.
+        """Return the complete test module content as a list of lines.
+
+        Delegates to ``test_module_content_with_skeletons()`` to produce the full
+        content, which includes both existing tests and newly generated skeletons.
 
         Returns:
-            Full test module source code including existing tests and new skeletons.
+            All lines of the test module source, ready to be written to disk.
         """
         return self.split_lines(self.test_module_content_with_skeletons())
 
     def should_override_content(self) -> bool:
-        """Enable content override mode for skeleton insertion.
+        """Instruct the parent class to replace file content entirely on each write.
+
+        Returns ``True`` so that the parent's ``merge_configs()`` discards the raw
+        file content and instead uses the output of ``lines()``, which already
+        incorporates the existing tests plus new skeletons.
 
         Returns:
-            True to enable override mode, allowing lines() to provide
-            the complete merged content (existing tests plus new skeletons).
-
+            Always ``True``.
         """
         return True
 
     def create_file(self) -> None:
-        """Create the test file and also import it from the file system."""
+        """Create the test file on disk and register it in ``sys.modules``."""
         super().create_file()
         import_module_with_file_fallback(self.path(), name=self.test_module_name())
 
     def is_correct(self) -> bool:
-        """Check if all source elements have corresponding tests.
+        """Return whether every source function and method has a corresponding test.
 
-        Validates that every function and method in the source module has a
-        corresponding test skeleton or implementation in the test module.
+        Checks the source module for untested functions and classes with untested
+        methods. Returns ``True`` only when both generators are empty.
 
         Returns:
-            True if all functions and methods are covered by tests, or if the
-            parent class validation passes.
+            ``True`` if all functions and methods are covered; ``False`` otherwise.
         """
         return not (
             any(self.untested_func_names())
@@ -205,54 +199,24 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         )
 
     def merge_configs(self) -> ConfigList:
-        """Return test configurations without merging.
+        """Return the full test module content without additional merging.
 
-        For mirror tests, configs() already includes existing tests,
-        so no additional merging is needed.
+        The content returned by ``configs()`` (via ``lines()``) already integrates
+        the existing file content with new skeletons, so no further merging is needed.
 
         Returns:
-            List of test configurations from configs().
+            The test module lines as produced by ``lines()``.
         """
         return self.configs()
 
-    @classmethod
-    def definition_package(cls) -> ModuleType:
-        """Get the package where ConfigFile subclasses are defined.
-
-        Defaults to ``pyrig.rig.tests``, which overrides the default of
-        ``pyrig.rig.configs``. Can be overridden by subclasses to define
-        their own package.
-        MirrorTestConfigFile and its subclasses are defined in the tests package because
-        they are conceptually part of the testing infrastructure rather than the
-        configuration management infrastructure, but also because the dynamic subclass
-        creation is unique compared to regular config files and how they are handled
-
-        Returns:
-            Package module where the ConfigFile subclass is defined.
-        """
-        return tests
-
-    @classmethod
-    def concrete_subclasses(cls) -> Generator[type[Self], None, None]:
-        """Override to return all dynamically generated subclasses."""
-        return cls.generate_subclasses(cls.all_mirror_modules())
-
-    def test_path(self) -> Path:
-        """Compute the file path for the test module.
-
-        Converts the test module's import name to a filesystem path.
-
-        Returns:
-            Relative path to the test file
-            (e.g., Path("tests/test_package/test_mod.py")).
-        """
-        return module_name_as_root_path(self.test_module_name())
-
     def test_module_name(self) -> str:
-        """Get the fully qualified import name for the test module.
+        """Return the fully qualified import name of the test module.
+
+        Constructs the name by prepending the tests package name and prefixing each
+        component of the source module's dotted name with the test module prefix.
 
         Returns:
-            Dotted import path (e.g., "tests.test_mypackage.test_mymodule").
+            Dotted import path (e.g., ``"tests.test_mypackage.test_mymodule"``).
         """
         return ".".join(
             [ProjectTester.I.tests_package_name()]
@@ -262,38 +226,52 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             ]
         )
 
-    def test_module_content(self) -> str:
-        """Get the current content of the test module as a string.
+    def test_path(self) -> Path:
+        """Return the filesystem path of the test module file.
+
+        Converts the test module's import name to a relative filesystem path.
 
         Returns:
-            The source code of the test module as a single string.
+            Relative path to the test file
+            (e.g., ``Path("tests/test_package/test_mod.py")``).
         """
-        return self.file_content()
+        return module_name_as_root_path(self.test_module_name())
 
     def test_module(self) -> ModuleType:
-        """Import and return the test module.
+        """Import and return the test module object.
+
+        Uses a file-path fallback for modules that have not yet been added to
+        ``sys.modules`` (e.g., immediately after the file is created).
 
         Returns:
-            The test module object, either imported or newly created.
+            The imported test module.
         """
         return import_module_with_file_fallback(
             self.test_path(), name=self.test_module_name()
         )
 
-    def test_module_content_with_skeletons(self) -> str:
-        """Build complete test module content by adding skeletons for untested code.
-
-        Orchestrates the full skeleton generation process:
-        1. Retrieves existing test module content
-        2. Ensures module has a docstring (adds default if missing)
-        3. Appends function skeletons for untested functions
-        4. Inserts class and method skeletons for untested classes/methods
+    def test_module_content(self) -> str:
+        """Return the current on-disk content of the test file as a string.
 
         Returns:
-            Complete test module source code ready to be written to file.
+            Source code of the test file, or an empty string if the file does not
+            exist yet.
+        """
+        return self.file_content()
 
-        Note:
-            Preserves all existing test implementations while adding new skeletons.
+    def test_module_content_with_skeletons(self) -> str:
+        """Build the complete test module content with skeletons for untested code.
+
+        Combines the existing file content with newly generated skeletons in four steps:
+
+        1. Read the existing test module content from disk.
+        2. Prepend a default module docstring if the module has none.
+        3. Append function skeletons for every untested source function.
+        4. Insert class and method skeletons for every untested source class.
+
+        Returns:
+            Full test module source ready to write to disk, preserving all existing
+            test implementations.
         """
         test_module_content = self.test_module_content()
         # if module content has no docstring, add the default one
@@ -305,7 +283,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return self.test_module_content_with_class_skeletons(test_module_content)
 
     def test_module_content_with_func_skeletons(self, test_module_content: str) -> str:
-        """Append test function skeletons for all untested source functions.
+        """Append function skeletons for all untested source functions.
 
         Args:
             test_module_content: Existing test module content to extend.
@@ -318,18 +296,15 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         )
 
     def untested_func_names(self) -> Generator[str, None, None]:
-        """Identify source functions that lack corresponding test functions.
+        """Yield test function names for functions that have no corresponding test.
 
-        Compares functions in the source module against functions in the test
-        module. For each source function, checks if a test function with the
-        expected name (test_<function_name>) exists.
+        Compares the source module's functions against the test module's functions.
+        Functions are sorted by their definition line so skeletons are appended in
+        source order.
 
         Returns:
-            Generator of test function names that need to be created, using the
-            test naming convention (e.g., ("test_foo", "test_bar")).
-
-        Note:
-            Logs debug information about the number and names of untested functions.
+            Generator of expected test function names (e.g., ``"test_foo"``) for each
+            source function that does not have a matching test function.
         """
         funcs = sorted_by_def_line(all_functions_from_module(self.mirror_module()))
         test_funcs = all_functions_from_module(self.test_module())
@@ -342,11 +317,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
     def test_func_skeleton(self, test_func_name: str) -> str:
         '''Generate skeleton code for a test function.
 
-        Creates a minimal test function that raises NotImplementedError,
+        Creates a minimal test function that raises ``NotImplementedError``,
         marking it as pending implementation.
 
         Args:
-            test_func_name: Name for the test function (e.g., "test_my_func").
+            test_func_name: Name for the test function (e.g., ``"test_my_func"``).
 
         Returns:
             Python source code for the skeleton test function.
@@ -366,26 +341,22 @@ def {test_func_name}() -> None:
 '''
 
     def test_module_content_with_class_skeletons(self, test_module_content: str) -> str:
-        """Insert test class and method skeletons for untested source classes.
+        """Insert class and method skeletons for untested source classes.
 
-        For each untested class, either creates a new test class with method
-        skeletons, or adds missing method skeletons to an existing test class.
-        Handles both cases where the test class doesn't exist and where it exists
-        but is missing some test methods.
+        For each untested source class, either appends a full new test class with
+        method skeletons, or inserts missing method skeletons into an existing test
+        class body.
+
+        The insertion uses string splitting on the class definition line. When the
+        test class already exists in the content, new method skeletons are placed
+        immediately after the class header. When the class does not exist yet, the
+        full skeleton (header and methods) is appended to the content.
 
         Args:
             test_module_content: Existing test module content to extend.
 
         Returns:
-            Test module content with class and method skeletons inserted.
-
-        Raises:
-            ValueError: If a test class definition appears multiple times in the
-                test module, indicating a structural problem.
-
-        Note:
-            Uses string splitting to locate where to insert new methods, ensuring
-            existing class content is preserved.
+            Test module content with all missing class and method skeletons inserted.
         """
         test_class_to_method_names = self.untested_class_and_method_names()
         for (
@@ -408,33 +379,21 @@ def {test_func_name}() -> None:
     def untested_class_and_method_names(
         self,
     ) -> Generator[tuple[str, Generator[str, None, None]], None, None]:
-        """Identify source classes and methods lacking corresponding tests.
+        """Yield test class/method pairs for source classes that have untested elements.
 
-        Performs a comprehensive comparison between source and test modules:
-        1. Extracts all classes and their methods from the source module
-        2. Extracts all test classes and their methods from the test module
-        3. Maps source class/method names to expected test names
-        4. Identifies missing test classes and missing test methods within
-           existing test classes
+        Compares source classes and their methods against the test module. For each
+        source class, computes the expected test class name and the expected test
+        method names. A tuple is yielded when the test class is entirely absent or
+        when at least one method is missing from an existing test class.
+
+        Classes and their methods are processed in source definition order. Only
+        methods defined directly on the class are considered; inherited methods are
+        excluded.
 
         Returns:
-            Generator of tuples of (test_class_name, missing_test_methods_generator).
-            The generator yields each test class name and a generator of its
-            missing test method names. If a test class is entirely missing,
-            it yields a tuple with the class name and a generator
-            of all its expected test method names. Returns an empty generator if
-            all classes and methods have tests.
-
-        Example:
-            Return value structure::
-
-                {
-                    "TestMyClass": ("test_method_one", "test_method_two"),
-                }
-
-        Note:
-            Only considers methods defined directly on the class, excluding
-            inherited methods from parent classes.
+            Generator of ``(test_class_name, missing_test_methods)`` tuples, where
+            ``missing_test_methods`` is itself a generator of method name strings.
+            Only classes with at least one untested element are included.
         """
         classes = sorted_by_def_line(module_classes(self.mirror_module()))
         test_classes = module_classes(self.test_module())
@@ -490,7 +449,7 @@ def {test_func_name}() -> None:
         Creates a minimal test class definition with a docstring.
 
         Args:
-            test_class_name: Name for the test class (e.g., "TestMyClass").
+            test_class_name: Name for the test class (e.g., ``"TestMyClass"``).
 
         Returns:
             Python source code for the skeleton test class definition.
@@ -510,11 +469,11 @@ class {test_class_name}:
     def test_method_skeleton(self, test_method_name: str) -> str:
         '''Generate skeleton code for a test method.
 
-        Creates a minimal test method that raises NotImplementedError,
+        Creates a minimal test method that raises ``NotImplementedError``,
         marking it as pending implementation.
 
         Args:
-            test_method_name: Name for the test method (e.g., "test_my_method").
+            test_method_name: Name for the test method (e.g., ``"test_my_method"``).
 
         Returns:
             Python source code for the skeleton test method with proper indentation.
@@ -536,21 +495,15 @@ class {test_class_name}:
     def generate_subclasses(
         cls, modules: Iterable[ModuleType]
     ) -> Generator[type[Self], None, None]:
-        """Create config subclasses for multiple modules.
+        """Yield a dynamically created config subclass for each module.
 
-        Convenience method for batch processing: creates a subclass for each
-        module in input order. Priority-based ordering is handled later by
-        ``validate_subclasses``.
+        Convenience wrapper around ``generate_subclass()`` for batch processing.
 
         Args:
-            modules: Sequence of source modules to create test configs for.
+            modules: Source modules to create test config subclasses for.
 
         Returns:
-            Generator yielding dynamically created subclasses, in input order.
-
-        See Also:
-            generate_subclass: Creates individual subclasses
-            validate_subclasses: Orders by priority and validates
+            Generator yielding one subclass per module, in input order.
         """
         return (cls.generate_subclass(m) for m in modules)
 
@@ -559,11 +512,12 @@ class {test_class_name}:
         """Dynamically create a config subclass for a specific source module.
 
         Creates a new class at runtime that:
-        1. Inherits from the current class (MirrorTestConfigFile or subclass)
-        2. Implements mirror_module() to return the specified module
-        3. Has a descriptive class name based on the test module name
 
-        This enables using the config file machinery without manually defining
+        1. Inherits from the current class (``MirrorTestConfigFile`` or a subclass).
+        2. Implements ``mirror_module()`` to return the given module.
+        3. Has a descriptive class name derived from the module name.
+
+        This enables the config file machinery to be used without manually defining
         a subclass for each source module.
 
         Args:
@@ -573,12 +527,10 @@ class {test_class_name}:
             Dynamically created subclass configured for the given module.
 
         Example:
-            Dynamic subclass creation::
+            ::
 
                 import myproject.utils
-                subclass = MirrorTestConfigFile.L.generate_subclass(
-                    myproject.utils
-                )
+                subclass = MirrorTestConfigFile.L.generate_subclass(myproject.utils)
                 # subclass.__name__ == "TestUtilsMirrorTestConfigFile"
                 subclass()  # Creates tests/test_myproject/test_utils.py
         """
@@ -599,68 +551,60 @@ class {test_class_name}:
 
     @classmethod
     def all_mirror_modules(cls) -> Generator[ModuleType, None, None]:
-        """Get all modules from the project's source package.
-
-        Retrieves all modules from the source package defined in the project tester.
+        """Yield all modules from the project's source package.
 
         Returns:
-            Generator of all modules in the source package.
+            Generator of every module in the package declared by the active
+            ``PackageManager``.
         """
         package = import_module(PackageManager.I.package_name())
         return all_modules_from_package(package)
 
     def test_func_name(self, func: Callable[..., Any]) -> str:
-        """Get test function name for a source function.
+        """Return the expected test function name for a given source function.
 
         Args:
-            func: Source function to get test function name for.
+            func: Source function whose test name to derive.
 
         Returns:
-            Test function name with appropriate prefix.
-
-        Example:
-            >>> def my_function(): pass
-            >>> test_func_name(my_function)
-            'test_my_function'
+            Test function name with the ``"test_"`` prefix applied to the
+            unwrapped function's ``__name__``
+            (e.g., ``"test_my_function"`` for ``my_function``).
         """
         return self.test_func_prefix() + unwrapped_obj(func).__name__
 
     def test_cls_name(self, cls: type) -> str:
-        """Get test class name for a source class.
+        """Return the expected test class name for a given source class.
 
         Args:
-            cls: Source class to get test class name for.
+            cls: Source class whose test name to derive.
 
         Returns:
-            Test class name with appropriate prefix.
-
-        Example:
-            >>> class MyClass: pass
-            >>> test_cls_name(MyClass)
-            'TestClass'
+            Test class name with the ``"Test"`` prefix applied to the class's
+            ``__name__`` (e.g., ``"TestMyClass"`` for ``MyClass``).
         """
         return self.test_cls_prefix() + cls.__name__
 
     def test_func_prefix(self) -> str:
-        """Get test function prefix.
+        """Return the prefix used for test function names.
 
         Returns:
-            The ``"test_"`` prefix string.
+            ``"test_"``
         """
         return "test_"
 
     def test_cls_prefix(self) -> str:
-        """Get test class prefix.
+        """Return the prefix used for test class names.
 
         Returns:
-            The ``"Test"`` prefix string.
+            ``"Test"``
         """
         return "Test"
 
     def test_module_docstring(self) -> str:
-        """Get default docstring for test modules.
+        """Return the default docstring used for newly created test modules.
 
         Returns:
-            Default docstring to use for test modules that lack one.
+            A minimal module docstring string, ready to prepend to an empty file.
         """
         return '"""Test module."""\n'

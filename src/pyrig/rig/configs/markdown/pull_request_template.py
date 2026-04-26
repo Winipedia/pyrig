@@ -1,11 +1,8 @@
-"""Configuration management for pull request template.
+"""Configuration for the GitHub pull request template.
 
-Manages .github/pull_request_template.md using a minimal template inspired by
-React's PR template. Contains Summary and Testing sections only.
-
-See Also:
-    pyrig.rig.configs.base.markdown.MarkdownConfigFile
-    https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository
+Manages ``.github/pull_request_template.md``, providing a minimal starter
+template that prompts contributors to summarize their change and describe
+how it was tested.
 """
 
 from pathlib import Path
@@ -33,40 +30,43 @@ Please consider the following:
 
 
 class PullRequestTemplateConfigFile(MarkdownConfigFile):
-    """Pull request template configuration manager.
+    """Configuration manager for the GitHub pull request template.
 
-    Generates .github/pull_request_template.md using a minimal template
-    inspired by React's PR template. Contains only two sections:
+    Generates ``.github/pull_request_template.md`` with a concise starter
+    template containing a Change Overview section with Summary and Testing
+    subsections.
 
-    - Summary: What changed and why
-    - Testing: How the change was verified
+    The ``is_correct`` validation is intentionally permissive: it only checks
+    that the file exists and contains non-whitespace content. This lets
+    contributors freely customize the template after initial generation
+    without triggering unwanted regeneration on subsequent ``validate`` calls.
 
-    Examples:
-        Generate pull_request_template.md::
-
-            PullRequestTemplateConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.base.markdown.MarkdownConfigFile
-        https://github.com/facebook/react/blob/main/.github/PULL_REQUEST_TEMPLATE.md
+    Example:
+        >>> PullRequestTemplateConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:
-        """Return `.github` as parent directory."""
+        """Return the ``.github`` directory as the file's parent path."""
         return Path(".github")
 
     def stem(self) -> str:
-        """Return the filename stem."""
+        """Return ``"pull_request_template"`` as the filename stem."""
         return "pull_request_template"
 
     def lines(self) -> list[str]:
-        """Return the pull request template content as lines."""
+        """Return the pull request template as a list of lines."""
         return self.split_lines(PULL_REQUEST_TEMPLATE)
 
     def is_correct(self) -> bool:
-        """Check if pull_request_template.md exists and is non-empty.
+        """Return whether the pull request template file exists and has content.
+
+        Overrides the parent's content-matching validation with a permissive
+        check: the file is considered correct as long as it exists and contains
+        at least one non-whitespace character. This avoids overwriting
+        user-customized templates on subsequent ``validate`` calls.
 
         Returns:
-            True if file exists with content, False otherwise.
+            ``True`` if the file exists and contains non-whitespace text;
+            ``False`` otherwise.
         """
         return self.path().exists() and bool(read_text_utf8(self.path()).strip())

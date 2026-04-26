@@ -1,13 +1,8 @@
-"""Manage pyproject.toml (PEP 518, 621, 660).
+"""Configuration management for pyproject.toml.
 
-Handles metadata, dependencies, build config (uv), tool configs (ruff, ty, pytest,
-bandit, rumdl). Enforces opinionated defaults: all ruff rules (except D203, D213,
-COM812, ANN401), Google docstrings, strict ty, bandit security, coverage threshold.
-Validation uses subset checking (users can add extra configs). Priority 20 (created
-early for other configs to read).
-
-Utility methods: project info, dependencies, Python versions, license detection,
-classifiers.
+Provides the PyprojectConfigFile class, which generates and validates the project's
+pyproject.toml according to PEP 518, 621, and 660. Covers project metadata,
+runtime and development dependencies, build system configuration, and tool settings.
 """
 
 import platform
@@ -44,32 +39,59 @@ from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 
 
 class PyprojectConfigFile(TomlConfigFile):
-    """Manage pyproject.toml with metadata, dependencies, configs, and tool settings.
+    """Generates and validates the project's pyproject.toml file.
 
-    Generates structure with metadata from git/filesystem, dependency normalization,
-    uv build config, tool configs, CLI entry points. Priority 20 (created early).
+    Builds the complete configuration structure from live project data: project
+    metadata sourced from git and the filesystem, runtime and development
+    dependencies, build system configuration for uv, and opinionated tool settings
+    for ruff, ty, pytest, and bandit.
 
-    Features: auto metadata, license detection, Python version management, dependency
-    normalization, opinionated defaults.
+    Created at priority 20 so that other configuration files can read its values
+    during their own generation.
 
-    See Also:
-        pyrig.rig.configs.base.toml.TomlConfigFile
+    Subclasses can override accessor methods such as ``dependencies``,
+    ``dev_dependencies``, or ``requires_python`` to customise the generated file.
     """
 
     def priority(self) -> float:
-        """Return priority 20 (created early for other configs to read)."""
+        """Return the creation priority (20), ensuring pyproject.toml is written early.
+
+        A higher priority means earlier execution. Priority 20 causes this file to
+        be created before most other config files, which may need to read project
+        metadata from it.
+        """
         return Priority.MEDIUM
 
     def parent_path(self) -> Path:
-        """Return project root."""
+        """Return the project root directory."""
         return Path()
 
     def stem(self) -> str:
-        """Return the filename stem 'pyproject' for 'pyproject.toml'."""
+        """Return ``"pyproject"``, the filename stem."""
         return "pyproject"
 
     def _configs(self) -> ConfigDict:
-        """Generate complete pyproject.toml config (metadata, deps, build, tools)."""
+        """Build the complete pyproject.toml configuration structure.
+
+        Reads live project state to assemble the full configuration dict that will be
+        written to pyproject.toml. The returned structure covers:
+
+        - ``project``: PEP 621 metadata (name, version, description, authors,
+          license, classifiers, scripts, URLs).
+        - ``dependency-groups``: Development dependencies merged from all registered
+          tools via ``Tool.subclasses_dev_dependencies``.
+        - ``build-system``: uv build backend configuration.
+        - ``tool``: Opinionated settings for ruff (all rules, Google docstrings),
+          ty (strict), pytest (with coverage), and bandit (security checks).
+
+        Note:
+            ``ReadmeConfigFile`` is imported locally to break a circular dependency:
+            the readme config needs pyproject data for badge generation, while
+            pyproject needs the readme path for project metadata.
+
+        Returns:
+            Nested dict matching the expected pyproject.toml structure.
+        """
         repo_owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
         tests_package_root = ProjectTester.I.tests_package_root().as_posix()
 
@@ -158,36 +180,36 @@ class PyprojectConfigFile(TomlConfigFile):
         }
 
     def detect_project_license(self) -> str:
-        """Detect the project's license from the LICENSE file.
+        """Detect the SPDX license identifier from the project LICENSE file.
 
-        Reads the LICENSE file and uses spdx_matcher to identify the license
-        type and return its SPDX identifier.
+        Reads the LICENSE file via ``LicenseConfigFile`` and delegates detection to
+        ``detect_project_licence_from_content``.
 
         Returns:
-            SPDX license identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
+            SPDX license identifier (e.g., ``"MIT"``, ``"Apache-2.0"``).
 
         Raises:
-            FileNotFoundError: If LICENSE file doesn't exist.
-            ValueError: If no license is detected in the LICENSE file.
-
-        Note:
-            This method reads from the LICENSE file in the project root.
-            May raise additional exceptions from spdx_matcher if license
-            analysis fails.
+            FileNotFoundError: If the LICENSE file does not exist.
+            LookupError: If no license can be identified in the LICENSE file.
         """
         content = LicenseConfigFile.I.file_content()
         return self.detect_project_licence_from_content(content)
 
     def detect_project_licence_from_content(self, content: str) -> str:
-        """Detect the project's license from given content.
+        """Detect the SPDX license identifier from a string of text.
 
-        Uses spdx_matcher to identify the license type and return its SPDX identifier.
+        Passes ``content`` to ``spdx_matcher.analyse_license_text`` and returns
+        the identifier of the first matched license.
 
         Args:
-            content: The text content to analyze for license detection.
+            content: Text to analyse, typically the contents of a LICENSE file.
 
         Returns:
-            SPDX license identifier (e.g., "MIT", "Apache-2.0", "GPL-3.0").
+            SPDX license identifier (e.g., ``"MIT"``, ``"Apache-2.0"``).
+
+        Raises:
+            LookupError: If ``spdx_matcher`` finds no recognisable license in the
+                text.
         """
         licenses: dict[str, ConfigDict]
         licenses, _ = spdx_matcher.analyse_license_text(content)
@@ -197,23 +219,42 @@ class PyprojectConfigFile(TomlConfigFile):
             raise LookupError(msg)
         return next(iter(licenses))
 
-    def project_description(self, default: str = "Add your description here") -> str:
-        """Get project description from pyproject.toml.
-
-        If not specified, default to "Add your description here"
-        (same as uv's initial default).
-        """
-        return str(self.load().get("project", {}).get("description", default))
-
     def project_version(self, default: str = "0.1.0") -> str:
-        """Get project version from pyproject.toml.
+        """Read the project version from pyproject.toml.
 
-        If not specified, default to "0.1.0" (same as uv's initial default).
+        Args:
+            default: Fallback value when the ``version`` key is absent. Defaults
+                to ``"0.1.0"``, matching uv's initial scaffold value.
+
+        Returns:
+            Version string from pyproject.toml, or ``default`` if absent.
         """
         return str(self.load().get("project", {}).get("version", default))
 
+    def project_description(self, default: str = "Add your description here") -> str:
+        """Read the project description from pyproject.toml.
+
+        Args:
+            default: Fallback value when the ``description`` key is absent. Defaults
+                to ``"Add your description here"``, matching uv's initial scaffold.
+
+        Returns:
+            Description string from pyproject.toml, or ``default`` if absent.
+        """
+        return str(self.load().get("project", {}).get("description", default))
+
     def make_python_version_classifiers(self) -> list[str]:
-        """Generate PyPI classifiers (Python versions, OS Independent, Typed)."""
+        """Build the PyPI trove classifiers for the project.
+
+        Generates a ``Programming Language :: Python :: X.Y`` classifier for every
+        Python minor version in the project's supported range (derived from
+        ``requires-python``), plus the fixed classifiers
+        ``Operating System :: OS Independent`` and ``Typing :: Typed``.
+
+        Returns:
+            List of trove classifier strings, ready for the ``project.classifiers``
+            field in pyproject.toml.
+        """
         versions = self.supported_python_versions()
         python_version_classifiers = [
             f"Programming Language :: Python :: {v.major}.{v.minor}" for v in versions
@@ -227,24 +268,26 @@ class PyprojectConfigFile(TomlConfigFile):
 
         return [*python_version_classifiers, *os_classifiers, *typing_classifiers]
 
-    def requires_python(self, default: str | None = None) -> str:
-        """Get requires-python constraint from pyproject.toml.
-
-        If not specified, default to ">=<current minor version>" (e.g., ">=3.10").
-        """
-        if default is None:
-            current_version = adjust_version_to_level(
-                Version(platform.python_version()), level="minor"
-            )
-            default = f">={current_version}"
-        return str(self.load().get("project", {}).get("requires-python", default))
-
     def make_dependency_versions(
         self,
         dependencies: Iterable[str],
         additional: Iterable[str] | None = None,
     ) -> list[str]:
-        """Normalize and merge dependency lists (sorted, deduplicated)."""
+        """Merge and normalise two dependency lists into one sorted, deduplicated list.
+
+        Packages already present in ``dependencies`` (matched by package name,
+        ignoring version specifiers) are excluded from ``additional`` before merging.
+        This prevents a tool from overwriting a user-pinned version. The final list
+        is sorted alphabetically.
+
+        Args:
+            dependencies: Primary dependency list. All entries are kept as-is.
+            additional: Optional supplementary dependencies. An entry is only included
+                if its package name does not already appear in ``dependencies``.
+
+        Returns:
+            Sorted, deduplicated list combining both inputs.
+        """
         if additional is None:
             additional = ()
         stripped_dependencies = {
@@ -260,32 +303,63 @@ class PyprojectConfigFile(TomlConfigFile):
         return sorted({*dependencies, *filtered_additional})
 
     def remove_version_from_dep(self, dep: str) -> str:
-        """Strip version specifier from dependency.
+        """Strip the version specifier from a dependency string.
 
-        Uses ``package_req_name_split_pattern`` from ``pyrig.src.string_``
-        for consistency (e.g., 'requests>=2.0' -> 'requests').
+        Splits on the first operator character using the pattern from
+        ``pyrig.core.strings.package_req_name_split_pattern``.
 
         Args:
-            dep: Dependency string, optionally with version specifier.
+            dep: Dependency string with or without a version specifier
+                (e.g., ``"requests>=2.0,<3"`` or ``"requests"``).
+
+        Returns:
+            Package name with any version specifier removed
+            (e.g., ``"requests>=2.0,<3"`` → ``"requests"``).
         """
         return package_req_name_split_pattern().split(dep)[0]
 
-    def dev_dependencies(self) -> list[str]:
-        """Get dev dependencies from pyproject.toml."""
-        dev_deps: list[str] = self.load().get("dependency-groups", {}).get("dev", [])
-        return dev_deps
-
     def dependencies(self, default: list[str] | None = None) -> list[str]:
-        """Get runtime dependencies from pyproject.toml."""
+        """Read runtime dependencies from pyproject.toml.
+
+        Args:
+            default: Fallback list when the ``project.dependencies`` key is absent.
+                Defaults to a list containing the current pyrig package name.
+
+        Returns:
+            List of dependency strings from pyproject.toml, or ``default`` if absent.
+        """
         if default is None:
             default = [Pyrigger.I.name()]
         deps: list[str] = self.load().get("project", {}).get("dependencies", default)
         return deps
 
+    def dev_dependencies(self) -> list[str]:
+        """Read development dependencies from pyproject.toml.
+
+        Returns:
+            List of dependency strings from ``dependency-groups.dev``, or an empty
+            list if that section is absent.
+        """
+        dev_deps: list[str] = self.load().get("dependency-groups", {}).get("dev", [])
+        return dev_deps
+
     def latest_possible_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"
     ) -> Version:
-        """Get latest Python version allowed by requires-python constraint."""
+        """Get the highest Python version permitted by the requires-python constraint.
+
+        Reads the ``requires-python`` specifier from pyproject.toml and derives the
+        upper inclusive bound. When the specifier has no upper bound
+        (e.g., ``">=3.10"``), falls back to the latest known stable Python release.
+
+        Args:
+            level: Precision of the returned version. Defaults to ``"minor"``
+                (e.g., ``Version("3.11")`` rather than ``Version("3.11.5")``). See
+                ``adjust_version_to_level`` for details on each level.
+
+        Returns:
+            The highest allowed Python version at the requested precision level.
+        """
         constraint = self.load()["project"]["requires-python"]
         version_constraint = VersionConstraint(constraint)
         version = version_constraint.upper_inclusive()
@@ -295,10 +369,16 @@ class PyprojectConfigFile(TomlConfigFile):
         return adjust_version_to_level(version, level)
 
     def first_supported_python_version(self) -> Version:
-        """Get minimum supported Python version from requires-python.
+        """Return the minimum Python version required by the project.
+
+        Reads the lower bound of the ``requires-python`` specifier from
+        pyproject.toml.
+
+        Returns:
+            Lowest inclusive Python version supported by the project.
 
         Raises:
-            LookupError: If requires-python has no lower bound.
+            LookupError: If the ``requires-python`` constraint has no lower bound.
         """
         constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)
@@ -309,7 +389,16 @@ class PyprojectConfigFile(TomlConfigFile):
         return lower
 
     def supported_python_versions(self) -> tuple[Version, ...]:
-        """Get all supported Python minor versions within requires-python constraint."""
+        """Return all Python minor versions within the requires-python range.
+
+        Reads the ``requires-python`` specifier from pyproject.toml and expands it
+        into a tuple of minor-precision Version objects. The upper end of an unbounded
+        range is capped at the latest known stable Python release.
+
+        Returns:
+            Tuple of Version objects, one per supported minor version, in ascending
+            order.
+        """
         constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)
         return version_constraint.version_range(
@@ -317,9 +406,39 @@ class PyprojectConfigFile(TomlConfigFile):
             upper_default=self.latest_python_version(level="minor"),
         )
 
+    def requires_python(self, default: str | None = None) -> str:
+        """Read the requires-python constraint from pyproject.toml.
+
+        Args:
+            default: Fallback specifier when the ``requires-python`` key is absent.
+                When ``None`` (the default), constructs ``">=<current minor version>"``
+                from the running Python interpreter (e.g., ``">=3.10"``).
+
+        Returns:
+            PEP 440 version specifier string (e.g., ``">=3.10"``).
+        """
+        if default is None:
+            current_version = adjust_version_to_level(
+                Version(platform.python_version()), level="minor"
+            )
+            default = f">={current_version}"
+        return str(self.load().get("project", {}).get("requires-python", default))
+
     def latest_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"
     ) -> Version:
-        """Get latest stable Python version at precision level (major/minor/micro)."""
+        """Return the latest known stable Python version.
+
+        Reads the version from the bundled ``LATEST_PYTHON_VERSION`` resource file
+        and truncates it to the requested precision level.
+
+        Args:
+            level: Precision of the returned version. Defaults to ``"minor"``
+                (e.g., ``Version("3.13")``). See ``adjust_version_to_level`` for
+                details on each level.
+
+        Returns:
+            Latest stable Python version at the requested precision level.
+        """
         latest_version = Version(resource_content("LATEST_PYTHON_VERSION", resources))
         return adjust_version_to_level(latest_version, level)

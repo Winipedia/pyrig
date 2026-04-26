@@ -1,68 +1,4 @@
-"""Abstract base class for declarative configuration file management.
-
-Provides ConfigFile for automated config management with automatic discovery,
-subset validation, intelligent merging, priority-based validation, and
-parallel execution.
-
-Subclass Requirements:
-    Must implement:
-    - `parent_path()`: Directory containing the file
-    - `extension()`: File extension without leading dot
-    - `_configs()`: Expected configuration structure (internal implementation)
-    - `_load()`: Load and parse the file (internal implementation)
-    - `_dump(config)`: Write configuration to file (internal implementation)
-
-    Optionally override:
-    - `priority()`: Float priority (default 0, higher = first)
-    - `filename()`: Filename without extension (auto-derived from class name)
-
-    Public API (already implemented, do not override):
-    - `configs()`: Cached wrapper around `_configs()`
-    - `load()`: Cached wrapper around `_load()`
-    - `dump(config)`: Cache-invalidating wrapper around `_dump(config)`
-
-Example:
-    Create a custom TOML config file::
-
-        from pathlib import Path
-        from typing import Any
-        from pyrig.rig.configs.base.toml import TomlConfigFile
-
-        class MyAppConfigFile(TomlConfigFile):
-            '''Manages myapp.toml configuration.'''
-
-
-            def parent_path(self) -> Path:
-                '''Place in project root.'''
-                return Path()
-
-
-            def _configs(self) -> ConfigDict:
-                '''Define expected configuration.'''
-                return {
-                    "app": {
-                        "name": "myapp",
-                        "version": "1.0.0"
-                    }
-                }
-
-
-            def priority(self) -> float:
-                '''Validate after pyproject.toml.'''
-                return 50
-
-    The system will automatically:
-    - Create `myapp.toml` if it doesn't exist
-    - Add missing keys if file exists but incomplete
-    - Preserve any extra keys user added
-    - Validate final result matches expected structure
-
-See Also:
-    pyrig.rig.configs: Package-level documentation
-    pyrig.src.iterate.nested_structure_is_subset: Subset validation logic
-    pyrig.src.modules.package.discover_subclasses_across_dependents:
-        Subclass discovery mechanism
-"""
+"""Abstract base class for declarative configuration file management."""
 
 import logging
 from abc import abstractmethod
@@ -92,7 +28,11 @@ type ConfigData = ConfigDict | ConfigList
 
 
 class Priority:
-    """Priority levels for config file validation ordering."""
+    """Numeric constants for controlling config file validation order.
+
+    Higher values cause a config file to be validated earlier.
+    Use these constants instead of raw integers for clarity.
+    """
 
     DEFAULT = 0
     LOW = DEFAULT + 10
@@ -103,136 +43,235 @@ class Priority:
 class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
     """Abstract base class for declarative configuration file management.
 
-    Declarative, idempotent system for managing config files. Preserves user
-    customizations while ensuring required configuration is present.
+    Implements an idempotent, declarative system for managing configuration
+    files across a project. Subclasses declare the required structure via
+    ``_configs()`` and the system ensures that structure is present on disk,
+    merging missing values while preserving any extra keys the user has added.
+    Users can opt out of a config file entirely by leaving it empty; an empty
+    file is treated as intentional and will not be modified.
 
     Type Parameters:
-        ConfigT: The configuration type (ConfigDict or ConfigList).
+        ConfigT: The configuration data type, either ``ConfigDict`` or
+            ``ConfigList``.
 
     Subclass Requirements:
-        Must implement (internal methods with underscore prefix):
-        - `parent_path()`: Directory containing the file
-        - `extension()`: File extension (e.g., "toml", "yaml")
-        - `_configs()`: Expected configuration (dict or list) - internal
-        - `_load()`: Load and parse the file - internal implementation
-        - `_dump(config)`: Write configuration to file - internal implementation
+        Concrete subclasses must implement the following abstract methods:
 
-        Optionally override:
-        - `priority()`: validation priority (default 0)
-        - `filename()`: Filename without extension (auto-derived)
+        - ``parent_path()``: Directory where the file lives.
+        - ``stem()``: Filename without the extension.
+        - ``extension()``: File extension without the leading dot.
+        - ``_configs()``: Minimum required configuration structure.
+        - ``_load()``: Parse the file from disk.
+        - ``_dump(config)``: Write configuration to disk.
 
-        Public API (already implemented with caching, do not override):
-        - `configs()`: Returns cached result of `_configs()`
-        - `load()`: Returns cached result of `_load()`
-        - `dump(config)`: Invalidates cache and calls `_dump(config)`
+        The following methods may optionally be overridden:
 
-    See Also:
-        pyrig.rig.configs: Package-level documentation
-        pyrig.rig.configs.base.toml.TomlConfigFile: TOML file base class
-        pyrig.rig.configs.base.yaml.YamlConfigFile: YAML file base class
-        pyrig.src.iterate.nested_structure_is_subset: Subset validation
+        - ``priority()``: Validation order (default 0, higher = earlier).
+        - ``version_control_ignored()``: Whether the file is git-ignored
+          (default ``False``).
+
+    Public API:
+        The following methods are already implemented with caching.
+        Do not override them:
+
+        - ``configs()``: Cached result of ``_configs()``.
+        - ``load()``: Cached result of ``_load()``.
+        - ``dump(config)``: Cache-invalidating wrapper around ``_dump(config)``.
     """
 
     def __str__(self) -> str:
-        """String representation showing the config file path."""
+        """Return a string representation including the config file path.
+
+        Returns:
+            The inherited class name appended with the file path, e.g.
+            ``mypackage.rig.configs.MyConfigFile (some/path/file.toml)``.
+        """
         return f"{super().__str__()} ({self.path()})"
 
     @abstractmethod
     def parent_path(self) -> Path:
-        """Return directory containing the config file.
+        """Return the directory that will contain the config file.
 
         Returns:
-            Path to parent directory, relative to project root.
+            Path to the parent directory, typically relative to the project root.
         """
 
     @abstractmethod
     def stem(self) -> str:
-        """Return filename stem (name without extension)."""
-
-    @abstractmethod
-    def _load(self) -> ConfigT:
-        """Load and parse configuration file.
+        """Return the filename without its extension.
 
         Returns:
-            Parsed configuration as dict or list. Implementations should return
-            empty dict/list for empty files to support opt-out behavior.
-        """
-
-    @abstractmethod
-    def _dump(self, config: ConfigT) -> None:
-        """Write configuration to file.
-
-        Args:
-            config: Configuration to write (dict or list).
+            The file stem, e.g. ``"pyproject"`` for ``pyproject.toml``.
         """
 
     @abstractmethod
     def extension(self) -> str:
-        """Return file extension without leading dot.
+        """Return the file extension without the leading dot.
 
         Returns:
-            File extension (e.g., "toml", "yaml", "json", "py", "md").
+            The extension string, e.g. ``"toml"``, ``"yaml"``, or ``"py"``.
         """
 
     @abstractmethod
     def _configs(self) -> ConfigT:
-        """Return expected configuration structure.
+        """Return the minimum required configuration structure.
+
+        Internal implementation called by the public ``configs()`` cached wrapper.
+        Define all required keys and values here; keys present on disk but
+        absent from this return value are preserved unchanged.
 
         Returns:
-            Minimum required configuration as dict or list.
+            Required configuration as a dict or list.
+        """
+
+    @abstractmethod
+    def _load(self) -> ConfigT:
+        """Load and parse the configuration file from disk.
+
+        Internal implementation called by the public ``load()`` cached wrapper.
+        Return an empty dict or list for an empty file so that
+        ``is_unwanted()`` can correctly detect the user opt-out case.
+
+        Returns:
+            Parsed configuration as a dict or list.
+        """
+
+    @abstractmethod
+    def _dump(self, config: ConfigT) -> None:
+        """Write configuration to the file on disk.
+
+        Internal implementation called by the public ``dump()``
+        cache-invalidating wrapper.
+
+        Args:
+            config: Configuration data to write.
         """
 
     @classmethod
     def definition_package(cls) -> ModuleType:
-        """Return the package containing ConfigFile subclass definitions.
+        """Return the package that scopes subclass discovery for config files.
 
-        Default is `pyrig.rig.configs`. Can be overridden by subclasses to
-        define their own package.
+        Overrides ``RigDependencySubclass.definition_package()`` to narrow
+        the discovery namespace from ``pyrig.rig`` to ``pyrig.rig.configs``,
+        ensuring only config file implementations are found.
 
         Returns:
-            Package module where ConfigFile subclasses are defined.
+            The ``pyrig.rig.configs`` package module.
         """
         return configs
 
     @classmethod
-    def sort_key(cls) -> float:
-        """Return a numeric sort key for the given config-file subclass.
+    def validate_all_subclasses(cls) -> None:
+        """Discover and validate every concrete ``ConfigFile`` subclass.
 
-        Subclasses may define priorities via `priority()`. This method
-        returns a value that can be used to sort subclasses so that higher
-        priority subclasses appear earlier. Implementations should return a
-        float where a smaller value sorts earlier when used with Python's
-        ascending sort; this base implementation returns the negative of the
-        subclass priority so that higher priority sorts first.
+        Discovers all concrete subclasses across all installed dependents
+        and delegates to ``validate_subclasses()`` to validate them in
+        priority order. This is the main entry point called by the
+        ``mkroot`` CLI command.
+        """
+        cls.validate_subclasses(cls.concrete_subclasses())
+
+    @classmethod
+    def validate_subclasses(cls, subclasses: Iterable[type[Self]]) -> None:
+        """Validate a specific collection of ``ConfigFile`` subclasses.
+
+        Sorts the given subclasses by priority (higher priority first) and
+        calls ``validate()`` on each one in order.
 
         Args:
-            subclass (type[Self]): The subclass to compute a key for.
+            subclasses: ``ConfigFile`` subclasses to validate.
+        """
+        for cf in cls.subclasses_sorted(subclasses):
+            cf().validate()
+
+    @classmethod
+    def version_control_ignored_subclasses(cls) -> Generator[type[Self], None, None]:
+        """Yield config file classes whose files are excluded from version control.
+
+        Used by the session autouse fixture to ensure gitignored config files
+        (e.g. ``.env``, ``.scratch``) are regenerated in CI, where they are
+        not committed to the repository.
+
+        Yields:
+            ``ConfigFile`` subclasses for which ``version_control_ignored()``
+            returns ``True``.
+        """
+        return (
+            cf for cf in cls.concrete_subclasses() if cf().version_control_ignored()
+        )
+
+    @classmethod
+    def incorrect_subclasses(cls) -> Generator[type[Self], None, None]:
+        """Yield config file classes whose files fail validation.
+
+        Used by the session autouse fixture to detect and auto-fix stale or
+        missing config files before tests run.
+
+        Yields:
+            ``ConfigFile`` subclasses for which ``is_correct()`` returns ``False``.
+        """
+        return (cf for cf in cls.concrete_subclasses() if not cf().is_correct())
+
+    @classmethod
+    def sort_key(cls) -> float:
+        """Return a sort key that places higher-priority subclasses first.
+
+        Returns the negative of ``priority()`` so that Python's ascending
+        sort places subclasses with higher priority values earlier in the list.
 
         Returns:
-            float: A numeric key suitable for sorting subclasses.
+            Negative of the subclass priority value.
         """
         # sort by priority (higher first),
         # so return negative priority for ascending sort
         return -cls().priority()
 
-    def version_control_ignored(self) -> bool:
-        """Wether this config file is ignored by version control (e.g., .gitignore).
+    @classmethod
+    @cache
+    def configs(cls) -> ConfigT:
+        """Return the required configuration structure.
 
-        Default implementation returns False,
-        meaning the file is tracked by version control.
-        Can be overridden by subclasses to indicate the file is ignored.
+        Delegates to ``_configs()`` and caches the result so that
+        ``_configs()`` is only called once per class.
+
+        Returns:
+            Minimum required configuration as a dict or list.
         """
-        return False
+        return cls()._configs()  # noqa: SLF001
+
+    @classmethod
+    @cache
+    def load(cls) -> ConfigT:
+        """Load and return the current file contents.
+
+        Delegates to ``_load()`` and caches the result so the file is only
+        read once per session. The cache is cleared whenever ``dump()`` is
+        called.
+
+        Returns:
+            Parsed configuration as a dict or list.
+        """
+        instance = cls()
+        logger.debug("Loading %s", instance)
+        return instance._load()
 
     def validate(self) -> None:
-        """Validate config file, creating or updating as needed.
+        """Validate the config file, creating or updating it as needed.
 
-        Calls create_file() if file doesn't exist (which creates parent dirs and file),
-        validates content, and adds missing configs if needed.
-        Idempotent and preserves user customizations.
+        Performs the following steps in order:
+
+        1. Creates the file (and any missing parent directories) if it does
+           not exist, then writes ``configs()`` as the initial content.
+        2. Returns immediately if the file is already correct.
+        3. Merges ``configs()`` into the current file content to fill any
+           missing keys while preserving user additions, then writes the result.
+        4. Raises ``RuntimeError`` if the file is still not correct after the
+           merge, which typically indicates a manual conflict in the file.
+
+        This method is idempotent and safe to call repeatedly.
 
         Raises:
-            ConfigFileValidationError: If file cannot be made correct.
+            RuntimeError: If the file cannot be corrected after merging.
         """
         path = self.path()
         logger.debug("Validating %s", self)
@@ -253,188 +292,139 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
             raise RuntimeError(msg)
 
     def create_file(self) -> None:
-        """Create the config file and its parent directories."""
+        """Create the config file and any missing parent directories.
+
+        Touches the file (creating it empty) after ensuring the full parent
+        directory tree exists. Called automatically by ``validate()`` when
+        the file is absent.
+        """
         path = self.path()
         typer.echo(f"Creating {self}")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
 
-    @classmethod
-    @cache
-    def configs(cls) -> ConfigT:
-        """Return expected configuration structure.
-
-        Cached to avoid multiple calls to _configs().
-
-        Returns:
-            Minimum required configuration as dict or list.
-        """
-        return cls()._configs()  # noqa: SLF001
-
-    @classmethod
-    @cache
-    def load(cls) -> ConfigT:
-        """Load and parse configuration file.
-
-        Cached to avoid multiple reads of same file.
-
-        Returns:
-            Parsed configuration as dict or list. Format-specific implementations
-            typically return empty dict/list for empty files (opt-out behavior).
-        """
-        instance = cls()
-        logger.debug("Loading %s", instance)
-        return instance._load()
-
     def dump(self, config: ConfigT) -> None:
-        """Write configuration to file.
+        """Write configuration to disk and keep the load cache consistent.
 
-        Clears the cache before writing to ensure the dump operation reads
-        the current file state if it loads, and after writing to ensure subsequent loads
-        reflect the latest state.
+        Clears the ``load()`` cache before and after calling ``_dump()`` to
+        prevent stale data from being returned if anything reads the cache
+        during or after the write.
 
         Args:
-            config: Configuration to write (dict or list).
+            config: Configuration data to write.
         """
         typer.echo(f"Updating {self}")
         self.load.cache_clear()
         self._dump(config)
         self.load.cache_clear()
 
-    def priority(self) -> float:
-        """Return validation priority (higher = first, default 0)."""
-        return Priority.DEFAULT
-
-    def path(self) -> Path:
-        """Return full path by combining parent path, filename, and extension."""
-        return self.parent_path() / (
-            self.stem() + self.extension_separator() + self.extension()
-        )
-
-    def extension_separator(self) -> str:
-        """Return extension separator character (always ".")."""
-        return "."
-
     def merge_configs(self) -> ConfigT:
-        """Merge expected config into current, preserving user customizations.
+        """Merge the required configuration into the current file contents.
+
+        Walks both structures and fills in every key or list item that is
+        present in ``configs()`` but absent in ``load()``. Keys that exist
+        only in the loaded file are left untouched, preserving user customizations.
 
         Returns:
-            Merged configuration with all expected values and user additions.
-
-        See Also:
-            pyrig.src.iterate.nested_structure_is_subset: Subset validation logic
+            Updated configuration containing both required and existing values.
         """
         return merge_nested_structures(subset=self.configs(), superset=self.load())
 
     def is_correct(self) -> bool:
-        """Check if config file is valid (empty or expected is subset of actual).
+        """Return whether the config file passes validation.
+
+        A file is considered correct if it exists and either:
+
+        - Is empty (the user opted out by leaving the file empty), or
+        - Contains at least all the keys and values declared in ``configs()``
+          (additional keys are allowed).
 
         Returns:
-            True if valid (opted out or contains all expected configuration).
-
-        See Also:
-            is_unwanted: Check if user opted out
-            is_correct_recursively: Perform subset validation
+            ``True`` if the file is valid or the user opted out.
         """
         return self.path().exists() and (
             self.is_unwanted() or self.is_correct_recursively()
         )
 
     def is_unwanted(self) -> bool:
-        """Check if user opted out (file exists and is empty).
+        """Return whether the user has opted out of this config file.
+
+        An empty file (zero bytes) is treated as an explicit opt-out signal.
+        The system will not modify it or report it as incorrect.
 
         Returns:
-            True if file exists and is completely empty.
+            ``True`` if the file exists and has zero bytes.
         """
         return self.path().exists() and self.path().stat().st_size == 0
 
-    def is_correct_recursively(
-        self,
-    ) -> bool:
-        """Recursively check if expected config is subset of actual.
+    def is_correct_recursively(self) -> bool:
+        """Return whether the required configuration is a subset of the file contents.
 
-        Args:
-            expected_config: Expected configuration structure.
-            actual_config: Actual configuration to validate.
+        Delegates to ``nested_structure_is_subset`` to recursively verify that
+        every key and value in ``configs()`` is present in ``load()``.
 
         Returns:
-            True if expected is subset of actual.
-
-        See Also:
-            pyrig.src.iterate.nested_structure_is_subset: Core subset logic
+            ``True`` if all required keys and values are present in the file.
         """
         return nested_structure_is_subset(self.configs(), self.load())
 
-    @classmethod
-    def validate_subclasses(cls, subclasses: Iterable[type[Self]]) -> None:
-        """Validate specific ConfigFile subclasses with priority-based ordering.
+    def path(self) -> Path:
+        """Return the full path to the config file.
 
-        Group by priority, validate in the given order, parallel within groups.
-
-        Args:
-            subclasses: ConfigFile subclasses to validate.
-
-        See Also:
-            validate_all_subclasses: validate all discovered subclasses
-        """
-        for cf in cls.subclasses_sorted(subclasses):
-            cf().validate()
-
-    @classmethod
-    def validate_all_subclasses(cls) -> None:
-        """Validate all discovered ConfigFile subclasses in priority order.
-
-        Discovers all concrete subclasses across dependents, sorts by priority,
-        and validates each. This is the main entry point for validating config files.
-        """
-        cls.validate_subclasses(cls.concrete_subclasses())
-
-    @classmethod
-    def version_control_ignored_subclasses(cls) -> Generator[type[Self], None, None]:
-        """Get config file classes that are ignored by .gitignore.
+        Assembles the path from ``parent_path()``, ``stem()``,
+        ``extension_separator()``, and ``extension()``.
 
         Returns:
-            Generator of ConfigFile instances whose paths match .gitignore patterns.
+            Full path to the config file.
         """
-        return (
-            cf for cf in cls.concrete_subclasses() if cf().version_control_ignored()
+        return self.parent_path() / (
+            self.stem() + self.extension_separator() + self.extension()
         )
 
-    @classmethod
-    def incorrect_subclasses(cls) -> Generator[type[Self], None, None]:
-        """Get config file classes whose files are not correct.
+    def extension_separator(self) -> str:
+        """Return the character separating the stem from the extension.
 
         Returns:
-            Generator of ConfigFile instances whose files exist but are not correct.
+            Always ``"."``.
         """
-        return (cf for cf in cls.concrete_subclasses() if not cf().is_correct())
+        return "."
+
+    def priority(self) -> float:
+        """Return the validation priority for this config file.
+
+        Higher values cause the file to be validated earlier relative to others.
+        Defaults to ``Priority.DEFAULT`` (0). Override in subclasses that must
+        be validated before others.
+
+        Returns:
+            Validation priority as a float.
+        """
+        return Priority.DEFAULT
+
+    def version_control_ignored(self) -> bool:
+        """Return whether this config file is excluded from version control.
+
+        Files that return ``True`` are regenerated by the test session autouse
+        fixture when running in CI, since they are not committed to the
+        repository. Defaults to ``False`` (tracked by version control).
+
+        Returns:
+            ``True`` if the file is git-ignored; ``False`` otherwise.
+        """
+        return False
 
 
 class ListConfigFile(ConfigFile[ConfigList]):
-    """Abstract base class for list-based configuration files.
+    """Abstract base for config files whose content is a list.
 
-    Specifies `ConfigList` as the configuration type. Subclasses inherit
-    proper typing for `load()`, `dump()`, `configs()`, etc.
-
-    Subclasses must implement:
-        - `parent_path`: Directory containing the config file
-        - `extension`: File extension without leading dot
-        - `_configs`: Expected configuration as list
-        - `_load`: Load and parse the file
-        - `_dump`: Write configuration to file
+    Binds the ``ConfigT`` type parameter to ``ConfigList``, giving subclasses
+    properly typed ``load()``, ``dump()``, and ``configs()`` methods.
     """
 
 
 class DictConfigFile(ConfigFile[ConfigDict]):
-    """Abstract base class for dict-based configuration files.
+    """Abstract base for config files whose content is a dict.
 
-    Specifies ConfigDict as the configuration type. Subclasses inherit
-    proper typing for load(), dump(), configs(), etc.
-
-    Subclasses must implement:
-        - `parent_path`: Directory containing the config file
-        - `extension`: File extension without leading dot
-        - `_configs`: Expected configuration as dict
-        - `_load`: Load and parse the file
-        - `_dump`: Write configuration to file
+    Binds the ``ConfigT`` type parameter to ``ConfigDict``, giving subclasses
+    properly typed ``load()``, ``dump()``, and ``configs()`` methods.
     """

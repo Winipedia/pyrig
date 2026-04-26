@@ -1,13 +1,8 @@
 """Configuration file manager for mkdocs.yml.
 
-Manages mkdocs.yml with Material theme, dark/light mode toggle, navigation
-(Home, API), search, mermaid diagrams, and mkdocstrings for Google-style
-docstring API documentation.
-
-See Also:
-    MkDocs: https://www.mkdocs.org/
-    Material for MkDocs: https://squidfunk.github.io/mkdocs-material/
-    mkdocstrings: https://mkdocstrings.github.io/
+Manages the project's mkdocs.yml, which configures the Material-themed
+MkDocs site with a dark/light mode palette toggle, page navigation,
+Mermaid diagram support, and Google-style API documentation via mkdocstrings.
 """
 
 from pathlib import Path
@@ -22,18 +17,15 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class DocsBuilderConfigFile(DictYmlConfigFile):
-    """MkDocs configuration manager.
+    """Configuration manager for the project's ``mkdocs.yml`` file.
 
-    Generates mkdocs.yml with Material theme, dark/light mode toggle, navigation
-    (Home, API), search, mermaid diagrams, and mkdocstrings for Google-style
-    docstring API documentation.
+    Generates ``mkdocs.yml`` with the Material theme, a dark/light mode
+    palette toggle, navigation entries for the Home and API pages, and
+    the search, mermaid2, and mkdocstrings plugins configured for
+    Google-style docstring rendering.
 
     Example:
         >>> DocsBuilderConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.pyproject.PyprojectConfigFile
-        pyrig.rig.configs.markdown.docs.index.IndexConfigFile
     """
 
     def parent_path(self) -> Path:
@@ -41,17 +33,32 @@ class DocsBuilderConfigFile(DictYmlConfigFile):
         return Path()
 
     def stem(self) -> str:
-        """Return stem of the configuration file."""
+        """Return ``'mkdocs'`` as the configuration file stem."""
         return DocsBuilder.I.name()
 
     def _configs(self) -> ConfigDict:
         """Build the complete mkdocs.yml configuration.
 
-        Include Material theme, navigation (Home, API), plugins (search,
-        mermaid2, mkdocstrings), and dark/light mode toggle.
+        Constructs the full configuration dict that is written to
+        ``mkdocs.yml``. The returned dict contains four top-level keys:
 
-        Note:
-            The project name is read from pyproject.toml.
+        - ``site_name``: Set to the current working directory name, which
+          by convention matches the project name.
+        - ``nav``: Two entries — ``Home`` pointing to ``index.md`` and
+          ``API`` pointing to ``api.md``, both expressed as POSIX paths
+          relative to the ``docs/`` directory.
+        - ``plugins``: Enables ``search``, ``mermaid2``, and
+          ``mkdocstrings`` (configured for the Python handler). The
+          ``docstring_style`` option is sourced from
+          :meth:`~pyrig.rig.tools.linter.Linter.pydocstyle` so that
+          Ruff and mkdocstrings always agree on the docstring convention.
+        - ``theme``: Uses the Material theme with a two-entry palette:
+          dark mode (``slate`` scheme) listed first so it is the default,
+          followed by light mode (``default`` scheme). Each entry has a
+          brightness toggle icon and label for switching between modes.
+
+        Returns:
+            A ``ConfigDict`` representing the complete mkdocs.yml structure.
         """
         return {
             "site_name": PackageManager.I.project_name(),

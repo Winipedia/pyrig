@@ -1,38 +1,37 @@
 r"""Markdown configuration file management.
 
-Provide `MarkdownConfigFile` base class for `.md` files with required content.
-
-Example:
-    >>> from pathlib import Path
-    >>> from pyrig.rig.configs.base.markdown import MarkdownConfigFile
-    >>>
-    >>> class ReadmeFile(MarkdownConfigFile):
-    ...
-    ...     def parent_path(self) -> Path:
-    ...         return Path()
-    ...
-    ...
-    ...     def lines(self) -> list[str]:
-    ...         return ["# My Project", "", "Description here."]
+Provides a base class for creating and managing Markdown (``.md``) configuration
+files with validated content.
 """
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
 class MarkdownConfigFile(StringConfigFile):
-    """Base class for Markdown (.md) files.
+    """Base class for Markdown (``.md``) configuration files.
 
-    Extends `StringConfigFile` with `"md"` extension. Inherits content-based validation.
+    Extends ``StringConfigFile`` with the ``"md"`` file extension. Subclasses define
+    their directory path and required content; the parent class handles reading,
+    writing, and content-based validation.
 
     Subclasses must implement:
-        - `parent_path`: Directory containing the .md file
-        - `lines`: Required Markdown content as list of lines
+        - ``parent_path``: Directory containing the ``.md`` file.
+        - ``lines``: Required Markdown content as a list of lines.
 
-    See Also:
-        pyrig.rig.configs.base.string_.StringConfigFile: Parent class
-        pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile: For badge files
+    Example:
+        >>> from pathlib import Path
+        >>> from pyrig.rig.configs.base.markdown import MarkdownConfigFile
+        >>>
+        >>> class ReadmeFile(MarkdownConfigFile):
+        ...
+        ...     def parent_path(self) -> Path:
+        ...         return Path()
+        ...
+        ...
+        ...     def lines(self) -> list[str]:
+        ...         return ["# My Project", "", "Description here."]
     """
 
     def extension(self) -> str:
-        """Return "md"."""
+        """Return the file extension ``"md"``."""
         return "md"

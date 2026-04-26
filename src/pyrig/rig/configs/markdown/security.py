@@ -1,10 +1,7 @@
 """Configuration management for SECURITY.md files.
 
-Manages SECURITY.md using a minimal best practices template. The template
+Manages SECURITY.md using a minimal best-practices template. The template
 covers vulnerability reporting, response timeline, and supported versions.
-
-See Also:
-    pyrig.rig.configs.base.markdown.MarkdownConfigFile
 """
 
 from pathlib import Path
@@ -40,72 +37,80 @@ We will:
 
 
 class SecurityConfigFile(MarkdownConfigFile):
-    """SECURITY.md configuration manager.
+    """Configuration manager for the project's SECURITY.md file.
 
-    Generates SECURITY.md using a minimal best practices template that
-    covers vulnerability reporting guidelines. Works for both private and
-    public repositories.
+    Generates SECURITY.md from a minimal best-practices template that covers
+    vulnerability reporting guidelines, the information to include in reports,
+    and response expectations. The contact method placeholder in the template
+    is populated from the configured git user email.
 
-    The template includes:
-        - How to report vulnerabilities (email, not public issues)
-        - What information to include in reports
-        - Response timeline expectations
+    Any non-empty SECURITY.md is treated as valid, so users can replace or
+    extend the generated template with their own policy without triggering
+    validation failures.
 
-    Examples:
-        Generate SECURITY.md::
+    Example:
+        Generate or update SECURITY.md::
 
             SecurityConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.base.markdown.MarkdownConfigFile
-        pyrig.rig.configs.markdown.code_of_conduct.CodeOfConductConfigFile
     """
 
     def stem(self) -> str:
-        """Get the SECURITY filename.
-
-        Returns:
-            str: "SECURITY" (extension added by parent).
-        """
+        """Return the filename stem ``"SECURITY"``."""
         return "SECURITY"
 
     def parent_path(self) -> Path:
-        """Get the parent directory for SECURITY.md.
+        """Return the project root directory as the location for SECURITY.md.
 
         Returns:
-            Path: Project root.
+            Path: Current working directory (project root).
         """
         return Path()
 
-    def lines(self) -> list[str]:
-        """Return the security policy as individual lines.
-
-        Returns:
-            list[str]: Security template lines with contact method inserted.
-        """
-        return self.split_lines(self.template_with_contact_method())
-
     def is_correct(self) -> bool:
-        """Check if SECURITY.md exists and is non-empty.
+        """Return whether SECURITY.md exists and contains non-empty content.
+
+        Overrides the parent's content-subset validation with a simpler check.
+        Any non-empty SECURITY.md is accepted as correct, allowing users to
+        replace or extend the generated template with their own policy without
+        triggering validation failures.
 
         Returns:
-            bool: True if file exists with content, False otherwise.
+            bool: True if the file exists and its content is not blank.
         """
         return self.path().exists() and bool(read_text_utf8(self.path()).strip())
 
-    def template_with_contact_method(self) -> str:
-        """Get the security template content with email inserted.
+    def lines(self) -> list[str]:
+        """Return the security policy template as a list of lines.
+
+        Delegates to ``template_with_contact_method()`` to build the full
+        template string, then splits it into lines for the parent class.
 
         Returns:
-            str: Security template content with user's email.
+            list[str]: Lines of the security policy template with the git
+                user email substituted as the contact method.
+        """
+        return self.split_lines(self.template_with_contact_method())
+
+    def template_with_contact_method(self) -> str:
+        """Return the security template with the contact placeholder replaced.
+
+        Substitutes the ``[INSERT CONTACT METHOD]`` placeholder in
+        ``SECURITY_TEMPLATE`` with the value returned by ``contact_method()``.
+
+        Returns:
+            str: Complete security policy template with the contact method
+                filled in.
         """
         contact_method = self.contact_method()
         return SECURITY_TEMPLATE.replace("[INSERT CONTACT METHOD]", contact_method)
 
     def contact_method(self) -> str:
-        """Get the contact method for security reports.
+        """Return the contact email address for security reports.
+
+        Reads the git ``user.email`` configuration and wraps it in angle
+        brackets to form a standard email reference (e.g. ``<user@example.com>``).
 
         Returns:
-            str: Email address from version control config (e.g. git).
+            str: Git user email wrapped in angle brackets.
         """
         return f"<{VersionController.I.email()}>"

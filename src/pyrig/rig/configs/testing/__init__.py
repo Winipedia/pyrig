@@ -1,9 +1,10 @@
-"""Test configuration file management.
+"""Configuration file management for test infrastructure.
 
-Manages pytest test infrastructure: conftest.py (pytest config), fixtures/__init__.py
-(custom fixtures), test_main.py (CLI tests), test_zero.py (sanity tests).
+This package contains ``ConfigFile`` subclasses that generate and maintain
+pytest scaffolding files for pyrig-based projects. These files establish a
+working test environment immediately, even before any application tests
+have been written.
 
-See Also:
-    pyrig.rig.tests.conftest
-    pytest documentation: https://docs.pytest.org/
+To add a new managed test file, define a concrete ``ConfigFile`` subclass
+inside this package.
 """

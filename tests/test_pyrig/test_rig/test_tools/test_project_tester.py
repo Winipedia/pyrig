@@ -12,10 +12,6 @@ class TestProjectTester:
         """Test method."""
         assert ProjectTester.I.test_module_prefix() == "test_"
 
-    def test_is_running_tests(self) -> None:
-        """Test method."""
-        assert ProjectTester.I.is_running_tests() is True
-
     def test_tests_source_root(self) -> None:
         """Test method."""
         assert ProjectTester.I.tests_source_root() == Path()

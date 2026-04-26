@@ -1,12 +1,6 @@
-"""GitHub issue template configuration management.
+"""Configuration management for GitHub issue templates.
 
-Manage GitHub issue templates in `.github/ISSUE_TEMPLATE/` directory:
-
-- Bug report template (bug_report.yml)
-- Feature request template (feature_request.yml)
-- Template chooser config (config.yml)
-
-See Also:
-    https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests
-    pyrig.rig.configs.base.yml.YmlConfigFile
+Generates and validates the YAML files placed in the `.github/ISSUE_TEMPLATE/`
+directory, which control the templates available to contributors when they open
+a new issue on GitHub.
 """

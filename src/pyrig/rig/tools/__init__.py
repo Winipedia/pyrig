@@ -1,5 +1,5 @@
-"""Tool wrappers for CLI tools used in development workflows.
+"""Wrappers for external CLI tools used in development and CI workflows.
 
-Tools are subclasses of `Tool` providing methods that return `Args` objects
-for type-safe command construction and execution.
+Each tool is a `Tool` subclass whose methods return `Args` objects that
+encapsulate command-line arguments for type-safe construction and execution.
 """

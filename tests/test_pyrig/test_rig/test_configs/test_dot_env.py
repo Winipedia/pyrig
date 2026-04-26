@@ -88,16 +88,3 @@ class TestDotEnvConfigFile:
         expected: dict[str, Any] = {}
         actual = my_test_dotenv_config_file().configs()
         assert actual == expected, f"Expected {expected}, got {actual}"
-
-    def test_is_correct(
-        self, my_test_dotenv_config_file: type[DotEnvConfigFile]
-    ) -> None:
-        """Test method."""
-        # Create the file
-        my_test_dotenv_config_file().path().parent.mkdir(parents=True, exist_ok=True)
-        my_test_dotenv_config_file().path().touch()
-
-        # Should be correct if file exists (even if empty)
-        assert my_test_dotenv_config_file().is_correct(), (
-            "Expected .env file to be correct when it exists"
-        )

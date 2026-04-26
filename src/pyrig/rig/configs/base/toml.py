@@ -1,21 +1,7 @@
-"""TOML configuration file management.
+"""TOML configuration file management using tomlkit.
 
-Provides TomlConfigFile base class using tomlkit for parsing and writing with
-formatting preservation. Arrays formatted as multiline for readability.
-
-Example:
-    >>> from pathlib import Path
-    >>> from typing import Any
-    >>> from pyrig.rig.configs.base.toml import TomlConfigFile
-    >>>
-    >>> class MyConfigFile(TomlConfigFile):
-    ...
-    ...     def parent_path(self) -> Path:
-    ...         return Path()
-    ...
-    ...
-    ...     def _configs(self) -> ConfigDict:
-    ...         return {"tool": {"myapp": {"dependencies": ["dep1", "dep2"]}}}
+Provides a base class for declarative TOML configuration file management
+with formatting preservation, multiline arrays, and key-order retention.
 """
 
 from typing import Any
@@ -30,12 +16,16 @@ from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
 class TomlConfigFile(DictConfigFile):
     """Base class for TOML configuration files.
 
-    Uses tomlkit for parsing/writing with formatting preservation. Arrays formatted
-    as multiline, key order preserved.
+    Implements TOML-specific file I/O using tomlkit, which preserves formatting,
+    key order, and comments on round-trip reads and writes. All lists are rendered
+    as multiline arrays for readability.
 
-    Subclasses must implement:
-        - `parent_path`: Directory containing the TOML file
-        - `_configs`: Expected TOML configuration structure
+    The ``extension()``, ``_load()``, and ``_dump()`` methods are fully implemented
+    here. Subclasses must implement:
+
+        - ``parent_path()``: Directory that contains the TOML file.
+        - ``stem()``: File name without extension.
+        - ``_configs()``: Expected TOML configuration structure.
 
     Example:
         >>> class MyConfigFile(TomlConfigFile):
@@ -43,42 +33,87 @@ class TomlConfigFile(DictConfigFile):
         ...     def parent_path(self) -> Path:
         ...         return Path()
         ...
+        ...     def stem(self) -> str:
+        ...         return "myconfig"
         ...
         ...     def _configs(self) -> ConfigDict:
         ...         return {"tool": {"myapp": {"version": "1.0.0"}}}
     """
 
     def _load(self) -> ConfigDict:
-        """Load and parse TOML file using tomlkit.parse.
+        """Read and parse the TOML file.
 
         Returns:
-            Parsed TOML as `tomlkit.TOMLDocument` (dict-like with formatting info).
+            Parsed content as a ``tomlkit.TOMLDocument``, which behaves like a
+            dict but retains formatting information for round-trip writes.
         """
         return tomlkit.parse(read_text_utf8(self.path()))
 
     def _dump(self, config: ConfigDict) -> None:
-        """Validate and write configuration to TOML file.
+        """Write configuration to the TOML file.
+
+        Delegates to ``pretty_dump()``, which converts the config to tomlkit
+        types before writing.
 
         Args:
             config: Configuration dict to write.
-
-        Raises:
-            TypeError: If config is not a dict (TOML requires top-level table).
         """
         self.pretty_dump(config)
 
-    def prettify_value(self, value: Any) -> Any:
-        """Recursively prettify a value for TOML output.
+    def pretty_dump(self, config: ConfigDict) -> None:
+        """Convert and write configuration to the TOML file.
 
-        Lists of dicts become arrays of tables (``[[section]]`` syntax).
-        Other lists become multiline arrays. Dicts become tables with recursively
-        prettified values. Scalars are returned as-is.
+        Converts the config dict to tomlkit types via ``prettify_dict()``, then
+        writes the result to the file. Lists are rendered as multiline arrays and
+        key order is preserved.
 
         Args:
-            value: Value to prettify (list, dict, or scalar).
+            config: Configuration dict to write.
+        """
+        config = self.prettify_dict(config)
+        with self.path().open("w") as f:
+            tomlkit.dump(config, f, sort_keys=False)
+
+    def prettify_dict(self, config: ConfigDict) -> Table:
+        """Convert a dict to a tomlkit ``Table`` with prettified values.
+
+        Iterates over every key-value pair and applies ``prettify_value()`` to each
+        value, building a tomlkit ``Table`` ready for serialization.
+
+        Args:
+            config: Configuration dict to convert.
 
         Returns:
-            Prettified tomlkit value.
+            A tomlkit ``Table`` containing all values formatted for TOML output.
+        """
+        t = tomlkit.table()
+        for k, v in config.items():
+            t.add(k, self.prettify_value(v))
+        return t
+
+    def prettify_value(self, value: Any) -> Any:
+        """Recursively convert a Python value to its tomlkit representation.
+
+        Handles four cases:
+
+        - **List of dicts**: Converted to a tomlkit array of tables using
+          ``[[section]]`` syntax. Each item is processed through
+          ``prettify_dict()``.
+        - **Other lists**: Converted to a tomlkit multiline array. Each element
+          is recursively prettified, so nested structures are fully converted.
+        - **Dicts**: Converted to a tomlkit ``Table`` via ``prettify_dict()``.
+        - **Scalars** (str, int, float, bool, etc.): Returned unchanged.
+
+        Note that ``prettify_value()`` and ``prettify_dict()`` are mutually
+        recursive: dicts inside lists will be fully converted, and lists inside
+        dicts will be formatted as multiline arrays.
+
+        Args:
+            value: The Python value to convert.
+
+        Returns:
+            The tomlkit-typed representation of ``value``, or the original value
+            unchanged if it is a scalar.
         """
         if isinstance(value, list):
             if value and all(isinstance(item, dict) for item in value):
@@ -94,38 +129,10 @@ class TomlConfigFile(DictConfigFile):
             return self.prettify_dict(value)
         return value
 
-    def prettify_dict(self, config: ConfigDict) -> Table:
-        """Convert dict to tomlkit table with multiline arrays.
-
-        Recursively processes config: lists of dicts become arrays of tables
-        (``[[section]]`` syntax), other lists become multiline arrays, dicts become
-        nested tables, scalars added as-is.
-
-        Args:
-            config: Configuration dict to prettify.
+    def extension(self) -> str:
+        """Return the TOML file extension.
 
         Returns:
-            tomlkit.table() with formatted arrays.
+            ``"toml"``
         """
-        t = tomlkit.table()
-        for k, v in config.items():
-            t.add(k, self.prettify_value(v))
-        return t
-
-    def pretty_dump(self, config: ConfigDict) -> None:
-        """Write configuration to TOML with pretty formatting.
-
-        Convert config to prettified tomlkit table via `prettify_dict()`, then write
-        with multiline arrays and preserved key order.
-
-        Args:
-            config: Configuration dict to write.
-        """
-        # turn all lists into multiline arrays
-        config = self.prettify_dict(config)
-        with self.path().open("w") as f:
-            tomlkit.dump(config, f, sort_keys=False)
-
-    def extension(self) -> str:
-        """Return "toml"."""
         return "toml"

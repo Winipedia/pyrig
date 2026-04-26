@@ -1,12 +1,8 @@
 """Configuration management for CODE_OF_CONDUCT.md files.
 
 Manages CODE_OF_CONDUCT.md using the Contributor Covenant, the most widely
-adopted code of conduct for open source projects. Fetches from the official
-source with fallback to bundled template.
-
-See Also:
-    https://www.contributor-covenant.org/
-    pyrig.rig.configs.base.markdown.MarkdownConfigFile
+adopted code of conduct for open source projects. Falls back to a bundled
+template when the upstream source is unavailable.
 """
 
 from pathlib import Path
@@ -24,26 +20,19 @@ from pyrig.rig.tools.version_controller import VersionController
 class CodeOfConductConfigFile(MarkdownConfigFile):
     """CODE_OF_CONDUCT.md configuration manager.
 
-    Generates CODE_OF_CONDUCT.md using the Contributor Covenant 2.1, the most
-    widely adopted code of conduct for open source projects. Used by Linux,
-    Kubernetes, Rails, Swift, and thousands of other projects.
-
-    Fetches from GitHub's MVG (Minimum Viable Governance) repository with
-    fallback to a bundled template. Applicable to both private and public
-    repositories.
+    Generates CODE_OF_CONDUCT.md using the Contributor Covenant 2.1 standard.
+    Reads the covenant text from a bundled resource file and substitutes the
+    project's version control email address for the ``[INSERT CONTACT METHOD]``
+    placeholder.
 
     Examples:
         Generate CODE_OF_CONDUCT.md::
 
             CodeOfConductConfigFile.I.validate()
-
-    See Also:
-        https://www.contributor-covenant.org/
-        pyrig.rig.configs.base.markdown.MarkdownConfigFile
     """
 
     def stem(self) -> str:
-        """Return "CODE_OF_CONDUCT" as the filename."""
+        """Return ``"CODE_OF_CONDUCT"`` as the filename stem."""
         return "CODE_OF_CONDUCT"
 
     def parent_path(self) -> Path:
@@ -51,18 +40,19 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return Path()
 
     def lines(self) -> list[str]:
-        """Return Contributor Covenant Code of Conduct content as lines."""
+        """Return the Contributor Covenant content with contact method as lines."""
         return self.split_lines(self.contributor_covenant_with_contact_method())
 
     def is_correct(self) -> bool:
         """Check if CODE_OF_CONDUCT.md exists and is non-empty.
 
-        Note:
-            When running inside pyrig itself, this also triggers
-            `contributor_covenant()` to update the bundled resource if needed.
+        Overrides the default content-comparison check with a simpler
+        existence and non-emptiness test. When running inside the pyrig
+        development repository, ``contributor_covenant()`` is also called
+        to confirm the bundled resource is readable.
 
         Returns:
-            True if file exists with content, False otherwise.
+            bool: True if the file exists and has non-empty content.
         """
         if src_package_is_pyrig():
             # if in pyrig just run get contributor covenant
@@ -71,11 +61,13 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         return self.path().exists() and bool(read_text_utf8(self.path()).strip())
 
     def contributor_covenant_with_contact_method(self) -> str:
-        """Return the Contributor Covenant with the contact method inserted.
+        """Return the Contributor Covenant with the contact method substituted.
+
+        Replaces the ``[INSERT CONTACT METHOD]`` placeholder in the covenant
+        text with the project's version control email address.
 
         Returns:
-            Contributor Covenant 2.1 content with the contact method in place
-            of ``[INSERT CONTACT METHOD]``.
+            str: Contributor Covenant 2.1 text with the contact method in place.
         """
         contact_method = self.contact_method()
         return self.contributor_covenant().replace(
@@ -83,14 +75,18 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         )
 
     def contributor_covenant(self) -> str:
-        """Return the Contributor Covenant content from resources."""
+        """Return the raw Contributor Covenant 2.1 text from the bundled resource.
+
+        Returns:
+            str: Full covenant text, unmodified.
+        """
         return resource_content("CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT", resources)
 
     def contact_method(self) -> str:
         """Return the contact method for the code of conduct.
 
         Returns:
-            Version control email wrapped in angle brackets,
-            e.g., ``<user@example.com>``.
+            str: Version control email address wrapped in angle brackets,
+                e.g., ``<user@example.com>``.
         """
         return f"<{VersionController.I.email()}>"

@@ -1,20 +1,8 @@
 """GitHub Actions workflow for deploying to PyPI and GitHub Pages.
 
-This module provides the DeployWorkflowConfigFile class for creating a GitHub Actions
-workflow that publishes packages to PyPI and deploys documentation to GitHub Pages
-after successful releases.
-
-The workflow:
-    - **Publishes Package**: Uploads wheel to PyPI for public distribution
-    - **Deploys Documentation**: Builds and deploys MkDocs site to GitHub Pages
-
-This is the final step in the automated release pipeline.
-
-See Also:
-    pyrig.rig.configs.workflows.release.ReleaseWorkflowConfigFile
-        Must complete successfully before this workflow runs
-    PyPI: https://pypi.org/
-    GitHub Pages: https://pages.github.com/
+Provides the ``DeployWorkflowConfigFile`` class, which generates the
+``.github/workflows/deploy.yml`` workflow file. This workflow is the final
+step in the automated CI/CD pipeline and runs after a successful release.
 """
 
 from typing import Any
@@ -27,52 +15,51 @@ from pyrig.rig.configs.remote_version_control.workflows.release import (
 
 
 class DeployWorkflowConfigFile(WorkflowConfigFile):
-    """GitHub Actions workflow for deploying to PyPI and GitHub Pages.
+    """Generates the GitHub Actions workflow for deployment.
 
-    Generates a .github/workflows/deploy.yml file that publishes the package
-    to PyPI and deploys documentation to GitHub Pages after successful releases.
+    Produces ``.github/workflows/deploy.yml``, which runs automatically when
+    ``ReleaseWorkflowConfigFile`` completes. Both jobs are gated on a successful
+    triggering run.
 
-    The workflow:
-        - Triggers after ReleaseWorkflowConfigFile completes successfully
-        - Builds a Python wheel and publishes it to PyPI when `PYPI_TOKEN` is configured
-        - Builds MkDocs documentation site
-        - Deploys documentation to GitHub Pages
+    Two jobs are defined:
 
-    Deployment Process:
-        1. Build Python wheel
-        2. Publish to PyPI using `PYPI_TOKEN` (skips publishing if token is not set)
-        3. Build MkDocs documentation site
-        4. Deploy to GitHub Pages via GitHub Actions Pages deployment
+    - **publish-package**: Builds a Python wheel and publishes it to PyPI.
+      Publishing is conditional on the ``PYPI_TOKEN`` secret being present;
+      the step is skipped when the secret is absent.
+    - **deploy-documentation**: Builds the MkDocs documentation site and
+      deploys it to GitHub Pages. Requires ``pages: write`` and
+      ``id-token: write`` job-level permissions.
 
-    Examples:
-        Generate deploy.yml workflow::
+    Example:
+        Generate or validate the workflow file::
 
-            from pyrig.rig.configs.workflows.deploy import DeployWorkflowConfigFile
+            from pyrig.rig.configs.remote_version_control.workflows.deploy import (
+                DeployWorkflowConfigFile,
+            )
 
-            # Creates .github/workflows/deploy.yml
             DeployWorkflowConfigFile.I.validate()
-
-    Note:
-        Publishing to PyPI is token-based by default (via the `PYPI_TOKEN` secret).
-        If `PYPI_TOKEN` is not configured, the PyPI publish step is skipped.
-
-    See Also:
-        pyrig.rig.configs.workflows.release.ReleaseWorkflowConfigFile
-            Triggers this workflow on completion
-        pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
-            Configures the documentation site
-        PyPI API tokens: https://pypi.org/help/#apitoken
     """
 
     def stem(self) -> str:
-        """Get the workflow filename stem."""
+        """Return the stem used to name the generated workflow file.
+
+        Returns:
+            ``"deploy"``, which produces ``.github/workflows/deploy.yml``.
+        """
         return "deploy"
 
     def workflow_triggers(self) -> ConfigDict:
-        """Get the workflow triggers.
+        """Build the workflow trigger configuration.
+
+        Extends the default ``workflow_dispatch`` trigger inherited from the
+        base class with a ``workflow_run`` trigger that fires whenever
+        ``ReleaseWorkflowConfigFile`` completes. Both jobs further guard
+        themselves with an ``if`` condition checked via
+        :meth:`if_workflow_run_is_success`.
 
         Returns:
-            Trigger for release workflow completion.
+            Combined trigger dict with ``workflow_dispatch`` and
+            ``workflow_run`` entries.
         """
         triggers = super().workflow_triggers()
         triggers.update(
@@ -83,10 +70,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return triggers
 
     def jobs(self) -> ConfigDict:
-        """Get the workflow jobs.
+        """Build the top-level jobs configuration.
 
         Returns:
-            Dict with the publish and deploy jobs.
+            Dict containing the publish-package and deploy-documentation jobs.
         """
         jobs: ConfigDict = {}
         jobs.update(self.job_publish_package())
@@ -94,10 +81,13 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return jobs
 
     def job_publish_package(self) -> ConfigDict:
-        """Get the publish job configuration.
+        """Build the job that packages and publishes the project to PyPI.
+
+        The job runs only when the triggering workflow run succeeded. Steps
+        are provided by :meth:`steps_publish_package`.
 
         Returns:
-            Job that builds and publishes to PyPI.
+            Dict mapping the derived job ID to its configuration.
         """
         return self.job(
             job_func=self.job_publish_package,
@@ -106,10 +96,15 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def job_deploy_documentation(self) -> ConfigDict:
-        """Get the deploy documentation job configuration.
+        """Build the job that deploys the MkDocs documentation to GitHub Pages.
+
+        Requests ``pages: write`` and ``id-token: write`` permissions at the
+        job level, which are required by the GitHub Pages deployment API. The
+        job runs only when the triggering workflow run succeeded. Steps are
+        provided by :meth:`steps_deploy_documentation`.
 
         Returns:
-            Job that deploys documentation to GitHub Pages.
+            Dict mapping the derived job ID to its configuration.
         """
         return self.job(
             job_func=self.job_deploy_documentation,
@@ -119,10 +114,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def steps_publish_package(self) -> list[dict[str, Any]]:
-        """Get the steps for publishing.
+        """Build the ordered steps for the publish-package job.
+
+        Combines core setup with a wheel build and a conditional PyPI publish.
+        The publish step reads ``PYPI_TOKEN`` from secrets and is skipped
+        silently when the secret is absent.
 
         Returns:
-            List of steps for setup, build, and publish.
+            Ordered list of step dicts: core setup, build wheel, publish to PyPI.
         """
         return [
             *self.steps_core_setup(),
@@ -131,10 +130,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         ]
 
     def steps_deploy_documentation(self) -> list[dict[str, Any]]:
-        """Get the steps for deploying documentation.
+        """Build the ordered steps for the deploy-documentation job.
+
+        Combines core installed-setup steps with the full documentation build
+        and GitHub Pages deployment sequence.
 
         Returns:
-            List of steps for setup and deploy.
+            Ordered list of step dicts: core installed setup, build docs,
+            enable Pages, upload artifact, deploy to GitHub Pages.
         """
         return [
             *self.steps_core_installed_setup(),

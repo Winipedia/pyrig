@@ -1,11 +1,8 @@
-"""Configuration management for docs/index.md files.
+"""Configuration file manager for the MkDocs home page (``docs/index.md``).
 
-Manages docs/index.md (MkDocs home page) with project name + "Documentation"
-header and status badges. Referenced in mkdocs.yml navigation.
-
-See Also:
-    pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
-    pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
+Produces the project's documentation landing page by extending the
+badge-augmented Markdown base with a ``{project_name} Documentation`` H1
+header.
 """
 
 from pathlib import Path
@@ -16,41 +13,42 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class IndexConfigFile(BadgesMarkdownConfigFile):
-    """MkDocs home page configuration manager.
+    """Configuration manager for the MkDocs home page (``docs/index.md``).
 
-    Generates docs/index.md with "# {project_name} Documentation" header and
-    status badges. Referenced as "Home" page in mkdocs.yml navigation.
+    Produces ``docs/index.md`` with a ``# {project_name} Documentation`` H1
+    header, followed by the grouped status badges and project description
+    provided by the badge-augmented Markdown base class. The file is registered
+    as the "Home" entry in ``mkdocs.yml`` navigation.
 
-    Examples:
-        Generate docs/index.md:
-
-            >>> IndexConfigFile.I.validate()
-
-        Header for "myproject":
-
-            # myproject Documentation
-
-    See Also:
-        pyrig.rig.configs.docs.mkdocs.DocsBuilderConfigFile
-        pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
+    Example:
+        >>> IndexConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:
-        """Return the docs directory path."""
+        """Return the ``docs/`` directory path.
+
+        Returns:
+            ``Path("docs")`` — the MkDocs documentation source directory,
+            relative to the project root.
+        """
         return DocsBuilder.I.docs_dir()
 
     def stem(self) -> str:
-        """Return the filename stem."""
+        """Return ``"index"`` as the filename stem."""
         return "index"
 
     def lines(self) -> list[str]:
-        """Get the index.md file content.
+        """Build the home page content lines.
+
+        Extends the parent's output by appending ``" Documentation"`` to the
+        project name in the H1 header, so the heading reads
+        ``# {project_name} Documentation`` rather than ``# {project_name}``.
+        The remainder of the content — badge rows and project description block
+        — is inherited unchanged from the base class.
 
         Returns:
-            Lines with "# {project_name} Documentation" header and badges.
-
-        Note:
-            Reads project name from pyproject.toml.
+            List of Markdown lines with the modified H1 header followed by the
+            badge rows and project description block.
         """
         lines = super().lines()
         project_name = PackageManager.I.project_name()

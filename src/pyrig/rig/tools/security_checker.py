@@ -1,11 +1,10 @@
-"""Bandit security checker wrapper.
+"""Bandit security checker tool wrapper.
 
-Provides type-safe wrapper for Bandit commands.
-Bandit is a tool designed to find common security issues in Python code.
+Provides a type-safe wrapper for constructing Bandit CLI commands.
+Bandit finds common security issues in Python code by analysing ASTs.
 
 Example:
     >>> from pyrig.rig.tools.security_checker import SecurityChecker
-    >>> SecurityChecker.I.run_args("-r", ".").run()
     >>> SecurityChecker.I.run_with_config_args().run()
 """
 
@@ -19,22 +18,20 @@ from pyrig.rig.tools.project_tester import ProjectTester
 
 
 class SecurityChecker(Tool):
-    """Bandit security checker wrapper.
+    """Bandit security checker tool wrapper.
 
-    Constructs bandit command arguments for security checking operations.
-
-    Operations:
-        - Security scanning: Find common security issues in Python code
-        - Recursive scanning: Scan directories recursively
-        - Config-based scanning: Use pyproject.toml configuration
+    Constructs Bandit CLI arguments for scanning Python source code for
+    common security vulnerabilities. The primary entry point is
+    ``run_with_config_args``, which reads Bandit settings from
+    ``pyproject.toml`` and scans the project's source and test directories.
 
     Example:
-        >>> SecurityChecker.I.run_args("-r", ".").run()
         >>> SecurityChecker.I.run_with_config_args().run()
+        >>> SecurityChecker.I.run_args("-r", "src/").run()
     """
 
     def name(self) -> str:
-        """Get tool name.
+        """Get the tool command name.
 
         Returns:
             'bandit'
@@ -42,10 +39,10 @@ class SecurityChecker(Tool):
         return "bandit"
 
     def group(self) -> str:
-        """Returns the group the tool belongs to.
+        """Get the badge group this tool belongs to.
 
         Returns:
-            `ToolGroup.SECURITY`
+            ``ToolGroup.SECURITY``
         """
         return ToolGroup.SECURITY
 
@@ -56,36 +53,18 @@ class SecurityChecker(Tool):
             "https://github.com/PyCQA/bandit",
         )
 
-    def target_paths(self) -> tuple[Path, ...]:
-        """Return target paths for security checking."""
-        return (
-            PackageManager.I.package_root(),
-            ProjectTester.I.tests_package_root(),
-        )
-
-    def target_posix_paths(self) -> Generator[str, None, None]:
-        """Return target paths as POSIX strings."""
-        return (path.as_posix() for path in self.target_paths())
-
-    def run_args(self, *args: str) -> Args:
-        """Construct bandit arguments.
-
-        Args:
-            *args: Bandit command arguments.
-
-        Returns:
-            Args for 'bandit'.
-        """
-        return self.args(*args)
-
     def run_with_config_args(self, *args: str) -> Args:
-        """Construct bandit arguments with pyproject.toml config.
+        """Construct Bandit arguments using ``pyproject.toml`` configuration.
+
+        Passes ``-c pyproject.toml -r`` followed by each target path so that
+        Bandit reads its settings from the project configuration file and
+        recursively scans all relevant directories.
 
         Args:
-            *args: Bandit command arguments.
+            *args: Additional Bandit arguments appended after the target paths.
 
         Returns:
-            Args for 'bandit -c pyproject.toml -r .'.
+            Args for ``bandit -c pyproject.toml -r <package_root> <tests_root>``.
         """
         return self.run_args(
             "-c",
@@ -93,4 +72,41 @@ class SecurityChecker(Tool):
             "-r",
             *self.target_posix_paths(),
             *args,
+        )
+
+    def run_args(self, *args: str) -> Args:
+        """Construct bare Bandit arguments.
+
+        Args:
+            *args: Bandit command arguments.
+
+        Returns:
+            Args for ``bandit [args]``.
+        """
+        return self.args(*args)
+
+    def target_posix_paths(self) -> Generator[str, None, None]:
+        """Yield the target scan paths as POSIX strings.
+
+        Converts each path from ``target_paths`` to its POSIX string
+        representation, which Bandit expects on the command line.
+
+        Yields:
+            POSIX path string for each target scan directory.
+        """
+        return (path.as_posix() for path in self.target_paths())
+
+    def target_paths(self) -> tuple[Path, ...]:
+        """Return the directories that Bandit should scan.
+
+        Combines the project's source package root and tests package root so
+        that both application code and test code are checked for security
+        issues.
+
+        Returns:
+            Tuple of ``Path`` objects: ``(package_root, tests_package_root)``.
+        """
+        return (
+            PackageManager.I.package_root(),
+            ProjectTester.I.tests_package_root(),
         )

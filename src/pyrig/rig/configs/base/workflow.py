@@ -1,33 +1,4 @@
-"""Base class for GitHub Actions workflow configuration.
-
-This module provides the WorkflowConfigFile base class that all workflow configuration
-files inherit from. It includes comprehensive utilities for building GitHub
-Actions workflows programmatically.
-
-The WorkflowConfigFile class provides:
-    - **Job Builders**: Methods for creating common CI/CD jobs (test, build,
-      release, deploy)
-    - **Step Builders**: Reusable step templates (checkout, setup Python, cache,
-      run commands)
-    - **Trigger Builders**: Methods for defining workflow triggers (push, PR,
-      schedule, workflow_run)
-    - **Matrix Strategies**: OS and Python version matrix configuration
-    - **Artifact Management**: Upload/download artifact utilities
-    - **Environment Setup**: Automatic uv, Python, and dependency installation
-
-Key Features:
-    - Type-safe workflow configuration using Python dicts
-    - Reusable templates for common CI/CD patterns
-    - Integration with pyrig's tools (Pyrigger, PackageManager, etc.)
-    - Support for multi-OS testing (Ubuntu, macOS, Windows)
-    - Support for multi-Python version testing
-    - Automatic caching for dependencies and build artifacts
-
-See Also:
-    pyrig.rig.configs.workflows
-        Concrete workflow implementations
-    GitHub Actions: https://docs.github.com/en/actions
-"""
+"""GitHub Actions workflow YAML generation utilities and abstract base classes."""
 
 from abc import abstractmethod
 from collections.abc import Callable
@@ -62,29 +33,23 @@ from pyrig.rig.tools.version_controller import VersionController
 
 
 class WorkflowConfigFile(DictYmlConfigFile):
-    """Abstract base class for GitHub Actions workflow configuration.
+    """Abstract base class for generating GitHub Actions workflow YAML files.
 
-    Provides a declarative API for building GitHub Actions workflow YAML files
-    programmatically. Subclasses define specific workflows by implementing
-    jobs() and optionally overriding trigger/permission methods.
-
-    The class provides extensive utilities for:
-        - Creating jobs with matrix strategies
-        - Building reusable step sequences
-        - Defining workflow triggers (push, PR, schedule, workflow_run)
-        - Managing artifacts and caching
-        - Setting up Python environments with uv
-        - Running pyrig commands
+    Subclasses define specific workflows by implementing :meth:`jobs` and
+    optionally overriding the trigger, permission, and environment methods.
+    The base class provides a rich set of composable building blocks for steps,
+    jobs, strategies, triggers, and expression helpers so subclasses can
+    assemble complete workflows without writing raw YAML.
 
     Subclasses should:
-        1. Implement jobs() to define workflow jobs
-        2. Override workflow_triggers() to customize triggers
-        3. Override permissions() if special permissions needed
+        1. Implement :meth:`jobs` to define the workflow jobs.
+        2. Override :meth:`workflow_triggers` to control when the workflow runs.
+        3. Override :meth:`permissions` if the workflow needs elevated access.
 
     Attributes:
-        UBUNTU_LATEST (str): Runner label for Ubuntu ("ubuntu-latest")
-        WINDOWS_LATEST (str): Runner label for Windows ("windows-latest")
-        MACOS_LATEST (str): Runner label for macOS ("macos-latest")
+        UBUNTU_LATEST (str): Runner label for Ubuntu (``"ubuntu-latest"``)
+        WINDOWS_LATEST (str): Runner label for Windows (``"windows-latest"``)
+        MACOS_LATEST (str): Runner label for macOS (``"macos-latest"``)
 
     Example:
         >>> from pyrig.rig.configs.base.workflow import WorkflowConfigFile
@@ -105,12 +70,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         ...         triggers = super().workflow_triggers()
         ...         triggers.update(self.on_push())
         ...         return triggers
-
-    See Also:
-        pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile
-            Example concrete workflow implementation
-        pyrig.rig.configs.base.yml.DictYmlConfigFile
-            Parent class for .yml configuration files
     """
 
     UBUNTU_LATEST = "ubuntu-latest"
@@ -118,10 +77,12 @@ class WorkflowConfigFile(DictYmlConfigFile):
     MACOS_LATEST = "macos-latest"
 
     def _configs(self) -> ConfigDict:
-        """Build the complete workflow configuration.
+        """Assemble the complete workflow configuration dict.
 
         Returns:
-            Dict with name, triggers, permissions, defaults, env, and jobs.
+            Top-level workflow configuration with ``name``, ``on``,
+            ``permissions``, ``run-name``, ``defaults``, ``env``, and ``jobs``
+            keys populated from the overridable methods.
         """
         return {
             "name": self.workflow_name(),
@@ -142,15 +103,20 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return Path(".github/workflows")
 
     def is_correct(self) -> bool:
-        """Check if the workflow configuration is correct.
+        """Check whether the workflow configuration is correct.
 
-        Handles the special case where workflow files cannot be empty.
-        If empty, writes the full workflow config with job steps replaced
-        by opt-out echo messages, allowing the workflow to be disabled
-        while remaining valid YAML.
+        Extends the base correctness check with special handling for
+        intentionally empty workflow files.  When a workflow file is found to
+        be empty, a valid YAML configuration is written with all job steps
+        replaced by an opt-out echo step — this keeps the file parseable by
+        GitHub Actions while effectively disabling the workflow.
+
+        A workflow is also considered correct when every job already contains
+        only the opt-out step (i.e. the workflow was previously disabled).
 
         Returns:
-            True if configuration matches expected state.
+            ``True`` if the configuration matches the expected content, or if
+            the workflow has been intentionally opted out.
         """
         correct = super().is_correct()
 
@@ -215,13 +181,15 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return {"run": {"shell": "bash"}}
 
     def global_env(self) -> ConfigDict:
-        """Get the global environment variables.
+        """Get global environment variables applied to all workflow jobs.
 
-        Override to add environment variables.
-        Default disables Python bytecode writing.
+        Override to add custom variables.  By default sets two variables:
+        one to prevent Python from writing ``.pyc`` bytecode files, and
+        one to prevent uv from automatically syncing the environment on
+        every invocation.
 
         Returns:
-            Dict of environment variables.
+            Dict of environment variable names to their values.
         """
         return {
             ProgrammingLanguage.I.no_bytecode_env_var(): 1,
@@ -231,16 +199,20 @@ class WorkflowConfigFile(DictYmlConfigFile):
     # WorkflowConfigFile Conventions
     # ----------------------------------------------------------------------------
     def workflow_name(self) -> str:
-        """Generate a human-readable workflow name from the class name.
+        """Derive a human-readable name from the class name.
+
+        Removes the ``WorkflowConfigFile`` suffix and splits the remainder on
+        uppercase letters to produce a space-separated title.
 
         Returns:
-            Class name split on uppercase letters and joined with spaces.
+            Workflow name, e.g. ``"Health Check"`` for
+            ``HealthCheckWorkflowConfigFile``.
         """
         name = self.__class__.__name__.removesuffix(WorkflowConfigFile.__name__)
         return " ".join(split_on_uppercase(name))
 
     def run_name(self) -> str:
-        """Get the display name for workflow runs.
+        """Get the display name shown for individual workflow runs.
 
         Returns:
             The workflow name by default.
@@ -260,21 +232,22 @@ class WorkflowConfigFile(DictYmlConfigFile):
         steps: list[dict[str, Any]] | None = None,
         job: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a job configuration.
+        """Build a job configuration dict.
 
         Args:
-            job_func: Function representing the job, used to generate the ID.
-            needs: List of job IDs this job depends on.
+            job_func: Function representing this job; its name is used to derive
+                the job ID.
+            needs: IDs of jobs that must complete before this job starts.
             strategy: Matrix or other strategy configuration.
-            permissions: Job-level permissions.
-            runs_on: Runner label. Defaults to ubuntu-latest.
-            if_condition: Conditional expression for job execution.
-            outputs: Job outputs mapping output names to step output references.
-            steps: List of step configurations.
-            job: Existing job dict to update.
+            permissions: Job-level permissions override.
+            runs_on: Runner label.  Defaults to ``ubuntu-latest``.
+            if_condition: GitHub Actions conditional expression controlling
+                whether the job runs.
+            steps: Ordered list of step configurations.
+            job: Additional job-level keys to merge into the configuration.
 
         Returns:
-            Dict mapping job ID to job configuration.
+            Dict mapping the derived job ID to its configuration.
         """
         name = self.make_id_from_func(job_func)
         if job is None:
@@ -294,108 +267,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         job_config.update(job)
         return {name: job_config}
 
-    def make_name_from_func(self, func: Callable[..., Any]) -> str:
-        """Generate a human-readable name from a function.
-
-        Args:
-            func: Function to extract name from.
-
-        Returns:
-            Formatted name with prefix removed.
-        """
-        name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
-        prefix = next(split_on_uppercase(name))
-        return name.removeprefix(prefix).strip()
-
-    def make_id_from_func(self, func: Callable[..., Any]) -> str:
-        """Generate a job/step ID from a function name.
-
-        Args:
-            func: Function to extract ID from.
-
-        Returns:
-            Function name with prefix removed.
-        """
-        name = func.__name__  # ty:ignore[unresolved-attribute]
-        prefix = name.split("_")[0]
-        return name.removeprefix(f"{prefix}_")
-
-    # triggers
-    def on_workflow_dispatch(self) -> dict[str, Any]:
-        """Create a manual workflow dispatch trigger.
-
-        Returns:
-            Trigger configuration for manual runs.
-        """
-        return {"workflow_dispatch": {}}
-
-    def on_push(self, branches: list[str] | None = None) -> dict[str, Any]:
-        """Create a push trigger.
-
-        Args:
-            branches: Branches to trigger on. Defaults to ["main"].
-
-        Returns:
-            Trigger configuration for push events.
-        """
-        if branches is None:
-            branches = [VersionController.I.default_branch()]
-        return {"push": {"branches": branches}}
-
-    def on_schedule(self, cron: str) -> dict[str, Any]:
-        """Create a scheduled trigger.
-
-        Args:
-            cron: Cron expression for the schedule.
-
-        Returns:
-            Trigger configuration for scheduled runs.
-        """
-        return {"schedule": [{"cron": cron}]}
-
-    def on_pull_request(self, types: list[str] | None = None) -> dict[str, Any]:
-        """Create a pull request trigger.
-
-        Args:
-            types: PR event types. Defaults to opened, synchronize, reopened.
-
-        Returns:
-            Trigger configuration for pull request events.
-        """
-        if types is None:
-            types = ["opened", "synchronize", "reopened"]
-        return {"pull_request": {"types": types}}
-
-    def on_workflow_run(
-        self, workflows: list[str], branches: list[str] | None = None
-    ) -> dict[str, Any]:
-        """Create a workflow run trigger.
-
-        Args:
-            workflows: WorkflowConfigFile names to trigger on.
-            branches: Branches to filter on.
-
-        Returns:
-            Trigger configuration for workflow completion events.
-        """
-        config: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
-        if branches is not None:
-            config["branches"] = branches
-        return {"workflow_run": config}
-
-    # permissions
-    def permission_content(self, permission: str = "read") -> dict[str, Any]:
-        """Create a contents permission configuration.
-
-        Args:
-            permission: Permission level (read, write, none).
-
-        Returns:
-            Dict with contents permission.
-        """
-        return {"contents": permission}
-
-    # Steps
     def step(  # noqa: PLR0913
         self,
         step_func: Callable[..., Any],
@@ -406,19 +277,22 @@ class WorkflowConfigFile(DictYmlConfigFile):
         env: dict[str, Any] | None = None,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step configuration.
+        """Build a step configuration dict.
 
         Args:
-            step_func: Function representing the step, used to generate name/ID.
+            step_func: Function representing this step; its name is used to
+                derive the step ``name`` and ``id`` fields.
             run: Shell command to execute.
-            uses: GitHub Action to use.
-            with_: Input parameters for the action.
-            env: Environment variables for the step.
-            step: Existing step dict to update.
-            if_condition: Condition for the step.
+            if_condition: GitHub Actions conditional expression controlling
+                whether the step runs.
+            uses: GitHub Action reference to use (e.g.
+                ``"actions/checkout@main"``).
+            with_: Input parameters passed to the action.
+            env: Step-level environment variables.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step configuration dict.
+            Step configuration dict with at least ``name`` and ``id`` set.
         """
         if step is None:
             step = {}
@@ -441,6 +315,110 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         return step_config
 
+    def make_name_from_func(self, func: Callable[..., Any]) -> str:
+        """Generate a human-readable display name from a function.
+
+        Splits the function name on underscores, capitalises each word, and
+        strips the first word (the type prefix, e.g. ``job`` or ``step``).
+
+        Args:
+            func: The function whose name provides the source text.
+
+        Returns:
+            Display name with the prefix removed, e.g. ``"Build Artifacts"``
+            from ``job_build_artifacts``.
+        """
+        name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
+        prefix = next(split_on_uppercase(name))
+        return name.removeprefix(prefix).strip()
+
+    def make_id_from_func(self, func: Callable[..., Any]) -> str:
+        """Generate a compact identifier from a function name.
+
+        Strips the first underscore-delimited segment (the type prefix, e.g.
+        ``step`` or ``job``) and returns the rest as the identifier.
+
+        Args:
+            func: The function whose name provides the source text.
+
+        Returns:
+            Identifier string, e.g. ``"build_artifacts"`` from
+            ``job_build_artifacts``.
+        """
+        name = func.__name__  # ty:ignore[unresolved-attribute]
+        prefix = name.split("_")[0]
+        return name.removeprefix(f"{prefix}_")
+
+    # triggers
+    def on_workflow_dispatch(self) -> dict[str, Any]:
+        """Create a manual ``workflow_dispatch`` trigger.
+
+        Returns:
+            Trigger configuration that allows manually starting the workflow
+            from the GitHub Actions UI or API.
+        """
+        return {"workflow_dispatch": {}}
+
+    def on_push(self, branches: list[str] | None = None) -> dict[str, Any]:
+        """Create a ``push`` trigger.
+
+        Args:
+            branches: Branches to trigger on.  Defaults to the default branch
+                (``"main"``).
+
+        Returns:
+            Trigger configuration for push events.
+        """
+        if branches is None:
+            branches = [VersionController.I.default_branch()]
+        return {"push": {"branches": branches}}
+
+    def on_schedule(self, cron: str) -> dict[str, Any]:
+        """Create a scheduled ``cron`` trigger.
+
+        Args:
+            cron: Cron expression defining the schedule
+                (e.g. ``"0 1 * * *"`` for 01:00 UTC daily).
+
+        Returns:
+            Trigger configuration for scheduled runs.
+        """
+        return {"schedule": [{"cron": cron}]}
+
+    def on_pull_request(self, types: list[str] | None = None) -> dict[str, Any]:
+        """Create a ``pull_request`` trigger.
+
+        Args:
+            types: Pull request event types to react to.  Defaults to
+                ``["opened", "synchronize", "reopened"]``.
+
+        Returns:
+            Trigger configuration for pull request events.
+        """
+        if types is None:
+            types = ["opened", "synchronize", "reopened"]
+        return {"pull_request": {"types": types}}
+
+    def on_workflow_run(
+        self, workflows: list[str], branches: list[str] | None = None
+    ) -> dict[str, Any]:
+        """Create a ``workflow_run`` trigger.
+
+        Args:
+            workflows: Names of workflows whose completion triggers this
+                workflow.
+            branches: Optional branch filter.  When provided, only completions
+                of the listed workflows on these branches fire the trigger.
+
+        Returns:
+            Trigger configuration for ``workflow_run`` events with
+            ``types: [completed]``.
+        """
+        config: dict[str, Any] = {"workflows": workflows, "types": ["completed"]}
+        if branches is not None:
+            config["branches"] = branches
+        return {"workflow_run": config}
+
     # Strategy
     def strategy_matrix_os_and_python_version(
         self,
@@ -452,13 +430,18 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """Create a strategy with OS and Python version matrix.
 
         Args:
-            os: List of OS runners. Defaults to all major platforms.
-            python_version: List of Python versions. Defaults to supported versions.
-            matrix: Additional matrix dimensions.
-            strategy: Additional strategy options.
+            os: Runner labels to test against.  Defaults to Ubuntu, Windows,
+                and macOS latest (``ubuntu-latest``, ``windows-latest``,
+                ``macos-latest``).
+            python_version: Python version strings to test against.  Defaults
+                to all versions returned by
+                :meth:`~pyrig.rig.configs.pyproject.PyprojectConfigFile.supported_python_versions`.
+            matrix: Additional matrix dimensions to merge in.
+            strategy: Additional strategy options (e.g. ``max-parallel``).
 
         Returns:
-            Strategy configuration with OS and Python matrix.
+            Strategy configuration containing the combined OS and Python
+            version matrix.
         """
         return self.strategy_matrix(
             matrix=self.matrix_os_and_python_version(
@@ -476,12 +459,14 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """Create a strategy with Python version matrix.
 
         Args:
-            python_version: List of Python versions. Defaults to supported versions.
-            matrix: Additional matrix dimensions.
-            strategy: Additional strategy options.
+            python_version: Python version strings to test against.  Defaults
+                to all versions returned by
+                :meth:`~pyrig.rig.configs.pyproject.PyprojectConfigFile.supported_python_versions`.
+            matrix: Additional matrix dimensions to merge in.
+            strategy: Additional strategy options (e.g. ``max-parallel``).
 
         Returns:
-            Strategy configuration with Python version matrix.
+            Strategy configuration containing the Python version matrix.
         """
         return self.strategy_matrix(
             matrix=self.matrix_python_version(
@@ -499,12 +484,14 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """Create a strategy with OS matrix.
 
         Args:
-            os: List of OS runners. Defaults to all major platforms.
-            matrix: Additional matrix dimensions.
-            strategy: Additional strategy options.
+            os: Runner labels to test against.  Defaults to Ubuntu, Windows,
+                and macOS latest (``ubuntu-latest``, ``windows-latest``,
+                ``macos-latest``).
+            matrix: Additional matrix dimensions to merge in.
+            strategy: Additional strategy options (e.g. ``max-parallel``).
 
         Returns:
-            Strategy configuration with OS matrix.
+            Strategy configuration containing the OS matrix.
         """
         return self.strategy_matrix(
             matrix=self.matrix_os(os=os, matrix=matrix), strategy=strategy
@@ -537,13 +524,16 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         strategy: dict[str, Any],
     ) -> dict[str, Any]:
-        """Finalize a strategy configuration.
+        """Apply defaults to a strategy configuration.
+
+        Sets ``fail-fast`` to ``True`` if not already present in the
+        strategy dict.
 
         Args:
-            strategy: Strategy configuration to finalize.
+            strategy: Strategy configuration to process.
 
         Returns:
-            Strategy with fail-fast defaulting to True.
+            The strategy dict with ``fail-fast`` defaulting to ``True``.
         """
         strategy["fail-fast"] = strategy.pop("fail-fast", True)
         return strategy
@@ -557,12 +547,16 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """Create a matrix with OS and Python version dimensions.
 
         Args:
-            os: List of OS runners. Defaults to all major platforms.
-            python_version: List of Python versions. Defaults to supported versions.
-            matrix: Additional matrix dimensions.
+            os: Runner labels to include.  Defaults to Ubuntu, Windows, and
+                macOS latest (``ubuntu-latest``, ``windows-latest``,
+                ``macos-latest``).
+            python_version: Python version strings to include.  Defaults to
+                all versions returned by
+                :meth:`~pyrig.rig.configs.pyproject.PyprojectConfigFile.supported_python_versions`.
+            matrix: Additional matrix dimensions to merge in.
 
         Returns:
-            Matrix configuration with os and python-version.
+            Matrix dict with ``os`` and ``python-version`` keys populated.
         """
         if matrix is None:
             matrix = {}
@@ -583,11 +577,13 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """Create a matrix with OS dimension.
 
         Args:
-            os: List of OS runners. Defaults to Ubuntu, Windows, macOS.
-            matrix: Additional matrix dimensions.
+            os: Runner labels to include.  Defaults to Ubuntu, Windows, and
+                macOS latest (``ubuntu-latest``, ``windows-latest``,
+                ``macos-latest``).
+            matrix: Additional matrix dimensions to merge in.
 
         Returns:
-            Matrix configuration with os.
+            Matrix dict with the ``os`` key populated.
         """
         if os is None:
             os = [self.UBUNTU_LATEST, self.WINDOWS_LATEST, self.MACOS_LATEST]
@@ -605,11 +601,13 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """Create a matrix with Python version dimension.
 
         Args:
-            python_version: List of Python versions. Defaults to supported versions.
-            matrix: Additional matrix dimensions.
+            python_version: Python version strings to include.  Defaults to
+                all versions returned by
+                :meth:`~pyrig.rig.configs.pyproject.PyprojectConfigFile.supported_python_versions`.
+            matrix: Additional matrix dimensions to merge in.
 
         Returns:
-            Matrix configuration with python-version.
+            Matrix dict with the ``python-version`` key populated.
         """
         if python_version is None:
             python_version = [
@@ -623,17 +621,88 @@ class WorkflowConfigFile(DictYmlConfigFile):
     def matrix(self, matrix: dict[str, list[Any]]) -> dict[str, Any]:
         """Return the matrix configuration.
 
+        This method is an extension point.  The base implementation returns the
+        dict unchanged; subclasses can override it to apply transformations or
+        add fixed dimensions to every matrix produced by this workflow.
+
         Args:
-            matrix: Matrix dimensions.
+            matrix: Matrix dimensions dict to pass through.
 
         Returns:
-            The matrix configuration unchanged.
+            The matrix configuration, unchanged by default.
         """
         return matrix
 
     # WorkflowConfigFile Steps
     # ----------------------------------------------------------------------------
     # Combined Steps
+    def steps_core_matrix_setup(
+        self,
+        *,
+        no_dev: bool = False,
+        python_version: str | None = None,
+        repo_token: bool = False,
+        patch_version: bool = False,
+    ) -> list[dict[str, Any]]:
+        """Build setup steps for matrix jobs.
+
+        Delegates entirely to :meth:`steps_core_installed_setup`.  Using this
+        method in matrix jobs makes the intent explicit and keeps a consistent
+        naming pattern alongside the other ``steps_core_*`` helpers.
+
+        Args:
+            no_dev: Omit dev dependency groups from the sync.
+            python_version: Python version string.  ``None`` resolves to the
+                latest supported minor version.
+            repo_token: Use ``REPO_TOKEN`` for checkout authentication.
+            patch_version: Bump and stage the patch version as part of setup.
+
+        Returns:
+            Ordered list of step configuration dicts.
+        """
+        return [
+            *self.steps_core_installed_setup(
+                python_version=python_version,
+                repo_token=repo_token,
+                no_dev=no_dev,
+                patch_version=patch_version,
+            ),
+        ]
+
+    def steps_core_installed_setup(
+        self,
+        *,
+        no_dev: bool = False,
+        python_version: str | None = None,
+        repo_token: bool = False,
+        patch_version: bool = False,
+    ) -> list[dict[str, Any]]:
+        """Build setup steps that also update and install dependencies.
+
+        Extends :meth:`steps_core_setup` with a dependency upgrade, a full
+        ``uv sync``, and a git-add step for lock-file changes.
+
+        Args:
+            no_dev: Omit dev dependency groups from the sync.
+            python_version: Python version string.  Defaults to the latest
+                minor version supported by the project.
+            repo_token: Use ``REPO_TOKEN`` for checkout authentication.
+            patch_version: Bump and stage the patch version as part of setup.
+
+        Returns:
+            Ordered list of step configuration dicts.
+        """
+        return [
+            *self.steps_core_setup(
+                python_version=python_version,
+                repo_token=repo_token,
+                patch_version=patch_version,
+            ),
+            self.step_update_dependencies(),
+            self.step_install_dependencies(no_dev=no_dev),
+            self.step_add_dependency_updates_to_version_control(),
+        ]
+
     def steps_core_setup(
         self,
         python_version: str | None = None,
@@ -641,15 +710,23 @@ class WorkflowConfigFile(DictYmlConfigFile):
         repo_token: bool = False,
         patch_version: bool = False,
     ) -> list[dict[str, Any]]:
-        """Get the core setup steps for any workflow.
+        """Build the base checkout and environment setup steps.
+
+        Checks out the repository, configures git credentials, and installs
+        the package manager (uv) with the specified Python version.
+        Optionally bumps the patch version and stages the change.
 
         Args:
-            python_version: Python version to use. Defaults to latest supported.
-            repo_token: Whether to use REPO_TOKEN for checkout.
-            patch_version: Whether to patch the version.
+            python_version: Python version string for uv.  Defaults to the
+                latest minor version supported by the project.
+            repo_token: Use ``REPO_TOKEN`` instead of the default token when
+                checking out the repository.  Required when subsequent steps
+                need to push changes back to the repository.
+            patch_version: If ``True``, append a patch-version bump step and a
+                git-add step for ``pyproject.toml`` and the lock file.
 
         Returns:
-            List with checkout and project setup steps.
+            Ordered list of step configuration dicts.
         """
         if python_version is None:
             python_version = str(
@@ -668,191 +745,261 @@ class WorkflowConfigFile(DictYmlConfigFile):
             ]
         return core
 
-    def steps_core_installed_setup(
+    # Single Steps
+    # ----------------------------------------------------------------------------
+
+    def step_checkout_repository(
         self,
         *,
-        no_dev: bool = False,
-        python_version: str | None = None,
+        step: dict[str, Any] | None = None,
         repo_token: bool = False,
-        patch_version: bool = False,
-    ) -> list[dict[str, Any]]:
-        """Get core setup steps with dependency update and installation.
-
-        Args:
-            no_dev: Whether to skip dev dependencies.
-            python_version: Python version to use. Defaults to latest supported.
-            repo_token: Whether to use REPO_TOKEN for checkout.
-            patch_version: Whether to patch the version.
-
-        Returns:
-            List with setup, dependency update, and dependency installation steps.
-        """
-        return [
-            *self.steps_core_setup(
-                python_version=python_version,
-                repo_token=repo_token,
-                patch_version=patch_version,
-            ),
-            self.step_update_dependencies(),
-            self.step_install_dependencies(no_dev=no_dev),
-            self.step_add_dependency_updates_to_version_control(),
-        ]
-
-    def steps_core_matrix_setup(
-        self,
-        *,
-        no_dev: bool = False,
-        python_version: str | None = None,
-        repo_token: bool = False,
-        patch_version: bool = False,
-    ) -> list[dict[str, Any]]:
-        """Get core setup steps for matrix jobs.
-
-        Args:
-            no_dev: Whether to skip dev dependencies.
-            python_version: Python version to use. If None (default),
-                steps_core_installed_setup will use latest supported version.
-            repo_token: Whether to use REPO_TOKEN for checkout.
-            patch_version: Whether to patch the version.
-
-        Returns:
-            List with full setup steps for matrix execution.
-        """
-        return [
-            *self.steps_core_installed_setup(
-                python_version=python_version,
-                repo_token=repo_token,
-                no_dev=no_dev,
-                patch_version=patch_version,
-            ),
-        ]
-
-    # Single Step
-
-    def step_opt_out_of_workflow(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that opts out of the workflow.
+        """Build a step that checks out the repository.
+
+        Uses ``actions/checkout@main``.  When ``repo_token`` is ``True``,
+        the checkout authenticates with ``REPO_TOKEN`` instead of the default
+        ``GITHUB_TOKEN``, which is required when subsequent steps need to push
+        commits or tags back to the repository.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
+            repo_token: Authenticate with ``REPO_TOKEN`` to allow pushing from
+                within the workflow.
 
         Returns:
-            Step that echoes an opt-out message.
+            Step using ``actions/checkout@main``.
         """
+        if step is None:
+            step = {}
+        if repo_token:
+            step.setdefault("with", {})["token"] = self.insert_repo_token()
         return self.step(
-            step_func=self.step_opt_out_of_workflow,
-            run=f"echo 'Opting out of {self.workflow_name()} workflow.'",
+            step_func=self.step_checkout_repository,
+            uses="actions/checkout@main",
             step=step,
         )
 
-    def step_aggregate_jobs(
+    def step_setup_version_control(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that aggregates matrix job results.
+        """Build a step that configures the git user identity.
+
+        Sets ``user.email`` and ``user.name`` globally on the runner so that
+        automated commits made during the workflow are attributed to
+        ``github-actions[bot]``.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step configuration for result aggregation.
+            Step that runs two ``git config --global`` commands.
         """
         return self.step(
-            step_func=self.step_aggregate_jobs,
-            run="echo 'Aggregating jobs into one job.'",
-            step=step,
-        )
-
-    def step_no_builder_defined(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a placeholder step when no builders are defined.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that echoes a skip message.
-        """
-        return self.step(
-            step_func=self.step_no_builder_defined,
-            run="echo 'No non-abstract builders defined. Skipping build.'",
-            step=step,
-        )
-
-    def step_install_container_engine(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that installs the container engine.
-
-        We use podman as the container engine.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that installs podman.
-        """
-        return self.step(
-            step_func=self.step_install_container_engine,
-            uses="redhat-actions/podman-install@main",
-            with_={"github-token": self.insert_github_token()},
-            step=step,
-        )
-
-    def step_build_container_image(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that builds the container image.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that builds the container image.
-        """
-        return self.step(
-            step_func=self.step_build_container_image,
+            step_func=self.step_setup_version_control,
             run=str(
-                ContainerEngine.I.build_args(
-                    project_name=PackageManager.I.project_name()
+                VersionController.I.config_global_user_email_args(
+                    email='"github-actions[bot]@users.noreply.github.com"',
+                ),
+            )
+            + " && "
+            + str(
+                VersionController.I.config_global_user_name_args(
+                    name='"github-actions[bot]"'
                 )
             ),
             step=step,
         )
 
-    def step_save_container_image(
+    def step_setup_package_manager(
+        self,
+        *,
+        python_version: str,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that installs uv and pins the Python version.
+
+        Uses ``astral-sh/setup-uv`` to install uv on the runner and configure
+        it to use the given Python version.  All subsequent ``uv run`` and
+        ``uv sync`` commands will use this version.
+
+        Args:
+            python_version: Python version string to pin, e.g. ``"3.13"``.
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step using ``astral-sh/setup-uv@main``.
+        """
+        return self.step(
+            step_func=self.step_setup_package_manager,
+            uses="astral-sh/setup-uv@main",
+            with_={"python-version": python_version},
+            step=step,
+        )
+
+    def step_patch_version(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that saves the container image to a file.
+        """Build a step that bumps the project patch version.
+
+        Runs ``uv version --bump patch`` to increment the patch segment of the
+        version string in ``pyproject.toml``.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that saves the container image.
+            Step that increments the patch version.
         """
-        image_file = Path(f"{PackageManager.I.project_name()}.tar")
-        image_path = Path(BuilderConfigFile.dist_dir_name()) / image_file
         return self.step(
-            step_func=self.step_save_container_image,
-            run=str(
-                ContainerEngine.I.save_args(
-                    image_path=image_path,
-                )
-            ),
+            step_func=self.step_patch_version,
+            run=str(PackageManager.I.patch_version_args()),
+            step=step,
+        )
+
+    def step_add_version_bump_to_version_control(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that stages the version-bump files.
+
+        Stages ``pyproject.toml`` and the lock file so they are included in
+        the next commit step.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs ``git add pyproject.toml uv.lock``.
+        """
+        return self.step(
+            step_func=self.step_add_version_bump_to_version_control,
+            run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
+            step=step,
+        )
+
+    def step_update_dependencies(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that upgrades all pinned dependencies.
+
+        Runs ``uv lock --upgrade`` to update the lock file to the latest
+        versions allowed by the version constraints in ``pyproject.toml``.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs ``uv lock --upgrade``.
+        """
+        return self.step(
+            step_func=self.step_update_dependencies,
+            run=str(PackageManager.I.update_dependencies_args()),
+            step=step,
+        )
+
+    def step_install_dependencies(
+        self,
+        *,
+        no_dev: bool = False,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that synchronises the virtual environment.
+
+        Runs ``uv sync`` to install all locked dependencies.  Pass
+        ``no_dev=True`` to omit the dev dependency group, which is useful for
+        production builds where dev tools are not needed.
+
+        Args:
+            no_dev: Exclude the dev dependency group from the sync.
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs ``uv sync`` (with ``--no-group dev`` when
+            ``no_dev`` is ``True``).
+        """
+        install = str(PackageManager.I.install_dependencies_args())
+        if no_dev:
+            install += " --no-group dev"
+        run = install
+
+        return self.step(
+            step_func=self.step_install_dependencies,
+            run=run,
+            step=step,
+        )
+
+    def step_add_dependency_updates_to_version_control(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that stages dependency file changes.
+
+        Stages ``pyproject.toml`` and the lock file after a dependency update
+        so the changes are included in the next commit.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs ``git add pyproject.toml uv.lock``.
+        """
+        return self.step(
+            step_func=self.step_add_dependency_updates_to_version_control,
+            run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
+            step=step,
+        )
+
+    def step_run_pre_commit_hooks(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that runs all pre-commit hooks via prek.
+
+        Runs ``prek --all-files`` to enforce code quality checks across the
+        entire working tree.  Including this step also ensures that
+        ``git stash pop`` does not fail when there are no staged changes,
+        since prek leaves the working tree clean.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs ``uv run prek --all-files``.
+        """
+        return self.step(
+            step_func=self.step_run_pre_commit_hooks,
+            run=str(PackageManager.I.run_args(*PreCommitter.I.run_all_files_args())),
+            step=step,
+        )
+
+    def step_run_dependency_audit(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that audits dependencies for known vulnerabilities.
+
+        Runs ``pip-audit`` via uv against the installed environment to detect
+        CVEs in direct and transitive dependencies.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs ``uv run pip-audit``.
+        """
+        return self.step(
+            step_func=self.step_run_dependency_audit,
+            run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
             step=step,
         )
 
@@ -861,13 +1008,18 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that runs pytest.
+        """Build a step that runs the test suite with pytest.
+
+        When running inside the pyrig package itself
+        (``src_package_is_pyrig()`` is ``True``), the ``REPO_TOKEN``
+        environment variable is injected so that tests that interact with the
+        GitHub API have the required credentials.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step configuration for running tests.
+            Step that executes pytest with CI-appropriate flags.
         """
         if step is None:
             step = {}
@@ -887,22 +1039,23 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that uploads the coverage report.
+        """Build a step that uploads the coverage report to Codecov.
 
-        Requires a Codecov account (log in at codecov.io with GitHub).
+        Requires a Codecov account linked to the repository (log in at
+        codecov.io with GitHub).
 
-        For private repos: CODECOV_TOKEN is required.
-        For public repos: CODECOV_TOKEN is recommended, or enable tokenless
-        upload in Codecov settings (Settings → General).
+        - **Private repos**: ``CODECOV_TOKEN`` secret is required.
+        - **Public repos**: ``CODECOV_TOKEN`` is recommended.  Tokenless
+          upload can be enabled in Codecov settings (Settings > General).
 
-        If CODECOV_TOKEN is not defined, fail_ci_if_error is set to false,
-        preventing the step from failing CI on upload errors.
+        When ``CODECOV_TOKEN`` is not configured, ``fail_ci_if_error`` is set
+        to ``false`` so a missing token does not break the CI run.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step configuration for uploading coverage report.
+            Step using ``codecov/codecov-action@main``.
         """
         #  make fail_ci_if_error true if token exists and false if it doesn't
         fail_ci_if_error = self.insert_var(
@@ -919,181 +1072,21 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_patch_version(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that bumps the patch version.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that increments version and stages pyproject.toml.
-        """
-        return self.step(
-            step_func=self.step_patch_version,
-            run=str(PackageManager.I.patch_version_args()),
-            step=step,
-        )
-
-    def step_add_version_bump_to_version_control(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that stages the version bump commit.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that stages pyproject.toml.
-        """
-        return self.step(
-            step_func=self.step_add_version_bump_to_version_control,
-            run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
-            step=step,
-        )
-
-    def step_add_dependency_updates_to_version_control(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that stages dependency file changes.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that stages pyproject.toml and uv.lock.
-        """
-        return self.step(
-            step_func=self.step_add_dependency_updates_to_version_control,
-            run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
-            step=step,
-        )
-
-    def step_checkout_repository(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-        repo_token: bool = False,
-    ) -> dict[str, Any]:
-        """Create a step that checks out the repository.
-
-        Args:
-            step: Existing step dict to update.
-            fetch_depth: Git fetch depth. None for full history.
-            repo_token: Whether to use REPO_TOKEN for authentication.
-
-        Returns:
-            Step using actions/checkout.
-        """
-        if step is None:
-            step = {}
-        if repo_token:
-            step.setdefault("with", {})["token"] = self.insert_repo_token()
-        return self.step(
-            step_func=self.step_checkout_repository,
-            uses="actions/checkout@main",
-            step=step,
-        )
-
-    def step_setup_version_control(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that configures git user for commits.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that sets git user.email and user.name.
-        """
-        return self.step(
-            step_func=self.step_setup_version_control,
-            run=str(
-                VersionController.I.config_global_user_email_args(
-                    email='"github-actions[bot]@users.noreply.github.com"',
-                ),
-            )
-            + " && "
-            + str(
-                VersionController.I.config_global_user_name_args(
-                    name='"github-actions[bot]"'
-                )
-            ),
-            step=step,
-        )
-
-    def step_setup_python(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-        python_version: str | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that sets up Python.
-
-        Args:
-            step: Existing step dict to update.
-            python_version: Python version to install. Defaults to latest.
-
-        Returns:
-            Step using actions/setup-python.
-        """
-        if step is None:
-            step = {}
-        if python_version is None:
-            python_version = str(
-                PyprojectConfigFile.I.latest_possible_python_version(level="minor")
-            )
-
-        step.setdefault("with", {})["python-version"] = python_version
-        return self.step(
-            step_func=self.step_setup_python,
-            uses="actions/setup-python@main",
-            step=step,
-        )
-
-    def step_setup_package_manager(
-        self,
-        *,
-        python_version: str,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that sets up the project package manager (uv).
-
-        Args:
-            python_version: Python version to configure.
-            step: Existing step dict to update.
-
-        Returns:
-            Step using astral-sh/setup-uv.
-        """
-        return self.step(
-            step_func=self.step_setup_package_manager,
-            uses="astral-sh/setup-uv@main",
-            with_={"python-version": python_version},
-            step=step,
-        )
-
     def step_build_wheel(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that builds the Python wheel.
+        """Build a step that packages the project as a Python wheel.
+
+        Runs ``uv build`` to produce wheel and sdist distributions in the
+        ``dist/`` directory.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs uv build.
+            Step that runs ``uv build``.
         """
         return self.step(
             step_func=self.step_build_wheel,
@@ -1101,26 +1094,104 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_publish_to_pypi(
+    def step_build_artifacts(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that publishes the package to PyPI.
+        """Build a step that runs the pyrig build command.
 
-        If PYPI_TOKEN is not defined then the step is skipped.
+        Invokes ``pyrig build`` via uv, which delegates to all registered
+        concrete :class:`~pyrig.rig.builders.base.builder.BuilderConfigFile`
+        subclasses to produce their respective artifacts.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs uv publish with PYPI_TOKEN.
+            Step that runs ``uv run pyrig build``.
         """
-        run = str(PackageManager.I.publish_args(token=self.insert_pypi_token()))
-        run_if = self.run_if_condition(run, self.pypi_token_var())
         return self.step(
-            step_func=self.step_publish_to_pypi,
-            run=run_if,
+            step_func=self.step_build_artifacts,
+            run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=build))),
+            step=step,
+        )
+
+    def step_install_container_engine(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that installs Podman as the container engine.
+
+        Uses the ``redhat-actions/podman-install`` GitHub Action.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that installs Podman on the runner.
+        """
+        return self.step(
+            step_func=self.step_install_container_engine,
+            uses="redhat-actions/podman-install@main",
+            with_={"github-token": self.insert_github_token()},
+            step=step,
+        )
+
+    def step_build_container_image(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that creates the project container image.
+
+        Runs the container engine build command derived from
+        :meth:`~pyrig.rig.tools.container_engine.ContainerEngine.build_args`.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that builds the container image from the project's
+            Containerfile.
+        """
+        return self.step(
+            step_func=self.step_build_container_image,
+            run=str(
+                ContainerEngine.I.build_args(
+                    project_name=PackageManager.I.project_name()
+                )
+            ),
+            step=step,
+        )
+
+    def step_save_container_image(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that exports the container image to a tar archive.
+
+        The archive is written to ``dist/<project-name>.tar`` so it can be
+        uploaded as a workflow artifact.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that saves the container image using the container engine's
+            save command.
+        """
+        image_file = Path(f"{PackageManager.I.project_name()}.tar")
+        image_path = Path(BuilderConfigFile.dist_dir_name()) / image_file
+        return self.step(
+            step_func=self.step_save_container_image,
+            run=str(
+                ContainerEngine.I.save_args(
+                    image_path=image_path,
+                )
+            ),
             step=step,
         )
 
@@ -1129,13 +1200,18 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that builds the project documentation.
+        """Build a step that generates the MkDocs documentation site.
+
+        Runs the docs builder command, which invokes ``mkdocs build`` and
+        writes the rendered HTML site to the ``site/`` directory.  The
+        ``site/`` directory is then consumed by the subsequent
+        :meth:`step_upload_documentation` step.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that builds the project documentation.
+            Step that runs the docs builder command.
         """
         return self.step(
             step_func=self.step_build_documentation,
@@ -1148,13 +1224,17 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that enables GitHub Pages.
+        """Build a step that enables GitHub Pages for the repository.
+
+        Calls ``actions/configure-pages`` with ``enablement: true``.  This is
+        idempotent -- running it on a repository where Pages is already enabled
+        has no effect.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that enables GitHub Pages.
+            Step that enables GitHub Pages using ``REPO_TOKEN``.
         """
         return self.step(
             step_func=self.step_enable_pages,
@@ -1168,13 +1248,17 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that uploads the documentation to GitHub Pages.
+        """Build a step that uploads the documentation as a Pages artifact.
+
+        Uploads the ``site/`` directory produced by
+        :meth:`step_build_documentation` so that the Pages deployment step
+        can publish it.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that uploads the documentation to GitHub Pages.
+            Step using ``actions/upload-pages-artifact@main``.
         """
         return self.step(
             step_func=self.step_upload_documentation,
@@ -1188,13 +1272,17 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that deploys the documentation to GitHub Pages.
+        """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
+
+        Must be preceded by :meth:`step_upload_documentation`.  The job that
+        contains this step must have ``pages: write`` and
+        ``id-token: write`` permissions.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that deploys documentation to GitHub Pages.
+            Step using ``actions/deploy-pages@main``.
         """
         return self.step(
             step_func=self.step_deploy_documentation,
@@ -1202,114 +1290,133 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_update_dependencies(
+    def step_build_changelog(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that updates the dependencies.
+        """Build a step that generates a changelog from commit history.
+
+        Uses ``mikepenz/release-changelog-builder-action`` to generate release
+        notes from commits since the previous tag.  The output is available
+        via :meth:`insert_changelog` in subsequent steps.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs uv lock --upgrade.
+            Step using ``release-changelog-builder-action@develop``.
         """
         return self.step(
-            step_func=self.step_update_dependencies,
-            run=str(PackageManager.I.update_dependencies_args()),
+            step_func=self.step_build_changelog,
+            uses="mikepenz/release-changelog-builder-action@develop",
+            with_={"token": self.insert_github_token()},
             step=step,
         )
 
-    def step_install_dependencies(
+    def step_extract_version(
         self,
         *,
-        no_dev: bool = False,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that installs Python dependencies.
+        """Build a step that writes the current version to ``GITHUB_OUTPUT``.
+
+        Evaluates :meth:`insert_version` (``v$(uv version --short)``) at
+        runtime and appends ``version=v<x.y.z>`` to the ``$GITHUB_OUTPUT``
+        file.  Downstream steps can reference the value via
+        :meth:`insert_version_from_extract_version_step`.
 
         Args:
-            no_dev: Whether to skip dev dependencies.
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs uv sync.
+            Step that exports the version as a GitHub Actions output.
         """
-        install = str(PackageManager.I.install_dependencies_args())
-        if no_dev:
-            install += " --no-group dev"
-        run = install
-
         return self.step(
-            step_func=self.step_install_dependencies,
-            run=run,
+            step_func=self.step_extract_version,
+            run=f'echo "version={self.insert_version()}" >> $GITHUB_OUTPUT',
             step=step,
         )
 
-    def step_protect_repository(
+    def step_create_release(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that applies repository protection rules.
+        """Build a step that creates a GitHub release.
+
+        Uses ``ncipollo/release-action`` to create a release tagged with the
+        version extracted by :meth:`step_extract_version`.  Attaches all
+        files under ``dist/`` as release assets and uses the changelog
+        generated by :meth:`step_build_changelog` as the release body.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs the pyrig protect-repo command.
+            Step using ``ncipollo/release-action@main``.
         """
+        version = self.insert_version_from_extract_version_step()
         return self.step(
-            step_func=self.step_protect_repository,
-            run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=protect_repo))),
-            env={
-                RemoteVersionController.I.access_token_key(): self.insert_repo_token()
+            step_func=self.step_create_release,
+            uses="ncipollo/release-action@main",
+            with_={
+                "tag": version,
+                "name": f"{self.insert_repository_name()} {version}",
+                "body": self.insert_changelog(),
+                "artifacts": f"{BuilderConfigFile.dist_dir_name()}/*",
             },
             step=step,
         )
 
-    def step_run_pre_commit_hooks(
+    def step_publish_to_pypi(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that runs prek hooks.
+        """Build a step that publishes the wheel to PyPI.
 
-        Ensures code quality checks pass before commits. Also useful
-        for ensuring git stash pop doesn't fail when there are no changes.
+        The publish command is wrapped in a shell conditional: if
+        ``PYPI_TOKEN`` is configured the step runs ``uv publish``; otherwise
+        it prints a skip message and exits successfully.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs prek on all files.
+            Step that conditionally publishes to PyPI using ``PYPI_TOKEN``.
         """
+        run = str(PackageManager.I.publish_args(token=self.insert_pypi_token()))
+        run_if = self.run_if_condition(run, self.pypi_token_var())
         return self.step(
-            step_func=self.step_run_pre_commit_hooks,
-            run=str(PackageManager.I.run_args(*PreCommitter.I.run_all_files_args())),
+            step_func=self.step_publish_to_pypi,
+            run=run_if,
             step=step,
         )
 
-    def step_run_dependency_audit(
+    def step_create_and_push_tag(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that audits installed dependencies for known vulnerabilities.
+        """Build a step that creates and pushes a version tag.
 
-        Runs pip-audit via uv (``uv run pip-audit``) so the audit uses the
-        workflow's installed environment.
+        Creates a tag named ``v<version>`` (e.g. ``v1.2.3``) and pushes it to
+        the remote.  The version string is resolved at runtime via
+        :meth:`insert_version`.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs pip-audit.
+            Step that runs ``git tag`` followed by
+            ``git push origin <tag>``.
         """
         return self.step(
-            step_func=self.step_run_dependency_audit,
-            run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
+            step_func=self.step_create_and_push_tag,
+            run=str(VersionController.I.tag_args(tag=self.insert_version()))
+            + " && "
+            + str(VersionController.I.push_origin_tag_args(tag=self.insert_version())),
             step=step,
         )
 
@@ -1318,13 +1425,18 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that commits staged changes.
+        """Build a step that commits any staged changes.
+
+        Commits with the message
+        ``[skip ci] CI/CD: Committing possible staged changes`` and uses
+        ``--no-verify`` to bypass pre-commit hooks.  The ``[skip ci]`` prefix
+        prevents the commit from re-triggering the workflow.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that commits with [skip ci] prefix.
+            Step that runs ``git commit --no-verify``.
         """
         msg = '"[skip ci] CI/CD: Committing possible staged changes"'
         return self.step(
@@ -1338,13 +1450,19 @@ class WorkflowConfigFile(DictYmlConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that pushes commits to the remote.
+        """Build a step that pushes the current branch to the remote.
+
+        Pushes any commits staged during the workflow (such as version bumps
+        or lock-file updates) to the remote origin.  The repository must be
+        checked out with ``REPO_TOKEN`` via
+        :meth:`step_checkout_repository` (``repo_token=True``) for this push
+        to succeed.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs git push.
+            Step that runs ``git push``.
         """
         return self.step(
             step_func=self.step_push_commits,
@@ -1352,24 +1470,30 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_create_and_push_tag(
+    def step_protect_repository(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that creates and pushes a version tag.
+        """Build a step that applies repository protection rules.
+
+        Runs ``pyrig protect-repo`` via uv with the ``REPO_TOKEN`` secret,
+        which configures GitHub branch protection and other repository settings
+        defined in ``branch-protection.json``.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that creates a git tag and pushes it.
+            Step that runs the protect-repo command with ``REPO_TOKEN``
+            injected as an environment variable.
         """
         return self.step(
-            step_func=self.step_create_and_push_tag,
-            run=str(VersionController.I.tag_args(tag=self.insert_version()))
-            + " && "
-            + str(VersionController.I.push_origin_tag_args(tag=self.insert_version())),
+            step_func=self.step_protect_repository,
+            run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=protect_repo))),
+            env={
+                RemoteVersionController.I.access_token_key(): self.insert_repo_token()
+            },
             step=step,
         )
 
@@ -1379,14 +1503,17 @@ class WorkflowConfigFile(DictYmlConfigFile):
         name: str | None = None,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that uploads build artifacts.
+        """Build a step that uploads build artifacts.
+
+        Uploads the entire ``dist/`` directory as a named GitHub Actions
+        artifact so it can be downloaded by downstream jobs or workflow runs.
 
         Args:
-            name: Artifact name. Defaults to package-os format.
-            step: Existing step dict to update.
+            name: Artifact name.  Defaults to ``<project>-<runner.os>``.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step using actions/upload-artifact.
+            Step using ``actions/upload-artifact@main``.
         """
         if name is None:
             name = self.insert_artifact_name()
@@ -1397,41 +1524,25 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_build_artifacts(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that builds project artifacts.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step that runs the pyrig build command.
-        """
-        return self.step(
-            step_func=self.step_build_artifacts,
-            run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=build))),
-            step=step,
-        )
-
     def step_download_artifacts_from_workflow_run(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that downloads artifacts from triggering workflow run.
+        """Build a step that downloads artifacts from the triggering workflow run.
 
-        Uses the github.event.workflow_run.id to download artifacts from
-        the workflow that triggered this workflow (via workflow_run event).
+        Uses ``github.event.workflow_run.id`` as the run ID so it always
+        fetches artifacts from the specific run that triggered the current
+        workflow, even when multiple runs exist.  All per-OS artifact
+        directories are merged into a single ``dist/`` directory
+        (``merge-multiple: true``).
 
         Args:
-            path: Path to download to. Defaults to artifacts directory.
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step using actions/download-artifact with run-id parameter.
+            Step using ``actions/download-artifact@main`` with the workflow
+            run ID and a GitHub token for cross-workflow artifact access.
         """
         with_: dict[str, Any] = {
             "path": BuilderConfigFile.dist_dir_name(),
@@ -1447,68 +1558,48 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_build_changelog(
+    def step_opt_out_of_workflow(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that generates a changelog.
+        """Build a step that marks the workflow as opted out.
+
+        Used by :meth:`is_correct` to replace all job steps when a workflow
+        file is intentionally left empty, keeping the YAML valid while
+        effectively disabling the workflow.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step using release-changelog-builder-action.
+            Step that echoes an opt-out message using the workflow name.
         """
         return self.step(
-            step_func=self.step_build_changelog,
-            uses="mikepenz/release-changelog-builder-action@develop",
-            with_={"token": self.insert_github_token()},
+            step_func=self.step_opt_out_of_workflow,
+            run=f"echo 'Opting out of {self.workflow_name()} workflow.'",
             step=step,
         )
 
-    def step_extract_version(
+    def step_aggregate_jobs(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Create a step that extracts the version to GITHUB_OUTPUT.
+        """Build a fan-in step used to aggregate matrix job results.
+
+        Downstream jobs declare a ``needs`` dependency on the job that contains
+        this step, ensuring all matrix runners have finished before continuing.
 
         Args:
-            step: Existing step dict to update.
+            step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that outputs the version for later steps.
+            Step that echoes an aggregation message.
         """
         return self.step(
-            step_func=self.step_extract_version,
-            run=f'echo "version={self.insert_version()}" >> $GITHUB_OUTPUT',
-            step=step,
-        )
-
-    def step_create_release(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Create a step that creates a GitHub release.
-
-        Args:
-            step: Existing step dict to update.
-
-        Returns:
-            Step using ncipollo/release-action.
-        """
-        version = self.insert_version_from_extract_version_step()
-        return self.step(
-            step_func=self.step_create_release,
-            uses="ncipollo/release-action@main",
-            with_={
-                "tag": version,
-                "name": f"{self.insert_repository_name()} {version}",
-                "body": self.insert_changelog(),
-                "artifacts": f"{BuilderConfigFile.dist_dir_name()}/*",
-            },
+            step_func=self.step_aggregate_jobs,
+            run="echo 'Aggregating jobs into one job.'",
             step=step,
         )
 
@@ -1516,68 +1607,89 @@ class WorkflowConfigFile(DictYmlConfigFile):
     # ----------------------------------------------------------------------------
 
     def repo_token_var(self) -> str:
-        """Get the GitHub expression for the REPO_TOKEN secret."""
+        """Get the raw secrets expression for ``REPO_TOKEN``.
+
+        Returns:
+            ``"secrets.REPO_TOKEN"``
+        """
         return self.secrets_var(RemoteVersionController.I.access_token_key())
 
     def github_token_var(self) -> str:
-        """Get the GitHub expression for the GITHUB_TOKEN secret."""
+        """Get the raw secrets expression for ``GITHUB_TOKEN``.
+
+        Returns:
+            ``"secrets.GITHUB_TOKEN"``
+        """
         return self.secrets_var("GITHUB_TOKEN")
 
     def codecov_token_var(self) -> str:
-        """Get the GitHub expression for the CODECOV_TOKEN secret."""
+        """Get the raw secrets expression for ``CODECOV_TOKEN``.
+
+        Returns:
+            ``"secrets.CODECOV_TOKEN"``
+        """
         return self.secrets_var(ProjectCoverageTester.I.access_token_key())
 
     def pypi_token_var(self) -> str:
-        """Get the GitHub expression for the PYPI_TOKEN secret."""
+        """Get the raw secrets expression for ``PYPI_TOKEN``.
+
+        Returns:
+            ``"secrets.PYPI_TOKEN"``
+        """
         return self.secrets_var(PackageIndex.I.access_token_key())
 
     def secrets_var(self, name: str) -> str:
-        """Get the GitHub expression for a secrets variable.
+        """Build the raw GitHub secrets expression for a secret name.
 
         Args:
-            name: Name of the secret variable.
+            name: The secret's key name (e.g. ``"REPO_TOKEN"``).
 
         Returns:
-            secrets.NAME
+            Raw expression string ``"secrets.<name>"`` suitable for use
+            inside ``${{ ... }}`` wrappers.
         """
         return f"secrets.{name}"
 
     # Insertions
     # ----------------------------------------------------------------------------
-    def insert_var(self, var: str) -> str:
-        """Wrap a variable in GitHub Actions expression syntax.
-
-        Args:
-            var: Variable expression to wrap.
+    def insert_repo_token(self) -> str:
+        """Get the ``${{ secrets.REPO_TOKEN }}`` expression.
 
         Returns:
-            GitHub Actions expression for the variable.
+            GitHub Actions expression for the ``REPO_TOKEN`` secret.
         """
-        # remove existing wrapping if it exists
-        return f"${{{{ {var} }}}}"
-
-    def insert_repo_token(self) -> str:
-        """Get the GitHub expression for REPO_TOKEN secret."""
         return self.insert_var(self.repo_token_var())
 
     def insert_pypi_token(self) -> str:
-        """Get the GitHub expression for PYPI_TOKEN secret."""
+        """Get the ``${{ secrets.PYPI_TOKEN }}`` expression.
+
+        Returns:
+            GitHub Actions expression for the ``PYPI_TOKEN`` secret.
+        """
         return self.insert_var(self.pypi_token_var())
 
     def insert_version(self) -> str:
-        """Get a shell expression for the current version.
+        """Build the shell expression that resolves to the project version.
+
+        Evaluates ``uv version --short`` in a subshell and prepends ``v``,
+        so the result at workflow execution time is a string like ``v1.2.3``.
 
         Returns:
-            Shell command that outputs the version with v prefix.
+            Shell expression string, e.g. ``"v$(uv version --short)"``.
         """
         script = str(PackageManager.I.version_short_args())
         return f"v$({script})"
 
     def insert_version_from_extract_version_step(self) -> str:
-        """Get the GitHub expression for version from extract step.
+        """Get the expression that reads the version from the extract step output.
+
+        References the ``version`` output produced by
+        :meth:`step_extract_version` so that subsequent steps can consume the
+        resolved version string.
 
         Returns:
-            GitHub Actions expression referencing the extract_version output.
+            GitHub Actions expression for
+            ``steps.extract_version.outputs.version``.
         """
         # make dynamic with self.make_id_from_func(self.step_extract_version)
         return self.insert_var(
@@ -1585,109 +1697,123 @@ class WorkflowConfigFile(DictYmlConfigFile):
         )
 
     def insert_changelog(self) -> str:
-        """Get the GitHub expression for changelog from build step.
+        """Get the expression that reads the changelog from the build step output.
+
+        References the ``changelog`` output produced by
+        :meth:`step_build_changelog`.
 
         Returns:
-            GitHub Actions expression referencing the build_changelog output.
+            GitHub Actions expression for
+            ``steps.build_changelog.outputs.changelog``.
         """
         return self.insert_var(
             f"steps.{self.make_id_from_func(self.step_build_changelog)}.outputs.changelog"
         )
 
     def insert_github_token(self) -> str:
-        """Get the GitHub expression for GITHUB_TOKEN.
+        """Get the ``${{ secrets.GITHUB_TOKEN }}`` expression.
 
         Returns:
-            GitHub Actions expression for secrets.GITHUB_TOKEN.
+            GitHub Actions expression for the automatic ``GITHUB_TOKEN``
+            secret.
         """
         return self.insert_var(self.github_token_var())
 
     def insert_codecov_token(self) -> str:
-        """Get the GitHub expression for CODECOV_TOKEN.
+        """Get the ``${{ secrets.CODECOV_TOKEN }}`` expression.
 
         Returns:
-            GitHub Actions expression for secrets.CODECOV_TOKEN.
+            GitHub Actions expression for the ``CODECOV_TOKEN`` secret.
         """
         return self.insert_var(self.codecov_token_var())
 
     def insert_repository_name(self) -> str:
-        """Get the GitHub expression for repository name.
+        """Get the expression that resolves to the repository name.
 
         Returns:
-            GitHub Actions expression for the repository name.
+            GitHub Actions expression for
+            ``github.event.repository.name``.
         """
         return self.insert_var("github.event.repository.name")
 
-    def insert_ref_name(self) -> str:
-        """Get the GitHub expression for the ref name.
-
-        Returns:
-            GitHub Actions expression for github.ref_name.
-        """
-        return self.insert_var("github.ref_name")
-
-    def insert_repository_owner(self) -> str:
-        """Get the GitHub expression for repository owner.
-
-        Returns:
-            GitHub Actions expression for github.repository_owner.
-        """
-        return self.insert_var("github.repository_owner")
-
     def insert_workflow_run_id(self) -> str:
-        """Get the GitHub expression for triggering workflow run ID.
+        """Get the expression that resolves to the triggering workflow run ID.
 
-        Used when downloading artifacts from the workflow that triggered
-        this workflow via workflow_run event.
+        Resolves to the run ID of the workflow that triggered the current
+        workflow via a ``workflow_run`` event.  Used when downloading
+        artifacts from that specific run.
 
         Returns:
-            GitHub Actions expression for github.event.workflow_run.id.
+            GitHub Actions expression for
+            ``github.event.workflow_run.id``.
         """
         return self.insert_var("github.event.workflow_run.id")
 
     def insert_os(self) -> str:
-        """Get the GitHub expression for runner OS.
+        """Get the expression that resolves to the current runner OS name.
 
         Returns:
-            GitHub Actions expression for runner.os.
+            GitHub Actions expression for ``runner.os`` (e.g. ``"Linux"``,
+            ``"Windows"``, ``"macOS"``).
         """
         return self.insert_var("runner.os")
 
     def insert_matrix_os(self) -> str:
-        """Get the GitHub expression for matrix OS value.
+        """Get the expression that resolves to the current matrix OS value.
 
         Returns:
-            GitHub Actions expression for matrix.os.
+            GitHub Actions expression for ``matrix.os``.
         """
         return self.insert_var("matrix.os")
 
     def insert_matrix_python_version(self) -> str:
-        """Get the GitHub expression for matrix Python version.
+        """Get the expression that resolves to the current matrix Python version.
 
         Returns:
-            GitHub Actions expression for matrix.python-version.
+            GitHub Actions expression for ``matrix.python-version``.
         """
         return self.insert_var("matrix.python-version")
 
     def insert_artifact_name(self) -> str:
-        """Generate an artifact name based on package and OS.
+        """Build the default artifact name for the current runner OS.
 
         Returns:
-            Artifact name in format: package-os.
+            Artifact name in the format ``"<project-name>-<runner.os>"``,
+            where ``<runner.os>`` is resolved at workflow execution time.
         """
         return f"{PackageManager.I.project_name()}-{self.insert_os()}"
+
+    def insert_var(self, var: str) -> str:
+        """Wrap an expression in GitHub Actions ``${{ ... }}`` syntax.
+
+        This is the primitive used by all ``insert_*`` methods.
+
+        Args:
+            var: The raw expression to wrap
+                (e.g. ``"secrets.REPO_TOKEN"``).
+
+        Returns:
+            The expression surrounded by ``${{ }}`` delimiters, e.g.
+            ``"${{ secrets.REPO_TOKEN }}"``.
+        """
+        return f"${{{{ {var} }}}}"
 
     # ifs
     # ----------------------------------------------------------------------------
     def combined_if(self, *conditions: str, operator: str) -> str:
-        """Combine multiple conditions with a logical operator.
+        """Combine multiple GitHub Actions expressions with a logical operator.
+
+        Strips any existing ``${{ }}`` wrappers from each condition, joins
+        them with the given operator, and re-wraps the result.
 
         Args:
-            *conditions: Individual condition expressions.
-            operator: Logical operator to combine conditions (e.g., "&&", "||").
+            *conditions: Individual condition expressions, with or without
+                ``${{ }}`` wrappers.
+            operator: Logical operator to join conditions,
+                e.g. ``"&&"`` or ``"||"``.
 
         Returns:
-            Combined condition expression wrapped in GitHub Actions syntax.
+            Single GitHub Actions expression combining all conditions.
         """
         bare_conditions = [
             condition.strip().removeprefix("${{").removesuffix("}}").strip()
@@ -1695,60 +1821,50 @@ class WorkflowConfigFile(DictYmlConfigFile):
         ]
         return self.insert_var(f" {operator} ".join(bare_conditions))
 
-    def if_matrix_is_not_os(self, os: str) -> str:
-        """Create a condition for not matching a specific OS.
-
-        Args:
-            os: OS runner label to not match.
-
-        Returns:
-            Condition expression for matrix.os comparison.
-        """
-        return self.insert_var(f"matrix.os != '{os}'")
-
-    def if_not_triggered_by_cron(self) -> str:
-        """Create a condition for not being triggered by cron.
-
-        Returns:
-            GitHub Actions expression checking event name.
-        """
-        return self.insert_var("github.event_name != 'schedule'")
-
     def if_workflow_run_is_success(self) -> str:
-        """Create a condition for successful workflow run.
+        """Build a condition that is true when the triggering workflow run succeeded.
 
         Returns:
-            GitHub Actions expression checking workflow_run conclusion.
+            GitHub Actions expression checking
+            ``github.event.workflow_run.conclusion == 'success'``.
         """
         return self.insert_var("github.event.workflow_run.conclusion == 'success'")
 
     def if_workflow_run_is_not_cron_triggered(self) -> str:
-        """Create a condition for the triggering workflow run not being cron.
+        """Build a condition that is true when the triggering run was not scheduled.
 
         Returns:
-            GitHub Actions expression checking workflow_run event name.
+            GitHub Actions expression checking
+            ``github.event.workflow_run.event != 'schedule'``.
         """
         return self.insert_var("github.event.workflow_run.event != 'schedule'")
 
     def if_pypi_token_configured(self) -> str:
-        """Create a condition for PYPI_TOKEN being configured.
+        """Build a condition that is true when ``PYPI_TOKEN`` is configured.
 
         Returns:
-            GitHub Actions expression checking for PYPI_TOKEN.
+            GitHub Actions expression checking
+            ``secrets.PYPI_TOKEN != ''``.
         """
         return self.insert_var(f"{self.pypi_token_var()} != ''")
 
     # Runs
     # ----------------------------------------------------------------------------
     def run_if_condition(self, run: str, condition: str) -> str:
-        """Return a run command that only runs if condition is true.
+        """Build a shell command that runs conditionally.
+
+        Wraps ``run`` in a bash ``if`` statement: if the evaluated condition
+        is truthy the command executes; otherwise a skip message is echoed
+        and the step exits successfully.  This avoids failing a job when an
+        optional secret (e.g. ``PYPI_TOKEN``) is not configured.
 
         Args:
-            run: Command to run.
-            condition: Condition expression.
+            run: The shell command to execute when the condition is met.
+            condition: A raw GitHub expression (without ``${{ }}`` wrappers).
 
         Returns:
-            Shell script that runs the command conditionally.
+            A bash snippet:
+            ``if [ ${{ <condition> }} ]; then <run>; else echo "Skipping..."; fi``.
         """
         condition_check = self.insert_var(condition)
         # make a script that runs the command if the token is configured

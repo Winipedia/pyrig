@@ -1,12 +1,7 @@
-"""PyPI package index wrapper.
+"""PyPI package index tool.
 
-Provides PyPI package URL generation and version badge integration.
-Assumes the PyPI package name matches the Git repository name.
-
-Example:
-    >>> from pyrig.rig.tools.package_index import PackageIndex
-    >>> PackageIndex.I.package_index_url()
-    'https://pypi.org/project/pyrig'
+Wraps PyPI project URL construction and version badge generation
+for use in documentation, CI/CD pipelines, and README badges.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
@@ -16,9 +11,10 @@ from pyrig.rig.tools.version_controller import VersionController
 class PackageIndex(Tool):
     """PyPI package index wrapper.
 
-    Constructs PyPI URLs and badge information for package distribution.
-    Uses `pyrig.rig.tools.version_controller.VersionController` to derive
-    the package name from the Git repository name.
+    Constructs the PyPI project URL and shields.io version badge for the
+    current repository. The package name is assumed to match the Git
+    repository name, resolved via
+    `pyrig.rig.tools.version_controller.VersionController`.
 
     Example:
         >>> PackageIndex.I.package_index_url()
@@ -42,7 +38,13 @@ class PackageIndex(Tool):
         return ToolGroup.PROJECT_INFO
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the PyPI version badge and project page URLs."""
+        """Return the PyPI version badge image URL and project page URL.
+
+        Returns:
+            Tuple of ``(badge_url, page_url)`` where ``badge_url`` is a
+            shields.io URL displaying the published PyPI version and
+            ``page_url`` is the package's PyPI project page.
+        """
         _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
@@ -52,12 +54,12 @@ class PackageIndex(Tool):
         )
 
     def package_index_url(self) -> str:
-        """Construct PyPI package URL.
+        """Construct the PyPI project page URL.
 
-        Assumes package name matches repository name.
+        Assumes the package name matches the Git repository name.
 
         Returns:
-            URL in format: `https://pypi.org/project/{repo}`
+            URL in format: ``https://pypi.org/project/{repo}``
         """
         _, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
@@ -67,8 +69,9 @@ class PackageIndex(Tool):
     def dev_dependencies(self) -> tuple[str, ...]:
         """Get development dependencies for this tool.
 
-        PyPI integration requires no dev dependencies; the package manager
-        (e.g. uv) handles publishing via pyproject.toml.
+        Returns an empty tuple because PyPI itself requires no extra
+        development dependency; publishing is handled by the package
+        manager (e.g. uv) via ``pyproject.toml``.
 
         Returns:
             Empty tuple.
@@ -76,8 +79,12 @@ class PackageIndex(Tool):
         return ()
 
     def access_token_key(self) -> str:
-        """Get the environment variable key for the access token.
+        """Get the environment variable key for the PyPI access token.
 
-        Used in CI/CD contexts for authentication when publishing to PyPI.
+        Used in CI/CD pipelines to authenticate when publishing packages
+        to PyPI.
+
+        Returns:
+            ``'PYPI_TOKEN'``
         """
         return "PYPI_TOKEN"

@@ -1,12 +1,6 @@
 """Podman container engine wrapper.
 
-Provides type-safe wrapper for Podman commands (build, save).
-Used for creating containerized builds, particularly PyInstaller executables.
-
-Example:
-    >>> from pyrig.rig.tools.container_engine import ContainerEngine
-    >>> args = ContainerEngine.I.build_args(project_name="myapp")
-    >>> args.run()
+Wraps podman CLI commands to build and export container images.
 """
 
 from pathlib import Path
@@ -19,13 +13,13 @@ class ContainerEngine(Tool):
     """Podman container engine wrapper.
 
     Constructs podman command arguments for building and saving container images.
+    Typical usage: call ``build_args`` to build the image, then ``save_args``
+    to export it as a tar archive.
 
     Example:
         >>> from pathlib import Path
         >>> ContainerEngine.I.build_args(project_name="app:v1").run()
-        >>> ContainerEngine.I.save_args(
-        ...     image_file=Path("app.tar"), image_path=Path("dist/app.tar")
-        ... ).run()
+        >>> ContainerEngine.I.save_args(image_path=Path("dist/app.tar")).run()
     """
 
     def name(self) -> str:
@@ -40,12 +34,17 @@ class ContainerEngine(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            `ToolGroup.TOOLING`
+            ``"tooling"``
         """
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and link URLs."""
+        """Return the badge image URL and the project link URL.
+
+        Returns:
+            A two-element tuple where the first element is the shield badge
+            image URL and the second is the URL that the badge links to.
+        """
         return (
             "https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6",
             "https://podman.io",
@@ -77,11 +76,15 @@ class ContainerEngine(Tool):
     def save_args(self, *args: str, image_path: Path) -> Args:
         """Construct podman save arguments.
 
+        The image name passed to podman is derived from ``image_path.stem``
+        (e.g., ``Path("dist/myapp.tar")`` yields image name ``"myapp"``), so
+        the path stem must match the tag used when building the image.
+
         Args:
             *args: Additional save command arguments.
-            image_file: Path representing the archive filename; `.stem` is used
-                as the image name (e.g., Path("myapp.tar") yields image "myapp").
-            image_path: Full output path for the saved archive (e.g., "dist/myapp.tar").
+            image_path: Full output path for the saved tar archive
+                (e.g., ``Path("dist/myapp.tar")``). The stem is used as the
+                image name to export.
 
         Returns:
             Args for 'podman save'.

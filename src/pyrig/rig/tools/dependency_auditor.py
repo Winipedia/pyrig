@@ -1,11 +1,12 @@
-"""Dependency vulnerability auditor wrapper.
+"""Dependency vulnerability auditor for Python packages.
 
-Provides a type-safe wrapper for `pip-audit`, which checks installed Python
-dependencies for known vulnerabilities.
+Wraps ``pip-audit`` to check installed dependencies for known
+vulnerabilities using public security advisories (CVEs).
 
-This complements Bandit:
-    - Bandit: scans *your code* for insecure patterns.
-    - pip-audit: scans *your dependencies* for known CVEs/advisories.
+Note:
+    This complements source-code security tools like Bandit: Bandit scans
+    your own source code for insecure patterns, while pip-audit scans your
+    installed *dependencies* for known vulnerabilities.
 
 Example:
     >>> from pyrig.rig.tools.dependency_auditor import DependencyAuditor
@@ -17,47 +18,51 @@ from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
 class DependencyAuditor(Tool):
-    """pip-audit wrapper.
+    """pip-audit command wrapper.
 
-    Constructs pip-audit command arguments.
-
-    Note:
-        This wrapper intentionally stays small. Teams often need to customize
-        pip-audit flags (e.g., ignores/formatting) based on their policy.
-        Subclass this tool in your downstream package and override
-        ``audit_args`` to add flags.
+    Constructs pip-audit command arguments for dependency vulnerability
+    scanning. Intentionally minimal so that downstream projects can subclass
+    and override ``audit_args`` to apply project-specific flags such as
+    custom ignore lists or output formats.
     """
 
-    def name(self) -> str:
-        """Get tool name.
+    def audit_args(self, *args: str) -> Args:
+        """Build pip-audit command arguments.
+
+        Args:
+            *args: Additional pip-audit CLI flags passed through verbatim
+                (e.g. ``"--format"``, ``"json"``).
 
         Returns:
-            'pip-audit'
+            Args for ``pip-audit`` with the given flags appended.
+        """
+        return self.args(*args)
+
+    def name(self) -> str:
+        """Return the pip-audit executable name.
+
+        Returns:
+            ``"pip-audit"``
         """
         return "pip-audit"
 
     def group(self) -> str:
-        """Returns the group the tool belongs to.
+        """Return the tool group used for badge organisation.
 
         Returns:
-            `ToolGroup.SECURITY`
+            ``"security"``
         """
         return ToolGroup.SECURITY
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and link URLs."""
+        """Return the pip-audit badge image URL and project link URL.
+
+        Returns:
+            A tuple of ``(badge_image_url, project_url)`` where
+            ``badge_image_url`` is the shields.io badge and
+            ``project_url`` is the pip-audit GitHub page.
+        """
         return (
             "https://img.shields.io/badge/security-pip--audit-blue?logo=python",
             "https://github.com/pypa/pip-audit",
         )
-
-    def audit_args(self, *args: str) -> Args:
-        """Construct pip-audit arguments.
-
-        Args:
-            *args: Additional pip-audit CLI arguments.
-
-        Returns:
-            Args for 'pip-audit'.
-        """
-        return self.args(*args)

@@ -139,19 +139,6 @@ def test_create_source_package(
     assert Path(package.__file__) == tmp_source_root_path / path / "__init__.py"  # ty:ignore[invalid-argument-type]
 
 
-def test_create_source_module(
-    tmp_package_root_path: tuple[Path, ModuleType],
-    create_source_module: Callable[[Path], ModuleType],
-) -> None:
-    """Test function."""
-    package_path, _ = tmp_package_root_path
-    path = Path(package_path.name) / "module.py"
-    module = create_source_module(path)
-    assert isinstance(module, ModuleType)
-    assert module.__name__ == "pyrig.module"
-    assert Path(module.__file__) == package_path / "module.py"  # ty:ignore[invalid-argument-type]
-
-
 def test_standard_output_error_template(standard_output_error_template: str) -> None:
     """Test function."""
     assert "{stdout}" in standard_output_error_template

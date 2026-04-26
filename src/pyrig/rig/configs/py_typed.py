@@ -1,12 +1,4 @@
-"""Manage py.typed marker files for PEP 561 compliance.
-
-Creates empty py.typed in package directory to indicate type checking support.
-Used by mypy, pyright, ty.
-
-See Also:
-    https://peps.python.org/pep-0561/
-    pyrig.rig.configs.base.typed.TypedConfigFile
-"""
+"""Concrete ``py.typed`` marker file generator for the active project."""
 
 from pathlib import Path
 
@@ -15,19 +7,27 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class PyTypedConfigFile(TypedConfigFile):
-    """Manage py.typed marker files for PEP 561 compliance.
+    """PEP 561 ``py.typed`` marker file placed at the project's package root.
 
-    Creates empty py.typed in package directory to indicate type checking support.
-
-    See Also:
-        pyrig.rig.configs.base.typed.TypedConfigFile
-        pyrig.rig.configs.pyproject.PyprojectConfigFile
+    The presence of a ``py.typed`` file at the package root signals to type checkers
+    (mypy, pyright, ty, etc.) that the package ships inline type information and
+    should be checked against its own annotations. The file must be empty; its mere
+    existence carries all semantic meaning.
     """
 
     def stem(self) -> str:
-        """Return 'py' as filename stem to produce 'py.typed'."""
+        """Return ``"py"`` as the filename stem.
+
+        Combined with the ``"typed"`` extension provided by the base class, this
+        produces the filename ``py.typed``.
+        """
         return "py"
 
     def parent_path(self) -> Path:
-        """Return package directory path."""
+        """Return the root directory of the project's main package.
+
+        Returns:
+            Path to the package source directory (e.g. ``src/<package_name>``),
+            as resolved by ``PackageManager``.
+        """
         return PackageManager.I.package_root()

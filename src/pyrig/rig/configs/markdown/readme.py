@@ -1,10 +1,7 @@
-"""Configuration management for README.md files.
+"""README.md configuration file generator.
 
-Manages README.md with project name header and status badges (build, coverage,
-version, license, Python version). Used on GitHub, PyPI, and in container images.
-
-See Also:
-    pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
+Provides a concrete configuration file class for the project's README.md,
+placing it at the project root with a fixed filename and no opt-out support.
 """
 
 from pathlib import Path
@@ -13,41 +10,47 @@ from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
 
 
 class ReadmeConfigFile(BadgesMarkdownConfigFile):
-    """README.md configuration manager.
+    """Concrete configuration manager for the project's README.md.
 
-    Generates README.md with project name header and status badges. Used on
-    GitHub and PyPI. Always required (is_unwanted() returns False).
+    Inherits badge generation, description management, and merge logic from
+    ``BadgesMarkdownConfigFile``. Places README.md at the project root, fixes
+    the filename stem to ``"README"``, and overrides ``is_unwanted()`` to ensure
+    README.md is always managed — users cannot opt out via an empty file.
 
     Examples:
-        Generate README.md::
+        Validate or generate README.md::
 
             ReadmeConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.base.badges_md.BadgesMarkdownConfigFile
-        pyrig.rig.configs.pyproject.PyprojectConfigFile
     """
 
     def stem(self) -> str:
-        """Get the README filename.
+        """Return the filename stem ``"README"``.
 
         Returns:
-            str: "README" (extension added by parent).
+            str: Always ``"README"``.
         """
         return "README"
 
     def parent_path(self) -> Path:
-        """Get the parent directory for README.md.
+        """Return the project root as the parent directory.
+
+        Places README.md at the top level of the project, where it is
+        discoverable by GitHub, PyPI, and other tooling.
 
         Returns:
-            Path: Project root.
+            Path: ``Path()``, resolving to the current working directory
+            (the project root).
         """
         return Path()
 
     def is_unwanted(self) -> bool:
-        """Check if README.md is unwanted.
+        """Return ``False`` unconditionally, marking README.md as always required.
+
+        Overrides the base implementation, which treats an empty file as an
+        explicit opt-out signal. README.md is a mandatory project artifact and
+        cannot be opted out of; the system will always validate and update it.
 
         Returns:
-            bool: Always False (README.md is always required).
+            bool: Always ``False``.
         """
         return False

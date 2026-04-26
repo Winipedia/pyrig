@@ -1,8 +1,7 @@
-"""Contains pytest fixtures.
+"""Shared pytest fixtures for pyrig and all projects built with it.
 
-Any pytest fixtures defined under the fixtures package in
-any file like this one will be automatically discovered and
-are available in all projects inheriting from this one.
+Fixtures defined here are automatically discovered by pytest and made
+available to any test suite that inherits from this project.
 """
 
 import platform
@@ -29,13 +28,15 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 
 @pytest.fixture
 def command_works() -> Callable[[Callable[..., Any]], None]:
-    """Fixture to check if a pyrig command is available and works.
+    """Return a callable that verifies a CLI command is registered and executable.
 
-    Usage:
-        returns a function that takes a command function (e.g. mkroot) and
-        checks if it can be run with --help without error.
-        This is a basic check to ensure the command is properly registered
-        and can be executed.
+    The returned function runs the command with ``--help`` and asserts that
+    the process exits with return code 0 and that the command name appears
+    in stdout.
+
+    Returns:
+        A callable ``(cmd) -> None`` that accepts a CLI function and asserts
+        it is reachable and produces help output.
     """
 
     def check(cmd: Callable[..., Any]) -> None:
@@ -54,10 +55,20 @@ def command_works() -> Callable[[Callable[..., Any]], None]:
 def command_calls_function(
     mocker: MockerFixture,
 ) -> Callable[[Callable[..., Any], Callable[..., Any]], None]:
-    """Fixture to check if a command calls the expected function."""
+    """Return a callable that verifies a CLI command delegates to the expected function.
+
+    The returned function patches the target function by its fully qualified
+    name, invokes the command, and asserts the patch was called exactly once.
+
+    Args:
+        mocker: pytest-mock fixture for patching.
+
+    Returns:
+        A callable ``(cmd, function) -> None`` that asserts ``cmd`` calls
+        ``function`` exactly once.
+    """
 
     def check(cmd: Callable[..., Any], function: Callable[..., Any]) -> None:
-        """Check if the command calls the expected function."""
         mock = mocker.patch(function.__module__ + "." + function.__name__)  # ty:ignore[unresolved-attribute]
         cmd()
         mock.assert_called_once()
@@ -69,30 +80,40 @@ def command_calls_function(
 def config_file_factory[T: ConfigFile[ConfigData]](
     tmp_path: Path,
 ) -> Callable[[type[T]], type[T]]:
-    """Provide a factory for creating test-safe ConfigFile subclasses.
+    """Return a factory that wraps a ``ConfigFile`` subclass for isolated testing.
 
-    Creates dynamic subclasses that redirect all file operations to pytest's
-    tmp_path for isolated testing. Overrides ``path()``, ``parent_path()``,
-    ``_dump()``, ``_load()``, and ``create_file()`` to ensure complete isolation.
+    The factory creates a dynamic subclass that redirects all file operations
+    to pytest's ``tmp_path``. This prevents tests from reading or writing
+    real project files. The following methods are overridden to enforce
+    isolation:
+
+    - ``path()`` and ``parent_path()``: prepend ``tmp_path`` to the original
+      path if it is not already inside ``tmp_path``.
+    - ``_dump()`` and ``_load()``: change the working directory to
+      ``tmp_path`` before delegating to the parent implementation.
+    - ``create_file()``: changes the working directory to ``tmp_path`` before
+      delegating to the parent implementation.
 
     Args:
-        tmp_path: Pytest's temporary directory, auto-provided per test.
+        tmp_path: Pytest's per-test temporary directory.
 
     Returns:
-        Factory function ``(type[T]) -> type[T]`` that wraps a ConfigFile
-        subclass with tmp_path-based file operations.
+        A callable ``(type[T]) -> type[T]`` that accepts a ``ConfigFile``
+        subclass and returns a test-safe subclass with ``tmp_path``-based
+        file operations.
     """
 
     def _make_test_config(
         base_class: type[T],
     ) -> type[T]:
-        """Create a test config class that uses tmp_path.
+        """Wrap ``base_class`` with ``tmp_path``-redirected file operations.
 
         Args:
-            base_class: The ConfigFile subclass to wrap.
+            base_class: The ``ConfigFile`` subclass to wrap.
 
         Returns:
-            A subclass with path() redirected to tmp_path.
+            A subclass of ``base_class`` with all file paths redirected to
+            ``tmp_path``.
         """
 
         class TestConfigFile(base_class):  # ty: ignore[unsupported-base]
@@ -139,8 +160,65 @@ def config_file_factory[T: ConfigFile[ConfigData]](
 
 
 @pytest.fixture
+def create_source_package(
+    tmp_source_root_path: Path, create_package: Callable[[Path], ModuleType]
+) -> Callable[[Path], ModuleType]:
+    """Return a callable that creates a Python package under the temporary source root.
+
+    Wraps ``create_package`` with a ``chdir`` to ``tmp_source_root_path``
+    so that all relative path operations resolve within the temporary source
+    tree.
+
+    Args:
+        tmp_source_root_path: Temporary source root directory.
+        create_package: Fixture that creates a package from a relative path.
+
+    Returns:
+        A callable ``(path) -> ModuleType`` that creates and imports the
+        package at ``path`` relative to the temporary source root.
+    """
+
+    def create(path: Path) -> ModuleType:
+        """Create the package relative to the source root."""
+        with chdir(tmp_source_root_path):
+            return create_package(path)
+
+    return create
+
+
+@pytest.fixture
+def create_package() -> Callable[[Path], ModuleType]:
+    """Return a callable that creates a Python package at a given path.
+
+    The returned function initializes the full directory tree as a package
+    hierarchy by adding ``__init__.py`` files up to the current working
+    directory, then imports and returns the package.
+
+    Returns:
+        A callable ``(path) -> ModuleType`` that creates and imports the
+        package at ``path``.
+    """
+
+    def create(path: Path) -> ModuleType:
+        """Create a package from the given path."""
+        make_package_dir(path, until=(), content="")
+        return import_package_with_dir_fallback(path, name=path_as_module_name(path))
+
+    return create
+
+
+@pytest.fixture
 def create_module() -> Callable[[Path], ModuleType]:
-    """Fixture to create a module from a given path."""
+    """Return a callable that creates a Python module at a given path.
+
+    The returned function ensures the parent directory is a proper package
+    hierarchy (adding ``__init__.py`` files up to the current working
+    directory), touches the module file, and imports it.
+
+    Returns:
+        A callable ``(path) -> ModuleType`` that creates and imports the
+        module at ``path``.
+    """
 
     def create(path: Path) -> ModuleType:
         """Create a module from the given path."""
@@ -152,77 +230,74 @@ def create_module() -> Callable[[Path], ModuleType]:
 
 
 @pytest.fixture
-def create_package() -> Callable[[Path], ModuleType]:
-    """Fixture to create a package from a given path."""
-
-    def create(path: Path) -> ModuleType:
-        """Create a package from the given path."""
-        make_package_dir(path, until=(), content="")
-        return import_package_with_dir_fallback(path, name=path_as_module_name(path))
-
-    return create
-
-
-@pytest.fixture
-def create_source_package(
-    tmp_source_root_path: Path, create_package: Callable[[Path], ModuleType]
-) -> Callable[[Path], ModuleType]:
-    """Creates a package in the source directory."""
-
-    def create(path: Path) -> ModuleType:
-        """Creates the package."""
-        with chdir(tmp_source_root_path):
-            return create_package(path)
-
-    return create
-
-
-@pytest.fixture
-def create_source_module(
-    tmp_source_root_path: Path, create_module: Callable[[Path], ModuleType]
-) -> Callable[[Path], ModuleType]:
-    """Creates a package in the source directory."""
-
-    def create(path: Path) -> ModuleType:
-        """Creates the package."""
-        with chdir(tmp_source_root_path):
-            return create_module(path)
-
-    return create
-
-
-@pytest.fixture
-def tmp_project_root_path(tmp_path: Path) -> Path:
-    """Fixture to provide a temporary project path for testing."""
-    path = tmp_path / PackageManager.I.project_name()
-    path.mkdir()
-    return path
-
-
-@pytest.fixture
-def tmp_source_root_path(tmp_project_root_path: Path) -> Path:
-    """Fixture to provide a temporary source path for testing."""
-    path = tmp_project_root_path / PackageManager.I.source_root()
-    path.mkdir()
-    return path
-
-
-@pytest.fixture
 def tmp_package_root_path(
     tmp_project_root_path: Path,
     tmp_source_root_path: Path,
     create_source_package: Callable[[Path], ModuleType],
 ) -> tuple[Path, ModuleType]:
-    """Creates the package root."""
+    """Provide the temporary package root directory and its imported package module.
+
+    Creates the package root directory under the temporary source root,
+    initializes it as a Python package, and returns both the path and the
+    imported module.
+
+    Args:
+        tmp_project_root_path: Temporary project root directory.
+        tmp_source_root_path: Temporary source root directory.
+        create_source_package: Fixture for creating packages in the source root.
+
+    Returns:
+        Tuple of ``(path, package)`` where ``path`` is the package root
+        directory and ``package`` is the imported package module.
+    """
     path = tmp_project_root_path / PackageManager.I.package_root()
 
     package = create_source_package(path.relative_to(tmp_source_root_path))
     return path, package
 
 
+@pytest.fixture
+def tmp_source_root_path(tmp_project_root_path: Path) -> Path:
+    """Provide the temporary source root directory.
+
+    Creates the ``src`` directory inside the temporary project root.
+
+    Args:
+        tmp_project_root_path: Temporary project root directory.
+
+    Returns:
+        Path to the temporary source root directory.
+    """
+    path = tmp_project_root_path / PackageManager.I.source_root()
+    path.mkdir()
+    return path
+
+
+@pytest.fixture
+def tmp_project_root_path(tmp_path: Path) -> Path:
+    """Provide a temporary project root directory named after the current project.
+
+    Args:
+        tmp_path: Pytest's per-test temporary directory.
+
+    Returns:
+        Path to the temporary project root directory.
+    """
+    path = tmp_path / PackageManager.I.project_name()
+    path.mkdir()
+    return path
+
+
 @pytest.fixture(scope="session")
 def standard_output_error_template() -> str:
-    """Fixture to provide a standard template for stdout and stderr in tests."""
+    """Provide a format string for displaying combined stdout and stderr output.
+
+    Contains ``{stdout}`` and ``{stderr}`` placeholders, useful for producing
+    clear assertion failure messages that include full process output.
+
+    Returns:
+        Format string with ``{stdout}`` and ``{stderr}`` placeholders.
+    """
     return """The standard output:
 {stdout}
 --------------------------------------------------------------------------------
@@ -231,8 +306,84 @@ The standard error:
 
 
 @pytest.fixture(scope="session")
+def on_linux_and_latest_python_version_or_not_in_ci(
+    *, on_linux_and_latest_python_version: bool
+) -> bool:
+    """Return whether tests that require a canonical environment should run.
+
+    True when running on Linux with the latest Python version, or when not
+    running in CI at all. This is used to gate environment-sensitive tests,
+    allowing them to always run locally while restricting them to the
+    canonical CI environment in GitHub Actions.
+
+    Args:
+        on_linux_and_latest_python_version: Whether the environment is Linux
+            with the latest Python version.
+
+    Returns:
+        True if the canonical CI conditions are met, or if not running in CI.
+    """
+    return (
+        on_linux_and_latest_python_version
+    ) or not RemoteVersionController.I.running_in_ci()
+
+
+@pytest.fixture(scope="session")
+def on_linux_and_latest_python_version(
+    *, on_linux: bool, on_latest_python_version: bool
+) -> bool:
+    """Return whether the current environment is Linux with the latest Python version.
+
+    Args:
+        on_linux: Whether the current system is Linux.
+        on_latest_python_version: Whether the current Python version is the latest.
+
+    Returns:
+        True if both conditions are met.
+    """
+    return on_linux and on_latest_python_version
+
+
+@pytest.fixture(scope="session")
+def on_linux(on_platform: Callable[[str], bool]) -> bool:
+    """Return whether the current system is Linux.
+
+    Args:
+        on_platform: Fixture for checking the current platform by name.
+
+    Returns:
+        True if the system is Linux.
+    """
+    return on_platform("Linux")
+
+
+@pytest.fixture(scope="session")
+def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
+    """Return whether the running Python version matches the latest stable release.
+
+    The latest version is read from the project's bundled
+    ``LATEST_PYTHON_VERSION`` resource via ``PyprojectConfigFile``.
+
+    Args:
+        on_python_version: Fixture for checking the current Python version.
+
+    Returns:
+        True if the current Python micro version matches the latest stable
+        release.
+    """
+    latest_version = PyprojectConfigFile.I.latest_python_version("micro")
+    return on_python_version(str(latest_version))
+
+
+@pytest.fixture(scope="session")
 def on_platform() -> Callable[[str], bool]:
-    """Fixture to check if the current system is a specific platform."""
+    """Check if the current system platform matches a given name.
+
+    Returns:
+        A callable ``(platform_name) -> bool`` that compares
+        ``platform.system()`` against the given name (e.g., ``"Linux"``,
+        ``"Windows"``, ``"Darwin"``).
+    """
 
     def check(platform_name: str) -> bool:
         """Check if the current system is the specified platform."""
@@ -242,42 +393,17 @@ def on_platform() -> Callable[[str], bool]:
 
 
 @pytest.fixture(scope="session")
-def on_linux(on_platform: Callable[[str], bool]) -> bool:
-    """Check if the current system is Linux."""
-    return on_platform("Linux")
-
-
-@pytest.fixture(scope="session")
 def on_python_version() -> Callable[[str], bool]:
-    """Fixture to check if the current Python version matches a specified version."""
+    """Check if the current Python version matches a given version string.
+
+    Returns:
+        A callable ``(version) -> bool`` that compares
+        ``platform.python_version()`` against the given version string
+        (e.g., ``"3.13.2"``).
+    """
 
     def check(version: str) -> bool:
         """Check if the current Python version matches the specified version."""
         return platform.python_version() == version
 
     return check
-
-
-@pytest.fixture(scope="session")
-def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
-    """Check if the current Python version is the latest stable release."""
-    latest_version = PyprojectConfigFile.I.latest_python_version("micro")
-    return on_python_version(str(latest_version))
-
-
-@pytest.fixture(scope="session")
-def on_linux_and_latest_python_version(
-    *, on_linux: bool, on_latest_python_version: bool
-) -> bool:
-    """Check if the current system is Linux and running the latest Python version."""
-    return on_linux and on_latest_python_version
-
-
-@pytest.fixture(scope="session")
-def on_linux_and_latest_python_version_or_not_in_ci(
-    *, on_linux_and_latest_python_version: bool
-) -> bool:
-    """Check if is Linux and on latest Python version, or not running in CI."""
-    return (
-        on_linux_and_latest_python_version
-    ) or not RemoteVersionController.I.running_in_ci()
