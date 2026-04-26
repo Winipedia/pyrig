@@ -7,7 +7,7 @@ from pyrig.rig.cli.commands.build_artifacts import build_artifacts
 from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.commands.make_fixture import make_fixture
 from pyrig.rig.cli.commands.make_inits import make_init_files
-from pyrig.rig.cli.commands.make_resources import make_resources
+from pyrig.rig.cli.commands.make_resources_package import make_resources_package
 from pyrig.rig.cli.commands.make_root import make_project_root
 from pyrig.rig.cli.commands.make_subclass import make_subclass
 from pyrig.rig.cli.commands.make_subcommand import make_subcommand
@@ -136,4 +136,4 @@ def test_resources(
 ) -> None:
     """Test function."""
     command_works(resources)
-    command_calls_function(resources, make_resources)
+    command_calls_function(resources, make_resources_package)

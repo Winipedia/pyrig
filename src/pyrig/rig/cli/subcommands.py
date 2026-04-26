@@ -183,9 +183,11 @@ def resources() -> None:
     Example:
         $ uv run pyrig resources
     """
-    from pyrig.rig.cli.commands.make_resources import make_resources  # noqa: PLC0415
+    from pyrig.rig.cli.commands.make_resources_package import (  # noqa: PLC0415
+        make_resources_package,
+    )
 
-    make_resources()
+    make_resources_package()
 
 
 def mkcmd(

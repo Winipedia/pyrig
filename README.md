@@ -39,12 +39,18 @@
 
 ## What is pyrig?
 
-pyrig generates and maintains a complete, production-ready Python project from a
-single command. It creates all the files you need — source structure, tests,
-CI/CD, documentation, configs — and keeps them in sync as your project evolves.
-Rerun it anytime: pyrig is idempotent.
+pyrig is a package and tool that scaffolds and initializes a complete, fully
+configured and working python project with one command and makes the process of
+developing and maintaining more seemless and efficient by automating things like
+configuration management, CLI generation, testing infrastructure, and more.
 
-## Quick Start
+## Requirements
+
+- Python 3.12+
+- Git
+- uv
+
+## Quick Start & Project Initialization
 
 ```bash
 uv init
@@ -57,107 +63,108 @@ See the
 
 ## Features
 
-### Idempotent Project Scaffolding
+### Project Scaffolding & Initialization
 
-`pyrig init` generates a complete project in one command — source tree, tests,
-CI/CD workflows, documentation, configs, and a working CLI. Run it again
-anytime to sync everything; pyrig never overwrites your customizations.
+`pyrig init` generates a complete project in one command that works out of the box.
+This includes everything a modern python project needs:
 
-→ [Getting Started](https://winipedia.github.io/pyrig/more/getting-started/)
-· [Generated Structure](https://winipedia.github.io/pyrig/more/getting-started/#what-you-get)
+- Standardized directory structure
+- Fully configured dev tools
+(linters, formatters, type checkers, test frameworks, etc.)
+- GitHub Actions workflows for CI/CD
+- Repository management configs (branch protection, issue/PR templates, etc.)
+- A working CLI
 
-### Config File System
+### File & Configuration Management
 
 Every generated file is backed by a Python class that validates and merges
 automatically. Override any config by subclassing, or define entirely new
 config files — pyrig discovers and manages them for you.
-
-→ [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/)
+Run `pyrig mkroot` to create or update all config files at once.
+Run `pyrig subcls` to generate a subclass for overriding a specific config.
 
 ### Automatic CLI
 
-`pyrig init` sets up a CLI for your project that works immediately. Add
-commands by defining functions in `<package>.rig.cli.subcommands` — they're
-discovered automatically. Shared commands propagate across the entire
-dependency chain.
+`pyrig init` sets up a CLI for your project that works immediately.
+Generate and add new commands by running `pyrig mkcmd <command-name>`.
+An automatic version command is included that shows the version of your project.
+Run `my-project version` to see it in action.
 
-→ [CLI docs](https://winipedia.github.io/pyrig/cli/)
+### Test Generation
 
-### Testing Infrastructure
+Generate test skeletons with `pyrig mktests`.
+This will generate test skeletons for all source modules
+and update them automatically as your project evolves.
 
-- **pytest** as the test runner with autouse fixtures that enforce best
-  practices
-- **`pyrig mktests`** generates test skeletons mirroring your source
-  structure
-- **Autouse fixtures** validate project invariants — init files, config
-  correctness, dependency freshness
+### Test Fixtures
 
-→ [Test Structure](https://winipedia.github.io/pyrig/tests/structure/)
-· [Autouse Fixtures](https://winipedia.github.io/pyrig/tests/autouse/)
+pyrig enables automatic sharing and registration of pytest fixtures.
+Run `pyrig mkfixture <fixture-name>` to generate a new fixture that is
+automatically registered and available across all your tests.
 
-### Multi-Package Inheritance (`.I` pattern)
+### Build Artifacts
 
-Override almost any behavior — configs, tools, CLI commands, builders — by
-subclassing the pyrig-provided class. pyrig discovers your implementation
-automatically and uses it instead of the default.
+PyInstaller integration and extensible build system for generating executables,
+distributable packages, and more.
+Run `pyrig subcls` to create a custom builder for your specific build needs.
+Run `pyrig build` to execute the build process and generate artifacts.
+Run `pyrig resources` to create a resources directory for your project.
 
-This enables creating a **personal pyrig package** with your own standards,
-adding it as a dependency to any project, and having `pyrig init` apply
-everything automatically.
+### Multi-Package Inheritance
 
-→ [Tool Architecture](https://winipedia.github.io/pyrig/tools/architecture/#two-extension-mechanisms)
-· [Config Architecture](https://winipedia.github.io/pyrig/configs/architecture/#automatic-discovery)
+Override and customize any and all behaviour to suit your project's needs.
+pyrig's classes are designed for inheritance and composition, allowing you to
+create custom configurations, tools, builders, and more by subclassing and
+overriding methods. pyrig will automatically discover and use your custom classes
+without any additional configuration.
+Run `pyrig subcls` to generate a subclass for any pyrig class.
 
-### Tool Wrappers
+The multi-package inheritance system is probably pyrig's most powerful
+and unique feature, enabling you to easily customize behaviour across your project
+and any other projects that have your project installed as a dependency making this
+an automatic plugin system for pyrig-based projects.
+Tired of setting up all your projects manually the same way?
+Create your personal pyrig-based package with your preferred setup and configs.
+Everything is overridable and extendable, you could even replace uv with something
+like poetry.
+After that you can run:
 
-Type-safe wrappers around `uv`, `git`, `ruff`, `pytest`, `bandit`, and more.
-Customizable via subclassing for organization-wide or per-project overrides.
+```bash
+uv init # or poetry init, add and run if you replaced uv with poetry
+uv add my-pyrig-package
+uv run pyrig init
+```
 
-→ [Tools](https://winipedia.github.io/pyrig/tools/)
-· [Tooling Choices](https://winipedia.github.io/pyrig/more/tooling/)
+### CI/CD & Repository Protection
 
-### Builders, Resources & Packaging
+Pyrig generates GitHub Actions workflows for CI/CD and automatically configures
+and applies repository protection settings and branch protection rules to ensure
+your repository is protected.
+Run `pyrig protect-repo` to apply or update repository protection settings or
+simply use the fully working CI/CD pipeline to apply them automatically.
 
-- **Builders** — PyInstaller integration and extensible build system
-- **Resources** — Reliable file access in both development and PyInstaller
-  bundles
-- **Packaging** — `uv_build` backend with console script integration
-
-→ [Builders](https://winipedia.github.io/pyrig/builders/)
-· [Resources](https://winipedia.github.io/pyrig/resources/)
-
-### CI/CD & Repository Automation
-
-Generates GitHub Actions workflows, branch protection configs, issue/PR
-templates, and release flows. Verbosity flags (`-v`, `-vv`, `-q`) provide
-flexible logging across all commands.
-
-→ [Workflows](https://winipedia.github.io/pyrig/configs/workflows/)
-· [Branch Protection](https://winipedia.github.io/pyrig/configs/branch_protection/)
-
-## CLI Commands
+## Pyrig Commands
 
 ```bash
 uv run pyrig init           # Full project initialization
-uv run pyrig mkroot         # Create/update all config files
+uv run pyrig mkroot         # Create/update all concrete config files
 uv run pyrig mktests        # Generate test skeletons
 uv run pyrig mkinits        # Create missing __init__.py files
+uv run pyrig mkfixture      # Generate a new pytest fixture
+uv run pyrig subcls         # Generate a subclass for overriding a config or tool
 uv run pyrig build          # Build artifacts (PyInstaller, etc.)
 uv run pyrig protect-repo   # Configure repository protection
 uv run pyrig scratch        # Execute the project's .scratch file
 uv run pyrig rmpyc          # Remove __pycache__ directories
+uv run pyrig version        # Show pyrig version
 uv run my-project --help    # Your project's CLI
-uv run my-project version   # Show pyrig or project version
+uv run my-project version   # Show your project's version
 ```
-
-→ [CLI Reference](https://winipedia.github.io/pyrig/cli/)
 
 ## Documentation
 
 | | |
 |---|---|
-| **[Getting Started](https://winipedia.github.io/pyrig/more/getting-started/)** | Complete setup guide |
-| **[Full Documentation](https://winipedia.github.io/pyrig/)** | Comprehensive reference |
-| **[Trade-offs](https://winipedia.github.io/pyrig/more/drawbacks/)** | What you give up and what you gain |
-| **[CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)** | AI-generated docs |
+| **[Full Documentation](https://winipedia.github.io/pyrig/)** | The manually written documentation |
+| **[CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)** | AI-generated documentation |
 | **[Tutorials](https://www.youtube.com/@Winipedia-py/playlists)** | YouTube tutorials for pyrig |
