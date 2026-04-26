@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-from pyrig.core.strings import read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 
@@ -89,17 +88,3 @@ class FeatureRequestConfigFile(DictYmlConfigFile):
                 },
             ],
         }
-
-    def is_correct(self) -> bool:
-        """Return ``True`` if the feature request template file exists and is non-empty.
-
-        Overrides the base class to use a looser correctness check. Rather than
-        verifying that all required keys are present, any file with non-whitespace
-        content is treated as correct. This allows contributors to freely customize
-        the template without the system overwriting their changes.
-
-        Returns:
-            ``True`` if the file exists and contains at least one non-whitespace
-            character.
-        """
-        return self.path().exists() and bool(read_text_utf8(self.path()).strip())

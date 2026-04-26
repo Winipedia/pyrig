@@ -9,6 +9,10 @@ from pyrig.rig.tests import conftest
 class TestProjectTesterConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert ProjectTesterConfigFile.I.is_correct()
+
     def test_parent_path(self) -> None:
         """Test method."""
         assert ProjectTesterConfigFile.I.parent_path() == Path("tests")
@@ -27,10 +31,6 @@ class TestProjectTesterConfigFile:
     def test_stem(self) -> None:
         """Test method."""
         assert ProjectTesterConfigFile.I.stem() == "conftest"
-
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert ProjectTesterConfigFile.I.is_correct()
 
     def test_lines(self) -> None:
         """Test method."""

@@ -8,6 +8,10 @@ from pyrig.rig.configs.markdown.contributing import ContributingConfigFile
 class TestContributingConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert ContributingConfigFile.I.is_correct()
+
     def test_stem(self) -> None:
         """Test method."""
         result = ContributingConfigFile.I.stem()
@@ -22,8 +26,3 @@ class TestContributingConfigFile:
         """Test method."""
         result = ContributingConfigFile.I.lines()
         assert len(result) > 0
-
-    def test_is_correct(self) -> None:
-        """Test method."""
-        result = ContributingConfigFile.I.is_correct()
-        assert result

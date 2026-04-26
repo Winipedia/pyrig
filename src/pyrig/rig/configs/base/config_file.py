@@ -333,29 +333,13 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
     def is_correct(self) -> bool:
         """Return whether the config file passes validation.
 
-        A file is considered correct if it exists and either:
-
-        - Is empty (the user opted out by leaving the file empty), or
-        - Contains at least all the keys and values declared in ``configs()``
-          (additional keys are allowed).
+        A file is considered correct if it contains at least all the keys and
+        values declared in ``configs()`` (additional keys are allowed).
 
         Returns:
-            ``True`` if the file is valid or the user opted out.
+            ``True`` if all required configuration is present in the file.
         """
-        return self.path().exists() and (
-            self.is_unwanted() or self.is_correct_recursively()
-        )
-
-    def is_unwanted(self) -> bool:
-        """Return whether the user has opted out of this config file.
-
-        An empty file (zero bytes) is treated as an explicit opt-out signal.
-        The system will not modify it or report it as incorrect.
-
-        Returns:
-            ``True`` if the file exists and has zero bytes.
-        """
-        return self.path().exists() and self.path().stat().st_size == 0
+        return self.is_correct_recursively()
 
     def is_correct_recursively(self) -> bool:
         """Return whether the required configuration is a subset of the file contents.

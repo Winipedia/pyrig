@@ -8,7 +8,6 @@ from typing import Any
 from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.core.strings import (
     make_name_from_obj,
-    read_text_utf8,
     split_on_uppercase,
 )
 from pyrig.rig.builders.base.builder import BuilderConfigFile
@@ -101,39 +100,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             Path to .github/workflows directory.
         """
         return Path(".github/workflows")
-
-    def is_correct(self) -> bool:
-        """Check whether the workflow configuration is correct.
-
-        Extends the base correctness check with special handling for
-        intentionally empty workflow files.  When a workflow file is found to
-        be empty, a valid YAML configuration is written with all job steps
-        replaced by an opt-out echo step — this keeps the file parseable by
-        GitHub Actions while effectively disabling the workflow.
-
-        A workflow is also considered correct when every job already contains
-        only the opt-out step (i.e. the workflow was previously disabled).
-
-        Returns:
-            ``True`` if the configuration matches the expected content, or if
-            the workflow has been intentionally opted out.
-        """
-        correct = super().is_correct()
-
-        if read_text_utf8(self.path()) == "":
-            config = self.configs()
-            jobs = config["jobs"]
-            for job in jobs.values():
-                job["steps"] = [self.step_opt_out_of_workflow()]
-            self.dump(config)
-
-        config = self.load()
-        jobs = config["jobs"]
-        opted_out = all(
-            job["steps"] == [self.step_opt_out_of_workflow()] for job in jobs.values()
-        )
-
-        return correct or opted_out
 
     # Overridable WorkflowConfigFile Parts
     # ----------------------------------------------------------------------------
@@ -1555,29 +1521,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step_func=self.step_download_artifacts_from_workflow_run,
             uses="actions/download-artifact@main",
             with_=with_,
-            step=step,
-        )
-
-    def step_opt_out_of_workflow(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that marks the workflow as opted out.
-
-        Used by :meth:`is_correct` to replace all job steps when a workflow
-        file is intentionally left empty, keeping the YAML valid while
-        effectively disabling the workflow.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that echoes an opt-out message using the workflow name.
-        """
-        return self.step(
-            step_func=self.step_opt_out_of_workflow,
-            run=f"echo 'Opting out of {self.workflow_name()} workflow.'",
             step=step,
         )
 

@@ -422,13 +422,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().steps_core_matrix_setup(no_dev=True)
         assert len(result) > 0, "Expected steps to be non-empty"
 
-    def test_step_opt_out_of_workflow(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_opt_out_of_workflow()
-        assert "run" in result, "Expected 'run' in step"
-
     def test_step_aggregate_jobs(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -666,22 +659,11 @@ class TestWorkflowConfigFile:
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
+        my_test_workflow().validate()
         result = my_test_workflow().if_workflow_run_is_success()
         assert "success" in result, "Expected 'success' in result"
-
-    def test_is_correct(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        # Test that an empty file is considered correct
-        my_test_workflow().validate()
-        workflow_path = my_test_workflow().path()
-        workflow_path.write_text("")
-        assert my_test_workflow().is_correct(), (
-            "Expected workflow to be correct when empty"
-        )
 
         # Test that a workflow with proper config is correct
         proper_config = my_test_workflow().configs()
         my_test_workflow().dump(proper_config)
-        assert my_test_workflow().is_correct(), (
-            "Expected workflow to be correct with proper config"
-        )
+        assert my_test_workflow().is_correct()

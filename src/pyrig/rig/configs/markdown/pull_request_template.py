@@ -7,7 +7,7 @@ how it was tested.
 
 from pathlib import Path
 
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import file_has_content
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 
 PULL_REQUEST_TEMPLATE = """<!--
@@ -58,15 +58,18 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
         return self.split_lines(PULL_REQUEST_TEMPLATE)
 
     def is_correct(self) -> bool:
-        """Return whether the pull request template file exists and has content.
+        """Return whether the pull request template file has content.
 
         Overrides the parent's content-matching validation with a permissive
-        check: the file is considered correct as long as it exists and contains
-        at least one non-whitespace character. This avoids overwriting
-        user-customized templates on subsequent ``validate`` calls.
+        check: the file is considered correct as long as it has non-empty
+        content. This avoids overwriting user-customized templates on
+        subsequent ``validate`` calls.
 
         Returns:
-            ``True`` if the file exists and contains non-whitespace text;
-            ``False`` otherwise.
+            ``True`` if the file has non-empty content; ``False`` if the
+            file is empty.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
         """
-        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
+        return file_has_content(self.path())

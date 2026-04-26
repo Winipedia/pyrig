@@ -10,6 +10,10 @@ from pyrig.rig.configs.markdown.pull_request_template import (
 class TestPullRequestTemplateConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert PullRequestTemplateConfigFile.I.is_correct()
+
     def test_stem(self) -> None:
         """Test method."""
         assert PullRequestTemplateConfigFile.I.stem() == "pull_request_template"
@@ -23,8 +27,3 @@ class TestPullRequestTemplateConfigFile:
         """Test method."""
         result = PullRequestTemplateConfigFile.I.lines()
         assert len(result) > 0
-
-    def test_is_correct(self) -> None:
-        """Test method."""
-        result = PullRequestTemplateConfigFile.I.is_correct()
-        assert result

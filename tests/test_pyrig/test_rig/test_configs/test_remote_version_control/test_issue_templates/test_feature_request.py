@@ -23,7 +23,3 @@ class TestFeatureRequestConfigFile:
         """Test method."""
         result = FeatureRequestConfigFile.I._configs()  # noqa: SLF001
         assert isinstance(result, dict)
-
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert FeatureRequestConfigFile.I.is_correct()

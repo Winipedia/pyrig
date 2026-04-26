@@ -6,7 +6,7 @@ with a minimal best practices contribution guide template.
 
 from pathlib import Path
 
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import file_has_content
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 
 CONTRIBUTING_TEMPLATE = """# Contributing
@@ -80,6 +80,10 @@ class ContributingConfigFile(MarkdownConfigFile):
         expected to customise.
 
         Returns:
-            True if the file exists and contains non-empty content, False otherwise.
+            ``True`` if the file has non-empty content; ``False`` if the
+            file is empty.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
         """
-        return self.path().exists() and bool(read_text_utf8(self.path()).strip())
+        return file_has_content(self.path())

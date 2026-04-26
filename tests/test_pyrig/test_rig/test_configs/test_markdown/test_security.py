@@ -8,6 +8,10 @@ from pyrig.rig.configs.markdown.security import SecurityConfigFile
 class TestSecurityConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert SecurityConfigFile.I.is_correct()
+
     def test_stem(self) -> None:
         """Test method."""
         result = SecurityConfigFile.I.stem()
@@ -22,11 +26,6 @@ class TestSecurityConfigFile:
         """Test method."""
         result = SecurityConfigFile.I.lines()
         assert len(result) > 0
-
-    def test_is_correct(self) -> None:
-        """Test method."""
-        result = SecurityConfigFile.I.is_correct()
-        assert result
 
     def test_template_with_contact_method(self) -> None:
         """Test method."""

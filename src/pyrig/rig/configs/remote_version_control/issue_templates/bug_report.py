@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-from pyrig.core.strings import read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 
@@ -119,17 +118,3 @@ class BugReportConfigFile(DictYmlConfigFile):
                 },
             ],
         }
-
-    def is_correct(self) -> bool:
-        """Return whether the bug report template file exists with content.
-
-        Overrides the base class check, which verifies that all required config
-        keys are present. For issue templates, any non-empty file is treated as
-        correct, so that user customizations are preserved and never overwritten
-        by the system.
-
-        Returns:
-            ``True`` if the file exists and contains at least one non-whitespace
-            character; ``False`` otherwise.
-        """
-        return self.path().exists() and bool(read_text_utf8(self.path()).strip())

@@ -67,17 +67,14 @@ class ProjectTesterConfigFile(CopyModuleDocstringConfigFile):
     def is_correct(self) -> bool:
         """Return whether the generated conftest.py is considered valid.
 
-        Extends the parent check with a fallback: the file is valid if the
-        source module (``pyrig.rig.tests.conftest``) has a docstring, or if
-        the ``pytest_plugins`` assignment is already present in the file on
-        disk. Since the conftest module always has a docstring, the parent
-        check short-circuits and the file content check is never evaluated.
+        The file is valid if the ``pytest_plugins`` assignment is already
+        present in the file on disk.
 
         Returns:
-            ``True`` if the source module has a docstring, or if the
-            ``pytest_plugins`` assignment is present in the file on disk.
+            ``True`` if the ``pytest_plugins`` assignment is present in the
+            file on disk.
         """
-        return super().is_correct() or (self.plugin_definition() in self.file_content())
+        return self.plugin_definition() in self.file_content()
 
     def plugin_definition(self) -> str:
         """Return the ``pytest_plugins`` assignment line for the generated file.

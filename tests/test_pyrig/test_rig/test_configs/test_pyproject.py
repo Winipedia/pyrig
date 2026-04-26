@@ -83,14 +83,6 @@ class TestPyprojectConfigFile:
         description = PyprojectConfigFile.I.project_description()
         assert isinstance(description, str), "Expected description to be a string"
 
-    def test_is_correct(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
-    ) -> None:
-        """Test method."""
-        my_test_pyproject_config_file().validate()
-        is_correct = my_test_pyproject_config_file().is_correct()
-        assert is_correct, "Expected config to be correct after validation"
-
     def test_parent_path(
         self,
         my_test_pyproject_config_file: type[PyprojectConfigFile],

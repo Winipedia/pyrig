@@ -92,20 +92,3 @@ class TestHealthCheckWorkflowConfigFile:
         """Test method."""
         result = my_test_health_check_workflow().steps_aggregate_jobs()
         assert len(result) > 0, "Expected steps to be non-empty"
-
-    def test_is_correct(
-        self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        my_test_health_check_workflow().validate()
-        workflow_path = my_test_health_check_workflow().path()
-        workflow_path.write_text("")
-        assert my_test_health_check_workflow().is_correct(), (
-            "Expected workflow to be correct when empty"
-        )
-
-        proper_config = my_test_health_check_workflow().configs()
-        my_test_health_check_workflow().dump(proper_config)
-        assert my_test_health_check_workflow().is_correct(), (
-            "Expected workflow to be correct with proper config"
-        )
