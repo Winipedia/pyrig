@@ -1,26 +1,17 @@
-"""Pytest configuration and automatic fixture discovery for pyrig tests.
+"""Pytest configuration for automatic fixture discovery across the pyrig ecosystem.
 
-Discovers and registers pytest fixtures from all packages depending on pyrig,
-making them available in all test modules without explicit imports.
+Registers fixture modules from pyrig and all installed packages that depend on
+it as pytest plugins. This makes all discovered fixtures available in every
+test module without explicit imports.
 
-Discovery Process:
-    1. Finds equivalent ``fixtures`` modules in all packages depending on pyrig
-       using ``discover_equivalent_modules_across_dependents``
-    2. Collects all ``.py`` files within each discovered fixtures package
-    3. Registers them as pytest plugins via the ``pytest_plugins`` list
+The registration walks the ``rig.tests.fixtures`` package path across each
+dependent in the pyrig ecosystem, collects all ``.py`` files (excluding
+``__init__.py``), converts them to dotted module names, and assigns the result
+to ``pytest_plugins`` for pytest to load automatically.
 
 Attributes:
-    fixtures_packages (list[ModuleType]): Discovered fixtures modules from pyrig
-        and all dependent packages.
-    pytest_plugin_paths (list[Path]): Relative paths to all fixture Python
-        files to be registered as pytest plugins.
-    pytest_plugins (list[str]): Dotted module names of all fixture files,
-        registered as pytest plugins for automatic fixture availability.
-
-See Also:
-    pyrig.rig.tests.fixtures: Base fixtures package that is mirrored.
-    pyrig.src.modules.package.discover_equivalent_modules_across_dependents:
-        Core discovery function for multi-package architecture.
+    pytest_plugins (tuple[str]): Dotted module names of all discovered fixture
+        files, registered as pytest plugins for automatic fixture availability.
 """
 
 import pyrig

@@ -41,12 +41,10 @@ class Pyrigger(Tool):
 
     Constructs pyrig command arguments for programmatic execution and
     orchestrates the full setup sequence for new pyrig projects.
-    Commands are constructed from callable objects or string arguments.
 
     Operations:
-        - CLI wrapping: Construct and run pyrig commands
-        - Function-based: Convert callable names to command names
-        - Project initialization: Run the full ordered setup sequence
+        - Command construction: Build ``Args`` for any pyrig subcommand
+        - Project initialization: Orchestrate the full ordered setup sequence
 
     Example:
         >>> from pyrig.rig.cli.subcommands import build
@@ -78,39 +76,52 @@ class Pyrigger(Tool):
         )
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Get tool dependencies.
+        """Get the development package dependencies for pyrig.
+
+        Returns ``("pyrig-dev",)`` rather than ``("pyrig",)`` because
+        ``pyrig`` is already declared as a runtime dependency of generated
+        projects. The ``pyrig-dev`` package provides additional tooling
+        needed only during development.
 
         Returns:
-            Tuple of tool dependencies.
+            ``("pyrig-dev",)``
         """
         # only pyrig-dev not pyrig because pyrig is already installed as dependency
         return ("pyrig-dev",)
 
     def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
-        """Construct pyrig command arguments from callable.
+        """Construct pyrig command arguments from a callable.
+
+        Derives the CLI command name from the callable's ``__name__``
+        attribute by converting it from snake_case to kebab-case
+        (e.g., ``my_command`` → ``my-command``), then prepends
+        ``"pyrig"`` to form a complete command.
 
         Args:
-            *args: Command arguments passed after the command name.
-            cmd: Callable whose name converts to command name (keyword-only).
+            *args: Additional arguments appended after the command name.
+            cmd: Callable whose ``__name__`` is used as the command name.
 
         Returns:
-            Args for 'pyrig <cmd_name>'.
+            Args for ``'pyrig <cmd_name> [args...]'``.
         """
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return self.args(cmd_name, *args)
 
     def init_project(self) -> None:
-        """Initialize a pyrig project by running all setup steps sequentially.
+        """Run the full project initialization sequence.
 
-        Executes the complete initialization sequence to transform a basic Python
-        project into a fully-configured, production-ready pyrig project.
-
-        Each step returns an `Args` object that is executed via `PackageManager`. Steps
-        are executed in order with a progress bar that updates after each step
-        completes. If any step fails, the process stops immediately.
+        Fetches all setup steps from ``setup_steps()``, then executes them
+        in order. Each step method returns an ``Args`` object which is
+        wrapped with ``PackageManager.I.run_args`` (i.e., ``uv run <args>``)
+        to ensure commands run inside the project's virtual environment.
+        The progress bar description is updated to the step method's human-
+        readable name before each step runs, and advances after it completes.
+        The process stops immediately if any step exits with a non-zero
+        return code.
 
         Note:
-            This function should be run once when setting up a new project.
+            Intended to be run once during initial project setup, not as
+            part of routine development.
         """
         steps = self.setup_steps()
         total = len(steps)
@@ -128,10 +139,18 @@ class Pyrigger(Tool):
             progress.update(task, description="[green]Initialization complete!")
 
     def setup_steps(self) -> tuple[Callable[..., Args], ...]:
-        """Return the ordered setup step methods for project initialization.
+        """Return the ordered tuple of project setup step methods.
 
-        Each method in the returned tuple takes no arguments and returns an `Args`
-        object that can be executed via `PackageManager`.
+        Each method takes no arguments and returns an ``Args`` object.
+        Steps are executed in the listed order by ``init_project()``.
+
+        ``installing_dependencies`` appears twice: first to install dev
+        dependencies after they are added to ``pyproject.toml``, and
+        again after ``creating_project_root`` updates ``pyproject.toml``
+        with the generated project configuration.
+
+        Returns:
+            Ordered tuple of callables, each returning an ``Args`` object.
         """
         return (
             self.initializing_version_control,
@@ -216,8 +235,11 @@ class Pyrigger(Tool):
     def committing_initial_changes(self) -> Args:
         """Return args for creating the initial git commit.
 
-        Commits all configuration files, test skeletons, and formatting changes
-        with the message "pyrig: Initial commit".
+        Commits all configuration files, test skeletons, and formatting
+        changes with the message ``"pyrig: Initial commit"``. Uses
+        ``--no-verify`` to skip re-running pre-commit hooks, since they
+        were already executed in the preceding ``running_pre_commit_hooks``
+        step and all staged changes are already clean.
         """
         # changes were added by the run prek hooks step
         return VersionController.I.commit_no_verify_args(

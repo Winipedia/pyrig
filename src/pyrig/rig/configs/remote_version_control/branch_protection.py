@@ -1,11 +1,7 @@
-"""GitHub branch protection ruleset configuration.
+"""Branch protection ruleset configuration for GitHub repositories.
 
-Generates branch-protection.json with GitHub ruleset config enforcing PR reviews,
-status checks, linear history, signed commits, and protection against force pushes.
-Upload via Settings > Rules > Rulesets.
-
-See Also:
-    https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets
+Manages the generation and application of branch protection rulesets,
+as well as repository-level security settings via the GitHub API.
 """
 
 import logging
@@ -27,34 +23,62 @@ logger = logging.getLogger(__name__)
 
 
 class BranchProtectionConfigFile(ListJsonConfigFile):
-    """Manages branch-protection.json for GitHub rulesets.
+    """Configuration file for GitHub branch protection rulesets.
 
-    Creates JSON config with PR requirements (1 approval, code owner review),
-    status checks (health check workflow), linear history, signed commits,
-    and protection rules. Upload to Settings > Rules > Rulesets.
+    Generates and manages ``branch-protection.json``, which defines a GitHub
+    repository ruleset targeting the default branch. The ruleset enforces pull
+    request reviews, status checks against the health-check workflow, linear
+    commit history, signed commits, and protection against force pushes and
+    direct updates to the branch.
 
-    See Also:
-        pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile
-        pyrig.rig.tools.version_controller.VersionController.default_ruleset_name
+    The generated file can be applied automatically via the GitHub API using
+    ``protect_repo()``, or uploaded manually via the repository's
+    Settings > Rules > Rulesets page.
     """
 
     def parent_path(self) -> Path:
-        """Get parent directory (project root)."""
+        """Return the directory that will contain the branch-protection.json file.
+
+        Returns:
+            An empty ``Path()``, which resolves to the current working directory
+            (the project root).
+        """
         return Path()
 
     def stem(self) -> str:
-        """Get filename with hyphens (branch-protection)."""
+        """Return the filename stem for the branch protection configuration file.
+
+        Returns:
+            ``'branch-protection'``
+        """
         return "branch-protection"
 
     def _configs(self) -> list[ConfigDict]:
-        """Get GitHub ruleset config.
+        """Build the GitHub ruleset configuration for the default branch.
 
-        Each item in the list is a ruleset dict with for a branch protection ruleset
-        targeting a branch (e.g. main) with PR review, status check,
-        and protection rules.
+        Constructs a single-element list containing a complete GitHub ruleset
+        dict that targets the repository default branch (``~DEFAULT_BRANCH``)
+        and enforces the following rules:
+
+        - ``creation``, ``update``, ``deletion``: Restrict who can create,
+          update, or delete the protected branch.
+        - ``required_linear_history``: Enforces a linear commit history,
+          preventing merge commits directly to the branch.
+        - ``required_signatures``: Requires all commits to be GPG-signed.
+        - ``pull_request``: Requires 1 approving review with code owner review,
+          stale review dismissal on push, last-push approval, and resolved
+          discussion threads. Only squash and rebase merges are permitted.
+        - ``required_status_checks``: Requires the health-check workflow job
+          to pass before a pull request can be merged. The branch must also be
+          up to date before merging (``strict_required_status_checks_policy``).
+        - ``non_fast_forward``: Prevents force-pushes to the branch.
+
+        The repository owner (bypass actor ID 5) is granted unconditional bypass
+        rights so that emergency changes can still be applied when necessary.
 
         Returns:
-            a List of Dicts with PR requirements, status checks, and protections.
+            A single-element list containing the complete ruleset configuration
+            dict, ready to be serialized as ``branch-protection.json``.
         """
         status_check_id = HealthCheckWorkflowConfigFile.I.make_id_from_func(
             HealthCheckWorkflowConfigFile.I.job_health_check
@@ -105,71 +129,28 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
             }
         ]
 
-    def repo_token(self) -> str:
-        """Retrieve the GitHub repository token for API authentication.
-
-        Searches for REPO_TOKEN in order: environment variable, then .env file.
-
-        Returns:
-            GitHub API token string.
-
-        Raises:
-            ValueError: If REPO_TOKEN not found in environment variables or .env
-                file.
-
-        Example:
-            >>> token = self.repo_token()
-
-        Note:
-            For ruleset management, token needs `repo` scope. Never commit tokens.
-            Use environment variables or .env (gitignored).
-        """
-        # try os env first
-        token = os.getenv(RemoteVersionController.I.access_token_key())
-        if token is not None:
-            logger.debug("Using repository token from environment variable")
-            return token
-
-        dotenv = DotEnvConfigFile.I.load()
-        token = dotenv.get(RemoteVersionController.I.access_token_key())
-        dotenv_path = DotEnvConfigFile.I.path()
-        if token is not None:
-            logger.debug("Using repository token from %s file", dotenv_path)
-            return token
-
-        msg = f"Expected repository token in {dotenv_path} or as env var."
-        raise LookupError(msg)
-
     def protect_repo(self) -> None:
-        """Apply security protections to the GitHub repository.
+        """Apply all security protections to the GitHub repository.
 
-        Configures repository-level settings and branch protection rulesets.
+        Orchestrates the full repository protection sequence by calling
+        ``set_secure_repo_settings()`` to update repository-level settings,
+        then ``create_or_update_branch_rulesets()`` to push the branch
+        protection ruleset to GitHub.
         """
         self.set_secure_repo_settings()
         self.create_or_update_branch_rulesets()
 
-    def create_or_update_branch_rulesets(self) -> None:
-        """Create or update branch protection ruleset for the default branch.
-
-        Applies pyrig's standard protection rules to the main branch. Updates
-        existing ruleset if present.
-        """
-        token = self.repo_token()
-        owner, repo_name = VersionController.I.repo_owner_and_name()
-        rulesets = self.load()
-        for ruleset in rulesets:
-            create_or_update_ruleset(
-                token=token,
-                owner=owner,
-                repo_name=repo_name,
-                **ruleset,
-            )
-
     def set_secure_repo_settings(self) -> None:
-        """Configure repository-level security and merge settings.
+        """Apply repository-level settings via the GitHub API.
 
-        Sets description, default branch, merge options, and branch cleanup
-        settings based on pyproject.toml and pyrig defaults.
+        Reads the project description from ``pyproject.toml`` and edits the
+        GitHub repository to enforce pyrig's standard configuration:
+
+        - Sets the repository name and description from ``pyproject.toml``.
+        - Sets the default branch to ``main``.
+        - Enables automatic branch deletion after merging and allows branch
+          updates via the GitHub UI.
+        - Disables merge commits; enables squash and rebase merges only.
         """
         logger.debug("Configuring secure repository settings")
         owner, repo_name = VersionController.I.repo_owner_and_name()
@@ -189,3 +170,56 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
             allow_rebase_merge=True,
             allow_squash_merge=True,
         )
+
+    def create_or_update_branch_rulesets(self) -> None:
+        """Push the branch protection rulesets from configuration to GitHub.
+
+        Loads the rulesets from ``branch-protection.json`` and creates or
+        updates each one on the remote repository. An existing ruleset matching
+        by name is updated in place; a ruleset that does not yet exist is
+        created as a new one.
+        """
+        token = self.repo_token()
+        owner, repo_name = VersionController.I.repo_owner_and_name()
+        rulesets = self.load()
+        for ruleset in rulesets:
+            create_or_update_ruleset(
+                token=token,
+                owner=owner,
+                repo_name=repo_name,
+                **ruleset,
+            )
+
+    def repo_token(self) -> str:
+        """Retrieve the GitHub repository token for API authentication.
+
+        Looks up the ``REPO_TOKEN`` environment variable first; if absent,
+        reads the value from the project's ``.env`` file.
+
+        Returns:
+            The GitHub personal access token string.
+
+        Raises:
+            LookupError: If ``REPO_TOKEN`` is not set as an environment variable
+                and is not present in the ``.env`` file.
+
+        Note:
+            The token must have ``repo`` scope (or ``administration:write``) for
+            ruleset management. Never commit tokens — use environment variables
+            or a gitignored ``.env`` file.
+        """
+        # try os env first
+        token = os.getenv(RemoteVersionController.I.access_token_key())
+        if token is not None:
+            logger.debug("Using repository token from environment variable")
+            return token
+
+        dotenv = DotEnvConfigFile.I.load()
+        token = dotenv.get(RemoteVersionController.I.access_token_key())
+        dotenv_path = DotEnvConfigFile.I.path()
+        if token is not None:
+            logger.debug("Using repository token from %s file", dotenv_path)
+            return token
+
+        msg = f"Expected repository token in {dotenv_path} or as env var."
+        raise LookupError(msg)

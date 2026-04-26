@@ -1,13 +1,4 @@
-"""Manage LICENSE files.
-
-Creates LICENSE with MIT license (current year + repo owner from git).
-Fetches from GitHub SPDX API with fallback template. Users can replace with
-preferred license. License type auto-detected for pyproject.toml.
-
-See Also:
-    https://api.github.com/licenses
-    https://spdx.org/licenses/
-"""
+"""LICENSE file configuration for generated projects."""
 
 from datetime import UTC, datetime
 from pathlib import Path
@@ -25,71 +16,116 @@ from pyrig.rig.tools.version_controller import VersionController
 
 
 class LicenseConfigFile(StringConfigFile):
-    """Manage LICENSE files with MIT license (year + owner from git).
+    """Manages the ``LICENSE`` file for a project using the MIT license.
 
-    Fetch from GitHub SPDX API with fallback. `Priority.HIGH` (created early
-    for pyproject.toml license detection).
+    Generates the LICENSE file by loading the MIT license template from the
+    bundled resources and substituting the current year and the repository
+    owner derived from git. The file is placed at the project root with no
+    extension.
 
-    See Also:
-        pyrig.rig.configs.pyproject.PyprojectConfigFile.I.detect_project_license
+    Uses ``Priority.HIGH`` so the LICENSE file is created before
+    ``PyprojectConfigFile``, which reads the license text to auto-detect the
+    SPDX identifier for ``pyproject.toml``.
     """
 
     def priority(self) -> float:
-        """Return `Priority.HIGH`.
+        """Return ``Priority.HIGH`` to ensure early creation.
 
-        Is created early for pyproject.toml license detection.
+        The LICENSE file must exist before ``PyprojectConfigFile`` is
+        validated, because ``PyprojectConfigFile.detect_project_license``
+        reads the LICENSE content to determine the SPDX identifier written
+        into ``pyproject.toml``.
+
+        Returns:
+            ``Priority.HIGH``
         """
         return Priority.HIGH
 
     def stem(self) -> str:
-        """Return 'LICENSE'."""
+        """Return ``'LICENSE'``."""
         return "LICENSE"
 
     def parent_path(self) -> Path:
-        """Return project root."""
+        """Return the project root as the parent directory."""
         return Path()
 
     def extension(self) -> str:
-        """Return empty string (no extension)."""
+        """Return an empty string — LICENSE has no file extension."""
         return ""
 
     def extension_separator(self) -> str:
-        """Return empty string (no extension separator)."""
+        """Return an empty string — no separator is needed without an extension."""
         return ""
 
     def lines(self) -> list[str]:
-        """Get MIT license with year and owner."""
+        """Return the MIT license text split into individual lines.
+
+        Delegates to ``mit_license_with_year_and_owner`` to produce the full
+        license text, then splits it into lines for the ``StringConfigFile``
+        base-class validation.
+
+        Returns:
+            List of lines comprising the MIT license with year and owner
+            already substituted.
+        """
         return self.split_lines(self.mit_license_with_year_and_owner())
 
     def is_correct(self) -> bool:
-        """Check if LICENSE exists and is non-empty."""
+        """Check whether the LICENSE file exists and contains non-empty text.
+
+        When pyrig is running inside its own repository (detected via
+        ``src_package_is_pyrig``), ``mit_license`` is called first. This is a
+        deliberate side effect that triggers the resource-update check for the
+        bundled ``MIT_LICENSE`` template, keeping it in sync with upstream.
+
+        Returns:
+            ``True`` if the LICENSE file exists and its contents are not blank,
+            ``False`` otherwise.
+        """
         if src_package_is_pyrig():
-            # if in pyrig just run get mit licence to trigger resource update if needed
+            # Trigger the resource-update check for the bundled MIT_LICENSE template.
             self.mit_license()
         return self.path().exists() and bool(read_text_utf8(self.path()).strip())
 
-    def mit_license(self) -> str:
-        """Get MIT license template from the resources."""
-        return resource_content("MIT_LICENSE", resources)
-
     def mit_license_with_year_and_owner(self) -> str:
-        """Get MIT license with year and owner from git."""
+        """Return the MIT license text with year and owner substituted.
+
+        Loads the raw template via ``mit_license`` and replaces the ``[year]``
+        placeholder with the current UTC year and the ``[fullname]`` placeholder
+        with the repository owner parsed from the git remote URL (or the git
+        username when no remote is configured).
+
+        Returns:
+            Complete MIT license text ready to write to the LICENSE file.
+        """
         mit_license = self.mit_license()
         year = datetime.now(tz=UTC).year
         owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
         mit_license = mit_license.replace("[year]", str(year))
         return mit_license.replace("[fullname]", owner)
 
-    def license_badge_url(self) -> str:
-        """Construct a shields.io badge URL for the repository license."""
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
-        )
-        return f"https://img.shields.io/github/license/{owner}/{repo}"
+    def mit_license(self) -> str:
+        """Return the raw MIT license template from the bundled resources.
+
+        The template contains ``[year]`` and ``[fullname]`` placeholders that
+        are filled in by ``mit_license_with_year_and_owner``.
+
+        Returns:
+            Raw MIT license template text.
+        """
+        return resource_content("MIT_LICENSE", resources)
 
     def license_badge(self) -> str:
-        """Construct a shields.io license badge as a Markdown image link."""
+        """Return a Markdown image-link badge for the project license.
+
+        Combines the shields.io badge image from ``license_badge_url`` with
+        a link to the ``LICENSE`` file on the repository's main branch.
+        Used when generating the project's README badges section.
+
+        Returns:
+            Markdown string in the form
+            ``[![License](<badge_url>)](<repo_url>/blob/main/LICENSE)``.
+        """
         badge_url = self.license_badge_url()
         repo_url = RemoteVersionController.I.repo_url()
         return make_linked_badge_markdown(
@@ -97,3 +133,19 @@ class LicenseConfigFile(StringConfigFile):
             link_url=f"{repo_url}/blob/main/{self.stem()}",
             alt_text="License",
         )
+
+    def license_badge_url(self) -> str:
+        """Return the shields.io badge image URL for the repository license.
+
+        Builds the URL using the percent-encoded repository owner and name so
+        the URL is safe for embedding in Markdown.
+
+        Returns:
+            URL in the form
+            ``https://img.shields.io/github/license/<owner>/<repo>``.
+        """
+        owner, repo = VersionController.I.repo_owner_and_name(
+            check_repo_url=False,
+            url_encode=True,
+        )
+        return f"https://img.shields.io/github/license/{owner}/{repo}"

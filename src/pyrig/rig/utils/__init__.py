@@ -1,32 +1,7 @@
-"""Development utilities requiring dev dependencies.
+"""Internal utilities supporting the rig layer.
 
-Utility functions and decorators that depend on development-time dependencies.
-These are only available when pyrig is installed with dev dependencies, ensuring
-production packages don't carry unnecessary dependencies.
-
-Modules:
-    github_api: GitHub API utilities and repository ruleset management
-    packages: Package discovery utilities
-    resources: Resource fallback decorators for network operations
-    testing: Pytest fixture decorators and test utilities
-    version_control: Git utilities for repository configuration
-    versions: Version constraint parsing and range generation
-
-Examples:
-    Discover packages with depth limit:
-
-        >>> from pyrig.rig.utils.packages import find_packages
-        >>> find_packages(depth=0)
-        ['myproject', 'tests']
-
-    Parse version constraints:
-
-        >>> from pyrig.rig.utils.versions import VersionConstraint
-        >>> vc = VersionConstraint(">=3.8,<3.12")
-        >>> vc.version_range(level="minor")
-        [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
-
-Note:
-    Requires pyrig installation with dev dependencies. Importing in a runtime-only
-    environment will raise ImportError.
+Provides development-oriented helper modules used across the CLI, tooling,
+configuration generation, and test infrastructure. These utilities depend on
+development-time packages and are intended for project setup and CI workflows,
+not production runtime use.
 """

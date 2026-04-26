@@ -1,13 +1,4 @@
-"""Configuration management for .gitignore files.
-
-Manages .gitignore by combining GitHub's standard Python patterns with
-pyrig-specific patterns (.scratch.py, .env, tool caches, build artifacts).
-Intelligently merges with existing patterns, avoiding duplicates.
-
-See Also:
-    GitHub gitignore templates: https://github.com/github/gitignore
-    Git documentation: https://git-scm.com/docs/gitignore
-"""
+"""Configuration management for .gitignore files."""
 
 from pathlib import Path
 
@@ -15,61 +6,80 @@ from pyrig.core.resources import resource_content
 from pyrig.rig import resources
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.version_controller import VersionController
 
 
 class VersionControllerIgnoreConfigFile(StringConfigFile):
-    """Gitignore configuration manager.
+    """Manages the ``.gitignore`` file for a pyrig project.
 
-    Combines GitHub's standard Python patterns with pyrig-specific patterns
-    (.scratch.py, .env, tool caches, build artifacts). Preserves existing
-    patterns and only adds missing ones.
+    Produces the final ``.gitignore`` content by merging a bundled Python gitignore
+    baseline with pyrig-specific additions such as tool caches, build artifacts, and
+    the paths of config files that are excluded from version control (e.g. ``.env``,
+    ``.scratch.py``). Entries already present in the baseline are never duplicated.
 
     Examples:
-        validate .gitignore::
+        Validate the ``.gitignore`` file::
 
             VersionControllerIgnoreConfigFile.I.validate()
 
-        Load patterns::
+        Load the current patterns::
 
             patterns = VersionControllerIgnoreConfigFile.I.load()
-
-    Note:
-        Makes HTTP request to GitHub for Python.gitignore. Uses fallback on failure.
-
-    See Also:
-        pyrig.rig.tools.version_controller.VersionController.loaded_ignore
-        pyrig.rig.configs.dot_env.DotEnvConfigFile
     """
 
     def stem(self) -> str:
-        """Get the filename for .gitignore."""
-        return VersionController.I.ignore_filename()
+        """Return the stem of the ``.gitignore`` filename.
+
+        Returns:
+            ``'.gitignore'``
+        """
+        return ".gitignore"
 
     def parent_path(self) -> Path:
-        """Get parent directory (project root)."""
+        """Return the directory where ``.gitignore`` is written.
+
+        Returns:
+            ``Path()`` — the current working directory, representing the project root.
+        """
         return Path()
 
     def extension_separator(self) -> str:
-        """Get extension separator (empty; .gitignore has no extension)."""
+        """Return the separator between the stem and the extension.
+
+        Returns:
+            An empty string, because ``.gitignore`` has no extension.
+        """
         return ""
 
     def extension(self) -> str:
-        """Get file extension (empty; .gitignore has no extension)."""
+        """Return the file extension.
+
+        Returns:
+            An empty string, because ``.gitignore`` has no extension.
+        """
         return ""
 
     def lines(self) -> list[str]:
-        """Get complete .gitignore patterns with intelligent merging.
+        """Build the complete list of lines for ``.gitignore``.
 
-        Combines GitHub's Python patterns with pyrig-specific patterns
-        (.scratch.py, .env, tool caches, build artifacts). Preserves existing
-        patterns and avoids duplicates.
+        Assembles the final pattern list by:
+
+        1. Collecting the file paths of all ``ConfigFile`` subclasses whose
+           ``version_control_ignored()`` returns ``True`` (e.g. ``.env``,
+           ``.scratch.py``).
+        2. Building a list of pyrig-specific patterns covering tool caches
+           (pytest, ruff, rumdl), build artifacts, the virtual environment,
+           the docs output directory, and those collected paths.
+        3. Reading the bundled Python gitignore baseline via
+           ``standard_ignore_lines()``.
+        4. Removing any pyrig-specific entry that already appears in the
+           baseline to avoid duplication.
+        5. Returning the baseline lines, then the remaining pyrig-specific
+           additions, followed by a trailing empty string for a final newline.
 
         Returns:
-            list[str]: Complete gitignore patterns (existing + missing standard).
-
-        Note:
-            Makes HTTP request to GitHub. Uses fallback on failure.
+            Complete list of ``.gitignore`` lines with the baseline first,
+            followed by any pyrig-specific additions not already present in
+            the baseline, and a trailing empty string.
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
         ignored_subclasses = self.version_control_ignored_subclasses()
@@ -95,9 +105,13 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         return [*standard, *needed, ""]
 
     def standard_ignore_lines(self) -> list[str]:
-        """Fetch GitHub's standard Python gitignore patterns as a list.
+        """Return the bundled Python gitignore baseline as a list of lines.
+
+        Reads the ``GITIGNORE`` resource file packaged with
+        ``pyrig.rig.resources`` — a snapshot of GitHub's ``Python.gitignore``
+        template — and splits it into individual lines.
 
         Returns:
-            list[str]: Python.gitignore patterns (one per line).
+            Lines from the bundled Python gitignore baseline.
         """
         return self.split_lines(resource_content("GITIGNORE", resources))

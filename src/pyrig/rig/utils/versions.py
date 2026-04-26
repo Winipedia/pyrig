@@ -1,33 +1,8 @@
 """Version constraint parsing and range generation utilities.
 
-Utilities for working with PEP 440 version specifiers. Wraps the packaging library
-to provide convenient methods for extracting version bounds and generating ranges.
-
-VersionConstraint parses PEP 440 specifier strings (e.g., ">=3.8,<3.12") to:
-- Extract inclusive and exclusive lower and upper bounds
-- Generate lists of versions within a constraint
-- Adjust version precision (major/minor/micro)
-
-Functions:
-    adjust_version_to_level: Truncate version to specific precision level
-
-Classes:
-    VersionConstraint: Parser and analyzer for PEP 440 version constraints
-
-Examples:
-    Parse and extract bounds:
-
-        >>> vc = VersionConstraint(">=3.8,<3.12")
-        >>> vc.find_lower_inclusive()
-        <Version('3.8')>
-
-    Generate version range:
-
-        >>> vc.version_range(level="minor")
-        [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
-
-See Also:
-    packaging.specifiers: PEP 440 version specifier implementation
+Provides tools for working with PEP 440 version specifiers, including
+extracting inclusive and exclusive bounds from a constraint string and
+enumerating all versions within a range at a specified precision level.
 """
 
 from typing import Literal
@@ -41,29 +16,25 @@ def adjust_version_to_level(
 ) -> Version:
     """Truncate a version to the specified precision level.
 
-    Removes components beyond the specified level. E.g., "3.11.5" to "minor" -> "3.11".
-
     Args:
-        version: Version to truncate (packaging.version.Version).
+        version: The version to truncate.
         level: Precision level:
-            - "major": Keep only major (e.g., "3.11.5" -> "3")
-            - "minor": Keep major and minor (e.g., "3.11.5" -> "3.11")
-            - "micro": Return version unchanged (e.g., "3.11.5" -> "3.11.5")
+            - ``"major"``: Keep only the major component (e.g., ``"3.11.5"`` → ``"3"``).
+            - ``"minor"``: Keep major and minor (e.g., ``"3.11.5"`` → ``"3.11"``).
+            - ``"micro"``: Return the version unchanged.
 
     Returns:
-        New Version object with components beyond level removed. For "micro" level,
-        returns the original Version object unchanged (including any pre-release,
-        post-release, dev, or local identifiers).
+        A new ``Version`` with components beyond the specified level removed.
+        Pre-release and other suffixes are stripped for ``"major"`` and ``"minor"``.
+        For ``"micro"``, the original ``Version`` object is returned as-is.
 
     Examples:
         >>> adjust_version_to_level(Version("3.11.5"), "major")
         <Version('3')>
         >>> adjust_version_to_level(Version("3.11.5"), "minor")
         <Version('3.11')>
-
-    Note:
-        For "major" and "minor" levels, pre-release, post-release, dev, and local
-        identifiers are removed. For "micro" level, the version is returned unchanged.
+        >>> adjust_version_to_level(Version("3.11.5"), "micro")
+        <Version('3.11.5')>
     """
     if level == "major":
         return Version(f"{version.major}")
@@ -75,59 +46,65 @@ def adjust_version_to_level(
 class VersionConstraint:
     """Parser and analyzer for PEP 440 version constraints.
 
-    Parses specifier strings (e.g., ">=3.8,<3.12") to extract bounds and generate
-    version ranges. Converts between inclusive and exclusive bounds by
-    incrementing/decrementing micro version.
+    Parses a specifier string such as ``">=3.8,<3.12"`` and exposes the effective
+    inclusive lower bound and exclusive upper bound, as well as a method to generate
+    all versions within the range at a given precision.
 
-    Examples: ">3.7.0" -> ">=3.7.1", "<=3.11.5" -> "<3.11.6"
+    Internally all bounds are normalized to a consistent form:
+
+    - Exclusive lower bounds (``>``) are converted to inclusive (``>=``) by
+      incrementing the micro component: ``">3.7.0"`` → ``">=3.7.1"``.
+    - Inclusive upper bounds (``<=``) are converted to exclusive (``<``) by
+      incrementing the micro component: ``"<=3.11.5"`` → ``"<3.11.6"``.
+    - When multiple lower or upper bounds are present, the most restrictive one
+      is used (maximum lower, minimum upper).
 
     Attributes:
-        constraint (str): Original constraint string.
-        spec (str): Cleaned specifier (quotes/whitespace stripped).
-        sset (SpecifierSet): Parsed SpecifierSet from packaging library.
-        lowers_inclusive (list[Version]): All lower bounds in inclusive form.
-        lowers_exclusive (list[Version]): All lower bounds in exclusive form.
-        lowers_exclusive_to_inclusive (list[Version]): Exclusive lower bounds
-            converted to inclusive by incrementing micro.
-        uppers_inclusive (list[Version]): All upper bounds in inclusive form.
-        uppers_exclusive (list[Version]): All upper bounds in exclusive form.
-        uppers_inclusive_to_exclusive (list[Version]): Inclusive upper bounds
-            converted to exclusive by incrementing micro.
-        lower_inclusive (Version | None): Effective lower bound (max of all lowers).
-        upper_exclusive (Version | None): Effective upper bound (min of all uppers).
+        constraint (str): The original constraint string as provided.
+        spec (str): The constraint with surrounding quotes and whitespace stripped.
+        sset (SpecifierSet): Parsed ``SpecifierSet`` from the ``packaging`` library.
+        lowers_inclusive (tuple[Version, ...]): All lower bounds in inclusive form,
+            including exclusive bounds converted via micro increment.
+        lowers_exclusive (tuple[Version, ...]): Lower bounds originally written as
+            exclusive (``>``), before conversion.
+        lowers_exclusive_to_inclusive (tuple[Version, ...]): Exclusive lower bounds
+            converted to inclusive by incrementing the micro component.
+        uppers_inclusive (tuple[Version, ...]): Upper bounds originally written as
+            inclusive (``<=``), before conversion.
+        uppers_exclusive (tuple[Version, ...]): All upper bounds in exclusive form,
+            including inclusive bounds converted via micro increment.
+        uppers_inclusive_to_exclusive (tuple[Version, ...]): Inclusive upper bounds
+            converted to exclusive by incrementing the micro component.
+        lower_inclusive (Version | None): The effective inclusive lower bound
+            (maximum of all normalized lower bounds), or ``None`` if unspecified.
+        upper_exclusive (Version | None): The effective exclusive upper bound
+            (minimum of all normalized upper bounds), or ``None`` if unspecified.
 
     Examples:
-        Parse and extract bounds:
-
-            >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.find_lower_inclusive()
-            <Version('3.8')>
-
-        Generate version range:
-
-            >>> vc.version_range(level="minor")
-            [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
-
-    Note:
-        Assumes non-negative integer version components. Converts bounds by
-        incrementing/decrementing micro version.
+        >>> vc = VersionConstraint(">=3.8,<3.12")
+        >>> vc.find_lower_inclusive()
+        <Version('3.8')>
+        >>> vc.version_range(level="minor")
+        (<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>)
     """
 
     def __init__(self, constraint: str) -> None:
-        """Initialize a VersionConstraint from a PEP 440 specifier string.
+        """Initialize from a PEP 440 specifier string.
 
-        Parses constraint and computes all inclusive and exclusive bounds.
-        Supports multiple specifiers separated by commas (e.g., ">=3.8,<3.12").
+        Parses the constraint and precomputes all normalized inclusive and exclusive
+        bounds. Supports multiple specifiers joined by commas (e.g., ``">=3.8,<3.12"``).
+        Leading and trailing quotes and whitespace are stripped automatically.
 
         Args:
-            constraint: PEP 440 version specifier string. Examples: ">=3.8,<3.12",
-                ">3.7,<=3.11", ">=3.8", "<4.0". Can be quoted or unquoted.
-                Quotes and whitespace automatically stripped.
+            constraint: A PEP 440 version specifier string. May be quoted or unquoted.
+                Examples: ``">=3.8,<3.12"``, ``">3.7,<=3.11"``, ``">=3.8"``, ``"<4.0"``.
 
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> print(vc.lower_inclusive)
-            3.8
+            >>> vc.lower_inclusive
+            <Version('3.8')>
+            >>> vc.upper_exclusive
+            <Version('3.12')>
         """
         self.constraint = constraint
         self.spec = self.constraint.strip().strip('"').strip("'")
@@ -171,161 +148,50 @@ class VersionConstraint:
             max(self.lowers_inclusive) if self.lowers_inclusive else None
         )
 
-    def find_lower_inclusive(
-        self, default: str | Version | None = None
-    ) -> Version | None:
-        """Get the inclusive lower bound of the version constraint.
-
-        Returns effective lower bound in inclusive form (>=). Exclusive bounds (>)
-        converted by incrementing micro version (e.g., ">3.7.0" -> ">=3.7.1").
-        Multiple bounds return maximum (most restrictive).
-
-        Args:
-            default: Default version if no lower bound specified. Can be string
-                (e.g., "3.8") or Version object. None if no bound and no default.
-
-        Returns:
-            Inclusive lower bound as Version, or None if no bound and no default.
-
-        Examples:
-            >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.find_lower_inclusive()
-            <Version('3.8')>
-            >>> vc = VersionConstraint(">3.7.5,<3.12")
-            >>> vc.find_lower_inclusive()  # >3.7.5 becomes >=3.7.6
-            <Version('3.7.6')>
-
-        Note:
-            Conversion increments micro version: ">3.7.0" -> ">=3.7.1", not ">=3.8.0".
-        """
-        default = str(default) if default else None
-        if self.lower_inclusive is None:
-            return Version(default) if default else None
-
-        return self.lower_inclusive
-
-    def find_upper_exclusive(
-        self, default: str | Version | None = None
-    ) -> Version | None:
-        """Get the exclusive upper bound of the version constraint.
-
-        Returns effective upper bound in exclusive form (<). Inclusive bounds (<=)
-        converted by incrementing micro version (e.g., "<=3.11.5" -> "<3.11.6").
-        Multiple bounds return minimum (most restrictive).
-
-        Args:
-            default: Default version if no upper bound specified. Can be string
-                (e.g., "4.0") or Version object. None if no bound and no default.
-
-        Returns:
-            Exclusive upper bound as Version, or None if no bound and no default.
-
-        Examples:
-            >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.find_upper_exclusive()
-            <Version('3.12')>
-            >>> vc = VersionConstraint(">=3.8,<=3.11.5")
-            >>> vc.find_upper_exclusive()  # <=3.11.5 becomes <3.11.6
-            <Version('3.11.6')>
-
-        Note:
-            Conversion increments micro version: "<=3.11.5" -> "<3.11.6", not "<3.12.0".
-        """
-        default = str(default) if default else None
-        if self.upper_exclusive is None:
-            return Version(default) if default else None
-
-        return self.upper_exclusive
-
-    def upper_inclusive(self, default: str | Version | None = None) -> Version | None:
-        """Get the inclusive upper bound of the version constraint.
-
-        Returns effective upper bound in inclusive form (<=). Exclusive bounds (<)
-        converted by decrementing appropriate component:
-        - micro > 0: Decrement micro ("<3.12.5" -> "<=3.12.4")
-        - micro == 0, minor > 0: Decrement minor ("<3.12.0" -> "<=3.11")
-        - micro == 0, minor == 0: Decrement major ("<4.0.0" -> "<=3")
-
-        Args:
-            default: Default version if no upper bound specified. Can be string or
-                Version. Incremented by one micro before processing.
-
-        Returns:
-            Inclusive upper bound as Version, or None if no bound and no default.
-
-        Examples:
-            >>> vc = VersionConstraint(">=3.8,<3.12.5")
-            >>> vc.upper_inclusive()  # <3.12.5 becomes <=3.12.4
-            <Version('3.12.4')>
-            >>> vc = VersionConstraint(">=3.8,<3.12.0")
-            >>> vc.upper_inclusive()  # <3.12.0 becomes <=3.11
-            <Version('3.11')>
-
-        Note:
-            Default incremented by one micro before use: "4.0" -> "4.0.1" -> "<=4.0.0".
-        """
-        # increment the default by 1 micro to make it exclusive
-        if default:
-            default = Version(str(default))
-            default = Version(f"{default.major}.{default.minor}.{default.micro + 1}")
-        upper_exclusive = self.find_upper_exclusive(default)
-        if upper_exclusive is None:
-            return None
-
-        major, minor, micro = (
-            upper_exclusive.major,
-            upper_exclusive.minor,
-            upper_exclusive.micro,
-        )
-        if micro != 0:
-            return Version(f"{major}.{minor}.{micro - 1}")
-        if minor != 0:
-            return Version(f"{major}.{minor - 1}")
-        return Version(f"{major - 1}")
-
     def version_range(
         self,
         level: Literal["major", "minor", "micro"] = "major",
         lower_default: str | Version | None = None,
         upper_default: str | Version | None = None,
     ) -> tuple[Version, ...]:
-        """Generate a list of versions within the constraint at specified precision.
+        """Enumerate all versions within the constraint at the specified precision.
 
-        Creates list of all versions satisfying the constraint, incrementing at
-        specified level. Useful for test matrices, listing supported versions, or
-        iterating over ranges.
-
-        Generates all possible versions between bounds at precision level, then
-        filters to only include versions satisfying the original constraint.
+        Generates every version between the effective lower and upper bounds,
+        incrementing at the given precision level, then filters the candidates
+        against the original specifier. This correctly handles complex constraints
+        such as ``"!=3.9"`` or disjoint ranges.
 
         Args:
-            level: Precision level for increments. Defaults to "major".
-                - "major": Increment major (e.g., 3, 4, 5)
-                - "minor": Increment minor (e.g., 3.8, 3.9, 3.10)
-                - "micro": Increment micro (e.g., 3.8.1, 3.8.2, 3.8.3)
-            lower_default: Default lower bound if constraint doesn't specify one.
-                String or Version. Raises ValueError if None and no constraint bound.
-            upper_default: Default upper bound if constraint doesn't specify one.
-                String or Version. Raises ValueError if None and no constraint bound.
+            level: Granularity of version increments. Defaults to ``"major"``.
+                - ``"major"``: (e.g., ``3``, ``4``, ``5``).
+                - ``"minor"``: (e.g., ``3.8``, ``3.9``, ``3.10``).
+                - ``"micro"``: (e.g., ``3.8.1``, ``3.8.2``).
+            lower_default: Fallback inclusive lower bound when the constraint
+                provides none. Accepts a version string (e.g., ``"3.8"``)
+                or a ``Version`` object.
+            upper_default: Fallback inclusive upper bound when the constraint provides
+                none. Accepts a version string or ``Version`` object.
 
         Returns:
-            List of Version objects satisfying constraint, sorted ascending. May be
-            empty if no versions satisfy constraint.
+            A tuple of ``Version`` objects satisfying the constraint, sorted ascending.
+            May be empty if no versions satisfy the constraint.
 
         Raises:
-            ValueError: If no lower or upper bound can be determined.
+            RuntimeError: If neither the constraint nor the provided defaults yield
+                a lower or upper bound.
 
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12")
             >>> vc.version_range(level="minor")
-            [<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>]
+            (<Version('3.8')>, <Version('3.9')>, <Version('3.10')>, <Version('3.11')>)
             >>> vc = VersionConstraint(">=3.10.1,<=3.10.3")
             >>> vc.version_range(level="micro")
-            [<Version('3.10.1')>, <Version('3.10.2')>, <Version('3.10.3')>]
+            (<Version('3.10.1')>, <Version('3.10.2')>, <Version('3.10.3')>)
 
         Note:
-            Generates all version combinations between bounds, then filters using
-            constraint's contains() method. Handles complex constraints properly.
+            Version candidates are generated from the component ranges of the
+            inclusive bounds and then filtered by the original specifier set,
+            so constraints like ``"!=3.9"`` or ``"~=3.8"`` are handled correctly.
         """
         lower = self.find_lower_inclusive(lower_default)
         upper = self.upper_inclusive(upper_default)
@@ -382,3 +248,125 @@ class VersionConstraint:
                     version.pop()
         version_versions = sorted({Version(".".join(map(str, v))) for v in versions})
         return tuple(v for v in version_versions if self.sset.contains(v))
+
+    def upper_inclusive(self, default: str | Version | None = None) -> Version | None:
+        """Get the inclusive upper bound of the constraint.
+
+        Converts the exclusive upper bound (``<``) to an inclusive form (``<=``) by
+        decrementing the appropriate version component:
+
+        - ``micro > 0``: Decrement micro — ``"<3.12.5"`` → ``"<=3.12.4"``.
+        - ``micro == 0`` and ``minor > 0``: Drop micro, decrement minor —
+          ``"<3.12.0"`` → ``"<=3.11"``.
+        - ``micro == 0`` and ``minor == 0``: Drop both, decrement major —
+          ``"<4.0.0"`` → ``"<=3"``.
+
+        Args:
+            default: Inclusive upper bound to use when the constraint specifies no
+                upper bound. Accepts a version string or ``Version`` object.
+
+        Returns:
+            The inclusive upper bound as a ``Version``, or ``None`` if no upper
+            bound exists and no default was provided.
+
+        Examples:
+            >>> vc = VersionConstraint(">=3.8,<3.12.5")
+            >>> vc.upper_inclusive()
+            <Version('3.12.4')>
+            >>> vc = VersionConstraint(">=3.8,<3.12.0")
+            >>> vc.upper_inclusive()
+            <Version('3.11')>
+            >>> vc = VersionConstraint(">=2.8,<3.0.0")
+            >>> vc.upper_inclusive()
+            <Version('2')>
+        """
+        # increment the default by 1 micro to make it exclusive
+        if default:
+            default = Version(str(default))
+            default = Version(f"{default.major}.{default.minor}.{default.micro + 1}")
+        upper_exclusive = self.find_upper_exclusive(default)
+        if upper_exclusive is None:
+            return None
+
+        major, minor, micro = (
+            upper_exclusive.major,
+            upper_exclusive.minor,
+            upper_exclusive.micro,
+        )
+        if micro != 0:
+            return Version(f"{major}.{minor}.{micro - 1}")
+        if minor != 0:
+            return Version(f"{major}.{minor - 1}")
+        return Version(f"{major - 1}")
+
+    def find_lower_inclusive(
+        self, default: str | Version | None = None
+    ) -> Version | None:
+        """Get the effective inclusive lower bound of the constraint.
+
+        Exclusive lower bounds (``>``) are converted to inclusive (``>=``) by
+        incrementing the micro component: ``">3.7.0"`` → ``">=3.7.1"``. When
+        multiple lower bounds are present, the most restrictive (maximum) is returned.
+
+        Args:
+            default: Inclusive lower bound to use when the constraint specifies none.
+                Accepts a version string (e.g., ``"3.8"``) or a ``Version`` object.
+
+        Returns:
+            The inclusive lower bound as a ``Version``, or ``None`` if no lower
+            bound exists and no default was provided.
+
+        Examples:
+            >>> vc = VersionConstraint(">=3.8,<3.12")
+            >>> vc.find_lower_inclusive()
+            <Version('3.8')>
+            >>> vc = VersionConstraint(">3.7.5,<3.12")
+            >>> vc.find_lower_inclusive()
+            <Version('3.7.6')>
+            >>> vc = VersionConstraint("<3.12")
+            >>> vc.find_lower_inclusive() is None
+            True
+            >>> vc.find_lower_inclusive("3.8")
+            <Version('3.8')>
+        """
+        default = str(default) if default else None
+        if self.lower_inclusive is None:
+            return Version(default) if default else None
+
+        return self.lower_inclusive
+
+    def find_upper_exclusive(
+        self, default: str | Version | None = None
+    ) -> Version | None:
+        """Get the effective exclusive upper bound of the constraint.
+
+        Inclusive upper bounds (``<=``) are converted to exclusive (``<``) by
+        incrementing the micro component: ``"<=3.11.5"`` → ``"<3.11.6"``. When
+        multiple upper bounds are present, the most restrictive (minimum) is returned.
+
+        Args:
+            default: Exclusive upper bound to use when the constraint specifies none.
+                Accepts a version string (e.g., ``"3.12"``) or a ``Version`` object.
+
+        Returns:
+            The exclusive upper bound as a ``Version``, or ``None`` if no upper
+            bound exists and no default was provided.
+
+        Examples:
+            >>> vc = VersionConstraint(">=3.8,<3.12")
+            >>> vc.find_upper_exclusive()
+            <Version('3.12')>
+            >>> vc = VersionConstraint(">=3.8,<=3.11.5")
+            >>> vc.find_upper_exclusive()
+            <Version('3.11.6')>
+            >>> vc = VersionConstraint(">=3.8")
+            >>> vc.find_upper_exclusive() is None
+            True
+            >>> vc.find_upper_exclusive("3.12")
+            <Version('3.12')>
+        """
+        default = str(default) if default else None
+        if self.upper_exclusive is None:
+            return Version(default) if default else None
+
+        return self.upper_exclusive

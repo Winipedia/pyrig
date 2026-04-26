@@ -1,19 +1,8 @@
 """Module content copying configuration management.
 
-Provides `CopyModuleConfigFile` for replicating module content with path
-transformation (e.g. `pyrig.src.X` -> `<project>.src.X`).
-
-Example:
-    >>> from types import ModuleType
-    >>> from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
-    >>> import pyrig.rig.configs.base.string_
-    >>>
-    >>> class StringModuleCopy(CopyModuleConfigFile):
-    ...
-    ...     def copy_module(self) -> ModuleType:
-    ...         return pyrig.rig.configs.base.string_
-    >>>
-    >>> StringModuleCopy()  # Copies pyrig/src/string_.py -> <project>/src/string_.py
+Provides a base configuration class for copying Python module source files
+into a target project, transforming the module's package prefix to match
+the target project's package name.
 """
 
 from abc import abstractmethod
@@ -33,77 +22,48 @@ from pyrig.rig.utils.paths import module_name_as_root_path
 
 
 class CopyModuleConfigFile(PythonPackageConfigFile):
-    """Base class for copying module content with path transformation.
+    """Base class for copying a Python module's source content to a target project.
 
-    Copy source module content to target location, transforming import paths
-    (e.g. `pyrig.src.X` -> `<project>.src.X`).
+    Reads the source module's file and writes it to the equivalent path in the
+    target project, replacing the ``pyrig`` package prefix with the target
+    project's package name. For example, ``pyrig.rig.configs.base.string_``
+    becomes ``<project>.rig.configs.base.string_``.
 
-    It can be important to keep content generic so that copying is not
-    affected by project specific details.
-    For example, copying a docstring with pyrig specific info into
-    another project would be undesirable
+    Keep module content generic where possible. Embedding pyrig-specific details
+    (such as pyrig-branded docstrings) in a source module will reproduce those
+    details verbatim in every project generated from it.
 
     Subclasses must implement:
-        - `copy_module`: Return the source module to copy
-
-    See Also:
-        pyrig.rig.configs.base.py_package.PythonPackageConfigFile: Parent class
-        pyrig.rig.configs.base.copy_module_docstr: For copying only docstrings
-        pyrig.src.modules.module: Module manipulation utilities
+        - `copy_module`: Return the source module whose content will be copied.
     """
-
-    @abstractmethod
-    def copy_module(self) -> ModuleType:
-        """Return the source module to copy.
-
-        Returns:
-            Module whose content will be copied.
-        """
-
-    def parent_path(self) -> Path:
-        """Get target directory by transforming source module path.
-
-        Replaces leading package name (pyrig) with target project's package name.
-
-        Returns:
-            Target directory path for copied module.
-        """
-        copy_module = self.copy_module()
-        new_module_name = module_name_replacing_start_module(
-            copy_module, PackageManager.I.package_name()
-        )
-
-        new_module_path = module_name_as_root_path(new_module_name)
-        return new_module_path.parent
-
-    def lines(self) -> list[str]:
-        """Return source module's content as list of lines.
-
-        Returns:
-            Full source code of the module as list of lines.
-        """
-        return self.split_lines(module_content(self.copy_module()))
-
-    def stem(self) -> str:
-        """Return module's isolated name (last component).
-
-        Returns:
-            Last component of the module's dotted name.
-        """
-        return leaf_module_name(self.copy_module())
 
     @classmethod
     def generate_subclass(cls, module: ModuleType) -> type[Self]:
-        """Dynamically create a typed subclass bound to a source module.
+        """Dynamically create a named subclass bound to a specific source module.
 
-        The generated subclass implements `copy_module` so instances copy content
-        from the provided module without requiring a manually declared class.
+        Constructs a new subclass of this class with ``copy_module``
+        pre-implemented to return ``module``. The subclass name is derived from
+        the module's leaf name converted to PascalCase, followed by this class's
+        own name. For example, a module with leaf name ``"string_"`` combined with
+        class ``CopyModuleConfigFile`` produces ``"StringCopyModuleConfigFile"``.
+
+        Use this factory when creating a subclass programmatically is more
+        convenient than writing a named class manually, for example when iterating
+        over a collection of modules that all need to be copied.
 
         Args:
-            module: Source module to bind as the return value of `copy_module`.
+            module: Source module to bind as the return value of ``copy_module``.
 
         Returns:
-            A subclass of this config class with `copy_module` preconfigured.
+            A new subclass of this class with ``copy_module`` returning ``module``.
+
+        Example:
+            >>> import pyrig.rig.configs.base.string_
+            >>> subclass = CopyModuleConfigFile.generate_subclass(
+            ...     pyrig.rig.configs.base.string_
+            ... )
+            >>> subclass().copy_module() is pyrig.rig.configs.base.string_
+            True
         """
         cls_name = (
             make_name_from_obj(
@@ -121,3 +81,51 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             {cls.copy_module.__name__: copy_module},
         )
         return cast("type[Self]", subclass)
+
+    def parent_path(self) -> Path:
+        """Compute the target directory for the copied module.
+
+        Replaces the root package component of the source module's dotted name
+        with the target project's package name, then resolves the result to a
+        filesystem path and returns its parent directory.
+
+        For example, source module ``pyrig.rig.configs.base.string_`` with a
+        project named ``myproject`` resolves to ``src/myproject/rig/configs/base``.
+
+        Returns:
+            Target directory path for the copied module file.
+        """
+        copy_module = self.copy_module()
+        new_module_name = module_name_replacing_start_module(
+            copy_module, PackageManager.I.package_name()
+        )
+
+        new_module_path = module_name_as_root_path(new_module_name)
+        return new_module_path.parent
+
+    def lines(self) -> list[str]:
+        """Read the source module's file content as a list of lines.
+
+        Returns:
+            Source code of the module split into individual lines.
+        """
+        return self.split_lines(module_content(self.copy_module()))
+
+    def stem(self) -> str:
+        """Return the filename stem for the copied module.
+
+        Returns:
+            Leaf component of the source module's dotted name, used as the
+            file stem when writing the copied module.
+        """
+        return leaf_module_name(self.copy_module())
+
+    @abstractmethod
+    def copy_module(self) -> ModuleType:
+        """Return the source module whose content will be copied.
+
+        Subclasses must implement this method to specify which module to copy.
+
+        Returns:
+            Source module to copy.
+        """

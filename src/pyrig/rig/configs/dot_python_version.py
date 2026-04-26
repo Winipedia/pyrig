@@ -1,11 +1,7 @@
-"""Manage .python-version files for pyenv/asdf.
+"""Configuration management for .python-version files.
 
-Creates .python-version with minimum supported Python version from pyproject.toml.
-Used by pyenv/asdf to auto-select Python version.
-
-See Also:
-    https://github.com/pyenv/pyenv
-    pyrig.rig.configs.pyproject.PyprojectConfigFile
+Sets the minimum supported Python version so that pyenv and asdf can
+automatically select the correct interpreter for the project.
 """
 
 from pathlib import Path
@@ -15,34 +11,57 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class DotPythonVersionConfigFile(StringConfigFile):
-    """Manage .python-version files for pyenv/asdf.
+    """Manages the .python-version file at the project root.
 
-    Create .python-version with minimum supported Python version from pyproject.toml.
-
-    See Also:
-        pyrig.rig.configs.pyproject.PyprojectConfigFile.I.first_supported_python_version
+    Writes the minimum supported Python version derived from the
+    ``requires-python`` constraint in pyproject.toml. When updated, the file
+    content is always replaced rather than appended to, ensuring it contains
+    exactly one version string.
     """
 
     def stem(self) -> str:
-        """Return '.python-version' as filename stem."""
+        """Return '.python-version' as the filename stem."""
         return ".python-version"
 
-    def extension(self) -> str:
-        """Return no extension."""
+    def extension_separator(self) -> str:
+        """Return an empty string, overriding the default '.' separator.
+
+        Prevents a trailing dot from being appended when the extension is
+        empty, so the path remains '.python-version' instead of
+        '.python-version.'.
+
+        Returns:
+            str: Always an empty string.
+        """
         return ""
 
-    def extension_separator(self) -> str:
-        """Return empty extension separator to produce '.python-version'."""
+    def extension(self) -> str:
+        """Return an empty string; .python-version has no file extension."""
         return ""
 
     def parent_path(self) -> Path:
-        """Return project root."""
+        """Return the project root as the parent directory."""
         return Path()
 
     def lines(self) -> list[str]:
-        """Get minimum supported Python version from pyproject.toml."""
+        """Return the file content as a list of lines.
+
+        Returns:
+            list[str]: A two-element list containing the minimum supported
+                Python version string (e.g., ``"3.8"``) followed by an empty
+                string that produces a trailing newline when the lines are
+                joined.
+        """
         return [str(PyprojectConfigFile.I.first_supported_python_version()), ""]
 
     def should_override_content(self) -> bool:
-        """Override content; only one python-version is needed in the file."""
+        """Return ``True`` to replace the entire file content on every update.
+
+        The .python-version file must contain exactly one version string.
+        Overriding rather than appending prevents stale versions from
+        accumulating in the file.
+
+        Returns:
+            bool: Always ``True``.
+        """
         return True

@@ -1,22 +1,4 @@
-"""GitHub Actions workflow for building artifacts.
-
-This module provides the BuildWorkflowConfigFile class for creating a GitHub Actions
-workflow that builds project artifacts and container images after successful
-health checks on the main branch.
-
-The workflow builds:
-    - **Python Wheels**: Distribution packages for PyPI
-    - **Container Images**: Docker/Podman images for deployment
-
-Artifacts are uploaded and made available for the release workflow to create
-GitHub releases.
-
-See Also:
-    pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile
-        Must complete successfully before this workflow runs
-    pyrig.rig.configs.workflows.release.ReleaseWorkflowConfigFile
-        Uses artifacts from this workflow
-"""
+"""GitHub Actions workflow configuration for building artifacts and container images."""
 
 from typing import Any
 
@@ -29,48 +11,54 @@ from pyrig.rig.tools.version_controller import VersionController
 
 
 class BuildWorkflowConfigFile(WorkflowConfigFile):
-    """GitHub Actions workflow for building project artifacts.
+    """GitHub Actions workflow that builds Python wheels and a container image.
 
-    Generates a .github/workflows/build.yml file that builds Python wheels and
-    container images after health checks pass on the main branch.
+    Generates ``.github/workflows/build.yml``. The workflow triggers when the
+    health check workflow completes on the default branch (excluding scheduled
+    runs), builds Python wheels across an OS matrix and a container image on
+    Ubuntu, then uploads both as GitHub Actions artifacts for the release
+    workflow to consume.
 
-    The workflow:
-        - Triggers after HealthCheckWorkflowConfigFile completes on main branch
-        - Skips cron-triggered health checks (only push/dispatch triggers build)
-        - Builds Python wheels across OS matrix
-        - Builds container images (Containerfile/Dockerfile)
-        - Uploads artifacts for the release workflow
+    Artifacts produced:
+        - **Python wheels**: Built with ``uv build`` on Ubuntu, Windows, and macOS.
+        - **Container image**: Built with Podman, saved as a
+          ``dist/<project>.tar`` archive.
 
-    Artifacts Built:
-        - **Python Wheels**: Built with uv, uploaded as GitHub artifacts
-        - **Container Images**: Built with Docker/Podman, tagged with version
+    Both artifact jobs are guarded so they only run when the triggering health
+    check run succeeded *and* was not a scheduled (cron) run. This prevents
+    unnecessary artifact builds and downstream releases on nightly health
+    check runs.
 
     Examples:
-        Generate build.yml workflow::
+        Generate the ``build.yml`` workflow file::
 
-            from pyrig.rig.configs.workflows.build import BuildWorkflowConfigFile
+            from pyrig.rig.configs.remote_version_control.workflows.build import (
+                BuildWorkflowConfigFile,
+            )
 
-            # Creates .github/workflows/build.yml
             BuildWorkflowConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.workflows.health_check.HealthCheckWorkflowConfigFile
-            Triggers this workflow on completion
-        pyrig.rig.configs.workflows.release.ReleaseWorkflowConfigFile
-            Downloads and uses artifacts from this workflow
-        pyrig.rig.configs.containers.container_file.ContainerfileConfigFile
-            Generates the Containerfile used for image builds
     """
 
     def stem(self) -> str:
-        """Get the workflow filename stem."""
+        """Return the stem used to derive the workflow filename (``build.yml``).
+
+        Returns:
+            ``"build"``
+        """
         return "build"
 
     def workflow_triggers(self) -> ConfigDict:
-        """Get the workflow triggers.
+        """Return the triggers for the build workflow.
+
+        Extends the default ``workflow_dispatch`` trigger inherited from the
+        base class with a ``workflow_run`` trigger. The ``workflow_run``
+        trigger fires whenever the health check workflow completes on the
+        default branch, which is the primary way this workflow is invoked in
+        CI.
 
         Returns:
-            Trigger for health check completion on main.
+            Trigger configuration dict containing both ``workflow_dispatch``
+            and ``workflow_run`` entries.
         """
         triggers = super().workflow_triggers()
         triggers.update(
@@ -82,10 +70,11 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         return triggers
 
     def jobs(self) -> ConfigDict:
-        """Get the workflow jobs.
+        """Return all jobs for the build workflow.
 
         Returns:
-            Dict with build job.
+            Dict with two jobs: one that builds Python wheels across an OS
+            matrix and one that builds the container image on Ubuntu.
         """
         jobs: ConfigDict = {}
         jobs.update(self.job_build_artifacts())
@@ -93,10 +82,18 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         return jobs
 
     def job_build_artifacts(self) -> ConfigDict:
-        """Get the build job that runs across OS matrix.
+        """Return the job configuration for building Python wheels across an OS matrix.
+
+        The job runs only when both of these conditions hold:
+            - The triggering health check workflow run completed successfully.
+            - The triggering run was not a scheduled (cron) run.
+
+        Uses an OS matrix strategy (Ubuntu, Windows, macOS) so wheels are
+        produced for all supported platforms in parallel.
 
         Returns:
-            Job configuration for building artifacts.
+            Dict mapping the job ID to its configuration, including the OS
+            matrix strategy, conditional guard, and artifact build steps.
         """
         return self.job(
             job_func=self.job_build_artifacts,
@@ -111,10 +108,18 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def job_build_container_image(self) -> ConfigDict:
-        """Get the build job that builds the container image.
+        """Return the job configuration for building the project container image.
+
+        The job runs only when both of these conditions hold:
+            - The triggering health check workflow run completed successfully.
+            - The triggering run was not a scheduled (cron) run.
+
+        Runs on a single Ubuntu runner because container image builds target
+        Linux deployments and do not require a cross-platform matrix.
 
         Returns:
-            Job configuration for building container image.
+            Dict mapping the job ID to its configuration, including the
+            conditional guard and container build steps.
         """
         return self.job(
             job_func=self.job_build_container_image,
@@ -128,10 +133,17 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def steps_build_artifacts(self) -> list[dict[str, Any]]:
-        """Get the steps for building artifacts.
+        """Return the ordered steps for the artifact build job.
+
+        Steps (in order):
+            1. Core matrix setup — checkout, git config, uv install, patch
+               version bump, dependency upgrade and install, stage lock-file
+               changes.
+            2. Build artifacts (runs ``pyrig build``).
+            3. Upload the ``dist/`` directory as a GitHub Actions artifact.
 
         Returns:
-            List of build steps.
+            Ordered list of step configuration dicts.
         """
         return [
             *self.steps_core_matrix_setup(patch_version=True),
@@ -140,10 +152,18 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         ]
 
     def steps_build_container_image(self) -> list[dict[str, Any]]:
-        """Get the steps for building the container image.
+        """Return the ordered steps for the container image build job.
+
+        Steps (in order):
+            1. Core setup — checkout, git config, uv install, patch version
+               bump, dependency upgrade and install, stage lock-file changes.
+            2. Install Podman as the container engine.
+            3. Build the container image from the project's Containerfile.
+            4. Save (export) the image to ``dist/<project>.tar``.
+            5. Upload the tar archive as a ``container-image`` artifact.
 
         Returns:
-            List of build steps.
+            Ordered list of step configuration dicts.
         """
         return [
             *self.steps_core_setup(patch_version=True),

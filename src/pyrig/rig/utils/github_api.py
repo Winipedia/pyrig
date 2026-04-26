@@ -1,18 +1,7 @@
-"""GitHub API utilities and repository ruleset management.
+"""GitHub API utilities for repository management.
 
-Utilities for interacting with the GitHub API, specifically for repository rulesets.
-Uses PyGithub for authentication and API calls.
-
-Functions:
-    create_or_update_ruleset: Create or update a GitHub repository ruleset
-    all_rulesets: Retrieve all rulesets defined for a repository
-    repository: Get a PyGithub Repository object for API operations
-    ruleset_exists: Check if a ruleset with the given name exists
-    github_api_request: Make a generic GitHub API request for a repository
-
-See Also:
-    pyrig.rig.cli.commands.protect_repo: CLI command using these utilities
-    pyrig.rig.utils.version_control: GitHub token retrieval and related constants
+Provides authenticated access to the GitHub API using PyGithub, supporting
+repository ruleset operations and arbitrary REST endpoint requests.
 """
 
 import logging
@@ -32,32 +21,35 @@ def create_or_update_ruleset(
 ) -> Any:
     """Create or update a GitHub repository ruleset.
 
-    Checks if a ruleset with the specified name exists. If yes, updates it;
-    otherwise, creates a new one. Handles idempotent creation/update pattern.
+    Checks whether a ruleset with the given name already exists on the repository.
+    If it does, the existing ruleset is updated in place; otherwise a new one is
+    created. The ``name`` key is required in ``ruleset_params`` to identify the
+    target ruleset.
 
     Args:
-        token: GitHub API token with repo administration permissions (repo scope).
-        owner: Repository owner username or organization name.
-        repo_name: Repository name (without owner prefix).
-        **ruleset_params: Ruleset configuration for GitHub API. Must include "name".
-            Common parameters: name (str), target (str), enforcement (str),
-            rules (list), conditions (dict), bypass_actors (list).
+        token: GitHub personal access token with repository administration
+            permissions (``repo`` scope or ``administration:write``).
+        owner: Repository owner — a GitHub username or organization name.
+        repo_name: Repository name without the owner prefix.
+        **ruleset_params: Ruleset configuration forwarded to the GitHub API.
+            Must include ``name`` (str). Other common keys:
+            ``target`` (str), ``enforcement`` (str), ``rules`` (list),
+            ``conditions`` (dict), ``bypass_actors`` (list).
 
     Returns:
-        API response dictionary with ruleset data (ID, name, rules, etc.).
+        Parsed JSON response from the GitHub API containing the created or
+        updated ruleset data, including its ``id``, ``name``, and ``rules``.
 
     Raises:
-        KeyError: If "name" not in ruleset_params.
-        github.GithubException: If API request fails.
+        KeyError: If ``name`` is not provided in ``ruleset_params``.
+        github.GithubException: If the API request fails.
 
     Examples:
-        Create a new ruleset:
-
-            >>> create_or_update_ruleset(
-            ...     token="ghp_...", owner="myorg", repo_name="myrepo",
-            ...     name="main-protection", target="branch",
-            ...     enforcement="active", rules=[{"type": "deletion"}]
-            ... )
+        >>> create_or_update_ruleset(
+        ...     token="ghp_...", owner="myorg", repo_name="myrepo",
+        ...     name="main-protection", target="branch",
+        ...     enforcement="active", rules=[{"type": "deletion"}],
+        ... )
     """
     logger.debug("Creating or updating ruleset: %s", ruleset_params["name"])
     ruleset_name: str = ruleset_params["name"]
@@ -91,99 +83,57 @@ def create_or_update_ruleset(
     return result
 
 
-def all_rulesets(token: str, owner: str, repo_name: str) -> Any:
-    """Retrieve all rulesets defined for a repository.
-
-    Fetches all repository rulesets regardless of target or enforcement level.
-
-    Args:
-        token: GitHub API token with repository read permissions.
-        owner: Repository owner username or organization name.
-        repo_name: Repository name (without owner prefix).
-
-    Returns:
-        List of ruleset dictionaries with metadata (id, name, target, enforcement,
-        rules, etc.). Empty list if no rulesets defined.
-
-    Raises:
-        github.GithubException: If API request fails.
-
-    Examples:
-        Get all rulesets:
-
-            >>> rulesets = all_rulesets(
-            ...     token="ghp_...", owner="myorg", repo_name="myrepo"
-            ... )
-            >>> for rs in rulesets:
-            ...     print(f"{rs['name']}: {rs['enforcement']}")
-    """
-    return github_api_request(
-        token, owner, repo_name, endpoint="rulesets", method="GET"
-    )
-
-
-def repository(token: str, owner: str, repo_name: str) -> "Repository":
-    """Get a PyGithub Repository object for API operations.
-
-    Creates an authenticated PyGithub client and retrieves a Repository object.
-
-    Args:
-        token: GitHub API token for authentication.
-        owner: Repository owner username or organization name.
-        repo_name: Repository name (without owner prefix).
-
-    Returns:
-        github.Repository.Repository object for API operations.
-
-    Raises:
-        github.UnknownObjectException: If repository doesn't exist or no access.
-        github.BadCredentialsException: If token is invalid or expired.
-
-    Examples:
-        Get a repository object:
-
-            >>> repo = repository(token="ghp_...", owner="myorg", repo_name="myrepo")
-            >>> print(repo.full_name)
-            myorg/myrepo
-    """
-    auth = Token(token)
-    github = Github(auth=auth)
-    return github.get_repo(f"{owner}/{repo_name}")
-
-
 def ruleset_exists(token: str, owner: str, repo_name: str, ruleset_name: str) -> int:
     """Check if a ruleset with the given name exists in a repository.
 
-    Searches all rulesets to find one matching the specified name.
+    Fetches all rulesets for the repository and searches for an exact name match.
 
     Args:
         token: GitHub API token with repository read permissions.
-        owner: Repository owner username or organization name.
-        repo_name: Repository name (without owner prefix).
-        ruleset_name: Name of the ruleset (case-sensitive exact match).
+        owner: Repository owner — a GitHub username or organization name.
+        repo_name: Repository name without the owner prefix.
+        ruleset_name: Name of the ruleset to look for (case-sensitive).
 
     Returns:
-        Ruleset ID (positive integer) if found, or 0 if not found.
+        The ruleset ID (a positive integer) if found, or ``0`` if not found.
+        Because ``0`` is falsy, the return value can be used directly in an
+        ``if`` statement to check existence.
 
     Raises:
-        github.GithubException: If API request fails.
+        github.GithubException: If the API request fails.
 
     Examples:
-        Check if a ruleset exists:
-
-            >>> ruleset_id = ruleset_exists(
-            ...     token="ghp_...", owner="myorg", repo_name="myrepo",
-            ...     ruleset_name="main-protection"
-            ... )
-            >>> if ruleset_id:
-            ...     print(f"Ruleset exists with ID: {ruleset_id}")
-
-    Note:
-        Returns 0 (falsy) when not found, convenient for boolean checks.
+        >>> ruleset_id = ruleset_exists(
+        ...     token="ghp_...", owner="myorg", repo_name="myrepo",
+        ...     ruleset_name="main-protection",
+        ... )
+        >>> if ruleset_id:
+        ...     print(f"Ruleset exists with ID: {ruleset_id}")
     """
     rulesets = all_rulesets(token, owner, repo_name)
     main_ruleset = next((rs for rs in rulesets if rs["name"] == ruleset_name), None)
     return main_ruleset["id"] if main_ruleset else 0
+
+
+def all_rulesets(token: str, owner: str, repo_name: str) -> Any:
+    """Retrieve all rulesets defined for a repository.
+
+    Args:
+        token: GitHub API token with repository read permissions.
+        owner: Repository owner — a GitHub username or organization name.
+        repo_name: Repository name without the owner prefix.
+
+    Returns:
+        List of ruleset dictionaries. Each entry contains metadata such as
+        ``id``, ``name``, ``target``, ``enforcement``, and ``rules``.
+        Returns an empty list if no rulesets are defined.
+
+    Raises:
+        github.GithubException: If the API request fails.
+    """
+    return github_api_request(
+        token, owner, repo_name, endpoint="rulesets", method="GET"
+    )
 
 
 def github_api_request(  # noqa: PLR0913
@@ -195,36 +145,33 @@ def github_api_request(  # noqa: PLR0913
     method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"] = "GET",
     payload: dict[str, Any] | None = None,
 ) -> Any:
-    """Make a generic GitHub API request for a repository.
+    """Make an authenticated GitHub REST API request for a repository.
 
-    Performs an authenticated HTTP request using PyGithub's internal requester.
-    Provides low-level interface for endpoints not fully supported by PyGithub.
+    Constructs the full repository-scoped URL and delegates the HTTP call to
+    PyGithub's internal requester, which handles authentication headers and
+    JSON serialization automatically. This provides access to GitHub API
+    endpoints that PyGithub does not expose through its high-level object model,
+    such as repository rulesets.
 
     Args:
         token: GitHub API token for authentication.
-        owner: Repository owner username or organization name.
-        repo_name: Repository name (without owner prefix).
-        endpoint: API endpoint path relative to repository URL (e.g., "rulesets",
-            "pages"). Do not include leading slash.
-        method: HTTP method. Defaults to "GET".
-        payload: Optional dict to send as JSON. Used for POST, PUT, PATCH.
+        owner: Repository owner — a GitHub username or organization name.
+        repo_name: Repository name without the owner prefix.
+        endpoint: API path relative to the repository URL (e.g., ``"rulesets"``,
+            ``"pages"``). Do not include a leading slash.
+        method: HTTP method for the request. Defaults to ``"GET"``.
+        payload: Optional dict to send as the JSON request body.
+            Used with ``"POST"``, ``"PUT"``, and ``"PATCH"`` requests.
 
     Returns:
-        Parsed JSON response as dict or list.
+        Parsed JSON response as a ``dict`` or ``list``, depending on the endpoint.
 
     Raises:
-        github.GithubException: If API request fails.
-
-    Examples:
-        Get all rulesets:
-
-            >>> rulesets = github_api_request(
-            ...     token="ghp_...", owner="myorg", repo_name="myrepo",
-            ...     endpoint="rulesets", method="GET"
-            ... )
+        github.GithubException: If the API request fails (e.g., 4xx/5xx response).
 
     Note:
-        Uses PyGithub's internal `_requester` with automatic API version header.
+        This function relies on PyGithub's internal ``_requester`` object, which
+        is not part of the public API and may change in future library versions.
     """
     logger.debug("GitHub API request: %s %s/%s/%s", method, owner, repo_name, endpoint)
     repo = repository(token, owner, repo_name)
@@ -237,3 +184,33 @@ def github_api_request(  # noqa: PLR0913
     )
     logger.debug("GitHub API request successful: %s %s", method, endpoint)
     return res
+
+
+def repository(token: str, owner: str, repo_name: str) -> "Repository":
+    """Get an authenticated PyGithub ``Repository`` object.
+
+    Creates a new PyGithub client authenticated with the given token and
+    returns the corresponding repository object, which can be used for
+    further GitHub API operations.
+
+    Args:
+        token: GitHub personal access token for authentication.
+        owner: Repository owner — a GitHub username or organization name.
+        repo_name: Repository name without the owner prefix.
+
+    Returns:
+        An authenticated ``github.Repository.Repository`` instance.
+
+    Raises:
+        github.UnknownObjectException: If the repository does not exist or
+            the token does not have access to it.
+        github.BadCredentialsException: If the token is invalid or expired.
+
+    Examples:
+        >>> repo = repository(token="ghp_...", owner="myorg", repo_name="myrepo")
+        >>> print(repo.full_name)
+        myorg/myrepo
+    """
+    auth = Token(token)
+    github = Github(auth=auth)
+    return github.get_repo(f"{owner}/{repo_name}")

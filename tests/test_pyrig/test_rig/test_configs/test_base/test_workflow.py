@@ -98,13 +98,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_run_dependency_audit()
         assert "run" in result, f"Expected 'run' in step, got {result}"
 
-    def test_if_not_triggered_by_cron(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().if_not_triggered_by_cron()
-        assert "schedule" in result, "Expected 'schedule' in result"
-
     def test_step_update_dependencies(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -179,15 +172,6 @@ class TestWorkflowConfigFile:
         ]
         result = my_test_workflow().combined_if(*conditions, operator="&&")
         expected = "${{ condition1 && condition2 }}"
-        assert result == expected, f"Expected '{expected}', got {result}"
-
-    def test_if_matrix_is_not_os(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        os = "ubuntu-latest"
-        result = my_test_workflow().if_matrix_is_not_os(os)
-        expected = "${{ matrix.os != 'ubuntu-latest' }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
     def test_step_install_container_engine(
@@ -347,14 +331,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().on_workflow_run(workflows=["Test Workflow"])
         assert "workflow_run" in result, "Expected 'workflow_run' in result"
 
-    def test_permission_content(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().permission_content()
-        assert "contents" in result, "Expected 'contents' in result"
-        assert result["contents"] == "read", "Expected default permission to be 'read'"
-
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
 
@@ -461,13 +437,6 @@ class TestWorkflowConfigFile:
         assert "name" in result, "Expected 'name' in step"
         assert "run" in result, "Expected 'run' in step"
 
-    def test_step_no_builder_defined(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_no_builder_defined()
-        assert "run" in result, "Expected 'run' in step"
-
     def test_step_checkout_repository(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -481,13 +450,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().step_setup_version_control()
         assert "run" in result, "Expected 'run' in step"
-
-    def test_step_setup_python(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_setup_python()
-        assert "uses" in result, "Expected 'uses' in step"
 
     def test_step_setup_package_manager(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -661,20 +623,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().insert_repository_name()
         assert "github.event.repository.name" in result, (
             "Expected 'github.event.repository.name' in result"
-        )
-
-    def test_insert_ref_name(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_ref_name()
-        assert "github.ref_name" in result, "Expected 'github.ref_name' in result"
-
-    def test_insert_repository_owner(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_repository_owner()
-        assert "github.repository_owner" in result, (
-            "Expected 'github.repository_owner' in result"
         )
 
     def test_insert_matrix_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:

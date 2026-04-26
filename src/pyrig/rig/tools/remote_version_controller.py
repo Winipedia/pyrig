@@ -1,13 +1,4 @@
-"""GitHub remote version control wrapper.
-
-Provides type-safe wrapper for GitHub remote version control operations.
-
-Example:
-    >>> from pyrig.rig.tools.remote_version_controller import (
-    ...     RemoteVersionController,
-    ... )
-    >>> RemoteVersionController.I.repo_url()
-"""
+"""GitHub remote version control wrapper."""
 
 import os
 
@@ -17,11 +8,12 @@ from pyrig.rig.tools.version_controller import VersionController
 
 
 class RemoteVersionController(Tool):
-    """GitHub remote version control wrapper.
+    """GitHub tool for constructing repository URLs and badges.
 
-    Constructs URLs and badge URLs for GitHub repository, documentation,
-    CI/CD, and badges. Potentially extensible to other remote version
-    control systems.
+    Implements the Tool interface for GitHub, providing methods to build
+    URLs for the repository, issues tracker, releases, and GitHub Actions
+    workflows. Also supports shields.io badge generation for use in
+    README and documentation files.
     """
 
     def name(self) -> str:
@@ -33,7 +25,7 @@ class RemoteVersionController(Tool):
         return "github"
 
     def group(self) -> str:
-        """Returns the group the tool belongs to.
+        """Get the badge group this tool belongs to.
 
         Returns:
             `ToolGroup.TOOLING`
@@ -41,7 +33,12 @@ class RemoteVersionController(Tool):
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and repository page URL."""
+        """Return the GitHub star-count badge image URL and repository page URL.
+
+        Returns:
+            Tuple of (badge_image_url, link_url) where the badge image shows
+            the repository star count using the shields.io social style.
+        """
         owner, repo = VersionController.I.repo_owner_and_name(
             check_repo_url=False, url_encode=True
         )
@@ -51,85 +48,25 @@ class RemoteVersionController(Tool):
         )
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Get tool dependencies.
+        """Get tool development dependencies.
 
         Returns:
-            Tuple of tool dependencies.
+            Tuple containing 'pygithub'.
         """
         return ("pygithub",)
 
-    def url_base(self) -> str:
-        """Get the base URL for GitHub.
-
-        Returns:
-            Base URL: https://github.com
-        """
-        return "https://github.com"
-
-    def repo_url(self) -> str:
-        """Construct HTTPS GitHub repository URL.
-
-        Returns:
-            URL in format: `https://github.com/{owner}/{repo}`
-        """
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
-        )
-        return f"{self.url_base()}/{owner}/{repo}"
-
-    def issues_url(self) -> str:
-        """Construct GitHub issues URL.
-
-        Returns:
-            URL in format: `https://github.com/{owner}/{repo}/issues`
-        """
-        return f"{self.repo_url()}/issues"
-
-    def releases_url(self) -> str:
-        """Construct GitHub releases URL.
-
-        Returns:
-            URL in format: `https://github.com/{owner}/{repo}/releases`
-        """
-        return f"{self.repo_url()}/releases"
-
-    def cicd_url(self, workflow_name: str) -> str:
-        """Construct GitHub Actions workflow run URL.
-
-        Args:
-            workflow_name: WorkflowConfigFile file name without `.yml` extension.
-
-        Returns:
-            URL to workflow execution history.
-        """
-        return f"{self.repo_url()}/actions/workflows/{workflow_name}.yml"
-
-    def cicd_badge_url(self, workflow_name: str, label: str) -> str:
-        """Construct GitHub Actions workflow status badge URL.
-
-        Args:
-            workflow_name: WorkflowConfigFile file name without `.yml` extension.
-            label: Badge text label (e.g., "CI", "Build").
-
-        Returns:
-            shields.io badge URL showing workflow status.
-        """
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
-        )
-        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
-
     def cicd_badge(self, workflow_name: str, label: str) -> str:
-        """Construct GitHub Actions workflow status badge Markdown string.
+        """Construct a clickable Markdown badge for a GitHub Actions workflow status.
+
+        Combines the shields.io badge image URL and the workflow run history URL
+        into a single Markdown badge string.
 
         Args:
-            workflow_name: WorkflowConfigFile file name without `.yml` extension.
-            label: Badge text label (e.g., "CI", "Build").
+            workflow_name: Workflow file name without the `.yml` extension.
+            label: Display label shown on the badge (e.g., "CI", "Build").
 
         Returns:
-            Markdown string for shields.io badge showing workflow status.
+            Markdown string in the form ``[![label](badge_url)](cicd_url)``.
         """
         badge_url = self.cicd_badge_url(workflow_name, label)
         cicd_url = self.cicd_url(workflow_name)
@@ -139,17 +76,88 @@ class RemoteVersionController(Tool):
             alt_text=label,
         )
 
-    def running_in_ci(self) -> bool:
-        """Detect if code is executing inside a CI environment.
+    def issues_url(self) -> str:
+        """Construct the GitHub issues URL.
 
         Returns:
-            True if running in CI, False otherwise.
+            URL in the format ``https://github.com/{owner}/{repo}/issues``.
+        """
+        return f"{self.repo_url()}/issues"
+
+    def releases_url(self) -> str:
+        """Construct the GitHub releases URL.
+
+        Returns:
+            URL in the format ``https://github.com/{owner}/{repo}/releases``.
+        """
+        return f"{self.repo_url()}/releases"
+
+    def cicd_url(self, workflow_name: str) -> str:
+        """Construct the GitHub Actions workflow run history URL.
+
+        Args:
+            workflow_name: Workflow file name without the `.yml` extension.
+
+        Returns:
+            URL in the format
+            ``https://github.com/{owner}/{repo}/actions/workflows/{workflow_name}.yml``.
+        """
+        return f"{self.repo_url()}/actions/workflows/{workflow_name}.yml"
+
+    def cicd_badge_url(self, workflow_name: str, label: str) -> str:
+        """Construct a shields.io badge URL for a GitHub Actions workflow status.
+
+        Args:
+            workflow_name: Workflow file name without the `.yml` extension.
+            label: Badge label text (e.g., "CI", "Build").
+
+        Returns:
+            shields.io URL that renders the current workflow status as a badge.
+        """
+        owner, repo = VersionController.I.repo_owner_and_name(
+            check_repo_url=False,
+            url_encode=True,
+        )
+        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
+
+    def repo_url(self) -> str:
+        """Construct the HTTPS GitHub repository URL.
+
+        Returns:
+            URL in the format ``https://github.com/{owner}/{repo}``.
+        """
+        owner, repo = VersionController.I.repo_owner_and_name(
+            check_repo_url=False,
+            url_encode=True,
+        )
+        return f"{self.url_base()}/{owner}/{repo}"
+
+    def url_base(self) -> str:
+        """Get the base URL for GitHub.
+
+        Returns:
+            ``https://github.com``
+        """
+        return "https://github.com"
+
+    def running_in_ci(self) -> bool:
+        """Detect whether the code is running inside a GitHub Actions environment.
+
+        Checks the ``GITHUB_ACTIONS`` environment variable, which GitHub
+        Actions automatically sets to ``"true"`` for all workflow runs.
+
+        Returns:
+            True if running inside GitHub Actions, False otherwise.
         """
         return os.getenv("GITHUB_ACTIONS", "false") == "true"
 
     def access_token_key(self) -> str:
-        """Get the environment variable key for the repository access token.
+        """Get the environment variable name for the repository access token.
 
-        Used for CI/CD authentication.
+        This key is used to retrieve the GitHub token from the environment
+        during CI/CD workflow runs and branch protection operations.
+
+        Returns:
+            ``'REPO_TOKEN'``
         """
         return "REPO_TOKEN"

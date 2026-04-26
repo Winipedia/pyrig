@@ -1,33 +1,4 @@
-"""GitHub Actions workflow for health checks and CI.
-
-This module provides the HealthCheckWorkflowConfigFile class
-for creating a GitHub Actions workflow that runs continuous
-integration checks to verify code quality and
-functionality.
-
-The workflow runs:
-    - **On Pull Requests**: Validates changes before merging
-    - **On Pushes to Main**: Ensures main branch stays healthy
-    - **On Schedule**: Daily checks with staggered timing based on dependency depth
-
-Checks Performed:
-    - **Linting**: ruff check for code quality
-    - **Formatting**: ruff format for code style
-    - **Type Checking**: ty check for type safety
-    - **Security (code)**: bandit for vulnerability scanning
-    - **Security (dependencies)**: pip-audit for dependency vulnerability scanning
-    - **Markdown**: rumdl for documentation quality
-    - **Tests**: pytest with coverage reporting
-
-The workflow uses a matrix strategy to test across:
-    - Multiple OS (Ubuntu, macOS, Windows)
-    - Multiple Python versions (from pyproject.toml)
-
-See Also:
-    GitHub Actions: https://docs.github.com/en/actions
-    pyrig.rig.configs.base.workflow.WorkflowConfigFile
-        Base class for workflow generation
-"""
+"""GitHub Actions workflow generator for the health check CI stage."""
 
 from typing import Any, Literal
 
@@ -36,52 +7,41 @@ from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 
 
 class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
-    """GitHub Actions workflow for continuous integration health checks.
+    """Generates the ``health_check.yml`` GitHub Actions workflow.
 
-    Generates a .github/workflows/health_check.yml file that runs comprehensive
-    code quality checks and tests on pull requests, pushes, and scheduled intervals.
+    This workflow runs code quality checks and tests on every pull request,
+    push to the default branch, daily cron schedule, and manual trigger.
 
-    The workflow includes:
-        - **Quality Checks**: Linting, formatting, type checking, security scanning
-        - **Tests**: pytest with coverage reporting across OS and Python version matrix
-        - **Staggered Scheduling**: Daily runs with timing based on dependency depth
-          to avoid conflicts when dependencies release updates
+    Three jobs run as part of this workflow:
 
-    Triggers:
-        - Pull requests to any branch
-        - Pushes to main branch
-        - Scheduled daily runs (staggered by dependency depth)
-
-    Matrix Strategy:
-        - OS: Ubuntu (latest), macOS (latest), Windows (latest)
-        - Python: All supported versions from pyproject.toml
-
-    Examples:
-        Generate health_check.yml workflow::
-
-            from pyrig.rig.configs.workflows.health_check import (
-                HealthCheckWorkflowConfigFile
-            )
-
-            # Creates .github/workflows/health_check.yml
-            HealthCheckWorkflowConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.workflows.build.BuildWorkflowConfigFile
-            Runs after this workflow completes on main branch (excludes cron)
-        pyrig.rig.configs.base.workflow.WorkflowConfigFile
-            Base class with workflow generation utilities
+    1. ``health_checks`` — a single-runner job that applies all pre-commit
+       hooks (linting, formatting, type checking, security, markdown), audits
+       dependencies for known CVEs, and enforces branch protection settings.
+    2. ``matrix_health_checks`` — a matrix job that runs the full test suite
+       with coverage reporting across all supported OS and Python versions.
+    3. ``health_check`` — a fan-in job that waits for both jobs above to
+       succeed. Its job ID is registered as the required status check in the
+       branch protection ruleset, making it the single gate for merging.
     """
 
     def stem(self) -> str:
-        """Get the workflow filename stem."""
+        """Return the stem used to derive the workflow filename.
+
+        Returns:
+            ``"health_check"``, giving the path
+            ``.github/workflows/health_check.yml``.
+        """
         return "health_check"
 
     def workflow_triggers(self) -> ConfigDict:
-        """Get the workflow triggers.
+        """Return the triggers for the health check workflow.
+
+        Extends the default ``workflow_dispatch`` trigger from the base class
+        with pull request, push, and scheduled cron triggers.
 
         Returns:
-            Triggers for pull requests, pushes, and scheduled runs.
+            Trigger configuration dict with ``workflow_dispatch``,
+            ``pull_request``, ``push``, and ``schedule`` entries.
         """
         triggers = super().workflow_triggers()
         triggers.update(self.on_pull_request())
@@ -98,18 +58,24 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         int | Literal["*"],
         int | Literal["*"],
     ]:
-        """Get the cron schedule for daily runs.
+        """Return the cron schedule tuple for the daily workflow run.
+
+        The five-element tuple maps to ``(minute, hour, day, month, weekday)``
+        and is joined into a cron string by :meth:`workflow_triggers`.
 
         Returns:
-            Cron expression for daily execution at midnight.
+            ``(0, 1, "*", "*", "*")``, which schedules the workflow every day
+            at 01:00 UTC.
         """
         return 0, 1, "*", "*", "*"
 
     def jobs(self) -> ConfigDict:
-        """Get the workflow jobs.
+        """Return all jobs for the health check workflow.
 
         Returns:
-            Dict with health check, matrix health check, and aggregation jobs.
+            Dict containing the ``health_checks`` job, the
+            ``matrix_health_checks`` job, and the ``health_check``
+            aggregation job.
         """
         jobs: ConfigDict = {}
         jobs.update(self.job_health_checks())
@@ -118,10 +84,17 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return jobs
 
     def job_health_check(self) -> ConfigDict:
-        """Get the aggregation job that depends on matrix completion.
+        """Return the fan-in aggregation job.
+
+        This job depends on both ``health_checks`` and
+        ``matrix_health_checks`` completing successfully. Its job ID
+        (``"health_check"``) is registered as the sole required status check
+        in the branch protection ruleset, making it the single gate that must
+        pass before any pull request can be merged.
 
         Returns:
-            Job configuration for result aggregation.
+            Job configuration with ``needs`` set to both sibling jobs and a
+            single aggregation step.
         """
         matrix_health_checks_job_id = self.make_id_from_func(
             self.job_matrix_health_checks
@@ -134,10 +107,15 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def job_matrix_health_checks(self) -> ConfigDict:
-        """Get the matrix job that runs across OS and Python versions.
+        """Return the matrix job that runs the test suite across environments.
+
+        Uses a strategy matrix of all supported OS and Python version
+        combinations so the test suite is verified on every platform the
+        project targets.
 
         Returns:
-            Job configuration for matrix testing.
+            Job configuration with a matrix strategy, dynamic ``runs-on``
+            value, and steps for setup, testing, and coverage upload.
         """
         return self.job(
             job_func=self.job_matrix_health_checks,
@@ -147,23 +125,36 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def job_health_checks(self) -> ConfigDict:
-        """Get the job that runs health checks.
+        """Return the single-runner job that applies all code quality checks.
 
-        This is for non-matrix checks.
+        Runs on a single Ubuntu runner (no matrix) and covers pre-commit hooks,
+        dependency auditing, and branch protection enforcement.
 
         Returns:
-            Job configuration for health checks.
+            Job configuration with steps for the full quality check sequence.
         """
         return self.job(
             job_func=self.job_health_checks,
             steps=self.steps_health_checks(),
         )
 
-    def steps_matrix_health_checks(self) -> list[dict[str, Any]]:
-        """Get the steps for the matrix health check job.
+    def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
+        """Return the steps for the fan-in aggregation job.
 
         Returns:
-            List of steps for setup and testing.
+            A single-element list containing the aggregation echo step.
+        """
+        return [
+            self.step_aggregate_jobs(),
+        ]
+
+    def steps_matrix_health_checks(self) -> list[dict[str, Any]]:
+        """Return the steps for the matrix test job.
+
+        Returns:
+            Steps that set up the environment for the current matrix OS and
+            Python version, run the test suite, and upload the coverage report
+            to Codecov.
         """
         return [
             *self.steps_core_matrix_setup(
@@ -173,22 +164,13 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_upload_coverage_report(),
         ]
 
-    def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
-        """Get the steps for aggregating matrix results.
-
-        Returns:
-            List with the aggregation step.
-        """
-        return [
-            self.step_aggregate_jobs(),
-        ]
-
     def steps_health_checks(self) -> list[dict[str, Any]]:
-        """Get the steps for the health check job.
+        """Return the steps for the single-runner quality check job.
 
         Returns:
-            List of steps for setup, pre-commit hooks, dependency audit,
-            and repository protection.
+            Steps that install dependencies, run all pre-commit hooks
+            (linting, formatting, type checking, security, markdown),
+            audit dependencies for CVEs, and apply branch protection rules.
         """
         return [
             *self.steps_core_installed_setup(),

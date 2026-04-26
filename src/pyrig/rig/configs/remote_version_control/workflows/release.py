@@ -1,23 +1,4 @@
-"""GitHub Actions workflow for creating releases.
-
-This module provides the ReleaseWorkflowConfigFile class for creating a GitHub Actions
-workflow that creates GitHub releases with version tags and changelogs after
-successful artifact builds.
-
-The workflow:
-    - Updates the project version and creates a git tag (e.g., v1.2.3)
-    - Downloads artifacts from the triggering build workflow run
-    - Generates changelogs from commit history
-    - Publishes GitHub releases with artifacts attached
-
-This enables automated semantic versioning and release management.
-
-See Also:
-    pyrig.rig.configs.workflows.build.BuildWorkflowConfigFile
-        Must complete successfully before this workflow runs
-    pyrig.rig.configs.workflows.deploy.DeployWorkflowConfigFile
-        Runs after this workflow to deploy to PyPI and GitHub Pages
-"""
+"""Workflow configuration for automated GitHub release creation."""
 
 from typing import Any
 
@@ -29,53 +10,57 @@ from pyrig.rig.configs.remote_version_control.workflows.build import (
 
 
 class ReleaseWorkflowConfigFile(WorkflowConfigFile):
-    """GitHub Actions workflow for creating GitHub releases.
+    """Generates the ``release.yml`` GitHub Actions workflow.
 
-    Generates a .github/workflows/release.yml file that creates GitHub releases
-    with version tags and changelogs after successful builds.
+    This workflow is triggered when the build workflow completes successfully.
+    It bumps the project patch version, commits and pushes all staged changes,
+    creates and pushes a version tag, downloads build artifacts from the
+    triggering run, generates a changelog from commit history, and publishes
+    a GitHub release with the artifacts attached.
 
-    The workflow:
-        - Triggers after BuildWorkflowConfigFile completes successfully
-        - Updates the project version, pushes commits, and creates/pushes a git tag
-        - Downloads artifacts (wheels, container images)
-          from the triggering build workflow run
-        - Generates changelogs from commit history
-        - Publishes GitHub releases with artifacts attached
-        - Requires write permissions for contents and read for actions
+    Release process (in order):
+        1. Check out the repository using ``REPO_TOKEN`` and configure git
+           credentials.
+        2. Bump the patch version and stage ``pyproject.toml``.
+        3. Update and install dependencies, staging lock-file changes.
+        4. Commit all staged changes and push commits to the remote.
+        5. Create a version tag (e.g. ``v1.2.3``) and push it to the remote.
+        6. Export the version string to ``GITHUB_OUTPUT``.
+        7. Download build artifacts from the triggering workflow run into
+           ``dist/``.
+        8. Generate a changelog from commits since the last tag.
+        9. Publish the GitHub release with artifacts and the changelog body.
 
-    Release Process:
-        1. Checkout and set up the project environment
-        2. Update/install dependencies
-        3. Bump patch version and stage changes
-        4. Run prek, commit changes, and push commits
-        5. Create and push a version tag
-        6. Download build artifacts from the triggering workflow run
-        7. Generate changelog and create the GitHub release
+    Permissions required:
+        - ``contents: write`` — push commits, tags, and create releases.
+        - ``actions: read`` — download artifacts from the triggering run.
 
     Example:
-        Generate release.yml workflow:
-
-        >>> from pyrig.rig.configs.workflows.release import ReleaseWorkflowConfigFile
+        >>> from pyrig.rig.configs.remote_version_control.workflows.release import (
+        ...     ReleaseWorkflowConfigFile,
+        ... )
         >>> ReleaseWorkflowConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.workflows.build.BuildWorkflowConfigFile
-            Triggers this workflow on completion
-        pyrig.rig.configs.workflows.deploy.DeployWorkflowConfigFile
-            Runs after this workflow completes
-        pyrig.rig.configs.pyproject.PyprojectConfigFile
-            Provides version information for tagging
     """
 
     def stem(self) -> str:
-        """Get the workflow filename stem."""
+        """Return the workflow filename stem.
+
+        Returns:
+            ``"release"``, which produces ``release.yml`` as the output file.
+        """
         return "release"
 
     def workflow_triggers(self) -> ConfigDict:
-        """Get the workflow triggers.
+        """Build the workflow trigger configuration.
+
+        Extends the default ``workflow_dispatch`` trigger (inherited from the
+        base class) with a ``workflow_run`` trigger that fires when
+        :class:`~pyrig.rig.configs.remote_version_control.workflows.build.BuildWorkflowConfigFile`
+        completes.
 
         Returns:
-            Trigger for build workflow completion.
+            Trigger configuration containing both ``workflow_dispatch`` and
+            ``workflow_run`` triggers.
         """
         triggers = super().workflow_triggers()
         triggers.update(
@@ -86,10 +71,15 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return triggers
 
     def permissions(self) -> ConfigDict:
-        """Get the workflow permissions.
+        """Build the workflow permission configuration.
+
+        Grants ``contents: write`` to allow pushing commits, creating version
+        tags, and publishing GitHub releases. Grants ``actions: read`` to
+        allow downloading artifacts from the triggering build workflow run.
 
         Returns:
-            Permissions with write access for creating releases.
+            Permission map with ``contents`` set to ``"write"`` and
+            ``actions`` set to ``"read"``.
         """
         permissions = super().permissions()
         permissions["contents"] = "write"
@@ -97,20 +87,25 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return permissions
 
     def jobs(self) -> ConfigDict:
-        """Get the workflow jobs.
+        """Build the complete jobs configuration for the workflow.
 
         Returns:
-            Dict with release job.
+            Dict containing the single release job.
         """
         jobs: ConfigDict = {}
         jobs.update(self.job_release())
         return jobs
 
     def job_release(self) -> ConfigDict:
-        """Get the release job that creates the GitHub release.
+        """Build the release job configuration.
+
+        The job is guarded by
+        :meth:`~WorkflowConfigFile.if_workflow_run_is_success`, so it only
+        runs when the triggering workflow run concluded successfully.
 
         Returns:
-            Job configuration for creating releases.
+            Job configuration dict keyed by the job name, containing the
+            success condition and the ordered release steps.
         """
         return self.job(
             job_func=self.job_release,
@@ -119,10 +114,14 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def steps_release(self) -> list[dict[str, Any]]:
-        """Get the steps for creating the release.
+        """Build the ordered list of steps for the release job.
 
         Returns:
-            List of steps for tagging, changelog, and release creation.
+            Steps that perform the full release sequence: environment setup
+            with a patch version bump, updating and installing dependencies,
+            committing and pushing changes, creating and pushing the version
+            tag, exporting the version, downloading build artifacts,
+            generating a changelog, and publishing the GitHub release.
         """
         return [
             *self.steps_core_installed_setup(repo_token=True, patch_version=True),

@@ -1,25 +1,12 @@
 """Pyrig-specific pyproject.toml configuration overrides.
 
-Extends the base PyprojectConfigFile with pyrig-specific PyPI classifiers and
-keywords. Only active when pyrig itself is the project being configured.
+Extends the base pyproject.toml configuration with PyPI classifiers and keywords
+relevant to pyrig's purpose as a project scaffolding and automation toolkit.
+Only active when pyrig itself is the project being configured.
 
-The conditional class definition uses `src_package_is_pyrig()` to ensure this
-class is only discoverable via `__subclasses__()` when running within pyrig's
-repository. Other projects depending on pyrig will not inherit these settings.
-
-Example:
-    When generating pyproject.toml for pyrig itself::
-
-        >>> from pyrig.rig.configs.pyrig.pyproject import PyprojectConfigFile
-        >>> configs = PyprojectConfigFile.I.configs()
-        >>> "project-setup" in configs["project"]["keywords"]
-        True
-        >>> any("Build Tools" in c for c in configs["project"]["classifiers"])
-        True
-
-See Also:
-    pyrig.rig.configs.pyproject.PyprojectConfigFile: Base pyproject.toml config
-    pyrig.rig.utils.packages.src_package_is_pyrig: Package detection utility
+The conditional class definition gates subclass registration so that
+``__subclasses__()`` only discovers this class when running inside pyrig's own
+repository, leaving dependent projects unaffected.
 """
 
 from pyrig.core.introspection.packages import src_package_is_pyrig
@@ -31,27 +18,51 @@ if src_package_is_pyrig():
     class PyprojectConfigFile(BasePyprojectConfigFile):
         """Pyrig-specific pyproject.toml configuration.
 
-        Extends base PyprojectConfigFile with pyrig-specific PyPI metadata:
-        development status, intended audience, topic classifiers, and keywords
-        relevant to project scaffolding and automation tools.
+        Extends the base ``PyprojectConfigFile`` with PyPI metadata specific to
+        pyrig: development status, intended audience, topic classifiers, and
+        project-related keywords for package discovery.
 
-        Only instantiated when pyrig is the current project (via conditional
-        class definition). Other projects using pyrig as a dependency will use
-        the base PyprojectConfigFile instead.
-
-        See Also:
-            pyrig.rig.configs.pyproject.PyprojectConfigFile: Parent class
+        Only defined when pyrig is the current project (via the module-level
+        conditional). Projects that use pyrig as a dependency get the base class
+        defaults instead.
         """
 
-        def make_python_version_classifiers(self) -> list[str]:
-            """Generate PyPI classifiers with pyrig-specific metadata.
+        def _configs(self) -> ConfigDict:
+            """Build pyproject.toml configuration with pyrig-specific keywords.
 
-            Prepends pyrig-specific classifiers to the base classifiers:
-            development status, intended audience, and topic categories.
+            Calls the base implementation and replaces the empty
+            ``project.keywords`` list with keywords that describe pyrig's purpose
+            as a scaffolding and automation toolkit.
 
             Returns:
-                Classifier list with pyrig-specific entries first, followed by
-                Python version, OS, and typing classifiers from parent.
+                Complete pyproject.toml configuration dict with pyrig-specific
+                keywords populated in the ``project`` section.
+            """
+            configs = super()._configs()
+            keywords = [
+                "project-setup",
+                "automation",
+                "scaffolding",
+                "cli",
+                "testing",
+                "ci-cd",
+                "devops",
+                "packaging",
+            ]
+            configs["project"]["keywords"] = keywords
+            return configs
+
+        def make_python_version_classifiers(self) -> list[str]:
+            """Build PyPI trove classifiers including pyrig-specific entries.
+
+            Prepends development status, intended audience, and software
+            development topic classifiers to the base set of Python version, OS,
+            and typing classifiers returned by the parent.
+
+            Returns:
+                List of trove classifier strings with pyrig-specific entries
+                first, followed by the parent's Python version, OS, and typing
+                classifiers.
             """
             classifiers = super().make_python_version_classifiers()
 
@@ -68,30 +79,19 @@ if src_package_is_pyrig():
             return [*dev_statuses, *intended_audiences, *topics, *classifiers]
 
         def dependencies(self, default: list[str] | None = None) -> list[str]:
-            """Get runtime dependencies with pyrig-specific defaults."""
+            """Read runtime dependencies with a pyrig-specific default.
+
+            Overrides the base default from ``[Pyrigger.I.name()]`` to
+            ``["typer"]``, reflecting that typer is pyrig's own primary runtime
+            dependency.
+
+            Args:
+                default: Fallback list used when ``project.dependencies`` is
+                    absent in pyproject.toml. Defaults to ``["typer"]``.
+
+            Returns:
+                Dependency list from pyproject.toml, or ``default`` if absent.
+            """
             if default is None:
                 default = ["typer"]
             return super().dependencies(default)
-
-        def _configs(self) -> ConfigDict:
-            """Generate complete pyproject.toml config with pyrig-specific keywords.
-
-            Extends base configuration by adding keywords relevant to pyrig's
-            purpose as a project scaffolding and automation toolkit.
-
-            Returns:
-                Complete pyproject.toml configuration dict with pyrig keywords.
-            """
-            configs = super()._configs()
-            keywords = [
-                "project-setup",
-                "automation",
-                "scaffolding",
-                "cli",
-                "testing",
-                "ci-cd",
-                "devops",
-                "packaging",
-            ]
-            configs["project"]["keywords"] = keywords
-            return configs

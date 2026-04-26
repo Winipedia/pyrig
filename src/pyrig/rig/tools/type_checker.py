@@ -1,6 +1,6 @@
 """Ty type checker wrapper.
 
-Provides type-safe wrapper for ty commands: check.
+Provides a type-safe wrapper for ty commands: check.
 Ty is Astral's extremely fast Python type checker.
 
 Example:
@@ -13,12 +13,9 @@ from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
 class TypeChecker(Tool):
-    """Ty type checker wrapper.
+    """Type-safe wrapper for the ty type checker.
 
-    Constructs ty command arguments for type checking operations.
-
-    Operations:
-        - Type checking: Verify type annotations and correctness
+    Constructs ``ty check`` command arguments for running static type checks.
 
     Example:
         >>> TypeChecker.I.check_args().run()
@@ -34,7 +31,7 @@ class TypeChecker(Tool):
         return "ty"
 
     def group(self) -> str:
-        """Returns the group the tool belongs to.
+        """Return the group the tool belongs to.
 
         Returns:
             `ToolGroup.CODE_QUALITY`
@@ -52,9 +49,9 @@ class TypeChecker(Tool):
         """Construct ty check arguments.
 
         Args:
-            *args: Check command arguments.
+            *args: Additional arguments appended after ``ty check``.
 
         Returns:
-            Args for 'ty check'.
+            Args for 'ty check [args]'.
         """
         return self.args("check", *args)

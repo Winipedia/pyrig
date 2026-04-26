@@ -1,10 +1,4 @@
-"""Manage feature request issue template.
-
-Create .github/ISSUE_TEMPLATE/feature_request.yml with a minimal template.
-
-See Also:
-    pyrig.rig.configs.base.yml.YmlConfigFile
-"""
+"""Configuration file for the GitHub feature request issue template."""
 
 from pathlib import Path
 
@@ -14,31 +8,43 @@ from pyrig.rig.configs.base.yml import DictYmlConfigFile
 
 
 class FeatureRequestConfigFile(DictYmlConfigFile):
-    """Manage .github/ISSUE_TEMPLATE/feature_request.yml.
+    """Manages ``.github/ISSUE_TEMPLATE/feature_request.yml``.
 
-    Feature request template with fields for:
-    - Summary (required)
-    - Use Case (required)
-    - Proposed Solution (optional)
-    - Alternatives Considered (optional)
+    Generates and validates the GitHub issue form that contributors use to
+    submit feature requests. The form guides contributors through describing
+    what they want, why they need it, and how it might work.
 
     Example:
         >>> FeatureRequestConfigFile.I.validate()
-
-    See Also:
-        pyrig.rig.configs.base.yml.YmlConfigFile
     """
 
     def parent_path(self) -> Path:
-        """Return .github/ISSUE_TEMPLATE/."""
+        """Return the directory containing the feature request template file.
+
+        Returns:
+            ``Path(".github/ISSUE_TEMPLATE")``.
+        """
         return Path(".github/ISSUE_TEMPLATE")
 
     def stem(self) -> str:
-        """Return the filename stem."""
+        """Return ``"feature_request"`` as the filename stem."""
         return "feature_request"
 
     def _configs(self) -> ConfigDict:
-        """Return feature request template YAML structure."""
+        """Return the GitHub issue form definition for feature requests.
+
+        Defines a form with the following textarea fields:
+
+        - **Summary** (required): A brief description of the requested feature.
+        - **Use Case** (required): The motivation or problem the feature would address.
+        - **Proposed Solution** (optional): The envisioned way the feature would work.
+        - **Alternatives Considered** (optional): Other approaches already evaluated.
+
+        Returns:
+            A ``ConfigDict`` representing the full GitHub issue form YAML, including
+            metadata such as ``name``, ``description``, ``title``, ``labels``, and
+            the ``body`` form fields.
+        """
         return {
             "name": "Feature Request",
             "description": "Suggest a new feature",
@@ -85,5 +91,15 @@ class FeatureRequestConfigFile(DictYmlConfigFile):
         }
 
     def is_correct(self) -> bool:
-        """Return True if feature_request.yml exists with content."""
+        """Return ``True`` if the feature request template file exists and is non-empty.
+
+        Overrides the base class to use a looser correctness check. Rather than
+        verifying that all required keys are present, any file with non-whitespace
+        content is treated as correct. This allows contributors to freely customize
+        the template without the system overwriting their changes.
+
+        Returns:
+            ``True`` if the file exists and contains at least one non-whitespace
+            character.
+        """
         return self.path().exists() and bool(read_text_utf8(self.path()).strip())

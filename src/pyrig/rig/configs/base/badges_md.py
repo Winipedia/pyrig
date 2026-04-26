@@ -1,22 +1,7 @@
-"""Markdown badge file configuration management.
+"""Badge-augmented Markdown configuration base class.
 
-Provides BadgesMarkdownConfigFile for creating Markdown files with auto-generated
-project badges from pyproject.toml and Git metadata.
-
-Example:
-    >>> from pathlib import Path
-    >>> from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
-    >>>
-    >>> class ReadmeFile(BadgesMarkdownConfigFile):
-    ...
-    ...     def parent_path(self) -> Path:
-    ...         return Path()
-    ...
-    ...
-    ...     def filename(self) -> str:
-    ...         return "README"
-    >>>
-    >>> ReadmeFile()  # Creates README.md with badges
+Extends Markdown file management with auto-generated project badges assembled
+from pyproject.toml, CI/CD workflow metadata, and registered tool definitions.
 """
 
 import re
@@ -40,30 +25,33 @@ from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 class BadgesMarkdownConfigFile(MarkdownConfigFile):
     """Base class for Markdown files with auto-generated project badges.
 
-    Generates badges from pyproject.toml and Git metadata. Validates that file
-    contains required badges, project name, and description.
+    Generates a Markdown header section consisting of the project name, grouped
+    badge rows (tooling, code quality, CI/CD, documentation, etc.), and a fenced
+    project description block read from pyproject.toml.
+
+    The ``merge_configs`` override handles stale files intelligently: when the
+    file already exists but has an outdated description or badge URLs, it updates
+    only those parts in-place before falling back to the standard prepend merge.
 
     Subclasses must implement:
-        - `parent_path`: Directory containing the Markdown file
-
-    See Also:
-        pyrig.rig.configs.base.markdown.MarkdownConfigFile: Parent class
-        pyrig.rig.configs.pyproject.PyprojectConfigFile: Project metadata
-        pyrig.rig.tools.remote_version_controller.RemoteVersionController:
-            Repository related badges and more
+        - ``parent_path``: Directory that will contain the Markdown file
     """
 
     def merge_configs(self) -> ConfigList:
-        """Check correctness, replacing a stale description if needed.
+        """Merge file content, updating stale badges and description in-place.
 
-        Normally `StringConfigFile.I.merge_configs` prepends the expected lines to
-        the actual lines. This leads to a stale description remaining in the file
-        if it was changed in pyproject.toml. This override detects the old description
-        block between `---` fences and replaces it with the current one before
-        the normal merge runs.
+        Overrides the standard merge to attempt a targeted in-place update before
+        resorting to a full prepend. The existing file content is first patched
+        using ``replace_description`` and ``replace_badges``. If all required lines
+        are present after patching, the patched content is returned directly,
+        preserving any user additions. If the patched content is still missing
+        required lines, the standard merge runs, prepending all expected lines
+        before the existing content.
 
         Returns:
-            True if the file contains all expected content.
+            Merged list of lines with description and badge URLs updated in-place,
+            or the full expected content prepended to existing content if an
+            in-place update was insufficient.
         """
         updated_content = self.replace_description(self.file_content())
         updated_content = self.replace_badges(updated_content)
@@ -73,10 +61,15 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         return super().merge_configs()
 
     def lines(self) -> list[str]:
-        """Generate Markdown with project name, categorized badges, and description.
+        """Generate the initial Markdown content with badges and description.
+
+        Produces an H1 header with the project name, followed by badge rows grouped
+        under HTML comment category labels, then the project description in a fenced
+        blockquote block.
 
         Returns:
-            Formatted Markdown with H1 header, badge categories, and description.
+            List of Markdown lines: H1 header, grouped badge rows, and a fenced
+            description block.
         """
         project_name = PackageManager.I.project_name()
         badges = self.badges()
@@ -98,12 +91,70 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             "",
         ]
 
-    def badges(self) -> dict[str, list[str]]:
-        """Return categorized badges from project metadata and CI/CD configurations.
+    def replace_description(self, content: str) -> str:
+        """Replace the description block with the current one from pyproject.toml.
+
+        Locates the first fenced description block (text between the first two
+        ``---`` dividers) and replaces its content with the current project
+        description. Only the first occurrence is replaced, since the description
+        is always at the top of the file.
+
+        Args:
+            content: Full Markdown file content to update.
 
         Returns:
-            Dict mapping category names (tooling, code-quality, package-info, ci/cd,
-            documentation) to lists of badge Markdown strings.
+            Updated content with the current description in place of the old one.
+            If no ``---`` fence pattern is found, the content is returned unchanged.
+        """
+        expected_description = PyprojectConfigFile.I.project_description()
+        pattern = r"---\s*\n(.*?)\n---"
+        replacement = f"---\n\n> {expected_description}\n\n---"
+        # only replace first occurrence, as description is expected at the top
+        return re.sub(pattern, replacement, content, count=1, flags=re.DOTALL)
+
+    def replace_badges(self, content: str) -> str:
+        """Replace stale badge URLs in the badge section with current ones.
+
+        For each expected badge, the alt text acts as a stable identifier to
+        locate the matching badge line in the existing content. If a match is
+        found, the old line is replaced with the current badge, including any
+        updated URLs. Only the content before the first ``---`` divider is
+        treated as the badge section.
+
+        Args:
+            content: Full Markdown file content to update.
+
+        Returns:
+            Updated content with current badge URLs in place of stale ones.
+        """
+        expected_badges = (badge for group in self.badges().values() for badge in group)
+
+        # only consider content before description
+        badges_content = content.split("---", 1)[0]
+        for badge in expected_badges:
+            # extract the alt text from the badge markdown — used as stable identifier
+            alt_text_match = re.search(r"\[!\[(.*?)\]", badge)
+            if not alt_text_match:
+                continue
+            alt_text = alt_text_match.group(1)
+            # find and replace the line containing the badge with the same alt text
+            pattern = rf".*\[!\[{re.escape(alt_text)}\].*"
+            badges_content = re.sub(pattern, badge, badges_content)
+        # replace the old badges content with the updated one
+        return content.replace(content.split("---", 1)[0], badges_content)
+
+    def badges(self) -> dict[str, list[str]]:
+        """Collect all project badges grouped by category.
+
+        Builds on ``Tool.grouped_badges()``, which gathers badges from all
+        registered ``Tool`` subclasses, then appends the license badge, CI/CD
+        workflow status badges, and the documentation badge to their respective
+        groups.
+
+        Returns:
+            Dict mapping category names (e.g., ``"tooling"``, ``"code-quality"``,
+            ``"project-info"``, ``"ci/cd"``, ``"documentation"``) to lists of
+            badge Markdown strings.
         """
         badge_groups = Tool.grouped_badges()
 
@@ -129,48 +180,3 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             ]
         )
         return badge_groups
-
-    def replace_description(self, content: str) -> str:
-        """Replace the description between `---` fences with the current one.
-
-        Args:
-            content: Markdown file content to update.
-
-        Returns:
-            Updated content with the current description from pyproject.toml.
-        """
-        expected_description = PyprojectConfigFile.I.project_description()
-        pattern = r"---\s*\n(.*?)\n---"
-        replacement = f"---\n\n> {expected_description}\n\n---"
-        # only replace first occurence, as description is expected at the top
-        return re.sub(pattern, replacement, content, count=1, flags=re.DOTALL)
-
-    def replace_badges(self, content: str) -> str:
-        """Replace existing badges with the current ones.
-
-        Each badge is in the format:
-            [![ToolClsName](badge-url)](linked-url)
-        The tool cls name is the constant identifier for the badge,
-        so if one the urls for a cls name chnaged we replace it.
-
-        Args:
-            content: Markdown file content to update.
-
-        Returns:
-            Updated content with current badges.
-        """
-        expected_badges = (badge for group in self.badges().values() for badge in group)
-
-        # only consider content before description
-        badges_content = content.split("---", 1)[0]
-        for badge in expected_badges:
-            # extract the alt text (tool cls name) from the badge markdown
-            alt_text_match = re.search(r"\[!\[(.*?)\]", badge)
-            if not alt_text_match:
-                continue
-            alt_text = alt_text_match.group(1)
-            # extract the line containing the badge with the same alt text
-            pattern = rf".*\[!\[{re.escape(alt_text)}\].*"
-            badges_content = re.sub(pattern, badge, badges_content)
-        # replace the old badges content with the updated one
-        return content.replace(content.split("---", 1)[0], badges_content)

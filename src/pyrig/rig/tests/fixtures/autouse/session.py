@@ -1,9 +1,8 @@
 """Session-scoped autouse fixtures for project-wide validation and setup.
 
-Provides autouse fixtures that run once per test session to enforce project
-structure, code quality, and development environment standards. Many fixtures
-auto-fix issues (creating missing files, updating dependencies) then fail with
-a message for developer review.
+These fixtures run automatically once per test session to enforce project
+structure, code quality, and development environment standards across every
+test run.
 """
 
 import logging
@@ -46,13 +45,21 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session", autouse=True)
 def no_unstaged_changes_in_ci() -> Generator[None, None, None]:
-    """Verify no unstaged git changes before and after tests (CI only).
+    """Fail if the working tree has unstaged changes before or after the test session.
+
+    Wraps the entire test session via a yield. Checks for unstaged git changes
+    before tests run and again after they finish. The check is skipped locally
+    to allow a normal development workflow with in-progress edits. In CI, any
+    unstaged change — whether present before tests or introduced during them —
+    is treated as an error that must be reviewed and either committed or
+    discarded. Staged (indexed) changes are always permitted.
 
     Yields:
-        None: Control yielded to run tests, then checks again after.
+        None: Control yielded to run the full test session.
 
     Raises:
-        AssertionError: If unstaged changes detected in CI.
+        AssertionError: If unstaged changes are detected in CI, either before
+            or after the test session.
     """
     in_ci = RemoteVersionController.I.running_in_ci()
 
@@ -81,10 +88,17 @@ Found the following unstaged changes:
 
 @pytest.fixture(scope="session", autouse=True)
 def all_config_files_correct() -> None:
-    """Verify project root structure is correct, auto-fixing incorrect config files.
+    """Validate all project config files, auto-fixing any that are incorrect.
+
+    In CI, gitignored config files (such as ``.env`` and ``.scratch``) are
+    regenerated first, because they are not committed to the repository and
+    would be absent in a freshly cloned environment. All config files are
+    then checked for correctness and auto-fixed before the assertion runs,
+    so any fixes can be reviewed and committed.
 
     Raises:
-        AssertionError: If config files were incorrect (lists fixed paths).
+        AssertionError: If any config files were incorrect, listing the
+            affected paths.
     """
     # if we are in CI then we must create config files that are gitignored
     # as they are not pushed to the repository
@@ -108,10 +122,17 @@ Please verify the changes at the following paths:
 
 @pytest.fixture(scope="session", autouse=True)
 def no_namespace_packages() -> None:
-    """Verify all packages have __init__.py, auto-creating missing ones.
+    """Validate all packages have an ``__init__.py`` file.
+
+    A namespace package is a Python package directory that lacks an
+    ``__init__.py`` file. While Python supports them, this project requires
+    explicit ``__init__.py`` files everywhere to keep package discovery
+    predictable. Any missing files are created automatically before the
+    assertion runs.
 
     Raises:
-        AssertionError: If namespace packages were found (lists created paths).
+        AssertionError: If any namespace packages were found, listing the
+            paths of the newly created ``__init__.py`` files.
     """
     namespace_packages = tuple(find_namespace_packages())
     make_init_files_for_namespace_packages(namespace_packages)
@@ -130,12 +151,18 @@ Please verify the changes at the following paths:
 
 @pytest.fixture(scope="session", autouse=True)
 def all_modules_tested() -> None:
-    """Verify every source module has a corresponding test module.
+    """Validate every source module has a corresponding test module.
 
-    Auto-generates test skeletons for missing test modules/packages.
+    Enforces a one-to-one mirror between the source package tree and the test
+    package tree. Any source module that lacks a corresponding test module gets
+    a test skeleton generated automatically. The fixture still fails after
+    generating the skeletons so the developer can review and commit the new
+    files. The leaf subclass ``MirrorTestConfigFile.L`` is discovered at
+    runtime via the cross-package subclass discovery mechanism.
 
     Raises:
-        AssertionError: If any source modules lack corresponding tests.
+        AssertionError: If any source modules lacked corresponding test
+            modules, listing the auto-generated paths.
     """
     incorrect_subclasses = tuple(MirrorTestConfigFile.L.incorrect_subclasses())
     MirrorTestConfigFile.L.validate_subclasses(incorrect_subclasses)
@@ -156,13 +183,80 @@ Please verify the changes at the following paths:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def all_dependencies_updated(standard_output_error_template: str) -> None:
-    """Verify dependencies are up to date via ``uv lock --upgrade`` and ``uv sync``.
+def package_manager_updated(standard_output_error_template: str) -> None:
+    """Update the ``uv`` package manager to the latest version.
 
-    Skipped if no internet connection is available.
+    Runs ``uv self update`` locally to keep the package manager current.
+    Skipped in CI because the CI environment always provisions the latest
+    version of ``uv``, and running a self-update there can cause unexpected
+    behaviour. Also skipped when no internet connection is available.
+
+    A GitHub API rate-limit error is treated as a successful outcome because
+    the update cannot proceed in that case and there is no actionable fix.
+
+    Args:
+        standard_output_error_template: Template for formatting stdout and
+            stderr in assertion failure messages.
 
     Raises:
-        AssertionError: If dependency update or sync commands fail.
+        AssertionError: If ``uv self update`` fails for any reason other
+            than a GitHub API rate limit.
+    """
+    if not internet_is_available():
+        logger.warning(
+            "No internet, skipping fixture: %s",
+            package_manager_updated.__name__,
+        )
+        return
+
+    # this only needed locally, in CI the latest version is used automatically
+    # by the CI environment, and running self update can cause issues there
+    if RemoteVersionController.I.running_in_ci():
+        return
+
+    # update the package manager itself
+    completed_process = PackageManager.I.update_self_args().run(check=False)
+    returncode = completed_process.returncode
+
+    stderr = completed_process.stderr
+    stdout = completed_process.stdout
+    std_msg = stderr + stdout
+
+    allowed_errors = ("GitHub API rate limit exceeded",)
+    allowed_error_in_err_or_out = any(exp in std_msg for exp in allowed_errors)
+
+    is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
+
+    msg = f"""The {PackageManager.I} is not up to date.
+
+This fixture ran `{PackageManager.I.update_self_args()}` to automatically update the package manager to the latest version.
+However, it failed. See the output below for details.
+
+{standard_output_error_template.format(stdout=stdout, stderr=stderr)}
+"""  # noqa: E501
+    assert is_up_to_date, msg
+
+
+@pytest.fixture(scope="session", autouse=True)
+def all_dependencies_updated(standard_output_error_template: str) -> None:
+    """Update all project dependencies and sync the virtual environment.
+
+    Runs two commands in sequence:
+
+    1. ``uv lock --upgrade`` — resolves the latest compatible versions of
+       all dependencies and writes them to ``uv.lock``.
+    2. ``uv sync`` — installs packages from the updated lock file, adding
+       or removing packages as needed.
+
+    Skipped when no internet connection is available.
+
+    Args:
+        standard_output_error_template: Template for formatting stdout and
+            stderr in assertion failure messages.
+
+    Raises:
+        AssertionError: If either the lock upgrade or the sync command
+            exits with a non-zero return code.
     """
     if not internet_is_available():
         logger.warning(
@@ -207,18 +301,36 @@ However, it failed. See the output below for details.
 def no_dev_deps_in_source_code(
     tmp_path_factory: pytest.TempPathFactory, standard_output_error_template: str
 ) -> None:
-    """Verify source code runs in isolated environment without dev dependencies.
+    """Verify the source code is fully functional without development dependencies.
 
-    Creates temp environment, installs without dev group, imports all src modules,
-    and runs CLI to catch any dev dependency usage.
+    This fixture detects accidental imports of development-only packages from
+    source code. It performs three checks in an isolated environment:
+
+    1. **Install check** — copies the source tree and project config files to
+       a temporary directory, then installs the project without the ``dev``
+       dependency group. Asserts that no known dev dependency appears in the
+       installation output.
+
+    2. **Import check** — walks all modules under the source package
+       (excluding ``rig``) and imports them in the isolated environment.
+       Asserts all modules import without error, catching indirect dev
+       dependency usage.
+
+    3. **CLI check** — invokes the project's CLI entry point with ``--help``
+       in the isolated environment. Asserts the command exits successfully.
+
+    Skipped when no internet connection is available.
 
     Args:
-        tmp_path_factory: Session-scoped temp directory factory.
-        standard_output_error_template: Template for formatting
-            standard output and error messages.
+        tmp_path_factory: Session-scoped temporary directory factory used
+            to create the isolated project copy.
+        standard_output_error_template: Template for formatting stdout and
+            stderr in assertion failure messages.
 
     Raises:
-        AssertionError: If source code cannot run without dev dependencies.
+        AssertionError: If any of the three checks fail, indicating the
+            source code has a direct or indirect dependency on a dev-only
+            package.
     """
     base_msg = f"""Failed to import all source modules without the development dependencies being installed.
 
@@ -317,45 +429,3 @@ However, it failed. See the output below for details.
         std_msg = stderr + stdout
         successful = completed_process.returncode == 0
         assert successful, base_msg.format(stdout=stdout, stderr=stderr)
-
-
-@pytest.fixture(scope="session", autouse=True)
-def package_manager_updated(standard_output_error_template: str) -> None:
-    """Verify uv is up to date via ``uv self update`` (skipped in CI).
-
-    Raises:
-        AssertionError: If ``uv self update`` fails unexpectedly.
-    """
-    if not internet_is_available():
-        logger.warning(
-            "No internet, skipping fixture: %s",
-            package_manager_updated.__name__,
-        )
-        return
-
-    # this only needed locally, in CI the latest version is used automatically
-    # by the CI environment, and running self update can cause issues there
-    if RemoteVersionController.I.running_in_ci():
-        return
-
-    # update the package manager itself
-    completed_process = PackageManager.I.update_self_args().run(check=False)
-    returncode = completed_process.returncode
-
-    stderr = completed_process.stderr
-    stdout = completed_process.stdout
-    std_msg = stderr + stdout
-
-    allowed_errors = ("GitHub API rate limit exceeded",)
-    allowed_error_in_err_or_out = any(exp in std_msg for exp in allowed_errors)
-
-    is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
-
-    msg = f"""The {PackageManager.I} is not up to date.
-
-This fixture ran `{PackageManager.I.update_self_args()}` to automatically update the package manager to the latest version.
-However, it failed. See the output below for details.
-
-{standard_output_error_template.format(stdout=stdout, stderr=stderr)}
-"""  # noqa: E501
-    assert is_up_to_date, msg

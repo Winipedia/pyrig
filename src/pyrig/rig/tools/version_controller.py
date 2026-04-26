@@ -1,17 +1,11 @@
-"""Git version control wrapper.
+"""Git version control operations for the pyrig toolchain.
 
-Provides type-safe wrapper for Git commands: init, add, commit, push, tag, config.
-
-Example:
-    >>> from pyrig.rig.tools.version_controller import VersionController
-    >>> VersionController.I.add_all_args().run()
-    >>> VersionController.I.commit_no_verify_args(msg="Update docs").run()
-    >>> VersionController.I.push_args().run()
+Wraps common git commands as typed argument builders, covering repository
+setup, staging, committing, pushing, tagging, and configuration reads and writes.
 """
 
 import logging
 from functools import cache
-from pathlib import Path
 from urllib.parse import quote
 
 from pyrig.core.subprocesses import Args
@@ -22,17 +16,12 @@ logger = logging.getLogger(__name__)
 
 
 class VersionController(Tool):
-    """Git version control wrapper.
+    """Type-safe git command argument builder.
 
-    Constructs git command arguments for version control operations.
-
-    Operations:
-        - Repository setup: init
-        - Staging: add files, add all
-        - Committing: commit with options
-        - Remote operations: push, push tags
-        - Tagging: create and push tags
-        - Configuration: user name/email
+    Each method constructs an ``Args`` object representing a specific git
+    command.  ``Args`` objects can be executed directly via ``.run()`` or
+    converted to a string for embedding in shell scripts and workflow files.
+    All commands are automatically prefixed with ``git``.
 
     Example:
         >>> VersionController.I.init_args().run()
@@ -41,331 +30,456 @@ class VersionController(Tool):
     """
 
     def name(self) -> str:
-        """Get tool name.
+        """Return the tool's command name.
 
         Returns:
-            'git'
+            ``'git'``
         """
         return "git"
 
     def group(self) -> str:
-        """Returns the group the tool belongs to.
+        """Return the badge group this tool belongs to.
 
         Returns:
-            `ToolGroup.TOOLING`
+            ``ToolGroup.TOOLING``
         """
         return ToolGroup.TOOLING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and linked page URLs."""
+        """Return the badge image URL and its linked page URL for Git.
+
+        Returns:
+            A ``(badge_url, page_url)`` tuple of strings.
+        """
         return (
             "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white",
             "https://git-scm.com",
         )
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Get development dependencies.
+        """Return development dependencies for this tool.
+
+        Git is a system dependency installed outside the Python environment,
+        so no pip-installable package is needed here.
 
         Returns:
-            Empty tuple (git is a system dependency).
+            An empty tuple.
         """
         # git is a system dependency, so we don't have a dev dependency for it
         return ()
 
+    # -------------------------------------------------------------------------
+    # Tool constants
+    # -------------------------------------------------------------------------
+
     def default_branch(self) -> str:
-        """Get the default branch name.
+        """Return the default branch name for new repositories.
 
         Returns:
-            Default branch name.
+            ``'main'``
         """
         return "main"
 
-    def ignore_filename(self) -> str:
-        """Get the filename for .gitignore.
-
-        Returns:
-            Filename for .gitignore.
-        """
-        return ".gitignore"
-
     def default_ruleset_name(self) -> str:
-        """Get the default branch protection ruleset name.
+        """Return the default branch-protection ruleset name.
+
+        The name follows the convention ``<branch>-protection``, derived from
+        ``default_branch()``.  For example, if the default branch is ``main``
+        the ruleset name is ``main-protection``.
 
         Returns:
-            Default ruleset name.
+            The default branch-protection ruleset name string.
         """
         return f"{self.default_branch()}-protection"
 
+    # -------------------------------------------------------------------------
+    # Repository initialisation
+    # -------------------------------------------------------------------------
+
     def init_args(self, *args: str) -> Args:
-        """Construct git init arguments.
+        """Build arguments for ``git init``.
 
         Args:
-            *args: Init command arguments.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git init'.
+            Args for ``git init [args]``.
         """
         return self.args("init", *args)
 
-    def add_args(self, *args: str) -> Args:
-        """Construct git add arguments.
+    # -------------------------------------------------------------------------
+    # Staging
+    # -------------------------------------------------------------------------
+
+    def add_pyproject_toml_and_lock_file_args(self, *args: str) -> Args:
+        """Build arguments to stage ``pyproject.toml`` and ``uv.lock`` together.
+
+        Used in CI workflow steps that bump the project version or sync
+        dependencies so that both the manifest and the lock file are always
+        committed as a pair.
 
         Args:
-            *args: Files or paths to add.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git add'.
+            Args for ``git add pyproject.toml uv.lock [args]``.
         """
-        return self.args("add", *args)
+        return self.add_pyproject_toml_args("uv.lock", *args)
 
     def add_all_args(self, *args: str) -> Args:
-        """Construct git add arguments for all files.
+        """Build arguments to stage all modified and untracked files.
+
+        Equivalent to running ``git add .`` from the current working directory.
 
         Args:
-            *args: Add command arguments.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git add .'.
+            Args for ``git add . [args]``.
         """
         return self.add_args(".", *args)
 
     def add_pyproject_toml_args(self, *args: str) -> Args:
-        """Construct git add arguments for pyproject.toml.
+        """Build arguments to stage ``pyproject.toml``.
 
         Args:
-            *args: Add command arguments.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git add pyproject.toml'.
+            Args for ``git add pyproject.toml [args]``.
         """
         return self.add_args("pyproject.toml", *args)
 
-    def add_pyproject_toml_and_lock_file_args(self, *args: str) -> Args:
-        """Construct git add arguments for pyproject.toml and uv.lock.
+    def add_args(self, *args: str) -> Args:
+        """Build base arguments for ``git add``.
 
         Args:
-            *args: Add command arguments.
+            *args: Files or paths to stage.
 
         Returns:
-            Args for 'git add pyproject.toml uv.lock'.
+            Args for ``git add [args]``.
         """
-        return self.add_pyproject_toml_args("uv.lock", *args)
+        return self.args("add", *args)
 
-    def commit_args(self, *args: str) -> Args:
-        """Construct git commit arguments.
-
-        Args:
-            *args: Commit command arguments.
-
-        Returns:
-            Args for 'git commit'.
-        """
-        return self.args("commit", *args)
+    # -------------------------------------------------------------------------
+    # Committing
+    # -------------------------------------------------------------------------
 
     def commit_no_verify_args(self, *args: str, msg: str) -> Args:
-        """Construct git commit arguments with no verification.
+        """Build arguments for ``git commit --no-verify -m <msg>``.
+
+        The ``--no-verify`` flag bypasses all pre-commit and commit-msg hooks.
+        This is intentional in automated CI steps where running hooks would
+        either re-trigger expensive checks or cause recursive hook invocations.
 
         Args:
-            *args: Commit command arguments.
-            msg: Commit message.
+            *args: Additional arguments appended to the command.
+            msg: The commit message.
 
         Returns:
-            Args for 'git commit --no-verify -m <msg>'.
+            Args for ``git commit --no-verify -m <msg> [args]``.
         """
         return self.commit_args("--no-verify", "-m", msg, *args)
 
-    def push_args(self, *args: str) -> Args:
-        """Construct git push arguments.
+    def commit_args(self, *args: str) -> Args:
+        """Build base arguments for ``git commit``.
 
         Args:
-            *args: Push command arguments.
+            *args: Commit options or message flags (e.g. ``-m``, ``--amend``).
 
         Returns:
-            Args for 'git push'.
+            Args for ``git commit [args]``.
         """
-        return self.args("push", *args)
+        return self.args("commit", *args)
 
-    def push_origin_args(self, *args: str) -> Args:
-        """Construct git push arguments for origin.
-
-        Args:
-            *args: Push command arguments.
-
-        Returns:
-            Args for 'git push origin'.
-        """
-        return self.push_args("origin", *args)
+    # -------------------------------------------------------------------------
+    # Pushing
+    # -------------------------------------------------------------------------
 
     def push_origin_tag_args(self, *args: str, tag: str) -> Args:
-        """Construct git push arguments for origin and tag.
+        """Build arguments to push a specific tag to the ``origin`` remote.
+
+        Used in release workflows to publish a version tag immediately after
+        it has been created locally.
 
         Args:
-            *args: Push command arguments.
-            tag: Tag name.
+            *args: Additional arguments appended to the command.
+            tag: The tag ref to push (e.g. ``v1.2.3``).
 
         Returns:
-            Args for 'git push origin <tag>'.
+            Args for ``git push origin <tag> [args]``.
         """
         return self.push_origin_args(tag, *args)
 
-    def config_args(self, *args: str) -> Args:
-        """Construct git config arguments.
+    def push_origin_args(self, *args: str) -> Args:
+        """Build arguments for ``git push origin``.
 
         Args:
-            *args: Config command arguments.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git config'.
+            Args for ``git push origin [args]``.
         """
-        return self.args("config", *args)
+        return self.push_args("origin", *args)
 
-    def config_global_args(self, *args: str) -> Args:
-        """Construct git config arguments with --global flag.
+    def push_args(self, *args: str) -> Args:
+        """Build base arguments for ``git push``.
 
         Args:
-            *args: Config command arguments.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git config --global'.
+            Args for ``git push [args]``.
         """
-        return self.config_args("--global", *args)
+        return self.args("push", *args)
 
-    def config_local_args(self, *args: str) -> Args:
-        """Construct git config arguments with --local flag.
+    # -------------------------------------------------------------------------
+    # Tagging
+    # -------------------------------------------------------------------------
+
+    def tag_args(self, *args: str, tag: str) -> Args:
+        """Build arguments to create a local tag.
 
         Args:
-            *args: Config command arguments.
+            *args: Additional arguments appended to the command.
+            tag: The tag name to create (e.g. ``v1.2.3``).
 
         Returns:
-            Args for 'git config --local'.
+            Args for ``git tag <tag> [args]``.
         """
-        return self.config_args("--local", *args)
+        return self.args("tag", tag, *args)
+
+    # -------------------------------------------------------------------------
+    # Configuration - write/set
+    # -------------------------------------------------------------------------
 
     def config_local_user_email_args(self, *args: str, email: str) -> Args:
-        """Construct git config arguments for local user email.
+        """Build arguments to set the local repository user email.
 
         Args:
-            *args: Config command arguments.
-            email: Email address.
+            *args: Additional arguments appended to the command.
+            email: The email address to configure.
 
         Returns:
-            Args for 'git config --local user.email <email>'.
+            Args for ``git config --local user.email <email> [args]``.
         """
         return self.config_local_args("user.email", email, *args)
 
     def config_local_user_name_args(self, *args: str, name: str) -> Args:
-        """Construct git config arguments for local user name.
+        """Build arguments to set the local repository user name.
 
         Args:
-            *args: Config command arguments.
-            name: Name.
+            *args: Additional arguments appended to the command.
+            name: The user name to configure.
 
         Returns:
-            Args for 'git config --local user.name <name>'.
+            Args for ``git config --local user.name <name> [args]``.
         """
         return self.config_local_args("user.name", name, *args)
 
     def config_global_user_email_args(self, *args: str, email: str) -> Args:
-        """Construct git config arguments for global user email.
+        """Build arguments to set the global user email.
 
         Args:
-            *args: Config command arguments.
-            email: Email address.
+            *args: Additional arguments appended to the command.
+            email: The email address to configure.
 
         Returns:
-            Args for 'git config --global user.email <email>'.
+            Args for ``git config --global user.email <email> [args]``.
         """
         return self.config_global_args("user.email", email, *args)
 
     def config_global_user_name_args(self, *args: str, name: str) -> Args:
-        """Construct git config arguments for global user name.
+        """Build arguments to set the global user name.
 
         Args:
-            *args: Config command arguments.
-            name: Name.
+            *args: Additional arguments appended to the command.
+            name: The user name to configure.
 
         Returns:
-            Args for 'git config --global user.name <name>'.
+            Args for ``git config --global user.name <name> [args]``.
         """
         return self.config_global_args("user.name", name, *args)
 
-    def tag_args(self, *args: str, tag: str) -> Args:
-        """Construct git tag arguments.
+    def config_local_args(self, *args: str) -> Args:
+        """Build arguments for ``git config --local``.
+
+        Local scope means changes apply only to the current repository and do
+        not affect the user's global git configuration.
 
         Args:
-            *args: Tag command arguments.
-            tag: Tag name.
+            *args: Configuration key/value pairs or additional flags.
 
         Returns:
-            Args for 'git tag <tag>'.
+            Args for ``git config --local [args]``.
         """
-        return self.args("tag", tag, *args)
+        return self.config_args("--local", *args)
 
-    def config_get_args(self, *args: str) -> Args:
-        """Construct git config get arguments.
+    def config_global_args(self, *args: str) -> Args:
+        """Build arguments for ``git config --global``.
+
+        Global scope means changes apply to the current user's git configuration
+        across all repositories on the machine.
 
         Args:
-            *args: Config get command arguments.
+            *args: Configuration key/value pairs or additional flags.
 
         Returns:
-            Args for 'git config --get'.
+            Args for ``git config --global [args]``.
         """
-        return self.config_args("--get", *args)
+        return self.config_args("--global", *args)
+
+    # -------------------------------------------------------------------------
+    # Configuration - read/get
+    # -------------------------------------------------------------------------
 
     def config_remote_origin_url_args(self, *args: str) -> Args:
-        """Construct git config get remote origin URL arguments.
+        """Build arguments to read the ``remote.origin.url`` value.
 
         Args:
-            *args: Config get command arguments.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git config --get remote.origin.url'.
+            Args for ``git config --get remote.origin.url [args]``.
         """
         return self.config_get_args("remote.origin.url", *args)
 
     def config_get_user_name_args(self, *args: str) -> Args:
-        """Construct git config get user name arguments.
+        """Build arguments to read the configured ``user.name`` value.
 
         Args:
-            *args: Config get command arguments.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git config --get user.name'.
+            Args for ``git config --get user.name [args]``.
         """
         return self.config_get_args("user.name", *args)
 
     def config_get_user_email_args(self, *args: str) -> Args:
-        """Construct git config get user email arguments.
+        """Build arguments to read the configured ``user.email`` value.
 
         Args:
-            *args: Config get command arguments.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for 'git config --get user.email'.
+            Args for ``git config --get user.email [args]``.
         """
         return self.config_get_args("user.email", *args)
 
-    def diff_args(self, *args: str) -> Args:
-        """Construct git diff arguments.
+    def config_get_args(self, *args: str) -> Args:
+        """Build base arguments for ``git config --get``.
+
+        The ``--get`` flag instructs git to print the value for the given key
+        and exit with a non-zero code when the key is absent.
 
         Args:
-            *args: Diff command arguments.
+            *args: The configuration key to query.
 
         Returns:
-            Args for 'git diff'.
+            Args for ``git config --get [args]``.
+        """
+        return self.config_args("--get", *args)
+
+    # -------------------------------------------------------------------------
+    # Configuration - base
+    # -------------------------------------------------------------------------
+
+    def config_args(self, *args: str) -> Args:
+        """Build base arguments for ``git config``.
+
+        Args:
+            *args: Config subcommands, scope flags, and key/value pairs.
+
+        Returns:
+            Args for ``git config [args]``.
+        """
+        return self.args("config", *args)
+
+    # -------------------------------------------------------------------------
+    # Diff
+    # -------------------------------------------------------------------------
+
+    def has_unstaged_diff(self) -> bool:
+        """Check whether the working tree contains any unstaged changes.
+
+        Runs ``git diff --quiet``, which exits with code ``0`` when the working
+        tree is clean and with a non-zero code when uncommitted differences
+        exist.  The exit code is used rather than parsing output, making this
+        check fast and reliable.
+
+        Returns:
+            ``True`` if there are unstaged changes, ``False`` if the working
+            tree is clean.
+        """
+        args = self.diff_quiet_args()
+        completed_process = args.run(check=False)
+        return completed_process.returncode != 0
+
+    def diff(self) -> str:
+        """Return the current unstaged diff as a string.
+
+        Returns:
+            The raw output of ``git diff``, or an empty string when the
+            working tree is clean.
+        """
+        args = self.diff_args()
+        completed_process = args.run(check=False)
+        return completed_process.stdout
+
+    def diff_quiet_args(self, *args: str) -> Args:
+        """Build arguments for ``git diff --quiet``.
+
+        The ``--quiet`` flag suppresses all output and signals the presence of
+        differences through the process exit code only.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for ``git diff --quiet [args]``.
+        """
+        return self.diff_args("--quiet", *args)
+
+    def diff_args(self, *args: str) -> Args:
+        """Build base arguments for ``git diff``.
+
+        Args:
+            *args: Additional arguments appended to the command.
+
+        Returns:
+            Args for ``git diff [args]``.
         """
         return self.args("diff", *args)
 
-    def diff_quiet_args(self, *args: str) -> Args:
-        """Construct git diff arguments with --quiet flag.
+    # -------------------------------------------------------------------------
+    # Repository metadata
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    @cache
+    def repo_owner_and_name(
+        cls, *, check_repo_url: bool = True, url_encode: bool = False
+    ) -> tuple[str, str]:
+        """Return the cached repository owner and name.
+
+        This is the primary public entry point for obtaining repository
+        identity.  It delegates to ``_repo_owner_and_name`` on a fresh instance
+        and caches the result at the class level so that repeated calls within
+        the same process incur no subprocess overhead.
 
         Args:
-            *args: Diff command arguments.
+            check_repo_url: When ``True``, raises an error if no remote origin
+                is configured.  Set to ``False`` to fall back gracefully to the
+                git user name and the current project name.
+            url_encode: When ``True``, percent-encodes the returned strings,
+                which is required when embedding them directly in URLs.
 
         Returns:
-            Args for 'git diff --quiet'.
+            A ``(owner, repository_name)`` tuple of strings.
         """
-        return self.diff_args("--quiet", *args)
+        return cls()._repo_owner_and_name(  # noqa: SLF001
+            check_repo_url=check_repo_url, url_encode=url_encode
+        )
 
     def _repo_owner_and_name(
         self,
@@ -373,19 +487,25 @@ class VersionController(Tool):
         check_repo_url: bool = True,
         url_encode: bool = False,
     ) -> tuple[str, str]:
-        """Get the repository owner and name.
+        """Parse the repository owner and name from the git remote URL.
 
-        Parses the git remote origin URL to extract owner and repo name.
-        Falls back to the git username and current working directory name
-        if no remote is configured.
+        Supports both HTTPS (``https://github.com/owner/repo.git``) and SSH
+        (``git@github.com:owner/repo.git``) remote formats by taking the last
+        two path segments after stripping the ``.git`` suffix and splitting on
+        ``/``.  The SSH colon separator in the owner segment is handled
+        explicitly.
+
+        When no remote is configured, falls back to the git ``user.name`` as
+        the owner and the current project name from ``PackageManager`` as the
+        repository name.
 
         Args:
-            check_repo_url: Whether to raise on missing remote. Defaults to True.
-            url_encode: Whether to percent-encode the returned strings.
-                Defaults to False.
+            check_repo_url: When ``True``, raises an error if no remote origin
+                is configured.
+            url_encode: When ``True``, percent-encodes the returned strings.
 
         Returns:
-            Tuple of (owner, repository_name).
+            A ``(owner, repository_name)`` tuple of strings.
         """
         url = self.repo_remote(check=check_repo_url)
         if not url:
@@ -408,95 +528,53 @@ class VersionController(Tool):
             repo = quote(repo)
         return owner, repo
 
-    @classmethod
-    @cache
-    def repo_owner_and_name(
-        cls, *, check_repo_url: bool = True, url_encode: bool = False
-    ) -> tuple[str, str]:
-        """Get the repository owner and name.
-
-        Wrapper around the instance method _repo_owner_and_name
-        to allow caching at the class level.
-
-        The user should override the instance method _repo_owner_and_name
-        for the actual logic, and this class method will handle caching and
-        provide a convenient interface.
-
-        Args:
-            check_repo_url: Whether to raise on missing remote. Defaults to True.
-            url_encode: Whether to percent-encode the returned strings.
-                Defaults to False.
-
-        Returns:
-            Tuple of (owner, repository_name).
-        """
-        return cls()._repo_owner_and_name(  # noqa: SLF001
-            check_repo_url=check_repo_url, url_encode=url_encode
-        )
-
     def repo_remote(self, *, check: bool = True) -> str:
-        """Get the remote origin URL from git config.
+        """Return the remote origin URL configured for this repository.
+
+        Reads ``remote.origin.url`` via ``git config --get`` and strips
+        surrounding whitespace from the output.
 
         Args:
-            check: Whether to raise exception if command fails.
+            check: When ``True``, raises ``subprocess.CalledProcessError`` if
+                the command fails (e.g. no remote is configured).  When
+                ``False``, returns an empty string on failure.
 
         Returns:
-            Remote origin URL (HTTPS or SSH format).
-            Empty string if check=False and no remote.
+            The remote URL string in HTTPS or SSH format, or an empty string
+            when ``check=False`` and no remote origin is configured.
 
         Raises:
-            subprocess.CalledProcessError: If check=True and command fails.
+            subprocess.CalledProcessError: When ``check=True`` and the git
+                command exits with a non-zero status.
         """
         args = self.config_remote_origin_url_args()
         stdout = args.run_cached(check=check).stdout
         return stdout.strip()
 
     def username(self) -> str:
-        """Get git username from config.
+        """Return the git ``user.name`` from the active configuration.
+
+        Used as the owner fallback inside ``_repo_owner_and_name`` when no
+        remote origin is configured.
 
         Returns:
-            Configured git username.
+            The configured git user name string.
 
         Raises:
-            subprocess.CalledProcessError: If user.name not configured.
+            subprocess.CalledProcessError: If ``user.name`` is not configured.
         """
         args = self.config_get_user_name_args()
         stdout = args.run_cached().stdout
         return stdout.strip()
 
-    def has_unstaged_diff(self) -> bool:
-        """Check if there are any unstaged changes.
-
-        Returns:
-            True if there are unstaged changes.
-        """
-        args = self.diff_quiet_args()
-        completed_process = args.run(check=False)
-        return completed_process.returncode != 0
-
-    def diff(self) -> str:
-        """Get the diff output.
-
-        Returns:
-            Diff output.
-        """
-        args = self.diff_args()
-        completed_process = args.run(check=False)
-        return completed_process.stdout
-
-    def ignore_path(self) -> Path:
-        """Get the path to the .gitignore file.
-
-        Returns:
-            Path to .gitignore.
-        """
-        return Path(self.ignore_filename())
-
     def email(self) -> str:
-        """Get the email from git config.
+        """Return the git ``user.email`` from the active configuration.
 
         Returns:
-            Email.
+            The configured git user email string.
+
+        Raises:
+            subprocess.CalledProcessError: If ``user.email`` is not configured.
         """
         args = self.config_get_user_email_args()
         stdout = args.run_cached().stdout
