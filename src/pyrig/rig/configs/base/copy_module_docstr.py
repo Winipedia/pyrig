@@ -8,7 +8,7 @@ from pyrig.core.introspection.modules import module_has_docstring
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 
 
-class CopyModuleOnlyDocstringConfigFile(CopyModuleConfigFile):
+class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
     """Base class for config files containing only a source module's docstring.
 
     Creates a Python file whose entire content is the triple-quoted docstring of

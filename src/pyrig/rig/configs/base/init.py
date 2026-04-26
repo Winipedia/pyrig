@@ -18,12 +18,12 @@ from pathlib import Path
 import pyrig
 from pyrig.core.introspection.modules import leaf_module_name
 from pyrig.rig.configs.base.copy_module_docstr import (
-    CopyModuleOnlyDocstringConfigFile,
+    CopyModuleDocstringConfigFile,
 )
 from pyrig.rig.tools.package_manager import PackageManager
 
 
-class InitConfigFile(CopyModuleOnlyDocstringConfigFile):
+class InitConfigFile(CopyModuleDocstringConfigFile):
     """Base class for generating ``__init__.py`` files with copied module docstrings.
 
     The filename is always ``__init__``. The parent directory is derived from the

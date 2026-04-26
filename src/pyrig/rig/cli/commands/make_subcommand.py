@@ -2,7 +2,7 @@
 
 from pyrig.core.strings import kebab_to_snake_case
 from pyrig.rig.cli import shared_subcommands, subcommands
-from pyrig.rig.configs.base.copy_module_docstr import CopyModuleOnlyDocstringConfigFile
+from pyrig.rig.configs.base.copy_module_docstr import CopyModuleDocstringConfigFile
 
 
 def make_subcommand(name: str, *, shared: bool) -> None:
@@ -24,7 +24,7 @@ def make_subcommand(name: str, *, shared: bool) -> None:
             subcommands module.
     """
     # create the file if not existent yet
-    config_file = CopyModuleOnlyDocstringConfigFile.generate_subclass(
+    config_file = CopyModuleDocstringConfigFile.generate_subclass(
         shared_subcommands if shared else subcommands
     )()
     config_file.validate()

@@ -19,7 +19,7 @@ graph TD
     C --> D[PythonConfigFile]
     D --> E[PythonPackageConfigFile]
     E --> F[CopyModuleConfigFile]
-    F --> G[CopyModuleOnlyDocstringConfigFile]
+    F --> G[CopyModuleDocstringConfigFile]
     G --> H[InitConfigFile]
     H --> I[PackageInitConfigFile]
 

@@ -41,7 +41,7 @@ graph TD
 
     D2A --> D2A1[CopyModuleConfigFile]
     D2A --> D2A2[MirrorTestConfigFile]
-    D2A1 --> D2A1A[CopyModuleOnlyDocstringConfigFile]
+    D2A1 --> D2A1A[CopyModuleDocstringConfigFile]
     D2A1A --> D2A1A1[InitConfigFile]
 
     G --> G1[PyInstallerBuilder]
@@ -531,18 +531,18 @@ class MainConfigFile(CopyModuleConfigFile):
 
 Creates `myapp/main.py` with full content from `pyrig.main`.
 
-### CopyModuleOnlyDocstringConfigFile
+### CopyModuleDocstringConfigFile
 
 Copies only the docstring, allowing custom implementation:
 
 ```python
 from types import ModuleType
 from pyrig.rig.configs.base.copy_module_docstr import (
-    CopyModuleOnlyDocstringConfigFile,
+    CopyModuleDocstringConfigFile,
 )
 from pyrig.rig.cli import shared_subcommands
 
-class SharedSubcommandsConfigFile(CopyModuleOnlyDocstringConfigFile):
+class SharedSubcommandsConfigFile(CopyModuleDocstringConfigFile):
     def src_module(self) -> ModuleType:
         return shared_subcommands
 ```

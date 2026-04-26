@@ -21,7 +21,7 @@ graph TD
     C --> D[PythonConfigFile]
     D --> E[PythonPackageConfigFile]
     E --> F[CopyModuleConfigFile]
-    F --> G[CopyModuleOnlyDocstringConfigFile]
+    F --> G[CopyModuleDocstringConfigFile]
     G --> H[SubcommandsConfigFile]
 
     style A fill:#a8dadc,stroke:#333,stroke-width:2px,color:#000
@@ -34,7 +34,7 @@ graph TD
     style H fill:#f4a261,stroke:#333,stroke-width:2px,color:#000
 ```
 
-**Inherits from**: `CopyModuleOnlyDocstringConfigFile`
+**Inherits from**: `CopyModuleDocstringConfigFile`
 
 **What this means**:
 

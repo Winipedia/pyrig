@@ -9,7 +9,7 @@ from pyrig.rig.tests import conftest
 def test_module_docstring() -> None:
     """Test that the module docstrings is generic.
 
-    This is important for CopyModuleOnlyDocstringConfigFile so that the docstring copied
+    This is important for CopyModuleDocstringConfigFile so that the docstring copied
     to the target project's conftest.py is generic and not pyrig-specific.
     """
     assert (
