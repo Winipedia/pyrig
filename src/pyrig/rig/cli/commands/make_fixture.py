@@ -20,15 +20,11 @@ def make_fixture(name: str) -> None:
     Args:
         name: Name of the fixture in kebab-case or snake_case.
     """
-    # create the file if not existent yet
     config_file = CopyModuleDocstringConfigFile.generate_subclass(fixtures)()
     config_file.validate()
-
-    # now add a function with the same name as given to the module
-    name = kebab_to_snake_case(name)
-
     content = config_file.read_content()
 
+    name = kebab_to_snake_case(name)
     pytest_import = "import pytest"
     if pytest_import not in content:
         content += f"""
