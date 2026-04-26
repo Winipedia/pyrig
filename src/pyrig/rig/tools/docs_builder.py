@@ -1,11 +1,6 @@
-"""MkDocs documentation builder wrapper.
+"""Documentation builder tool wrapper.
 
-Wraps the MkDocs static site generator as a ``Tool`` subclass for
-constructing and executing documentation build commands.
-
-Example:
-    >>> from pyrig.rig.tools.docs_builder import DocsBuilder
-    >>> DocsBuilder.I.build_args().run()
+Wraps DocsBuilder commands and information.
 """
 
 from pathlib import Path

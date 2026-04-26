@@ -1,7 +1,6 @@
-"""UV package manager wrapper.
+"""Package manager wrapper.
 
-Wraps uv commands as type-safe ``Args`` objects for use across pyrig,
-covering project setup, dependency management, versioning, builds, and publishing.
+Wraps PackageManager commands and information.
 """
 
 from collections.abc import Callable

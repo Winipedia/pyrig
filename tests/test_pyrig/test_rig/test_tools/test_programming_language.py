@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools import programming_language
 from pyrig.rig.tools.base.tool import ToolGroup
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
@@ -32,3 +33,14 @@ class TestProgrammingLanguage:
         badge_image_url, badge_link_url = ProgrammingLanguage().badge_urls()
         assert isinstance(badge_image_url, str)
         assert isinstance(badge_link_url, str)
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        programming_language.__doc__
+        == """Programming language tool wrapper.
+
+Wraps ProgrammingLanguage commands and information.
+"""
+    )

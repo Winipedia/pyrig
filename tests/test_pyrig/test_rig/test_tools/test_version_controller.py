@@ -2,6 +2,7 @@
 
 from pytest_mock import MockerFixture
 
+from pyrig.rig.tools import version_controller
 from pyrig.rig.tools.version_controller import VersionController
 
 
@@ -233,3 +234,14 @@ class TestVersionController:
         """Test method."""
         result = VersionController.I.has_unstaged_diff()
         assert isinstance(result, bool)
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        version_controller.__doc__
+        == """Version controller wrapper.
+
+Wraps VersionController commands and information.
+"""
+    )

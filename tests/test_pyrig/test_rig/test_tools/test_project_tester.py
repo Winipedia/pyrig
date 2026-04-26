@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from pyrig.rig.tools import project_tester
 from pyrig.rig.tools.project_tester import ProjectTester
 
 
@@ -60,3 +61,14 @@ class TestProjectTester:
         """Test method."""
         result = ProjectTester.I.tests_package_name()
         assert result == "tests"
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        project_tester.__doc__
+        == """Project tester wrapper.
+
+Wraps ProjectTester commands and information.
+"""
+    )

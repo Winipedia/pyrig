@@ -1,11 +1,6 @@
-"""Ty type checker wrapper.
+"""Type checker wrapper.
 
-Provides a type-safe wrapper for ty commands: check.
-Ty is Astral's extremely fast Python type checker.
-
-Example:
-    >>> from pyrig.rig.tools.type_checker import TypeChecker
-    >>> TypeChecker.I.check_args().run()
+Wraps TypeChecker commands and information.
 """
 
 from pyrig.core.subprocesses import Args

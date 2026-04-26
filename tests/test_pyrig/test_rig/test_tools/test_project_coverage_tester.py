@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools import project_coverage_tester
 from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 
 
@@ -51,3 +52,14 @@ class TestProjectCoverageTester:
         result = ProjectCoverageTester.I.remote_coverage_url()
         assert isinstance(result, str)
         assert result.startswith("https://codecov.io/gh/")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        project_coverage_tester.__doc__
+        == """Coverage testing wrapper for pytest-cov and Codecov.io integration.
+
+Wraps ProjectCoverageTester commands and information.
+"""
+    )

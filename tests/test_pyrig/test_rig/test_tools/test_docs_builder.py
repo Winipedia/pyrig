@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from pyrig.rig.tools import docs_builder
 from pyrig.rig.tools.docs_builder import DocsBuilder
 
 
@@ -58,3 +59,14 @@ class TestDocsBuilder:
         """Test method."""
         result = DocsBuilder.I.build_args()
         assert result == ("mkdocs", "build")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        docs_builder.__doc__
+        == """Documentation builder tool wrapper.
+
+Wraps DocsBuilder commands and information.
+"""
+    )

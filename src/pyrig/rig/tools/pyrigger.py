@@ -1,13 +1,6 @@
-"""Pyrig CLI wrapper and project initialization orchestrator.
+"""Wrapper around pyrig.
 
-Provides a type-safe wrapper for pyrig commands and owns the full sequence
-of steps required to initialize a new pyrig project.
-
-Example:
-    >>> from pyrig.rig.tools.pyrigger import Pyrigger
-    >>> from pyrig.rig.cli.subcommands import build
-    >>> Pyrigger.I.cmd_args(cmd=build)  # pyrig build
-    >>> Pyrigger.I.init_project()  # full project initialization
+Provides a type-safe wrapper for pyrig commands and information.
 """
 
 from collections.abc import Callable

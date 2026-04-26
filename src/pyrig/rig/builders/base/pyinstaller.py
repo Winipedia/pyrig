@@ -1,8 +1,4 @@
-"""PyInstaller-based artifact builder for creating standalone executables.
-
-Provides the abstract ``PyInstallerBuilder`` base class for building
-platform-specific standalone executables from pyrig projects using PyInstaller.
-"""
+"""PyInstaller-based artifact builder for creating standalone executables."""
 
 import os
 import platform

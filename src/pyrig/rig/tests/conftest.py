@@ -4,14 +4,8 @@ Registers fixture modules from pyrig and all installed packages that depend on
 it as pytest plugins. This makes all discovered fixtures available in every
 test module without explicit imports.
 
-The registration walks the ``rig.tests.fixtures`` package path across each
-dependent in the pyrig ecosystem, collects all ``.py`` files (excluding
-``__init__.py``), converts them to dotted module names, and assigns the result
-to ``pytest_plugins`` for pytest to load automatically.
-
-Attributes:
-    pytest_plugins (tuple[str]): Dotted module names of all discovered fixture
-        files, registered as pytest plugins for automatic fixture availability.
+The registration walks the ``rig.tests.fixtures`` package path in each
+dependent package, collecting all Python modules and registers them as plugins.
 """
 
 import pyrig

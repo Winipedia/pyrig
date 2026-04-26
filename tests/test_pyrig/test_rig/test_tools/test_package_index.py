@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools import package_index
 from pyrig.rig.tools.package_index import PackageIndex
 
 
@@ -37,3 +38,14 @@ class TestPackageIndex:
         """Test method."""
         result = PackageIndex.I.dev_dependencies()
         assert result == ()
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        package_index.__doc__
+        == """Package index tool wrapper.
+
+Wraps PackageIndex commands and information.
+"""
+    )

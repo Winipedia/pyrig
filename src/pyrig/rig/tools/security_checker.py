@@ -1,11 +1,6 @@
-"""Bandit security checker tool wrapper.
+"""Security checker tool wrapper.
 
-Provides a type-safe wrapper for constructing Bandit CLI commands.
-Bandit finds common security issues in Python code by analysing ASTs.
-
-Example:
-    >>> from pyrig.rig.tools.security_checker import SecurityChecker
-    >>> SecurityChecker.I.run_with_config_args().run()
+Wraps SecurityChecker commands and information.
 """
 
 from collections.abc import Generator

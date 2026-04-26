@@ -1,8 +1,6 @@
 """Coverage testing wrapper for pytest-cov and Codecov.io integration.
 
-Wraps pytest-cov configuration and Codecov.io URL construction to provide
-a single, overridable interface for coverage analysis settings used across
-local development and CI environments.
+Wraps ProjectCoverageTester commands and information.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup

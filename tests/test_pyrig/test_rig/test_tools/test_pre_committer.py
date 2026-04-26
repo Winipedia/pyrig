@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools import pre_committer
 from pyrig.rig.tools.pre_committer import PreCommitter
 
 
@@ -37,3 +38,14 @@ class TestPreCommitter:
         """Test method."""
         result = PreCommitter.I.run_all_files_args()
         assert result == ("prek", "run", "--all-files")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        pre_committer.__doc__
+        == """Pre-commit tool wrapper.
+
+Wraps PreCommitter commands and information.
+"""
+    )

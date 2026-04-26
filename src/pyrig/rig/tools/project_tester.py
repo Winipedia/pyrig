@@ -1,11 +1,6 @@
-"""Pytest test runner wrapper.
+"""Project tester wrapper.
 
-Provides a type-safe interface for constructing pytest command arguments,
-and exposes project-wide test layout constants used across the codebase.
-
-Example:
-    >>> from pyrig.rig.tools.project_tester import ProjectTester
-    >>> ProjectTester.I.run_tests_in_ci_args().run()
+Wraps ProjectTester commands and information.
 """
 
 from pathlib import Path

@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools import type_checker
 from pyrig.rig.tools.type_checker import TypeChecker
 
 
@@ -27,3 +28,14 @@ class TestTypeChecker:
         """Test method."""
         result = TypeChecker.I.check_args()
         assert result == ("ty", "check")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        type_checker.__doc__
+        == """Type checker wrapper.
+
+Wraps TypeChecker commands and information.
+"""
+    )

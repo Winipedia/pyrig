@@ -1,7 +1,6 @@
-"""Pre-commit hook manager wrapper.
+"""Pre-commit tool wrapper.
 
-Wraps the prek tool to provide type-safe argument construction for
-installing and running pre-commit hooks.
+Wraps PreCommitter commands and information.
 """
 
 from pyrig.core.subprocesses import Args

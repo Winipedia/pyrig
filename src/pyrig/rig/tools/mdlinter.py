@@ -1,13 +1,6 @@
-"""Markdown linter tool wrapper.
+"""Wrapper around the Markdown Linter tool.
 
-Wraps the rumdl command-line tool with a type-safe interface for
-constructing markdown linting arguments. Rumdl is a fast markdown
-linter written in Rust.
-
-Example:
-    >>> from pyrig.rig.tools.mdlinter import MDLinter
-    >>> MDLinter.I.check_args().run()
-    >>> MDLinter.I.check_fix_args().run()
+Wraps Markdown Linter commands and information.
 """
 
 from pyrig.core.subprocesses import Args

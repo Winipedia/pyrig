@@ -1,5 +1,6 @@
 """module."""
 
+from pyrig.rig.tools import linter
 from pyrig.rig.tools.linter import Linter
 
 
@@ -41,3 +42,14 @@ class TestLinter:
         """Test method."""
         result = Linter.I.format_args()
         assert result == ("ruff", "format")
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        linter.__doc__
+        == """Wrapper around the Linter tool.
+
+Wraps Linter commands and information.
+"""
+    )
