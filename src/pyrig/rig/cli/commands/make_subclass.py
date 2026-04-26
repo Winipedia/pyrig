@@ -29,7 +29,6 @@ def make_subclass() -> None:
 
     config_file = CopyModuleDocstringConfigFile.generate_subclass(module)()
     config_file.validate()
-
     content = config_file.read_content()
 
     content += f'''
@@ -39,6 +38,7 @@ from {module_name} import {class_name} as Base{class_name}
 class {class_name}(Base{class_name}):
     """You can override methods from the base class to customize behavior."""
 '''
+
     config_file.write_content(content)
 
 

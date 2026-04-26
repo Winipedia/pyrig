@@ -28,12 +28,9 @@ def make_subcommand(name: str, *, shared: bool) -> None:
         shared_subcommands if shared else subcommands
     )()
     config_file.validate()
-
-    # now add a function with the same name as given to the module
-    name = kebab_to_snake_case(name)
-
     content = config_file.read_content()
 
+    name = kebab_to_snake_case(name)
     content += f'''
 
 def {name}() -> None:
