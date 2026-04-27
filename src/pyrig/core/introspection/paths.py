@@ -19,8 +19,8 @@ def package_dir_path(package: ModuleType) -> Path:
         ``__init__.py`` file).
 
     Raises:
-        AttributeError: If the package has no ``__file__`` attribute (e.g.,
-            built-in modules or namespace packages).
+        AttributeError: If the package's ``__file__`` attribute is ``None``
+            (e.g., built-in modules or namespace packages).
     """
     return module_file_path(package).parent
 

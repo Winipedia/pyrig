@@ -119,7 +119,7 @@ class Tool(RigDependencySubclass):
 
         Collects every concrete ``Tool`` subclass, sorts them by ``sort_key``,
         and builds a mapping from group name to the list of Markdown badge
-        strings for that group. Used by ``BadgesMdConfigFile`` to render the
+        strings for that group. Used by ``BadgesMarkdownConfigFile`` to render the
         ``README.md``.
 
         Returns:

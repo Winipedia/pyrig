@@ -177,8 +177,8 @@ class VersionConstraint:
             May be empty if no versions satisfy the constraint.
 
         Raises:
-            RuntimeError: If neither the constraint nor the provided defaults yield
-                a lower or upper bound.
+            RuntimeError: If the constraint and defaults together fail to yield a
+                lower bound, or fail to yield an upper bound.
 
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12")

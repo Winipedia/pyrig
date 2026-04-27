@@ -21,7 +21,8 @@ Example:
     ...         return ['"""Subpackage module."""']
     >>>
     >>> # Writing creates src/mypackage/subpackage/my_subpackage_module.py and
-    >>> # ensures src/__init__.py and src/mypackage/__init__.py exist.
+    >>> # ensures src/mypackage/__init__.py and
+    >>> # src/mypackage/subpackage/__init__.py exist.
 '''
 
 from pyrig.core.introspection.packages import make_package_dir

@@ -13,9 +13,8 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
     """Concrete configuration manager for the project's README.md.
 
     Inherits badge generation, description management, and merge logic from
-    ``BadgesMarkdownConfigFile``. Places README.md at the project root, fixes
-    the filename stem to ``"README"``, and overrides ``is_unwanted()`` to ensure
-    README.md is always managed — users cannot opt out via an empty file.
+    ``BadgesMarkdownConfigFile``. Places README.md at the project root and fixes
+    the filename stem to ``"README"``.
 
     Examples:
         Validate or generate README.md::

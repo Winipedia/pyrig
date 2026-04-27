@@ -41,14 +41,14 @@ class TypedConfigFile(DictConfigFile):
         return {}
 
     def _dump(self, configs: ConfigDict) -> None:
-        """Write configuration to the marker file, enforcing the empty-file contract.
+        """Enforce the empty-file contract.
 
         A no-op when ``configs`` is empty (the normal case). Raises
         ``PermissionError`` when called with a non-empty dict, because
         ``py.typed`` must never contain data.
 
         Args:
-            configs: Configuration dict to write. Must be empty.
+            configs: Configuration dict to validate. Must be empty.
 
         Raises:
             PermissionError: If ``configs`` is not empty.

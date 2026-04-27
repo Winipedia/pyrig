@@ -54,8 +54,7 @@ def def_line(obj: Any) -> int:
 
     Handles the full range of method-like forms before resolving the line:
 
-    - ``property`` descriptors: reads the line of the getter (``fget``) first.
-    - All other forms: delegates to ``unwrapped_obj`` to strip classmethod,
+    - All forms: delegates to ``unwrapped_obj`` to strip property, classmethod,
       staticmethod, and ``functools.wraps`` decorator layers.
 
     After unwrapping, the line number is read from ``__code__.co_firstlineno``
@@ -73,8 +72,6 @@ def def_line(obj: Any) -> int:
         OSError: If source lines cannot be retrieved, for example for built-in
             or C extension callables that lack ``__code__``.
     """
-    if isinstance(obj, property):
-        obj = obj.fget
     unwrapped = unwrapped_obj(obj)
     if hasattr(unwrapped, "__code__"):
         return int(unwrapped.__code__.co_firstlineno)

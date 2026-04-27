@@ -21,7 +21,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     Release process (in order):
         1. Check out the repository using ``REPO_TOKEN`` and configure git
            credentials.
-        2. Bump the patch version and stage ``pyproject.toml``.
+        2. Bump the patch version and stage ``pyproject.toml`` and the lock file.
         3. Update and install dependencies, staging lock-file changes.
         4. Commit all staged changes and push commits to the remote.
         5. Create a version tag (e.g. ``v1.2.3``) and push it to the remote.

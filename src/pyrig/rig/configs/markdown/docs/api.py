@@ -25,7 +25,7 @@ class ApiConfigFile(MarkdownConfigFile):
 
             # API Reference
 
-            ::: pyrig
+            ::: project_package_name
     """
 
     def parent_path(self) -> Path:
@@ -44,13 +44,12 @@ class ApiConfigFile(MarkdownConfigFile):
         """Build the ``api.md`` file content.
 
         Produces an ``# API Reference`` heading followed by a single
-        mkdocstrings ``:::`` directive that targets the project's root
-        package. mkdocstrings resolves this directive at build time and
+        mkdocstrings ``:::`` directive that targets the project's package name.
+        mkdocstrings resolves this directive at build time and
         recursively renders all public members into the final HTML page.
 
         Returns:
             list[str]: Lines comprising the ``# API Reference`` heading and
-                the ``:::`` directive for the project's root package name.
+                the ``:::`` directive for the project's package name.
         """
-        project_name = PackageManager.I.project_name()
-        return ["# API Reference", "", f"::: {project_name}", ""]
+        return ["# API Reference", "", f"::: {PackageManager.I.package_name()}", ""]

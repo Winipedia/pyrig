@@ -14,10 +14,6 @@ class ConfigConfigFile(DictYmlConfigFile):
     blank issues, requiring contributors to use one of the provided issue
     templates when opening a new issue.
 
-    Overrides ``is_correct()`` to accept any non-empty file content rather than
-    enforcing the exact structure from ``_configs()``. This lets the file be
-    customized without being flagged as incorrect.
-
     Example:
         >>> ConfigConfigFile.I.validate()
     """

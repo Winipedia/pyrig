@@ -15,9 +15,9 @@ class BugReportConfigFile(DictYmlConfigFile):
     expected and actual behavior, plus optional fields for environment details
     and log output.
 
-    The file is considered correct as long as it exists with any non-empty
-    content, allowing users to freely customize the template after initial
-    generation without the system reverting their changes.
+    The file is considered correct when it contains at least all the keys and
+    values defined in ``_configs()``. Users may add extra keys without the
+    system reverting their additions.
 
     Example:
         >>> BugReportConfigFile.I.validate()

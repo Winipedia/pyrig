@@ -33,8 +33,8 @@ class DependencyGraph(DiGraph):
     def __init__(self, root: str | None = None) -> None:
         """Initialize the dependency graph rooted at the given package.
 
-        Only packages that depend on ``root`` (directly or transitively) are
-        included in the graph after pruning.
+        Only ``root`` itself and packages that depend on it (directly or
+        transitively) are included in the graph after pruning.
 
         Args:
             root: Name of the root package to build the graph around.

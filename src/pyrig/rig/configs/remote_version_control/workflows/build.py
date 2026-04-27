@@ -154,14 +154,6 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
     def steps_build_container_image(self) -> list[dict[str, Any]]:
         """Return the ordered steps for the container image build job.
 
-        Steps (in order):
-            1. Core setup — checkout, git config, uv install, patch version
-               bump, dependency upgrade and install, stage lock-file changes.
-            2. Install Podman as the container engine.
-            3. Build the container image from the project's Containerfile.
-            4. Save (export) the image to ``dist/<project>.tar``.
-            5. Upload the tar archive as a ``container-image`` artifact.
-
         Returns:
             Ordered list of step configuration dicts.
         """

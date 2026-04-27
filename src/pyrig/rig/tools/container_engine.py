@@ -54,10 +54,10 @@ class ContainerEngine(Tool):
         """Get tool dependencies.
 
         Podman is a system package (not a Python dependency), so this
-        returns an empty list.
+        returns an empty tuple.
 
         Returns:
-            Empty list — podman must be installed at the OS level.
+            Empty tuple — podman must be installed at the OS level.
         """
         return ()
 

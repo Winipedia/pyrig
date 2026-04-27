@@ -233,7 +233,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         environments and PyInstaller-bundled executables.
 
         Returns:
-            Absolute path to the source ``icon.png`` file.
+            Absolute path to the source PNG icon file.
         """
         file_stem, package = self.app_icon_png_location()
         return resource_path(f"{file_stem}.png", package)

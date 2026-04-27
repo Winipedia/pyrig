@@ -516,7 +516,7 @@ class {test_class_name}:
 
                 import myproject.utils
                 subclass = MirrorTestConfigFile.L.generate_subclass(myproject.utils)
-                # subclass.__name__ == "TestUtilsMirrorTestConfigFile"
+                # subclass.__name__ == "UtilsMirrorTestConfigFile"
                 subclass()  # Creates tests/test_myproject/test_utils.py
         """
         test_cls_name = (

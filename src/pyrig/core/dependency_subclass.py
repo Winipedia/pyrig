@@ -102,7 +102,7 @@ class DependencySubclass(ABC):
     def I(cls) -> Self:  # noqa: E743, N802, N805
         """Return a cached instance of the leaf subclass.
 
-        Convenience shortcut equivalent to ``cls.L()()``. The instance is
+        Convenience shortcut equivalent to ``cls.L()``. The instance is
         created once per class and reused on every subsequent access.
 
         Returns:

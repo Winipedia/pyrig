@@ -42,6 +42,7 @@ class StringConfigFile(ListConfigFile):
 
     Subclasses must implement:
         - `parent_path`: Directory containing the text file.
+        - `stem`: Filename without its extension.
         - `lines`: Required content as a list of lines.
         - `extension`: File extension (can be an empty string).
     """
