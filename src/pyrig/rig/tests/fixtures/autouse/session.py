@@ -17,12 +17,10 @@ import pytest
 from pyrig.core.introspection.packages import (
     walk_package,
 )
+from pyrig.core.iterate import generator_has_items
 from pyrig.core.requests import internet_is_available
 from pyrig.core.strings import (
     make_summary_error_msg,
-)
-from pyrig.rig.cli.commands.make_inits import (
-    make_init_files_for_namespace_packages,
 )
 from pyrig.rig.cli.subcommands import mkinits, mkroot, mktests
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -88,98 +86,84 @@ Found the following unstaged changes:
 
 @pytest.fixture(scope="session", autouse=True)
 def all_config_files_correct() -> None:
-    """Validate all project config files, auto-fixing any that are incorrect.
+    """Fail if any version-controlled config files are incorrect.
 
-    In CI, gitignored config files (such as ``.env`` and ``.scratch``) are
-    regenerated first, because they are not committed to the repository and
-    would be absent in a freshly cloned environment. All config files are
-    then checked for correctness and auto-fixed before the assertion runs,
-    so any fixes can be reviewed and committed.
+    Checks all config files that are tracked by version control. Git-ignored
+    files (such as ``.env`` and ``.scratch``) are excluded because they are
+    not committed and are expected to be managed manually.
 
     Raises:
-        AssertionError: If any config files were incorrect, listing the
-            affected paths.
+        AssertionError: If any version-controlled config files are incorrect,
+            listing the affected paths.
     """
-    # if we are in CI then we must create config files that are gitignored
-    # as they are not pushed to the repository
-    if RemoteVersionController.I.running_in_ci():
-        ConfigFile.validate_subclasses(ConfigFile.version_control_ignored_subclasses())
-
-    incorrect_cfs = tuple(ConfigFile.incorrect_subclasses())
-    ConfigFile.validate_subclasses(incorrect_cfs)
+    has_incorrect_cfs, incorrect_cfs = generator_has_items(
+        ConfigFile.discard_correct_subclasses(
+            ConfigFile.version_controlled_subclasses()
+        )
+    )
 
     msg = f"""Found incorrect {ConfigFile.__name__}s.
-It was attempted to auto-fix them via their {ConfigFile.validate.__name__} method.
-This should have created or updated the config files to be correct.
-Consider using the proper command to create or update the config files:
+Please run the following command to fix any incorrect config files:
     '{Pyrigger.I.cmd_args(cmd=mkroot)}'
 
-Please verify the changes at the following paths:
 {make_summary_error_msg(cf().path() for cf in incorrect_cfs)}
 """
-    assert not incorrect_cfs, msg
+    assert not has_incorrect_cfs, msg
 
 
 @pytest.fixture(scope="session", autouse=True)
 def no_namespace_packages() -> None:
-    """Validate all packages have an ``__init__.py`` file.
+    """Fail if any packages are missing an ``__init__.py`` file.
 
     A namespace package is a Python package directory that lacks an
     ``__init__.py`` file. While Python supports them, this project requires
     explicit ``__init__.py`` files everywhere to keep package discovery
-    predictable. Any missing files are created automatically before the
-    assertion runs.
+    predictable.
 
     Raises:
-        AssertionError: If any namespace packages were found, listing the
-            paths of the newly created ``__init__.py`` files.
+        AssertionError: If any namespace packages are found, listing the
+            paths of the missing ``__init__.py`` files.
     """
-    namespace_packages = tuple(find_namespace_packages())
-    make_init_files_for_namespace_packages(namespace_packages)
+    has_namespace_packages, namespace_packages = generator_has_items(
+        find_namespace_packages()
+    )
 
     msg = f"""Found namespace packages.
 Namespace packages are packages that do not have an __init__.py file.
-This fixture attempted to auto-fix this by creating the files for any namespace packages found.
-Consider using the proper command to create __init__.py files for any namespace packages in the source directory:
+All packages should have an __init__.py file to ensure predictable package discovery.
+Please run the following command to create __init__.py files for any namespace packages:
     '{Pyrigger.I.cmd_args(cmd=mkinits)}'
 
-Please verify the changes at the following paths:
 {make_summary_error_msg(package_name_as_root_path(package_name) / "__init__.py" for package_name in namespace_packages)}
 """  # noqa: E501
-    assert not namespace_packages, msg
+    assert not has_namespace_packages, msg
 
 
 @pytest.fixture(scope="session", autouse=True)
 def all_modules_tested() -> None:
-    """Validate every source module has a corresponding test module.
+    """Fail if any source module lacks a corresponding test module.
 
     Enforces a one-to-one mirror between the source package tree and the test
-    package tree. Any source module that lacks a corresponding test module gets
-    a test skeleton generated automatically. The fixture still fails after
-    generating the skeletons so the developer can review and commit the new
-    files. The leaf subclass ``MirrorTestConfigFile.L`` is discovered at
+    package tree. The leaf subclass ``MirrorTestConfigFile.L`` is discovered at
     runtime via the cross-package subclass discovery mechanism.
 
     Raises:
-        AssertionError: If any source modules lacked corresponding test
-            modules, listing the auto-generated paths.
+        AssertionError: If any source modules lack a corresponding test
+            module, listing the affected paths.
     """
-    incorrect_subclasses = tuple(MirrorTestConfigFile.L.incorrect_subclasses())
-    MirrorTestConfigFile.L.validate_subclasses(incorrect_subclasses)
+    has_incorrect_subclasses, incorrect_subclasses = generator_has_items(
+        MirrorTestConfigFile.L.incorrect_subclasses()
+    )
 
     msg = f"""Found incorrect test modules.
-It is enforced that every module in src has a corresponding test module in tests.
-The test module should mirror the structure package under the source directory.
+It is enforced that all source code has a corresponding mirrored test.
 
-Attempted to auto-generate test skeletons for any missing test modules via {MirrorTestConfigFile.L.__name__}
-
-Consider using the proper command to create test skeletons for any missing test modules:
+Please run the following command to generate test skeletons for any missing tests:
     '{Pyrigger.I.cmd_args(cmd=mktests)}'
 
-Please verify the changes at the following paths:
 {make_summary_error_msg(sc().path() for sc in incorrect_subclasses)}
-"""  # noqa: E501
-    assert not incorrect_subclasses, msg
+"""
+    assert not has_incorrect_subclasses, msg
 
 
 @pytest.fixture(scope="session", autouse=True)

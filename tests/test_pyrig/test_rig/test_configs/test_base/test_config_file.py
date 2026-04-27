@@ -68,6 +68,28 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
+    def test_version_controlled_subclasses(self) -> None:
+        """Test method."""
+        not_expected = {
+            DotEnvConfigFile,
+            DotScratchConfigFile,
+        }
+        actual = set(ConfigFile.version_controlled_subclasses())
+        assert len(actual) > 0
+        for cf in not_expected:
+            assert cf not in actual
+
+    def test_discard_correct_subclasses(self, mocker: MockerFixture) -> None:
+        """Test method."""
+        # make two magic mock subclasses of ConfigFile that are correct and incorrect
+        cf1 = mocker.MagicMock()
+        cf1.return_value.is_correct.return_value = True
+
+        cf2 = mocker.MagicMock()
+        cf2.return_value.is_correct.return_value = False
+
+        assert tuple(ConfigFile.discard_correct_subclasses((cf1, cf2))) == (cf2,)
+
     def test___str__(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
