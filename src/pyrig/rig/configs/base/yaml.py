@@ -12,6 +12,8 @@ Example:
     ...     def parent_path(self) -> Path:
     ...         return Path(".github/workflows")
     ...
+    ...     def stem(self) -> str:
+    ...         return "my_workflow"
     ...
     ...     def _configs(self) -> dict:
     ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
@@ -33,6 +35,7 @@ class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
 
     Subclasses must implement:
         - `parent_path`: Directory containing the YAML file
+        - `stem`: Filename without extension
         - `_configs`: Expected YAML configuration structure
     """
 

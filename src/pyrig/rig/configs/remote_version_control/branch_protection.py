@@ -146,7 +146,8 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
         Reads the project description from ``pyproject.toml`` and edits the
         GitHub repository to enforce pyrig's standard configuration:
 
-        - Sets the repository name and description from ``pyproject.toml``.
+        - Sets the repository name from the git remote URL and the description
+          from ``pyproject.toml``.
         - Sets the default branch to ``main``.
         - Enables automatic branch deletion after merging and allows branch
           updates via the GitHub UI.

@@ -1,8 +1,7 @@
 """Configuration management for CODE_OF_CONDUCT.md files.
 
 Manages CODE_OF_CONDUCT.md using the Contributor Covenant, the most widely
-adopted code of conduct for open source projects. Falls back to a bundled
-template when the upstream source is unavailable.
+adopted code of conduct for open source projects.
 """
 
 from pathlib import Path

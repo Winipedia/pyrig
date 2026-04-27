@@ -15,6 +15,7 @@ class PythonConfigFile(StringConfigFile):
 
     Subclasses must implement:
         - ``parent_path``: The directory that will contain the ``.py`` file.
+        - ``stem``: The filename without its extension.
         - ``lines``: The Python source lines required to be present in the file.
 
     Example:
@@ -27,6 +28,9 @@ class PythonConfigFile(StringConfigFile):
 
                 def parent_path(self) -> Path:
                     return Path("src")
+
+                def stem(self) -> str:
+                    return "my_module"
 
                 def lines(self) -> list[str]:
                     return ["from typing import Any", "import sys"]
