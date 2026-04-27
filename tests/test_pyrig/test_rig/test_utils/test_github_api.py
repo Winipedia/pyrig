@@ -5,6 +5,7 @@ from github.Repository import Repository
 from pyrig.rig.configs.remote_version_control.branch_protection import (
     BranchProtectionConfigFile,
 )
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.version_controller import VersionController
 from pyrig.rig.utils.github_api import (
     all_rulesets,
@@ -17,7 +18,7 @@ from pyrig.rig.utils.github_api import (
 
 def test_repository() -> None:
     """Test function."""
-    owner, repo_name = VersionController.I.repo_owner_and_name()
+    owner, repo_name = VersionController.I.repo_owner(), PackageManager.I.project_name()
     repo = repository(
         BranchProtectionConfigFile.I.repo_token(),
         owner,
@@ -31,14 +32,15 @@ def test_all_rulesets() -> None:
     """Test function."""
     rulesets = all_rulesets(
         BranchProtectionConfigFile.I.repo_token(),
-        *VersionController.I.repo_owner_and_name(),
+        VersionController.I.repo_owner(),
+        PackageManager.I.project_name(),
     )
     assert isinstance(rulesets, list), "Expected rulesets to be a list"
 
 
 def test_ruleset_exists() -> None:
     """Test function."""
-    owner, repo_name = VersionController.I.repo_owner_and_name()
+    owner, repo_name = VersionController.I.repo_owner(), PackageManager.I.project_name()
     ruleset_id = ruleset_exists(
         BranchProtectionConfigFile.I.repo_token(),
         owner,
@@ -51,7 +53,7 @@ def test_ruleset_exists() -> None:
 def test_create_or_update_ruleset() -> None:
     """Test function."""
     token = BranchProtectionConfigFile.I.repo_token()
-    owner, repo_name = VersionController.I.repo_owner_and_name()
+    owner, repo_name = VersionController.I.repo_owner(), PackageManager.I.project_name()
     create_or_update_ruleset(
         token=token,
         owner=owner,
@@ -62,7 +64,7 @@ def test_create_or_update_ruleset() -> None:
 
 def test_github_api_request() -> None:
     """Test function."""
-    owner, repo_name = VersionController.I.repo_owner_and_name()
+    owner, repo_name = VersionController.I.repo_owner(), PackageManager.I.project_name()
     github_api_request(
         BranchProtectionConfigFile.I.repo_token(),
         owner,

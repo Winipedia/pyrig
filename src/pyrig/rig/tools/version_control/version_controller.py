@@ -9,7 +9,6 @@ from urllib.parse import quote
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
-from pyrig.rig.tools.package_manager import PackageManager
 
 logger = logging.getLogger(__name__)
 
@@ -478,76 +477,74 @@ class VersionController(Tool):
 
     @classmethod
     @cache
-    def repo_owner_and_name(
+    def repo_owner(
         cls, *, check_repo_url: bool = True, url_encode: bool = False
-    ) -> tuple[str, str]:
-        """Return the cached repository owner and name.
+    ) -> str:
+        """Return the cached repository owner.
 
-        This is the primary public entry point for obtaining repository
-        identity.  It delegates to ``_repo_owner_and_name`` on a fresh instance
+        This is the primary public entry point for obtaining the repository
+        owner.  It delegates to ``_repo_owner`` on a fresh instance
         and caches the result at the class level so that repeated calls within
         the same process incur no subprocess overhead.
 
         Args:
             check_repo_url: When ``True``, raises an error if no remote origin
                 is configured.  Set to ``False`` to fall back gracefully to the
-                git user name and the current project name.
-            url_encode: When ``True``, percent-encodes the returned strings,
-                which is required when embedding them directly in URLs.
+                git user name.
+            url_encode: When ``True``, percent-encodes the returned string,
+                which is required when embedding it directly in a URL.
 
         Returns:
-            A ``(owner, repository_name)`` tuple of strings.
+            The repository owner as a string.
         """
-        return cls()._repo_owner_and_name(  # noqa: SLF001
+        return cls()._repo_owner(  # noqa: SLF001
             check_repo_url=check_repo_url, url_encode=url_encode
         )
 
-    def _repo_owner_and_name(
+    def _repo_owner(
         self,
         *,
         check_repo_url: bool = True,
         url_encode: bool = False,
-    ) -> tuple[str, str]:
-        """Parse the repository owner and name from the git remote URL.
+    ) -> str:
+        """Parse the repository owner from the git remote URL.
 
         Supports both HTTPS (``https://github.com/owner/repo.git``) and SSH
-        (``git@github.com:owner/repo.git``) remote formats by taking the last
-        two path segments after stripping the ``.git`` suffix and splitting on
-        ``/``.  The SSH colon separator in the owner segment is handled
-        explicitly.
+        (``git@github.com:owner/repo.git``) remote formats by stripping the
+        ``.git`` suffix and known URL prefixes, then taking the first path
+        segment as the owner.
 
         When no remote is configured, falls back to the git ``user.name`` as
-        the owner and the current project name from ``PackageManager`` as the
-        repository name.
+        the owner.
 
         Args:
             check_repo_url: When ``True``, raises an error if no remote origin
                 is configured.
-            url_encode: When ``True``, percent-encodes the returned strings.
+            url_encode: When ``True``, percent-encodes the returned string.
 
         Returns:
-            A ``(owner, repository_name)`` tuple of strings.
+            The repository owner as a string.
         """
         url = self.repo_remote(check=check_repo_url)
         if not url:
             # we default to git username and repo name from cwd
-            logger.debug(
-                "No git remote found, using git username and CWD for repo info"
-            )
+            logger.debug("No git remote found, using git username as repo owner")
             owner = self.username()
-            repo = PackageManager.I.project_name()
-            logger.debug("Derived repository: %s/%s", owner, repo)
         else:
-            parts = url.removesuffix(".git").split("/")
-            # keep last two parts
-            owner, repo = parts[-2:]
-            if ":" in owner:
-                owner = owner.split(":")[-1]
+            # remote URL formats:
+            # - HTTPS: https://github.com/owner/repo.git
+            # - SSH: git@github.com:owner/repo.git
+            url = (
+                url.removesuffix(".git")
+                .removeprefix("git@github.com:")
+                .removeprefix("https://github.com/")
+            )
+            segments = url.split("/")
+            owner = segments[0]
         if url_encode:
             logger.debug("Url encoding owner and repo")
             owner = quote(owner)
-            repo = quote(repo)
-        return owner, repo
+        return owner
 
     def repo_remote(self, *, check: bool = True) -> str:
         """Return the remote origin URL configured for this repository.
@@ -575,7 +572,7 @@ class VersionController(Tool):
     def username(self) -> str:
         """Return the git ``user.name`` from the active configuration.
 
-        Used as the owner fallback inside ``_repo_owner_and_name`` when no
+        Used as the owner fallback inside ``_repo_owner`` when no
         remote origin is configured.
 
         Returns:

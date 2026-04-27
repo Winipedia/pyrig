@@ -4,15 +4,14 @@ Wraps PackageIndex commands and information.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
-from pyrig.rig.tools.version_control.version_controller import VersionController
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class PackageIndex(Tool):
     """PyPI package index wrapper.
 
     Constructs the PyPI project URL and shields.io version badge for the
-    current repository. The package name is assumed to match the Git
-    repository name.
+    current project. The package name is read from ``PackageManager.I.project_name()``.
 
     Example:
         >>> PackageIndex.I.package_index_url()
@@ -43,9 +42,7 @@ class PackageIndex(Tool):
             shields.io URL displaying the published PyPI version and
             ``page_url`` is the package's PyPI project page.
         """
-        _, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False, url_encode=True
-        )
+        repo = PackageManager.I.project_name()
         return (
             f"https://img.shields.io/pypi/v/{repo}?logo=pypi&logoColor=white",
             self.package_index_url(),
@@ -54,14 +51,12 @@ class PackageIndex(Tool):
     def package_index_url(self) -> str:
         """Construct the PyPI project page URL.
 
-        Assumes the package name matches the Git repository name.
+        Uses the project name from ``PackageManager.I.project_name()``.
 
         Returns:
             URL in format: ``https://pypi.org/project/{repo}``
         """
-        _, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False, url_encode=True
-        )
+        repo = PackageManager.I.project_name()
         return f"https://pypi.org/project/{repo}"
 
     def dev_dependencies(self) -> tuple[str, ...]:

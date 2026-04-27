@@ -94,7 +94,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Returns:
             Nested dict matching the expected pyproject.toml structure.
         """
-        repo_owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
+        repo_owner = VersionController.I.repo_owner(check_repo_url=False)
         tests_package_root = ProjectTester.I.tests_package_root().as_posix()
 
         # local import as ReadmeConfigFile inherits from BadgesMarkdownConfigFile
