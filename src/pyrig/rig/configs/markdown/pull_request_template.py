@@ -37,7 +37,7 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
     subsections.
 
     The ``is_correct`` validation is intentionally permissive: it only checks
-    that the file exists and contains non-whitespace content. This lets
+    that the file exists and contains non-empty content. This lets
     contributors freely customize the template after initial generation
     without triggering unwanted regeneration on subsequent ``validate`` calls.
 

@@ -62,7 +62,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         - ``extension()``: File extension without the leading dot.
         - ``_configs()``: Minimum required configuration structure.
         - ``_load()``: Parse the file from disk.
-        - ``_dump(config)``: Write configuration to disk.
+        - ``_dump(configs)``: Write configuration to disk.
 
         The following methods may optionally be overridden:
 
@@ -76,7 +76,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
 
         - ``configs()``: Cached result of ``_configs()``.
         - ``load()``: Cached result of ``_load()``.
-        - ``dump(config)``: Cache-invalidating wrapper around ``_dump(config)``.
+        - ``dump(configs)``: Cache-invalidating wrapper around ``_dump(configs)``.
     """
 
     def __str__(self) -> str:

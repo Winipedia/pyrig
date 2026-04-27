@@ -1271,7 +1271,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step using ``release-changelog-builder-action@develop``.
+            Step using ``mikepenz/release-changelog-builder-action@develop``.
         """
         return self.step(
             step_func=self.step_build_changelog,

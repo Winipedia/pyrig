@@ -28,6 +28,7 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     Subclasses must still implement:
 
     - ``parent_path()``: Directory that will contain the JSON file.
+    - ``stem()``: Filename without extension.
     - ``_configs()``: Expected configuration content (dict or list).
 
     Example:
