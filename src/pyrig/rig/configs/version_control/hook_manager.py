@@ -86,7 +86,7 @@ class VersionControlHookManagerConfigFile(TomlConfigFile):
             self.hook(
                 "update-package-manager",
                 PackageManager.I.update_self_args(),
-                stages=["pre-push"],
+                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
             ),
             self.hook(
                 "update-dependencies",
