@@ -8,7 +8,7 @@ from pathlib import Path
 
 from pyrig.core.strings import file_has_content
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 SECURITY_TEMPLATE = """# Security Policy
 

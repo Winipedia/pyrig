@@ -26,15 +26,17 @@ from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
-from pyrig.rig.tools.linter import Linter
+from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.type_checker import TypeChecker
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
+from pyrig.rig.tools.version_control.version_controller import VersionController
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 
 
@@ -144,7 +146,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "build-backend": PackageManager.I.build_backend(),
             },
             "tool": {
-                Linter.I.name(): {
+                PythonLinter.I.name(): {
                     "lint": {
                         "select": ["ALL"],
                         "ignore": ["D203", "D213", "COM812", "ANN401"],
@@ -152,7 +154,7 @@ class PyprojectConfigFile(TomlConfigFile):
                         "per-file-ignores": {
                             f"**/{tests_package_root}/**/*.py": ["S101"],
                         },
-                        "pydocstyle": {"convention": Linter.I.pydocstyle()},
+                        "pydocstyle": {"convention": PythonLinter.I.pydocstyle()},
                     },
                 },
                 TypeChecker.I.name(): {

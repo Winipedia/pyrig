@@ -4,7 +4,7 @@ Wraps PackageIndex commands and information.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class PackageIndex(Tool):
@@ -12,8 +12,7 @@ class PackageIndex(Tool):
 
     Constructs the PyPI project URL and shields.io version badge for the
     current repository. The package name is assumed to match the Git
-    repository name, resolved via
-    `pyrig.rig.tools.version_controller.VersionController`.
+    repository name.
 
     Example:
         >>> PackageIndex.I.package_index_url()

@@ -22,13 +22,17 @@ from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_index import PackageIndex
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.pre_committer import PreCommitter
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.hook_manager import (
+    VersionControlHookManager,
+)
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class WorkflowConfigFile(DictYmlConfigFile):
@@ -930,20 +934,19 @@ class WorkflowConfigFile(DictYmlConfigFile):
     ) -> dict[str, Any]:
         """Build a step that runs all pre-commit hooks via prek.
 
-        Runs ``prek --all-files`` to enforce code quality checks across the
-        entire working tree.  Including this step also ensures that
-        ``git stash pop`` does not fail when there are no staged changes,
-        since prek leaves the working tree clean.
-
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs ``uv run prek --all-files``.
+            Step that runs the pre-commit hooks.
         """
         return self.step(
             step_func=self.step_run_pre_commit_hooks,
-            run=str(PackageManager.I.run_args(*PreCommitter.I.run_all_files_args())),
+            run=str(
+                PackageManager.I.run_args(
+                    *VersionControlHookManager.I.run_all_files_stage_pre_commit_args()
+                )
+            ),
             step=step,
         )
 
@@ -1382,7 +1385,11 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step_func=self.step_create_and_push_tag,
             run=str(VersionController.I.tag_args(tag=self.insert_version()))
             + " && "
-            + str(VersionController.I.push_origin_tag_args(tag=self.insert_version())),
+            + str(
+                VersionController.I.push_no_verify_origin_tag_args(
+                    tag=self.insert_version()
+                )
+            ),
             step=step,
         )
 
@@ -1432,7 +1439,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.step(
             step_func=self.step_push_commits,
-            run=str(VersionController.I.push_args()),
+            run=str(VersionController.I.push_no_verify_args()),
             step=step,
         )
 

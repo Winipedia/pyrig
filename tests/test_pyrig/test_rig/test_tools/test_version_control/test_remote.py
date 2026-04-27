@@ -1,7 +1,9 @@
 """module."""
 
-from pyrig.rig.tools import remote_version_controller
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
+from pyrig.rig.tools.version_control import remote
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
 
 
 class TestRemoteVersionController:
@@ -84,7 +86,7 @@ class TestRemoteVersionController:
 def test_module_docstring() -> None:
     """Test module docstring."""
     assert (
-        remote_version_controller.__doc__
+        remote.__doc__
         == """Remote version controller wrapper.
 
 Wraps RemoteVersionController commands and information.

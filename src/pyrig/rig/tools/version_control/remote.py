@@ -7,7 +7,7 @@ import os
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class RemoteVersionController(Tool):

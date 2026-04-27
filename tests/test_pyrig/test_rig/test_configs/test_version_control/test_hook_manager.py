@@ -7,40 +7,43 @@ from pathlib import Path
 import pytest
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.configs.version_control.pre_committer import PreCommitterConfigFile
+from pyrig.rig.configs.version_control.hook_manager import (
+    VersionControlHookManagerConfigFile,
+)
 
 
 @pytest.fixture
 def my_test_prek_config_file(
     config_file_factory: Callable[
-        [type[PreCommitterConfigFile]], type[PreCommitterConfigFile]
+        [type[VersionControlHookManagerConfigFile]],
+        type[VersionControlHookManagerConfigFile],
     ],
-) -> type[PreCommitterConfigFile]:
+) -> type[VersionControlHookManagerConfigFile]:
     """Create a test prek config file class with tmp_path."""
 
-    class MyTestPreCommitterConfigFile(
-        config_file_factory(PreCommitterConfigFile)  # ty: ignore[unsupported-base]
+    class MyTestVersionControlHookManagerConfigFile(
+        config_file_factory(VersionControlHookManagerConfigFile)  # ty: ignore[unsupported-base]
     ):
         """Test prek config file with tmp_path override."""
 
-    return MyTestPreCommitterConfigFile
+    return MyTestVersionControlHookManagerConfigFile
 
 
-class TestPreCommitterConfigFile:
+class TestVersionControlHookManagerConfigFile:
     """Test class."""
 
     def test_stem(self) -> None:
         """Test method."""
-        assert PreCommitterConfigFile.I.stem() == "prek"
+        assert VersionControlHookManagerConfigFile.I.stem() == "prek"
 
     def test_hook(self) -> None:
         """Test method."""
-        hook = PreCommitterConfigFile.I.hook("test", Args(("test",)))
+        hook = VersionControlHookManagerConfigFile.I.hook("test", Args(("test",)))
         assert hook["id"] == "test", f"Expected id to be 'test', got {hook['id']}"
 
     def test_parent_path(
         self,
-        my_test_prek_config_file: type[PreCommitterConfigFile],
+        my_test_prek_config_file: type[VersionControlHookManagerConfigFile],
         tmp_path: Path,
     ) -> None:
         """Test method."""
@@ -49,7 +52,7 @@ class TestPreCommitterConfigFile:
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
     def test__configs(
-        self, my_test_prek_config_file: type[PreCommitterConfigFile]
+        self, my_test_prek_config_file: type[VersionControlHookManagerConfigFile]
     ) -> None:
         """Test method."""
         configs = my_test_prek_config_file().configs()

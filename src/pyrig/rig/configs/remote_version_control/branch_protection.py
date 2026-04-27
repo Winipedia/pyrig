@@ -15,8 +15,10 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.remote_version_control.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
+from pyrig.rig.tools.version_control.version_controller import VersionController
 from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
 
 logger = logging.getLogger(__name__)

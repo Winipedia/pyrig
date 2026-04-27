@@ -24,7 +24,9 @@ from pyrig.core.introspection.paths import path_as_module_name
 from pyrig.rig.configs.base.config_file import ConfigData, ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
 
 
 @pytest.fixture

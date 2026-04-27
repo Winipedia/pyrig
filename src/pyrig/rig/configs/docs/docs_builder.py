@@ -12,7 +12,7 @@ from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.markdown.docs.api import ApiConfigFile
 from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
 from pyrig.rig.tools.docs_builder import DocsBuilder
-from pyrig.rig.tools.linter import Linter
+from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
 
 
@@ -50,7 +50,7 @@ class DocsBuilderConfigFile(DictYmlConfigFile):
         - ``plugins``: Enables ``search``, ``mermaid2``, and
           ``mkdocstrings`` (configured for the Python handler). The
           ``docstring_style`` option is sourced from
-          :meth:`~pyrig.rig.tools.linter.Linter.pydocstyle` so that
+          :meth:`~pyrig.rig.tools.linting.python.PythonLinter.pydocstyle` so that
           Ruff and mkdocstrings always agree on the docstring convention.
         - ``theme``: Uses the Material theme with a two-entry palette:
           dark mode (``slate`` scheme) listed first so it is the default,
@@ -82,7 +82,7 @@ class DocsBuilderConfigFile(DictYmlConfigFile):
                         "handlers": {
                             "python": {
                                 "options": {
-                                    "docstring_style": Linter.I.pydocstyle(),
+                                    "docstring_style": PythonLinter.I.pydocstyle(),
                                     "members": True,
                                     "show_source": True,
                                     "inherited_members": True,

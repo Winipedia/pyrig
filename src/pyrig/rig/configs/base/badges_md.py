@@ -19,7 +19,9 @@ from pyrig.rig.configs.remote_version_control.workflows.release import (
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
 
 
 class BadgesMarkdownConfigFile(MarkdownConfigFile):

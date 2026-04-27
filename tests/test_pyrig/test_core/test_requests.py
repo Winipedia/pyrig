@@ -3,7 +3,9 @@
 from pytest_mock import MockerFixture
 
 from pyrig.core.requests import internet_is_available
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
 
 
 def test_internet_is_available(mocker: MockerFixture) -> None:

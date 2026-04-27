@@ -2,12 +2,20 @@
 
 from pytest_mock import MockerFixture
 
-from pyrig.rig.tools import version_controller
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control import version_controller
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class TestVersionController:
     """Test class."""
+
+    def test_push_no_verify_args(self) -> None:
+        """Test method."""
+        assert VersionController.I.push_no_verify_args() == (
+            "git",
+            "push",
+            "--no-verify",
+        )
 
     def test__repo_owner_and_name(self, mocker: MockerFixture) -> None:
         """Test method."""
@@ -106,16 +114,16 @@ class TestVersionController:
         result = VersionController.I.diff_args()
         assert result == ("git", "diff")
 
-    def test_push_origin_args(self) -> None:
+    def test_push_no_verify_origin_args(self) -> None:
         """Test method."""
-        result = VersionController.I.push_origin_args()
-        assert result == ("git", "push", "origin")
+        result = VersionController.I.push_no_verify_origin_args()
+        assert result == ("git", "push", "--no-verify", "origin")
 
-    def test_push_origin_tag_args(self) -> None:
+    def test_push_no_verify_origin_tag_args(self) -> None:
         """Test method."""
         tag = "v1.2.3"
-        result = VersionController.I.push_origin_tag_args(tag=tag)
-        assert result == ("git", "push", "origin", tag)
+        result = VersionController.I.push_no_verify_origin_tag_args(tag=tag)
+        assert result == ("git", "push", "--no-verify", "origin", tag)
 
     def test_tag_args(self) -> None:
         """Test method."""

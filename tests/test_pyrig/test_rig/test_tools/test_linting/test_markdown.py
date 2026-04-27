@@ -1,46 +1,46 @@
 """module."""
 
-from pyrig.rig.tools import mdlinter
-from pyrig.rig.tools.mdlinter import MDLinter
+from pyrig.rig.tools.linting import markdown
+from pyrig.rig.tools.linting.markdown import MarkdownLinter
 
 
-class TestMDLinter:
+class TestMarkdownLinter:
     """Test class."""
 
     def test_group(self) -> None:
         """Test method."""
-        result = MDLinter.I.group()
+        result = MarkdownLinter.I.group()
         assert isinstance(result, str)
         assert result == "code-quality"
 
     def test_badge_urls(self) -> None:
         """Test method."""
-        result = MDLinter.I.badge_urls()
+        result = MarkdownLinter.I.badge_urls()
         assert isinstance(result, tuple)
         assert all(isinstance(url, str) for url in result)
 
     def test_name(self) -> None:
         """Test method."""
-        result = MDLinter.I.name()
+        result = MarkdownLinter.I.name()
         assert result == "rumdl"
 
     def test_check_args(self) -> None:
         """Test method."""
-        result = MDLinter.I.check_args()
+        result = MarkdownLinter.I.check_args()
         assert result == ("rumdl", "check")
 
     def test_check_fix_args(self) -> None:
         """Test method."""
-        result = MDLinter.I.check_fix_args()
+        result = MarkdownLinter.I.check_fix_args()
         assert result == ("rumdl", "check", "--fix")
 
 
 def test_module_docstring() -> None:
     """Test module docstring."""
     assert (
-        mdlinter.__doc__
-        == """Wrapper around the Markdown Linter tool.
+        markdown.__doc__
+        == """Wrapper around the Markdown PythonLinter tool.
 
-Wraps Markdown Linter commands and information.
+Wraps Markdown PythonLinter commands and information.
 """
     )
