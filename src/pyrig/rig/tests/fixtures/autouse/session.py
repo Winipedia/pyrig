@@ -152,7 +152,9 @@ def all_modules_tested() -> None:
             module, listing the affected paths.
     """
     has_incorrect_subclasses, incorrect_subclasses = generator_has_items(
-        MirrorTestConfigFile.L.incorrect_subclasses()
+        MirrorTestConfigFile.L.discard_correct_subclasses(
+            MirrorTestConfigFile.L.concrete_subclasses()
+        )
     )
 
     msg = f"""Found incorrect test modules.

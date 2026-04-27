@@ -207,15 +207,6 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         )
 
     @classmethod
-    def incorrect_subclasses(cls) -> Generator[type[Self], None, None]:
-        """Yield config file classes whose files fail validation.
-
-        Yields:
-            ``ConfigFile`` subclasses for which ``is_correct()`` returns ``False``.
-        """
-        return cls.discard_correct_subclasses(cls.concrete_subclasses())
-
-    @classmethod
     def discard_correct_subclasses(
         cls, subclasses: Iterable[type[Self]]
     ) -> Generator[type[Self], None, None]:
