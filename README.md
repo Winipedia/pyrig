@@ -50,7 +50,7 @@ configuration management, CLI generation, testing infrastructure, and more.
 - Git
 - uv
 
-## Quick Start & Project Initialization
+## Quick Start
 
 ```bash
 uv init
