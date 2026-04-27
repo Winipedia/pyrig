@@ -47,7 +47,7 @@ class DiGraph(ABC):
         """
 
     def prune(self, root: str) -> None:
-        """Remove all nodes that do not depend on root.
+        """Remove all nodes that are neither root nor depend on root.
 
         Keeps ``root`` and all its ancestors (nodes with a directed path to
         ``root``). All other nodes and their associated edges are removed.

@@ -58,7 +58,7 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the JSON file with 4-space indentation.
 
-        Opens the file at ``self.path()`` for writing and serializes ``config``
+        Opens the file at ``self.path()`` for writing and serializes ``configs``
         using ``json.dump`` with ``indent=4``. This is the internal
         implementation called by the public ``dump()`` method, which
         invalidates the load cache before delegating here.

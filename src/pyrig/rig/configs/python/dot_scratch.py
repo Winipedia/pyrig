@@ -23,7 +23,7 @@ class DotScratchConfigFile(PythonConfigFile):
         """Return whether .scratch.py exists at the project root.
 
         Overrides the default validation from the base class, which verifies
-        both existence and required content. Because .scratch.py is a
+        required content. Because .scratch.py is a
         free-form scratch file that users are expected to edit freely,
         content is not validated — only existence matters.
 

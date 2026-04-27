@@ -25,10 +25,10 @@ def discover_subclasses_across_dependents[T: type](
 ) -> Generator[T, None, None]:
     """Yield all subclasses of ``cls`` across packages that depend on ``dependency``.
 
-    The primary entry point for pyrig's plugin-style subclass discovery. For each
-    installed package that depends on ``dependency``, this function locates the
-    module that corresponds to ``package`` within that dependent package and
-    collects every subclass of ``cls`` defined there.
+    The primary entry point for pyrig's plugin-style subclass discovery. For
+    ``dependency`` itself and each installed package that depends on ``dependency``,
+    this function locates the module that corresponds to ``package`` within that
+    package and collects every subclass of ``cls`` defined there.
 
     This enables subsystems such as ``ConfigFile`` and ``Tool`` to automatically
     find all concrete implementations across the entire installed ecosystem
@@ -36,8 +36,8 @@ def discover_subclasses_across_dependents[T: type](
 
     Args:
         cls: Base class whose subclasses should be discovered.
-        dependency: The base dependency package (e.g., ``pyrig``). All installed
-            packages that depend on this are searched.
+        dependency: The base dependency package (e.g., ``pyrig``). This package
+            itself and all installed packages that depend on it are searched.
         package: Template module whose dotted path is replicated across dependent
             packages to locate the modules to search. For example, passing
             ``pyrig.rig`` would search ``<pkg>.rig`` in each dependent package.

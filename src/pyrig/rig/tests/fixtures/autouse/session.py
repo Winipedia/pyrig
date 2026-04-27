@@ -294,8 +294,8 @@ def no_dev_deps_in_source_code(
 
     1. **Install check** — copies the source tree and project config files to
        a temporary directory, then installs the project without the ``dev``
-       dependency group. Asserts that no known dev dependency appears in the
-       installation output.
+       dependency group. Asserts that a known dev dependency does not appear
+       in the installation output.
 
     2. **Import check** — walks all modules under the source package
        (excluding ``rig``) and imports them in the isolated environment.

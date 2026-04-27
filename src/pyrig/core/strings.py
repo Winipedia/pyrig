@@ -117,7 +117,7 @@ def package_req_name_split_pattern() -> re.Pattern[str]:
     specifiers and extras.
 
     For example, splitting ``"requests>=2.0[security]"`` yields
-    ``["requests", ""]``, so ``result[0]`` is ``"requests"``.
+    ``["requests", "", "2.0[security]"]``, so ``result[0]`` is ``"requests"``.
 
     Returns:
         Compiled regex pattern matching characters outside a valid package name.
@@ -157,10 +157,6 @@ def make_name_from_obj(
     Returns:
         Formatted name string. For example, ``"init_project"`` becomes
         ``"Init-Project"`` with the default parameters.
-
-    Raises:
-        ValueError: If the object has no ``__name__`` attribute and is not a
-            string, or if the resulting name would be empty.
 
     Example:
         >>> make_name_from_obj("init_project")

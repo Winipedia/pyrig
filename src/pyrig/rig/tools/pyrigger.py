@@ -103,11 +103,11 @@ class Pyrigger(Tool):
         """Run the full project initialization sequence.
 
         Fetches all setup steps from ``setup_steps()``, then executes them
-        in order. Each step method returns an ``Args`` object which is
-        wrapped with ``PackageManager.I.run_args`` (i.e., ``uv run <args>``)
+        in order. Each step's ``Args`` object is wrapped with
+        ``PackageManager.I.run_args`` (i.e., ``uv run <args>``)
         to ensure commands run inside the project's virtual environment.
-        The progress bar description is updated to the step method's human-
-        readable name before each step runs, and advances after it completes.
+        The progress bar description is updated to the step's description
+        (the dict key) before each step runs, and advances after it completes.
         The process stops immediately if any step exits with a non-zero
         return code.
 

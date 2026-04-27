@@ -39,7 +39,7 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
         """Return the tests package root as the destination directory.
 
         Overrides the base class, which would derive a nested path from
-        the source module name (for example ``tests/<pkg>/rig/tests``).
+        the source module name (for example ``src/<pkg>/rig/tests``).
         This override places ``test_zero.py`` directly in the top-level
         ``tests/`` directory, which is where pytest expects to find it.
 
@@ -57,5 +57,5 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
         return test_zero_module
 
     def is_correct(self) -> bool:
-        """Conisdered correct if def test_zero() exists in the target file."""
+        """Considered correct if def test_zero() exists in the target file."""
         return f"def {test_zero.__name__}()" in self.read_content()

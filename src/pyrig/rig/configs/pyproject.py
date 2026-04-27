@@ -82,7 +82,7 @@ class PyprojectConfigFile(TomlConfigFile):
           tools via ``Tool.subclasses_dev_dependencies``.
         - ``build-system``: uv build backend configuration.
         - ``tool``: Opinionated settings for ruff (all rules, Google docstrings),
-          ty (strict), pytest (with coverage), and bandit (security checks).
+          ty (error-on-warning), pytest (with coverage), and bandit (security checks).
 
         Note:
             ``ReadmeConfigFile`` is imported locally to break a circular dependency:
