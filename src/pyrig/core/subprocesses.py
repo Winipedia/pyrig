@@ -20,7 +20,7 @@ class Args(tuple[str, ...]):
 
     A :class:`tuple` subclass that represents a complete subprocess command.
     Returned by all ``Tool.*_args`` methods (e.g.,
-    ``PackageManager.I.install_dependencies_args``, ``Linter.I.check_args``)
+    ``PackageManager.I.install_dependencies_args``, ``PythonLinter.I.check_args``)
     to provide a consistent interface for building, inspecting, and running
     subprocess commands.
 
@@ -141,7 +141,7 @@ def run_subprocess(  # noqa: PLR0913
     * Defaults ``cwd`` to the current directory when not provided.
 
     This is the underlying execution primitive used by all ``Tool`` wrappers
-    (``PackageManager``, ``Linter``, ``ContainerEngine``, etc.).
+    (``PackageManager``, ``PythonLinter``, ``ContainerEngine``, etc.).
 
     Args:
         args: Command and arguments as a sequence (e.g., ``["git", "status"]``).

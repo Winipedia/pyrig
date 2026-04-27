@@ -13,32 +13,28 @@ from pyrig.core.subprocesses import (
 )
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.toml import TomlConfigFile
-from pyrig.rig.tools.linter import Linter
-from pyrig.rig.tools.mdlinter import MDLinter
-from pyrig.rig.tools.pre_committer import PreCommitter
+from pyrig.rig.tools.linting.markdown import MarkdownLinter
+from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.type_checker import TypeChecker
+from pyrig.rig.tools.version_control.hook_manager import (
+    VersionControlHookManager,
+)
 
 
-class PreCommitterConfigFile(TomlConfigFile):
+class VersionControlHookManagerConfigFile(TomlConfigFile):
     """Manages ``prek.toml`` for pre-commit hook configuration.
 
     Generates ``prek.toml`` at the project root with a single ``local``
-    repository entry containing five hooks that cover the full code-quality
+    repository entry containing hooks that cover the full code-quality
     pipeline.  All hooks use ``language: system``, meaning the tools must be
     installed on the host.
-
-    Hooks generated:
-        - ``format-code``: ``ruff format`` — auto-formats Python source.
-        - ``lint-code``: ``ruff check --fix`` — lints and auto-fixes Python source.
-        - ``check-types``: ``ty check`` — static type checking.
-        - ``check-security``: ``bandit`` with project config — security scanning.
-        - ``lint-markdown``: ``rumdl check --fix`` — Markdown style checking.
 
     Examples:
         Generate prek.toml::
 
-            PreCommitterConfigFile.I.validate()
+            VersionControlHookManagerConfigFile.I.validate()
 
         Install hooks::
 
@@ -55,13 +51,13 @@ class PreCommitterConfigFile(TomlConfigFile):
 
     def stem(self) -> str:
         """Return the config filename stem, producing ``prek.toml``."""
-        return PreCommitter.I.name()
+        return VersionControlHookManager.I.name()
 
     def _configs(self) -> ConfigDict:
         """Build the complete ``prek.toml`` configuration.
 
-        Constructs a single ``local`` repository entry containing five hooks
-        that enforce the full code-quality pipeline on every commit:
+        Constructs a single ``local`` repository entry containing hooks
+        that enforce the full code-quality pipeline on every commit.
 
         Returns:
             Top-level prek.toml structure containing the ``repos`` list.
@@ -69,11 +65,11 @@ class PreCommitterConfigFile(TomlConfigFile):
         hooks: list[ConfigDict] = [
             self.hook(
                 "format-code",
-                Linter.I.format_args(),
+                PythonLinter.I.format_args(),
             ),
             self.hook(
                 "lint-code",
-                Linter.I.check_fix_args(),
+                PythonLinter.I.check_fix_args(),
             ),
             self.hook(
                 "check-types",
@@ -85,7 +81,22 @@ class PreCommitterConfigFile(TomlConfigFile):
             ),
             self.hook(
                 "lint-markdown",
-                MDLinter.I.check_fix_args(),
+                MarkdownLinter.I.check_fix_args(),
+            ),
+            self.hook(
+                "update-package-manager",
+                PackageManager.I.update_self_args(),
+                stages=["pre-push"],
+            ),
+            self.hook(
+                "update-dependencies",
+                PackageManager.I.update_dependencies_args(),
+                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
+            ),
+            self.hook(
+                "install-dependencies",
+                PackageManager.I.install_dependencies_args(),
+                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
             ),
         ]
         return {
@@ -97,7 +108,7 @@ class PreCommitterConfigFile(TomlConfigFile):
             ]
         }
 
-    def hook(
+    def hook(  # noqa: PLR0913
         self,
         name: str,
         args: Args,
@@ -105,6 +116,7 @@ class PreCommitterConfigFile(TomlConfigFile):
         language: str = "system",
         pass_filenames: bool = False,
         always_run: bool = True,
+        stages: list[str] | None = None,
         **kwargs: Any,
     ) -> ConfigDict:
         """Build a single prek hook configuration entry.
@@ -126,12 +138,15 @@ class PreCommitterConfigFile(TomlConfigFile):
             always_run: When ``True``, the hook runs on every commit regardless
                 of whether any files match the optional ``files`` filter.
                 Defaults to ``True``.
+            stages: Iterable of stages in which the hook should run.
             **kwargs: Additional prek hook fields passed through verbatim
                 (e.g. ``files``, ``exclude``, ``stages``).
 
         Returns:
             Hook configuration dict ready for inclusion in the ``hooks`` list.
         """
+        if stages is None:
+            stages = ["pre-commit"]
         hook: ConfigDict = {
             "id": name,
             "name": name,
@@ -139,6 +154,7 @@ class PreCommitterConfigFile(TomlConfigFile):
             "language": language,
             "always_run": always_run,
             "pass_filenames": pass_filenames,
+            "stages": stages,
             **kwargs,
         }
         return hook

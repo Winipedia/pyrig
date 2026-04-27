@@ -31,8 +31,10 @@ from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
+from pyrig.rig.tools.version_control.version_controller import VersionController
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
 )
@@ -166,121 +168,6 @@ Please run the following command to generate test skeletons for any missing test
 {make_summary_error_msg(sc().path() for sc in incorrect_subclasses)}
 """
     assert not has_incorrect_subclasses, msg
-
-
-@pytest.fixture(scope="session", autouse=True)
-def package_manager_updated(standard_output_error_template: str) -> None:
-    """Update the ``uv`` package manager to the latest version.
-
-    Runs ``uv self update`` locally to keep the package manager current.
-    Skipped in CI because the CI environment always provisions the latest
-    version of ``uv``, and running a self-update there can cause unexpected
-    behaviour. Also skipped when no internet connection is available.
-
-    A GitHub API rate-limit error is treated as a successful outcome because
-    the update cannot proceed in that case and there is no actionable fix.
-
-    Args:
-        standard_output_error_template: Template for formatting stdout and
-            stderr in assertion failure messages.
-
-    Raises:
-        AssertionError: If ``uv self update`` fails for any reason other
-            than a GitHub API rate limit.
-    """
-    if not internet_is_available():
-        logger.warning(
-            "No internet, skipping fixture: %s",
-            package_manager_updated.__name__,
-        )
-        return
-
-    # this only needed locally, in CI the latest version is used automatically
-    # by the CI environment, and running self update can cause issues there
-    if RemoteVersionController.I.running_in_ci():
-        return
-
-    # update the package manager itself
-    completed_process = PackageManager.I.update_self_args().run(check=False)
-    returncode = completed_process.returncode
-
-    stderr = completed_process.stderr
-    stdout = completed_process.stdout
-    std_msg = stderr + stdout
-
-    allowed_errors = ("GitHub API rate limit exceeded",)
-    allowed_error_in_err_or_out = any(exp in std_msg for exp in allowed_errors)
-
-    is_up_to_date = returncode == 0 or allowed_error_in_err_or_out
-
-    msg = f"""The {PackageManager.I} is not up to date.
-
-This fixture ran `{PackageManager.I.update_self_args()}` to automatically update the package manager to the latest version.
-However, it failed. See the output below for details.
-
-{standard_output_error_template.format(stdout=stdout, stderr=stderr)}
-"""  # noqa: E501
-    assert is_up_to_date, msg
-
-
-@pytest.fixture(scope="session", autouse=True)
-def all_dependencies_updated(standard_output_error_template: str) -> None:
-    """Update all project dependencies and sync the virtual environment.
-
-    Runs two commands in sequence:
-
-    1. ``uv lock --upgrade`` — resolves the latest compatible versions of
-       all dependencies and writes them to ``uv.lock``.
-    2. ``uv sync`` — installs packages from the updated lock file, adding
-       or removing packages as needed.
-
-    Skipped when no internet connection is available.
-
-    Args:
-        standard_output_error_template: Template for formatting stdout and
-            stderr in assertion failure messages.
-
-    Raises:
-        AssertionError: If either the lock upgrade or the sync command
-            exits with a non-zero return code.
-    """
-    if not internet_is_available():
-        logger.warning(
-            "No internet, skipping fixture: %s",
-            all_dependencies_updated.__name__,
-        )
-        return
-
-    # update the dependencies
-    args = PackageManager.I.update_dependencies_args()
-    completed_process = args.run(check=False)
-    stderr = completed_process.stderr
-    stdout = completed_process.stdout
-    success = completed_process.returncode == 0
-
-    msg = f"""Failed to update dependencies.
-
-This fixture ran `{args}` to automatically update the dependencies to the latest versions.
-However, it failed. See the output below for details.
-
-{standard_output_error_template.format(stdout=stdout, stderr=stderr)}
-"""  # noqa: E501
-    assert success, msg
-
-    # sync the dependencies
-    args = PackageManager.I.install_dependencies_args()
-    completed_process = args.run(check=False)
-    stderr = completed_process.stderr
-    stdout = completed_process.stdout
-    success = completed_process.returncode == 0
-    msg = f"""Failed to install dependencies.
-
-This fixture ran `{args}` to automatically install the dependencies.
-However, it failed. See the output below for details.
-
-{standard_output_error_template.format(stdout=stdout, stderr=stderr)}
-"""
-    assert success, msg
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -16,7 +16,9 @@ from pyrig.rig.cli.subcommands import mkroot
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.fixtures import fixtures
-from pyrig.rig.tools.remote_version_controller import RemoteVersionController
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
 
 
 @pytest.fixture

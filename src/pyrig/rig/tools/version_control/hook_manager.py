@@ -1,13 +1,13 @@
-"""Pre-commit tool wrapper.
+"""Tool wrapper for the version control hook manager.
 
-Wraps PreCommitter commands and information.
+Wraps version control hook manager commands and information.
 """
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
-class PreCommitter(Tool):
+class VersionControlHookManager(Tool):
     """Wrapper for the prek pre-commit hook manager.
 
     Builds Args objects for the two primary prek operations: installing
@@ -19,11 +19,11 @@ class PreCommitter(Tool):
     Example:
         Install hooks once during project setup:
 
-        >>> PreCommitter.I.install_args().run()
+        >>> VersionControlHookManager.I.install_args().run()
 
         Run all hooks against the full project (e.g., in CI):
 
-        >>> PreCommitter.I.run_all_files_args().run()
+        >>> VersionControlHookManager.I.run_all_files_args().run()
     """
 
     def name(self) -> str:
@@ -66,6 +66,29 @@ class PreCommitter(Tool):
             Args for 'prek install [args]'.
         """
         return self.args("install", *args)
+
+    def run_all_files_stage_pre_commit_args(self, *args: str) -> Args:
+        """Get Args to run pre-commit hooks against every file in the project.
+
+        Args:
+            *args: Additional arguments forwarded to ``prek run``.
+
+        Returns:
+            Args for 'prek run --all-files --hook-stage pre-commit [args]'.
+        """
+        return self.run_all_files_stage_args(*args, stage="pre-commit")
+
+    def run_all_files_stage_args(self, *args: str, stage: str) -> Args:
+        """Get Args to run hooks of a specific stage against every file in the project.
+
+        Args:
+            *args: Additional arguments forwarded to ``prek run``.
+            stage: The hook stage to run (e.g., "pre-commit").
+
+        Returns:
+            Args for 'prek run --all-files --hook-stage [stage] [args]'.
+        """
+        return self.run_all_files_args("--hook-stage", stage, *args)
 
     def run_all_files_args(self, *args: str) -> Args:
         """Construct arguments to run all prek hooks against every file in the project.

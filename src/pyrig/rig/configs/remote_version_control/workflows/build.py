@@ -7,7 +7,7 @@ from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.remote_version_control.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class BuildWorkflowConfigFile(WorkflowConfigFile):

@@ -1,21 +1,21 @@
-"""Wrapper around the Markdown Linter tool.
+"""Wrapper around the Markdown linter tool.
 
-Wraps Markdown Linter commands and information.
+Wraps Markdown linter commands and information.
 """
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
-class MDLinter(Tool):
+class MarkdownLinter(Tool):
     """Type-safe wrapper for the rumdl markdown linter.
 
     Constructs rumdl command-line arguments for linting and auto-fixing
     markdown files.
 
     Example:
-        >>> MDLinter.I.check_args().run()
-        >>> MDLinter.I.check_fix_args().run()
+        >>> MarkdownLinter.I.check_args().run()
+        >>> MarkdownLinter.I.check_fix_args().run()
     """
 
     def name(self) -> str:

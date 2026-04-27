@@ -5,7 +5,7 @@ from github.Repository import Repository
 from pyrig.rig.configs.remote_version_control.branch_protection import (
     BranchProtectionConfigFile,
 )
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.version_controller import VersionController
 from pyrig.rig.utils.github_api import (
     all_rulesets,
     create_or_update_ruleset,

@@ -1,13 +1,13 @@
-"""Wrapper around the Linter tool.
+"""Wrapper around the python linter tool.
 
-Wraps Linter commands and information.
+Wraps python linter commands and information.
 """
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
-class Linter(Tool):
+class PythonLinter(Tool):
     """Type-safe wrapper for the Ruff Python linter and formatter.
 
     Ruff is a fast Python linter and formatter written in Rust.
@@ -15,8 +15,8 @@ class Linter(Tool):
     auto-fix, and format operations.
 
     Example:
-        >>> Linter.I.check_fix_args().run()
-        >>> Linter.I.format_args().run()
+        >>> PythonLinter.I.check_fix_args().run()
+        >>> PythonLinter.I.format_args().run()
     """
 
     def name(self) -> str:

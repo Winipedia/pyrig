@@ -21,11 +21,11 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.subcommands import mkroot, mktests
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.pre_committer import (
-    PreCommitter,
-)
 from pyrig.rig.tools.project_tester import ProjectTester
-from pyrig.rig.tools.version_controller import VersionController
+from pyrig.rig.tools.version_control.hook_manager import (
+    VersionControlHookManager,
+)
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class Pyrigger(Tool):
@@ -147,9 +147,11 @@ class Pyrigger(Tool):
             "Creating project root": self.cmd_args(cmd=mkroot),
             "Installing project": PackageManager.I.install_dependencies_args(),
             "Creating tests": self.cmd_args(cmd=mktests),
-            "Installing pre-commit hooks": PreCommitter.I.install_args(),
+            "Installing pre-commit hooks": VersionControlHookManager.I.install_args(),
             "Staging files for initial commit": VersionController.I.add_all_args(),
-            "Running pre-commit hooks": PreCommitter.I.run_all_files_args(),
+            "Running pre-commit hooks": (
+                VersionControlHookManager.I.run_all_files_stage_pre_commit_args()
+            ),
             "Running tests": ProjectTester.I.test_args(),
             "Committing initial changes": VersionController.I.commit_no_verify_args(
                 msg=f"{self.name()}: Initial commit"
