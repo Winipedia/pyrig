@@ -147,7 +147,9 @@ class Pyrigger(Tool):
             "Creating project root": self.cmd_args(cmd=mkroot),
             "Installing project": PackageManager.I.install_dependencies_args(),
             "Creating tests": self.cmd_args(cmd=mktests),
-            "Installing pre-commit hooks": VersionControlHookManager.I.install_args(),
+            "Installing all version control hooks": (
+                VersionControlHookManager.I.install_args()
+            ),
             "Staging files for initial commit": VersionController.I.add_all_args(),
             "Running pre-commit hooks": (
                 VersionControlHookManager.I.run_all_files_stage_pre_commit_args()
