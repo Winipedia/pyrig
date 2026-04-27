@@ -57,10 +57,10 @@ class VersionControlHookManagerConfigFile(TomlConfigFile):
         """Build the complete ``prek.toml`` configuration.
 
         Constructs a single ``local`` repository entry containing hooks
-        that enforce the full code-quality pipeline on every commit.
+        that enforce the full code-quality pipeline on the project via hooks.
 
         Returns:
-            Top-level prek.toml structure containing the ``repos`` list.
+            Top-level prek.toml structure containing the prek configuration.
         """
         hooks: list[ConfigDict] = [
             self.hook(
