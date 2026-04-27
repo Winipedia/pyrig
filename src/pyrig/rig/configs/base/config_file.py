@@ -186,10 +186,6 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
     def version_control_ignored_subclasses(cls) -> Generator[type[Self], None, None]:
         """Yield config file classes whose files are excluded from version control.
 
-        Used by the session autouse fixture to ensure gitignored config files
-        (e.g. ``.env``, ``.scratch``) are regenerated in CI, where they are
-        not committed to the repository.
-
         Yields:
             ``ConfigFile`` subclasses for which ``version_control_ignored()``
             returns ``True``.
@@ -199,16 +195,43 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         )
 
     @classmethod
+    def version_controlled_subclasses(cls) -> Generator[type[Self], None, None]:
+        """Yield config file classes whose files are tracked by version control.
+
+        Yields:
+            ``ConfigFile`` subclasses for which ``version_control_ignored()``
+            returns ``False``.
+        """
+        return (
+            cf for cf in cls.concrete_subclasses() if not cf().version_control_ignored()
+        )
+
+    @classmethod
     def incorrect_subclasses(cls) -> Generator[type[Self], None, None]:
         """Yield config file classes whose files fail validation.
-
-        Used by the session autouse fixture to detect and auto-fix stale or
-        missing config files before tests run.
 
         Yields:
             ``ConfigFile`` subclasses for which ``is_correct()`` returns ``False``.
         """
-        return (cf for cf in cls.concrete_subclasses() if not cf().is_correct())
+        return cls.discard_correct_subclasses(cls.concrete_subclasses())
+
+    @classmethod
+    def discard_correct_subclasses(
+        cls, subclasses: Iterable[type[Self]]
+    ) -> Generator[type[Self], None, None]:
+        """Yield only the incorrect config file classes from a collection.
+
+        Used to filter out correct config files when validating a specific
+        collection of subclasses.
+
+        Args:
+            subclasses: Collection of ``ConfigFile`` subclasses to filter.
+
+        Yields:
+            Only the subclasses from the input collection for which ``is_correct()``
+            returns ``False``.
+        """
+        return (cf for cf in subclasses if not cf().is_correct())
 
     @classmethod
     def sort_key(cls) -> float:

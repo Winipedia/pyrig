@@ -9,7 +9,6 @@ from pytest_mock import MockerFixture
 from pyrig.core.introspection.inspection import unwrapped_obj
 from pyrig.core.requests import internet_is_available
 from pyrig.core.subprocesses import Args
-from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.tests import fixtures
 from pyrig.rig.tests.fixtures.autouse import session
@@ -58,20 +57,15 @@ def test_all_config_files_correct(mocker: MockerFixture) -> None:
     """Test function."""
     unwrapped_func = unwrapped_obj(all_config_files_correct)
     incorrect_mock = mocker.patch.object(
-        ConfigFile,
-        ConfigFile.incorrect_subclasses.__name__,
-        return_value=[ReadmeConfigFile],
+        ReadmeConfigFile,
+        ReadmeConfigFile.is_correct.__name__,
+        return_value=False,
     )
-    running_in_ci_mock = mocker.patch.object(
-        RemoteVersionController,
-        RemoteVersionController.running_in_ci.__name__,
-        return_value=True,
-    )
+
     with pytest.raises(AssertionError, match=r"Found incorrect ConfigFiles."):
         unwrapped_func()
 
     incorrect_mock.assert_called_once()
-    running_in_ci_mock.assert_called_once()
 
 
 def test_no_namespace_packages(mocker: MockerFixture) -> None:
@@ -80,7 +74,7 @@ def test_no_namespace_packages(mocker: MockerFixture) -> None:
 
     find_mock = mocker.patch(
         no_namespace_packages.__module__ + "." + find_namespace_packages.__name__,
-        return_value=[fixtures.__name__],
+        return_value=iter([fixtures.__name__]),
     )
     with pytest.raises(AssertionError, match=r"Found namespace packages."):
         unwrapped_func()
@@ -95,7 +89,7 @@ def test_all_modules_tested(mocker: MockerFixture) -> None:
     incorrect_mock = mocker.patch.object(
         MirrorTestConfigFile,
         MirrorTestConfigFile.incorrect_subclasses.__name__,
-        return_value=[MirrorTestConfigFile.generate_subclass(session)],
+        return_value=(x for x in [MirrorTestConfigFile.generate_subclass(session)]),
     )
     with pytest.raises(AssertionError, match=r"Found incorrect test modules."):
         unwrapped_func()
