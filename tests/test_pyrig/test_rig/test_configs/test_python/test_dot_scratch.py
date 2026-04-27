@@ -14,6 +14,7 @@ class TestDotScratchConfigFile:
 
     def test_is_correct(self) -> None:
         """Test method."""
+        DotScratchConfigFile.I.validate()
         assert DotScratchConfigFile.I.is_correct()
 
     def test_stem(self) -> None:

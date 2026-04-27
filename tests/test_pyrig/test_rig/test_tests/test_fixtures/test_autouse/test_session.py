@@ -97,7 +97,7 @@ def test_all_modules_tested(mocker: MockerFixture) -> None:
     subclass = MirrorTestConfigFile.generate_subclass(session)
     incorrect_mock = mocker.patch.object(
         MirrorTestConfigFile,
-        MirrorTestConfigFile.incorrect_subclasses.__name__,
+        MirrorTestConfigFile.discard_correct_subclasses.__name__,
         return_value=iter([subclass]),
     )
     expected_path = subclass().path()
