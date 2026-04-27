@@ -99,13 +99,15 @@ class VersionControlHookManagerConfigFile(TomlConfigFile):
                 stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
             ),
         ]
+        hook_types = {stage for hook in hooks for stage in hook["stages"]}
         return {
+            "default_install_hook_types": list(hook_types),
             "repos": [
                 {
                     "repo": "local",
                     "hooks": hooks,
                 },
-            ]
+            ],
         }
 
     def hook(  # noqa: PLR0913
