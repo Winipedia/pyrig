@@ -12,10 +12,9 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class ZeroTestConfigFile(CopyModuleConfigFile):
     """Generates ``test_zero.py`` in the tests package root of a scaffolded project.
 
-    Copies the content of ``pyrig.rig.tests.test_zero`` into the project's
-    ``tests/`` directory, replacing the ``pyrig`` package prefix with the target
-    project's package name. The result is a ``test_zero.py`` file containing a
-    single empty ``test_zero()`` function.
+    Copies the content of ``pyrig.rig.tests.test_zero`` into the
+    project's ``tests/`` directory. The result is a ``test_zero.py`` file
+    containing a single empty ``test_zero()`` function.
 
     The generated file serves two purposes:
 

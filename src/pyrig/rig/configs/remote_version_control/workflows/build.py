@@ -20,7 +20,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
     workflow to consume.
 
     Artifacts produced:
-        - **Python wheels**: Built with ``uv build`` on Ubuntu, Windows, and macOS.
+        - **Artifacts**: Built with ``pyrig build`` on Ubuntu, Windows, and macOS.
         - **Container image**: Built with Podman, saved as a
           ``dist/<project>.tar`` archive.
 

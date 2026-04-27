@@ -81,8 +81,9 @@ class ContainerfileConfigFile(StringConfigFile):
             empty string.
 
         Note:
-            Reads ``requires-python`` from ``pyproject.toml`` and may make an
-            external API call to resolve the latest compatible Python version.
+            Reads ``requires-python`` from ``pyproject.toml`` and falls back to
+            the bundled ``LATEST_PYTHON_VERSION`` resource file when no upper
+            bound is specified.
         """
         latest_python_version = PyprojectConfigFile.I.latest_possible_python_version()
         package_root = PackageManager.I.package_root().as_posix()
