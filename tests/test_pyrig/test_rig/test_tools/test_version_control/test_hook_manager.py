@@ -68,8 +68,8 @@ def test_module_docstring() -> None:
     """Test module docstring."""
     assert (
         hook_manager.__doc__
-        == """Pre-commit tool wrapper.
+        == """Tool wrapper for the version control hook manager.
 
-Wraps VersionControlHookManager commands and information.
+Wraps version control hook manager commands and information.
 """
     )

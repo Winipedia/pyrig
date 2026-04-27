@@ -48,8 +48,8 @@ def test_module_docstring() -> None:
     """Test module docstring."""
     assert (
         python.__doc__
-        == """Wrapper around the PythonLinter tool.
+        == """Wrapper around the python linter tool.
 
-Wraps PythonLinter commands and information.
+Wraps python linter commands and information.
 """
     )
