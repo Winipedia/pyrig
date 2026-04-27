@@ -5,6 +5,7 @@ default_install_hook_types = [
     "post-merge",
     "pre-commit",
 ]
+
 [[repos]]
 repo = "local"
 
@@ -72,6 +73,9 @@ always_run = true
 pass_filenames = false
 stages = [
     "pre-push",
+    "post-checkout",
+    "post-merge",
+    "post-rewrite",
 ]
 
 [[repos.hooks]]
