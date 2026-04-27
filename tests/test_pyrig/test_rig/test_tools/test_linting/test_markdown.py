@@ -39,8 +39,8 @@ def test_module_docstring() -> None:
     """Test module docstring."""
     assert (
         markdown.__doc__
-        == """Wrapper around the Markdown PythonLinter tool.
+        == """Wrapper around the Markdown linter tool.
 
-Wraps Markdown PythonLinter commands and information.
+Wraps Markdown linter commands and information.
 """
     )
