@@ -40,72 +40,21 @@
 ## Philosophy
 
 pyrig provides **minimal best practices fully working defaults for everything a
-project needs**. Every configuration, workflow, and tool is pre-configured and
-working from day one. No templates, no boilerplate - just a complete, tested,
+python project needs**. Every configuration, workflow, and tool is pre-configured
+and working from the start. No templates, no boilerplate - just a complete, tested,
 production-ready setup that lets you start coding immediately.
 
-## Quick Start
+## More Detailed Documentation
 
-```bash
-# Create repository on GitHub, then clone it
-git clone https://github.com/username/my-project.git
-cd my-project
+We are keeping the manual documentation restricted to the essentials,
+if you want to know more about how pyrig works under the hood or you have
+more specific questions about how to use it than we will explain here,
+check out the [CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)
+for AI-generated documentation about pyrig's codebase, where you can also ask
+questions and get code explanations.
 
-# Initialize with uv and pyrig
-uv init
-uv add pyrig
-uv run pyrig init
+## Getting Started
 
-# Push to GitHub
-git push -u origin main
-```
-
-**New to pyrig?** See the [Getting Started Guide](more/getting-started.md) for
-complete setup instructions including prerequisites, required tokens, and
-detailed explanations.
-
----
-
-## Documentation
-
-### [CLI Documentation](cli/index.md)
-
-Learn how pyrig's CLI system works, including command discovery, multi-package
-support, and how to create your own commands.
-
-### [Testing Documentation](tests/index.md)
-
-Understand pyrig's testing framework, including mirrored test structure,
-automatic fixture sharing, and autouse validation fixtures.
-
-### [Builder Documentation](builders/index.md)
-
-Create distributable artifacts with pyrig's builder system, including
-PyInstaller executables and custom build processes.
-
-### [Resources Documentation](resources/index.md)
-
-Manage static files (images, configs, templates) that work seamlessly in both
-development and PyInstaller executables.
-
-### [Configuration Files Documentation](configs/index.md)
-
-Understand pyrig's configuration file system, including automatic discovery,
-validation, and creating custom config files. This is the main feature of pyrig
-that generates a complete project structure for you, ready to use and start
-developing your project.
-
-### [Tool Wrappers Documentation](tools/index.md)
-
-pyrig wraps external tools (uv, git, ruff, pytest, etc.) in type-safe Python
-classes. Learn how the Tool system works, what each wrapper does, and how to
-customize tool behavior through subclassing.
-
-### [Additional Information](more/index.md)
-
-See more documentation about pyrig's drawbacks, how to get started, tooling
-choices and a detailed example usage.
-
-### [CodeWiki Documentation](https://codewiki.google/github.com/winipedia/pyrig)
-
-AI-generated documentation for pyrig.
+To get started with pyrig, check out the [Getting Started Guide](getting-started.md)
+for a complete walkthrough of setting up a new python project
+from scratch with pyrig.

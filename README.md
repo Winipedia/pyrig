@@ -59,7 +59,9 @@ uv run pyrig init
 ```
 
 See the
-[Getting Started Guide](https://winipedia.github.io/pyrig/more/getting-started/) for detailed setup instructions.
+[Getting Started Guide](https://winipedia.github.io/pyrig/getting-started/)
+for detailed setup instructions to also fully integrate with GitHub and
+CI/CD from the start.
 
 ## Features
 
