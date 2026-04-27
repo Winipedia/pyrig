@@ -101,14 +101,15 @@ class ProjectCoverageTester(Tool):
     def remote_coverage_url(self) -> str:
         """Construct the Codecov project dashboard URL for the current repository.
 
-        Resolves the repository owner and name from the git remote and
-        URL-encodes both components to handle special characters safely.
+        Resolves the repository owner from the git remote (URL-encoded) and
+        the repository name from the project name.
 
         Returns:
             URL in the format ``https://codecov.io/gh/{owner}/{repo}``.
         """
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False, url_encode=True
+        owner, repo = (
+            VersionController.I.repo_owner(check_repo_url=False, url_encode=True),
+            PackageManager.I.project_name(),
         )
         return f"https://codecov.io/gh/{owner}/{repo}"
 

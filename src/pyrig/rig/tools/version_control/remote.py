@@ -7,6 +7,7 @@ import os
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
@@ -42,8 +43,9 @@ class RemoteVersionController(Tool):
             Tuple of (badge_image_url, link_url) where the badge image shows
             the repository star count using the shields.io social style.
         """
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False, url_encode=True
+        owner, repo = (
+            VersionController.I.repo_owner(check_repo_url=False, url_encode=True),
+            PackageManager.I.project_name(),
         )
         return (
             f"https://img.shields.io/github/stars/{owner}/{repo}?style=social",
@@ -117,9 +119,12 @@ class RemoteVersionController(Tool):
         Returns:
             shields.io URL that renders the current workflow status as a badge.
         """
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
+        owner, repo = (
+            VersionController.I.repo_owner(
+                check_repo_url=False,
+                url_encode=True,
+            ),
+            PackageManager.I.project_name(),
         )
         return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
 
@@ -129,9 +134,12 @@ class RemoteVersionController(Tool):
         Returns:
             URL in the format ``https://github.com/{owner}/{repo}``.
         """
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
+        owner, repo = (
+            VersionController.I.repo_owner(
+                check_repo_url=False,
+                url_encode=True,
+            ),
+            PackageManager.I.project_name(),
         )
         return f"{self.url_base()}/{owner}/{repo}"
 

@@ -17,39 +17,39 @@ class TestVersionController:
             "--no-verify",
         )
 
-    def test__repo_owner_and_name(self, mocker: MockerFixture) -> None:
+    def test__repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
-        result = VersionController()._repo_owner_and_name(  # noqa: SLF001
+        result = VersionController()._repo_owner(  # noqa: SLF001
             check_repo_url=False, url_encode=False
         )
-        assert result == ("Winipedia", "pyrig")
+        assert result == "Winipedia"
 
         # mock repo_remote to return empty string
         remote_mock = mocker.patch.object(
             VersionController, VersionController.repo_remote.__name__, return_value=""
         )
-        result = VersionController()._repo_owner_and_name(  # noqa: SLF001
+        result = VersionController()._repo_owner(  # noqa: SLF001
             check_repo_url=False, url_encode=False
         )
-        owner, name = result
+        owner = result
         assert isinstance(owner, str)  # in ci its github actions bot
-        assert name == "pyrig"
+        assert owner == "Winipedia"
 
         remote_mock.assert_called_once()
 
         # make it return a https remote url
         remote_mock.return_value = "https://github.com/OWNER/REPO.git"
-        result = VersionController()._repo_owner_and_name(  # noqa: SLF001
+        result = VersionController()._repo_owner(  # noqa: SLF001
             check_repo_url=False, url_encode=False
         )
-        assert result == ("OWNER", "REPO")
+        assert result == "OWNER"
 
         # make it return a ssh remote url
         remote_mock.return_value = "git@github.com:OWNER/REPO.git"
-        result = VersionController()._repo_owner_and_name(  # noqa: SLF001
+        result = VersionController()._repo_owner(  # noqa: SLF001
             check_repo_url=False, url_encode=False
         )
-        assert result == ("OWNER", "REPO")
+        assert result == "OWNER"
 
     def test_group(self) -> None:
         """Test method."""
@@ -217,11 +217,10 @@ class TestVersionController:
         result = VersionController.I.config_global_user_name_args(name="Test User")
         assert result == ("git", "config", "--global", "user.name", "Test User")
 
-    def test_repo_owner_and_name(self) -> None:
+    def test_repo_owner(self) -> None:
         """Test method."""
-        result = VersionController.I.repo_owner_and_name()
-        assert isinstance(result, tuple)
-        assert all(isinstance(item, str) for item in result)
+        result = VersionController.I.repo_owner()
+        assert isinstance(result, str)
 
     def test_repo_remote(self) -> None:
         """Test method."""

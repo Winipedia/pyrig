@@ -8,6 +8,7 @@ from pathlib import Path
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
@@ -106,16 +107,18 @@ class DocsBuilder(Tool):
     def documentation_url(self) -> str:
         """Construct the expected GitHub Pages URL for this project.
 
-        Reads the repository owner and name from the git remote URL and
-        composes the standard GitHub Pages URL. Both owner and name are
-        URL-encoded for safe use in the URL. Does not verify that the remote
-        is configured or that GitHub Pages is enabled.
+        Reads the repository owner from the git remote URL (URL-encoded) and
+        the repository name from the project name. Does not verify that the
+        remote is configured or that GitHub Pages is enabled.
 
         Returns:
             URL in the form ``https://{owner}.github.io/{repo}``.
         """
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
+        owner, repo = (
+            VersionController.I.repo_owner(
+                check_repo_url=False,
+                url_encode=True,
+            ),
+            PackageManager.I.project_name(),
         )
         return f"https://{owner}.github.io/{repo}"

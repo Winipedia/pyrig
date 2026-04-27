@@ -15,6 +15,7 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.remote_version_control.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
 )
@@ -156,7 +157,10 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
         - Disables merge commits; enables squash and rebase merges only.
         """
         logger.debug("Configuring secure repository settings")
-        owner, repo_name = VersionController.I.repo_owner_and_name()
+        owner, repo_name = (
+            VersionController.I.repo_owner(),
+            PackageManager.I.project_name(),
+        )
         token = self.repo_token()
         repo = repository(token, owner, repo_name)
 
@@ -183,7 +187,10 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
         created as a new one.
         """
         token = self.repo_token()
-        owner, repo_name = VersionController.I.repo_owner_and_name()
+        owner, repo_name = (
+            VersionController.I.repo_owner(),
+            PackageManager.I.project_name(),
+        )
         rulesets = self.load()
         for ruleset in rulesets:
             create_or_update_ruleset(

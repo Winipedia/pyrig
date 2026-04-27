@@ -13,6 +13,7 @@ from pyrig.core.strings import (
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
 )
@@ -99,7 +100,7 @@ class LicenseConfigFile(StringConfigFile):
         """
         mit_license = self.mit_license()
         year = datetime.now(tz=UTC).year
-        owner, _ = VersionController.I.repo_owner_and_name(check_repo_url=False)
+        owner = VersionController.I.repo_owner(check_repo_url=False)
         mit_license = mit_license.replace("[year]", str(year))
         return mit_license.replace("[fullname]", owner)
 
@@ -143,8 +144,11 @@ class LicenseConfigFile(StringConfigFile):
             URL in the form
             ``https://img.shields.io/github/license/<owner>/<repo>``.
         """
-        owner, repo = VersionController.I.repo_owner_and_name(
-            check_repo_url=False,
-            url_encode=True,
+        owner, repo = (
+            VersionController.I.repo_owner(
+                check_repo_url=False,
+                url_encode=True,
+            ),
+            PackageManager.I.project_name(),
         )
         return f"https://img.shields.io/github/license/{owner}/{repo}"
