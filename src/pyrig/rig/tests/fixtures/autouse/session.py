@@ -96,7 +96,7 @@ def all_config_files_correct() -> None:
         AssertionError: If any version-controlled config files are incorrect,
             listing the affected paths.
     """
-    has_incorrect_cfs, incorrect_cfs = generator_has_items(
+    has_incorrect_config_files, incorrect_config_files = generator_has_items(
         ConfigFile.discard_correct_subclasses(
             ConfigFile.version_controlled_subclasses()
         )
@@ -106,9 +106,9 @@ def all_config_files_correct() -> None:
 Please run the following command to fix any incorrect config files:
     '{Pyrigger.I.cmd_args(cmd=mkroot)}'
 
-{make_summary_error_msg(cf().path() for cf in incorrect_cfs)}
+{make_summary_error_msg(cf().path() for cf in incorrect_config_files)}
 """
-    assert not has_incorrect_cfs, msg
+    assert not has_incorrect_config_files, msg
 
 
 @pytest.fixture(scope="session", autouse=True)
