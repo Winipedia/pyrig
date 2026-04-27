@@ -26,6 +26,7 @@ from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.remote_version_controller import RemoteVersionController
 from pyrig.rig.tools.version_controller import VersionController
 from pyrig.rig.utils.packages import find_namespace_packages
+from pyrig.rig.utils.paths import package_name_as_root_path
 
 
 def test_no_unstaged_changes_in_ci(mocker: MockerFixture) -> None:
@@ -62,7 +63,10 @@ def test_all_config_files_correct(mocker: MockerFixture) -> None:
         return_value=False,
     )
 
-    with pytest.raises(AssertionError, match=r"Found incorrect ConfigFiles."):
+    with pytest.raises(
+        AssertionError,
+        match=rf"(?s){re.escape('Found incorrect ConfigFiles.')}.*{re.escape(str(ReadmeConfigFile.I.path()))}",  # noqa: E501
+    ):
         unwrapped_func()
 
     incorrect_mock.assert_called_once()
@@ -76,7 +80,11 @@ def test_no_namespace_packages(mocker: MockerFixture) -> None:
         no_namespace_packages.__module__ + "." + find_namespace_packages.__name__,
         return_value=iter([fixtures.__name__]),
     )
-    with pytest.raises(AssertionError, match=r"Found namespace packages."):
+    expected_path = package_name_as_root_path(fixtures.__name__) / "__init__.py"
+    with pytest.raises(
+        AssertionError,
+        match=rf"(?s){re.escape('Found namespace packages.')}.*{re.escape(str(expected_path))}",  # noqa: E501
+    ):
         unwrapped_func()
 
     find_mock.assert_called_once()
@@ -86,12 +94,17 @@ def test_all_modules_tested(mocker: MockerFixture) -> None:
     """Test function."""
     unwrapped_func = unwrapped_obj(all_modules_tested)
 
+    subclass = MirrorTestConfigFile.generate_subclass(session)
     incorrect_mock = mocker.patch.object(
         MirrorTestConfigFile,
         MirrorTestConfigFile.incorrect_subclasses.__name__,
-        return_value=(x for x in [MirrorTestConfigFile.generate_subclass(session)]),
+        return_value=iter([subclass]),
     )
-    with pytest.raises(AssertionError, match=r"Found incorrect test modules."):
+    expected_path = subclass().path()
+    with pytest.raises(
+        AssertionError,
+        match=rf"(?s){re.escape('Found incorrect test modules.')}.*{re.escape(str(expected_path))}",  # noqa: E501
+    ):
         unwrapped_func()
 
     incorrect_mock.assert_called_once()
