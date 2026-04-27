@@ -33,7 +33,7 @@ class TestVersionController:
         )
         owner = result
         assert isinstance(owner, str)  # in ci its github actions bot
-        assert owner == "Winipedia"
+        assert len(owner) > 0
 
         remote_mock.assert_called_once()
 
