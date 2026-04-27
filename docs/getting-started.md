@@ -26,9 +26,13 @@ anything that needs a remote repository and/or CI/CD to work,
 but if you just want to get going with a local project and add the repository
 and CI/CD setup later, this is the fastest way to get started.
 
-## Prerequisites
+## Full Setup Guide
 
 ### Required Software
+
+**Python 3.12+**:
+pyrig requires Python 3.12 or higher to run. You can seamlessly manage
+multiple Python versions with uv's built-in python version management.
 
 **Git**:
 Pyrig requires you to have git installed for version control.
