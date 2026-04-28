@@ -49,6 +49,13 @@ def my_test_workflow(
 class TestWorkflowConfigFile:
     """Test class."""
 
+    def test_step_make_distribution_directory(
+        self, my_test_workflow: type[WorkflowConfigFile]
+    ) -> None:
+        """Test method."""
+        step = my_test_workflow().step_make_distribution_directory()
+        assert "run" in step
+
     def test_repo_token_var(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile.I.repo_token_var() == "secrets.REPO_TOKEN"
@@ -155,7 +162,7 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         step = my_test_workflow().step_save_container_image()
-        assert "run" in step, f"Expected 'run' in step, got {step}"
+        assert "run" in step
 
     def test_insert_var(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
