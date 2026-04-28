@@ -1,9 +1,9 @@
 default_install_hook_types = [
     "post-checkout",
-    "pre-push",
-    "post-rewrite",
     "post-merge",
+    "post-rewrite",
     "pre-commit",
+    "pre-push",
 ]
 
 [[repos]]
