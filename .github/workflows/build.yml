@@ -96,9 +96,6 @@ jobs:
     - name: Build Container Image
       id: build_container_image
       run: podman build -t pyrig .
-    - name: Make Dist Folder
-      id: make_dist_folder
-      run: mkdir -p dist
     - name: Save Container Image
       id: save_container_image
       run: podman save -o dist/pyrig.tar pyrig
