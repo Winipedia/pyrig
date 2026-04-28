@@ -1,4 +1,4 @@
-"""Configuration management for prek pre-commit hooks.
+"""Configuration management for version control hooks.
 
 Manages ``prek.toml`` with a local hook repository containing system-installed
 tools that run on every commit to enforce code quality across formatting,
