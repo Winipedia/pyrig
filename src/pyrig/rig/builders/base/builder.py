@@ -105,13 +105,28 @@ class BuilderConfigFile(ListConfigFile):
         """
         return "dist"
 
+    @classmethod
+    def dist_dir_path(cls) -> Path:
+        """Return the path to the artifacts output directory.
+
+        Combines the current working directory with the name from ``dist_dir_name()``.
+        This is the final destination for built artifacts after they are renamed
+        with platform suffixes.
+        Implemented as a classmethod because it is referenced by ``WorkflowConfigFile``
+        subclasses, which need the path without instantiating an abstract builder.
+
+        Returns:
+            Path to the artifacts output directory (e.g., ``Path.cwd() / "dist"``).
+        """
+        return Path(cls.dist_dir_name())
+
     def parent_path(self) -> Path:
         """Return the output directory path for artifacts.
 
         Returns:
             ``Path`` to the artifacts directory, derived from ``dist_dir_name()``.
         """
-        return Path(self.dist_dir_name())
+        return self.dist_dir_path()
 
     def stem(self) -> str:
         """Return an empty string.
@@ -288,7 +303,7 @@ class BuilderConfigFile(ListConfigFile):
         Returns:
             Path to the newly created subdirectory.
         """
-        path = temp_dir / self.dist_dir_name()
+        path = temp_dir / self.dist_dir_path()
         path.mkdir(parents=True, exist_ok=True)
         return path
 

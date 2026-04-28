@@ -34,6 +34,12 @@ def my_test_builder_config_file(
 class TestBuilderConfigFile:
     """Test class."""
 
+    def test_dist_dir_path(self) -> None:
+        """Test method."""
+        assert BuilderConfigFile.dist_dir_path() == Path(
+            BuilderConfigFile.dist_dir_name()
+        )
+
     def test_stem(self, my_test_builder_config_file: type[BuilderConfigFile]) -> None:
         """Test method."""
         assert my_test_builder_config_file().stem() == ""

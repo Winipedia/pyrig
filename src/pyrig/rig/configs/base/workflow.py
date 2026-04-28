@@ -1048,7 +1048,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
     ) -> dict[str, Any]:
         """Build a step that packages the project as a Python wheel.
 
-        Runs ``uv build`` to produce wheel and sdist distributions in the
+        Runs ``uv build`` to produce wheel and source distributions in the
         ``dist/`` directory.
 
         Args:
@@ -1153,12 +1153,39 @@ class WorkflowConfigFile(DictYmlConfigFile):
             save command.
         """
         image_file = Path(f"{PackageManager.I.project_name()}.tar")
-        image_path = Path(BuilderConfigFile.dist_dir_name()) / image_file
+        image_path = BuilderConfigFile.dist_dir_path() / image_file
         return self.step(
             step_func=self.step_save_container_image,
             run=str(
                 ContainerEngine.I.save_args(
                     image_path=image_path,
+                )
+            ),
+            step=step,
+        )
+
+    def step_make_distribution_directory(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that creates the distribution directory.
+
+        Creates the ``dist/`` directory if it does not already exist so that
+        subsequent steps that write files there (e.g. the container image tar
+        archive) do not fail.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs ``mkdir -p dist``.
+        """
+        return self.step(
+            step_func=self.step_make_distribution_directory,
+            run=str(
+                PackageManager.I.run_args(
+                    "mkdir", "-p", BuilderConfigFile.dist_dir_path().as_posix()
                 )
             ),
             step=step,
@@ -1333,7 +1360,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
                 "tag": version,
                 "name": f"{self.insert_repository_name()} {version}",
                 "body": self.insert_changelog(),
-                "artifacts": f"{BuilderConfigFile.dist_dir_name()}/*",
+                "artifacts": f"{BuilderConfigFile.dist_dir_path().as_posix()}/*",
             },
             step=step,
         )
@@ -1493,7 +1520,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return self.step(
             step_func=self.step_upload_artifacts,
             uses="actions/upload-artifact@main",
-            with_={"name": name, "path": BuilderConfigFile.dist_dir_name()},
+            with_={"name": name, "path": BuilderConfigFile.dist_dir_path().as_posix()},
             step=step,
         )
 
@@ -1518,7 +1545,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             run ID and a GitHub token for cross-workflow artifact access.
         """
         with_: dict[str, Any] = {
-            "path": BuilderConfigFile.dist_dir_name(),
+            "path": BuilderConfigFile.dist_dir_path().as_posix(),
             "run-id": self.insert_workflow_run_id(),
             "github-token": self.insert_github_token(),
         }

@@ -160,6 +160,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         return [
             *self.steps_core_setup(patch_version=True),
             self.step_install_container_engine(),
+            self.step_make_distribution_directory(),
             self.step_build_container_image(),
             self.step_save_container_image(),
             self.step_upload_artifacts(name="container-image"),
