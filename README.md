@@ -116,26 +116,10 @@ Run `pyrig resources` to create a resources directory for your project.
 
 Override and customize any and all behaviour to suit your project's needs.
 pyrig's classes are designed for inheritance and composition, allowing you to
-create custom configurations, tools, builders, and more by subclassing and
+create custom configurations, tools, builders, and more by subclassing and simply
 overriding methods. pyrig will automatically discover and use your custom classes
 without any additional configuration.
 Run `pyrig subcls` to generate a subclass for any pyrig class.
-
-The multi-package inheritance system is probably pyrig's most powerful
-and unique feature, enabling you to easily customize behaviour across your project
-and any other projects that have your project installed as a dependency making this
-an automatic plugin system for pyrig-based projects.
-Tired of setting up all your projects manually the same way?
-Create your personal pyrig-based package with your preferred setup and configs.
-Everything is overridable and extendable, you could even replace uv with something
-like poetry.
-After that you can run:
-
-```bash
-uv init # or poetry init, add and run if you replaced uv with poetry
-uv add my-pyrig-package
-uv run pyrig init
-```
 
 ### CI/CD & Repository Protection
 
