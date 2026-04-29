@@ -9,6 +9,11 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_commit_with_message_args(self) -> None:
+        """Test method."""
+        result = VersionController.I.commit_with_message_args(msg="Initial commit")
+        assert result == ("git", "commit", "-m", "Initial commit")
+
     def test__repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
         result = VersionController()._repo_owner(  # noqa: SLF001
