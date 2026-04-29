@@ -6,7 +6,7 @@ import socket
 def internet_is_available() -> bool:
     """Check internet connectivity by attempting a TCP connection.
 
-    Attempts to open a TCP connection to Cloudflare's public DNS resolver
+    Attempts to open a TCP connection to Cloudflare's public HTTP server
     (1.1.1.1) on port 80 with a 2-second timeout. This provides a fast,
     reliable connectivity check without requiring DNS resolution or depending
     on any specific API endpoint.

@@ -74,7 +74,7 @@ def package_name_as_path(name: str) -> Path:
 def path_as_module_name(path: Path) -> str:
     """Convert a relative file path to a dotted module name.
 
-    Strips the ``.py`` extension if present, then joins the path parts with
+    Strips the file extension if present, then joins the path parts with
     dots. Paths without an extension are handled the same as those with
     ``.py``.
 
