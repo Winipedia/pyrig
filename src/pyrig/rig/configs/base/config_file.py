@@ -47,8 +47,6 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
     files across a project. Subclasses declare the required structure via
     ``_configs()`` and the system ensures that structure is present on disk,
     merging missing values while preserving any extra keys the user has added.
-    Users can opt out of a config file entirely by leaving it empty; an empty
-    file is treated as intentional and will not be modified.
 
     Type Parameters:
         ConfigT: The configuration data type, either ``ConfigDict`` or

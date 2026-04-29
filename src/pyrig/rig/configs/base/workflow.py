@@ -1183,11 +1183,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.step(
             step_func=self.step_make_distribution_directory,
-            run=str(
-                PackageManager.I.run_args(
-                    "mkdir", "-p", BuilderConfigFile.dist_dir_path().as_posix()
-                )
-            ),
+            run=f"mkdir -p {BuilderConfigFile.dist_dir_path().as_posix()}",
             step=step,
         )
 
@@ -1460,7 +1456,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.step(
             step_func=self.step_push_commits,
-            run=str(VersionController.I.push_origin_args()),
+            run=str(VersionController.I.push_args()),
             step=step,
         )
 

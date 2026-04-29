@@ -137,8 +137,8 @@ class LicenseConfigFile(StringConfigFile):
     def license_badge_url(self) -> str:
         """Return the shields.io badge image URL for the repository license.
 
-        Builds the URL using the percent-encoded repository owner and name so
-        the URL is safe for embedding in Markdown.
+        Builds the URL using the percent-encoded repository owner and the
+        project name so the URL is safe for embedding in Markdown.
 
         Returns:
             URL in the form

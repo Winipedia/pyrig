@@ -16,6 +16,7 @@ class MarkdownConfigFile(StringConfigFile):
 
     Subclasses must implement:
         - ``parent_path``: Directory containing the ``.md`` file.
+        - ``stem``: Filename without its extension.
         - ``lines``: Required Markdown content as a list of lines.
 
     Example:
@@ -26,6 +27,10 @@ class MarkdownConfigFile(StringConfigFile):
         ...
         ...     def parent_path(self) -> Path:
         ...         return Path()
+        ...
+        ...
+        ...     def stem(self) -> str:
+        ...         return "README"
         ...
         ...
         ...     def lines(self) -> list[str]:

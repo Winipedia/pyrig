@@ -18,6 +18,7 @@ class YmlConfigFile[ConfigT: ConfigData](YamlConfigFile[ConfigT]):
 
     Subclasses must implement:
         - ``parent_path``: The directory that contains the ``.yml`` file.
+        - ``stem``: The filename without its extension.
         - ``_configs``: The expected configuration structure.
     """
 
@@ -36,6 +37,7 @@ class DictYmlConfigFile(YmlConfigFile[ConfigDict]):
 
     Subclasses must implement:
         - ``parent_path``: The directory that contains the ``.yml`` file.
+        - ``stem``: The filename without its extension.
         - ``_configs``: The expected configuration as a ``ConfigDict``.
 
     Example:

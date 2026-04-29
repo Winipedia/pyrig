@@ -55,7 +55,7 @@ jobs:
       run: 'git commit -m "[skip ci] CI/CD: Committing possible staged changes"'
     - name: Push Commits
       id: push_commits
-      run: git push origin
+      run: git push
     - name: Create And Push Tag
       id: create_and_push_tag
       run: git tag v$(uv version --short) && git push origin v$(uv version --short)

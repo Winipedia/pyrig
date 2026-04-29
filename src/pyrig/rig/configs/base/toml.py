@@ -17,8 +17,9 @@ class TomlConfigFile(DictConfigFile):
     """Base class for TOML configuration files.
 
     Implements TOML-specific file I/O using tomlkit, which preserves formatting,
-    key order, and comments on round-trip reads and writes. All lists are rendered
-    as multiline arrays for readability.
+    key order, and comments on round-trip reads and writes. Lists of dicts are
+    rendered as TOML array-of-tables (``[[section]]`` syntax); all other lists are
+    rendered as multiline arrays for readability.
 
     The ``extension()``, ``_load()``, and ``_dump()`` methods are fully implemented
     here. Subclasses must implement:
@@ -64,8 +65,9 @@ class TomlConfigFile(DictConfigFile):
         """Convert and write configuration to the TOML file.
 
         Converts the configs dict to tomlkit types via ``prettify_dict()``, then
-        writes the result to the file. Lists are rendered as multiline arrays and
-        key order is preserved.
+        writes the result to the file. Lists of dicts are rendered as TOML
+        array-of-tables (``[[section]]`` syntax); other lists are rendered as
+        multiline arrays. Key order is preserved.
 
         Args:
             configs: Configuration dict to write.

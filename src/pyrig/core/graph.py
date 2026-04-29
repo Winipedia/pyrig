@@ -13,9 +13,9 @@ from collections import deque
 class DiGraph(ABC):
     """Abstract base class for a directed graph with bidirectional edge traversal.
 
-    Maintains forward and reverse adjacency mappings, enabling O(1) neighbor
-    lookups in either direction: outgoing neighbors via ``__getitem__`` and
-    incoming neighbors (all nodes that can reach a given node) via ``ancestors``.
+    Maintains forward and reverse adjacency mappings, enabling O(1) outgoing
+    neighbor lookups via ``__getitem__`` and efficient transitive ancestor
+    queries via ``ancestors``.
 
     Subclasses must implement ``build`` to populate the graph at construction
     time. If a ``root`` node is provided, the graph is automatically pruned after

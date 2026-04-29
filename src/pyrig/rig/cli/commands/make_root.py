@@ -11,7 +11,7 @@ def make_project_root() -> None:
     """Create or update all project configuration files and directory structure.
 
     Discovers every concrete ``ConfigFile`` subclass registered across the
-    project and its installed dependencies, then validates each one in priority
+    project and its installed dependents, then validates each one in priority
     order. Validation creates missing files and overwrites files whose content
     is out of date while leaving correct files untouched.
 
