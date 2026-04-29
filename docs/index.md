@@ -55,7 +55,8 @@ questions and get code explanations from the AI.
 
 ## Overview
 
-For a high-level description of all pyrig capabilities see the [Overview](overview.md).
+For a high-level description of how pyrig works and some of its key features
+and capabilities, see the [Architecture Overview](architecture.md).
 
 ## Getting Started
 
