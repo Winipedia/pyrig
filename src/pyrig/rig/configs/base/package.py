@@ -17,6 +17,10 @@ Example:
     ...         return Path("src/mypackage/subpackage")
     ...
     ...
+    ...     def stem(self) -> str:
+    ...         return "my_subpackage_module"
+    ...
+    ...
     ...     def lines(self) -> list[str]:
     ...         return ['"""Subpackage module."""']
     >>>
@@ -46,6 +50,7 @@ class PythonPackageConfigFile(PythonConfigFile):
 
     Subclasses must implement:
         - ``parent_path``: Directory that will contain the generated file.
+        - ``stem``: The filename without its extension.
         - ``lines``: Python source lines that form the file content.
     """
 
