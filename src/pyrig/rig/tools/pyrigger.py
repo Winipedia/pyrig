@@ -151,11 +151,8 @@ class Pyrigger(Tool):
                 VersionControlHookManager.I.install_args()
             ),
             "Staging files for initial commit": VersionController.I.add_all_args(),
-            "Running pre-commit hooks": (
-                VersionControlHookManager.I.run_all_files_stage_pre_commit_args()
-            ),
             "Running tests": ProjectTester.I.test_args(),
-            "Committing initial changes": VersionController.I.commit_no_verify_args(
+            "Committing initial changes": VersionController.I.commit_with_message_args(
                 msg=f"{self.name()}: Initial commit"
             ),
         }
