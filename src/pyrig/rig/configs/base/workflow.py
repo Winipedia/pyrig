@@ -1412,11 +1412,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step_func=self.step_create_and_push_tag,
             run=str(VersionController.I.tag_args(tag=self.insert_version()))
             + " && "
-            + str(
-                VersionController.I.push_no_verify_origin_tag_args(
-                    tag=self.insert_version()
-                )
-            ),
+            + str(VersionController.I.push_origin_tag_args(tag=self.insert_version())),
             step=step,
         )
 
@@ -1428,20 +1424,18 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """Build a step that commits any staged changes.
 
         Commits with the message
-        ``[skip ci] CI/CD: Committing possible staged changes`` and uses
-        ``--no-verify`` to bypass pre-commit hooks.  The ``[skip ci]`` prefix
-        prevents the commit from re-triggering the workflow.
+        ``[skip ci] CI/CD: Committing possible staged changes``.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs ``git commit --no-verify``.
+            Step that runs ``git commit -m <msg>``.
         """
         msg = '"[skip ci] CI/CD: Committing possible staged changes"'
         return self.step(
             step_func=self.step_commit_added_changes,
-            run=str(VersionController.I.commit_no_verify_args(msg=msg)),
+            run=str(VersionController.I.commit_with_message_args(msg=msg)),
             step=step,
         )
 
@@ -1466,7 +1460,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.step(
             step_func=self.step_push_commits,
-            run=str(VersionController.I.push_no_verify_args()),
+            run=str(VersionController.I.push_origin_args()),
             step=step,
         )
 

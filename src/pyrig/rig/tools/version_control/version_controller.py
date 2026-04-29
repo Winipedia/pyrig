@@ -24,7 +24,7 @@ class VersionController(Tool):
     Example:
         >>> VersionController.I.init_args().run()
         >>> VersionController.I.add_all_args().run()
-        >>> VersionController.I.commit_no_verify_args(msg="Initial commit").run()
+        >>> VersionController.I.commit_with_message_args(msg="Initial commit").run()
     """
 
     def name(self) -> str:
@@ -163,21 +163,17 @@ class VersionController(Tool):
     # Committing
     # -------------------------------------------------------------------------
 
-    def commit_no_verify_args(self, *args: str, msg: str) -> Args:
-        """Build arguments for ``git commit --no-verify -m <msg>``.
-
-        The ``--no-verify`` flag bypasses all pre-commit and commit-msg hooks.
-        This is intentional in automated CI steps where running hooks would
-        either re-trigger expensive checks or cause recursive hook invocations.
+    def commit_with_message_args(self, *args: str, msg: str) -> Args:
+        """Build arguments for ``git commit -m <msg>``.
 
         Args:
             *args: Additional arguments appended to the command.
             msg: The commit message.
 
         Returns:
-            Args for ``git commit --no-verify -m <msg> [args]``.
+            Args for ``git commit -m <msg> [args]``.
         """
-        return self.commit_args("--no-verify", "-m", msg, *args)
+        return self.commit_args("-m", msg, *args)
 
     def commit_args(self, *args: str) -> Args:
         """Build base arguments for ``git commit``.
@@ -194,14 +190,11 @@ class VersionController(Tool):
     # Pushing
     # -------------------------------------------------------------------------
 
-    def push_no_verify_origin_tag_args(self, *args: str, tag: str) -> Args:
+    def push_origin_tag_args(self, *args: str, tag: str) -> Args:
         """Build arguments to push a specific tag to the ``origin`` remote.
 
         Used in release workflows to publish a version tag immediately after
         it has been created locally.
-        The ``--no-verify`` flag bypasses all pre-push hooks.  This is
-        intentional in automated CI steps where running hooks would either
-        re-trigger expensive checks or cause recursive hook invocations.
 
         Args:
             *args: Additional arguments appended to the command.
@@ -210,37 +203,18 @@ class VersionController(Tool):
         Returns:
             Args for ``git push origin <tag> [args]``.
         """
-        return self.push_no_verify_origin_args(tag, *args)
+        return self.push_origin_args(tag, *args)
 
-    def push_no_verify_origin_args(self, *args: str) -> Args:
-        """Build arguments for ``git push origin --no-verify``.
-
-        The ``--no-verify`` flag bypasses all pre-push hooks.  This is
-        intentional in automated CI steps where running hooks would either
-        re-trigger expensive checks or cause recursive hook invocations.
+    def push_origin_args(self, *args: str) -> Args:
+        """Build arguments for ``git push origin``.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``git push origin --no-verify [args]``.
+            Args for ``git push origin [args]``.
         """
-        return self.push_no_verify_args("origin", *args)
-
-    def push_no_verify_args(self, *args: str) -> Args:
-        """Build arguments for ``git push --no-verify``.
-
-        The ``--no-verify`` flag bypasses all pre-push hooks.  This is
-        intentional in automated CI steps where running hooks would either
-        re-trigger expensive checks or cause recursive hook invocations.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for ``git push --no-verify [args]``.
-        """
-        return self.push_args("--no-verify", *args)
+        return self.push_args("origin", *args)
 
     def push_args(self, *args: str) -> Args:
         """Build base arguments for ``git push``.
