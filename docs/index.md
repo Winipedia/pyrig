@@ -51,10 +51,14 @@ if you want to know more about how pyrig works under the hood or you have
 more specific questions about how to use it than we will explain here,
 check out the [CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)
 for AI-generated documentation about pyrig's codebase, where you can also ask
-questions and get code explanations.
+questions and get code explanations from the AI.
+
+## Overview
+
+For a high-level description of all pyrig capabilities see the [Overview](overview.md).
 
 ## Getting Started
 
 To get started with pyrig, check out the [Getting Started Guide](getting-started.md)
-for a complete walkthrough of setting up a new python project
-from scratch with pyrig.
+for a complete walkthrough of setting up a new python project from scratch with
+pyrig.
