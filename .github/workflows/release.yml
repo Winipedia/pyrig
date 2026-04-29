@@ -52,15 +52,13 @@ jobs:
       run: git add pyproject.toml uv.lock
     - name: Commit Added Changes
       id: commit_added_changes
-      run: 'git commit --no-verify -m "[skip ci] CI/CD: Committing possible staged
-        changes"'
+      run: 'git commit -m "[skip ci] CI/CD: Committing possible staged changes"'
     - name: Push Commits
       id: push_commits
-      run: git push --no-verify
+      run: git push origin
     - name: Create And Push Tag
       id: create_and_push_tag
-      run: git tag v$(uv version --short) && git push --no-verify origin v$(uv version
-        --short)
+      run: git tag v$(uv version --short) && git push origin v$(uv version --short)
     - name: Extract Version
       id: extract_version
       run: echo "version=v$(uv version --short)" >> $GITHUB_OUTPUT
