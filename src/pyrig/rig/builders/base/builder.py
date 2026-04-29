@@ -109,14 +109,13 @@ class BuilderConfigFile(ListConfigFile):
     def dist_dir_path(cls) -> Path:
         """Return the path to the artifacts output directory.
 
-        Combines the current working directory with the name from ``dist_dir_name()``.
-        This is the final destination for built artifacts after they are renamed
-        with platform suffixes.
+        Wraps ``dist_dir_name()`` in a ``Path`` object. The resulting path is
+        relative to the current working directory.
         Implemented as a classmethod because it is referenced by ``WorkflowConfigFile``
         subclasses, which need the path without instantiating an abstract builder.
 
         Returns:
-            Path to the artifacts output directory (e.g., ``Path.cwd() / "dist"``).
+            Relative path to the artifacts output directory (e.g., ``Path("dist")``).
         """
         return Path(cls.dist_dir_name())
 

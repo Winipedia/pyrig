@@ -307,8 +307,9 @@ class PyprojectConfigFile(TomlConfigFile):
     def remove_version_from_dep(self, dep: str) -> str:
         """Strip the version specifier from a dependency string.
 
-        Splits on the first operator character using the pattern from
-        ``pyrig.core.strings.package_req_name_split_pattern``.
+        Splits on all operator characters using the pattern from
+        ``pyrig.core.strings.package_req_name_split_pattern`` and returns the
+        first element.
 
         Args:
             dep: Dependency string with or without a version specifier

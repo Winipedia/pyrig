@@ -142,7 +142,7 @@ class VersionControlHookManagerConfigFile(TomlConfigFile):
                 Defaults to ``True``.
             stages: Iterable of stages in which the hook should run.
             **kwargs: Additional prek hook fields passed through verbatim
-                (e.g. ``files``, ``exclude``, ``stages``).
+                (e.g. ``files``, ``exclude``).
 
         Returns:
             Hook configuration dict ready for inclusion in the ``hooks`` list.

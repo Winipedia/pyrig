@@ -95,7 +95,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Make Distribution Directory
       id: make_distribution_directory
-      run: uv run mkdir -p dist
+      run: mkdir -p dist
     - name: Build Container Image
       id: build_container_image
       run: podman build -t pyrig .

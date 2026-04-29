@@ -91,7 +91,8 @@ def config_file_factory[T: ConfigFile[ConfigData]](
     isolation:
 
     - ``path()`` and ``parent_path()``: prepend ``tmp_path`` to the original
-      path if it is not already inside ``tmp_path``.
+      path if it is not already inside ``tmp_path`` and the current working
+      directory is not ``tmp_path``.
     - ``_dump()`` and ``_load()``: change the working directory to
       ``tmp_path`` before delegating to the parent implementation.
     - ``create_file()``: changes the working directory to ``tmp_path`` before

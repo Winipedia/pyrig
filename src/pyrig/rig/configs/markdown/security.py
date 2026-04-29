@@ -1,7 +1,7 @@
 """Configuration management for SECURITY.md files.
 
 Manages SECURITY.md using a minimal best-practices template. The template
-covers vulnerability reporting, response timeline, and supported versions.
+covers vulnerability reporting guidelines and response expectations.
 """
 
 from pathlib import Path
