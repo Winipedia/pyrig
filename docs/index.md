@@ -42,7 +42,7 @@
 pyrig provides **minimal best practices fully working defaults for everything a
 python project needs**. Every configuration, workflow, and tool is pre-configured
 and working from the start. No templates, no boilerplate - just a complete, tested,
-production-ready setup that lets you start coding immediately.
+production-ready setup that lets you start developing code immediately.
 
 ## More Detailed Documentation
 
