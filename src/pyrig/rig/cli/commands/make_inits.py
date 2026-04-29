@@ -11,9 +11,9 @@ from pyrig.rig.utils.paths import package_name_as_root_path
 def make_init_files() -> None:
     """Create `__init__.py` files for all namespace packages in the project.
 
-    Discovers namespace packages by scanning the project (excluding the docs
-    directory) and creates a minimal `__init__.py` in each. Idempotent:
-    packages that already have an `__init__.py` are skipped.
+    Discovers namespace packages by scanning the tests and source directories
+    and creates a minimal `__init__.py` in each. Idempotent: packages that
+    already have an `__init__.py` are skipped.
     """
     make_init_files_for_namespace_packages(find_namespace_packages())
 

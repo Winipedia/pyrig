@@ -49,6 +49,9 @@ class DictYmlConfigFile(YmlConfigFile[ConfigDict]):
         ...     def parent_path(self) -> Path:
         ...         return Path()
         ...
+        ...     def stem(self) -> str:
+        ...         return "mkdocs"
+        ...
         ...
         ...     def _configs(self) -> ConfigDict:
         ...         return {"site_name": "My Project", "theme": {"name": "material"}}
