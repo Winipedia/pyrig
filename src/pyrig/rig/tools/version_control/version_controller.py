@@ -502,7 +502,7 @@ class VersionController(Tool):
         url = self.repo_remote(check=check_repo_url)
         if not url:
             # we default to git username and repo name from cwd
-            logger.debug("No git remote found, using git username as repo owner")
+            logger.warning("No git remote found, using git username as repo owner")
             owner = self.username()
         else:
             # remote URL formats:
@@ -516,7 +516,7 @@ class VersionController(Tool):
             segments = url.split("/")
             owner = segments[0]
         if url_encode:
-            logger.debug("Url encoding owner and repo")
+            logger.debug("Url encoding owner")
             owner = quote(owner)
         return owner
 
