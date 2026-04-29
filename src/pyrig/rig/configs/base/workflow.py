@@ -1831,8 +1831,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Returns:
             A bash snippet:
-            ``if [ ${{ <condition> }} ]; then <run>; else echo "Skipping..."; fi``.
-        """
+            ``if [ ${{ <condition> }} ]; then <run>; else echo "Skipping step due to failed condition: <condition>."; fi``.
+        """  # noqa: E501
         condition_check = self.insert_var(condition)
         # make a script that runs the command if the token is configured
         # and echos a message if it is not

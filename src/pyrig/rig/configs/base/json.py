@@ -37,6 +37,9 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         ...     def parent_path(self) -> Path:
         ...         return Path()
         ...
+        ...     def stem(self) -> str:
+        ...         return "config"
+        ...
         ...
         ...     def _configs(self) -> dict[str, str]:
         ...         return {"name": "my-package", "version": "1.0.0"}
