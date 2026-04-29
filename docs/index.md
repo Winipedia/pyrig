@@ -53,7 +53,7 @@ check out the [CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)
 for AI-generated documentation about pyrig's codebase, where you can also ask
 questions and get code explanations from the AI.
 
-## Overview
+## Architecture Overview
 
 For a high-level description of how pyrig works and some of its key features
 and capabilities, see the [Architecture Overview](architecture.md).
