@@ -3,7 +3,6 @@
 import logging
 import sys
 from collections.abc import Generator, Iterable
-from functools import cache
 from importlib.machinery import SourceFileLoader
 from importlib.util import module_from_spec, spec_from_loader
 from pathlib import Path
@@ -83,7 +82,6 @@ def src_package_is_pyrig() -> bool:
     return src_package_is_package(pyrig)
 
 
-@cache
 def src_package_is_package(package: ModuleType) -> bool:
     """Check if the given module is the top-level package of the current project.
 
