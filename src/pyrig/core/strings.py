@@ -194,7 +194,7 @@ def make_summary_error_msg(
         paths: File paths where errors were found.
 
     Returns:
-        A string starting with ``"Found errors at:"`` followed by each path
+        A string containing ``"Found errors at:"`` followed by each path
         on its own line, prefixed with ``"- "``.
     """
     msg = """

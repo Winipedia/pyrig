@@ -117,8 +117,8 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """Build the ordered steps for the publish-package job.
 
         Combines core setup with a wheel build and a conditional PyPI publish.
-        The publish step reads ``PYPI_TOKEN`` from secrets and is skipped
-        silently when the secret is absent.
+        The publish step reads ``PYPI_TOKEN`` from secrets and echoes a skip
+        message when the secret is absent.
 
         Returns:
             Ordered list of step dicts: core setup, build wheel, publish to PyPI.

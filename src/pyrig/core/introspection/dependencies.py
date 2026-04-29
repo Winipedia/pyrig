@@ -95,8 +95,9 @@ def discover_equivalent_modules_across_dependents(
             package (e.g., ``pyrig.core`` → ``<pkg>.core`` for every dependent).
         dependency: The base dependency package. Both this package and all
             packages that depend on it are iterated.
-        until_package: If provided, iteration stops after this package is yielded
-            (inclusive). Useful for scoping discovery to a subset of the ecosystem.
+        until_package: If provided, iteration stops after this package is reached
+            (inclusive), whether or not its equivalent module was found. Useful for
+            scoping discovery to a subset of the ecosystem.
 
     Yields:
         Successfully imported module objects in topological order, starting with
