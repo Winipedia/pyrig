@@ -332,10 +332,11 @@ def {test_func_name}() -> None:
         method skeletons, or inserts missing method skeletons into an existing test
         class body.
 
-        The insertion uses string splitting on the class definition line. When the
-        test class already exists in the content, new method skeletons are placed
-        immediately after the class header. When the class does not exist yet, the
-        full skeleton (header and methods) is appended to the content.
+        The insertion uses string splitting on the class skeleton (class definition
+        line plus docstring). When the test class already exists in the content, new
+        method skeletons are placed immediately after the class header. When the class
+        does not exist yet, the full skeleton (header and methods) is appended to the
+        content.
 
         Args:
             test_module_content: Existing test module content to extend.

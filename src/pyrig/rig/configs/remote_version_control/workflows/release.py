@@ -12,8 +12,9 @@ from pyrig.rig.configs.remote_version_control.workflows.build import (
 class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     """Generates the ``release.yml`` GitHub Actions workflow.
 
-    This workflow is triggered when the build workflow completes successfully.
-    It bumps the project patch version, commits and pushes all staged changes,
+    This workflow is triggered when the build workflow completes. The release
+    job only runs when the triggering run succeeded. It applies a minimal version
+    patch bump, commits and pushes all staged changes,
     creates and pushes a version tag, downloads build artifacts from the
     triggering run, generates a changelog from commit history, and publishes
     a GitHub release with the artifacts attached.
