@@ -9,6 +9,10 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_owner_from_remote_url(self) -> None:
+        """Test method."""
+        assert VersionController.I.owner_from_remote_url() == "Winipedia"
+
     def test_commit_with_message_args(self) -> None:
         """Test method."""
         result = VersionController.I.commit_with_message_args(msg="Initial commit")
@@ -21,9 +25,9 @@ class TestVersionController:
         )
         assert result == "Winipedia"
 
-        # mock repo_remote to return empty string
+        # mock remote_url to return empty string
         remote_mock = mocker.patch.object(
-            VersionController, VersionController.repo_remote.__name__, return_value=""
+            VersionController, VersionController.remote_url.__name__, return_value=""
         )
         result = VersionController()._repo_owner(  # noqa: SLF001
             check_repo_url=False, url_encode=False
@@ -214,9 +218,9 @@ class TestVersionController:
         result = VersionController.I.repo_owner()
         assert isinstance(result, str)
 
-    def test_repo_remote(self) -> None:
+    def test_remote_url(self) -> None:
         """Test method."""
-        result = VersionController.I.repo_remote()
+        result = VersionController.I.remote_url()
         assert isinstance(result, str)
 
     def test_username(self) -> None:
