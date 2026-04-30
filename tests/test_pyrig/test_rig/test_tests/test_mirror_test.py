@@ -73,9 +73,35 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
-    def test_split_content_on_class_skeleton(self) -> None:
+    def test_split_content_on_class_skeleton(
+        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
+    ) -> None:
         """Test method."""
-        raise NotImplementedError
+        test_module_content = """import something
+
+
+def test_mirror_function():
+    pass
+
+
+class TestMirrorClass:
+    '''Some docstring.'''
+
+    def test_mirror_method(self):
+        pass
+
+
+def test_another_function():
+    pass
+"""
+        test_class_name = "TestMirrorClass"
+        parts = my_test_mirror_test_config_file().split_content_on_class_skeleton(
+            test_module_content, test_class_name
+        )
+        assert len(parts) == 2  # noqa: PLR2004
+        assert all(isinstance(part, str) for part in parts)
+        assert all("Some docstring." not in part for part in parts)
+        assert all("class TestMirrorClass" not in part for part in parts)
 
     def test_test_class_skeleton_docstring(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
