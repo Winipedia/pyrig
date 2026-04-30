@@ -12,8 +12,8 @@ def make_project_root() -> None:
 
     Discovers every concrete ``ConfigFile`` subclass registered across the
     project and its installed dependents, then validates each one in priority
-    order. Validation creates missing files and overwrites files whose content
-    is out of date while leaving correct files untouched.
+    order. Validation creates missing files and merges expected configuration
+    into files whose content is out of date while leaving correct files untouched.
 
     Idempotent: safe to run multiple times with consistent results.
 
