@@ -80,8 +80,9 @@ class PyprojectConfigFile(TomlConfigFile):
 
         - ``project``: PEP 621 metadata (name, version, description, authors,
           license, classifiers, scripts, URLs).
-        - ``dependency-groups``: Development dependencies merged from all registered
-          tools via ``Tool.subclasses_dev_dependencies``.
+        - ``dependency-groups``: Development dependencies from pyproject.toml merged
+          with additional entries contributed by all registered tools via
+          ``Tool.subclasses_dev_dependencies``.
         - ``build-system``: uv build backend configuration.
         - ``tool``: Opinionated settings for ruff (all rules, Google docstrings),
           ty (error-on-warning), pytest (with coverage), and bandit (security checks).

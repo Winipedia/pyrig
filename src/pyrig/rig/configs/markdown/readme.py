@@ -1,7 +1,7 @@
 """README.md configuration file generator.
 
 Provides a concrete configuration file class for the project's README.md,
-placing it at the project root with a fixed filename and no opt-out support.
+placing it at the project root with a fixed filename.
 """
 
 from pathlib import Path
