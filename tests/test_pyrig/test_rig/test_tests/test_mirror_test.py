@@ -73,6 +73,19 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
+    def test_split_content_on_class_skeleton(self) -> None:
+        """Test method."""
+        raise NotImplementedError
+
+    def test_test_class_skeleton_docstring(
+        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_mirror_test_config_file().test_class_skeleton_docstring()
+            == '"""Test class."""'
+        )
+
     def test_concrete_subclasses(self) -> None:
         """Test method."""
         subclasses = tuple(MirrorTestConfigFile.concrete_subclasses())

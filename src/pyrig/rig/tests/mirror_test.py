@@ -4,6 +4,7 @@ Ensures every source module, class, function and method has a test counterpart.
 """
 
 import logging
+import re
 from abc import abstractmethod
 from collections.abc import Callable, Generator, Iterable
 from importlib import import_module
@@ -353,14 +354,38 @@ def {test_func_name}() -> None:
             test_cls_content = test_cls_skeleton + "".join(
                 self.test_method_skeleton(name) for name in test_method_names
             )
-            # if the class already exists we need to insert the new methods
-            # rather than overwrite the class
-            module_content_parts = test_module_content.split(test_cls_skeleton)
-            # we simply insert the new class content into the parts
-            module_content_parts.insert(1, test_cls_content)
-            test_module_content = "".join(module_content_parts)
+            parts = self.split_content_on_class_skeleton(
+                test_module_content, test_class_name
+            )
+            # insert the new content
+            parts.insert(1, test_cls_content)
+            test_module_content = "".join(parts)
 
         return test_module_content
+
+    def split_content_on_class_skeleton(
+        self, test_module_content: str, test_class_name: str
+    ) -> list[str]:
+        """Split the test module content on the skeleton of a specific test class.
+
+        Builds a regex pattern from the class skeleton (definition line plus docstring)
+        and uses it to split the content on the class skeleton.
+
+        Args:
+            test_module_content: The full test module content to split.
+            test_class_name: The name of the test class whose skeleton to split on.
+
+        Returns:
+            List of strings resulting from splitting the content on the pattern.
+        """
+        cls_skeleton = self.test_class_skeleton(test_class_name)
+        # use cls_skeleton as a regex pattern by replacing the docstring
+        # with regex that matches any docstring
+        pattern = cls_skeleton.replace(
+            self.test_class_skeleton_docstring(),
+            r"(?:\"\"\".*?\"\"\"|\'\'\'.*?\'\'\')",
+        )
+        return re.split(pattern, test_module_content, maxsplit=1)
 
     def untested_class_and_method_names(
         self,
@@ -446,11 +471,19 @@ def {test_func_name}() -> None:
                 class TestMyClass:
                     """Test class."""
         '''
-        return f'''
+        return f"""
 
 class {test_class_name}:
-    """Test class."""
-'''
+    {self.test_class_skeleton_docstring()}
+"""
+
+    def test_class_skeleton_docstring(self) -> str:
+        """Return the default docstring for a skeleton test class.
+
+        Returns:
+            A minimal test class docstring string.
+        """
+        return '"""Test class."""'
 
     def test_method_skeleton(self, test_method_name: str) -> str:
         '''Generate skeleton code for a test method.
