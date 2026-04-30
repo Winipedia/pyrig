@@ -67,7 +67,7 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
           update, or delete the protected branch.
         - ``required_linear_history``: Enforces a linear commit history,
           preventing merge commits directly to the branch.
-        - ``required_signatures``: Requires all commits to be GPG-signed.
+        - ``required_signatures``: Requires all commits to be signed.
         - ``pull_request``: Requires 1 approving review with code owner review,
           stale review dismissal on push, last-push approval, and resolved
           discussion threads. Only squash and rebase merges are permitted.
