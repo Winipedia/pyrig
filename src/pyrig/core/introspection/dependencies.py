@@ -78,7 +78,7 @@ def discover_subclasses_across_dependents[T: type](
 def discover_equivalent_modules_across_dependents(
     module: ModuleType, dependency: ModuleType, until_package: ModuleType | None = None
 ) -> Generator[ModuleType, None, None]:
-    """Yield the equivalent module from every package that depends on ``dependency``.
+    """Yield the equivalent module from ``dependency`` and every dependent package.
 
     Given a module within ``dependency`` (e.g., ``pyrig.rig.configs``), constructs
     the equivalent dotted path in each package that depends on ``dependency``
