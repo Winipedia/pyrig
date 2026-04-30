@@ -147,11 +147,11 @@ class Pyrigger(Tool):
             "Creating project root": self.cmd_args(cmd=mkroot),
             "Installing project": PackageManager.I.install_dependencies_args(),
             "Creating tests": self.cmd_args(cmd=mktests),
-            "Installing all version control hooks": (
+            "Installing version control hooks": (
                 VersionControlHookManager.I.install_args()
             ),
-            "Staging files for initial commit": VersionController.I.add_all_args(),
             "Running tests": ProjectTester.I.test_args(),
+            "Adding files to version control": VersionController.I.add_all_args(),
             "Committing initial changes": VersionController.I.commit_with_message_args(
                 msg=f"{self.name()}: Initial commit"
             ),
