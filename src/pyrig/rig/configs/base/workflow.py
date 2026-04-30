@@ -155,8 +155,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Override to add custom variables.  By default sets two variables:
         one to prevent Python from writing ``.pyc`` bytecode files, and
-        one to prevent uv from automatically syncing the environment on
-        every invocation.
+        one to prevent uv from automatically syncing the environment when
+        it is out of date.
 
         Returns:
             Dict of environment variable names to their values.
