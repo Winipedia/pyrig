@@ -499,28 +499,47 @@ class VersionController(Tool):
         Returns:
             The repository owner as a string.
         """
-        url = self.repo_remote(check=check_repo_url)
+        url = self.remote_url(check=check_repo_url)
         if not url:
             # we default to git username and repo name from cwd
-            logger.warning("No git remote found, using git username as repo owner")
             owner = self.username()
-        else:
-            # remote URL formats:
-            # - HTTPS: https://github.com/owner/repo.git
-            # - SSH: git@github.com:owner/repo.git
-            url = (
-                url.removesuffix(".git")
-                .removeprefix("git@github.com:")
-                .removeprefix("https://github.com/")
+            logger.warning(
+                "No remote url found, using git username: '%s' as repo owner",
+                owner,
             )
-            segments = url.split("/")
-            owner = segments[0]
+        else:
+            owner = self.owner_from_remote_url()
         if url_encode:
             logger.debug("Url encoding owner")
             owner = quote(owner)
         return owner
 
-    def repo_remote(self, *, check: bool = True) -> str:
+    def owner_from_remote_url(self) -> str:
+        """Return the repository owner parsed from the remote URL.
+
+        This method is a thin wrapper around ``remote_url()`` that extracts the
+        owner segment from the URL.
+
+        Returns:
+            The repository owner as a string.
+
+        Raises:
+            subprocess.CalledProcessError: If no remote origin URL is configured.
+        """
+        url = self.remote_url(check=True)
+        url = (
+            url.removesuffix(".git")
+            # SSH format: git@github.com:owner/repo.git
+            .removeprefix("git@github.com:")
+            # HTTPS format: https://github.com/owner/repo.git
+            .removeprefix("https://github.com/")
+        )
+        # the url left must have the format: owner/repo
+        owner = next(iter(url.split("/")))
+        logger.debug("Extracted owner from remote URL: %s", owner)
+        return owner
+
+    def remote_url(self, *, check: bool = True) -> str:
         """Return the remote origin URL configured for this repository.
 
         Reads ``remote.origin.url`` via ``git config --get`` and strips
