@@ -62,7 +62,7 @@ def is_funclike(obj: Any) -> bool:
 
 
 def is_func_or_method(obj: Any) -> bool:
-    """Return True if an object is a plain function or a bound/unbound method.
+    """Return True if an object is a plain function or a bound method.
 
     Uses ``inspect.isfunction`` and ``inspect.ismethod`` directly. This does
     not detect ``staticmethod``, ``classmethod``, or ``property`` descriptors
@@ -72,7 +72,7 @@ def is_func_or_method(obj: Any) -> bool:
         obj: The object to test.
 
     Returns:
-        True if ``obj`` is a plain function or a bound/unbound method,
+        True if ``obj`` is a plain function or a bound method,
         False otherwise.
     """
     return inspect.isfunction(obj) or inspect.ismethod(obj)

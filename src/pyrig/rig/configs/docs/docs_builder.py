@@ -42,8 +42,8 @@ class DocsBuilderConfigFile(DictYmlConfigFile):
         Constructs the full configuration dict that is written to
         ``mkdocs.yml``. The returned dict contains four top-level keys:
 
-        - ``site_name``: Set to the current working directory name, which
-          by convention matches the project name.
+        - ``site_name``: Set to the project name as returned by
+          :meth:`~pyrig.rig.tools.package_manager.PackageManager.project_name`.
         - ``nav``: Two entries — ``Home`` pointing to ``index.md`` and
           ``API`` pointing to ``api.md``, both expressed as POSIX paths
           relative to the ``docs/`` directory.
