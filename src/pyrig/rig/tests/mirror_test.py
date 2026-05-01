@@ -28,7 +28,7 @@ from pyrig.core.introspection.modules import (
     module_has_docstring,
     reimport_module,
 )
-from pyrig.core.introspection.packages import all_modules_from_package
+from pyrig.core.introspection.packages import package_modules
 from pyrig.core.iterate import generator_has_items
 from pyrig.core.strings import make_name_from_obj
 from pyrig.rig import tests
@@ -577,7 +577,7 @@ class {test_class_name}:
             ``PackageManager``.
         """
         package = import_module(PackageManager.I.package_name())
-        return all_modules_from_package(package)
+        return package_modules(package)
 
     def test_func_name(self, func: Callable[..., Any]) -> str:
         """Return the expected test function name for a given source function.
