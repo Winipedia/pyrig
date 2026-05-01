@@ -23,7 +23,7 @@ def discover_subclasses_across_dependents[T: type](
     dependency: ModuleType,
     package: ModuleType,
 ) -> Generator[T, None, None]:
-    """Yield all subclasses of ``cls`` across ``dependency`` and all packages that depend on it.
+    """Yield all subclasses of ``cls`` across packages that depend on ``dependency``.
 
     The primary entry point for pyrig's plugin-style subclass discovery. For
     ``dependency`` itself and each installed package that depends on ``dependency``,
