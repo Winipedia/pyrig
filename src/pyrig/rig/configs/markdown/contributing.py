@@ -60,7 +60,7 @@ class ContributingConfigFile(MarkdownConfigFile):
     """
 
     def stem(self) -> str:
-        """Return "CONTRIBUTING" as the filename."""
+        """Return "CONTRIBUTING" as the filename stem."""
         return "CONTRIBUTING"
 
     def parent_path(self) -> Path:
