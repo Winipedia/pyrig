@@ -63,3 +63,8 @@ and capabilities, see the [Architecture Overview](architecture.md).
 To get started with pyrig, check out the [Getting Started Guide](getting-started.md)
 for a complete walkthrough of setting up a new python project from scratch with
 pyrig.
+
+## Scaffolding
+
+To see the full file tree of a project scaffolded by pyrig and get detailed descriptions
+of each file and configuration, see the [Scaffolding Documentation](scaffolding.md).
