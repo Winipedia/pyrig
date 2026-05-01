@@ -77,6 +77,6 @@ See the [Config File System Documentation](config-files.md) for details.
 
 ## CLI System
 
-pyrig provides a fully inheritable, automatically extensible CLI that every
-project built on pyrig gets automatically.
+pyrig provides a fully functional, inheritable and automatically extensible
+CLI that every project built on pyrig gets automatically.
 Check out the [CLI System Documentation](cli.md) for more information.
