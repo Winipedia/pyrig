@@ -37,12 +37,12 @@ def module_functions(
 
 
 def is_funclike(obj: Any) -> bool:
-    """Return True if an object is any callable method-like attribute.
+    """Return True if an object is a function or any method-like descriptor.
 
     Covers all forms that may appear as a method or function in a class or
     module namespace:
 
-    - Plain functions and bound/unbound methods (via ``is_func_or_method``)
+    - Plain functions and bound methods (via ``is_func_or_method``)
     - ``staticmethod`` and ``classmethod`` descriptors
     - ``property`` descriptors (and custom descriptor subclasses)
     - Functions wrapped with ``functools.wraps`` or similar decorators
@@ -62,7 +62,7 @@ def is_funclike(obj: Any) -> bool:
 
 
 def is_func_or_method(obj: Any) -> bool:
-    """Return True if an object is a plain function or a bound/unbound method.
+    """Return True if an object is a plain function or a bound method.
 
     Uses ``inspect.isfunction`` and ``inspect.ismethod`` directly. This does
     not detect ``staticmethod``, ``classmethod``, or ``property`` descriptors
@@ -72,7 +72,7 @@ def is_func_or_method(obj: Any) -> bool:
         obj: The object to test.
 
     Returns:
-        True if ``obj`` is a plain function or a bound/unbound method,
+        True if ``obj`` is a plain function or a bound method,
         False otherwise.
     """
     return inspect.isfunction(obj) or inspect.ismethod(obj)
