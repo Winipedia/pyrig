@@ -68,7 +68,7 @@ def mktests() -> None:
     """Generate mirror test skeletons for all source modules.
 
     Scans the project's source package and writes test files that mirror the
-    source structure. For each module, class, function, and method that does
+    source structure. For each class, function, and method that does
     not already have a test, a stub is added that raises `NotImplementedError`.
 
     Existing test implementations are never overwritten — only new stubs are
