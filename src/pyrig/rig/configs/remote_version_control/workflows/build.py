@@ -15,8 +15,8 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
 
     Generates ``.github/workflows/build.yml``. The workflow triggers when the
     health check workflow completes on the default branch (excluding scheduled
-    runs), builds Python wheels across an OS matrix and a container image on 
-    Ubuntu, then uploads both as GitHub Actions artifacts for the release 
+    runs), builds Python wheels across an OS matrix and a container image on
+    Ubuntu, then uploads both as GitHub Actions artifacts for the release
     workflow to consume.
 
     Artifacts produced:
