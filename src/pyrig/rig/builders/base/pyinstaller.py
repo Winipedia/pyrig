@@ -124,7 +124,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         return (
             self.entry_point_path().as_posix(),
             "--name",
-            self.non_platform_stem(),
+            self.stem(),
             "--clean",
             "--noconfirm",
             "--onefile",
