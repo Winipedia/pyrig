@@ -86,3 +86,9 @@ Check out the [CLI System Documentation](cli.md) for more information.
 pyrig provides a system for automatically generating and maintaining test files
 that mirror the structure of the source code and ensure everything is tested.
 Find out more about it in the [Mirror Test System Documentation](mirror-tests.md).
+
+## Test Fixture System
+
+pyrig provides a system for automatically sharing and registering pytest fixtures
+across all your tests.
+See the [Test Fixture System Documentation](fixtures.md) for more information.

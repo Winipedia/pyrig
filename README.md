@@ -93,19 +93,19 @@ Generate and add new commands by running `pyrig mkcmd <command-name>`.
 An automatic version command is included that shows the version of your project.
 Run `my-project version` to see it in action.
 
-### Test Generation
+### [Mirror Test Generation & Maintenance](https://winipedia.github.io/pyrig/mirror-tests)
 
 Generate test skeletons with `pyrig mktests`.
 This will generate test skeletons for all source modules
 and update them automatically as your project evolves.
 
-### Test Fixtures
+### [Test Fixtures](https://winipedia.github.io/pyrig/fixtures)
 
 pyrig enables automatic sharing and registration of pytest fixtures.
 Run `pyrig mkfixture <fixture-name>` to generate a new fixture that is
 automatically registered and available across all your tests.
 
-### Build Artifacts
+### [Build Artifacts](https://winipedia.github.io/pyrig/build)
 
 PyInstaller integration and extensible build system for generating executables,
 distributable packages, and more.
