@@ -72,7 +72,7 @@ class ContributingConfigFile(MarkdownConfigFile):
         return self.split_lines(CONTRIBUTING_TEMPLATE)
 
     def is_correct(self) -> bool:
-        """Check whether CONTRIBUTING.md exists and contains non-empty content.
+        """Return whether CONTRIBUTING.md has non-empty content.
 
         Overrides the inherited line-matching validation so that user-modified
         content is still considered correct. Any non-empty file at the expected
