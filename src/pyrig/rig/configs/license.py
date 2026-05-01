@@ -138,7 +138,7 @@ class LicenseConfigFile(StringConfigFile):
         """Return the shields.io badge image URL for the repository license.
 
         Builds the URL using the percent-encoded repository owner and the
-        project name (unencoded).
+        (unencoded) project name.
 
         Returns:
             URL in the form
