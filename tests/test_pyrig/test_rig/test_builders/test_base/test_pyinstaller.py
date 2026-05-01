@@ -1,6 +1,5 @@
 """Test module."""
 
-import platform
 import random
 from collections.abc import Callable
 from contextlib import chdir
@@ -73,12 +72,14 @@ class TestPyInstallerBuilder:
         assert my_test_pyinstaller_builder().non_platform_stem() == "pyrig"
 
     def test_extension(
-        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+        self,
+        my_test_pyinstaller_builder: type[PyInstallerBuilder],
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
-        assert my_test_pyinstaller_builder().extension() == (
-            ".exe" if platform.system() == "Windows" else ""
-        )
+        for pf, ext in [("Windows", ".exe"), ("Darwin", ""), ("Linux", "")]:
+            mocker.patch("platform.system", return_value=pf)
+            assert my_test_pyinstaller_builder().extension() == ext
 
     def test_app_icon_png_path(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder], tmp_path: Path
