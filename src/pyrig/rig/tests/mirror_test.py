@@ -17,7 +17,7 @@ from pyrig.core.introspection.classes import (
     discard_parent_methods,
     module_classes,
 )
-from pyrig.core.introspection.functions import all_functions_from_module
+from pyrig.core.introspection.functions import module_functions
 from pyrig.core.introspection.inspection import (
     obj_qualname,
     sorted_by_def_line,
@@ -292,8 +292,8 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Generator of expected test function names (e.g., ``"test_foo"``) for each
             source function that does not have a matching test function.
         """
-        funcs = sorted_by_def_line(all_functions_from_module(self.mirror_module()))
-        test_funcs = all_functions_from_module(self.test_module())
+        funcs = sorted_by_def_line(module_functions(self.mirror_module()))
+        test_funcs = module_functions(self.test_module())
 
         supposed_test_func_names = (self.test_func_name(f) for f in funcs)
         actual_test_func_names = {obj_qualname(f) for f in test_funcs}

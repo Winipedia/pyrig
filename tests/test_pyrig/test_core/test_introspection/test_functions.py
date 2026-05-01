@@ -5,9 +5,9 @@ import functools
 from pyrig.core.introspection import functions
 from pyrig.core.introspection.classes import classproperty
 from pyrig.core.introspection.functions import (
-    all_functions_from_module,
     is_func_or_method,
     is_funclike,
+    module_functions,
 )
 
 
@@ -148,11 +148,11 @@ def test_is_funclike() -> None:
     )
 
 
-def test_all_functions_from_module() -> None:
+def test_module_functions() -> None:
     """Test function."""
     # Test with pyrigmodules.function module
 
-    funcs = tuple(all_functions_from_module(functions))
+    funcs = tuple(module_functions(functions))
 
     # Verify we got some functions
     assert len(funcs) > 0, f"Expected at least 1 function, got {len(funcs)}"
@@ -166,7 +166,7 @@ def test_all_functions_from_module() -> None:
     expected_functions = [
         is_func_or_method.__name__,
         is_funclike.__name__,
-        all_functions_from_module.__name__,
+        module_functions.__name__,
     ]
 
     expected_count = len(expected_functions)

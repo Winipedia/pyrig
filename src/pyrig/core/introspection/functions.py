@@ -12,15 +12,14 @@ from pyrig.core.introspection.inspection import (
 )
 
 
-def all_functions_from_module(
+def module_functions(
     module: ModuleType,
 ) -> Generator[Callable[..., Any], None, None]:
     """Yield all functions defined directly in a module, excluding imports.
 
-    A function is included only when its ``__module__`` attribute matches the
+    A function is included only when its module matches the
     module being inspected, which filters out any names that were imported from
-    other modules. All callable forms are covered: plain functions, staticmethods,
-    classmethods, properties, and decorated callables.
+    other modules.
 
     Args:
         module: The module object to extract functions from.

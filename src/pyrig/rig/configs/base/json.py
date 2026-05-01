@@ -65,7 +65,7 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         Opens the file at ``self.path()`` for writing and serializes ``configs``
         using ``json.dump`` with ``indent=4``. This is the internal
         implementation called by the public ``dump()`` method, which
-        invalidates the load cache before delegating here.
+        clears the load cache before and after delegating here.
 
         Args:
             configs: Configuration dict or list to serialize and write.

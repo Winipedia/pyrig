@@ -23,8 +23,8 @@ def init() -> None:
         5.  uv sync             (re-install to apply updated pyproject.toml)
         6.  pyrig mktests       (generate test skeletons)
         7.  prek install        (install pre-commit hooks)
-        8.  git add .           (stage all files for commit)
-        9.  pytest              (run the test suite)
+        8.  pytest              (run the test suite)
+        9.  git add .           (stage all files for commit)
         10. git commit          (initial commit)
 
     Each step runs sequentially and is tracked with a progress bar.
@@ -193,7 +193,8 @@ def mkcmd(
 ) -> None:
     """Create a new CLI subcommand stub for this project.
 
-    Appends a minimal function stub to `rig/cli/subcommands.py`.
+    Appends a minimal function stub to `rig/cli/subcommands.py` or
+    `rig/cli/shared_subcommands.py` depending on the ``shared`` flag.
     The target module is created automatically if it does not yet exist.
     Kebab-case names are normalized to snake_case for the generated function name.
 
