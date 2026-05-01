@@ -14,7 +14,7 @@ from pyrig.core.cli import package_name_from_argv
 from pyrig.core.introspection.dependencies import (
     discover_equivalent_modules_across_dependents,
 )
-from pyrig.core.introspection.functions import all_functions_from_module
+from pyrig.core.introspection.functions import module_functions
 from pyrig.core.introspection.modules import (
     import_module_with_default,
     module_name_replacing_start_module,
@@ -127,7 +127,7 @@ def add_subcommands() -> None:
     if subcommands_module is None:
         return
 
-    sub_cmds = all_functions_from_module(subcommands_module)
+    sub_cmds = module_functions(subcommands_module)
 
     for sub_cmd in sub_cmds:
         app.command()(sub_cmd)
@@ -165,6 +165,6 @@ def add_shared_subcommands() -> None:
         until_package=package,
     )
     for shared_subcommands_module in all_shared_subcommands_modules:
-        sub_cmds = all_functions_from_module(shared_subcommands_module)
+        sub_cmds = module_functions(shared_subcommands_module)
         for sub_cmd in sub_cmds:
             app.command()(sub_cmd)

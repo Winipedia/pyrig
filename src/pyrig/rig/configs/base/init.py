@@ -10,7 +10,7 @@ Example:
     ...     def copy_module(self) -> ModuleType:
     ...         return pyrig.rig.configs
     >>>
-    >>> ConfigsPackageInit()  # Creates <project>/rig/configs/__init__.py
+    >>> ConfigsPackageInit()  # Creates src/<project>/rig/configs/__init__.py
 """
 
 from pathlib import Path
