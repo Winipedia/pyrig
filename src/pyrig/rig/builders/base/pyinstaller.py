@@ -90,7 +90,13 @@ class PyInstallerBuilder(BuilderConfigFile):
     def extension(self) -> str:
         """Return the file extension for the built executable based on the platform."""
         if platform.system() == "Windows":
-            return ".exe"
+            return "exe"
+        return ""
+
+    def extension_separator(self) -> str:
+        """Return the separator between the stem and extension for the executable."""
+        if platform.system() == "Windows":
+            return "."
         return ""
 
     def create_artifact(self, tmp_path: Path) -> None:

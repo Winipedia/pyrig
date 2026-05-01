@@ -65,6 +65,16 @@ if __name__ == "__main__":
 class TestPyInstallerBuilder:
     """Test class."""
 
+    def test_extension_separator(
+        self,
+        mocker: MockerFixture,
+        my_test_pyinstaller_builder: type[PyInstallerBuilder],
+    ) -> None:
+        """Test method."""
+        for pf, sep in [("Windows", "."), ("Darwin", ""), ("Linux", "")]:
+            mocker.patch("platform.system", return_value=pf)
+            assert my_test_pyinstaller_builder().extension_separator() == sep
+
     def test_non_platform_stem(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
     ) -> None:
@@ -77,7 +87,7 @@ class TestPyInstallerBuilder:
         mocker: MockerFixture,
     ) -> None:
         """Test method."""
-        for pf, ext in [("Windows", ".exe"), ("Darwin", ""), ("Linux", "")]:
+        for pf, ext in [("Windows", "exe"), ("Darwin", ""), ("Linux", "")]:
             mocker.patch("platform.system", return_value=pf)
             assert my_test_pyinstaller_builder().extension() == ext
 
