@@ -42,7 +42,7 @@ class DocsBuilderConfigFile(DictYmlConfigFile):
         Constructs the full configuration dict that is written to
         ``mkdocs.yml``. The returned dict contains four top-level keys:
 
-        - ``site_name``: Set to the project name from the package manager.
+        - ``site_name``: Set to the project name.
         - ``nav``: Two entries — ``Home`` pointing to ``index.md`` and
           ``API`` pointing to ``api.md``, both expressed as POSIX paths
           relative to the ``docs/`` directory.
