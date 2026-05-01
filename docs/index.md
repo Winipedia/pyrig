@@ -80,3 +80,9 @@ See the [Config File System Documentation](config-files.md) for details.
 pyrig provides a fully functional, inheritable and automatically extensible
 CLI that every project built on pyrig gets automatically.
 Check out the [CLI System Documentation](cli.md) for more information.
+
+## Mirror Test System
+
+pyrig provides a system for automatically generating and maintaining test files
+that mirror the structure of the source code and ensure everything is tested.
+Find out more about it in the [Mirror Test System Documentation](mirror-tests.md).

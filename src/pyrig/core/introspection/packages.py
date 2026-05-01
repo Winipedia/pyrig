@@ -163,7 +163,7 @@ def import_package_from_dir(path: Path, name: str) -> ModuleType:
     return module
 
 
-def all_modules_from_package(package: ModuleType) -> Generator[ModuleType, None, None]:
+def package_modules(package: ModuleType) -> Generator[ModuleType, None, None]:
     """Recursively discover all modules (non-packages) in a package.
 
     Walks the entire package hierarchy via ``walk_package`` and yields only

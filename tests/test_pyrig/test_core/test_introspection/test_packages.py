@@ -13,12 +13,12 @@ from pyrig.core import introspection
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.introspection import packages
 from pyrig.core.introspection.packages import (
-    all_modules_from_package,
     discover_all_subclasses_across_package,
     import_package_from_dir,
     import_package_with_dir_fallback,
     make_init_file,
     make_package_dir,
+    package_modules,
     src_package_is_package,
     src_package_is_pyrig,
     walk_package,
@@ -150,9 +150,9 @@ def test_discover_all_subclasses_across_package() -> None:
     assert all(issubclass(subcls, DependencySubclass) for subcls in subclasses)
 
 
-def test_all_modules_from_package() -> None:
+def test_package_modules() -> None:
     """Test function."""
-    modules = list(all_modules_from_package(pyrig))
+    modules = list(package_modules(pyrig))
     assert pyrig not in modules
     # modules should be included, but not the package itself
     assert mirror_test in modules
