@@ -110,11 +110,11 @@ class PyInstallerBuilder(BuilderConfigFile):
 
         Assembles all flags and paths required to invoke PyInstaller: the entry
         point script, output name, build paths, icon, and ``--add-data`` entries
-        for every resource package. Uses ``tmp_path.parent`` as the
+        for every resource package. Uses ``tmp_path`` as the
         root for PyInstaller's distpath, workpath, and specpath subdirectories.
 
         Args:
-            tmp_path: Temporary directory whose parent is used as the root for
+            tmp_path: Temporary directory used as the root for
                 distpath, workpath, and specpath.
 
         Returns:
