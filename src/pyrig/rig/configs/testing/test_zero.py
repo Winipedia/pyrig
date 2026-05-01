@@ -14,7 +14,7 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
 
     Copies the content of ``pyrig.rig.tests.test_zero`` into the
     project's ``tests/`` directory. The result is a ``test_zero.py`` file
-    containing a single empty ``test_zero()`` function.
+    containing a module docstring and a single empty ``test_zero()`` function.
 
     The generated file serves two purposes:
 
