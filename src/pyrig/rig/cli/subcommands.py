@@ -165,10 +165,11 @@ def protect_repo() -> None:
 def resources() -> None:
     """Scaffold the `resources` package for bundling static assets.
 
-    Creates a `your-project/rig/resources/__init__.py` file.
-    This is the conventional home for templates, data files, and other non-code assets
-    bundled with the project. Resources are accessible at runtime via
-    `resource_path()`.
+    Creates a `src/<package_name>/rig/resources/__init__.py` file, where
+    `<package_name>` is the project's Python import package name (typically
+    snake_case). This is the conventional home for templates, data files, and
+    other non-code assets bundled with the project. Resources are accessible at
+    runtime via `resource_path()`.
 
     This command is idempotent and safe to run multiple times.
     If the file already exists, it is left untouched.
