@@ -117,8 +117,11 @@ def package_req_name_split_pattern() -> re.Pattern[str]:
     specifiers (brackets are treated as valid name characters, so extras
     notation such as ``[extra]`` is not removed).
 
-    For example, splitting ``"requests>=2.0[security]"`` yields
-    ``["requests", "", "2.0[security]"]``, so ``result[0]`` is ``"requests"``.
+    For example, splitting ``"requests>=2.0,<3.0"`` yields
+    ``["requests", "=2.0,<3.0"]``, so ``result[0]`` is ``"requests"``.
+    Splitting ``"requests[security]>=2.0"`` (standard PEP 508 extras before
+    version) yields ``["requests[security]", "=2.0"]``, preserving the extras
+    in ``result[0]``.
 
     Returns:
         Compiled regex pattern matching characters outside a valid package name.
