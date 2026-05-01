@@ -173,7 +173,7 @@ def resources() -> None:
     Resources are accessible at runtime via `resource_path()`.
 
     This command is idempotent and safe to run multiple times.
-    If the file already exists, it is left untouched.
+    If the file already exists but is incorrect, it is repaired.
 
     Example:
         $ uv run pyrig resources
