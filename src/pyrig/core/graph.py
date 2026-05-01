@@ -2,7 +2,7 @@
 
 Maintains forward and reverse adjacency mappings to support efficient traversal
 in both directions: from a node to its outgoing neighbors (dependencies) and
-from a node to all nodes that transitively point to it (ancestors).
+from a node to its direct incoming neighbors (reverse edges).
 """
 
 import heapq
@@ -51,8 +51,8 @@ class DiGraph(ABC):
 
         Keeps ``root`` and all its ancestors (nodes with a directed path to
         ``root``). All other nodes and their associated edges are removed.
-        Rebuilds the internal data structures from the kept set in a single
-        pass, which is more efficient than removing nodes one at a time.
+        Rebuilds the internal data structures from the kept set in two passes,
+        which is more efficient than removing nodes one at a time.
 
         Args:
             root: The root node to prune around.

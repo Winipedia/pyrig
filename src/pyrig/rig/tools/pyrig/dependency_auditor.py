@@ -15,8 +15,10 @@ if src_package_is_pyrig():
         """
 
         def audit_args(self, *args: str) -> Args:
-            """Build pip-audit command arguments for pyrig-specific overrides.
+            """Build pip-audit command arguments.
 
-            Sometimes used to ignore irrelevant vulnerabilities dependencies.
+            Sometimes used to ignore irrelevant vulnerabilities in dependencies,
+            so that the CI/CD passes the audit, usually delegates to the base when
+            no vulnerabilities are present.
             """
             return super().audit_args(*args)
