@@ -68,3 +68,9 @@ pyrig.
 
 To see the full file tree of a project scaffolded by pyrig and get detailed descriptions
 of each file and configuration, see the [Scaffolding Documentation](scaffolding.md).
+
+## Config File System
+
+pyrig's config file system is built around the `ConfigFile` base class, which defines
+how pyrig creates and validates files.
+See the [Config File System Documentation](config-files.md) for details

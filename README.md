@@ -60,7 +60,7 @@ uv run pyrig init
 ```
 
 See the
-[Getting Started Guide](https://winipedia.github.io/pyrig/getting-started/)
+[Getting Started Guide](https://winipedia.github.io/pyrig/getting-started)
 for detailed setup instructions to also fully integrate with GitHub and
 CI/CD from the start.
 
@@ -78,6 +78,9 @@ frameworks, git hooks, etc.)
 - Complete and working CLI
 - And much more...
 
+See the [Scaffolding Documentation](https://winipedia.github.io/pyrig/scaffolding) for a complete
+file tree of a scaffolded project.
+
 ### File & Configuration Management
 
 Every generated file is backed by a Python class that validates and merges
@@ -85,6 +88,8 @@ automatically. Override any config by subclassing, or define entirely new
 config files — pyrig discovers and manages them for you.
 Run `pyrig mkroot` to create or update all config files at once.
 Run `pyrig subcls` to generate a subclass for overriding a specific file.
+
+See the [Config File System Documentation](https://winipedia.github.io/pyrig/config-files) for more details.
 
 ### Automatic CLI
 
@@ -152,6 +157,6 @@ uv run my-project version   # Show your project's version
 
 | | |
 |---|---|
-| **[Full Documentation](https://winipedia.github.io/pyrig/)** | The manually written documentation |
+| **[Full Documentation](https://winipedia.github.io/pyrig)** | The manually written documentation |
 | **[CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)** | AI-generated documentation |
 | **[Tutorials](https://www.youtube.com/@Winipedia-py/playlists)** | YouTube tutorials for pyrig |
