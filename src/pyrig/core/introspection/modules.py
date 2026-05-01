@@ -59,7 +59,8 @@ def module_content(module: ModuleType) -> str:
         Complete source code of the module as a UTF-8 encoded string.
 
     Raises:
-        AttributeError: If the module has no ``__file__`` attribute.
+        AttributeError: If the module has no ``__file__`` attribute or its
+            ``__file__`` attribute is ``None``.
         FileNotFoundError: If the source file does not exist.
     """
     path = module_file_path(module)

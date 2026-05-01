@@ -365,8 +365,7 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
     def path(self) -> Path:
         """Return the full path to the config file.
 
-        Assembles the path from ``parent_path()``, ``stem()``,
-        ``extension_separator()``, and ``extension()``.
+        Assembles the path from ``parent_path()`` and ``filename()``.
 
         Returns:
             Full path to the config file.
