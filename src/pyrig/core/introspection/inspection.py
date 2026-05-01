@@ -69,8 +69,11 @@ def def_line(obj: Any) -> int:
         1-based line number of the first line of the object's definition.
 
     Raises:
-        OSError: If source lines cannot be retrieved, for example for built-in
-            or C extension callables that lack ``__code__``.
+        OSError: If source lines cannot be retrieved, for example when the
+            source file is missing or unavailable.
+        TypeError: If the object is a built-in or C extension callable that
+            lacks ``__code__`` and is not supported by
+            ``inspect.getsourcelines``.
     """
     unwrapped = unwrapped_obj(obj)
     if hasattr(unwrapped, "__code__"):

@@ -29,7 +29,7 @@ class Args(tuple[str, ...]):
         >>> str(args)
         'uv sync'
         >>> args.run()
-        CompletedProcess(args=['uv', 'sync'], returncode=0, ...)
+        CompletedProcess(args=('uv', 'sync'), returncode=0, ...)
     """
 
     __slots__ = ()
