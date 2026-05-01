@@ -104,15 +104,9 @@ def build() -> None:
     """Build all distributable artifacts defined in the builders package.
 
     Discovers every concrete `BuilderConfigFile` subclass under the `builders`
-    package and runs each one through its full pipeline:
+    package and runs each one through its full pipeline.
 
-        1. Creates a temporary working directory
-        2. Calls create_artifacts() to produce raw output files there
-        3. Appends a platform suffix to each file
-           (e.g., myapp-Linux, myapp-Darwin, myapp-Windows)
-        4. Moves the renamed artifacts to dist/
-
-    Builders are skipped when output already exists in dist/.
+    Builders are skipped when the expected artifact already exists in dist/.
     Delete the existing dist/ artifacts if you want to rebuild them.
 
     Extend pyrig by subclassing `BuilderConfigFile` (for custom builds) or

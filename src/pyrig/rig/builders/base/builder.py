@@ -10,7 +10,6 @@ import platform
 import shutil
 import tempfile
 from abc import abstractmethod
-from collections.abc import Generator, Iterable
 from pathlib import Path
 from types import ModuleType
 
@@ -18,7 +17,6 @@ import typer
 
 from pyrig.rig import builders
 from pyrig.rig.configs.base.config_file import ListConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
 
 logger = logging.getLogger(__name__)
 
@@ -29,53 +27,74 @@ class BuilderConfigFile(ListConfigFile):
     Extends `ListConfigFile` but repurposes its interface for build operations
     rather than configuration file management:
 
-    - ``load()`` returns existing artifacts found in the output directory.
+    - ``load()`` returns a list containing the artifact path if it exists on disk.
     - ``dump()`` triggers the full build process.
-    - ``validate()`` runs the build if no artifacts are present yet.
-    - ``is_correct()`` returns ``True`` if at least one artifact exists.
+    - ``validate()`` runs the build if the artifact is not present yet.
     - ``create_file()`` creates the output directory.
+
+    Each builder produces a single artifact whose filename is composed of
+    ``non_platform_stem()`` plus a platform suffix (from ``platform.system()``)
+    plus ``extension()``, e.g. ``myapp-Linux`` or ``docs-Darwin.zip``.
 
     Build lifecycle (managed by ``build()``):
 
     1. A temporary directory is created via ``tempfile.TemporaryDirectory``.
-    2. ``create_artifacts()`` is called with a subdirectory inside that temp dir.
-    3. All files in the temp subdirectory are collected.
-    4. Each file is renamed with a platform suffix (e.g., ``app-Linux.zip``)
-       and moved to the final output directory (default: ``dist/``).
-    5. The temporary directory and its contents are deleted automatically.
+    2. ``create_artifact()`` is called with that temporary directory and is
+       expected to write a file named ``filename()`` into it.
+    3. ``move_artifact()`` moves that file to the final output directory
+       (default: ``dist/``).
+    4. The temporary directory and its contents are deleted automatically.
 
-    Subclasses must implement ``create_artifacts()`` to define their build logic.
+    Subclasses must implement ``non_platform_stem()`` and ``create_artifact()``
+    to define their build logic.
 
     Example:
         Basic builder subclass::
 
             class ExecutableBuilder(BuilderConfigFile):
 
-                def create_artifacts(self, temp_artifacts_dir: Path) -> None:
-                    exe_path = temp_artifacts_dir / f"{self.app_name()}.exe"
+                def non_platform_stem(self) -> str:
+                    return "myapp"
+
+                def extension(self) -> str:
+                    return "exe"
+
+                def create_artifact(self, tmp_path: Path) -> None:
+                    exe_path = tmp_path / self.filename()
                     # compile and write the executable to exe_path
     """
 
     @abstractmethod
-    def create_artifacts(self, temp_artifacts_dir: Path) -> None:
-        """Create build artifacts in the provided temporary directory.
+    def non_platform_stem(self) -> str:
+        """Return the stem without a platform suffix.
 
-        This is the sole method subclasses must implement. Write all output
-        files directly into ``temp_artifacts_dir``. After this method returns,
-        ``build()`` will collect every file in that directory, append a
-        platform suffix to each filename, and move them to the final output
-        directory.
+        This is the base name of the artifact before the platform suffix is
+        appended. For example, if the final artifact is named
+        ``myapp-Linux.zip``, this method should return ``myapp``.
+
+        Returns:
+            Base stem string without the platform suffix (e.g., ``"myapp"``).
+        """
+
+    @abstractmethod
+    def create_artifact(self, tmp_path: Path) -> None:
+        """Create the build artifact in the provided temporary directory.
+
+        Subclasses must write a single file into ``tmp_path`` named exactly
+        ``self.filename()`` (i.e., ``"<stem><extension_separator><extension>"``
+        with the platform-suffixed stem). After this method returns, ``build()``
+        moves that file to the final output directory.
 
         Args:
-            temp_artifacts_dir: Directory where artifacts must be written.
-                Every file placed here is treated as a build artifact and
-                processed by the framework automatically.
+            tmp_path: Directory where the artifact must be written. The file
+                placed at ``tmp_path / self.filename()`` is moved to
+                ``parent_path()`` by the framework.
 
         Example:
             ::
 
-                def create_artifacts(self, temp_artifacts_dir: Path) -> None:
-                    output = temp_artifacts_dir / "docs.zip"
+                def create_artifact(self, tmp_path: Path) -> None:
+                    output = tmp_path / self.filename()
                     output.write_bytes(archive_bytes)
         """
 
@@ -119,6 +138,14 @@ class BuilderConfigFile(ListConfigFile):
         """
         return Path(cls.dist_dir_name())
 
+    def stem(self) -> str:
+        """Return the stem for the artifact filename.
+
+        Combines ``non_platform_stem()`` with the current ``platform.system()``
+        value, producing names like ``myapp-Linux`` or ``docs-Darwin``.
+        """
+        return f"{self.non_platform_stem()}-{platform.system()}"
+
     def parent_path(self) -> Path:
         """Return the output directory path for artifacts.
 
@@ -127,65 +154,40 @@ class BuilderConfigFile(ListConfigFile):
         """
         return self.dist_dir_path()
 
-    def stem(self) -> str:
-        """Return an empty string.
-
-        Builders do not produce a single named file, so no stem is needed.
-        """
-        return ""
-
-    def extension(self) -> str:
-        """Return an empty string.
-
-        Builders do not produce a single file with a fixed extension.
-        """
-        return ""
-
     def _configs(self) -> list[Path]:
-        """Return an empty list.
+        """Return the expected artifact path.
 
-        Builders have no expected configuration structure; the build output
-        is determined entirely by ``create_artifacts()``.
+        The required "configuration" of a builder is simply the existence of
+        its single artifact at ``path()``. ``is_correct()`` (inherited from
+        ``ListConfigFile``) compares this against ``_load()``.
         """
-        return []
+        return [self.path()]
 
     def _load(self) -> list[Path]:
-        """List all artifacts currently present in the output directory.
+        """Return the artifact path if it currently exists on disk.
 
         Returns:
-            All files (non-recursive) found directly inside ``parent_path()``.
-            Returns an empty list if the directory does not exist or is empty.
+            ``[self.path()]`` if the artifact file exists, otherwise an empty
+            list.
         """
-        return list(self.parent_path().glob("*"))
+        return [self.path()] if self.path().exists() else []
 
     def _dump(self, configs: list[Path]) -> None:  # noqa: ARG002
         """Trigger the build process.
 
         The ``configs`` parameter is required by the parent class interface but
-        is not used here; the build is fully driven by ``create_artifacts()``.
+        is not used here; the build is fully driven by ``create_artifact()``.
 
         Args:
             configs: Ignored.
         """
         self.build()
 
-    def is_correct(self) -> bool:
-        """Return ``True`` if at least one artifact exists in the output directory.
-
-        Used by the parent ``validate()`` lifecycle to decide whether a build
-        is needed. A builder is considered correct when its output directory
-        contains at least one artifact.
-
-        Returns:
-            ``True`` if ``load()`` returns a non-empty list, ``False`` otherwise.
-        """
-        return bool(self.load())
-
     def create_file(self) -> None:
         """Create the output directory for artifacts.
 
         Creates ``parent_path()`` (and any missing parent directories). The
-        actual artifact files are produced later by ``create_artifacts()``.
+        actual artifact files are produced later by ``create_artifact()``.
         """
         self.parent_path().mkdir(parents=True, exist_ok=True)
 
@@ -195,121 +197,36 @@ class BuilderConfigFile(ListConfigFile):
         Orchestrates the entire build lifecycle:
 
         1. Creates a temporary directory.
-        2. Calls ``temp_artifacts_path()`` to create a ``dist/`` subdirectory
-           inside it.
-        3. Calls ``create_artifacts()`` with that subdirectory.
-        4. Collects all files written there via ``temp_artifacts()``.
-        5. Calls ``rename_artifacts()`` to add platform suffixes and move
-           each file to the final output directory.
+        2. Calls ``create_artifact()`` with that directory; the subclass is
+           expected to write a file named ``self.filename()`` there.
+        3. Calls ``move_artifact()`` to move the file to ``parent_path()``.
 
         The temporary directory is cleaned up automatically when the context
         manager exits, regardless of whether the build succeeds or fails.
         """
         logger.debug("Building artifacts with %s", self.__class__.__name__)
         with tempfile.TemporaryDirectory() as temp_dir:
-            temp_dir_path = Path(temp_dir)
-            temp_artifacts_dir = self.temp_artifacts_path(temp_dir_path)
-            self.create_artifacts(temp_artifacts_dir)
-            artifacts = self.temp_artifacts(temp_artifacts_dir)
-            self.rename_artifacts(artifacts)
+            tmp_path = Path(temp_dir)
+            self.create_artifact(tmp_path=tmp_path)
+            self.move_artifact(tmp_path)
 
-    def rename_artifacts(self, artifacts: Iterable[Path]) -> None:
-        """Move each artifact to the output directory with a platform-specific name.
+    def move_artifact(self, tmp_path: Path) -> None:
+        """Move the artifact from the temp directory to the output directory.
 
-        Iterates over the provided artifact paths and delegates each one to
-        ``rename_artifact()``.
-
-        Args:
-            artifacts: Artifact paths from the temporary build directory.
-        """
-        for artifact in artifacts:
-            self.rename_artifact(artifact)
-
-    def rename_artifact(self, artifact: Path) -> None:
-        """Move a single artifact to the output directory with a platform suffix.
-
-        Computes the platform-specific destination path via
-        ``platform_specific_path()``, creates any missing parent directories,
-        moves the file from the temporary location, and prints the destination
-        path to the console.
+        Reads the artifact at ``tmp_path / self.filename()`` (already named
+        with the platform-suffixed stem produced by ``stem()``), moves it into
+        ``parent_path()``, and prints the destination path to the console.
 
         Args:
-            artifact: Path to the artifact file in the temporary build directory.
+            tmp_path: Path to the temporary build directory passed to
+                ``create_artifact()``.
         """
-        platform_specific_path = self.platform_specific_path(artifact)
+        artifact = tmp_path / self.filename()
+        dist_path = self.parent_path()
         logger.debug(
             "Moving artifact: %s to: %s",
             artifact,
-            platform_specific_path,
+            dist_path,
         )
-        # create the platform-specific path's parent directory if it doesn't exist
-        platform_specific_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(artifact, platform_specific_path)
-        typer.echo(f"Created {platform_specific_path}")
-
-    def platform_specific_path(self, artifact: Path) -> Path:
-        """Return the final output path for an artifact, including the platform suffix.
-
-        Combines ``parent_path()`` with the result of
-        ``platform_specific_name()`` to produce the full destination path.
-
-        Args:
-            artifact: Artifact path (typically from the temporary directory).
-
-        Returns:
-            Destination path inside the output directory with the platform
-            suffix applied to the filename.
-        """
-        return self.parent_path() / self.platform_specific_name(artifact)
-
-    def platform_specific_name(self, artifact: Path) -> str:
-        """Return the artifact filename with the current platform appended as a suffix.
-
-        Produces names of the form ``<stem>-<platform><ext>``, for example
-        ``myapp-Linux.exe`` or ``docs-Darwin.zip``. The platform string is
-        determined by ``platform.system()``.
-
-        Args:
-            artifact: Artifact path whose name will be transformed.
-
-        Returns:
-            Filename string with the platform suffix inserted before the
-            extension (e.g., ``"myapp-Linux.exe"``).
-        """
-        return f"{artifact.stem}-{platform.system()}{artifact.suffix}"
-
-    def temp_artifacts(self, temp_artifacts_dir: Path) -> Generator[Path, None, None]:
-        """Yield all files in the temporary artifacts directory.
-
-        Args:
-            temp_artifacts_dir: Directory populated by ``create_artifacts()``.
-
-        Returns:
-            Generator of artifact paths (non-recursive). Yields nothing if no
-            files were written during the build.
-        """
-        return temp_artifacts_dir.glob("*")
-
-    def temp_artifacts_path(self, temp_dir: Path) -> Path:
-        """Create and return the build subdirectory inside the temporary directory.
-
-        Creates a subdirectory named after ``dist_dir_name()`` inside
-        ``temp_dir``. This is the directory passed to ``create_artifacts()``.
-
-        Args:
-            temp_dir: Root of the temporary directory created by ``build()``.
-
-        Returns:
-            Path to the newly created subdirectory.
-        """
-        path = temp_dir / self.dist_dir_path()
-        path.mkdir(parents=True, exist_ok=True)
-        return path
-
-    def app_name(self) -> str:
-        """Return the project name defined in ``pyproject.toml``.
-
-        Convenience helper for subclasses that need the project name when
-        constructing artifact filenames inside ``create_artifacts()``.
-        """
-        return PackageManager.I.project_name()
+        shutil.move(artifact, dist_path)
+        typer.echo(f"Created {self.path()}")

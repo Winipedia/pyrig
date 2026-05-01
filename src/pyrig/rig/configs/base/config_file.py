@@ -371,9 +371,18 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
         Returns:
             Full path to the config file.
         """
-        return self.parent_path() / (
-            self.stem() + self.extension_separator() + self.extension()
-        )
+        return self.parent_path() / self.filename()
+
+    def filename(self) -> str:
+        """Return the filename of the config file, including extension.
+
+        Combines ``stem()``, ``extension_separator()``, and ``extension()`` to
+        produce the filename.
+
+        Returns:
+            The config file's filename, e.g. ``"config.toml"``.
+        """
+        return f"{self.stem()}{self.extension_separator()}{self.extension()}"
 
     def extension_separator(self) -> str:
         """Return the character separating the stem from the extension.
