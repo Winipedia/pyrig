@@ -68,8 +68,10 @@ def mktests() -> None:
     """Generate mirror test skeletons for all source modules.
 
     Scans the project's source package and writes test files that mirror the
-    source structure. For each class, function, and method that does
-    not already have a test, a stub is added that raises `NotImplementedError`.
+    source structure. For each class, function, and method that does not
+    already have a test, the generator adds the appropriate test skeleton:
+    test classes for classes, and `NotImplementedError` stubs for functions
+    and methods.
 
     Existing test implementations are never overwritten — only new stubs are
     added. This command is idempotent and safe to run multiple times.
