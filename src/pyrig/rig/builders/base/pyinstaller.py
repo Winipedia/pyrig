@@ -84,7 +84,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         """
 
     def non_platform_stem(self) -> str:
-        """Return the stem without a platform suffix for the built executable."""
+        """Return the project name as the stem without a platform suffix."""
         return PackageManager.I.project_name()
 
     def extension(self) -> str:
