@@ -159,7 +159,7 @@ class BuilderConfigFile(ListConfigFile):
 
         The required "configuration" of a builder is simply the existence of
         its single artifact at ``path()``. ``is_correct()`` (inherited from
-        ``ListConfigFile``) compares this against ``_load()``.
+        ``ConfigFile``) compares ``configs()`` against ``load()``.
         """
         return [self.path()]
 
@@ -176,7 +176,7 @@ class BuilderConfigFile(ListConfigFile):
         """Trigger the build process.
 
         The ``configs`` parameter is required by the parent class interface but
-        is not used here; the build is fully driven by ``create_artifact()``.
+        is not used here; the build is fully driven by ``build()``.
 
         Args:
             configs: Ignored.
