@@ -73,4 +73,10 @@ of each file and configuration, see the [Scaffolding Documentation](scaffolding.
 
 pyrig's config file system is built around the `ConfigFile` base class, which defines
 how pyrig creates and validates files.
-See the [Config File System Documentation](config-files.md) for details
+See the [Config File System Documentation](config-files.md) for details.
+
+## CLI System
+
+pyrig provides a fully inheritable, automatically extensible CLI that every
+project built on pyrig gets automatically.
+Check out the [CLI System Documentation](cli.md) for more information.

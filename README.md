@@ -66,7 +66,7 @@ CI/CD from the start.
 
 ## Features
 
-### Project Scaffolding & Initialization
+### [Project Scaffolding & Initialization](https://winipedia.github.io/pyrig/scaffolding)
 
 `pyrig init` generates a complete project in one command that works out of the box.
 This includes everything a modern python project needs:
@@ -78,10 +78,7 @@ frameworks, git hooks, etc.)
 - Complete and working CLI
 - And much more...
 
-See the [Scaffolding Documentation](https://winipedia.github.io/pyrig/scaffolding) for a complete
-file tree of a scaffolded project.
-
-### File & Configuration Management
+### [File & Configuration Management](https://winipedia.github.io/pyrig/config-files)
 
 Every generated file is backed by a Python class that validates and merges
 automatically. Override any config by subclassing, or define entirely new
@@ -89,9 +86,7 @@ config files — pyrig discovers and manages them for you.
 Run `pyrig mkroot` to create or update all config files at once.
 Run `pyrig subcls` to generate a subclass for overriding a specific file.
 
-See the [Config File System Documentation](https://winipedia.github.io/pyrig/config-files) for more details.
-
-### Automatic CLI
+### [Automatic CLI](https://winipedia.github.io/pyrig/cli)
 
 `pyrig init` sets up a CLI for your project that works immediately.
 Generate and add new commands by running `pyrig mkcmd <command-name>`.
