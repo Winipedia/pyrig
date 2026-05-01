@@ -140,7 +140,7 @@ class VersionControlHookManagerConfigFile(TomlConfigFile):
             always_run: When ``True``, the hook runs on every commit regardless
                 of whether any files match the optional ``files`` filter.
                 Defaults to ``True``.
-            stages: Iterable of stages in which the hook should run.
+            stages: List of stages in which the hook should run.
             **kwargs: Additional prek hook fields passed through verbatim
                 (e.g. ``files``, ``exclude``).
 
