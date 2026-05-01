@@ -18,7 +18,7 @@ def init() -> None:
 
         1.  git init            (initialize version control)
         2.  uv add --group dev  (adds all pyrig dev dependencies)
-        3.  uv sync             (install dev deps)
+        3.  uv sync             (install all dependencies)
         4.  pyrig mkroot        (generate all config files and project structure)
         5.  uv sync             (re-install to apply updated pyproject.toml)
         6.  pyrig mktests       (generate test skeletons)
@@ -68,8 +68,10 @@ def mktests() -> None:
     """Generate mirror test skeletons for all source modules.
 
     Scans the project's source package and writes test files that mirror the
-    source structure. For each module, class, function, and method that does
-    not already have a test, a stub is added that raises `NotImplementedError`.
+    source structure. For each class, function, and method that does not
+    already have a test, the generator adds the appropriate test skeleton:
+    test classes for classes, and `NotImplementedError` stubs for functions
+    and methods.
 
     Existing test implementations are never overwritten — only new stubs are
     added. This command is idempotent and safe to run multiple times.
@@ -165,10 +167,10 @@ def protect_repo() -> None:
 def resources() -> None:
     """Scaffold the `resources` package for bundling static assets.
 
-    Creates a `your-project/rig/resources/__init__.py` file.
-    This is the conventional home for templates, data files, and other non-code assets
-    bundled with the project. Resources are accessible at runtime via
-    `resource_path()`.
+    Creates a `src/<package_name>/rig/resources/__init__.py` file.
+    This is the conventional home for templates, data files, and
+    other non-code assets bundled with the project.
+    Resources are accessible at runtime via `resource_path()`.
 
     This command is idempotent and safe to run multiple times.
     If the file already exists but is incorrect, it is repaired.

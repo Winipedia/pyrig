@@ -650,7 +650,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """Build setup steps that also update and install dependencies.
 
         Extends :meth:`steps_core_setup` with a dependency upgrade, a full
-        ``uv sync``, and a git-add step for lock-file changes.
+        ``uv sync``, and a git-add step for ``pyproject.toml`` and lock-file changes.
 
         Args:
             no_dev: Omit dev dependency groups from the sync.

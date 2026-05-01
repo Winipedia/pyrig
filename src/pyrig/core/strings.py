@@ -114,10 +114,14 @@ def package_req_name_split_pattern() -> re.Pattern[str]:
     The pattern matches any character that is not alphanumeric, an underscore,
     a hyphen, a period, or a bracket. When used with ``re.Pattern.split``, the
     first element of the result is the bare package name, stripped of version
-    specifiers and extras.
+    specifiers (brackets are treated as valid name characters, so extras
+    notation such as ``[extra]`` is not removed).
 
-    For example, splitting ``"requests>=2.0[security]"`` yields
-    ``["requests", "", "2.0[security]"]``, so ``result[0]`` is ``"requests"``.
+    For example, calling ``pattern.split("requests>=2.0,<3.0", maxsplit=1)``
+    yields ``["requests", "=2.0,<3.0"]``, so ``result[0]`` is ``"requests"``.
+    Calling ``pattern.split("requests[security]>=2.0", maxsplit=1)``
+    (standard PEP 508 extras before version) yields
+    ``["requests[security]", "=2.0"]``, preserving the extras in ``result[0]``.
 
     Returns:
         Compiled regex pattern matching characters outside a valid package name.

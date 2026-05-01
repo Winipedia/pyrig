@@ -203,7 +203,7 @@ def discover_all_subclasses_across_package[T: type](
         ``package``. Does not include ``cls`` itself.
 
     Example:
-        >>> from pyrig.rig.configs.base.base import ConfigFile
+        >>> from pyrig.rig.configs.base.config_file import ConfigFile
         >>> from pyrig.rig import configs
         >>> discovered = discover_all_subclasses_across_package(
         ...     ConfigFile,
