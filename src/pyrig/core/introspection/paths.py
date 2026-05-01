@@ -15,7 +15,7 @@ def package_dir_path(package: ModuleType) -> Path:
         package: An imported Python package (a module with an ``__init__.py``).
 
     Returns:
-        Absolute path to the package directory (the parent of the package's
+        Path to the package directory (the parent of the package's
         ``__init__.py`` file).
 
     Raises:
@@ -32,7 +32,7 @@ def module_file_path(module: ModuleType) -> Path:
         module: An imported Python module.
 
     Returns:
-        Absolute path to the module's ``.py`` source file.
+        Path to the module's ``.py`` source file.
 
     Raises:
         AttributeError: If the module's ``__file__`` attribute is ``None``
