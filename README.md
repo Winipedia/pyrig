@@ -59,8 +59,7 @@ uv add pyrig
 uv run pyrig init
 ```
 
-See the
-[Getting Started Guide](https://winipedia.github.io/pyrig/getting-started)
+See the [Getting Started Guide](https://winipedia.github.io/pyrig/getting-started)
 for detailed setup instructions to also fully integrate with GitHub and
 CI/CD from the start.
 
@@ -113,7 +112,7 @@ Run `pyrig subcls` to create a custom builder for your specific build needs.
 Run `pyrig build` to execute the build process and generate artifacts.
 Run `pyrig resources` to create a resources directory for your project.
 
-### Multi-Package Inheritance
+### [Multi-Package Inheritance and Extensibility Architecture](https://winipedia.github.io/pyrig/architecture)
 
 Override and customize any and all behaviour to suit your project's needs.
 pyrig's classes are designed for inheritance and composition, allowing you to
@@ -122,7 +121,7 @@ overriding methods. pyrig will automatically discover and use your custom classe
 without any additional configuration.
 Run `pyrig subcls` to generate a subclass for any pyrig class.
 
-### CI/CD & Repository Protection
+### [CI/CD & Repository Protection](https://winipedia.github.io/pyrig/ci-cd)
 
 Pyrig generates GitHub Actions workflows for CI/CD and automatically configures
 and applies repository protection settings and branch protection rules to ensure
@@ -130,7 +129,10 @@ your repository is protected.
 Run `pyrig protect-repo` to apply or update repository protection settings or
 simply use the fully working CI/CD pipeline to apply them automatically.
 
-## Pyrig Commands
+## Commands
+
+Run `pyrig <command> --help` for more information about a specific command and
+its usage.
 
 ```bash
 uv run pyrig init           # Full project initialization
