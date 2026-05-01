@@ -2,7 +2,7 @@
 
 Maintains forward and reverse adjacency mappings to support efficient traversal
 in both directions: from a node to its outgoing neighbors (dependencies) and
-from a node to all nodes that transitively point to it (ancestors).
+from a node to its direct incoming neighbors (reverse edges).
 """
 
 import heapq
