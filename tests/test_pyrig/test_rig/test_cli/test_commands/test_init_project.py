@@ -37,17 +37,17 @@ def test_init_project(tmp_path: Path) -> None:
     # copy the pyrig package to tmp_path/pyrig with shutil
     project_name = "src-project"
 
-    pyrig_temp_path = tmp_path / PackageManager.I.project_name()
+    pyrig_tmp_path = tmp_path / PackageManager.I.project_name()
     shutil.copytree(
         Path(),
-        pyrig_temp_path,
+        pyrig_tmp_path,
     )
-    with chdir(pyrig_temp_path):
+    with chdir(pyrig_tmp_path):
         # build the package
         args = PackageManager.I.build_args()
         args.run()
 
-    dist_files = list((pyrig_temp_path / "dist").glob("*.whl"))
+    dist_files = list((pyrig_tmp_path / "dist").glob("*.whl"))
     wheel_path = dist_files[-1].resolve().as_posix()
 
     src_project_dir = tmp_path / project_name

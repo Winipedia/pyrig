@@ -68,6 +68,12 @@ def my_test_config_file(
 class TestConfigFile:
     """Test class."""
 
+    def test_filename(
+        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+    ) -> None:
+        """Test method."""
+        assert my_test_config_file().filename() == "my-test-file.txt"
+
     def test_version_controlled_subclasses(self) -> None:
         """Test method."""
         not_expected = {

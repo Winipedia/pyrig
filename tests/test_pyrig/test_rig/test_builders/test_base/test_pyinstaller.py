@@ -1,5 +1,6 @@
 """Test module."""
 
+import platform
 import random
 from collections.abc import Callable
 from contextlib import chdir
@@ -10,7 +11,9 @@ import pytest
 from PIL import Image
 from pytest_mock import MockerFixture
 
-from pyrig.core.introspection.packages import import_package_with_dir_fallback
+from pyrig.core.introspection.packages import (
+    import_package_from_dir,
+)
 from pyrig.rig.builders.base import pyinstaller
 from pyrig.rig.builders.base.pyinstaller import PyInstallerBuilder
 
@@ -25,7 +28,7 @@ def my_test_pyinstaller_builder(
     with chdir(tmp_path):
         path = Path("builder_package/entry_point.py")
         module = create_module(path)
-        package = import_package_with_dir_fallback(
+        package = import_package_from_dir(
             Path("builder_package"), name="builder_package"
         )  # type: ignore[return-value]
         path.write_text(
@@ -63,15 +66,30 @@ if __name__ == "__main__":
 class TestPyInstallerBuilder:
     """Test class."""
 
+    def test_non_platform_stem(
+        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
+        """Test method."""
+        assert my_test_pyinstaller_builder().non_platform_stem() == "pyrig"
+
+    def test_extension(
+        self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
+    ) -> None:
+        """Test method."""
+        assert my_test_pyinstaller_builder().extension() == (
+            ".exe" if platform.system() == "Windows" else ""
+        )
+
     def test_app_icon_png_path(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder], tmp_path: Path
     ) -> None:
         """Test method."""
-        assert my_test_pyinstaller_builder().app_icon_png_path().exists()
-        assert (
-            my_test_pyinstaller_builder().app_icon_png_path()
-            == tmp_path / "builder_package" / "icon.png"
-        )
+        with chdir(tmp_path):
+            assert my_test_pyinstaller_builder().app_icon_png_path().exists()
+            assert (
+                my_test_pyinstaller_builder().app_icon_png_path()
+                == Path("builder_package") / "icon.png"
+            )
 
     def test_entry_point_module(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
@@ -97,13 +115,6 @@ class TestPyInstallerBuilder:
         # All items should be modules
         for package in result:
             assert hasattr(package, "__name__"), f"Expected module, got {package}"
-
-    def test_temp_distpath(
-        self, tmp_path: Path, my_test_pyinstaller_builder: type[PyInstallerBuilder]
-    ) -> None:
-        """Test method."""
-        result = my_test_pyinstaller_builder().temp_distpath(tmp_path)
-        assert result.exists(), "Expected path to exist"
 
     def test_temp_workpath(
         self, tmp_path: Path, my_test_pyinstaller_builder: type[PyInstallerBuilder]
@@ -134,8 +145,9 @@ class TestPyInstallerBuilder:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        options = my_test_pyinstaller_builder().pyinstaller_options(tmp_path)
-        assert "--name" in options, "Expected --name option"
+        with chdir(tmp_path):
+            options = my_test_pyinstaller_builder().pyinstaller_options(tmp_path)
+            assert "--name" in options, "Expected --name option"
 
     def test_app_icon_png_location(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
@@ -149,16 +161,17 @@ class TestPyInstallerBuilder:
             == my_test_pyinstaller_builder().app_icon_png_path()
         )
 
-    def test_create_artifacts(
+    def test_create_artifact(
         self,
         my_test_pyinstaller_builder: type[PyInstallerBuilder],
         mocker: MockerFixture,
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        mock_run = mocker.patch(pyinstaller.__name__ + ".run")
-        my_test_pyinstaller_builder().create_artifacts(tmp_path)
-        mock_run.assert_called_once()
+        with chdir(tmp_path):
+            mock_run = mocker.patch(pyinstaller.__name__ + ".run")
+            my_test_pyinstaller_builder().create_artifact(tmp_path)
+            mock_run.assert_called_once()
 
     def test_convert_png_to_format(
         self,
@@ -166,8 +179,11 @@ class TestPyInstallerBuilder:
         tmp_path: Path,
     ) -> None:
         """Test method."""
-        result = my_test_pyinstaller_builder().convert_png_to_format("ico", tmp_path)
-        assert result.name == "icon.ico", "Expected icon.ico"
+        with chdir(tmp_path):
+            result = my_test_pyinstaller_builder().convert_png_to_format(
+                "ico", tmp_path
+            )
+            assert result.name == "icon.ico", "Expected icon.ico"
 
     def test_app_icon_path(
         self,
@@ -176,20 +192,21 @@ class TestPyInstallerBuilder:
         mocker: MockerFixture,
     ) -> None:
         """Test method."""
-        result = my_test_pyinstaller_builder().app_icon_path(tmp_path)
-        assert result.stem == "icon"
-
-        # mock platform.system to return each platform once
-        platforms = ["Windows", "Darwin", "Linux"]
-        for platform in platforms:
-            mocker.patch("platform.system", return_value=platform)
+        with chdir(tmp_path):
             result = my_test_pyinstaller_builder().app_icon_path(tmp_path)
-            if platform == "Windows":
-                assert result.suffix == ".ico", "Expected .ico for Windows"
-            elif platform == "Darwin":
-                assert result.suffix == ".icns", "Expected .icns for macOS"
-            else:
-                assert result.suffix == ".png", "Expected .png for Linux"
+            assert result.stem == "icon"
+
+            # mock platform.system to return each platform once
+            platforms = ["Windows", "Darwin", "Linux"]
+            for pf in platforms:
+                mocker.patch("platform.system", return_value=pf)
+                result = my_test_pyinstaller_builder().app_icon_path(tmp_path)
+                if pf == "Windows":
+                    assert result.suffix == ".ico", "Expected .ico for Windows"
+                elif pf == "Darwin":
+                    assert result.suffix == ".icns", "Expected .icns for macOS"
+                else:
+                    assert result.suffix == ".png", "Expected .png for Linux"
 
 
 def test_module_docstring() -> None:

@@ -40,9 +40,10 @@
 ## What is pyrig?
 
 pyrig is a package and tool that scaffolds and initializes a complete, fully
-configured and working python project with one command and makes the process of
-developing and maintaining more seemless and efficient by automating things like
-configuration management, CLI generation, testing infrastructure, and more.
+configured, installed and working python project with one command and makes
+the process of developing and maintaining it more seamless and efficient by
+automating things like configuration management, CLI generation, testing
+infrastructure, and more.
 
 ## Requirements
 
@@ -71,11 +72,11 @@ CI/CD from the start.
 This includes everything a modern python project needs:
 
 - Standardized directory structure
-- Fully configured dev tools
-(PythonLinters, formatters, type checkers, test frameworks, etc.)
-- GitHub Actions workflows for CI/CD
-- Repository management configs (branch protection, issue/PR templates, etc.)
-- A working CLI
+- Fully configured dev tools (linters, formatters, type checkers, test
+frameworks, git hooks, etc.)
+- End-to-end CI/CD pipeline with GitHub Actions and integrated repository protection
+- Complete and working CLI
+- And much more...
 
 ### File & Configuration Management
 
@@ -83,7 +84,7 @@ Every generated file is backed by a Python class that validates and merges
 automatically. Override any config by subclassing, or define entirely new
 config files — pyrig discovers and manages them for you.
 Run `pyrig mkroot` to create or update all config files at once.
-Run `pyrig subcls` to generate a subclass for overriding a specific config.
+Run `pyrig subcls` to generate a subclass for overriding a specific file.
 
 ### Automatic CLI
 

@@ -19,6 +19,7 @@ from pyrig.core.introspection.paths import module_file_path
 from pyrig.core.resources import resource_path
 from pyrig.rig import resources
 from pyrig.rig.builders.base.builder import BuilderConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class PyInstallerBuilder(BuilderConfigFile):
@@ -55,72 +56,6 @@ class PyInstallerBuilder(BuilderConfigFile):
                     return "icon", resources
     """
 
-    def create_artifacts(self, temp_artifacts_dir: Path) -> None:
-        """Build a PyInstaller executable.
-
-        Assembles the PyInstaller command-line options and runs PyInstaller.
-        The resulting executable is written to ``temp_artifacts_dir``.
-
-        Args:
-            temp_artifacts_dir: Temporary directory where the executable is created.
-        """
-        options = self.pyinstaller_options(temp_artifacts_dir)
-        run(options)
-
-    def pyinstaller_options(self, temp_artifacts_dir: Path) -> tuple[str, ...]:
-        """Build the complete set of PyInstaller command-line arguments.
-
-        Assembles all flags and paths required to invoke PyInstaller: the entry
-        point script, output name, build paths, icon, and ``--add-data`` entries
-        for every resource package. Uses ``temp_artifacts_dir.parent`` as the
-        root for PyInstaller's internal workpath and specpath subdirectories so
-        they remain within the same temporary workspace as the executable.
-
-        Args:
-            temp_artifacts_dir: Temporary directory where the executable will be
-                written. Its parent is used as the root for workpath and specpath.
-
-        Returns:
-            Tuple of string arguments suitable for passing directly to
-            ``PyInstaller.__main__.run``.
-        """
-        temp_dir = temp_artifacts_dir.parent
-
-        return (
-            self.entry_point_path().as_posix(),
-            "--name",
-            self.app_name(),
-            "--clean",
-            "--noconfirm",
-            "--onefile",
-            "--noconsole",
-            "--workpath",
-            self.temp_workpath(temp_dir).as_posix(),
-            "--specpath",
-            self.temp_specpath(temp_dir).as_posix(),
-            "--distpath",
-            self.temp_distpath(temp_dir).as_posix(),
-            "--icon",
-            self.app_icon_path(temp_dir).as_posix(),
-            *(
-                arg
-                for src, dest in self.add_datas()
-                for arg in ("--add-data", f"{src}{os.pathsep}{dest}")
-            ),
-        )
-
-    def entry_point_path(self) -> Path:
-        """Return the absolute path to the application's entry point script.
-
-        Resolves the source file path of the module returned by
-        ``entry_point_module()``. PyInstaller uses this path as its main script.
-
-        Returns:
-            Absolute path to the entry point ``.py`` file.
-        """
-        module = self.entry_point_module()
-        return module_file_path(module)
-
     @abstractmethod
     def entry_point_module(self) -> ModuleType:
         """Return the module that serves as the application's entry point.
@@ -147,6 +82,82 @@ class PyInstallerBuilder(BuilderConfigFile):
                 if __name__ == "__main__":
                     main()
         """
+
+    def non_platform_stem(self) -> str:
+        """Return the stem (filename without extension) for the built executable."""
+        return PackageManager.I.project_name()
+
+    def extension(self) -> str:
+        """Return the file extension for the built executable based on the platform."""
+        if platform.system() == "Windows":
+            return ".exe"
+        return ""
+
+    def create_artifact(self, tmp_path: Path) -> None:
+        """Build a PyInstaller executable.
+
+        Assembles the PyInstaller command-line options and runs PyInstaller.
+        The resulting executable is written to ``tmp_path``.
+
+        Args:
+            tmp_path: Temporary directory where the executable is created.
+        """
+        options = self.pyinstaller_options(tmp_path)
+        run(options)
+
+    def pyinstaller_options(self, tmp_path: Path) -> tuple[str, ...]:
+        """Build the complete set of PyInstaller command-line arguments.
+
+        Assembles all flags and paths required to invoke PyInstaller: the entry
+        point script, output name, build paths, icon, and ``--add-data`` entries
+        for every resource package. Uses ``tmp_path.parent`` as the
+        root for PyInstaller's internal workpath and specpath subdirectories so
+        they remain within the same temporary workspace as the executable.
+
+        Args:
+            tmp_path: Temporary directory where the executable will be
+                written. Its parent is used as the root for workpath and specpath.
+
+        Returns:
+            Tuple of string arguments suitable for passing directly to
+            ``PyInstaller.__main__.run``.
+        """
+        tmp_path = tmp_path.parent
+
+        return (
+            self.entry_point_path().as_posix(),
+            "--name",
+            self.non_platform_stem(),
+            "--clean",
+            "--noconfirm",
+            "--onefile",
+            "--noconsole",
+            "--workpath",
+            self.temp_workpath(tmp_path).as_posix(),
+            "--specpath",
+            self.temp_specpath(tmp_path).as_posix(),
+            "--distpath",
+            tmp_path.as_posix(),
+            "--icon",
+            self.app_icon_path(tmp_path).as_posix(),
+            *(
+                arg
+                for src, dest in self.add_datas()
+                for arg in ("--add-data", f"{src}{os.pathsep}{dest}")
+            ),
+        )
+
+    def entry_point_path(self) -> Path:
+        """Return the absolute path to the application's entry point script.
+
+        Resolves the source file path of the module returned by
+        ``entry_point_module()``. PyInstaller uses this path as its main script.
+
+        Returns:
+            Absolute path to the entry point ``.py`` file.
+        """
+        module = self.entry_point_module()
+        return module_file_path(module)
 
     def add_datas(self) -> list[tuple[str, str]]:
         """Build the list of ``--add-data`` arguments for PyInstaller.
@@ -179,7 +190,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         """
         return discover_equivalent_modules_across_dependents(resources, pyrig)
 
-    def app_icon_path(self, temp_dir: Path) -> Path:
+    def app_icon_path(self, tmp_path: Path) -> Path:
         """Return the path to the converted, platform-appropriate icon file.
 
         Converts the source PNG icon to the format required by the current
@@ -190,23 +201,23 @@ class PyInstallerBuilder(BuilderConfigFile):
         - Linux: ``.png``
 
         Args:
-            temp_dir: Directory where the converted icon file is written.
+            tmp_path: Directory where the converted icon file is written.
 
         Returns:
             Path to the converted icon file.
         """
         if platform.system() == "Windows":
-            return self.convert_png_to_format("ico", temp_dir)
+            return self.convert_png_to_format("ico", tmp_path)
         if platform.system() == "Darwin":
-            return self.convert_png_to_format("icns", temp_dir)
-        return self.convert_png_to_format("png", temp_dir)
+            return self.convert_png_to_format("icns", tmp_path)
+        return self.convert_png_to_format("png", tmp_path)
 
-    def convert_png_to_format(self, file_format: str, temp_dir_path: Path) -> Path:
+    def convert_png_to_format(self, file_format: str, tmp_path: Path) -> Path:
         """Convert the application's PNG icon to the specified image format.
 
         Opens the source PNG returned by ``app_icon_png_path()`` and saves a
         copy in the requested format using Pillow. The output file is named
-        ``icon.<file_format>`` and written to ``temp_dir_path``.
+        ``icon.<file_format>`` and written to ``tmp_path``.
 
         ICNS conversion typically requires specific icon sizes (16x16, 32x32,
         128x128, 256x256, 512x512) for best results on macOS.
@@ -214,12 +225,12 @@ class PyInstallerBuilder(BuilderConfigFile):
         Args:
             file_format: Target format extension without the dot
                 (e.g., ``"ico"``, ``"icns"``, or ``"png"``).
-            temp_dir_path: Directory where the converted icon is written.
+            tmp_path: Directory where the converted icon is written.
 
         Returns:
             Path to the converted icon file.
         """
-        output_path = temp_dir_path / f"icon.{file_format}"
+        output_path = tmp_path / f"icon.{file_format}"
         png_path = self.app_icon_png_path()
         img = Image.open(png_path)
         img.save(output_path, format=file_format.upper())
@@ -253,43 +264,32 @@ class PyInstallerBuilder(BuilderConfigFile):
             resource (e.g., ``("icon", resources)`` for ``resources/icon.png``).
         """
 
-    def temp_distpath(self, temp_dir: Path) -> Path:
-        """Return the temporary directory where PyInstaller writes the executable.
-
-        Args:
-            temp_dir: Root temporary directory for the build.
-
-        Returns:
-            Path to the dist subdirectory inside ``temp_dir``.
-        """
-        return self.temp_artifacts_path(temp_dir)
-
-    def temp_workpath(self, temp_dir: Path) -> Path:
+    def temp_workpath(self, tmp_path: Path) -> Path:
         """Return the PyInstaller work directory for intermediate build files.
 
         Creates the directory if it does not already exist.
 
         Args:
-            temp_dir: Root temporary directory for the build.
+            tmp_path: Root temporary directory for the build.
 
         Returns:
-            Path to the ``workpath`` subdirectory inside ``temp_dir``.
+            Path to the ``workpath`` subdirectory inside ``tmp_path``.
         """
-        path = temp_dir / "workpath"
+        path = tmp_path / "workpath"
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    def temp_specpath(self, temp_dir: Path) -> Path:
+    def temp_specpath(self, tmp_path: Path) -> Path:
         """Return the directory where PyInstaller writes the ``.spec`` file.
 
         Creates the directory if it does not already exist.
 
         Args:
-            temp_dir: Root temporary directory for the build.
+            tmp_path: Root temporary directory for the build.
 
         Returns:
-            Path to the ``specpath`` subdirectory inside ``temp_dir``.
+            Path to the ``specpath`` subdirectory inside ``tmp_path``.
         """
-        path = temp_dir / "specpath"
+        path = tmp_path / "specpath"
         path.mkdir(parents=True, exist_ok=True)
         return path
