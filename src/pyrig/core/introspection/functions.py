@@ -37,7 +37,7 @@ def module_functions(
 
 
 def is_funclike(obj: Any) -> bool:
-    """Return True if an object is any callable method-like attribute.
+    """Return True if an object is a function or any method-like descriptor.
 
     Covers all forms that may appear as a method or function in a class or
     module namespace:
