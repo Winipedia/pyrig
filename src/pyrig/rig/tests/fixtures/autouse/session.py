@@ -143,15 +143,16 @@ Please run the following command to create __init__.py files for any namespace p
 
 @pytest.fixture(scope="session", autouse=True)
 def all_modules_tested() -> None:
-    """Fail if any source module lacks a corresponding test module.
+    """Fail if any source module lacks a fully mirrored test module.
 
     Enforces a one-to-one mirror between the source package tree and the test
     package tree. The leaf subclass ``MirrorTestConfigFile.L`` is discovered at
     runtime via the cross-package subclass discovery mechanism.
 
     Raises:
-        AssertionError: If any source modules lack a corresponding test
-            module, listing the affected paths.
+        AssertionError: If any source modules lack a fully mirrored test
+            module (either missing entirely or missing test coverage for one
+            or more functions, classes, or methods), listing the affected paths.
     """
     has_incorrect_subclasses, incorrect_subclasses = generator_has_items(
         MirrorTestConfigFile.L.discard_correct_subclasses(
