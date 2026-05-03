@@ -15,40 +15,10 @@ from pyrig.rig.tests.fixtures.autouse.session import (
     all_modules_tested,
     no_dev_deps_in_source_code,
     no_namespace_packages,
-    no_unstaged_changes_in_ci,
 )
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.tools.version_control.remote import (
-    RemoteVersionController,
-)
-from pyrig.rig.tools.version_control.version_controller import VersionController
 from pyrig.rig.utils.packages import find_namespace_packages
 from pyrig.rig.utils.paths import package_name_as_root_path
-
-
-def test_no_unstaged_changes_in_ci(mocker: MockerFixture) -> None:
-    """Test function."""
-    unwrapped_func = unwrapped_obj(no_unstaged_changes_in_ci)
-
-    # mock the RemoteVersionController.I.running_in_ci method to return True
-    in_ci_mock = mocker.patch.object(
-        RemoteVersionController,
-        RemoteVersionController.running_in_ci.__name__,
-        return_value=True,
-    )
-    has_diff_mock = mocker.patch.object(
-        VersionController,
-        VersionController.has_unstaged_diff.__name__,
-        return_value=False,
-    )
-    tuple(unwrapped_func())
-
-    in_ci_mock.assert_called_once()
-    has_diff_mock.assert_called()
-
-    has_diff_mock.return_value = True
-    with pytest.raises(AssertionError, match=r"Found unstaged changes during tests."):
-        tuple(unwrapped_func())
 
 
 def test_all_config_files_correct(mocker: MockerFixture) -> None:

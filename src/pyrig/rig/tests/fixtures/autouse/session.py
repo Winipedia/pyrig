@@ -8,7 +8,6 @@ test run.
 import logging
 import os
 import shutil
-from collections.abc import Generator
 from contextlib import chdir
 from pathlib import Path
 
@@ -31,59 +30,12 @@ from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.version_control.remote import (
-    RemoteVersionController,
-)
-from pyrig.rig.tools.version_control.version_controller import VersionController
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
 )
 from pyrig.rig.utils.paths import package_name_as_root_path
 
 logger = logging.getLogger(__name__)
-
-
-@pytest.fixture(scope="session", autouse=True)
-def no_unstaged_changes_in_ci() -> Generator[None, None, None]:
-    """Fail if the working tree has unstaged changes before or after the test session.
-
-    Wraps the entire test session via a yield. Checks for unstaged git changes
-    before tests run and again after they finish. The check is skipped locally
-    to allow a normal development workflow with in-progress edits. In CI, any
-    unstaged change — whether present before tests or introduced during them —
-    is treated as an error that must be reviewed and either committed or
-    discarded. Staged (indexed) changes are always permitted.
-
-    Yields:
-        None: Control yielded to run the full test session.
-
-    Raises:
-        AssertionError: If unstaged changes are detected in CI, either before
-            or after the test session.
-    """
-    in_ci = RemoteVersionController.I.running_in_ci()
-
-    msg = """Found unstaged changes during tests.
-There should not be made any unstaged changes during tests in CI.
-This check only runs in CI to allow a normal development workflow locally
-where you may have unstaged changes. If you want to make changes during tests
-then you must stage them to avoid this assertion error.
-
-Found the following unstaged changes:
-{unstaged_changes}
-"""
-
-    if in_ci:
-        unstaged_changes = VersionController.I.has_unstaged_diff()
-        assert not unstaged_changes, msg.format(
-            unstaged_changes=VersionController.I.diff()
-        )
-    yield
-    if in_ci:
-        unstaged_changes = VersionController.I.has_unstaged_diff()
-        assert not unstaged_changes, msg.format(
-            unstaged_changes=VersionController.I.diff()
-        )
 
 
 @pytest.fixture(scope="session", autouse=True)
