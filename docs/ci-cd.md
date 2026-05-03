@@ -104,8 +104,8 @@ release having succeeded:
 
 A notable property of the pipeline is that **dependency
 upgrades happen inside CI** in the health check stage. It runs `uv lock --upgrade`
-to pull the latest dependency versions within declared constraints. This ensures your
-project catches problems caused by new versions in the dependencies early.
+to pull the latest dependency versions within declared constraints. This ensures
+your project catches problems caused by new versions in the dependencies early.
 If you need specific versions of packages you need to pin them in `pyproject.toml`
 to prevent it from being updated by the pipeline.
 
