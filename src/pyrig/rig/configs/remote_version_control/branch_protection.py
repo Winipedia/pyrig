@@ -63,8 +63,8 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
         dict that targets the repository default branch (``~DEFAULT_BRANCH``)
         and enforces the following rules:
 
-        - ``creation``, ``update``, ``deletion``: Restrict who can create,
-          update, or delete the protected branch.
+        - ``creation``, ``deletion``: Restrict who can create or delete the
+          protected branch.
         - ``required_linear_history``: Enforces a linear commit history,
           preventing merge commits directly to the branch.
         - ``required_signatures``: Requires all commits to be signed.
