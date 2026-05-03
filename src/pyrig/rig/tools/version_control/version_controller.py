@@ -5,7 +5,6 @@ Wraps VersionController commands and information.
 
 import logging
 from functools import cache
-from urllib.parse import quote
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
@@ -451,9 +450,7 @@ class VersionController(Tool):
 
     @classmethod
     @cache
-    def repo_owner(
-        cls, *, check_repo_url: bool = True, url_encode: bool = False
-    ) -> str:
+    def repo_owner(cls, *, check_repo_url: bool = True) -> str:
         """Return the cached repository owner.
 
         This is the primary public entry point for obtaining the repository
@@ -465,21 +462,18 @@ class VersionController(Tool):
             check_repo_url: When ``True``, raises an error if no remote origin
                 is configured.  Set to ``False`` to fall back gracefully to the
                 git user name.
-            url_encode: When ``True``, percent-encodes the returned string,
-                which is required when embedding it directly in a URL.
 
         Returns:
             The repository owner as a string.
         """
         return cls()._repo_owner(  # noqa: SLF001
-            check_repo_url=check_repo_url, url_encode=url_encode
+            check_repo_url=check_repo_url
         )
 
     def _repo_owner(
         self,
         *,
         check_repo_url: bool = True,
-        url_encode: bool = False,
     ) -> str:
         """Parse the repository owner from the git remote URL.
 
@@ -491,10 +485,15 @@ class VersionController(Tool):
         When no remote is configured, falls back to the git ``user.name`` as
         the owner.
 
+        If the fallback to git username is used, the spaces in the username are removed
+        to ensure URL safety and a warning is logged. This is inspired by the fact that
+        GitHub usernames cannot contain spaces in the URL, but git usernames can, so if
+        the git username contains spaces, it is likely not intended to be used as-is
+        for the repository owner in URLs.
+
         Args:
             check_repo_url: When ``True``, raises an error if no remote origin
                 is configured.
-            url_encode: When ``True``, percent-encodes the returned string.
 
         Returns:
             The repository owner as a string.
@@ -509,9 +508,17 @@ class VersionController(Tool):
             )
         else:
             owner = self.owner_from_remote_url()
-        if url_encode:
-            logger.debug("Url encoding owner")
-            owner = quote(owner)
+            if " " in owner:
+                logger.warning(
+                    "Repository owner '%s' contains spaces.",
+                    owner,
+                )
+                owner = owner.replace(" ", "")
+                logger.warning(
+                    "Spaces removed from the owner to ensure URL safety: '%s'",
+                    owner,
+                )
+
         return owner
 
     def owner_from_remote_url(self) -> str:

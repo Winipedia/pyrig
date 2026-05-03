@@ -147,7 +147,6 @@ class LicenseConfigFile(StringConfigFile):
         owner, repo = (
             VersionController.I.repo_owner(
                 check_repo_url=False,
-                url_encode=True,
             ),
             PackageManager.I.project_name(),
         )

@@ -21,7 +21,7 @@ class TestVersionController:
     def test__repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False, url_encode=False
+            check_repo_url=False
         )
         assert result == "Winipedia"
 
@@ -29,26 +29,30 @@ class TestVersionController:
         remote_mock = mocker.patch.object(
             VersionController, VersionController.remote_url.__name__, return_value=""
         )
+        username_mock = mocker.patch.object(
+            VersionController,
+            VersionController.username.__name__,
+            return_value="Test User",
+        )
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False, url_encode=False
+            check_repo_url=False
         )
         owner = result
-        assert isinstance(owner, str)  # in ci its github actions bot
-        assert len(owner) > 0
-
+        assert owner == "TestUser"
+        username_mock.assert_called_once()
         remote_mock.assert_called_once()
 
         # make it return a https remote url
         remote_mock.return_value = "https://github.com/OWNER/REPO.git"
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False, url_encode=False
+            check_repo_url=False
         )
         assert result == "OWNER"
 
         # make it return a ssh remote url
         remote_mock.return_value = "git@github.com:OWNER/REPO.git"
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False, url_encode=False
+            check_repo_url=False
         )
         assert result == "OWNER"
 

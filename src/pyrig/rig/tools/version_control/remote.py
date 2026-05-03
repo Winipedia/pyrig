@@ -44,7 +44,7 @@ class RemoteVersionController(Tool):
             the repository star count using the shields.io social style.
         """
         owner, repo = (
-            VersionController.I.repo_owner(check_repo_url=False, url_encode=True),
+            VersionController.I.repo_owner(check_repo_url=False),
             PackageManager.I.project_name(),
         )
         return (
@@ -120,10 +120,7 @@ class RemoteVersionController(Tool):
             shields.io URL that renders the current workflow status as a badge.
         """
         owner, repo = (
-            VersionController.I.repo_owner(
-                check_repo_url=False,
-                url_encode=True,
-            ),
+            VersionController.I.repo_owner(check_repo_url=False),
             PackageManager.I.project_name(),
         )
         return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
@@ -135,10 +132,7 @@ class RemoteVersionController(Tool):
             URL in the format ``https://github.com/{owner}/{repo}``.
         """
         owner, repo = (
-            VersionController.I.repo_owner(
-                check_repo_url=False,
-                url_encode=True,
-            ),
+            VersionController.I.repo_owner(check_repo_url=False),
             PackageManager.I.project_name(),
         )
         return f"{self.url_base()}/{owner}/{repo}"
