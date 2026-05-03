@@ -48,7 +48,7 @@ class PyprojectConfigFile(TomlConfigFile):
     dependencies, build system configuration for uv, and opinionated tool settings
     for ruff, ty, pytest, and bandit.
 
-    Created at priority 20 so that other configuration files can read its values
+    Validated at priority 20 so that other configuration files can read its values
     during their own generation.
 
     Subclasses can override accessor methods such as ``dependencies``,
@@ -56,10 +56,10 @@ class PyprojectConfigFile(TomlConfigFile):
     """
 
     def priority(self) -> float:
-        """Return the creation priority (20), ensuring pyproject.toml is written early.
+        """Return the validation priority (20), ensuring pyproject.toml is validated early.
 
-        A higher priority means earlier execution. Priority 20 causes this file to
-        be created before most other config files, which may need to read project
+        A higher priority means earlier validation. Priority 20 causes this file to
+        be validated before most other config files, which may need to read project
         metadata from it.
         """
         return Priority.MEDIUM

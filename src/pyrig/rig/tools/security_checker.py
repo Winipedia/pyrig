@@ -86,8 +86,8 @@ class SecurityChecker(Tool):
         Converts each path from ``target_paths`` to its POSIX string
         representation, which Bandit expects on the command line.
 
-        Yields:
-            POSIX path string for each target scan directory.
+        Returns:
+            Generator yielding a POSIX path string for each target scan directory.
         """
         return (path.as_posix() for path in self.target_paths())
 

@@ -61,8 +61,8 @@ class PythonPackageConfigFile(PythonConfigFile):
         calls ``make_package_dir`` on the file's parent directory. That call
         walks up the directory tree, creating an ``__init__.py`` in every
         directory that does not already have one, stopping when it reaches the
-        project source root (``PackageManager.source_root``) or the tests source
-        root (``ProjectTester.tests_source_root``). Those boundary directories
+        project source root (``PackageManager.I.source_root()``) or the tests source
+        root (``ProjectTester.I.tests_source_root()``). Those boundary directories
         themselves are not modified.
 
         Each generated ``__init__.py`` is written with the project's standard

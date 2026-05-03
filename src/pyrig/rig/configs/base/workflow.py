@@ -296,7 +296,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Returns:
             Display name with the prefix removed, e.g. ``"Build Artifacts"``
-            from ``job_artifacts``.
+            from ``job_build_artifacts``.
         """
         name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
         prefix = next(split_on_uppercase(name))
@@ -312,8 +312,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
             func: The function whose name provides the source text.
 
         Returns:
-            Identifier string, e.g. ``"build_artifacts"`` from
-            ``job_artifacts``.
+            Identifier string, e.g. ``"build-artifacts"`` from
+            ``job_build_artifacts``.
         """
         name = func.__name__  # ty:ignore[unresolved-attribute]
         prefix = name.split("_")[0]
@@ -647,8 +647,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
     ) -> list[dict[str, Any]]:
         """Build setup steps that also update and install dependencies.
 
-        Extends :meth:`steps_core_setup` with a dependency upgrade, a full
-        ``uv sync``, and a git-add step for ``pyproject.toml`` and lock-file changes.
+        Extends :meth:`steps_core_setup` with an optional dependency upgrade
+        and a full ``uv sync``.
 
         Args:
             python_version: Python version string.  Defaults to the latest
@@ -680,7 +680,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Checks out the repository, configures git credentials, and installs
         the package manager (uv) with the specified Python version.
-        Optionally bumps the patch version and stages the change.
 
         Args:
             python_version: Python version string for uv.  Defaults to the
@@ -889,11 +888,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a step that runs the test suite with pytest.
-
-        When running inside the pyrig package itself
-        (``src_package_is_pyrig()`` is ``True``), the ``REPO_TOKEN``
-        environment variable is injected so that tests that interact with the
-        GitHub API have the required credentials.
 
         Args:
             step: Additional keys to merge into the step configuration.
