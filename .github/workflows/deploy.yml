@@ -1,0 +1,86 @@
+name: Deploy
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+    - Release
+    types:
+    - completed
+permissions: {}
+run-name: Deploy
+defaults:
+  run:
+    shell: bash
+env:
+  PYTHONDONTWRITEBYTECODE: 1
+  UV_NO_SYNC: 1
+jobs:
+  publish-package:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - name: Checkout Repository
+      id: checkout-repository
+      uses: actions/checkout@main
+    - name: Setup Version Control
+      id: setup-version-control
+      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        && git config --global user.name "github-actions[bot]"
+    - name: Setup Package Manager
+      id: setup-package-manager
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+    - name: Build Wheel
+      id: build-wheel
+      run: uv build
+    - name: Publish To Pypi
+      id: publish-to-pypi
+      run: 'if [ ${{ secrets.PYPI_TOKEN }} ]; then uv publish --token ${{ secrets.PYPI_TOKEN
+        }}; else echo "Skipping step due to failed condition: secrets.PYPI_TOKEN.";
+        fi'
+  deploy-documentation:
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - name: Checkout Repository
+      id: checkout-repository
+      uses: actions/checkout@main
+    - name: Setup Version Control
+      id: setup-version-control
+      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        && git config --global user.name "github-actions[bot]"
+    - name: Setup Package Manager
+      id: setup-package-manager
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+    - name: Update Dependencies
+      id: update-dependencies
+      run: uv lock --upgrade
+    - name: Install Dependencies
+      id: install-dependencies
+      run: uv sync
+    - name: Add Dependency Updates To Version Control
+      id: add-dependency-updates-to-version-control
+      run: git add pyproject.toml uv.lock
+    - name: Build Documentation
+      id: build-documentation
+      run: uv run mkdocs build
+    - name: Enable Pages
+      id: enable-pages
+      uses: actions/configure-pages@main
+      with:
+        token: ${{ secrets.REPO_TOKEN }}
+        enablement: 'true'
+    - name: Upload Documentation
+      id: upload-documentation
+      uses: actions/upload-pages-artifact@main
+      with:
+        path: site
+    - name: Deploy Documentation
+      id: deploy-documentation
+      uses: actions/deploy-pages@main
