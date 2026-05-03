@@ -56,7 +56,7 @@ class PyprojectConfigFile(TomlConfigFile):
     """
 
     def priority(self) -> float:
-        """Return the validation priority (20), ensuring pyproject.toml is validated early.
+        """Return priority (20), ensuring pyproject.toml is validated early.
 
         A higher priority means earlier validation. Priority 20 causes this file to
         be validated before most other config files, which may need to read project
