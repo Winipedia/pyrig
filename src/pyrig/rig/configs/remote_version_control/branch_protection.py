@@ -96,7 +96,6 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
                 },
                 "rules": [
                     {"type": "creation"},
-                    {"type": "update"},
                     {"type": "deletion"},
                     {"type": "required_linear_history"},
                     {"type": "required_signatures"},
