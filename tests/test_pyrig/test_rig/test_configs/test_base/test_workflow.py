@@ -49,6 +49,16 @@ def my_test_workflow(
 class TestWorkflowConfigFile:
     """Test class."""
 
+    def test_step_create_tag(self) -> None:
+        """Test method."""
+        step = HealthCheckWorkflowConfigFile.I.step_create_tag()
+        assert "run" in step
+
+    def test_step_push_tag(self) -> None:
+        """Test method."""
+        step = HealthCheckWorkflowConfigFile.I.step_push_tag()
+        assert "run" in step
+
     def test_step_make_distribution_directory(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -90,13 +100,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().if_workflow_run_is_not_cron_triggered()
         assert "schedule" in result, "Expected 'schedule' in result"
-
-    def test_step_add_version_bump_to_version_control(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_add_version_bump_to_version_control()
-        assert "run" in result, f"Expected 'run' in step, got {result}"
 
     def test_step_run_dependency_audit(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -458,20 +461,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
 
-    def test_step_patch_version(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_patch_version()
-        assert "run" in result
-
-    def test_step_add_dependency_updates_to_version_control(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_add_dependency_updates_to_version_control()
-        assert "run" in result
-
     def test_step_build_wheel(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step_build_wheel()
@@ -515,27 +504,6 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_run_pre_commit_hooks()
-        assert "run" in result
-
-    def test_step_commit_added_changes(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_commit_added_changes()
-        assert "run" in result
-
-    def test_step_push_commits(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_push_commits()
-        assert "run" in result
-
-    def test_step_create_and_push_tag(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_create_and_push_tag()
         assert "run" in result
 
     def test_step_upload_artifacts(

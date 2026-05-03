@@ -125,10 +125,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             generating a changelog, and publishing the GitHub release.
         """
         return [
-            *self.steps_core_installed_setup(repo_token=True, patch_version=True),
-            self.step_commit_added_changes(),
-            self.step_push_commits(),
-            self.step_create_and_push_tag(),
+            *self.steps_core_installed_setup(repo_token=True),
+            self.step_create_tag(),
+            self.step_push_tag(),
             self.step_extract_version(),
             self.step_download_artifacts_from_workflow_run(),
             self.step_build_changelog(),

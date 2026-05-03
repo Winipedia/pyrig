@@ -58,15 +58,9 @@ jobs:
       uses: astral-sh/setup-uv@main
       with:
         python-version: '3.14'
-    - name: Update Dependencies
-      id: update-dependencies
-      run: uv lock --upgrade
     - name: Install Dependencies
       id: install-dependencies
       run: uv sync
-    - name: Add Dependency Updates To Version Control
-      id: add-dependency-updates-to-version-control
-      run: git add pyproject.toml uv.lock
     - name: Build Documentation
       id: build-documentation
       run: uv run mkdocs build

@@ -146,7 +146,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             Ordered list of step configuration dicts.
         """
         return [
-            *self.steps_core_matrix_setup(patch_version=True),
+            *self.steps_core_matrix_setup(),
             self.step_build_artifacts(),
             self.step_upload_artifacts(),
         ]
@@ -158,7 +158,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             Ordered list of step configuration dicts.
         """
         return [
-            *self.steps_core_setup(patch_version=True),
+            *self.steps_core_setup(),
             self.step_install_container_engine(),
             self.step_make_distribution_directory(),
             self.step_build_container_image(),
