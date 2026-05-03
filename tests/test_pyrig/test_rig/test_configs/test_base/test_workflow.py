@@ -199,8 +199,8 @@ class TestWorkflowConfigFile:
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_workflow().steps_core_installed_setup(no_dev=True)
-        assert len(result) > 0, "Expected steps to be non-empty"
+        result = my_test_workflow().steps_core_installed_setup()
+        assert len(result) > 0
 
     def test_make_id_from_func(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -420,14 +420,14 @@ class TestWorkflowConfigFile:
     def test_steps_core_setup(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().steps_core_setup()
-        assert len(result) > 0, "Expected steps to be non-empty"
+        assert len(result) > 0
 
     def test_steps_core_matrix_setup(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_workflow().steps_core_matrix_setup(no_dev=True)
-        assert len(result) > 0, "Expected steps to be non-empty"
+        result = my_test_workflow().steps_core_matrix_setup()
+        assert len(result) > 0
 
     def test_step_aggregate_jobs(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -435,7 +435,7 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().step_aggregate_jobs()
         assert "name" in result, "Expected 'name' in step"
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_checkout_repository(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -449,7 +449,7 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_setup_version_control()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_setup_package_manager(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -463,33 +463,33 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_patch_version()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_add_dependency_updates_to_version_control(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_add_dependency_updates_to_version_control()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_build_wheel(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step_build_wheel()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_publish_to_pypi(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_publish_to_pypi()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_install_dependencies(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_workflow().step_install_dependencies(no_dev=True)
-        assert "run" in result, "Expected 'run' in step"
+        result = my_test_workflow().step_install_dependencies()
+        assert "run" in result
 
     def test_step_protect_repository(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -501,7 +501,7 @@ class TestWorkflowConfigFile:
     def test_step_run_tests(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step_run_tests()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_upload_coverage_report(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -515,28 +515,28 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_run_pre_commit_hooks()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_commit_added_changes(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_commit_added_changes()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_push_commits(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_push_commits()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_create_and_push_tag(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_create_and_push_tag()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_upload_artifacts(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -550,7 +550,7 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_build_artifacts()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_download_artifacts_from_workflow_run(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -571,7 +571,7 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_extract_version()
-        assert "run" in result, "Expected 'run' in step"
+        assert "run" in result
 
     def test_step_create_release(
         self, my_test_workflow: type[WorkflowConfigFile]
