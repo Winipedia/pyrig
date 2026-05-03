@@ -141,7 +141,7 @@ uv run pyrig mktests                 # Generate test skeletons
 uv run pyrig mkinits                 # Create missing __init__.py files
 uv run pyrig mkfixture <name>        # Generate a new pytest fixture
 uv run pyrig mkcmd <name>            # Create a new CLI subcommand stub
-uv run pyrig subcls                  # Generate a subclass for overriding a config or tool
+uv run pyrig subcls                  # generate and override subclasses
 uv run pyrig build                   # Build artifacts (PyInstaller, etc.)
 uv run pyrig resources               # Scaffold the resources package
 uv run pyrig protect-repo            # Configure repository protection
