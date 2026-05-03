@@ -101,7 +101,7 @@ class ProjectCoverageTester(Tool):
     def remote_coverage_url(self) -> str:
         """Construct the Codecov project dashboard URL for the current repository.
 
-        Resolves the repository owner from the git remote (URL-encoded) and
+        Resolves the repository owner from the git remote and
         the repository name from the project name.
 
         Returns:
