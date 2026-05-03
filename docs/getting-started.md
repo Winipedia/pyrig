@@ -103,9 +103,8 @@ You will need an account for [github.com](https://github.com)
 1. Go to GitHub Settings → Developer settings → Personal access tokens →
 Fine-grained tokens
 2. Select scopes:
-   - `administration: read, write` (for `pyrig protect-repo`)
+   - `administration: read, write` (for `pyrig protect-repo` and enabling GitHub Pages)
    - `contents: read, write` (for CI/CD)
-   - `pages: read, write` (for GitHub Pages)
 3. Generate token
 4. **Copy token immediately** (you won't see it again)
 5. Add token to your repository secrets as `REPO_TOKEN`
@@ -214,7 +213,7 @@ On GitHub.com:
 
 1. Go to Actions tab
 2. Health Check workflow should run automatically,
-follwed by Build workflow, Release workflow, and Deploy workflow
+followed by Build workflow, Release workflow, and Deploy workflow
 3. Verify all jobs run successfully
 (should just take a 2-3 minutes on an empty project)
 

@@ -38,7 +38,7 @@ my-project/
 │
 ├── .github/
 │   ├── pull_request_template.md            # Pull request description template
-│   └── ISSUE_TEMPLATE/
+│   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.yml                  # Bug report issue form
 │   │   ├── config.yml                      # Issue template chooser configuration
 │   │   └── feature_request.yml             # Feature request issue form

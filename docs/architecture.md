@@ -14,6 +14,7 @@ src/pyrig/
     ├── builders/       # Artifact builders (executables, archives)
     ├── tools/          # CLI tool wrappers (git, uv, pytest, ruff …)
     ├── tests/          # Mirror test framework + pytest fixtures
+    ├── resources/      # Template files (licenses, gitignore, etc.)
     └── utils/          # Rig-layer helpers (paths, versions, GitHub API)
 ```
 
@@ -51,9 +52,9 @@ modules are imported and searched for further subclasses. This is just for
 efficiency — the system would work even if all subclasses were defined
 directly under `pyrig.rig`.
 
-The `.L` (used for abstract final leafs) classproperty returns the cached
-**leaf subclass** — the single outermost override across all dependencies.
-`.I` (used for concrete final leafs) returns a cached instance of that leaf.
+The `.L` classproperty returns the cached **leaf subclass** — the single
+outermost override across all dependencies (returns the class type, which may
+be abstract or concrete). `.I` returns a cached instance of that leaf class.
 These two shortcuts are used throughout the codebase for all usages of
 subclasses of `DependencySubclass` to allow downstream projects to override
 any part of the system by simply defining a new subclass in the right place. :
@@ -231,7 +232,7 @@ package to start new projects by running:
 uv init my-new-project
 cd my-new-project
 uv add my-pyrig-package
-uv run pyrig init
+uv run my-pyrig-package init
 ```
 
 All your customizations to pyrig will be in your package and you can keep
