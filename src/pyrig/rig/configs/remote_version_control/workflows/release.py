@@ -111,10 +111,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             job_func=self.job_distributions,
             if_condition=self.if_workflow_run_is_success(),
-            steps=self.steps_release(),
+            steps=self.steps_distributions(),
         )
 
-    def steps_release(self) -> list[dict[str, Any]]:
+    def steps_distributions(self) -> list[dict[str, Any]]:
         """Build the ordered list of steps for the release job.
 
         Returns:

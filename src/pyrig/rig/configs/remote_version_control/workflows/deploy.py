@@ -84,14 +84,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """Build the job that packages and publishes the project to PyPI.
 
         The job runs only when the triggering workflow run succeeded. Steps
-        are provided by :meth:`steps_publish_package`.
+        are provided by :meth:`steps_package`.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
         """
         return self.job(
             job_func=self.job_package,
-            steps=self.steps_publish_package(),
+            steps=self.steps_package(),
             if_condition=self.if_workflow_run_is_success(),
         )
 
@@ -101,7 +101,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         Requests ``pages: write`` and ``id-token: write`` permissions at the
         job level, which are required by the GitHub Pages deployment API. The
         job runs only when the triggering workflow run succeeded. Steps are
-        provided by :meth:`steps_deploy_documentation`.
+        provided by :meth:`steps_documentation`.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
@@ -109,11 +109,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             job_func=self.job_documentation,
             permissions={"pages": "write", "id-token": "write"},
-            steps=self.steps_deploy_documentation(),
+            steps=self.steps_documentation(),
             if_condition=self.if_workflow_run_is_success(),
         )
 
-    def steps_publish_package(self) -> list[dict[str, Any]]:
+    def steps_package(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the publish-package job.
 
         Combines core setup with a wheel build and a conditional PyPI publish.
@@ -129,7 +129,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.step_publish_to_pypi(),
         ]
 
-    def steps_deploy_documentation(self) -> list[dict[str, Any]]:
+    def steps_documentation(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the deploy-documentation job.
 
         Combines core installed-setup steps with the full documentation build

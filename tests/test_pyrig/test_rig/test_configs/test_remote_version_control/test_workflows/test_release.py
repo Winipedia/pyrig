@@ -60,9 +60,9 @@ class TestReleaseWorkflowConfigFile:
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
 
-    def test_steps_release(
+    def test_steps_distributions(
         self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_release_workflow().steps_release()
+        result = my_test_release_workflow().steps_distributions()
         assert len(result) > 0, "Expected steps to be non-empty"

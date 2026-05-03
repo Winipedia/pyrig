@@ -33,9 +33,9 @@ class TestDeployWorkflowConfigFile:
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
 
-    def test_steps_deploy_documentation(self) -> None:
+    def test_steps_documentation(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.steps_deploy_documentation()
+        result = DeployWorkflowConfigFile.I.steps_documentation()
         assert len(result) > 0, f"Expected steps to be non-empty, got {result}"
 
     def test_workflow_triggers(
@@ -63,9 +63,9 @@ class TestDeployWorkflowConfigFile:
         assert "steps" in result[job_name], "Expected 'steps' in job"
         assert "if" in result[job_name], "Expected 'if' condition in job"
 
-    def test_steps_publish_package(
+    def test_steps_package(
         self, my_test_deploy_workflow: type[DeployWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_deploy_workflow().steps_publish_package()
+        result = my_test_deploy_workflow().steps_package()
         assert len(result) > 0, "Expected steps to be non-empty"
