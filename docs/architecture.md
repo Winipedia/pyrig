@@ -15,7 +15,7 @@ src/pyrig/
     ├── tools/          # CLI tool wrappers (git, uv, pytest, ruff …)
     ├── tests/          # Mirror test framework + pytest fixtures
     ├── utils/          # Rig-layer helpers (paths, versions, GitHub API)
-    └── resources/      # Static resource files (templates, defaults)
+    └── resources/      # Static resource files bundled with the package
 ```
 
 ---
