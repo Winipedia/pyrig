@@ -40,8 +40,9 @@ fires when the previous stage finishes. Each downstream stage also guards its
 jobs with an `if` condition that checks the triggering run succeeded, so a
 failure anywhere in the chain stops propagation cleanly.
 
-Build is not triggered by scheduled health checks, since they serve as a continuous
-health signal rather than a release signal. Only pushes and PR merges trigger builds.
+The Build workflow is triggered when Health Check completes on the default branch,
+but excludes scheduled health check runs. This means builds only occur for actual
+code changes pushed to the default branch, not for routine nightly health checks.
 
 ---
 
@@ -70,11 +71,10 @@ making them available for the next stage in the pipeline.
 
 **File:** `.github/workflows/release.yml`
 
-**Trigger:** `build` workflow completes.
+**Trigger:** `Build` workflow completes.
 
 The release job runs only when the triggering build succeeded.
-It commits a version patch bump and dependency upgrades to the default branch,
-tags the commit with the new version, and pushes both back to the repository.
+It tags the current commit with the version and pushes the tag to the repository.
 Then it creates a GitHub Release with the new tag and attaches the build
 artifacts from the previous stage.
 
@@ -84,33 +84,29 @@ artifacts from the previous stage.
 
 **File:** `.github/workflows/deploy.yml`
 
-**Trigger:** `release` workflow completes.
+**Trigger:** `Release` workflow completes.
 
 Two independent jobs run in this final stage, both gated on the triggering
 release having succeeded:
 
-- **`publish_package`** — builds a Python wheel and publishes it to PyPI using
+- **`package`** — builds a Python wheel and publishes it to PyPI using
   the `PYPI_TOKEN` secret. The publish step is conditional: if `PYPI_TOKEN` is
   not configured in the repository secrets, the step is skipped rather than
   failing. This makes the workflow safe to run for projects that are not yet
   published to PyPI.
 
-- **`deploy_documentation`** — builds the MkDocs documentation site and
+- **`documentation`** — builds the MkDocs documentation site and
   deploys it to GitHub Pages. This job requires `pages: write` and
   `id-token: write` permissions at the job level.
 
 ---
 
-## Automatic Version and Dependency Management
+## Automatic Dependency Updates Checks
 
-A notable property of the pipeline is that **version bumps and dependency
-upgrades happen inside CI**, not as a manual developer step. Every stage that
-needs a fresh environment runs `uv lock --upgrade` to pull the latest
-dependency versions within declared constraints, stages the result, and
-carries it forward. The final commit and tag in the release stage captures
-both the bumped version and any dependency updates, so the repository always
-reflects exactly what was tested and shipped. This ensures your project is always
-up to date and secure without any manual effort.
+A notable property of the pipeline is that **dependency
+upgrades happen inside CI** in the health check stage. It runs `uv lock --upgrade`
+to pull the latest dependency versions within declared constraints. This ensures
+your project catches problems caused by new versions in the dependencies early.
 If you need specific versions of packages you need to pin them in `pyproject.toml`
 to prevent it from being updated by the pipeline.
 

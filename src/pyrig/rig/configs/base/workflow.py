@@ -295,8 +295,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
             func: The function whose name provides the source text.
 
         Returns:
-            Display name with the prefix removed, e.g. ``"Build Artifacts"``
-            from ``job_build_artifacts``.
+            Display name with the prefix removed, e.g. ``"Do Something"``
+            from ``job_do_something``.
         """
         name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
         prefix = next(split_on_uppercase(name))
@@ -312,8 +312,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
             func: The function whose name provides the source text.
 
         Returns:
-            Identifier string, e.g. ``"build-artifacts"`` from
-            ``job_build_artifacts``.
+            Identifier string, e.g. ``"do-something"`` from
+            ``job_do_something``.
         """
         name = func.__name__  # ty:ignore[unresolved-attribute]
         prefix = name.split("_")[0]
@@ -645,7 +645,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         update_dependencies: bool = False,
         repo_token: bool = False,
     ) -> list[dict[str, Any]]:
-        """Build setup steps that also update and install dependencies.
+        """Build setup steps that also install dependencies.
 
         Extends :meth:`steps_core_setup` with an optional dependency upgrade
         and a full ``uv sync``.
@@ -1526,7 +1526,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Returns:
             GitHub Actions expression for
-            ``steps.extract_version.outputs.version``.
+            ``steps.extract-version.outputs.version``.
         """
         # make dynamic with self.make_id_from_func(self.step_extract_version)
         return self.insert_var(
@@ -1541,7 +1541,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Returns:
             GitHub Actions expression for
-            ``steps.build_changelog.outputs.changelog``.
+            ``steps.build-changelog.outputs.changelog``.
         """
         return self.insert_var(
             f"steps.{self.make_id_from_func(self.step_build_changelog)}.outputs.changelog"

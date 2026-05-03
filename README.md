@@ -110,7 +110,7 @@ PyInstaller integration and extensible build system for generating executables,
 distributable packages, and more.
 Run `pyrig subcls` to create a custom builder for your specific build needs.
 Run `pyrig build` to execute the build process and generate artifacts.
-Run `pyrig resources` to create a resources directory for your project.
+Run `pyrig resources` to create a resources package for your project.
 
 ### [Multi-Package Inheritance and Extensibility Architecture](https://winipedia.github.io/pyrig/architecture)
 
@@ -135,19 +135,21 @@ Run `pyrig <command> --help` for more information about a specific command and
 its usage.
 
 ```bash
-uv run pyrig init           # Full project initialization
-uv run pyrig mkroot         # Create/update all concrete config files
-uv run pyrig mktests        # Generate test skeletons
-uv run pyrig mkinits        # Create missing __init__.py files
-uv run pyrig mkfixture      # Generate a new pytest fixture
-uv run pyrig subcls         # Generate a subclass for overriding a config or tool
-uv run pyrig build          # Build artifacts (PyInstaller, etc.)
-uv run pyrig protect-repo   # Configure repository protection
-uv run pyrig scratch        # Execute the project's .scratch.py file
-uv run pyrig rmpyc          # Remove __pycache__ directories
-uv run pyrig version        # Show pyrig version
-uv run my-project --help    # Your project's CLI
-uv run my-project version   # Show your project's version
+uv run pyrig init                    # Full project initialization
+uv run pyrig mkroot                  # Create/update all concrete config files
+uv run pyrig mktests                 # Generate test skeletons
+uv run pyrig mkinits                 # Create missing __init__.py files
+uv run pyrig mkfixture <name>        # Generate a new pytest fixture
+uv run pyrig mkcmd <name>            # Create a new CLI subcommand stub
+uv run pyrig subcls                  # generate and override subclasses
+uv run pyrig build                   # Build artifacts (PyInstaller, etc.)
+uv run pyrig resources               # Scaffold the resources package
+uv run pyrig protect-repo            # Configure repository protection
+uv run pyrig scratch                 # Execute the project's .scratch.py file
+uv run pyrig rmpyc                   # Remove __pycache__ directories
+uv run pyrig version                 # Show pyrig version
+uv run my-project --help             # Your project's CLI
+uv run my-project version            # Show your project's version
 ```
 
 ## Documentation

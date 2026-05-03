@@ -214,7 +214,7 @@ On GitHub.com:
 
 1. Go to Actions tab
 2. Health Check workflow should run automatically,
-follwed by Build workflow, Release workflow, and Deploy workflow
+followed by Build workflow, Release workflow, and Deploy workflow
 3. Verify all jobs run successfully
 (should just take a 2-3 minutes on an empty project)
 
