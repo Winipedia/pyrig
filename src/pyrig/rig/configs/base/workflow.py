@@ -5,7 +5,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.core.strings import (
     make_name_from_obj,
     snake_to_kebab_case,
@@ -904,10 +903,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         if step is None:
             step = {}
-        if src_package_is_pyrig():
-            step.setdefault("env", {})[RemoteVersionController.I.access_token_key()] = (
-                self.insert_repo_token()
-            )
         run = str(PackageManager.I.run_args(*ProjectTester.I.run_tests_in_ci_args()))
         return self.step(
             step_func=self.step_run_tests,
