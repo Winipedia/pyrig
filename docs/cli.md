@@ -68,4 +68,5 @@ uv run pyrig version
 ```
 
 To add a shared command, simply run `pyrig mkcmd <command-name> --shared` and
-it will append the command skeleton to `shared_subcommands` (creating the file if it does not exist).
+it will append the command skeleton to `shared_subcommands` (creating the
+file if it does not exist).
