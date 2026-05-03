@@ -38,7 +38,7 @@ my-project/
 │
 ├── .github/
 │   ├── pull_request_template.md            # Pull request description template
-│   └── ISSUE_TEMPLATE/
+│   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.yml                  # Bug report issue form
 │   │   ├── config.yml                      # Issue template chooser configuration
 │   │   └── feature_request.yml             # Feature request issue form
@@ -69,7 +69,7 @@ my-project/
 
 | File | Purpose |
 |---|---|
-| `pyproject.toml` | Central project config: package metadata, dependencies, build backend (`uv`), and tool settings for ruff, bandit, pytest, and ty |
+| `pyproject.toml` | Central project config: package metadata, dependencies, build backend, and tool settings |
 | `uv.lock` | Fully resolved, reproducible dependency lock file managed by uv |
 | `.python-version` | Pins the Python version used by uv for this project |
 | `prek.toml` | Pre-commit hooks: `ruff format`, `ruff check --fix`, `ty check`, `bandit`, `rumdl check --fix` on pre-commit; `uv self update`, `uv lock --upgrade`, `uv sync` on pre-push/post-checkout/post-merge/post-rewrite |
@@ -102,7 +102,7 @@ my-project/
 | `ISSUE_TEMPLATE/bug_report.yml` | Structured bug report form |
 | `ISSUE_TEMPLATE/feature_request.yml` | Structured feature request form |
 | `ISSUE_TEMPLATE/config.yml` | Configures the issue template chooser |
-| `workflows/health_check.yml` | Runs the full test suite on every PR, push to `main`, and on a nightly schedule |
+| `workflows/health_check.yml` | Runs code quality checks and the full test suite on every PR, push to `main`, and on a nightly schedule |
 | `workflows/build.yml` | Builds distributable artifacts after a successful health check |
 | `workflows/release.yml` | Creates a GitHub release after a successful build |
 | `workflows/deploy.yml` | Deploys documentation and packages after a successful release |
