@@ -645,10 +645,10 @@ class WorkflowConfigFile(DictYmlConfigFile):
         update_dependencies: bool = False,
         repo_token: bool = False,
     ) -> list[dict[str, Any]]:
-        """Build setup steps that also update and install dependencies.
+        """Build setup steps that also install dependencies.
 
-        Extends :meth:`steps_core_setup` with a dependency upgrade, a full
-        ``uv sync``, and a git-add step for ``pyproject.toml`` and lock-file changes.
+        Extends :meth:`steps_core_setup` with an optional dependency upgrade
+        and a full ``uv sync``.
 
         Args:
             python_version: Python version string.  Defaults to the latest
@@ -680,7 +680,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Checks out the repository, configures git credentials, and installs
         the package manager (uv) with the specified Python version.
-        Optionally bumps the patch version and stages the change.
 
         Args:
             python_version: Python version string for uv.  Defaults to the
@@ -889,11 +888,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a step that runs the test suite with pytest.
-
-        When running inside the pyrig package itself
-        (``src_package_is_pyrig()`` is ``True``), the ``REPO_TOKEN``
-        environment variable is injected so that tests that interact with the
-        GitHub API have the required credentials.
 
         Args:
             step: Additional keys to merge into the step configuration.
