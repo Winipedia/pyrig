@@ -32,11 +32,7 @@ class ProjectTester(Tool):
         return "pytest"
 
     def group(self) -> str:
-        """Get the badge group for this tool.
-
-        Returns:
-            ``ToolGroup.TESTING``
-        """
+        """Get the badge group for this tool."""
         return ToolGroup.TESTING
 
     def badge_urls(self) -> tuple[str, str]:
