@@ -103,8 +103,9 @@ You will need an account for [github.com](https://github.com)
 1. Go to GitHub Settings → Developer settings → Personal access tokens →
 Fine-grained tokens
 2. Select scopes:
-   - `administration: read, write` (for `pyrig protect-repo` and enabling GitHub Pages)
+   - `administration: read, write` (for `pyrig protect-repo`)
    - `contents: read, write` (for CI/CD)
+   - `pages: read, write` (for GitHub Pages)
 3. Generate token
 4. **Copy token immediately** (you won't see it again)
 5. Add token to your repository secrets as `REPO_TOKEN`
