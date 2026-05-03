@@ -10,7 +10,7 @@ automatically without any explicit registration.
 
 ## How It Works
 
-`BuilderConfigFile` is an abstract base class that **repurposes the `ConfigFile`
+`BuilderConfigFile` is an abstract base class that **repurposes the `ListConfigFile`
 interface for build operations** instead of configuration file management. The
 key insight is that a build artifact can be modelled as a "config file" whose
 required content is simply its own existence on disk:
