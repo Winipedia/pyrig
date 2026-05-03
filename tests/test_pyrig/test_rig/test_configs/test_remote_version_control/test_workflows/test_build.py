@@ -33,11 +33,11 @@ class TestBuildWorkflowConfigFile:
         result = my_test_build_workflow().job_container_image()
         assert len(result) == 1, f"Expected job to have one key, got {result}"
 
-    def test_steps_build_container_image(
+    def test_steps_container_image(
         self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow().steps_build_container_image()
+        result = my_test_build_workflow().steps_container_image()
         assert len(result) > 0, f"Expected some steps, got {result}"
 
     def test_workflow_triggers(
@@ -65,9 +65,9 @@ class TestBuildWorkflowConfigFile:
         assert "strategy" in result[job_name], "Expected 'strategy' in job"
         assert "runs-on" in result[job_name], "Expected 'runs-on' in job"
 
-    def test_steps_build_artifacts(
+    def test_steps_artifacts(
         self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow().steps_build_artifacts()
+        result = my_test_build_workflow().steps_artifacts()
         assert len(result) > 0, "Expected steps to be non-empty"

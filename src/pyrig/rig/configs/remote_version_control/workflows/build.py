@@ -104,7 +104,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             ),
             strategy=self.strategy_matrix_os(),
             runs_on=self.insert_matrix_os(),
-            steps=self.steps_build_artifacts(),
+            steps=self.steps_artifacts(),
         )
 
     def job_container_image(self) -> ConfigDict:
@@ -129,10 +129,10 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
                 operator="&&",
             ),
             runs_on=self.UBUNTU_LATEST,
-            steps=self.steps_build_container_image(),
+            steps=self.steps_container_image(),
         )
 
-    def steps_build_artifacts(self) -> list[dict[str, Any]]:
+    def steps_artifacts(self) -> list[dict[str, Any]]:
         """Return the ordered steps for the artifact build job.
 
         Steps (in order):
@@ -151,7 +151,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             self.step_upload_artifacts(),
         ]
 
-    def steps_build_container_image(self) -> list[dict[str, Any]]:
+    def steps_container_image(self) -> list[dict[str, Any]]:
         """Return the ordered steps for the container image build job.
 
         Returns:
