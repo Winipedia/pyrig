@@ -1,0 +1,86 @@
+name: Release
+'on':
+  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+    - Build
+    types:
+    - completed
+permissions:
+  contents: write
+  actions: read
+run-name: Release
+defaults:
+  run:
+    shell: bash
+env:
+  PYTHONDONTWRITEBYTECODE: 1
+  UV_NO_SYNC: 1
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - name: Checkout Repository
+      id: checkout-repository
+      uses: actions/checkout@main
+      with:
+        token: ${{ secrets.REPO_TOKEN }}
+    - name: Setup Version Control
+      id: setup-version-control
+      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        && git config --global user.name "github-actions[bot]"
+    - name: Setup Package Manager
+      id: setup-package-manager
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+    - name: Patch Version
+      id: patch-version
+      run: uv version --bump patch
+    - name: Add Version Bump To Version Control
+      id: add-version-bump-to-version-control
+      run: git add pyproject.toml uv.lock
+    - name: Update Dependencies
+      id: update-dependencies
+      run: uv lock --upgrade
+    - name: Install Dependencies
+      id: install-dependencies
+      run: uv sync
+    - name: Add Dependency Updates To Version Control
+      id: add-dependency-updates-to-version-control
+      run: git add pyproject.toml uv.lock
+    - name: Commit Added Changes
+      id: commit-added-changes
+      run: 'git commit -m "[skip ci] CI/CD: Committing possible staged changes"'
+    - name: Push Commits
+      id: push-commits
+      run: git push
+    - name: Create And Push Tag
+      id: create-and-push-tag
+      run: git tag v$(uv version --short) && git push origin v$(uv version --short)
+    - name: Extract Version
+      id: extract-version
+      run: echo "version=v$(uv version --short)" >> $GITHUB_OUTPUT
+    - name: Download Artifacts From Workflow Run
+      id: download-artifacts-from-workflow-run
+      uses: actions/download-artifact@main
+      with:
+        path: dist
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        merge-multiple: 'true'
+    - name: Build Changelog
+      id: build-changelog
+      uses: mikepenz/release-changelog-builder-action@develop
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release
+      id: create-release
+      uses: ncipollo/release-action@main
+      with:
+        tag: ${{ steps.extract-version.outputs.version }}
+        name: ${{ github.event.repository.name }} ${{ steps.extract-version.outputs.version
+          }}
+        body: ${{ steps.build-changelog.outputs.changelog }}
+        artifacts: dist/*
