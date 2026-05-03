@@ -49,7 +49,7 @@ git (defaults to `False`).
 
 Calling `validate()` on a config file follows this sequence:
 
-1. If the file does not exist, create it (including any missing parent directories).
+1. If the file does not exist, create it (including any missing parent directories) and write `configs()` as the initial content.
 2. If the file is already correct — meaning it already contains all required
 keys and values — return immediately.
 3. Merge `configs()` into the current file content, filling any missing keys
