@@ -8,6 +8,7 @@ from typing import Any
 from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.core.strings import (
     make_name_from_obj,
+    snake_to_kebab_case,
     split_on_uppercase,
 )
 from pyrig.rig.builders.base.builder import BuilderConfigFile
@@ -317,7 +318,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         name = func.__name__  # ty:ignore[unresolved-attribute]
         prefix = name.split("_")[0]
-        return name.removeprefix(f"{prefix}_")
+        name = name.removeprefix(f"{prefix}_")
+        return snake_to_kebab_case(name)
 
     # triggers
     def on_workflow_dispatch(self) -> dict[str, Any]:
