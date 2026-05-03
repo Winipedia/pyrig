@@ -17,7 +17,7 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
   UV_NO_SYNC: 1
 jobs:
-  build-artifacts:
+  artifacts:
     strategy:
       matrix:
         os:
@@ -65,7 +65,7 @@ jobs:
       with:
         name: pyrig-${{ runner.os }}
         path: dist
-  build-container-image:
+  container-image:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event
       != 'schedule' }}

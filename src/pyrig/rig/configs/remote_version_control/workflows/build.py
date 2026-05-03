@@ -77,11 +77,11 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             matrix and one that builds the container image on Ubuntu.
         """
         jobs: ConfigDict = {}
-        jobs.update(self.job_build_artifacts())
-        jobs.update(self.job_build_container_image())
+        jobs.update(self.job_artifacts())
+        jobs.update(self.job_container_image())
         return jobs
 
-    def job_build_artifacts(self) -> ConfigDict:
+    def job_artifacts(self) -> ConfigDict:
         """Return the job configuration for building Python wheels across an OS matrix.
 
         The job runs only when both of these conditions hold:
@@ -96,7 +96,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             matrix strategy, conditional guard, and artifact build steps.
         """
         return self.job(
-            job_func=self.job_build_artifacts,
+            job_func=self.job_artifacts,
             if_condition=self.combined_if(
                 self.if_workflow_run_is_success(),
                 self.if_workflow_run_is_not_cron_triggered(),
@@ -107,7 +107,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_build_artifacts(),
         )
 
-    def job_build_container_image(self) -> ConfigDict:
+    def job_container_image(self) -> ConfigDict:
         """Return the job configuration for building the project container image.
 
         The job runs only when both of these conditions hold:
@@ -122,7 +122,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             conditional guard and container build steps.
         """
         return self.job(
-            job_func=self.job_build_container_image,
+            job_func=self.job_container_image,
             if_condition=self.combined_if(
                 self.if_workflow_run_is_success(),
                 self.if_workflow_run_is_not_cron_triggered(),

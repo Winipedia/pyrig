@@ -297,7 +297,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Returns:
             Display name with the prefix removed, e.g. ``"Build Artifacts"``
-            from ``job_build_artifacts``.
+            from ``job_artifacts``.
         """
         name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
         prefix = next(split_on_uppercase(name))
@@ -314,7 +314,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Returns:
             Identifier string, e.g. ``"build_artifacts"`` from
-            ``job_build_artifacts``.
+            ``job_artifacts``.
         """
         name = func.__name__  # ty:ignore[unresolved-attribute]
         prefix = name.split("_")[0]

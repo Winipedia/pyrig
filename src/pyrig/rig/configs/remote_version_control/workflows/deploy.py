@@ -76,11 +76,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Dict containing the publish-package and deploy-documentation jobs.
         """
         jobs: ConfigDict = {}
-        jobs.update(self.job_publish_package())
-        jobs.update(self.job_deploy_documentation())
+        jobs.update(self.job_package())
+        jobs.update(self.job_documentation())
         return jobs
 
-    def job_publish_package(self) -> ConfigDict:
+    def job_package(self) -> ConfigDict:
         """Build the job that packages and publishes the project to PyPI.
 
         The job runs only when the triggering workflow run succeeded. Steps
@@ -90,12 +90,12 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Dict mapping the derived job ID to its configuration.
         """
         return self.job(
-            job_func=self.job_publish_package,
+            job_func=self.job_package,
             steps=self.steps_publish_package(),
             if_condition=self.if_workflow_run_is_success(),
         )
 
-    def job_deploy_documentation(self) -> ConfigDict:
+    def job_documentation(self) -> ConfigDict:
         """Build the job that deploys the MkDocs documentation to GitHub Pages.
 
         Requests ``pages: write`` and ``id-token: write`` permissions at the
@@ -107,7 +107,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Dict mapping the derived job ID to its configuration.
         """
         return self.job(
-            job_func=self.job_deploy_documentation,
+            job_func=self.job_documentation,
             permissions={"pages": "write", "id-token": "write"},
             steps=self.steps_deploy_documentation(),
             if_condition=self.if_workflow_run_is_success(),
