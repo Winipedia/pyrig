@@ -188,8 +188,8 @@ class PyInstallerBuilder(BuilderConfigFile):
         multi-package applications to bundle resources from their entire
         dependency chain without explicit configuration.
 
-        Yields:
-            Module objects for each discovered ``resources`` package.
+        Returns:
+            Generator of module objects for each discovered ``resources`` package.
         """
         return discover_equivalent_modules_across_dependents(resources, pyrig)
 
