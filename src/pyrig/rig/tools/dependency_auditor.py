@@ -37,11 +37,7 @@ class DependencyAuditor(Tool):
         return "pip-audit"
 
     def group(self) -> str:
-        """Return the tool group used for badge organisation.
-
-        Returns:
-            ``ToolGroup.SECURITY``
-        """
+        """Return the tool group used for badge organisation."""
         return ToolGroup.SECURITY
 
     def badge_urls(self) -> tuple[str, str]:
