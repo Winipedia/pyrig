@@ -310,21 +310,6 @@ class PackageManager(Tool):
         """
         return self.version_args("--short", *args)
 
-    def patch_version_args(self, *args: str) -> Args:
-        """Construct ``Args`` for bumping the patch segment of the project version.
-
-        Increments the third component of the semver string (e.g.
-        ``1.2.3`` → ``1.2.4``) and writes the new version back to
-        ``pyproject.toml``.
-
-        Args:
-            *args: Additional arguments for the version command.
-
-        Returns:
-            Args for ``uv version --bump patch <args...>``.
-        """
-        return self.args("version", "--bump", "patch", *args)
-
     def version_args(self, *args: str) -> Args:
         """Construct ``Args`` for ``uv version``.
 

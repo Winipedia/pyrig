@@ -35,30 +35,15 @@ jobs:
       uses: astral-sh/setup-uv@main
       with:
         python-version: '3.14'
-    - name: Patch Version
-      id: patch-version
-      run: uv version --bump patch
-    - name: Add Version Bump To Version Control
-      id: add-version-bump-to-version-control
-      run: git add pyproject.toml uv.lock
-    - name: Update Dependencies
-      id: update-dependencies
-      run: uv lock --upgrade
     - name: Install Dependencies
       id: install-dependencies
       run: uv sync
-    - name: Add Dependency Updates To Version Control
-      id: add-dependency-updates-to-version-control
-      run: git add pyproject.toml uv.lock
-    - name: Commit Added Changes
-      id: commit-added-changes
-      run: 'git commit -m "[skip ci] CI/CD: Committing possible staged changes"'
-    - name: Push Commits
-      id: push-commits
-      run: git push
-    - name: Create And Push Tag
-      id: create-and-push-tag
-      run: git tag v$(uv version --short) && git push origin v$(uv version --short)
+    - name: Create Tag
+      id: create-tag
+      run: git tag v$(uv version --short)
+    - name: Push Tag
+      id: push-tag
+      run: git push origin v$(uv version --short)
     - name: Extract Version
       id: extract-version
       run: echo "version=v$(uv version --short)" >> $GITHUB_OUTPUT

@@ -612,8 +612,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
         self,
         *,
         python_version: str | None = None,
+        update_dependencies: bool = False,
         repo_token: bool = False,
-        patch_version: bool = False,
     ) -> list[dict[str, Any]]:
         """Build setup steps for matrix jobs.
 
@@ -624,8 +624,9 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Args:
             python_version: Python version string.  ``None`` resolves to the
                 latest supported minor version.
+            update_dependencies: Whether to include a step that updates all
+                dependencies to their latest allowed versions before installing.
             repo_token: Use ``REPO_TOKEN`` for checkout authentication.
-            patch_version: Bump and stage the patch version as part of setup.
 
         Returns:
             Ordered list of step configuration dicts.
@@ -634,7 +635,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             *self.steps_core_installed_setup(
                 python_version=python_version,
                 repo_token=repo_token,
-                patch_version=patch_version,
+                update_dependencies=update_dependencies,
             ),
         ]
 
@@ -642,8 +643,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
         self,
         *,
         python_version: str | None = None,
+        update_dependencies: bool = False,
         repo_token: bool = False,
-        patch_version: bool = False,
     ) -> list[dict[str, Any]]:
         """Build setup steps that also update and install dependencies.
 
@@ -653,21 +654,21 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Args:
             python_version: Python version string.  Defaults to the latest
                 minor version supported by the project.
+            update_dependencies: Whether to include a step that updates all
+                dependencies to their latest allowed versions before installing.
             repo_token: Use ``REPO_TOKEN`` for checkout authentication.
-            patch_version: Bump and stage the patch version as part of setup.
 
         Returns:
             Ordered list of step configuration dicts.
         """
+        update_steps = (self.step_update_dependencies(),) if update_dependencies else ()
         return [
             *self.steps_core_setup(
                 python_version=python_version,
                 repo_token=repo_token,
-                patch_version=patch_version,
             ),
-            self.step_update_dependencies(),
+            *update_steps,
             self.step_install_dependencies(),
-            self.step_add_dependency_updates_to_version_control(),
         ]
 
     def steps_core_setup(
@@ -675,7 +676,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         python_version: str | None = None,
         *,
         repo_token: bool = False,
-        patch_version: bool = False,
     ) -> list[dict[str, Any]]:
         """Build the base checkout and environment setup steps.
 
@@ -689,8 +689,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             repo_token: Use ``REPO_TOKEN`` instead of the default token when
                 checking out the repository.  Required when subsequent steps
                 need to push changes back to the repository.
-            patch_version: If ``True``, append a patch-version bump step and a
-                git-add step for ``pyproject.toml`` and the lock file.
 
         Returns:
             Ordered list of step configuration dicts.
@@ -699,18 +697,11 @@ class WorkflowConfigFile(DictYmlConfigFile):
             python_version = str(
                 PyprojectConfigFile.I.latest_possible_python_version(level="minor")
             )
-        core = [
+        return [
             self.step_checkout_repository(repo_token=repo_token),
             self.step_setup_version_control(),
             self.step_setup_package_manager(python_version=python_version),
         ]
-        if patch_version:
-            core = [
-                *core,
-                self.step_patch_version(),
-                self.step_add_version_bump_to_version_control(),
-            ]
-        return core
 
     # Single Steps
     # ----------------------------------------------------------------------------
@@ -805,50 +796,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_patch_version(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that bumps the project patch version.
-
-        Runs ``uv version --bump patch`` to increment the patch segment of the
-        version string in ``pyproject.toml``.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that increments the patch version.
-        """
-        return self.step(
-            step_func=self.step_patch_version,
-            run=str(PackageManager.I.patch_version_args()),
-            step=step,
-        )
-
-    def step_add_version_bump_to_version_control(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that stages the version-bump files.
-
-        Stages ``pyproject.toml`` and the lock file so they are included in
-        the next commit step.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that runs ``git add pyproject.toml uv.lock``.
-        """
-        return self.step(
-            step_func=self.step_add_version_bump_to_version_control,
-            run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
-            step=step,
-        )
-
     def step_update_dependencies(
         self,
         *,
@@ -889,28 +836,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         return self.step(
             step_func=self.step_install_dependencies,
             run=str(PackageManager.I.install_dependencies_args()),
-            step=step,
-        )
-
-    def step_add_dependency_updates_to_version_control(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that stages dependency file changes.
-
-        Stages ``pyproject.toml`` and the lock file after a dependency update
-        so the changes are included in the next commit.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that runs ``git add pyproject.toml uv.lock``.
-        """
-        return self.step(
-            step_func=self.step_add_dependency_updates_to_version_control,
-            run=str(VersionController.I.add_pyproject_toml_and_lock_file_args()),
             step=step,
         )
 
@@ -1373,77 +1298,46 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_create_and_push_tag(
+    def step_create_tag(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step that creates and pushes a version tag.
+        """Build a step that creates a version tag.
 
-        Creates a tag named ``v<version>`` (e.g. ``v1.2.3``) and pushes it to
-        the remote.  The version string is resolved at runtime via
-        :meth:`insert_version`.
+        Creates a tag named ``v<version>`` (e.g. ``v1.2.3``).  The version
+        string is resolved at runtime via :meth:`insert_version`.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs ``git tag`` followed by
-            ``git push origin <tag>``.
+            Step that runs ``git tag`` to create the version tag.
         """
         return self.step(
-            step_func=self.step_create_and_push_tag,
-            run=str(VersionController.I.tag_args(tag=self.insert_version()))
-            + " && "
-            + str(VersionController.I.push_origin_tag_args(tag=self.insert_version())),
+            step_func=self.step_create_tag,
+            run=str(VersionController.I.tag_args(tag=self.insert_version())),
             step=step,
         )
 
-    def step_commit_added_changes(
+    def step_push_tag(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step that commits any staged changes.
-
-        Commits with the message
-        ``[skip ci] CI/CD: Committing possible staged changes``.
+        """Build a step that pushes the version tag to the remote repository.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs ``git commit -m <msg>``.
-        """
-        msg = '"[skip ci] CI/CD: Committing possible staged changes"'
-        return self.step(
-            step_func=self.step_commit_added_changes,
-            run=str(VersionController.I.commit_with_message_args(msg=msg)),
-            step=step,
-        )
-
-    def step_push_commits(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that pushes the current branch to the remote.
-
-        Pushes any commits staged during the workflow (such as version bumps
-        or lock-file updates) to the remote origin.  The repository must be
-        checked out with ``REPO_TOKEN`` via
-        :meth:`step_checkout_repository` (``repo_token=True``) for this push
-        to succeed.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that runs ``git push``.
+            Step that runs ``git push origin <tag>``.
         """
         return self.step(
-            step_func=self.step_push_commits,
-            run=str(VersionController.I.push_args()),
+            step_func=self.step_push_tag,
+            run=str(
+                VersionController.I.push_origin_tag_args(tag=self.insert_version())
+            ),
             step=step,
         )
 

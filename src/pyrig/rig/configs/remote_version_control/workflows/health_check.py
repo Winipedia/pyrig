@@ -159,6 +159,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return [
             *self.steps_core_matrix_setup(
                 python_version=self.insert_matrix_python_version(),
+                update_dependencies=True,
             ),
             self.step_run_tests(),
             self.step_upload_coverage_report(),
@@ -173,7 +174,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             audit dependencies for CVEs, and apply branch protection rules.
         """
         return [
-            *self.steps_core_installed_setup(),
+            *self.steps_core_installed_setup(update_dependencies=True),
             self.step_run_pre_commit_hooks(),
             self.step_run_dependency_audit(),
             self.step_protect_repository(),
