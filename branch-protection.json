@@ -49,7 +49,7 @@
                     "do_not_enforce_on_create": true,
                     "required_status_checks": [
                         {
-                            "context": "health_check"
+                            "context": "health-check"
                         }
                     ]
                 }
