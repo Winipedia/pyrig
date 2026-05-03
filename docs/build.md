@@ -64,7 +64,7 @@ never leaves a partial artifact in the output directory.
 
 ## `PyInstallerBuilder`
 
-pyrig ships one ready-to-use concrete base: `PyInstallerBuilder`, which produces
+pyrig ships one ready-to-use abstract base: `PyInstallerBuilder`, which produces
 **single-file standalone executables** using
 [PyInstaller](https://pyinstaller.org). It handles all PyInstaller configuration
 automatically:
