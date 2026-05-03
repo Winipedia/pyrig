@@ -11,11 +11,11 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class BuildWorkflowConfigFile(WorkflowConfigFile):
-    """GitHub Actions workflow that builds Python wheels and a container image.
+    """GitHub Actions workflow that builds artifacts and a container image.
 
     Generates ``.github/workflows/build.yml``. The workflow triggers when the
     health check workflow completes on the default branch (excluding scheduled
-    runs), builds Python wheels across an OS matrix and a container image on
+    runs), builds artifacts across an OS matrix and a container image on
     Ubuntu, then uploads both as GitHub Actions artifacts for the release
     workflow to consume.
 
@@ -73,7 +73,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         """Return all jobs for the build workflow.
 
         Returns:
-            Dict with two jobs: one that builds Python wheels across an OS
+            Dict with two jobs: one that builds artifacts across an OS
             matrix and one that builds the container image on Ubuntu.
         """
         jobs: ConfigDict = {}
@@ -82,13 +82,13 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         return jobs
 
     def job_artifacts(self) -> ConfigDict:
-        """Return the job configuration for building Python wheels across an OS matrix.
+        """Return the job configuration for building artifacts across an OS matrix.
 
         The job runs only when both of these conditions hold:
             - The triggering health check workflow run completed successfully.
             - The triggering run was not a scheduled (cron) run.
 
-        Uses an OS matrix strategy (Ubuntu, Windows, macOS) so wheels are
+        Uses an OS matrix strategy (Ubuntu, Windows, macOS) so artifacts are
         produced for all supported platforms in parallel.
 
         Returns:
@@ -136,9 +136,8 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         """Return the ordered steps for the artifact build job.
 
         Steps (in order):
-            1. Core matrix setup — checkout, git config, uv install, patch
-               version bump, dependency upgrade and install, stage lock-file
-               changes.
+            1. Core matrix setup — checkout, git config, uv install,
+               dependency install.
             2. Build artifacts (runs ``pyrig build``).
             3. Upload the ``dist/`` directory as a GitHub Actions artifact.
 

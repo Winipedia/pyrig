@@ -295,8 +295,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
             func: The function whose name provides the source text.
 
         Returns:
-            Display name with the prefix removed, e.g. ``"Build Artifacts"``
-            from ``step_build_artifacts``.
+            Display name with the prefix removed, e.g. ``"Do Something"``
+            from ``job_do_something``.
         """
         name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
         prefix = next(split_on_uppercase(name))
@@ -312,8 +312,8 @@ class WorkflowConfigFile(DictYmlConfigFile):
             func: The function whose name provides the source text.
 
         Returns:
-            Identifier string in kebab-case, e.g. ``"artifacts"`` from
-            ``job_artifacts``.
+            Identifier string, e.g. ``"do-something"`` from
+            ``job_do_something``.
         """
         name = func.__name__  # ty:ignore[unresolved-attribute]
         prefix = name.split("_")[0]
@@ -645,7 +645,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         update_dependencies: bool = False,
         repo_token: bool = False,
     ) -> list[dict[str, Any]]:
-        """Build setup steps that also update and install dependencies.
+        """Build setup steps that also install dependencies.
 
         Extends :meth:`steps_core_setup` with an optional dependency upgrade
         and a full ``uv sync``.

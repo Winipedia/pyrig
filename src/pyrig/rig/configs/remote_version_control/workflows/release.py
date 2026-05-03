@@ -13,24 +13,21 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     """Generates the ``release.yml`` GitHub Actions workflow.
 
     This workflow is triggered when the build workflow completes. The release
-    job only runs when the triggering run succeeded. It applies a minimal version
-    patch bump, commits and pushes all staged changes,
-    creates and pushes a version tag, downloads build artifacts from the
-    triggering run, generates a changelog from commit history, and publishes
-    a GitHub release with the artifacts attached.
+    job only runs when the triggering run succeeded. It creates and pushes a
+    version tag, downloads build artifacts from the triggering run, generates
+    a changelog from commit history, and publishes a GitHub release with the
+    artifacts attached.
 
     Release process (in order):
         1. Check out the repository using ``REPO_TOKEN`` and configure git
            credentials.
-        2. Bump the patch version and stage ``pyproject.toml`` and the lock file.
-        3. Update and install dependencies, staging lock-file changes.
-        4. Commit all staged changes and push commits to the remote.
-        5. Create a version tag (e.g. ``v1.2.3``) and push it to the remote.
-        6. Export the version string to ``GITHUB_OUTPUT``.
-        7. Download build artifacts from the triggering workflow run into
+        2. Install dependencies.
+        3. Create a version tag (e.g. ``v1.2.3``) and push it to the remote.
+        4. Export the version string to ``GITHUB_OUTPUT``.
+        5. Download build artifacts from the triggering workflow run into
            ``dist/``.
-        8. Generate a changelog from commits since the last tag.
-        9. Publish the GitHub release with artifacts and the changelog body.
+        6. Generate a changelog from commits since the last tag.
+        7. Publish the GitHub release with artifacts and the changelog body.
 
     Permissions required:
         - ``contents: write`` — push commits, tags, and create releases.
@@ -119,8 +116,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
 
         Returns:
             Steps that perform the full release sequence: environment setup
-            with a patch version bump, updating and installing dependencies,
-            committing and pushing changes, creating and pushing the version
+            and dependency installation, creating and pushing the version
             tag, exporting the version, downloading build artifacts,
             generating a changelog, and publishing the GitHub release.
         """
