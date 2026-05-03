@@ -94,10 +94,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             Dict containing the single release job.
         """
         jobs: ConfigDict = {}
-        jobs.update(self.job_release())
+        jobs.update(self.job_distributions())
         return jobs
 
-    def job_release(self) -> ConfigDict:
+    def job_distributions(self) -> ConfigDict:
         """Build the release job configuration.
 
         The job is guarded by
@@ -109,7 +109,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             success condition and the ordered release steps.
         """
         return self.job(
-            job_func=self.job_release,
+            job_func=self.job_distributions,
             if_condition=self.if_workflow_run_is_success(),
             steps=self.steps_release(),
         )

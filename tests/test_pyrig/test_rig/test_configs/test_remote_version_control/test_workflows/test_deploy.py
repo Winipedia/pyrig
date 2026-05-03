@@ -26,9 +26,9 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         assert DeployWorkflowConfigFile.I.stem() == "deploy"
 
-    def test_job_deploy_documentation(self) -> None:
+    def test_job_documentation(self) -> None:
         """Test method."""
-        result = DeployWorkflowConfigFile.I.job_deploy_documentation()
+        result = DeployWorkflowConfigFile.I.job_documentation()
         assert len(result) == 1, f"Expected job to have one key, got {result}"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
@@ -53,11 +53,11 @@ class TestDeployWorkflowConfigFile:
         result = my_test_deploy_workflow().jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
-    def test_job_publish_package(
+    def test_job_package(
         self, my_test_deploy_workflow: type[DeployWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_deploy_workflow().job_publish_package()
+        result = my_test_deploy_workflow().job_package()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"

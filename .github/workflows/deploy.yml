@@ -15,7 +15,7 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
   UV_NO_SYNC: 1
 jobs:
-  publish-package:
+  package:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
@@ -39,7 +39,7 @@ jobs:
       run: 'if [ ${{ secrets.PYPI_TOKEN }} ]; then uv publish --token ${{ secrets.PYPI_TOKEN
         }}; else echo "Skipping step due to failed condition: secrets.PYPI_TOKEN.";
         fi'
-  deploy-documentation:
+  documentation:
     permissions:
       pages: write
       id-token: write

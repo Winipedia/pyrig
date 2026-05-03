@@ -26,11 +26,11 @@ class TestBuildWorkflowConfigFile:
         """Test method."""
         assert BuildWorkflowConfigFile.I.stem() == "build"
 
-    def test_job_build_container_image(
+    def test_job_container_image(
         self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow().job_build_container_image()
+        result = my_test_build_workflow().job_container_image()
         assert len(result) == 1, f"Expected job to have one key, got {result}"
 
     def test_steps_build_container_image(
@@ -54,11 +54,11 @@ class TestBuildWorkflowConfigFile:
         result = my_test_build_workflow().jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
-    def test_job_build_artifacts(
+    def test_job_artifacts(
         self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_build_workflow().job_build_artifacts()
+        result = my_test_build_workflow().job_artifacts()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
