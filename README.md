@@ -110,7 +110,7 @@ PyInstaller integration and extensible build system for generating executables,
 distributable packages, and more.
 Run `pyrig subcls` to create a custom builder for your specific build needs.
 Run `pyrig build` to execute the build process and generate artifacts.
-Run `pyrig resources` to create a resources directory for your project.
+Run `pyrig resources` to create a resources package for your project.
 
 ### [Multi-Package Inheritance and Extensibility Architecture](https://winipedia.github.io/pyrig/architecture)
 
