@@ -74,8 +74,7 @@ making them available for the next stage in the pipeline.
 **Trigger:** `Build` workflow completes.
 
 The release job runs only when the triggering build succeeded.
-It creates a version tag based on the current version in pyproject.toml and
-pushes it to the repository.
+It tags the current commit with the version and pushes the tag to the repository.
 Then it creates a GitHub Release with the new tag and attaches the build
 artifacts from the previous stage.
 
@@ -102,17 +101,14 @@ release having succeeded:
 
 ---
 
-## Automatic Dependency Management
+## Automatic Dependency Updates Checks
 
-A notable property of the pipeline is that **dependency upgrades happen inside
-CI**, not as a manual developer step. The Health Check stage runs
-`uv lock --upgrade` to pull the latest dependency versions within declared
-constraints. Subsequent stages (Build, Release, Deploy) use `uv sync` to install
-dependencies from the updated lock file. The release stage creates a tag based on
-the current version in pyproject.toml. This ensures your project dependencies are
-always up to date and secure without any manual effort. If you need specific
-versions of packages you need to pin them in `pyproject.toml` to prevent them from
-being updated by the pipeline.
+A notable property of the pipeline is that **dependency
+upgrades happen inside CI** in the health check stage. It runs `uv lock --upgrade`
+to pull the latest dependency versions within declared constraints. This ensures
+your project catches problems caused by new versions in the dependencies early.
+If you need specific versions of packages you need to pin them in `pyproject.toml`
+to prevent it from being updated by the pipeline.
 
 ---
 

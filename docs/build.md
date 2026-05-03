@@ -10,7 +10,7 @@ automatically without any explicit registration.
 
 ## How It Works
 
-`BuilderConfigFile` is an abstract base class that **repurposes the `ConfigFile`
+`BuilderConfigFile` is an abstract base class that **repurposes the `ListConfigFile`
 interface for build operations** instead of configuration file management. The
 key insight is that a build artifact can be modelled as a "config file" whose
 required content is simply its own existence on disk:
@@ -64,7 +64,7 @@ never leaves a partial artifact in the output directory.
 
 ## `PyInstallerBuilder`
 
-pyrig ships one ready-to-use concrete base: `PyInstallerBuilder`, which produces
+pyrig ships one ready-to-use abstract base: `PyInstallerBuilder`, which produces
 **single-file standalone executables** using
 [PyInstaller](https://pyinstaller.org). It handles all PyInstaller configuration
 automatically:
