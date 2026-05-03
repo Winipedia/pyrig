@@ -81,8 +81,6 @@ mirrored test module.
 - **`all_config_files_correct`** — checks that all version-controlled config
 files match their expected content.
 - **`no_namespace_packages`** — all package directories have an `__init__.py`.
-- **`no_unstaged_changes_in_ci`** — no unstaged file changes exist before or
-  after the session when running in CI.
 - **`no_dev_deps_in_source_code`** — source code can be imported and the CLI
   can run in an isolated environment that has no dev dependencies installed.
 
