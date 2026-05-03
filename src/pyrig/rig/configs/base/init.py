@@ -37,7 +37,7 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
     def parent_path(self) -> Path:
         """Return the directory that will contain the generated ``__init__.py``.
 
-        ``CopyModuleDocstringConfigFile.parent_path`` resolves a module's dotted name
+        ``CopyModuleConfigFile.parent_path`` resolves a module's dotted name
         to a filesystem path and returns its *parent directory* — the directory that
         would hold a regular ``.py`` file of that name.  For an ``__init__.py`` the
         file lives one level deeper: inside the package directory itself. This override
