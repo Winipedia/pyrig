@@ -100,8 +100,11 @@ A class hierarchy of format-specific bases builds on top of `ConfigFile`:
 ```text
 ConfigFile
  ├── DictConfigFile
- │    ├── TomlConfigFile       → pyproject.toml, prek.toml …
- │    ├── DictYmlConfigFile    → GitHub Actions workflows
+ │    └── TomlConfigFile       → pyproject.toml, prek.toml …
+ ├── YamlConfigFile
+ │    └── YmlConfigFile
+ │         └── DictYmlConfigFile    → GitHub Actions workflows
+ ├── JsonConfigFile
  │    └── DictJsonConfigFile   → branch-protection.json
  └── ListConfigFile
       ├── StringConfigFile
@@ -115,7 +118,7 @@ ConfigFile
 
 Every external tool is wrapped in a `Tool` subclass. A `Tool` exposes methods
 that return `Args` objects. `Args` is an immutable
-`tuple[str]` subclass with `.run()` and `.run_cached()` that run the command
+`tuple[str, ...]` subclass with `.run()` and `.run_cached()` that run the command
 via `subprocess`. This allows tools to be used in a declarative, composable way:
 
 ```python

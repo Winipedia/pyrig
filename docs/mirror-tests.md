@@ -29,16 +29,38 @@ always a 1:1 mirror.
 way pyrig treats any other managed file: as a file with a required minimum content
 that must be present and correct.
 
-The "required content" for a test file is the set of test stubs for every source
-symbol that does not yet have a test. `_configs()` returns those stubs. `_load()`
-reads the existing test file. `validate()` compares the two and writes only
-what is missing — it never touches existing test implementations.
+The "required content" for a test file is the full test module: the existing
+implementations plus new stubs for every source symbol that does not yet have a
+test. `_configs()` builds and returns that full content by reading the existing
+file and appending skeletons for any untested symbols. `_load()` reads the
+existing test file. `validate()` writes the result when the file is missing or
+incorrect — it never removes existing test implementations.
 
 Each stub is a minimal placeholder:
 
-- **Functions** become `def test_<name>() -> None: raise NotImplementedError`
-- **Classes** become an empty `class Test<Name>:` shell
-- **Methods** become `def test_<name>(self) -> None: raise NotImplementedError`
+- **Functions** become:
+
+  ```python
+  def test_<name>() -> None:
+      """Test function."""
+      raise NotImplementedError
+  ```
+
+- **Classes** become:
+
+  ```python
+  class Test<Name>:
+      """Test class."""
+  ```
+
+- **Methods** become:
+
+  ```python
+  def test_<name>(self) -> None:
+      """Test method."""
+      raise NotImplementedError
+  ```
+
   inserted into the matching test class
 
 Stubs signal intent — they mark code that needs a test without pretending the
