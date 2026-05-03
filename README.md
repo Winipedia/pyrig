@@ -143,7 +143,7 @@ uv run pyrig mkfixture      # Generate a new pytest fixture
 uv run pyrig subcls         # Generate a subclass for overriding a config or tool
 uv run pyrig build          # Build artifacts (PyInstaller, etc.)
 uv run pyrig protect-repo   # Configure repository protection
-uv run pyrig scratch        # Execute the project's .scratch file
+uv run pyrig scratch        # Execute the project's .scratch.py file
 uv run pyrig rmpyc          # Remove __pycache__ directories
 uv run pyrig version        # Show pyrig version
 uv run my-project --help    # Your project's CLI

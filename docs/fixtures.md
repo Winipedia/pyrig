@@ -62,7 +62,7 @@ You can also generate a new fixture skeleton with the `mkfixture` command:
 uv run pyrig mkfixture my-fixture-name
 ```
 
-This will create a new file `my_project/rig/tests/fixtures/fixtures.py` and
+This will create a new file `src/my_project/rig/tests/fixtures/fixtures.py` and
 add a new fixture function skeleton named `my_fixture_name` to it with a
 `@pytest.fixture` decorator. If the file already exists, the new fixture will be
 added to it without affecting any existing content.
@@ -76,7 +76,8 @@ on every test run without being requested by any test. They act as continuous
 project health checks, turning a passing test suite into a guarantee that the
 project is structurally sound.
 
-- **`all_modules_tested`** — checks that every source symbol has a test stub.
+- **`all_modules_tested`** — checks that every source module has a fully
+mirrored test module.
 - **`all_config_files_correct`** — checks that all version-controlled config
 files match their expected content.
 - **`no_namespace_packages`** — all package directories have an `__init__.py`.

@@ -89,13 +89,13 @@ artifacts from the previous stage.
 Two independent jobs run in this final stage, both gated on the triggering
 release having succeeded:
 
-- **`publish-package`** — builds a Python wheel and publishes it to PyPI using
+- **`publish_package`** — builds a Python wheel and publishes it to PyPI using
   the `PYPI_TOKEN` secret. The publish step is conditional: if `PYPI_TOKEN` is
   not configured in the repository secrets, the step is skipped rather than
   failing. This makes the workflow safe to run for projects that are not yet
   published to PyPI.
 
-- **`deploy-documentation`** — builds the MkDocs documentation site and
+- **`deploy_documentation`** — builds the MkDocs documentation site and
   deploys it to GitHub Pages. This job requires `pages: write` and
   `id-token: write` permissions at the job level.
 

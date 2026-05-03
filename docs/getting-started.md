@@ -198,7 +198,7 @@ This will create an initial commit of the scaffolded and initialized project.
 uv run pyrig init
 ```
 
-### 7. Push to GitHub
+### 6. Push to GitHub
 
 Make sure you have the necessary tokens and secrets set up before
 pushing so that the CI/CD pipeline can run successfully on push.
@@ -208,7 +208,7 @@ pushing so that the CI/CD pipeline can run successfully on push.
 git push -u origin main
 ```
 
-### 8. Verify Workflows
+### 7. Verify Workflows
 
 On GitHub.com:
 
@@ -218,9 +218,9 @@ follwed by Build workflow, Release workflow, and Deploy workflow
 3. Verify all jobs run successfully
 (should just take a 2-3 minutes on an empty project)
 
-### 9. Start coding
+### 8. Start coding
 
 Start coding under the `src/my_project/` directory.
 
 Add commands to your CLI with `pyrig mkcmd` and start building your project!
-Write tests with `pyrig mktest` and watch them run in CI/CD on every push.
+Write tests with `pyrig mktests` and watch them run in CI/CD on every push.
