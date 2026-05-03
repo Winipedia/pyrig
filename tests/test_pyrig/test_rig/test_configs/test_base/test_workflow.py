@@ -211,7 +211,7 @@ class TestWorkflowConfigFile:
             pass
 
         result = my_test_workflow().make_id_from_func(job_test_function)
-        assert result == "test_function", f"Expected 'test_function', got {result}"
+        assert result == "test-function"
 
     def test_insert_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -635,16 +635,12 @@ class TestWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_workflow().insert_version_from_extract_version_step()
-        assert "steps.extract_version.outputs.version" in result, (
-            "Expected 'steps.extract_version.outputs.version' in result"
-        )
+        assert "steps.extract-version.outputs.version" in result
 
     def test_insert_changelog(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().insert_changelog()
-        assert "steps.build_changelog.outputs.changelog" in result, (
-            "Expected 'steps.build_changelog.outputs.changelog' in result"
-        )
+        assert "steps.build-changelog.outputs.changelog" in result
 
     def test_insert_matrix_python_version(
         self, my_test_workflow: type[WorkflowConfigFile]
