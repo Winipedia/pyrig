@@ -31,8 +31,8 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
     Generates and manages ``branch-protection.json``, which defines a GitHub
     repository ruleset targeting the default branch. The ruleset enforces pull
     request reviews, status checks against the health-check workflow, linear
-    commit history, signed commits, and protection against force pushes and
-    direct updates to the branch.
+    commit history, signed commits, and protection against force pushes to the
+    branch.
 
     The generated file can be applied automatically via the GitHub API using
     ``protect_repo()``, or uploaded manually via the repository's
@@ -63,8 +63,8 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
         dict that targets the repository default branch (``~DEFAULT_BRANCH``)
         and enforces the following rules:
 
-        - ``creation``, ``update``, ``deletion``: Restrict who can create,
-          update, or delete the protected branch.
+        - ``creation``, ``deletion``: Restrict who can create or delete the
+          protected branch.
         - ``required_linear_history``: Enforces a linear commit history,
           preventing merge commits directly to the branch.
         - ``required_signatures``: Requires all commits to be signed.
