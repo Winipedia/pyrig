@@ -31,7 +31,7 @@ When `ConfigFile.subclasses()` (or `Tool.subclasses()`, etc.) is called, it:
    `importlib.metadata`.
 2. For every package in that ancestor set it locates the equivalent sub-package
    (e.g. `myproject.rig.configs` mirrors `pyrig.rig.configs`).
-3. Imports every module in that sub-package and collects all non-abstract subclasses.
+3. Imports every module in that sub-package and collects all leaf (non-parent) subclasses.
 
 This means any installed package that depends on `pyrig` automatically contributes
 its `ConfigFile`, `Tool`, and `BuilderConfigFile` subclasses — no entry-point
