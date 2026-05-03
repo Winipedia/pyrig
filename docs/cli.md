@@ -48,7 +48,7 @@ to `my_project.rig.cli.subcommands` (creating the file if it does not exist).
 
 `my_project.rig.cli.shared_subcommands` is a bit special: it is intended for
 commands that should be shared across multiple projects. If a project defines a
-function in `shared_subcommands`, that command will also be availabe in any
+function in `shared_subcommands`, that command will also be available in any
 other project that has your project as a dependency.
 An example of this is pyrig's own `version` command, which is defined in `pyrig.rig.cli.shared_subcommands`
 so that it is available in every project that uses pyrig.

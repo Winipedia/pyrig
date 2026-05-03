@@ -40,8 +40,9 @@ fires when the previous stage finishes. Each downstream stage also guards its
 jobs with an `if` condition that checks the triggering run succeeded, so a
 failure anywhere in the chain stops propagation cleanly.
 
-Build is not triggered by scheduled health checks, since they serve as a continuous
-health signal rather than a release signal. Only pushes and PR merges trigger builds.
+The Build workflow is triggered when Health Check completes on the default branch,
+but excludes scheduled health check runs. This means builds only occur for actual
+code changes pushed to the default branch, not for routine nightly health checks.
 
 ---
 
@@ -70,7 +71,7 @@ making them available for the next stage in the pipeline.
 
 **File:** `.github/workflows/release.yml`
 
-**Trigger:** `build` workflow completes.
+**Trigger:** `Build` workflow completes.
 
 The release job runs only when the triggering build succeeded.
 It tags the current commit with the version and pushes the tag to the repository.
@@ -83,7 +84,7 @@ artifacts from the previous stage.
 
 **File:** `.github/workflows/deploy.yml`
 
-**Trigger:** `release` workflow completes.
+**Trigger:** `Release` workflow completes.
 
 Two independent jobs run in this final stage, both gated on the triggering
 release having succeeded:
@@ -100,7 +101,7 @@ release having succeeded:
 
 ---
 
-## Automatic Version and Dependency Management
+## Automatic Dependency Updates Checks
 
 A notable property of the pipeline is that **dependency
 upgrades happen inside CI** in the health check stage. It runs `uv lock --upgrade`
