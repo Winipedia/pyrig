@@ -69,7 +69,7 @@ my-project/
 
 | File | Purpose |
 |---|---|
-| `pyproject.toml` | Central project config: package metadata, dependencies, build backend (`uv_build`), and tool settings for ruff, bandit, pytest, and ty |
+| `pyproject.toml` | Central project config: package metadata, dependencies, build backend, and tool settings |
 | `uv.lock` | Fully resolved, reproducible dependency lock file managed by uv |
 | `.python-version` | Pins the Python version used by uv for this project |
 | `prek.toml` | Pre-commit hooks: `ruff format`, `ruff check --fix`, `ty check`, `bandit`, `rumdl check --fix` on pre-commit; `uv self update`, `uv lock --upgrade`, `uv sync` on pre-push/post-checkout/post-merge/post-rewrite |
