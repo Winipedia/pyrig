@@ -1526,7 +1526,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Returns:
             GitHub Actions expression for
-            ``steps.extract_version.outputs.version``.
+            ``steps.extract-version.outputs.version``.
         """
         # make dynamic with self.make_id_from_func(self.step_extract_version)
         return self.insert_var(
@@ -1541,7 +1541,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Returns:
             GitHub Actions expression for
-            ``steps.build_changelog.outputs.changelog``.
+            ``steps.build-changelog.outputs.changelog``.
         """
         return self.insert_var(
             f"steps.{self.make_id_from_func(self.step_build_changelog)}.outputs.changelog"
