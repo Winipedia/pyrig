@@ -155,8 +155,8 @@ def make_name_from_obj(
             for snake_case identifiers.
         join_on: Character(s) to join the resulting parts with. Defaults to
             ``"-"`` producing kebab-case output.
-        capitalize: Whether to capitalize the first letter of each part.
-            Defaults to ``True``.
+        capitalize: Whether to capitalize each part (first letter uppercased,
+            remainder lowercased). Defaults to ``True``.
 
     Returns:
         Formatted name string. For example, ``"init_project"`` becomes
