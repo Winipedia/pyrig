@@ -43,8 +43,8 @@ When the CLI is invoked, pyrig discovers every function defined in
 and registers them as CLI commands. This means that to add a new command, simply
 define a new function in one of those modules, and it will be automatically
 available as a CLI command the next time the CLI is run.
-Simply run `pyrig mkcmd <command-name>` to create the file `my_project.rig.cli.subcommands`
-and generate a new command function skeleton.
+Simply run `pyrig mkcmd <command-name>` to append a new command function skeleton to
+`my_project.rig.cli.subcommands` (the file is created automatically if it does not yet exist).
 
 `my_project.rig.cli.shared_subcommands` is a bit special: it is intended for
 commands that should be shared across multiple projects. If a project defines a
