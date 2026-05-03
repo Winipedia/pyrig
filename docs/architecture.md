@@ -14,7 +14,8 @@ src/pyrig/
     ├── builders/       # Artifact builders (executables, archives)
     ├── tools/          # CLI tool wrappers (git, uv, pytest, ruff …)
     ├── tests/          # Mirror test framework + pytest fixtures
-    └── utils/          # Rig-layer helpers (paths, versions, GitHub API)
+    ├── utils/          # Rig-layer helpers (paths, versions, GitHub API)
+    └── resources/      # Static resource files bundled with the package
 ```
 
 ---
@@ -30,7 +31,8 @@ When `ConfigFile.subclasses()` (or `Tool.subclasses()`, etc.) is called, it:
    `importlib.metadata`.
 2. For every package in that ancestor set it locates the equivalent sub-package
    (e.g. `myproject.rig.configs` mirrors `pyrig.rig.configs`).
-3. Imports every module in that sub-package and collects all leaf subclasses (discarding intermediate parent classes).
+3. Imports every module in that sub-package and collects all leaf subclasses
+(discarding intermediate parent classes).
 
 This means any installed package that depends on `pyrig` automatically contributes
 its `ConfigFile`, `Tool`, and `BuilderConfigFile` subclasses — no entry-point

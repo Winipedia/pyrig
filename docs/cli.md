@@ -31,8 +31,8 @@ automatically at runtime.
 
 A `typer.Typer` instance (`app`) is defined in `pyrig.rig.cli.cli`.
 It is fully configured and working from the start and registers
-every function defined in `my_project.rig.cli.subcommands.py` as a command.
-The same applies to every `my_project.rig.cli.shared_subcommands.py`
+every function defined in `my_project.rig.cli.subcommands` as a command.
+The same applies to every `my_project.rig.cli.shared_subcommands`
 
 ---
 
@@ -43,8 +43,8 @@ When the CLI is invoked, pyrig discovers every function defined in
 and registers them as CLI commands. This means that to add a new command, simply
 define a new function in one of those modules, and it will be automatically
 available as a CLI command the next time the CLI is run.
-Simply run `pyrig mkcmd <command-name>` to create the file `my_project.rig.cli.subcommands`
-and generate a new command function skeleton.
+Simply run `pyrig mkcmd <command-name>` to append a new command function skeleton
+to `my_project.rig.cli.subcommands` (creating the file if it does not exist).
 
 `my_project.rig.cli.shared_subcommands` is a bit special: it is intended for
 commands that should be shared across multiple projects. If a project defines a
@@ -68,4 +68,5 @@ uv run pyrig version
 ```
 
 To add a shared command, simply run `pyrig mkcmd <command-name> --shared` and
-it will create`shared_subcommands` and add the command skeleton there.
+it will append the command skeleton to `shared_subcommands` (creating the
+file if it does not exist).
