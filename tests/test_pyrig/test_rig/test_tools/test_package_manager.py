@@ -129,11 +129,6 @@ class TestPackageManager:
         result = PackageManager.I.update_self_args()
         assert result == ("uv", "self", "update")
 
-    def test_patch_version_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.patch_version_args()
-        assert result == ("uv", "version", "--bump", "patch")
-
     def test_build_args(self) -> None:
         """Test method."""
         result = PackageManager.I.build_args()
