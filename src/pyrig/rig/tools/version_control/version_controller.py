@@ -490,6 +490,8 @@ class VersionController(Tool):
         GitHub usernames cannot contain spaces in the URL, but git usernames can, so if
         the git username contains spaces, it is likely not intended to be used as-is
         for the repository owner in URLs.
+        When extracting the owner from the remote URL, the username is guaranteed to be
+        correct, so no correction is applied to it.
 
         Args:
             check_repo_url: When ``True``, raises an error if no remote origin
@@ -506,8 +508,6 @@ class VersionController(Tool):
                 "No remote url found, using git username: '%s' as repo owner",
                 owner,
             )
-        else:
-            owner = self.owner_from_remote_url()
             if " " in owner:
                 logger.warning(
                     "Repository owner '%s' contains spaces.",
@@ -518,6 +518,8 @@ class VersionController(Tool):
                     "Spaces removed from the owner to ensure URL safety: '%s'",
                     owner,
                 )
+        else:
+            owner = self.owner_from_remote_url()
 
         return owner
 
