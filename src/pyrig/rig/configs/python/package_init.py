@@ -1,6 +1,6 @@
 """Configuration for generating the top-level package ``__init__.py`` file.
 
-Produces ``{package_name}/__init__.py`` with a generic module docstring and
+Produces ``src/{package_name}/__init__.py`` with a generic module docstring and
 removes the ``main.py`` file that ``uv init`` places in the project root.
 """
 
@@ -14,7 +14,7 @@ from pyrig.rig.configs.base.init import InitConfigFile
 class PackageInitConfigFile(InitConfigFile):
     """Generates the project's top-level package ``__init__.py``.
 
-    Writes ``{package_name}/__init__.py`` using the docstring from the ``pyrig``
+    Writes ``src/{package_name}/__init__.py`` using the docstring from the ``pyrig``
     root module. That docstring is intentionally generic so it reads correctly
     in any scaffolded project's top-level package.
 
@@ -26,7 +26,7 @@ class PackageInitConfigFile(InitConfigFile):
     """
 
     def create_file(self) -> None:
-        """Generate ``{package_name}/__init__.py`` and remove the root ``main.py``.
+        """Generate ``src/{package_name}/__init__.py`` and remove the root ``main.py``.
 
         Delegates file creation to the parent implementation, then removes
         ``main.py`` from the project root if it exists.
