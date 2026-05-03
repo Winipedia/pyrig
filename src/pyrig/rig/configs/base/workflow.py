@@ -611,7 +611,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
     def steps_core_matrix_setup(
         self,
         *,
-        no_dev: bool = False,
         python_version: str | None = None,
         repo_token: bool = False,
         patch_version: bool = False,
@@ -623,7 +622,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         naming pattern alongside the other ``steps_core_*`` helpers.
 
         Args:
-            no_dev: Omit dev dependency groups from the sync.
             python_version: Python version string.  ``None`` resolves to the
                 latest supported minor version.
             repo_token: Use ``REPO_TOKEN`` for checkout authentication.
@@ -636,7 +634,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             *self.steps_core_installed_setup(
                 python_version=python_version,
                 repo_token=repo_token,
-                no_dev=no_dev,
                 patch_version=patch_version,
             ),
         ]
@@ -644,7 +641,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
     def steps_core_installed_setup(
         self,
         *,
-        no_dev: bool = False,
         python_version: str | None = None,
         repo_token: bool = False,
         patch_version: bool = False,
@@ -655,7 +651,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         ``uv sync``, and a git-add step for ``pyproject.toml`` and lock-file changes.
 
         Args:
-            no_dev: Omit dev dependency groups from the sync.
             python_version: Python version string.  Defaults to the latest
                 minor version supported by the project.
             repo_token: Use ``REPO_TOKEN`` for checkout authentication.
@@ -671,7 +666,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
                 patch_version=patch_version,
             ),
             self.step_update_dependencies(),
-            self.step_install_dependencies(no_dev=no_dev),
+            self.step_install_dependencies(),
             self.step_add_dependency_updates_to_version_control(),
         ]
 
@@ -879,31 +874,21 @@ class WorkflowConfigFile(DictYmlConfigFile):
     def step_install_dependencies(
         self,
         *,
-        no_dev: bool = False,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a step that synchronises the virtual environment.
 
-        Runs ``uv sync`` to install all locked dependencies.  Pass
-        ``no_dev=True`` to omit the dev dependency group, which is useful for
-        production builds where dev tools are not needed.
+        Runs ``uv sync`` to install all locked dependencies.
 
         Args:
-            no_dev: Exclude the dev dependency group from the sync.
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs ``uv sync`` (with ``--no-group dev`` when
-            ``no_dev`` is ``True``).
+            Step that runs ``uv sync``.
         """
-        install = str(PackageManager.I.install_dependencies_args())
-        if no_dev:
-            install += " --no-group dev"
-        run = install
-
         return self.step(
             step_func=self.step_install_dependencies,
-            run=run,
+            run=str(PackageManager.I.install_dependencies_args()),
             step=step,
         )
 
