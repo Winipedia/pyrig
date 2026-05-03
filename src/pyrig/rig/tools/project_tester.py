@@ -35,7 +35,7 @@ class ProjectTester(Tool):
         """Get the badge group for this tool.
 
         Returns:
-            'testing'
+            ``ToolGroup.TESTING``
         """
         return ToolGroup.TESTING
 
