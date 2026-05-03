@@ -53,7 +53,7 @@ my-project/
 │   └── index.md                            # Documentation home page
 │
 ├── src/
-│   └── my_pr/                              # Package root (project name → snake_case)
+│   └── my_project/                         # Package root (project name → snake_case)
 │       ├── __init__.py                     # Top-level package module
 │       └── py.typed                        # PEP 561 marker (typed package)
 │
@@ -69,10 +69,10 @@ my-project/
 
 | File | Purpose |
 |---|---|
-| `pyproject.toml` | Central project config: package metadata, dependencies, build backend (`uv`), and tool settings for ruff, bandit, pytest, and mypy/ty |
+| `pyproject.toml` | Central project config: package metadata, dependencies, build backend (`uv`), and tool settings for ruff, bandit, pytest, and ty |
 | `uv.lock` | Fully resolved, reproducible dependency lock file managed by uv |
 | `.python-version` | Pins the Python version used by uv for this project |
-| `prek.toml` | Pre-commit hooks: `ruff format`, `ruff check --fix`, `ty check`, `bandit`, `rumdl check --fix` on pre-commit; `uv self update`, `uv lock --upgrade`, `uv sync` on pre-push/checkout/merge |
+| `prek.toml` | Pre-commit hooks: `ruff format`, `ruff check --fix`, `ty check`, `bandit`, `rumdl check --fix` on pre-commit; `uv self update`, `uv lock --upgrade`, `uv sync` on pre-push/post-checkout/post-merge/post-rewrite |
 | `mkdocs.yml` | MkDocs + Material theme configuration with mkdocstrings and mermaid2 plugins |
 | `branch-protection.json` | Declarative GitHub branch protection rules applied via `pyrig protect-repo` |
 | `.env` | Environment variable template (empty by default) |
@@ -114,7 +114,7 @@ testing, building, releasing and deploying the project:
 Health Check ──► Build ──► Release ──► Deploy
 ```
 
-### `src/my_pr/`
+### `src/my_project/`
 
 | File | Purpose |
 |---|---|
@@ -132,8 +132,10 @@ Health Check ──► Build ──► Release ──► Deploy
 ## Tool-Generated Artifacts
 
 These files and directories are created as side effects of the tools that
-`pyrig init` runs (test suite, linters, etc.). They are gitignored and are
-not directly managed by pyrig:
+pyrig configures, but they are not directly managed by pyrig's `mkroot` command.
+They are gitignored and should not be manually edited, but they are not
+considered part of the "scaffolded" project structure since they are generated
+and updated automatically by their respective tools.:
 
 | Path | Created by |
 |---|---|
