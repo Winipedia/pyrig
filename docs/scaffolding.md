@@ -102,7 +102,7 @@ my-project/
 | `ISSUE_TEMPLATE/bug_report.yml` | Structured bug report form |
 | `ISSUE_TEMPLATE/feature_request.yml` | Structured feature request form |
 | `ISSUE_TEMPLATE/config.yml` | Configures the issue template chooser |
-| `workflows/health_check.yml` | Runs the full test suite on every PR, push to `main`, and on a nightly schedule |
+| `workflows/health_check.yml` | Runs code quality checks and the full test suite on every PR, push to `main`, and on a nightly schedule |
 | `workflows/build.yml` | Builds distributable artifacts after a successful health check |
 | `workflows/release.yml` | Creates a GitHub release after a successful build |
 | `workflows/deploy.yml` | Deploys documentation and packages after a successful release |

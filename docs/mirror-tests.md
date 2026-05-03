@@ -31,7 +31,7 @@ that must be present and correct.
 
 The "required content" for a test file is the full test module: the existing
 implementations plus new stubs for every source symbol that does not yet have a
-test. `_configs()` builds and returns that full content by reading the existing
+test. `lines()` builds and returns that full content by reading the existing
 file and appending skeletons for any untested symbols. `_load()` reads the
 existing test file. `validate()` writes the result when the file is missing or
 incorrect — it never removes existing test implementations.
