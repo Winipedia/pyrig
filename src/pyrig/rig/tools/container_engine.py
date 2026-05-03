@@ -34,7 +34,7 @@ class ContainerEngine(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            ``"tooling"``
+            ``ToolGroup.TOOLING``
         """
         return ToolGroup.TOOLING
 

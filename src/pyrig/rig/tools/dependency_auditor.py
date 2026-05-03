@@ -40,7 +40,7 @@ class DependencyAuditor(Tool):
         """Return the tool group used for badge organisation.
 
         Returns:
-            ``"security"``
+            ``ToolGroup.SECURITY``
         """
         return ToolGroup.SECURITY
 
