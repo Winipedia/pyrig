@@ -62,9 +62,9 @@ never leaves a partial artifact in the output directory.
 
 ---
 
-## `PyInstallerBuilder`
+## `ExecutableBuilder`
 
-pyrig ships one ready-to-use abstract base: `PyInstallerBuilder`, which produces
+pyrig ships one ready-to-use abstract base: `ExecutableBuilder`, which produces
 **single-file standalone executables** using
 [PyInstaller](https://pyinstaller.org). It handles all PyInstaller configuration
 automatically:
@@ -75,7 +75,7 @@ automatically:
   so that every `rig/resources/` package in the project's dependencies is
   included and accessible at runtime via `importlib.resources`.
 
-To create an executable builder, subclass `PyInstallerBuilder` and implement two
+To create an executable builder, subclass `ExecutableBuilder` and implement two
 methods:
 
 - `entry_point_module()` — the module PyInstaller uses as its main script.
@@ -100,7 +100,7 @@ Two methods must be implemented:
 Everything else — output path, platform suffix, temp directory lifecycle, and
 skip-if-exists logic — is handled by the framework.
 
-Simply run `pyrig subcls` and select `PyInstallerBuilder` to generate a
+Simply run `pyrig subcls` and select `ExecutableBuilder` to generate a
 ready-to-edit subclass skeleton for a new executable.
 
 ---

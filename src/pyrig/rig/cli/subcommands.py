@@ -112,7 +112,7 @@ def build() -> None:
     Delete the existing dist/ artifacts if you want to rebuild them.
 
     Extend pyrig by subclassing `BuilderConfigFile` (for custom builds) or
-    `PyInstallerBuilder` (for standalone executables) and placing the subclass
+    `ExecutableBuilder` (for standalone executables) and placing the subclass
     inside your project's `builders` package.
 
     Example:
