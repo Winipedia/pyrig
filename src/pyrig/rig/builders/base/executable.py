@@ -22,7 +22,7 @@ from pyrig.rig.builders.base.builder import BuilderConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 
 
-class PyInstallerBuilder(BuilderConfigFile):
+class ExecutableBuilder(BuilderConfigFile):
     """Abstract builder for creating PyInstaller standalone executables.
 
     Extends ``BuilderConfigFile`` to produce single-file executables using
@@ -44,10 +44,10 @@ class PyInstallerBuilder(BuilderConfigFile):
         Minimal concrete subclass:
 
             from types import ModuleType
-            from pyrig.rig.builders.base.pyinstaller import PyInstallerBuilder
+            from pyrig.rig.builders.base.executable import ExecutableBuilder
             from myapp import main, resources
 
-            class AppBuilder(PyInstallerBuilder):
+            class AppBuilder(ExecutableBuilder):
 
                 def entry_point_module(self) -> ModuleType:
                     return main
@@ -108,9 +108,9 @@ class PyInstallerBuilder(BuilderConfigFile):
         Args:
             tmp_path: Temporary directory where the executable is created.
         """
-        run(self.pyinstaller_options(tmp_path))
+        run(self.executable_options(tmp_path))
 
-    def pyinstaller_options(self, tmp_path: Path) -> list[str]:
+    def executable_options(self, tmp_path: Path) -> list[str]:
         """Build the complete set of PyInstaller command-line arguments.
 
         Assembles all flags and paths required to invoke PyInstaller: the entry
