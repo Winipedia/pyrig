@@ -77,6 +77,13 @@ The release job runs only when the triggering build succeeded.
 It tags the current commit with the version and pushes the tag to the repository.
 Then it creates a GitHub Release with the new tag and attaches the build
 artifacts from the previous stage.
+Important: The release workflow creates a new tag, which will fail if that tag
+already exists. This means you must ensure the version is updated in `pyproject.toml`
+before pushing to the default branch, otherwise the release workflow will
+fail on the existing tag. This is a common source of confusion, so make sure
+to update the version in `pyproject.toml` before creating a new release.
+This is easily done by running `uv version --bump patch` (or `minor`/`major`)
+locally and pushing the resulting commit to the default branch.
 
 ---
 
