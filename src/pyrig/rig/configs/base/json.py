@@ -10,7 +10,6 @@ import json
 from pyrig.core.strings import read_text_utf8
 from pyrig.rig.configs.base.config_file import (
     ConfigData,
-    ConfigDict,
     ConfigFile,
     ConfigList,
 )
@@ -80,17 +79,6 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
             The string ``"json"``, without a leading dot.
         """
         return "json"
-
-
-class DictJsonConfigFile(JsonConfigFile[ConfigDict]):
-    """Concrete base for JSON configuration files whose top-level structure is a dict.
-
-    Fixes the ``ConfigT`` type parameter to ``ConfigDict`` so that ``_load``
-    returns a ``dict`` and ``_dump`` / ``_configs`` are expected to accept and
-    return a ``dict`` respectively. Useful when the JSON file is structured as
-    an object at the root level (e.g. package.json, pyproject.toml's JSON
-    equivalent, etc.).
-    """
 
 
 class ListJsonConfigFile(JsonConfigFile[ConfigList]):

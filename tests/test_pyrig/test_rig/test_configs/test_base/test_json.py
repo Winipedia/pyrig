@@ -6,16 +6,16 @@ from typing import Any
 
 import pytest
 
-from pyrig.rig.configs.base.json import DictJsonConfigFile
+from pyrig.rig.configs.base.json import ListJsonConfigFile
 
 
 @pytest.fixture
 def my_test_json_config_file(
-    config_file_factory: Callable[[type[DictJsonConfigFile]], type[DictJsonConfigFile]],
-) -> type[DictJsonConfigFile]:
+    config_file_factory: Callable[[type[ListJsonConfigFile]], type[ListJsonConfigFile]],
+) -> type[ListJsonConfigFile]:
     """Create a test json config file class with tmp_path."""
 
-    class MyTestDictJsonConfigFile(config_file_factory(DictJsonConfigFile)):  # ty: ignore[unsupported-base]
+    class MyTestListJsonConfigFile(config_file_factory(ListJsonConfigFile)):  # ty: ignore[unsupported-base]
         """Test json config file."""
 
         def stem(self) -> str:
@@ -26,38 +26,34 @@ def my_test_json_config_file(
             """Get the parent path."""
             return Path()
 
-        def _configs(self) -> dict[str, Any]:
+        def _configs(self) -> list[dict[str, Any]]:
             """Get the configs."""
-            return {"key": "value"}
+            return [{"key": "value"}]
 
-    return MyTestDictJsonConfigFile
+    return MyTestListJsonConfigFile
 
 
 class TestJsonConfigFile:
     """Test class."""
 
-    def test__load(self, my_test_json_config_file: type[DictJsonConfigFile]) -> None:
+    def test__load(self, my_test_json_config_file: type[ListJsonConfigFile]) -> None:
         """Test method."""
         my_test_json_config_file().validate()
         loaded = my_test_json_config_file().load()
-        assert loaded == {"key": "value"}
+        assert loaded == [{"key": "value"}]
 
-    def test__dump(self, my_test_json_config_file: type[DictJsonConfigFile]) -> None:
+    def test__dump(self, my_test_json_config_file: type[ListJsonConfigFile]) -> None:
         """Test method."""
-        my_test_json_config_file().dump({"key": "value"})
+        my_test_json_config_file().dump([{"key": "value"}])
         loaded = my_test_json_config_file().load()
-        assert loaded == {"key": "value"}
+        assert loaded == [{"key": "value"}]
 
     def test_extension(
-        self, my_test_json_config_file: type[DictJsonConfigFile]
+        self, my_test_json_config_file: type[ListJsonConfigFile]
     ) -> None:
         """Test method."""
         extension = my_test_json_config_file().extension()
         assert extension == "json"
-
-
-class TestDictJsonConfigFile:
-    """Test class."""
 
 
 class TestListJsonConfigFile:
