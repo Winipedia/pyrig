@@ -108,8 +108,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         Args:
             tmp_path: Temporary directory where the executable is created.
         """
-        options = self.pyinstaller_options(tmp_path)
-        run(options)
+        run(self.pyinstaller_options(tmp_path))
 
     def pyinstaller_options(self, tmp_path: Path) -> list[str]:
         """Build the complete set of PyInstaller command-line arguments.
