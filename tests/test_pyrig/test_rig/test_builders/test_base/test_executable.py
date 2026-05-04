@@ -13,8 +13,8 @@ from pytest_mock import MockerFixture
 from pyrig.core.introspection.packages import (
     import_package_from_dir,
 )
-from pyrig.rig.builders.base import pyinstaller
-from pyrig.rig.builders.base.pyinstaller import PyInstallerBuilder
+from pyrig.rig.builders.base import executable
+from pyrig.rig.builders.base.executable import PyInstallerBuilder
 
 
 @pytest.fixture
@@ -180,7 +180,7 @@ class TestPyInstallerBuilder:
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
-            mock_run = mocker.patch(pyinstaller.__name__ + ".run")
+            mock_run = mocker.patch(executable.__name__ + ".run")
             my_test_pyinstaller_builder().create_artifact(tmp_path)
             mock_run.assert_called_once()
 
@@ -223,6 +223,6 @@ class TestPyInstallerBuilder:
 def test_module_docstring() -> None:
     """Test function."""
     assert (
-        pyinstaller.__doc__
+        executable.__doc__
         == """PyInstaller-based artifact builder for creating standalone executables."""
     )
