@@ -123,7 +123,7 @@ class ExecutableBuilder(BuilderConfigFile):
                 workpath and specpath subdirectories.
 
         Returns:
-            Tuple of string arguments suitable for passing directly to
+            List of string arguments suitable for passing directly to
             ``PyInstaller.__main__.run``.
         """
         return [

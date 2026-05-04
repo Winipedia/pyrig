@@ -23,7 +23,7 @@ def my_test_executable_builder(
     tmp_path: Path,
     create_module: Callable[[Path], ModuleType],
 ) -> type[ExecutableBuilder]:
-    """Create a test PyInstaller builder class."""
+    """Create a test ExecutableBuilder class."""
     with chdir(tmp_path):
         path = Path("builder_package/entry_point.py")
         module = create_module(path)
