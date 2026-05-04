@@ -111,7 +111,7 @@ class PyInstallerBuilder(BuilderConfigFile):
         options = self.pyinstaller_options(tmp_path)
         run(options)
 
-    def pyinstaller_options(self, tmp_path: Path) -> tuple[str, ...]:
+    def pyinstaller_options(self, tmp_path: Path) -> list[str]:
         """Build the complete set of PyInstaller command-line arguments.
 
         Assembles all flags and paths required to invoke PyInstaller: the entry
@@ -127,7 +127,7 @@ class PyInstallerBuilder(BuilderConfigFile):
             Tuple of string arguments suitable for passing directly to
             ``PyInstaller.__main__.run``.
         """
-        return (
+        return [
             self.entry_point_path().as_posix(),
             "--name",
             self.stem(),
@@ -148,7 +148,7 @@ class PyInstallerBuilder(BuilderConfigFile):
                 for src, dest in self.add_datas()
                 for arg in ("--add-data", f"{src}{os.pathsep}{dest}")
             ),
-        )
+        ]
 
     def entry_point_path(self) -> Path:
         """Return the absolute path to the application's entry point script.
