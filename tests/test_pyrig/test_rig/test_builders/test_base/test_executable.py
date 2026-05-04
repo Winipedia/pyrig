@@ -158,7 +158,7 @@ class TestPyInstallerBuilder:
         """Test method."""
         with chdir(tmp_path):
             options = my_test_pyinstaller_builder().pyinstaller_options(tmp_path)
-            assert "--name" in options, "Expected --name option"
+            assert "--name" in options
 
     def test_app_icon_png_location(
         self, my_test_pyinstaller_builder: type[PyInstallerBuilder]
