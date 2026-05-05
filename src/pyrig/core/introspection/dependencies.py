@@ -131,7 +131,7 @@ def discover_equivalent_modules_across_dependents(
 def all_deps_depending_on_dep(dependency: ModuleType) -> tuple[ModuleType, ...]:
     """Return all installed packages that depend on ``dependency``, as module objects.
 
-    Uses the pyrig dependency graph to find every installed package that depends
+    Uses the dependency graph to find every installed package that depends
     on ``dependency`` (directly or transitively), imports them, and returns the
     result as a tuple in topological order (packages with fewer transitive
     dependencies appear first). The result is cached per unique ``dependency``
