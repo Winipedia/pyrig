@@ -10,7 +10,6 @@ from collections.abc import Generator
 from functools import cache
 from types import ModuleType
 
-import pyrig
 from pyrig.core.dependency_graph import DependencyGraph
 from pyrig.core.introspection.modules import import_module_with_default, import_modules
 from pyrig.core.introspection.packages import discover_all_subclasses_across_package
@@ -146,18 +145,9 @@ def all_deps_depending_on_dep(dependency: ModuleType) -> tuple[ModuleType, ...]:
         ``dependency``. Does not include ``dependency`` itself.
     """
     return tuple(
-        import_modules(pyrig_dependency_graph().sorted_ancestors(dependency.__name__))
+        import_modules(
+            DependencyGraph.cached(root=dependency.__name__).sorted_ancestors(
+                dependency.__name__
+            )
+        )
     )
-
-
-@cache
-def pyrig_dependency_graph() -> DependencyGraph:
-    """Return the cached dependency graph rooted at the ``pyrig`` package.
-
-    Builds and caches a ``DependencyGraph`` containing only ``pyrig`` and all
-    installed packages that depend on it. Constructed at most once per process.
-
-    Returns:
-        A ``DependencyGraph`` rooted at ``pyrig``.
-    """
-    return DependencyGraph(root=pyrig.__name__)

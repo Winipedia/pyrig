@@ -16,6 +16,17 @@ class MyTestDiGraph(DiGraph):
 class TestDiGraph:
     """Test class."""
 
+    def test_cached(self) -> None:
+        """Test method."""
+        graph1 = DependencyGraph.cached(root="pyrig")
+        graph2 = DependencyGraph.cached(root="pyrig")
+        assert graph2 is graph1
+        graph3 = DependencyGraph.cached(root="typer")
+        assert graph3 is not graph1
+
+        graph4 = DependencyGraph(root="pyrig")
+        assert graph4 is not graph1
+
     def test_prune(self) -> None:
         """Test that prune keeps only root and its ancestors."""
         graph = MyTestDiGraph()

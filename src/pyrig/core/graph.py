@@ -8,6 +8,8 @@ from a node to its direct incoming neighbors (reverse edges).
 import heapq
 from abc import ABC, abstractmethod
 from collections import deque
+from functools import cache
+from typing import Any, Self
 
 
 class DiGraph(ABC):
@@ -21,6 +23,24 @@ class DiGraph(ABC):
     time. If a ``root`` node is provided, the graph is automatically pruned after
     building to retain only that node and all nodes that transitively point to it.
     """
+
+    @classmethod
+    @cache
+    def cached(cls, *args: Any, **kwargs: Any) -> Self:
+        """Return a cached instance of the graph for the given arguments.
+
+        Caches instances of the graph based on the arguments passed to this
+        method. Subsequent calls with the same arguments will return the same
+        instance, avoiding redundant construction and building of the graph.
+
+        Args:
+            *args: Positional arguments to pass to the graph constructor.
+            **kwargs: Keyword arguments to pass to the graph constructor.
+
+        Returns:
+            An instance of the graph, cached based on the provided arguments.
+        """
+        return cls(*args, **kwargs)
 
     def __init__(self, root: str | None = None) -> None:
         """Initialize and build the graph structure.
