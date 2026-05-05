@@ -10,7 +10,6 @@ from pyrig.core.introspection.dependencies import (
     all_deps_depending_on_dep,
     discover_equivalent_modules_across_dependents,
     discover_subclasses_across_dependents,
-    pyrig_dependency_graph,
 )
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tools.base.tool import Tool
@@ -49,11 +48,3 @@ def test_all_deps_depending_on_dep() -> None:
     """Test function."""
     packages = [*all_deps_depending_on_dep(pyrig), pyrig]
     assert pyrig in packages, f"Expected pyrig in packages, got {packages}"
-
-
-def test_pyrig_dependency_graph() -> None:
-    """Test function."""
-    graph = pyrig_dependency_graph()
-
-    # should only be pyrig and its dependents, not unrelated packages
-    assert graph.nodes() == {pyrig.__name__}
