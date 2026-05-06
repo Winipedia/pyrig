@@ -31,7 +31,7 @@
 <!-- rumdl-disable MD013 -->
 ---
 
-> pyrig is a python toolkit that rigs up your project by standardizing and automating project setup, configuration and maintenance.
+> Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance.
 
 ---
 
@@ -39,11 +39,11 @@
 
 ## What is pyrig?
 
-pyrig is a package and tool that scaffolds and initializes a complete, fully
-configured, installed and working python project with one command and makes
-the process of developing and maintaining it more seamless and efficient by
-automating things like configuration management, CLI generation, testing
-infrastructure, and more.
+pyrig is a package and tool that **rigs up** your project.
+It scaffolds and initializes a complete, fully configured, installed and
+working Python project with one command and makes the process of developing
+and maintaining it more seamless and efficient by automating things like
+configuration management, CLI generation, testing infrastructure, and more.
 
 ## Requirements
 
