@@ -78,7 +78,7 @@ def discover_subclasses_across_dependencies[T: type](
 
 
 def discover_equivalent_modules_across_dependents(
-    module: ModuleType, dependency: ModuleType, until_package: ModuleType | None = None
+    module: ModuleType, dependency: ModuleType
 ) -> Generator[ModuleType, None, None]:
     """Yield the equivalent module from ``dependency`` and every dependent package.
 
@@ -97,9 +97,6 @@ def discover_equivalent_modules_across_dependents(
             package (e.g., ``pyrig.core`` → ``<pkg>.core`` for every dependent).
         dependency: The base dependency package. Both this package and all
             packages that depend on it are iterated.
-        until_package: If provided, iteration stops after this package is reached
-            (inclusive), whether or not its equivalent module was found. Useful for
-            scoping discovery to a subset of the ecosystem.
 
     Yields:
         Successfully imported module objects in topological order, starting with
@@ -126,8 +123,6 @@ def discover_equivalent_modules_across_dependents(
         package_module = import_module_with_default(package_module_name)
         if package_module is not None:
             yield package_module
-        if package is until_package:
-            break
 
 
 @cache
