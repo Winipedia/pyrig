@@ -89,9 +89,9 @@ Do not override the public methods:
 `validate()` then enforces the invariant:
 
 ```text
-file missing?  → create it, merge required content, write
-file present but incomplete? → merge missing keys/lines, write
-file correct?  → no-op
+file missing?           → create it, write required content
+file present but incorrect? → merge missing keys/lines, write
+file correct?           → no-op
 ```
 
 User-added content is always preserved; only absent required content is enforced.

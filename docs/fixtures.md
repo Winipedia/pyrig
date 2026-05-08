@@ -14,8 +14,8 @@ The mechanism is driven by a single `conftest.py` at `pyrig.rig.tests.conftest`.
 Which is registered as a pytest plugin in your generated `conftest.py` and
 thus executed on every test run. When pytest starts, it executes this file, which:
 
-1. Finds all installed packages that depend on pyrig, including the current
-project itself
+1. Starts with pyrig's own `rig.tests.fixtures` package, then finds all
+installed packages that depend on pyrig, including the current project itself
 2. For each package in that chain, locates the equivalent of the
    `rig.tests.fixtures` package (e.g. `myproject.rig.tests.fixtures`).
 3. Recursively collects every `.py` file in that package, skipping
