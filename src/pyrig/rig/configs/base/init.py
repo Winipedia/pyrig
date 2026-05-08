@@ -48,8 +48,9 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
 
         - If ``copy_module`` is the ``pyrig`` root package, the target project's
           package name is used instead (obtained from
-          ``PackageManager.I.package_name()``).  This is necessary because ``pyrig``
-          has no meaningful leaf name to use for the generated project.
+          ``PackageManager.I.package_name()``).  This is necessary because ``pyrig``'s
+          leaf name (``"pyrig"``) is not the correct directory name for the generated
+          project.
         - For every other module the last component of its dotted name is used
           (e.g. ``"configs"`` for ``pyrig.rig.configs``).
 

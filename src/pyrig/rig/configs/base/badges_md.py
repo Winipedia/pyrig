@@ -37,6 +37,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
     Subclasses must implement:
         - ``parent_path``: Directory that will contain the Markdown file
+        - ``stem``: Filename without its extension
     """
 
     def merge_configs(self) -> ConfigList:

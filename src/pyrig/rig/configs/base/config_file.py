@@ -46,7 +46,8 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
     Implements an idempotent, declarative system for managing configuration
     files across a project. Subclasses declare the required structure via
     ``_configs()`` and the system ensures that structure is present on disk,
-    merging missing values while preserving any extra keys the user has added.
+    merging missing or mismatched values while preserving any extra keys the
+    user has added.
 
     Type Parameters:
         ConfigT: The configuration data type, either ``ConfigDict`` or
@@ -274,7 +275,8 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
            not exist, then writes ``configs()`` as the initial content.
         2. Returns immediately if the file is already correct.
         3. Merges ``configs()`` into the current file content to fill any
-           missing keys while preserving user additions, then writes the result.
+           missing or mismatched keys while preserving user additions,
+           then writes the result.
         4. Raises ``RuntimeError`` if the file is still not correct after the
            merge, which typically indicates a manual conflict in the file.
 
@@ -332,8 +334,9 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
         """Merge the required configuration into the current file contents.
 
         Walks both structures and fills in every key or list item that is
-        present in ``configs()`` but absent in ``load()``. Keys that exist
-        only in the loaded file are left untouched, preserving user customizations.
+        present in ``configs()`` but missing from or having a different value in
+        ``load()``. Keys that exist only in the loaded file are left untouched,
+        preserving user customizations.
 
         Returns:
             Updated configuration containing both required and existing values.
