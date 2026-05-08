@@ -9,7 +9,7 @@ from pyrig.core.dependency_subclass import DependencySubclass
 class RigDependencySubclass(DependencySubclass):
     """Shared base class for all rig subsystem classes.
 
-    Pre-configures the two abstract hooks required by ``DependencySubclass``
+    Pre-configures abstract hooks required by ``DependencySubclass``
     so that tools, config files, builders, and other rig subsystem classes
     gain automatic cross-package subclass discovery without additional
     boilerplate.
