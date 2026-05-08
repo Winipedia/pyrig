@@ -130,7 +130,7 @@ def add_subcommands() -> None:
 def add_shared_subcommands() -> None:
     """Discover and register shared commands from the full dependency chain.
 
-    Searches every package between ``pyrig`` and the calling package for a
+    Searches pyrig itself and every package that depends on pyrig for a
     ``<package>.rig.cli.shared_subcommands`` module and registers all functions
     found there as Typer commands. These commands are available in every
     pyrig-based project and can adapt their behavior to the calling project
@@ -147,9 +147,9 @@ def add_shared_subcommands() -> None:
         myproject version 1.2.3
 
     Note:
-        Commands are registered in dependency order (pyrig first, calling
-        package last). When two packages define a command with the same name,
-        the last registration takes precedence.
+        Commands are registered in dependency order (pyrig first, then all
+        dependent packages in topological order). When two packages define a
+        command with the same name, the last registration takes precedence.
     """
     for shared_subcommands_module in (
         shared_subcommands,

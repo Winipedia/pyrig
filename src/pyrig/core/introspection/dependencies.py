@@ -80,35 +80,33 @@ def discover_subclasses_across_dependencies[T: type](
 def discover_equivalent_modules_across_dependents(
     module: ModuleType, dependency: ModuleType
 ) -> Generator[ModuleType, None, None]:
-    """Yield the equivalent module from ``dependency`` and every dependent package.
+    """Yield the equivalent module from every package that depends on ``dependency``.
 
     Given a module within ``dependency`` (e.g., ``pyrig.rig.configs``), constructs
     the equivalent dotted path in each package that depends on ``dependency``
     (e.g., ``myapp.rig.configs``), imports it if it exists, and yields it.
 
-    Discovery always starts with ``dependency`` itself before iterating over its
-    dependents in topological order. The path transformation replaces the first
-    occurrence of ``dependency.__name__`` in ``module.__name__`` with each
-    dependent package's name, so a consistent directory structure across the
-    ecosystem is assumed.
+    Only packages that depend on ``dependency`` are iterated; ``dependency`` itself
+    is not included. The path transformation replaces the first occurrence of
+    ``dependency.__name__`` in ``module.__name__`` with each dependent package's
+    name, so a consistent directory structure across the ecosystem is assumed.
 
     Args:
         module: Template module whose path pattern is replicated in each dependent
             package (e.g., ``pyrig.core`` → ``<pkg>.core`` for every dependent).
-        dependency: The base dependency package. Both this package and all
-            packages that depend on it are iterated.
+        dependency: The base dependency package. Only packages that depend on this
+            package are iterated; ``dependency`` itself is not included.
 
     Yields:
-        Successfully imported module objects in topological order, starting with
-        the module from ``dependency`` itself. Packages whose equivalent module
-        path cannot be imported are silently skipped.
+        Successfully imported module objects in topological order. Packages whose
+        equivalent module path cannot be imported are silently skipped.
 
     Example:
         >>> import pyrig
         >>> from pyrig import core
         >>> modules = list(discover_equivalent_modules_across_dependents(core, pyrig))
-        >>> # Includes pyrig.core and the corresponding module in each dependent
-        >>> # package.
+        >>> # Returns the corresponding module from each dependent package.
+        >>> # Does not include pyrig.core itself.
     """
     module_name = module.__name__
     dependency_name = dependency.__name__

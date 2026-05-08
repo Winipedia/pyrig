@@ -1,7 +1,8 @@
 """Pytest configuration and automatic fixture discovery for pyrig tests.
 
-Discovers and registers pytest fixtures from all packages depending on pyrig,
-making them available in all test modules without explicit imports.
+Discovers and registers pytest fixtures from pyrig itself and all packages
+depending on pyrig, making them available in all test modules without explicit
+imports.
 
 Discovery Process:
     1. Finds equivalent ``fixtures`` modules in all packages depending on pyrig
