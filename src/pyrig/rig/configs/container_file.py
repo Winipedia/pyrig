@@ -53,9 +53,9 @@ class ContainerfileConfigFile(StringConfigFile):
         """Generate the complete sequence of Containerfile build instructions.
 
         Produces an optimized layer order so that infrequently changing files
-        (project metadata and lock file) are copied and dependencies are
-        installed before the source tree is added. This maximizes Docker/Podman
-        build cache reuse when only source code changes.
+        (project metadata and lock file) are copied before the source tree is
+        added. This maximizes Docker/Podman build cache reuse when only source
+        code changes.
 
         The generated layer sequence is:
 
