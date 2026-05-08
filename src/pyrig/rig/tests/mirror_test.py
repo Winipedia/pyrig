@@ -87,7 +87,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
 
     @classmethod
-    def definition_package(cls) -> ModuleType:
+    def dependency_package(cls) -> ModuleType:
         """Return the package where this ConfigFile subclass hierarchy is defined.
 
         Overrides the default (``pyrig.rig.configs``) to ``pyrig.rig.tests``,

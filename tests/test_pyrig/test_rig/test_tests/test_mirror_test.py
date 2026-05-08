@@ -221,11 +221,11 @@ def test_another_function():
                 == my_test_mirror_test_config_file().configs()
             )
 
-    def test_definition_package(
+    def test_dependency_package(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
-        assert my_test_mirror_test_config_file().definition_package() is tests
+        assert my_test_mirror_test_config_file().dependency_package() is tests
 
     def test_mirror_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]

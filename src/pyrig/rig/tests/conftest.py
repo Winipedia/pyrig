@@ -11,7 +11,6 @@ plugins.
 
 from pathlib import Path
 
-import pyrig
 from pyrig.core.introspection.dependencies import (
     discover_equivalent_modules_across_dependents,
 )
@@ -21,7 +20,7 @@ from pyrig.rig.tests import fixtures
 module_names: list[str] = []
 for package in (
     fixtures,
-    *discover_equivalent_modules_across_dependents(fixtures, pyrig),
+    *discover_equivalent_modules_across_dependents(fixtures),
 ):
     package_name = package.__name__
     package_path = package_dir_path(package)

@@ -44,14 +44,17 @@ pyrig
       └── installed dependent B   ← B's rig/configs/** is searched automatically
 ```
 
-The `RigDependencySubclass` intermediate base pre-configures the two required hooks
-(`definition_package → pyrig.rig`, `base_dependency → pyrig`) so that concrete
+The `RigDependencySubclass` intermediate base pre-configures the required hook
+(`dependency_package → pyrig.rig`) so that concrete
 subsystem classes (`Tool`, `ConfigFile`, `BuilderConfigFile`) inherit discovery
-for free. Further BaseSubclasses like `Tool` and `ConfigFile` override
-`definition_package` to a more specific sub-package, so that only relevant
-modules are imported and searched for further subclasses. This is just for
-efficiency — the system would work even if all subclasses were defined
-directly under `pyrig.rig`.
+for free. The root dependency is inferred automatically from the root package of
+`dependency_package()`, so no separate `base_dependency` hook is needed.
+Further BaseSubclasses like `Tool` and `ConfigFile` override
+`dependency_package` to a more specific sub-package, so that only relevant
+modules are imported and searched for further subclasses. This is just for discovery
+efficiency and speed — the system would work even if all subclasses were defined
+directly under `pyrig.rig`. However, it is recommended to follow the established
+structure to be specific and avoid ambiguity.
 
 The `.L` classproperty returns the cached **leaf subclass** — the single
 outermost override across all dependencies (returns the class type, which may
@@ -196,7 +199,7 @@ To subclass a `DependencySubclass` (or `RigDependencySubclass` specifically) lik
 `ConfigFile` or `Tool` it must be defined under the same package path as the
 base class from the package root, meaning a subclass defined in a module under
 `some_pyrig_project.rig.configs.some_mdoule` must be defined under the same package
-respectively as defined in the method `definition_package()` of the base class,
+respectively as defined in the method `dependency_package()` of the base class,
 which is `pyrig.rig.configs` for `ConfigFile`.
 So your ovveride must be defined a module like: `my_project.rig.configs.my_config_file.py`.
 As can be seen the initial part that is the project's name is the only part that

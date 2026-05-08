@@ -35,6 +35,22 @@ def leaf_module_name(module: ModuleType) -> str:
     return module.__name__.split(".")[-1]
 
 
+def root_module(module: ModuleType) -> ModuleType:
+    """Get the root module of the given module.
+
+    For a module with a dotted name like ``"package.subpackage.module"``, this
+    function returns the module corresponding to ``"package"``. For top-level
+    modules with no dots in their name, the module itself is returned.
+
+    Args:
+        module: Module to get the root from.
+
+    Returns:
+        The root module corresponding to the first segment of the module's name.
+    """
+    return import_module(module.__name__.split(".")[0])
+
+
 def callable_obj_import_path(obj: Callable[..., Any]) -> str:
     """Get the fully qualified import path for a callable object.
 

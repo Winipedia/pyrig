@@ -91,7 +91,7 @@ questions and get code explanations from the AI.
 ## Subclass Discovery, Validation & Customization
 
 The `pyrig.rig.configs` package is the **discovery root** for all config files.
-`ConfigFile.definition_package()` returns this module, and `ConfigFile.validate_all_subclasses()`
+`ConfigFile.dependency_package()` returns this module, and `ConfigFile.validate_all_subclasses()`
 — called by `pyrig mkroot` — discovers every concrete subclass defined anywhere
 inside the package, sorts by priority (higher first), and validates each one
 in order.
@@ -111,7 +111,7 @@ when `pyrig mkroot` is run.
 
 If you want to create a new config file from scratch, simply create a new
 subclass of `ConfigFile` or one of its base classes anywhere under the same
-`definition_package()`, and it will be automatically discovered and validated
+`dependency_package()`, and it will be automatically discovered and validated
 as well.
 
 If you want to exclude a file from validation, simply override `validate()`

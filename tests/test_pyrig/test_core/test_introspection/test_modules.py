@@ -15,6 +15,7 @@ from types import ModuleType
 import pytest
 from pytest_mock import MockerFixture
 
+import pyrig
 from pyrig.core.introspection import modules as modules_module
 from pyrig.core.introspection.modules import (
     callable_obj_import_path,
@@ -28,6 +29,7 @@ from pyrig.core.introspection.modules import (
     module_has_docstring,
     module_name_replacing_start_module,
     reimport_module,
+    root_module,
 )
 from pyrig.core.introspection.packages import import_package_from_dir
 from pyrig.rig.cli import subcommands
@@ -185,3 +187,8 @@ def test_iter_modules(tmp_path: Path) -> None:
         exclude_pattern = re.compile(r"^test_package\.test_module$")
         modules = iter_modules(package, exclude=(exclude_pattern,))
         assert list(modules) == [], f"Expected no modules, got {modules}"
+
+
+def test_root_module() -> None:
+    """Test function."""
+    assert root_module(subcommands) is pyrig

@@ -99,7 +99,7 @@ class BuilderConfigFile(ListConfigFile):
         """
 
     @classmethod
-    def definition_package(cls) -> ModuleType:
+    def dependency_package(cls) -> ModuleType:
         """Return the package where builder subclass definitions are discovered.
 
         Overrides the parent default of ``pyrig.rig.configs`` so that builder

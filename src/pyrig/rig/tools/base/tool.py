@@ -100,10 +100,10 @@ class Tool(RigDependencySubclass):
         """
 
     @classmethod
-    def definition_package(cls) -> ModuleType:
+    def dependency_package(cls) -> ModuleType:
         """Return the ``pyrig.rig.tools`` package as the subclass discovery scope.
 
-        Overrides ``RigDependencySubclass.definition_package`` to narrow discovery
+        Overrides ``RigDependencySubclass.dependency_package`` to narrow discovery
         from the entire ``pyrig.rig`` namespace down to ``pyrig.rig.tools``,
         ensuring that only tool implementations are found when searching
         dependent packages.

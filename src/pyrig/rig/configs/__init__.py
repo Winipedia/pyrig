@@ -1,7 +1,7 @@
 """Configuration file definitions for project scaffolding.
 
 This package is the discovery root for all ``ConfigFile`` subclasses.
-``ConfigFile.definition_package()`` returns this module, so only subclasses
+``ConfigFile.dependency_package()`` returns this module, so only subclasses
 defined here — and in dependent packages that extend pyrig — are discovered
 and validated.
 

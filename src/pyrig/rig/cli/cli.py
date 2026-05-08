@@ -8,7 +8,6 @@ import logging
 
 import typer
 
-import pyrig
 from pyrig.core.cli import package_name_from_argv
 from pyrig.core.introspection.dependencies import (
     discover_equivalent_modules_across_dependents,
@@ -155,7 +154,6 @@ def add_shared_subcommands() -> None:
         shared_subcommands,
         *discover_equivalent_modules_across_dependents(
             shared_subcommands,
-            pyrig,
         ),
     ):
         sub_cmds = module_functions(shared_subcommands_module)

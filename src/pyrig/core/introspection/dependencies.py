@@ -11,7 +11,11 @@ from functools import cache
 from types import ModuleType
 
 from pyrig.core.dependency_graph import DependencyGraph
-from pyrig.core.introspection.modules import import_module_with_default, import_modules
+from pyrig.core.introspection.modules import (
+    import_module_with_default,
+    import_modules,
+    root_module,
+)
 from pyrig.core.introspection.packages import discover_all_subclasses_across_package
 
 logger = logging.getLogger(__name__)
@@ -19,15 +23,15 @@ logger = logging.getLogger(__name__)
 
 def discover_subclasses_across_dependencies[T: type](
     cls: T,
-    dependency: ModuleType,
     package: ModuleType,
 ) -> Generator[T, None, None]:
-    """Yield all subclasses of ``cls`` across packages that depend on ``dependency``.
+    """Yield subclasses of ``cls`` across packages that depend on ``package``'s root.
 
-    The primary entry point for pyrig's plugin-style subclass discovery. For
-    ``dependency`` itself and each installed package that depends on ``dependency``,
-    this function locates the module that corresponds to ``package`` within that
-    package and collects every subclass of ``cls`` defined there.
+    The primary entry point for pyrig's plugin-style subclass discovery. Starting
+    with ``package`` itself and then each installed package that depends on
+    ``package``'s root package, this function locates the module that corresponds
+    to ``package`` within each dependent and collects every subclass of ``cls``
+    defined there. The root package is inferred automatically via ``root_module()``.
 
     This enables subsystems such as ``ConfigFile`` and ``Tool`` to automatically
     find all concrete implementations across the entire installed ecosystem
@@ -35,11 +39,11 @@ def discover_subclasses_across_dependencies[T: type](
 
     Args:
         cls: Base class whose subclasses should be discovered.
-        dependency: The base dependency package (e.g., ``pyrig``). This package
-            itself and all installed packages that depend on it are searched.
         package: Template module whose dotted path is replicated across dependent
-            packages to locate the modules to search. For example, passing
-            ``pyrig.rig`` would search ``<pkg>.rig`` in each dependent package.
+            packages to locate the modules to search. The root of this module
+            (e.g., ``pyrig`` for ``pyrig.rig.configs``) is used to find all
+            dependent packages. For example, passing ``pyrig.rig`` would search
+            ``<pkg>.rig`` in each dependent package.
 
     Yields:
         Subclass types of ``cls`` discovered across all dependent packages, in
@@ -48,10 +52,8 @@ def discover_subclasses_across_dependencies[T: type](
     Example:
         >>> from pyrig.rig.configs.base.config_file import ConfigFile
         >>> from pyrig.rig import configs
-        >>> import pyrig
         >>> subclasses = list(discover_subclasses_across_dependencies(
         ...     cls=ConfigFile,
-        ...     dependency=pyrig,
         ...     package=configs,
         ... ))
         >>> # Returns concrete ConfigFile implementations across the pyrig ecosystem.
@@ -59,16 +61,14 @@ def discover_subclasses_across_dependencies[T: type](
     logger.debug(
         "Discovering subclasses of %s from modules in packages depending on %s",
         cls.__name__,
-        dependency.__name__,
+        package.__name__,
     )
 
     return (
         subclass
         for pkg in (
             package,
-            *discover_equivalent_modules_across_dependents(
-                module=package, dependency=dependency
-            ),
+            *discover_equivalent_modules_across_dependents(module=package),
         )
         for subclass in discover_all_subclasses_across_package(
             cls,
@@ -78,46 +78,46 @@ def discover_subclasses_across_dependencies[T: type](
 
 
 def discover_equivalent_modules_across_dependents(
-    module: ModuleType, dependency: ModuleType
+    module: ModuleType,
 ) -> Generator[ModuleType, None, None]:
-    """Yield the equivalent module from every package that depends on ``dependency``.
+    """Yield the equivalent module from every package that depends on ``module``'s root.
 
-    Given a module within ``dependency`` (e.g., ``pyrig.rig.configs``), constructs
-    the equivalent dotted path in each package that depends on ``dependency``
+    Given a module (e.g., ``pyrig.rig.configs``), infers the root package
+    automatically via ``root_module()`` (e.g., ``pyrig``), then constructs the
+    equivalent dotted path in each package that depends on that root
     (e.g., ``myapp.rig.configs``), imports it if it exists, and yields it.
 
-    Only packages that depend on ``dependency`` are iterated; ``dependency`` itself
-    is not included. The path transformation replaces the first occurrence of
-    ``dependency.__name__`` in ``module.__name__`` with each dependent package's
-    name, so a consistent directory structure across the ecosystem is assumed.
+    The root package itself is not included in results — only its dependents are
+    iterated. The path transformation replaces the first occurrence of the root
+    package name in ``module.__name__`` with each dependent package's name, so a
+    consistent directory structure across the ecosystem is assumed.
 
     Args:
         module: Template module whose path pattern is replicated in each dependent
             package (e.g., ``pyrig.core`` → ``<pkg>.core`` for every dependent).
-        dependency: The base dependency package. Only packages that depend on this
-            package are iterated; ``dependency`` itself is not included.
+            The root of this module is used to discover dependent packages.
 
     Yields:
         Successfully imported module objects in topological order. Packages whose
         equivalent module path cannot be imported are silently skipped.
 
     Example:
-        >>> import pyrig
         >>> from pyrig import core
-        >>> modules = list(discover_equivalent_modules_across_dependents(core, pyrig))
+        >>> modules = list(discover_equivalent_modules_across_dependents(core))
         >>> # Returns the corresponding module from each dependent package.
         >>> # Does not include pyrig.core itself.
     """
-    module_name = module.__name__
-    dependency_name = dependency.__name__
+    dependency = root_module(module)
     logger.debug(
         "Discovering modules equivalent to %s in packages depending on %s",
-        module_name,
-        dependency_name,
+        module.__name__,
+        dependency.__name__,
     )
 
     for package in all_deps_depending_on_dep(dependency):
-        package_module_name = module_name.replace(dependency_name, package.__name__, 1)
+        package_module_name = module.__name__.replace(
+            dependency.__name__, package.__name__, 1
+        )
         package_module = import_module_with_default(package_module_name)
         if package_module is not None:
             yield package_module
