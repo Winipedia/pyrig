@@ -27,9 +27,9 @@ T = TypeVar("T", bound="DependencySubclass")
 class DependencySubclass(ABC):
     """Abstract base for cross-package subclass discovery.
 
-    Concrete subclasses must implement ``definition_package()`` to declare
-    the package where their implementations live, and ``base_dependency()``
-    to declare the base installed package whose dependents are searched.
+    Concrete subclasses must implement ``dependency_package()`` to declare
+    the package where their implementations live. The dependency root is
+    inferred automatically from the root package of ``dependency_package()``.
     The optional ``sort_key()`` hook controls ordering in
     ``subclasses_sorted()``.
 
@@ -54,7 +54,7 @@ class DependencySubclass(ABC):
 
     @classmethod
     @abstractmethod
-    def definition_package(cls) -> ModuleType:
+    def dependency_package(cls) -> ModuleType:
         """Return the package where this class's implementations are defined.
 
         Used by ``subclasses()`` to scope cross-package discovery to the
@@ -66,21 +66,6 @@ class DependencySubclass(ABC):
 
         Returns:
             Package module that contains the concrete subclass definitions.
-        """
-
-    @classmethod
-    @abstractmethod
-    def base_dependency(cls) -> ModuleType:
-        """Return the installed package that anchors the dependency search.
-
-        Used by ``subclasses()`` to find all installed packages that depend
-        on this module. For example, returning ``pyrig`` causes discovery to
-        search every installed package that lists ``pyrig`` as a dependency.
-
-        Must be overridden by each concrete subclass.
-
-        Returns:
-            The base dependency module (e.g. ``pyrig``).
         """
 
     @classmethod
@@ -173,9 +158,8 @@ Found subclasses:
     def subclasses(cls) -> Generator[type[Self], None, None]:
         """Yield all subclasses discovered across the package ecosystem.
 
-        Searches every installed package that depends on
-        ``base_dependency()``, scoped to the module namespace of
-        ``definition_package()``. Intermediate parent classes are discarded,
+        Searches every installed package that depends on the root package of
+        ``dependency_package()``. Intermediate parent classes are discarded,
         leaving only the outermost leaf-level subclasses. Results are yielded
         in topological dependency order (base package classes first,
         dependents after).
@@ -187,8 +171,7 @@ Found subclasses:
         return discard_parent_classes(
             discover_subclasses_across_dependencies(
                 cls,
-                dependency=cls.base_dependency(),
-                package=cls.definition_package(),
+                package=cls.dependency_package(),
             )
         )
 

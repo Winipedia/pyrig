@@ -2,7 +2,6 @@
 
 from types import ModuleType
 
-import pyrig
 from pyrig import rig
 from pyrig.core.dependency_subclass import DependencySubclass
 
@@ -15,15 +14,14 @@ class RigDependencySubclass(DependencySubclass):
     gain automatic cross-package subclass discovery without additional
     boilerplate.
 
-    Discovery is scoped to the ``pyrig.rig`` namespace (``definition_package``)
-    and spans every installed package that declares ``pyrig`` as a dependency
-    (``base_dependency``). Any new rig subsystem class should inherit from
-    this class, or from an intermediate such as ``Tool`` or ``ConfigFile``,
+    Discovery is scoped to the ``pyrig.rig`` namespace (``dependency_package``).
+    Any new rig subsystem class should inherit from this class, or from an intermediate
+    such as ``Tool`` or ``ConfigFile``,
     rather than from ``DependencySubclass`` directly.
     """
 
     @classmethod
-    def definition_package(cls) -> ModuleType:
+    def dependency_package(cls) -> ModuleType:
         """Return ``pyrig.rig`` as the namespace for subclass discovery.
 
         Scopes cross-package discovery to the rig layer so that only rig
@@ -35,15 +33,3 @@ class RigDependencySubclass(DependencySubclass):
             The ``pyrig.rig`` module.
         """
         return rig
-
-    @classmethod
-    def base_dependency(cls) -> ModuleType:
-        """Return ``pyrig`` as the root package for dependent-package discovery.
-
-        The discovery engine searches every installed package that declares
-        ``pyrig`` as a dependency when looking for subclasses.
-
-        Returns:
-            The ``pyrig`` package module.
-        """
-        return pyrig

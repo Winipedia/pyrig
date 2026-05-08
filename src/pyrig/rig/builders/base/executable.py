@@ -11,7 +11,6 @@ from PIL import Image
 from PyInstaller.__main__ import run
 from PyInstaller.utils.hooks import collect_data_files
 
-import pyrig
 from pyrig.core.introspection.dependencies import (
     discover_equivalent_modules_across_dependents,
 )
@@ -192,7 +191,7 @@ class ExecutableBuilder(BuilderConfigFile):
         Returns:
             Generator of module objects for each discovered ``resources`` package.
         """
-        return discover_equivalent_modules_across_dependents(resources, pyrig)
+        return discover_equivalent_modules_across_dependents(resources)
 
     def app_icon_path(self, tmp_path: Path) -> Path:
         """Return the path to the converted, platform-appropriate icon file.

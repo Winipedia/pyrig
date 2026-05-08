@@ -144,10 +144,10 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         """
 
     @classmethod
-    def definition_package(cls) -> ModuleType:
+    def dependency_package(cls) -> ModuleType:
         """Return the package that scopes subclass discovery for config files.
 
-        Overrides ``RigDependencySubclass.definition_package()`` to narrow
+        Overrides ``RigDependencySubclass.dependency_package()`` to narrow
         the discovery namespace from ``pyrig.rig`` to ``pyrig.rig.configs``,
         ensuring only config file implementations are found.
 

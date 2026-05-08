@@ -13,9 +13,9 @@ class TestTool:
         """Test method."""
         assert "uv" in str(PackageManager.I)
 
-    def test_definition_package(self) -> None:
+    def test_dependency_package(self) -> None:
         """Test method."""
-        result = Tool.definition_package()
+        result = Tool.dependency_package()
         assert result == tools
 
     def test_sort_key(self) -> None:

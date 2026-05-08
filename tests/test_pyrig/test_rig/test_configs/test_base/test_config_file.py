@@ -133,9 +133,9 @@ class TestConfigFile:
         assert configs is not cached_configs
         assert my_test_config_file().configs() is cached_configs
 
-    def test_definition_package(self) -> None:
+    def test_dependency_package(self) -> None:
         """Test method."""
-        assert ConfigFile.definition_package() is configs
+        assert ConfigFile.dependency_package() is configs
 
     def test_create_file(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]

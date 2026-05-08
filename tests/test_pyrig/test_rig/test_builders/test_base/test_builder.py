@@ -57,9 +57,9 @@ class TestBuilderConfigFile:
         assert artifact_path.exists()
         assert artifact_path.read_text() == "My File Content"
 
-    def test_definition_package(self) -> None:
+    def test_dependency_package(self) -> None:
         """Test method."""
-        assert BuilderConfigFile.definition_package() is builders
+        assert BuilderConfigFile.dependency_package() is builders
 
     def test_dist_dir_name(self) -> None:
         """Test method."""

@@ -4,7 +4,6 @@ import inspect
 
 import pytest
 
-import pyrig
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -58,9 +57,9 @@ class TestDependencySubclass:
         assert isinstance(result, VersionControllerIgnoreConfigFile)
         assert result is VersionControllerIgnoreConfigFile.I.I
 
-    def test_definition_package(self) -> None:
+    def test_dependency_package(self) -> None:
         """Test method."""
-        result = ConfigFile.definition_package()
+        result = ConfigFile.dependency_package()
         assert issubclass(ConfigFile, DependencySubclass)
         assert result == configs
 
@@ -70,11 +69,6 @@ class TestDependencySubclass:
         assert isinstance(result, (float, int))
 
         assert DependencySubclass.sort_key() == DependencySubclass.__name__
-
-    def test_base_dependency(self) -> None:
-        """Test method."""
-        result = ConfigFile.base_dependency()
-        assert result == pyrig
 
     def test_subclasses(self) -> None:
         """Test method."""
