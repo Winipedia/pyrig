@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class VersionController(Tool):
     """Type-safe git command argument builder.
 
-    Each method constructs an ``Args`` object representing a specific git
+    Each ``*_args`` method constructs an ``Args`` object representing a specific git
     command.  ``Args`` objects can be executed directly via ``.run()`` or
     converted to a string for embedding in shell scripts and workflow files.
     All commands are automatically prefixed with ``git``.

@@ -18,9 +18,9 @@ from pyrig.rig.tools.base.tool import Tool, ToolGroup
 class PackageManager(Tool):
     """uv package manager wrapper.
 
-    Each method constructs a type-safe ``Args`` object for a specific uv
-    command. Call ``.run()`` on the result to execute it, or convert it to
-    a string to embed in CI workflow scripts.
+    The ``*_args()`` methods each construct a type-safe ``Args`` object for a
+    specific uv command. Call ``.run()`` on the result to execute it, or
+    convert it to a string to embed in CI workflow scripts.
 
     Subclass and override ``build_system_requires``, ``build_backend``,
     ``source_root``, or ``dev_dependencies`` to adapt pyrig to a different
