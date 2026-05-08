@@ -1,6 +1,5 @@
 """Test module."""
 
-import typer
 from pytest_mock import MockerFixture
 
 import pyrig
@@ -27,9 +26,7 @@ def test_discover_equivalent_modules_across_dependents(mocker: MockerFixture) ->
         all_deps_depending_on_dep.__module__ + "." + all_deps_depending_on_dep.__name__,
         return_value=[pyrig],
     )
-    modules = tuple(
-        discover_equivalent_modules_across_dependents(core, pyrig, until_package=typer)
-    )
+    modules = tuple(discover_equivalent_modules_across_dependents(core, pyrig))
     assert core in modules
     mock_all_deps.assert_called_once()
 

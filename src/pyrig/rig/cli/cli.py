@@ -5,7 +5,6 @@ and shared sources across the package dependency chain. Built on Typer.
 """
 
 import logging
-from importlib import import_module
 
 import typer
 
@@ -116,21 +115,16 @@ def add_subcommands() -> None:
         imported functions are excluded. If the module cannot be imported,
         registration is silently skipped.
     """
-    # extract project name from sys.argv[0]
-    package_name = package_name_from_argv()
-    # replace the first parent with package_name
     subcommands_module_name = module_name_replacing_start_module(
-        subcommands, package_name
+        subcommands, package_name_from_argv()
     )
     subcommands_module = import_module_with_default(subcommands_module_name)
 
     if subcommands_module is None:
         return
 
-    sub_cmds = module_functions(subcommands_module)
-
-    for sub_cmd in sub_cmds:
-        app.command()(sub_cmd)
+    for cmd in module_functions(subcommands_module):
+        app.command()(cmd)
 
 
 def add_shared_subcommands() -> None:
@@ -157,14 +151,13 @@ def add_shared_subcommands() -> None:
         package last). When two packages define a command with the same name,
         the last registration takes precedence.
     """
-    package_name = package_name_from_argv()
-    package = import_module(package_name)
-    shared_subcommands_modules = discover_equivalent_modules_across_dependents(
+    for shared_subcommands_module in (
         shared_subcommands,
-        pyrig,
-        until_package=package,
-    )
-    for shared_subcommands_module in (shared_subcommands, *shared_subcommands_modules):
+        *discover_equivalent_modules_across_dependents(
+            shared_subcommands,
+            pyrig,
+        ),
+    ):
         sub_cmds = module_functions(shared_subcommands_module)
         for sub_cmd in sub_cmds:
             app.command()(sub_cmd)
