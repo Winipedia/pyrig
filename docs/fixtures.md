@@ -71,10 +71,10 @@ added to it without affecting any existing content.
 
 ## Autouse Fixtures
 
-pyrig defines a few autouse fixtures in `autouse/session.py`. These are automatically
-run on every test run without being requested by any test. They act as continuous
-project health checks, turning a passing test suite into a guarantee that the
-project is structurally sound.
+pyrig defines a few autouse fixtures in `autouse/session.py`. These automatically
+run at the beginning of every test run without being requested by any test.
+They act as continuous project health checks, turning a passing test suite into
+a guarantee that the project is structurally sound.
 
 - **`all_modules_tested`** — checks that every source module has a fully
 mirrored test module.
