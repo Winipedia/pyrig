@@ -73,7 +73,7 @@ def src_package_is_pyrig() -> bool:
     repository rather than as an installed dependency in another project.
 
     Returns:
-        True if the current working directory's kebab-case name matches ``pyrig``.
+        True if the current working directory is named ``pyrig``.
 
     Examples:
         >>> if src_package_is_pyrig():
