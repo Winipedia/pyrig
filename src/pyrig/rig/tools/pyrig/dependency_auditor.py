@@ -18,6 +18,7 @@ if src_package_is_pyrig():
             """Build pip-audit command arguments.
 
             Sometimes used to ignore irrelevant vulnerabilities in dependencies,
-            so that the CI/CD passes the audit, delegates to the base.
+            so that the CI/CD passes the audit, usually delegates to the base when
+            no vulnerabilities are present.
             """
             return super().audit_args(*args)
