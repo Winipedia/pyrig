@@ -66,7 +66,7 @@ class PythonPackageConfigFile(PythonConfigFile):
         themselves are not modified.
 
         Each generated ``__init__.py`` is written with the project's standard
-        init content (``ProgrammingLanguage.standard_init_content``).
+        init content (``ProgrammingLanguage.I.standard_init_content()``).
 
         Args:
             configs: Lines of Python source code to write to the target file.
