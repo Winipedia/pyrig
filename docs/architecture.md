@@ -89,9 +89,9 @@ Do not override the public methods:
 `validate()` then enforces the invariant:
 
 ```text
-file missing?  → create it, merge required content, write
-file present but incomplete? → merge missing keys/lines, write
-file correct?  → no-op
+file missing?           → create it, write required content
+file present but incorrect? → merge missing keys/lines, write
+file correct?           → no-op
 ```
 
 User-added content is always preserved; only absent required content is enforced.
@@ -175,8 +175,8 @@ downstream project without any explicit registration because it is defined in
 `<package>.rig.cli.subcommands` and they will be available in that project
 without any explicit registration.
 A project can also define its own shared commands in `<package>.rig.cli.shared_subcommands`
-and they will be available in every pyrig-based project in the ecosystem, regardless
-of whether that project is upstream or downstream in the dependency chain.
+and they will be available in every pyrig-based project that depends on it
+(directly or transitively).
 
 ---
 

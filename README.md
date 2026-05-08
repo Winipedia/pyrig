@@ -88,7 +88,7 @@ Run `pyrig subcls` to generate a subclass for overriding a specific file.
 ### [Automatic CLI](https://winipedia.github.io/pyrig/cli)
 
 `pyrig init` sets up a CLI for your project that works immediately.
-Generate and add new commands by running `pyrig mkcmd <command-name>`.
+Generate and add new commands by running `pyrig mkcmd <name>`.
 An automatic version command is included that shows the version of your project.
 Run `my-project version` to see it in action.
 
@@ -101,7 +101,7 @@ and update them automatically as your project evolves.
 ### [Test Fixtures](https://winipedia.github.io/pyrig/fixtures)
 
 pyrig enables automatic sharing and registration of pytest fixtures.
-Run `pyrig mkfixture <fixture-name>` to generate a new fixture that is
+Run `pyrig mkfixture <name>` to generate a new fixture that is
 automatically registered and available across all your tests.
 
 ### [Build Artifacts](https://winipedia.github.io/pyrig/build)
