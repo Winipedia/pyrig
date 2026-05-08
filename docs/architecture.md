@@ -161,7 +161,8 @@ downstream project. On startup it:
 1. Derives the calling package name from `sys.argv[0]` (the console-script path).
 2. Imports `<package>.rig.cli.subcommands` and registers all its functions as Typer
    commands — these are project-specific commands.
-3. Walks the full dependency chain from `pyrig` to the calling package, importing
+3. Starts with `pyrig.rig.cli.shared_subcommands` itself, then walks the full
+   dependency chain of every package that depends on `pyrig`, importing
    `<package>.rig.cli.shared_subcommands` from each, and registers those functions
    as shared commands available in every project.
 
@@ -171,8 +172,8 @@ downstream project without any explicit registration because it is defined in
 `<package>.rig.cli.subcommands` and they will be available in that project
 without any explicit registration.
 A project can also define its own shared commands in `<package>.rig.cli.shared_subcommands`
-and they will be available in every project downstream of it, not including
-upstream dependencies like `pyrig` itself.
+and they will be available in every pyrig-based project in the ecosystem, regardless
+of whether that project is upstream or downstream in the dependency chain.
 
 ---
 
