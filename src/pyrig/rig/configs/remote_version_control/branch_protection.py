@@ -59,25 +59,12 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
     def _configs(self) -> list[ConfigDict]:
         """Build the GitHub ruleset configuration for the default branch.
 
-        Constructs a single-element list containing a complete GitHub ruleset
-        dict that targets the repository default branch (``~DEFAULT_BRANCH``)
-        and enforces the following rules:
-
-        - ``creation``, ``deletion``: Restrict who can create or delete the
-          protected branch.
-        - ``required_linear_history``: Enforces a linear commit history,
-          preventing merge commits directly to the branch.
-        - ``required_signatures``: Requires all commits to be signed.
-        - ``pull_request``: Requires 1 approving review with code owner review,
-          stale review dismissal on push, last-push approval, and resolved
-          discussion threads. Only squash and rebase merges are permitted.
-        - ``required_status_checks``: Requires the health-check workflow job
-          to pass before a pull request can be merged. The branch must also be
-          up to date before merging (``strict_required_status_checks_policy``).
-        - ``non_fast_forward``: Prevents force-pushes to the branch.
-
-        The repository owner (bypass actor ID 5) is granted unconditional bypass
-        rights so that emergency changes can still be applied when necessary.
+        Constructs a list of ruleset configuration dicts, each representing a complete
+        ruleset. If you export a ruleset from GitHub, the resulting json will be a dict
+        and this config file stores a list of those dicts, so that several rulesets can
+        be managed together if desired in a simple way via a single file.
+        The default implementation returns a single ruleset targeting the default
+        branch with some recommended protections already in place.
 
         Returns:
             A single-element list containing the complete ruleset configuration
