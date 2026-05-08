@@ -92,7 +92,7 @@ of the source package. No registration, no manifest, no manual bookkeeping.
 
 ## Extending the Mirror Test System
 
-The mirror test system is itself overridable via the standard `DependencySubclass`
+The mirror test system is itself overridable via the standard `RigDependencySubclass`
 mechanism. A downstream project can subclass `MirrorTestConfigFile` to change
 naming conventions, adjust what counts as "tested", or customise the skeleton
 format. The `mktests` command and the `all_modules_tested` fixture both use
