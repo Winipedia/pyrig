@@ -72,7 +72,7 @@ added to it without affecting any existing content.
 ## Autouse Fixtures
 
 pyrig defines a few autouse fixtures in `autouse/session.py`. These are automatically
-on every test run without being requested by any test. They act as continuous
+run on every test run without being requested by any test. They act as continuous
 project health checks, turning a passing test suite into a guarantee that the
 project is structurally sound.
 
