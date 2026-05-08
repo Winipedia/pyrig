@@ -182,13 +182,12 @@ class ExecutableBuilder(BuilderConfigFile):
     def resource_packages(self) -> Generator[ModuleType, None, None]:
         """Yield resource packages from all pyrig-dependent packages.
 
-        Discovers all ``resources`` modules from packages in the pyrig dependency
-        chain, starting with ``pyrig.rig.resources`` itself. This allows
-        multi-package applications to bundle resources from their entire
-        dependency chain without explicit configuration.
+        Discovers all ``resources`` modules from packages that depend on pyrig.
+        This allows multi-package applications to bundle resources from their
+        entire dependency chain without explicit configuration.
 
-        This intentionally leaves out pyrigs resources package as its resources
-        are for no use to any other application.
+        Intentionally excludes pyrig's own resources package, as its resources
+        (gitignore templates, licenses, etc.) are not useful to other applications.
 
         Returns:
             Generator of module objects for each discovered ``resources`` package.
