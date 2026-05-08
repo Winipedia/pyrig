@@ -31,7 +31,7 @@ class PythonLinter(Tool):
         """Return the badge group this tool belongs to.
 
         Returns:
-            `ToolGroup.CODE_QUALITY`
+            ToolGroup.CODE_QUALITY
         """
         return ToolGroup.CODE_QUALITY
 

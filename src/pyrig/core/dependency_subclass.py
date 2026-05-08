@@ -85,13 +85,13 @@ class DependencySubclass(ABC):
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator
     def I(cls) -> Self:  # noqa: E743, N802, N805
-        """Return a cached instance of the leaf subclass.
+        """Return the cached leaf subclass.
 
-        Convenience shortcut equivalent to ``cls.L()``. The instance is
-        created once per class and reused on every subsequent access.
+        Convenience shortcut equivalent to ``cls.L()``. The leaf subclass is
+        retrieved once per class and reused on every subsequent access.
 
         Returns:
-            Instance of the leaf subclass.
+            The single leaf subclass type. May be abstract.
         """
         return cls.L()
 

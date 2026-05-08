@@ -213,8 +213,8 @@ class BuilderConfigFile(ListConfigFile):
     def move_artifact(self, tmp_path: Path) -> None:
         """Move the artifact from the temp directory to the output directory.
 
-        Reads the artifact at ``tmp_path / self.filename()`` (already named
-        with the platform-suffixed stem produced by ``stem()``), moves it into
+        Moves the artifact at ``tmp_path / self.filename()`` (already named
+        with the platform-suffixed stem produced by ``stem()``) into
         ``parent_path()``, and prints the destination path to the console.
 
         Args:
