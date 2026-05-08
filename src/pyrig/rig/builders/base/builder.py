@@ -222,7 +222,6 @@ class BuilderConfigFile(ListConfigFile):
                 ``create_artifact()``.
         """
         artifact = tmp_path / self.filename()
-
         dist_path = self.parent_path()
         logger.debug(
             "Moving artifact: %s to: %s",
