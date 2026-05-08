@@ -89,7 +89,7 @@ class DependencySubclass(ABC):
 
         Convenience shortcut equivalent to ``cls.L()``. The instance is
         created once per class and reused on every subsequent access.
-        
+
         Returns:
             Instance of the leaf subclass.
         """
