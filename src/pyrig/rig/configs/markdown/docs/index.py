@@ -28,7 +28,7 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
         """Return the ``docs/`` directory path.
 
         Returns:
-            ``Path("docs")`` — the MkDocs documentation source directory,
+            Path: The MkDocs documentation source directory,
             relative to the project root.
         """
         return DocsBuilder.I.docs_dir()

@@ -42,9 +42,6 @@ def resource_path(name: str, package: ModuleType) -> Path:
     Returns:
         Absolute path to the resource file.
 
-    Raises:
-        TypeError: If ``package`` is not a valid module object.
-
     Note:
         The path is resolved from within an ``as_file`` context manager. For
         file-based packages (standard in development and PyInstaller builds), the
