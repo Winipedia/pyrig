@@ -18,7 +18,10 @@ from pyrig.core.introspection.paths import package_dir_path, path_as_module_name
 from pyrig.rig.tests import fixtures
 
 module_names: list[str] = []
-for package in discover_equivalent_modules_across_dependents(fixtures, pyrig):
+for package in (
+    fixtures,
+    *discover_equivalent_modules_across_dependents(fixtures, pyrig),
+):
     package_name = package.__name__
     package_path = package_dir_path(package)
 

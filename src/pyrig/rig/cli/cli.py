@@ -159,12 +159,12 @@ def add_shared_subcommands() -> None:
     """
     package_name = package_name_from_argv()
     package = import_module(package_name)
-    all_shared_subcommands_modules = discover_equivalent_modules_across_dependents(
+    shared_subcommands_modules = discover_equivalent_modules_across_dependents(
         shared_subcommands,
         pyrig,
         until_package=package,
     )
-    for shared_subcommands_module in all_shared_subcommands_modules:
+    for shared_subcommands_module in (shared_subcommands, *shared_subcommands_modules):
         sub_cmds = module_functions(shared_subcommands_module)
         for sub_cmd in sub_cmds:
             app.command()(sub_cmd)

@@ -13,6 +13,7 @@ from pytest_mock import MockerFixture
 from pyrig.core.introspection.packages import (
     import_package_from_dir,
 )
+from pyrig.rig import resources
 from pyrig.rig.builders.base import executable
 from pyrig.rig.builders.base.executable import ExecutableBuilder
 
@@ -122,10 +123,8 @@ class TestExecutableBuilder:
     ) -> None:
         """Test method."""
         # Test that default additional resource packages are discovered
-        result = my_test_executable_builder().resource_packages()
-        # All items should be modules
-        for package in result:
-            assert hasattr(package, "__name__"), f"Expected module, got {package}"
+        packages = my_test_executable_builder().resource_packages()
+        assert resources not in packages
 
     def test_temp_workpath(
         self, tmp_path: Path, my_test_executable_builder: type[ExecutableBuilder]
@@ -142,13 +141,19 @@ class TestExecutableBuilder:
         assert result.exists(), "Expected path to exist"
 
     def test_add_datas(
-        self, my_test_executable_builder: type[ExecutableBuilder]
+        self, my_test_executable_builder: type[ExecutableBuilder], mocker: MockerFixture
     ) -> None:
         """Test method."""
+        resource_packages_mock = mocker.patch.object(
+            ExecutableBuilder,
+            ExecutableBuilder.resource_packages.__name__,
+            return_value=[resources],
+        )
         result = my_test_executable_builder().add_datas()
         # should contain the resource.py and __init__.py from the resources package
         result_list = list(result)
         assert len(result_list) > 1, f"Expected at least two files, got {result_list}"
+        resource_packages_mock.assert_called_once()
 
     def test_executable_options(
         self,

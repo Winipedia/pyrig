@@ -17,7 +17,7 @@ from pyrig.core.introspection.packages import discover_all_subclasses_across_pac
 logger = logging.getLogger(__name__)
 
 
-def discover_subclasses_across_dependents[T: type](
+def discover_subclasses_across_dependencies[T: type](
     cls: T,
     dependency: ModuleType,
     package: ModuleType,
@@ -49,7 +49,7 @@ def discover_subclasses_across_dependents[T: type](
         >>> from pyrig.rig.configs.base.config_file import ConfigFile
         >>> from pyrig.rig import configs
         >>> import pyrig
-        >>> subclasses = list(discover_subclasses_across_dependents(
+        >>> subclasses = list(discover_subclasses_across_dependencies(
         ...     cls=ConfigFile,
         ...     dependency=pyrig,
         ...     package=configs,
@@ -64,12 +64,15 @@ def discover_subclasses_across_dependents[T: type](
 
     return (
         subclass
-        for package in discover_equivalent_modules_across_dependents(
-            module=package, dependency=dependency
+        for pkg in (
+            package,
+            *discover_equivalent_modules_across_dependents(
+                module=package, dependency=dependency
+            ),
         )
         for subclass in discover_all_subclasses_across_package(
             cls,
-            package=package,
+            package=pkg,
         )
     )
 
@@ -118,7 +121,7 @@ def discover_equivalent_modules_across_dependents(
         dependency_name,
     )
 
-    for package in (dependency, *all_deps_depending_on_dep(dependency)):
+    for package in all_deps_depending_on_dep(dependency):
         package_module_name = module_name.replace(dependency_name, package.__name__, 1)
         package_module = import_module_with_default(package_module_name)
         if package_module is not None:
