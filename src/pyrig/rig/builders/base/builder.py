@@ -215,13 +215,14 @@ class BuilderConfigFile(ListConfigFile):
 
         Reads the artifact at ``tmp_path / self.filename()`` (already named
         with the platform-suffixed stem produced by ``stem()``), moves it into
-        ``parent_path()``, and prints the destination path to the console.
+        ``parent_path()``, and prints the artifact path to the console.
 
         Args:
             tmp_path: Path to the temporary build directory passed to
                 ``create_artifact()``.
         """
         artifact = tmp_path / self.filename()
+
         dist_path = self.parent_path()
         logger.debug(
             "Moving artifact: %s to: %s",
