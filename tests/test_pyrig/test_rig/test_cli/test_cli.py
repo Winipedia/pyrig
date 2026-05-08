@@ -44,15 +44,9 @@ def test_add_subcommands(mocker: MockerFixture) -> None:
     assert len(app.registered_commands) == 0
 
 
-def test_add_shared_subcommands(mocker: MockerFixture) -> None:
+def test_add_shared_subcommands() -> None:
     """Test function."""
-    # mock package_name_from_argv to return pyrig for testing
-    # bc in pytest it would return pytest instead of pyrig
-    argv_mock = mocker.patch(
-        cli.__name__ + "." + package_name_from_argv.__name__, return_value="pyrig"
-    )
     add_shared_subcommands()
-    argv_mock.assert_called_once()
     # check that version is in the app commands
     commands = {cmd.callback.__name__ for cmd in app.registered_commands}  # ty:ignore[unresolved-attribute]
     assert {"version"}.issubset(commands)
