@@ -150,7 +150,7 @@ Found subclasses:
         this when only instantiable implementations are needed.
 
         Yields:
-            Non-abstract subclass types in dependency order.
+            Non-abstract subclass types.
         """
         return discard_abstract_classes(cls.subclasses())
 
@@ -160,13 +160,10 @@ Found subclasses:
 
         Searches every installed package that depends on the root package of
         ``dependency_package()``. Intermediate parent classes are discarded,
-        leaving only the outermost leaf-level subclasses. Results are yielded
-        in topological dependency order (base package classes first,
-        dependents after).
+        leaving only the outermost leaf-level subclasses.
 
         Yields:
-            Subclass types with intermediate parent classes removed, in
-            dependency order.
+            Subclass types with intermediate parent classes removed.
         """
         return discard_parent_classes(
             discover_subclasses_across_dependencies(

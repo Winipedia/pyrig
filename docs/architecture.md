@@ -110,7 +110,7 @@ ConfigFile
  │    └── YmlConfigFile
  │         └── DictYmlConfigFile    → GitHub Actions workflows
  ├── JsonConfigFile
- │    └── DictJsonConfigFile   → branch-protection.json
+ │    └── ListJsonConfigFile   → branch-protection.json
  └── ListConfigFile
       ├── StringConfigFile
       │    └── MarkdownConfigFile  → README.md, CONTRIBUTING.md …
