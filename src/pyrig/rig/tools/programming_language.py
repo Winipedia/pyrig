@@ -1,6 +1,6 @@
 """Programming language tool wrapper.
 
-Wraps ProgrammingLanguage information.
+Wraps ProgrammingLanguage commands and information.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
