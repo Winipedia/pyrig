@@ -217,7 +217,7 @@ def mkcmd(
 def subcls() -> None:
     """Scaffold a subclass of any pyrig class interactively.
 
-    Launches a fuzzy-search prompt listing all `RigDependencySubclass` subclasses
+    Launches a fuzzy-search prompt listing all `RigDependencySubclass` leaf subclasses
     found in pyrig and its dependents — both concrete classes (shown with their string
     representation) and abstract classes (shown by qualified name), sorted
     alphabetically by import path.
