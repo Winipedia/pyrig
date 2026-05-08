@@ -11,7 +11,7 @@ def internet_is_available() -> bool:
     reliable connectivity check without requiring DNS resolution or depending
     on any specific API endpoint.
 
-    All connection errors are caught silently and result in ``False``, so
+    OSError exceptions are caught silently and result in ``False``, so
     this function never raises.
 
     Returns:

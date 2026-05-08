@@ -39,7 +39,7 @@ def write_text_utf8(path: Path, content: str) -> int:
         content: Text content to write.
 
     Returns:
-        Number of characters written.
+        Number of bytes written.
     """
     return path.write_text(content, encoding="utf-8")
 

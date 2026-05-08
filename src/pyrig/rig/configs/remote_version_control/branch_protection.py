@@ -200,9 +200,9 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
                 and is not present in the ``.env`` file.
 
         Note:
-            The token must have ``repo`` scope (or ``administration:write``) for
-            ruleset management. Never commit tokens — use environment variables
-            or a gitignored ``.env`` file.
+            The token must have ``repo`` scope for ruleset management.
+            Never commit tokens — use environment variables or a gitignored
+            ``.env`` file.
         """
         # try os env first
         token = os.getenv(RemoteVersionController.I.access_token_key())

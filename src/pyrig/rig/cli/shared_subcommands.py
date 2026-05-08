@@ -1,6 +1,6 @@
 """Shared CLI commands available across all dependent projects.
 
-Every public function defined here is automatically discovered and registered
+Every function defined here is automatically discovered and registered
 as a CLI command in all projects that depend on this project.
 """
 

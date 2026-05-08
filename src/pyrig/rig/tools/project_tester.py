@@ -16,7 +16,7 @@ class ProjectTester(Tool):
     Centralizes test-related constants (package name, source root, module
     prefix) used throughout the project for path resolution, config
     generation, and mirror-test discovery. Also constructs pytest command
-    argument tuples for both local and CI execution.
+    Args objects for both local and CI execution.
 
     Example:
         >>> ProjectTester.I.run_tests_in_ci_args().run()
@@ -32,7 +32,7 @@ class ProjectTester(Tool):
         return "pytest"
 
     def group(self) -> str:
-        """Get the badge group for this tool."""
+        """Get the tool group for this tool."""
         return ToolGroup.TESTING
 
     def badge_urls(self) -> tuple[str, str]:

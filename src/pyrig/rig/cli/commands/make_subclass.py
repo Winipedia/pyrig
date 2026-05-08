@@ -48,7 +48,7 @@ def choose_subclass() -> type[DependencySubclass]:
     Discovers all concrete and abstract ``RigDependencySubclass`` subclasses,
     formats them for display (
         concrete classes use the string representation of an instance,
-        abstract classes use their qualified name
+        abstract classes use their module and class name
     ), sorts them alphabetically by import path, and delegates selection to an
     InquirerPy fuzzy prompt.
 

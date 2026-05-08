@@ -32,7 +32,7 @@ def module_file_path(module: ModuleType) -> Path:
         module: An imported Python module.
 
     Returns:
-        Path to the module's ``.py`` source file.
+        Path to the module's file.
 
     Raises:
         AttributeError: If the module's ``__file__`` attribute is ``None``
