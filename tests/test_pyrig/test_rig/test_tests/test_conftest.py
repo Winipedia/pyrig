@@ -20,8 +20,8 @@ Registers fixture modules from pyrig and all installed packages that depend on
 it as pytest plugins. This makes all discovered fixtures available in every
 test module without explicit imports.
 
-The registration walks the ``rig.tests.fixtures`` package path in pyrig and
-each dependent package, collecting all Python modules and registers them as
-plugins.
+The registration walks the ``<project_name>.rig.tests.fixtures`` package path in
+all pyrig dependent packages, collecting all Python modules except ``__init__.py``
+and registers them as plugins.
 """  # noqa: E501
     )
