@@ -45,7 +45,7 @@ def mkroot() -> None:
     """Create or update all managed project configuration files.
 
     Discovers every concrete `ConfigFile` subclass registered in the project
-    and its installed dependencies, then validates each one in priority order.
+    and its installed pyrig dependencies, then validates each one in priority order.
     Missing files are created (including parent directories); existing files are
     updated only when their content is not correct. User customisations are
     preserved wherever possible.
@@ -217,7 +217,7 @@ def mkcmd(
 def subcls() -> None:
     """Scaffold a subclass of any pyrig class interactively.
 
-    Launches a fuzzy-search prompt listing all `RigDependencySubclass` leaf classes
+    Launches a fuzzy-search prompt listing all `RigDependencySubclass` leaf subclasses
     found in pyrig and its dependents — both concrete classes (shown with their string
     representation) and abstract classes (shown by qualified name), sorted
     alphabetically by import path.

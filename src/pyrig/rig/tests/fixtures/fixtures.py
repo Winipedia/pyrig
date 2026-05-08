@@ -264,7 +264,7 @@ def tmp_package_root_path(
 def tmp_source_root_path(tmp_project_root_path: Path) -> Path:
     """Provide the temporary source root directory.
 
-    Creates the ``src`` directory inside the temporary project root.
+    Creates the source root directory inside the temporary project root.
 
     Args:
         tmp_project_root_path: Temporary project root directory.
