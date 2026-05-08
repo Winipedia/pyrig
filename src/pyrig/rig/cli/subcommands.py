@@ -45,7 +45,7 @@ def mkroot() -> None:
     """Create or update all managed project configuration files.
 
     Discovers every concrete `ConfigFile` subclass registered in the project
-    and its installed dependents, then validates each one in priority order.
+    and its installed pyrig dependencies, then validates each one in priority order.
     Missing files are created (including parent directories); existing files are
     updated only when their content is not correct. User customisations are
     preserved wherever possible.
