@@ -28,11 +28,7 @@ class PythonLinter(Tool):
         return "ruff"
 
     def group(self) -> str:
-        """Return the badge group this tool belongs to.
-
-        Returns:
-            ToolGroup.CODE_QUALITY
-        """
+        """Return the badge group this tool belongs to."""
         return ToolGroup.CODE_QUALITY
 
     def badge_urls(self) -> tuple[str, str]:
