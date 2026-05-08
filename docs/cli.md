@@ -32,24 +32,26 @@ automatically at runtime.
 A `typer.Typer` instance (`app`) is defined in `pyrig.rig.cli.cli`.
 It is fully configured and working from the start and registers
 every function defined in `my_project.rig.cli.subcommands` as a command.
-The same applies to every `my_project.rig.cli.shared_subcommands`
+Functions in `my_project.rig.cli.shared_subcommands` are also registered.
 
 ---
 
 ## Command Discovery
 
 When the CLI is invoked, pyrig discovers every function defined in
-`my_project.rig.cli.subcommands` and `my_project.rig.cli.shared_subcommands`
-and registers them as CLI commands. This means that to add a new command, simply
-define a new function in one of those modules, and it will be automatically
-available as a CLI command the next time the CLI is run.
-Simply run `pyrig mkcmd <command-name>` to append a new command function skeleton
-to `my_project.rig.cli.subcommands` (creating the file if it does not exist).
+`my_project.rig.cli.subcommands` and registers them as CLI commands.
+Additionally, it discovers functions from `shared_subcommands` modules across
+all packages in the dependency chain (pyrig and all packages that depend on it).
+This means that to add a new command, simply define a new function in one of
+those modules, and it will be automatically available as a CLI command the next
+time the CLI is run. Simply run `pyrig mkcmd <command-name>` to append a new
+command function skeleton to `my_project.rig.cli.subcommands` (creating the file
+if it does not exist).
 
 `my_project.rig.cli.shared_subcommands` is a bit special: it is intended for
 commands that should be shared across multiple projects. If a project defines a
 function in `shared_subcommands`, that command will also be available in every
-other pyrig-based project in the ecosystem, regardless of the dependency direction.
+other pyrig-based project that depends on it (directly or transitively).
 An example of this is pyrig's own `version` command, which is defined in `pyrig.rig.cli.shared_subcommands`
 so that it is available in every project that uses pyrig.
 So your project has already one command from the start that you can run:

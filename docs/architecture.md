@@ -175,8 +175,8 @@ downstream project without any explicit registration because it is defined in
 `<package>.rig.cli.subcommands` and they will be available in that project
 without any explicit registration.
 A project can also define its own shared commands in `<package>.rig.cli.shared_subcommands`
-and they will be available in every pyrig-based project in the ecosystem, regardless
-of whether that project is upstream or downstream in the dependency chain.
+and they will be available in every pyrig-based project that depends on it
+(directly or transitively).
 
 ---
 
