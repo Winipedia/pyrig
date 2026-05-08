@@ -17,7 +17,7 @@ def init() -> None:
     Steps executed in order:
 
         1.  git init            (initialize version control)
-        2.  uv add --group dev  (adds all pyrig dev dependencies)
+        2.  uv add --group dev  (adds all tool dev dependencies)
         3.  uv sync             (install all dependencies)
         4.  pyrig mkroot        (generate all config files and project structure)
         5.  uv sync             (re-install to apply updated pyproject.toml)
