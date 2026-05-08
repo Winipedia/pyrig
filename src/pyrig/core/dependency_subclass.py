@@ -18,7 +18,7 @@ from pyrig.core.introspection.classes import (
     discard_parent_classes,
 )
 from pyrig.core.introspection.dependencies import (
-    discover_subclasses_across_dependents,
+    discover_subclasses_across_dependencies,
 )
 
 T = TypeVar("T", bound="DependencySubclass")
@@ -185,7 +185,7 @@ Found subclasses:
             dependency order.
         """
         return discard_parent_classes(
-            discover_subclasses_across_dependents(
+            discover_subclasses_across_dependencies(
                 cls,
                 dependency=cls.base_dependency(),
                 package=cls.definition_package(),

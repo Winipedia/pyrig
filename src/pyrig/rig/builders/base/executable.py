@@ -187,6 +187,9 @@ class ExecutableBuilder(BuilderConfigFile):
         multi-package applications to bundle resources from their entire
         dependency chain without explicit configuration.
 
+        This intentionally leaves out pyrigs resources package as its resources
+        are for no use to any other application.
+
         Returns:
             Generator of module objects for each discovered ``resources`` package.
         """
