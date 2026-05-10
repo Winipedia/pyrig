@@ -96,7 +96,7 @@ file correct?           → no-op
 
 User-added content is always preserved; only absent required content is enforced.
 This also means that content that you change manually without overriding the right
-`ConfigFile` subclass is overwritten if it chnages one of the content defined
+`ConfigFile` subclass is overwritten if it changes one of the content defined
 in `_configs()`, only additions like additional keys in a dict or items in a
 list are preserved.
 
@@ -199,10 +199,10 @@ checked into the repository and kept in sync by `pyrig mkroot`.
 To subclass a `DependencySubclass` (or `RigDependencySubclass` specifically) like
 `ConfigFile` or `Tool` it must be defined under the same package path as the
 base class from the package root, meaning a subclass defined in a module under
-`some_pyrig_project.rig.configs.some_mdoule` must be defined under the same package
+`some_pyrig_project.rig.configs.some_module` must be defined under the same package
 respectively as defined in the method `dependency_package()` of the base class,
 which is `pyrig.rig.configs` for `ConfigFile`.
-So your ovveride must be defined a module like: `my_project.rig.configs.my_config_file.py`.
+So your override must be defined a module like: `my_project.rig.configs.my_config_file.py`.
 As can be seen the initial part that is the project's name is the only part that
 can be different, the rest of the path must be the same as the base class's
 definition package. Each module under that path is searched for subclasses and
@@ -215,21 +215,15 @@ if you then need to look up what config files you need to override to change a
 specific part of the system.
 
 To make this process easier there is the `pyrig subcls` CLI command that opens
-a fuzzy search interafce in the terminal where you can search for any class
+a fuzzy search interface in the terminal where you can search for any class
 that you want to override and after you select it will generate a skeleton of
 the subclass for you in the correct path with the correct imports and everything,
 so you can just fill in the logic that you want to change without worrying about
 where to define it and how to import it and all that.
 
-Together with the [CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)
-where you can ask the AI about the codebase and get explanations about how
-everything works and where to look to change specific parts of the system,
-this makes it very easy to understand how to customize pyrig for your project
-and what parts of the system you need to override to change specific behaviors.
-
 ## Usage Recommendations
 
-Our suggestions is that you use pyrig only once to create your own personal
+Our suggestion is that you use pyrig only once to create your own personal
 package and publish it to PyPI, so that you can customize it once with all
 behaviour you want for your projects, and after that you can simply use your
 package to start new projects by running:
