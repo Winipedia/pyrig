@@ -118,9 +118,12 @@ def test_generator_has_items() -> None:
     gen = (x for x in iterable_with_items)
     has_items, items = generator_has_items(gen)
     assert has_items is True
-    assert list(items) == iterable_with_items, (
-        "Expected generator to yield all items from the iterable"
-    )
+    assert list(items) == iterable_with_items
+
+    empty_iterable: list[Any] = []
+    gen = (x for x in empty_iterable)
+    has_items, items = generator_has_items(gen)
+    assert has_items is False
 
 
 def test_merge_nested_structures() -> None:
