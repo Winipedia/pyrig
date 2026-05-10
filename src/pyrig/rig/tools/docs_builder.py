@@ -107,8 +107,9 @@ class DocsBuilder(Tool):
     def documentation_url(self) -> str:
         """Construct the expected GitHub Pages URL for this project.
 
-        Reads the repository owner from the git remote URL and
-        the repository name from the project name. Does not verify that the
+        Reads the repository owner from the git remote URL if configured,
+        otherwise falls back to the git username, and the repository name
+        from the project name. Does not verify that the
         remote is configured or that GitHub Pages is enabled.
 
         Returns:
