@@ -59,13 +59,13 @@ uv add pyrig
 uv run pyrig init
 ```
 
-See the [Getting Started Guide](https://winipedia.github.io/pyrig/getting-started)
+See the [Getting Started Guide](https://Winipedia.github.io/pyrig/getting-started)
 for detailed setup instructions to also fully integrate with GitHub and
 CI/CD from the start.
 
 ## Features
 
-### [Project Scaffolding & Initialization](https://winipedia.github.io/pyrig/scaffolding)
+### [Project Scaffolding & Initialization](https://Winipedia.github.io/pyrig/scaffolding)
 
 `pyrig init` generates a complete project in one command that works out of the box.
 This includes everything a modern python project needs:
@@ -77,7 +77,7 @@ frameworks, git hooks, etc.)
 - Complete and working CLI
 - And much more...
 
-### [File & Configuration Management](https://winipedia.github.io/pyrig/config-files)
+### [File & Configuration Management](https://Winipedia.github.io/pyrig/config-files)
 
 Every generated file is backed by a Python class that validates and merges
 automatically. Override any config by subclassing, or define entirely new
@@ -85,26 +85,26 @@ config files — pyrig discovers and manages them for you.
 Run `pyrig mkroot` to create or update all config files at once.
 Run `pyrig subcls` to generate a subclass for overriding a specific file.
 
-### [Automatic CLI](https://winipedia.github.io/pyrig/cli)
+### [Automatic CLI](https://Winipedia.github.io/pyrig/cli)
 
 `pyrig init` sets up a CLI for your project that works immediately.
 Generate and add new commands by running `pyrig mkcmd <name>`.
 An automatic version command is included that shows the version of your project.
 Run `my-project version` to see it in action.
 
-### [Mirror Test Generation & Maintenance](https://winipedia.github.io/pyrig/mirror-tests)
+### [Mirror Test Generation & Maintenance](https://Winipedia.github.io/pyrig/mirror-tests)
 
 Generate test skeletons with `pyrig mktests`.
 This will generate test skeletons for all source modules
 and update them automatically as your project evolves.
 
-### [Test Fixtures](https://winipedia.github.io/pyrig/fixtures)
+### [Test Fixtures](https://Winipedia.github.io/pyrig/fixtures)
 
 pyrig enables automatic sharing and registration of pytest fixtures.
 Run `pyrig mkfixture <name>` to generate a new fixture that is
 automatically registered and available across all your tests.
 
-### [Build Artifacts](https://winipedia.github.io/pyrig/build)
+### [Build Artifacts](https://Winipedia.github.io/pyrig/build)
 
 PyInstaller integration and extensible build system for generating executables,
 distributable packages, and more.
@@ -112,7 +112,7 @@ Run `pyrig subcls` to create a custom builder for your specific build needs.
 Run `pyrig build` to execute the build process and generate artifacts.
 Run `pyrig resources` to create a resources package for your project.
 
-### [Multi-Package Inheritance and Extensibility Architecture](https://winipedia.github.io/pyrig/architecture)
+### [Multi-Package Inheritance and Extensibility Architecture](https://Winipedia.github.io/pyrig/architecture)
 
 Override and customize any and all behaviour to suit your project's needs.
 pyrig's classes are designed for inheritance and composition, allowing you to
@@ -121,7 +121,7 @@ overriding methods. pyrig will automatically discover and use your custom classe
 without any additional configuration.
 Run `pyrig subcls` to generate a subclass for any pyrig class.
 
-### [CI/CD & Repository Protection](https://winipedia.github.io/pyrig/ci-cd)
+### [CI/CD & Repository Protection](https://Winipedia.github.io/pyrig/ci-cd)
 
 Pyrig generates GitHub Actions workflows for CI/CD and automatically configures
 and applies repository protection settings and branch protection rules to ensure
@@ -156,6 +156,6 @@ uv run my-project version            # Show your project's version
 
 | | |
 |---|---|
-| **[Full Documentation](https://winipedia.github.io/pyrig)** | The manually written documentation |
+| **[Full Documentation](https://Winipedia.github.io/pyrig)** | The manually written documentation |
 | **[CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)** | AI-generated documentation |
 | **[Tutorials](https://www.youtube.com/@Winipedia-py/playlists)** | YouTube tutorials for pyrig |
