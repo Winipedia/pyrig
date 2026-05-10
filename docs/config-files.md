@@ -102,7 +102,8 @@ discover and validate these subclasses as well, so custom project-specific
 config files can be added without any additional configuration or setup.
 
 To subclass an existing config file, simply run `pyrig subcls`. This will
-open a fuzzy search prompt with all existing pyrig classes.
+open a fuzzy search prompt listing all `RigDependencySubclass` leaf subclasses
+found in pyrig and its dependents.
 Search for the class name or the file path to find the class you want to
 subclass, and select it. This will generate a file with a subclass of the
 selected class where you can add or override any configuration you want.
