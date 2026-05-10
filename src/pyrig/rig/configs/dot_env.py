@@ -28,8 +28,8 @@ class DotEnvConfigFile(DictConfigFile):
     def _load(self) -> dict[str, str | None]:
         """Load all key-value pairs from the .env file.
 
-        Parses the file according to dotenv format rules. Keys declared
-        without a value (e.g. ``KEY=``) are returned as empty strings.
+        Parses the file according to dotenv format rules. Keys assigned
+        an empty value (e.g. ``KEY=``) are returned as empty strings.
 
         Returns:
             Mapping of variable names to their string values, or None for
