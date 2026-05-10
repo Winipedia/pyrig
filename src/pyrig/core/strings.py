@@ -12,6 +12,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+UTF_8_ENCODING = "utf-8"
+
 
 def read_text_utf8(path: Path) -> str:
     """Read the text content of a file using UTF-8 encoding.
@@ -25,7 +27,7 @@ def read_text_utf8(path: Path) -> str:
     Returns:
         File content as a string.
     """
-    return path.read_text(encoding="utf-8")
+    return path.read_text(encoding=UTF_8_ENCODING)
 
 
 def write_text_utf8(path: Path, content: str) -> int:
@@ -41,7 +43,21 @@ def write_text_utf8(path: Path, content: str) -> int:
     Returns:
         Number of bytes written.
     """
-    return path.write_text(content, encoding="utf-8")
+    return path.write_text(content, encoding=UTF_8_ENCODING)
+
+
+def open_path_with_utf8(path: Path, *args: Any, **kwargs: Any) -> Any:
+    """Open a file with UTF-8 encoding.
+
+    Args:
+        path: Path to the file to open.
+        *args: Positional arguments to pass to `open`.
+        **kwargs: Keyword arguments to pass to `open`.
+
+    Returns:
+        File object.
+    """
+    return path.open(*args, encoding=UTF_8_ENCODING, **kwargs)
 
 
 def file_has_content(path: Path) -> bool:

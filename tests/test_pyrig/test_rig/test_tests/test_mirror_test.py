@@ -85,7 +85,10 @@ def test_mirror_function():
 
 
 class TestMirrorClass:
-    '''Some docstring.'''
+    '''Some docstring.
+
+    that is multiline.
+    '''
 
     def test_mirror_method(self):
         pass

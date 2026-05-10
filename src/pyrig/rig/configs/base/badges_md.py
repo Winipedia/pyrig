@@ -113,7 +113,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         pattern = r"---\s*\n(.*?)\n---"
         replacement = f"---\n\n> {expected_description}\n\n---"
         # only replace first occurrence, as description is expected at the top
-        return re.sub(pattern, replacement, content, count=1, flags=re.DOTALL)
+        return re.sub(pattern, lambda _: replacement, content, count=1, flags=re.DOTALL)
 
     def replace_badges(self, content: str) -> str:
         """Replace stale badge URLs in the badge section with current ones.
@@ -142,7 +142,9 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
             alt_text = alt_text_match.group(1)
             # find and replace the line containing the badge with the same alt text
             pattern = rf".*\[!\[{re.escape(alt_text)}\].*"
-            badges_content = re.sub(pattern, badge, badges_content)
+            badges_content = re.sub(
+                pattern, lambda _, badge=badge: badge, badges_content
+            )
         # replace the old badges content with the updated one
         return content.replace(content.split("---", 1)[0], badges_content)
 
