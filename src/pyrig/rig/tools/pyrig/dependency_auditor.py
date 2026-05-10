@@ -17,8 +17,8 @@ if src_package_is_pyrig():
         def audit_args(self, *args: str) -> Args:
             """Build pip-audit command arguments.
 
-            Sometimes used to ignore irrelevant vulnerabilities in dependencies,
-            so that the CI/CD passes the audit, always delegates to the base when
-            no vulnerabilities are present.
+            It is used to ignore irrelevant vulnerabilities in dependencies,
+            so that the CI/CD passes the dependency audit check. It delegates
+            to the base when nothing needs to be ignored.
             """
             return super().audit_args(*args)
