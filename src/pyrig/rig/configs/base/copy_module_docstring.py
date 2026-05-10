@@ -35,7 +35,13 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
             The triple-quoted docstring as a list of lines.
         """
         docstring = self.copy_module().__doc__ or self.default_docstring()
-        return self.split_lines(f'"""{docstring}"""\n')
+        double_triple_quotes, single_triple_quotes = '"""', "'''"
+        triple_quotes = (
+            double_triple_quotes
+            if double_triple_quotes not in docstring
+            else single_triple_quotes
+        )
+        return self.split_lines(f"{triple_quotes}{docstring}{triple_quotes}\n")
 
     def is_correct(self) -> bool:
         """Check if the source module has a docstring.

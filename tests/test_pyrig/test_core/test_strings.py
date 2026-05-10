@@ -12,6 +12,7 @@ from pyrig.core.strings import (
     make_linked_badge_markdown,
     make_name_from_obj,
     make_summary_error_msg,
+    open_path_with_utf8,
     package_req_name_split_pattern,
     read_text_utf8,
     snake_to_kebab_case,
@@ -197,3 +198,14 @@ def test_file_has_content(tmp_path: Path) -> None:
 
     with pytest.raises(FileNotFoundError):
         file_has_content(tmp_path / "non_existent_file.txt")
+
+
+def test_open_path_with_utf8(tmp_path: Path) -> None:
+    """Test function."""
+    text = "Hello, world! 👋"
+    file_path = tmp_path / "test_open.txt"
+    file_path.write_text(text, encoding="utf-8")
+
+    with open_path_with_utf8(file_path, mode="r") as f:
+        result = f.read()
+    assert result == text

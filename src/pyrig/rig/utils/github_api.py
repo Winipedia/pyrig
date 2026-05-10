@@ -212,5 +212,5 @@ def repository(token: str, owner: str, repo_name: str) -> "Repository":
         myorg/myrepo
     """
     auth = Token(token)
-    github = Github(auth=auth)
-    return github.get_repo(f"{owner}/{repo_name}")
+    with Github(auth=auth) as github:
+        return github.get_repo(f"{owner}/{repo_name}")

@@ -21,7 +21,7 @@ Example:
 
 import yaml
 
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigData, ConfigFile
 
 
@@ -55,8 +55,8 @@ class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         Args:
             configs: Configuration dict or list to write.
         """
-        with self.path().open("w") as f:
-            yaml.safe_dump(configs, f, sort_keys=False)
+        with open_path_with_utf8(self.path(), mode="w") as f:
+            yaml.safe_dump(configs, f, sort_keys=False, allow_unicode=True)
 
     def extension(self) -> str:
         """Return "yaml"."""

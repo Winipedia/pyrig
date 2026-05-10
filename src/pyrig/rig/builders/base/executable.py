@@ -235,8 +235,8 @@ class ExecutableBuilder(BuilderConfigFile):
         """
         output_path = tmp_path / f"icon.{file_format}"
         png_path = self.app_icon_png_path()
-        img = Image.open(png_path)
-        img.save(output_path, format=file_format.upper())
+        with Image.open(png_path) as image:
+            image.save(output_path, format=file_format.upper())
         return output_path
 
     def app_icon_png_path(self) -> Path:

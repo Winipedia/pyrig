@@ -385,7 +385,7 @@ def {test_func_name}() -> None:
             self.test_class_skeleton_docstring(),
             r"(?:\"\"\".*?\"\"\"|\'\'\'.*?\'\'\')",
         )
-        return re.split(pattern, test_module_content, maxsplit=1)
+        return re.split(pattern, test_module_content, maxsplit=1, flags=re.DOTALL)
 
     def untested_class_and_method_names(
         self,
