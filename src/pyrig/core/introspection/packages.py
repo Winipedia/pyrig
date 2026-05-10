@@ -103,11 +103,12 @@ def src_package_is_package(package: ModuleType) -> bool:
 def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
     """Import a package by name, falling back to a direct directory import if needed.
 
-    Uses a two-stage strategy:
+    Uses the same two-stage strategy as ``import_module_with_file_fallback``
+    with ``is_package=True``:
 
-    1. Attempts a standard import via ``import_module_with_default``.
+    1. Attempts a standard import via ``importlib.import_module``.
     2. If the module is not found, falls back to importing directly from
-       the directory at ``path`` via ``import_package_from_dir``.
+       the directory at ``path`` via ``import_module_from_file``.
 
     The fallback handles packages not yet registered in ``sys.modules``,
     such as dynamically created packages or packages in non-standard locations.
@@ -131,10 +132,11 @@ def import_package_from_dir(path: Path, name: str) -> ModuleType:
     """Import a package directly from a directory, always reading from disk.
 
     Unlike a standard import, this function does not check ``sys.modules``
-    first — it always loads from the ``__init__.py`` on disk. The loaded
-    module is registered in ``sys.modules`` under ``name`` after successful
-    execution. Prefer ``import_package_with_dir_fallback`` when a standard
-    import should be attempted first.
+    first — it always loads from the ``__init__.py`` on disk. The module is
+    pre-registered in ``sys.modules`` before execution and removed on failure,
+    so failed loads do not leave invalid cache entries. Prefer
+    ``import_package_with_dir_fallback`` when a standard import should be
+    attempted first.
 
     Args:
         path: Directory containing the package (must have ``__init__.py``).
@@ -184,7 +186,8 @@ def discover_all_subclasses_across_package[T: type](
         package: Package to walk before discovery. All modules within it are
             imported so their classes register as subclasses of ``cls``.
             Only subclasses whose ``__module__`` starts with
-            ``package.__name__`` are returned.
+            ``package.__name__ + "."`` are returned (i.e., the root package
+            module itself is excluded).
 
     Returns:
         Set of all subclass types of ``cls`` that are defined within
