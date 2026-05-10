@@ -144,15 +144,16 @@ about the tool by overriding the relevant method in the relevant `Tool` subclass
 ## Mirror Tests — `MirrorTestConfigFile`
 
 `MirrorTestConfigFile` is a `ConfigFile` subclass that treats test files as
-configuration: `_configs()` returns the expected list of test stubs and `_load()`
-reads the existing test file. `validate()` appends only the missing stubs, never
-touching existing implementations.
+configuration: `_configs()` returns the complete expected test file content
+(existing tests merged with new stubs) and `_load()` reads the existing test file.
+`validate()` appends only the missing stubs, never touching existing implementations.
 
 At test-run time a session-scoped autouse fixture (`all_modules_tested`) enforces
-that every source module has a corresponding test file, failing the session if any
-are absent. Combined with `all_config_files_correct` (which checks all other
-`ConfigFile` subclasses), the test suite acts as a **continuous conformance check**
-for the whole project structure.
+that every source module has a corresponding fully-mirrored test file, failing the
+session if any are absent or have missing test coverage. Combined with
+`all_config_files_correct` (which checks all version-controlled `ConfigFile`
+subclasses), the test suite acts as a **continuous conformance check** for the whole
+project structure.
 
 ---
 

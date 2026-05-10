@@ -30,7 +30,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         7. Publish the GitHub release with artifacts and the changelog body.
 
     Permissions required:
-        - ``contents: write`` — push commits, tags, and create releases.
+        - ``contents: write`` — push tags and create releases.
         - ``actions: read`` — download artifacts from the triggering run.
 
     Example:
@@ -71,8 +71,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     def permissions(self) -> ConfigDict:
         """Build the workflow permission configuration.
 
-        Grants ``contents: write`` to allow pushing commits, creating version
-        tags, and publishing GitHub releases. Grants ``actions: read`` to
+        Grants ``contents: write`` to allow pushing tags and publishing
+        GitHub releases. Grants ``actions: read`` to
         allow downloading artifacts from the triggering build workflow run.
 
         Returns:

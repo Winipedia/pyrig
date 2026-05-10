@@ -19,7 +19,7 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
     The generated file serves two purposes:
 
     - It ensures pytest always collects at least one test, preventing exit
-      code 4 (no tests found) in CI pipelines for projects that have not yet
+      (no tests found) in CI pipelines for projects that have not yet
       written any real tests.
     - It triggers session-scoped autouse fixtures on the very first test run.
 
