@@ -95,7 +95,7 @@ def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleTy
     Args:
         module: Module to re-import.
         is_package: Whether the module being re-imported is a package. If ``True``,
-            the loader is created with ``is_package=True`` to ensure correct
+            the spec is created with ``is_package=True`` to ensure correct
             handling of package semantics (e.g., relative imports). Default is
             ``False`` for regular modules. Set to ``True`` when re-importing a
             package from its ``__init__.py`` file.
@@ -126,7 +126,7 @@ def import_module_with_file_fallback(
         path: Path to the module file (absolute or relative).
         name: The name to use for the imported module.
         is_package: Whether the module being imported is a package. If ``True``,
-            the loader is created with ``is_package=True`` to ensure correct
+            the spec is created with ``is_package=True`` to ensure correct
             handling of package semantics (e.g., relative imports). Default is
             ``False`` for regular modules. Set to ``True`` when importing a package
             from its ``__init__.py`` file.
@@ -159,7 +159,7 @@ def import_module_from_file(
         path: Path to the ``.py`` file (will be resolved to absolute path).
         name: The name to use for the imported module.
         is_package: Whether the module being imported is a package. If ``True``,
-            the loader is created with ``is_package=True`` to ensure correct
+            the spec is created with ``is_package=True`` to ensure correct
             handling of package semantics (e.g., relative imports). Default is
             ``False`` for regular modules. Set to ``True`` when importing a package
             from its ``__init__.py`` file.
