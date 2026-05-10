@@ -10,10 +10,6 @@ from pyrig.rig.builders.base.builder import BuilderConfigFile
 def build_artifacts() -> None:
     """Build all distributable artifacts for the project.
 
-    Discovers all concrete ``BuilderConfigFile`` subclasses, sorts them by
-    priority, and validates each one. Artifacts are written to the ``dist/``
-    directory with platform-specific names (e.g., ``myapp-Linux``,
-    ``myapp-Windows``, ``myapp-Darwin``). Builders whose output already
-    exists in ``dist/`` are skipped.
+    Validates all concrete ``BuilderConfigFile`` subclasses.
     """
     BuilderConfigFile.validate_all_subclasses()
