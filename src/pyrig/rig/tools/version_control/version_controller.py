@@ -396,7 +396,7 @@ class VersionController(Tool):
         """Check whether the working tree contains any unstaged changes.
 
         Runs ``git diff --quiet``, which exits with code ``0`` when the working
-        tree is clean and with a non-zero code when uncommitted differences
+        tree is clean and with a non-zero code when unstaged differences
         exist.  The exit code is used rather than parsing output, making this
         check fast and reliable.
 

@@ -10,7 +10,7 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 def init_project() -> None:
     """Run the full pyrig project initialization sequence.
 
-    This function is the CLI entry point for ``pyrig init``. It delegates
+    This function is called by the ``pyrig init`` CLI entry point. It delegates
     entirely to ``Pyrigger.I.init_project``, which owns and executes all
     ordered setup steps.
     """
