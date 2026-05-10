@@ -113,7 +113,10 @@ class ContainerfileConfigFile(StringConfigFile):
             f"RUN useradd -m -u 1000 {app_user_name}",
             f"RUN chown -R {app_user_name}:{app_user_name} .",
             f"USER {app_user_name}",
-            f"COPY --chown=appuser:appuser {package_root} {package_root}",
+            (
+                f"COPY --chown={app_user_name}:{app_user_name}"
+                f" {package_root} {package_root}"
+            ),
             f"RUN {install_dependencies_no_dev}",
             f"RUN rm {copy_files}",
             f"ENTRYPOINT {entrypoint}",

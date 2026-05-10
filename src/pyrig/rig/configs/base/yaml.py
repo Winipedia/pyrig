@@ -19,6 +19,8 @@ Example:
     ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
 """
 
+from typing import cast
+
 import yaml
 
 from pyrig.core.strings import open_path_with_utf8, read_text_utf8
@@ -45,7 +47,10 @@ class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         Returns:
             Parsed YAML content as a dict or list.
         """
-        return yaml.safe_load(read_text_utf8(self.path()))
+        result = yaml.safe_load(read_text_utf8(self.path()))
+        if result is None:
+            return cast("ConfigT", {})
+        return result
 
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the YAML file using safe_dump.

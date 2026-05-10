@@ -299,7 +299,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             from ``job_do_something``.
         """
         name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
-        prefix = next(split_on_uppercase(name))
+        prefix = next(split_on_uppercase(name), "")
         return name.removeprefix(prefix).strip()
 
     def make_id_from_func(self, func: Callable[..., Any]) -> str:

@@ -105,7 +105,7 @@ def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleTy
     """
     module_path = module_file_path(module)
     # Remove from cache
-    del sys.modules[module.__name__]
+    sys.modules.pop(module.__name__, None)
     return import_module_with_file_fallback(
         module_path, name=module.__name__, is_package=is_package
     )

@@ -297,7 +297,9 @@ class VersionConstraint:
             return Version(f"{major}.{minor}.{micro - 1}")
         if minor != 0:
             return Version(f"{major}.{minor - 1}")
-        return Version(f"{major - 1}")
+        if major != 0:
+            return Version(f"{major - 1}")
+        return None
 
     def find_lower_inclusive(
         self, default: str | Version | None = None
