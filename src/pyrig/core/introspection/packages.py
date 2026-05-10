@@ -1,8 +1,9 @@
 """Utilities for creating, importing, and traversing Python packages."""
 
 import logging
+import re
 import sys
-from collections.abc import Generator, Iterable
+from collections.abc import Generator
 from importlib.machinery import SourceFileLoader
 from importlib.util import module_from_spec, spec_from_loader
 from pathlib import Path
@@ -223,7 +224,7 @@ def discover_all_subclasses_across_package[T: type](
 
 def walk_package(
     package: ModuleType,
-    exclude: Iterable[str] = (),
+    exclude: tuple[str | re.Pattern[str], ...] = (),
 ) -> Generator[tuple[ModuleType, bool], None, None]:
     """Recursively walk and import all modules in a package hierarchy.
 
@@ -234,11 +235,11 @@ def walk_package(
 
     Args:
         package: Root package to start traversal from.
-        exclude: Regex patterns matched against fully qualified names of the
-            direct children of ``package``. Any child whose name matches a
-            pattern is skipped entirely, along with all of its descendants,
-            because excluded sub-packages are never recursed into. Patterns
-            are not propagated to deeper levels of the hierarchy.
+        exclude: tuple of strings or compiled regex patterns matched against
+            fully qualified names of the direct children of ``package``. Any
+            child whose name matches a pattern is skipped entirely, along with
+            all of its descendants, because excluded sub-packages are never recursed
+            into. Patterns are not propagated to deeper levels of the hierarchy.
 
     Yields:
         ``(module, is_package)`` tuples for each visited module, where
