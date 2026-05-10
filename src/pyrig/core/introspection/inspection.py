@@ -156,9 +156,9 @@ def unwrapped_obj(obj: Any) -> Any:
     prev = None
     while prev is not obj:
         prev = obj
-        if hasattr(obj, "__func__"):
-            obj = obj.__func__
-        if hasattr(obj, "fget"):
-            obj = obj.fget
+        if func := getattr(obj, "__func__", None):
+            obj = func
+        if fget := getattr(obj, "fget", None):
+            obj = fget
         obj = inspect.unwrap(obj)
     return obj
