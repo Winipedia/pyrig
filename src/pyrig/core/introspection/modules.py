@@ -174,7 +174,7 @@ def import_module_from_file(
     path = path.resolve()
     if is_package and path.name != "__init__.py":
         path = path / "__init__.py"
-    loader = SourceFileLoader(name, path.as_posix())
+    loader = SourceFileLoader(name, str(path))
     spec = spec_from_loader(name=name, loader=loader, is_package=is_package)
     if spec is None:
         msg = f"Could not create spec for {path}"
