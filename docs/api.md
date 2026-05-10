@@ -1,4 +1,3 @@
 # API Reference
 
 ::: pyrig
-
