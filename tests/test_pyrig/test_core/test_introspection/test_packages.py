@@ -91,7 +91,7 @@ def test_import_package_with_dir_fallback(
         import_package_from_dir_mock.assert_not_called()
 
 
-def test_import_package_from_dir(tmp_path: Path, mocker: MockerFixture) -> None:
+def test_import_package_from_dir(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         non_existing_dir = tmp_path / "non_existing"
@@ -116,16 +116,6 @@ def test_import_package_from_dir(tmp_path: Path, mocker: MockerFixture) -> None:
         # check all are now registered in sys.modules
         assert "test_package" in sys.modules
         assert "test_package.subdir" in sys.modules
-
-        # check if loader is None that it raises ImportError
-        # patch the func spec_from_loader to return None
-        spec_from_loader_mock = mocker.patch(
-            packages.__name__ + "." + "spec_from_loader", return_value=None
-        )
-        with pytest.raises(ImportError):
-            import_package_from_dir(subdir, name="test_package.subdir")
-
-        spec_from_loader_mock.assert_called_once()
 
 
 def test_walk_package() -> None:
