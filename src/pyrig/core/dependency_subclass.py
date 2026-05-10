@@ -115,7 +115,7 @@ class DependencySubclass(ABC):
     def leaf(cls) -> type[Self]:
         """Return the single leaf subclass found across dependent packages.
 
-        Expects exactly one result from ``subclasses()``. If no subclasses
+        Expects at most one result from ``subclasses()``. If no subclasses
         are found the class itself is returned. Raises ``RuntimeError`` if
         multiple subclasses are found, because a "leaf" must be
         unambiguous: exactly one active implementation is allowed.
