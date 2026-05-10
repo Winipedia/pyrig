@@ -44,15 +44,6 @@ python project needs**. Every configuration, workflow, and tool is pre-configure
 and working from the start. No templates, no boilerplate - just a complete, tested,
 production-ready setup that lets you start developing code immediately.
 
-## More Detailed Documentation
-
-We are keeping the manual documentation restricted to the essentials,
-if you want to know more about how pyrig works under the hood or you have
-more specific questions about how to use it than we will explain here,
-check out the [CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)
-for AI-generated documentation about pyrig's codebase, where you can also ask
-questions and get code explanations from the AI.
-
 ## Architecture Overview
 
 For a high-level description of how pyrig works and some of its key features
