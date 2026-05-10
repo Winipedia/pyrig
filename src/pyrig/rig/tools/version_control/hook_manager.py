@@ -56,8 +56,9 @@ class VersionControlHookManager(Tool):
     def install_args(self, *args: str) -> Args:
         """Construct arguments to install prek hooks into the local git repository.
 
-        Runs ``prek install``, which writes hook scripts into ``.git/hooks/`` so
-        that configured checks run automatically on each commit attempt.
+        Constructs args for ``prek install``, which writes hook scripts into
+        ``.git/hooks/`` so that configured checks run automatically on each commit
+        attempt.
 
         Args:
             *args: Additional arguments forwarded to ``prek install``.
