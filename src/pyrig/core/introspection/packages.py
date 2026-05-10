@@ -12,7 +12,7 @@ import pyrig
 from pyrig.core.introspection.classes import discover_all_subclasses
 from pyrig.core.introspection.modules import (
     import_module_from_file,
-    import_module_with_default,
+    import_module_with_file_fallback,
     iter_modules,
 )
 from pyrig.core.strings import snake_to_kebab_case, write_text_utf8
@@ -124,11 +124,7 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
         FileNotFoundError: If the fallback import fails because the directory
             or its ``__init__.py`` does not exist.
     """
-    path = path.resolve()
-    package = import_module_with_default(name)
-    if isinstance(package, ModuleType):
-        return package
-    return import_package_from_dir(path, name)
+    return import_module_with_file_fallback(path=path, name=name, is_package=True)
 
 
 def import_package_from_dir(path: Path, name: str) -> ModuleType:
@@ -152,11 +148,10 @@ def import_package_from_dir(path: Path, name: str) -> ModuleType:
             does not exist.
         ImportError: If the module spec cannot be created from the path.
     """
-    init_path = path / "__init__.py"
-    return import_module_from_file(path=init_path, name=name, is_package=True)
+    return import_module_from_file(path=path, name=name, is_package=True)
 
 
-def package_modules(package: ModuleType) -> Generator[ModuleType, None, None]:
+def discover_modules(package: ModuleType) -> Generator[ModuleType, None, None]:
     """Recursively discover all modules (non-packages) in a package.
 
     Walks the entire package hierarchy via ``walk_package`` and yields only

@@ -85,7 +85,7 @@ def module_content(module: ModuleType) -> str:
     return read_text_utf8(path)
 
 
-def reimport_module(module: ModuleType) -> ModuleType:
+def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleType:
     """Re-import a module, bypassing the import cache.
 
     Evicts the module from ``sys.modules`` and re-imports it via
@@ -94,17 +94,26 @@ def reimport_module(module: ModuleType) -> ModuleType:
 
     Args:
         module: Module to re-import.
+        is_package: Whether the module being re-imported is a package. If ``True``,
+            the loader is created with ``is_package=True`` to ensure correct
+            handling of package semantics (e.g., relative imports). Default is
+            ``False`` for regular modules. Set to ``True`` when re-importing a
+            package from its ``__init__.py`` file.
 
     Returns:
         A freshly imported module object, distinct from the original.
     """
     module_path = module_file_path(module)
     # Remove from cache
-    sys.modules.pop(module.__name__)
-    return import_module_with_file_fallback(module_path, name=module.__name__)
+    del sys.modules[module.__name__]
+    return import_module_with_file_fallback(
+        module_path, name=module.__name__, is_package=is_package
+    )
 
 
-def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
+def import_module_with_file_fallback(
+    path: Path, name: str, *, is_package: bool = False
+) -> ModuleType:
     """Import a module, trying standard import first then direct file import.
 
     First attempts to import the module using Python's standard import mechanism
@@ -115,6 +124,11 @@ def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
     Args:
         path: Path to the module file (absolute or relative).
         name: The name to use for the imported module.
+        is_package: Whether the module being imported is a package. If ``True``,
+            the loader is created with ``is_package=True`` to ensure correct
+            handling of package semantics (e.g., relative imports). Default is
+            ``False`` for regular modules. Set to ``True`` when importing a package
+            from its ``__init__.py`` file.
 
     Returns:
         The imported module.
@@ -126,7 +140,7 @@ def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
     module = import_module_with_default(name)
     if isinstance(module, ModuleType):
         return module
-    return import_module_from_file(path, name=name)
+    return import_module_from_file(path, name=name, is_package=is_package)
 
 
 def import_module_from_file(
@@ -155,6 +169,9 @@ def import_module_from_file(
         ImportError: If the module spec or loader cannot be created.
         FileNotFoundError: If the file does not exist or cannot be read.
     """
+    path = path.resolve()
+    if is_package and path.name != "__init__.py":
+        path = path / "__init__.py"
     loader = SourceFileLoader(name, path.as_posix())
     spec = spec_from_loader(name=name, loader=loader, is_package=is_package)
     if spec is None:
