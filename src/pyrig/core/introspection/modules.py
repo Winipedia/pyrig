@@ -238,7 +238,7 @@ def import_modules(module_names: Iterable[str]) -> Generator[ModuleType, None, N
 
 def iter_modules(
     package: ModuleType,
-    exclude: Iterable[str | re.Pattern[str]] = (),
+    exclude: tuple[str | re.Pattern[str], ...] = (),
 ) -> Generator[tuple[ModuleType, bool], None, None]:
     """Iterate over and import all direct children of a package.
 
@@ -256,7 +256,7 @@ def iter_modules(
     Args:
         package: Package to iterate. Must have a ``__path__`` attribute
             (i.e., must be a package, not a plain module).
-        exclude: String or compiled regex patterns matched against fully
+        exclude: tuple of strings or compiled regex patterns matched against fully
             qualified child names (e.g., ``"pyrig.rig.configs.base"``).
             Matching children are skipped.
 
