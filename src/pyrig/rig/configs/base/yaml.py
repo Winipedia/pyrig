@@ -50,7 +50,9 @@ class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the YAML file using safe_dump.
 
-        Key insertion order is preserved (sort_keys=False).
+        Key insertion order is preserved (``sort_keys=False``) and non-ASCII
+        characters are written as-is rather than escaped (``allow_unicode=True``).
+        The file is opened with explicit UTF-8 encoding.
 
         Args:
             configs: Configuration dict or list to write.

@@ -118,8 +118,9 @@ def import_module_with_file_fallback(
 
     First attempts to import the module using Python's standard import mechanism
     (via ``importlib.import_module``). If that fails, falls back to importing
-    directly from the file path using ``importlib.util``. This fallback is useful
-    for modules that aren't on ``sys.path`` or haven't been installed.
+    directly from the file path using ``importlib`` (via ``SourceFileLoader``
+    and ``spec_from_loader``). This fallback is useful for modules that aren't
+    on ``sys.path`` or haven't been installed.
 
     Args:
         path: Path to the module file (absolute or relative).
@@ -146,12 +147,13 @@ def import_module_with_file_fallback(
 def import_module_from_file(
     path: Path, name: str, *, is_package: bool = False
 ) -> ModuleType:
-    """Import a module directly from a ``.py`` file using ``importlib.util``.
+    """Import a module directly from a ``.py`` file using ``importlib`` machinery.
 
-    Resolves the path to absolute, builds a module spec from the file location,
-    and executes the module loader. The module is registered in ``sys.modules``
-    under the provided ``name`` only after successful execution, so failures
-    during loading do not leave invalid cache entries.
+    Resolves the path to absolute, creates a ``SourceFileLoader`` and builds a
+    module spec via ``spec_from_loader``, then executes the loader. The module
+    is pre-registered in ``sys.modules`` before execution (required so that
+    packages with internal imports can find themselves), and removed on failure,
+    so failed loads do not leave invalid cache entries.
 
     Args:
         path: Path to the ``.py`` file (will be resolved to absolute path).

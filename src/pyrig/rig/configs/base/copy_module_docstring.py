@@ -28,8 +28,10 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
         """Return the source module's docstring as file content.
 
         The docstring is wrapped in triple quotes to form a valid Python
-        module-level docstring. If the source module has no docstring,
-        ``default_docstring()`` is used as the fallback.
+        module-level docstring. Double triple quotes are used by default;
+        if the docstring itself already contains a triple-double-quote sequence,
+        single triple quotes are used instead. If the source module has no
+        docstring, ``default_docstring()`` is used as the fallback.
 
         Returns:
             The triple-quoted docstring as a list of lines.
