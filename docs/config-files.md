@@ -92,9 +92,9 @@ questions and get code explanations from the AI.
 
 The `pyrig.rig.configs` package is the **discovery root** for all config files.
 `ConfigFile.dependency_package()` returns this module, and `ConfigFile.validate_all_subclasses()`
-— called by `pyrig mkroot` — discovers every concrete subclass defined anywhere
-inside the package, sorts by priority (higher first), and validates each one
-in order.
+— called by `pyrig mkroot` — discovers every concrete subclass defined inside
+the package and in dependent packages, sorts by priority (higher first), and
+validates each one in order.
 
 Projects that use pyrig can also define their own config files by subclassing `ConfigFile`
 or overriding existing config file classes. The system will automatically

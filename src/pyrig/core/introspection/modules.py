@@ -168,7 +168,7 @@ def import_module_from_file(
         The imported and executed module.
 
     Raises:
-        ImportError: If the module spec or loader cannot be created.
+        ImportError: If the module spec cannot be created.
         FileNotFoundError: If the file does not exist or cannot be read.
     """
     path = path.resolve()
