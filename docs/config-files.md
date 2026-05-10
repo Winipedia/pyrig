@@ -54,7 +54,7 @@ then write `configs()` as the initial content.
 2. If the file is already correct — meaning it already contains all required
 keys and values — return immediately.
 3. Merge `configs()` into the current file content, filling any missing keys
-while leaving all existing content intact.
+while leaving all existing content intact, then write the result.
 4. If the file is still not correct after merging, raise a `RuntimeError`.
 
 **Correctness** is evaluated by `is_correct()`, which checks whether `configs()`
@@ -102,7 +102,7 @@ discover and validate these subclasses as well, so custom project-specific
 config files can be added without any additional configuration or setup.
 
 To subclass an existing config file, simply run `pyrig subcls`. This will
-open a fuzzy search prompt with all existing pyrig classes.
+open a fuzzy search prompt with all `RigDependencySubclass` leaf subclasses.
 Search for the class name or the file path to find the class you want to
 subclass, and select it. This will generate a file with a subclass of the
 selected class where you can add or override any configuration you want.
