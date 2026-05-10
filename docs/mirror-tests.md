@@ -78,7 +78,7 @@ at runtime.
 
 When `mktests` asks for all concrete subclasses during validation, the system:
 
-1. Enumerates every module in the project's source package via `package_modules`.
+1. Enumerates every module in the project's source package via `discover_modules`.
 2. Generates dynamically a subclass for each one using `type()`, wiring
    `mirror_module()` to return that specific module.
 3. Yields those subclasses to the validation machinery, which validates each one

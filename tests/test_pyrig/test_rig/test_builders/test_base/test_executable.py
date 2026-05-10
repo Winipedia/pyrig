@@ -100,7 +100,7 @@ class TestExecutableBuilder:
             assert my_test_executable_builder().app_icon_png_path().exists()
             assert (
                 my_test_executable_builder().app_icon_png_path()
-                == Path("builder_package") / "icon.png"
+                == tmp_path / "builder_package" / "icon.png"
             )
 
     def test_entry_point_module(

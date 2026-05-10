@@ -14,11 +14,11 @@ from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.introspection import packages
 from pyrig.core.introspection.packages import (
     discover_all_subclasses_across_package,
+    discover_modules,
     import_package_from_dir,
     import_package_with_dir_fallback,
     make_init_file,
     make_package_dir,
-    package_modules,
     src_package_is_package,
     src_package_is_pyrig,
     walk_package,
@@ -74,20 +74,21 @@ def test_import_package_with_dir_fallback(
         with pytest.raises(FileNotFoundError):
             import_package_with_dir_fallback(non_existing_dir, name="non_existing")
 
-        existing_dir = tmp_path / "existing"
+        dir_name = test_import_package_with_dir_fallback.__name__
+        existing_dir = tmp_path / dir_name
         existing_dir.mkdir()
         init_file = existing_dir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_package_with_dir_fallback(existing_dir, name="existing")
-        assert package.__name__ == "existing"
+        package = import_package_with_dir_fallback(existing_dir, name=dir_name)
+        assert package.__name__ == dir_name
 
         import_package_from_dir_mock = mocker.patch(
             import_package_from_dir.__module__ + "." + import_package_from_dir.__name__,
             return_value=None,
         )
         # test that if the package is already imported it doesn't call the fallback
-        package = import_package_with_dir_fallback(existing_dir, name="existing")
-        assert package.__name__ == "existing"
+        package = import_package_with_dir_fallback(existing_dir, name=dir_name)
+        assert package.__name__ == dir_name
         import_package_from_dir_mock.assert_not_called()
 
 
@@ -99,23 +100,24 @@ def test_import_package_from_dir(tmp_path: Path) -> None:
         with pytest.raises(FileNotFoundError):
             import_package_from_dir(non_existing_dir, name="non_existing")
 
-        package_dir = tmp_path / "test_package"
+        dir_name = test_import_package_from_dir.__name__
+        package_dir = tmp_path / dir_name
         package_dir.mkdir()
         init_file = package_dir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_package_from_dir(package_dir, name="test_package")
-        assert package.__name__ == "test_package"
+        package = import_package_from_dir(package_dir, name=dir_name)
+        assert package.__name__ == dir_name
 
         subdir = package_dir / "subdir"
         subdir.mkdir()
         init_file = subdir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
-        package = import_package_from_dir(subdir, name="test_package.subdir")
-        assert package.__name__ == "test_package.subdir"
+        package = import_package_from_dir(subdir, name=f"{dir_name}.subdir")
+        assert package.__name__ == f"{dir_name}.subdir"
 
         # check all are now registered in sys.modules
-        assert "test_package" in sys.modules
-        assert "test_package.subdir" in sys.modules
+        assert dir_name in sys.modules
+        assert f"{dir_name}.subdir" in sys.modules
 
 
 def test_walk_package() -> None:
@@ -140,9 +142,9 @@ def test_discover_all_subclasses_across_package() -> None:
     assert all(issubclass(subcls, DependencySubclass) for subcls in subclasses)
 
 
-def test_package_modules() -> None:
+def test_discover_modules() -> None:
     """Test function."""
-    modules = list(package_modules(pyrig))
+    modules = list(discover_modules(pyrig))
     assert pyrig not in modules
     # modules should be included, but not the package itself
     assert mirror_test in modules
