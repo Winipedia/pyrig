@@ -150,7 +150,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 PythonLinter.I.name(): {
                     "lint": {
                         "select": ["ALL"],
-                        "ignore": ["D203", "D213", "COM812", "ANN401"],
+                        "ignore": ["COM812", "ANN401"],
                         "fixable": ["ALL"],
                         "per-file-ignores": {
                             f"**/{tests_package_root}/**/*.py": ["S101"],
