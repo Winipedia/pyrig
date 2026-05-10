@@ -2,10 +2,7 @@
 
 import logging
 import re
-import sys
 from collections.abc import Generator
-from importlib.machinery import SourceFileLoader
-from importlib.util import module_from_spec, spec_from_loader
 from pathlib import Path
 from types import ModuleType
 
@@ -13,7 +10,11 @@ import typer
 
 import pyrig
 from pyrig.core.introspection.classes import discover_all_subclasses
-from pyrig.core.introspection.modules import import_module_with_default, iter_modules
+from pyrig.core.introspection.modules import (
+    import_module_from_file,
+    import_module_with_default,
+    iter_modules,
+)
 from pyrig.core.strings import snake_to_kebab_case, write_text_utf8
 
 logger = logging.getLogger(__name__)
@@ -152,16 +153,7 @@ def import_package_from_dir(path: Path, name: str) -> ModuleType:
         ImportError: If the module spec cannot be created from the path.
     """
     init_path = path / "__init__.py"
-
-    loader = SourceFileLoader(fullname=name, path=init_path.as_posix())
-    spec = spec_from_loader(name=name, loader=loader, is_package=True)
-    if spec is None:
-        msg = f"Could not create spec for {init_path}"
-        raise ImportError(msg)
-    module = module_from_spec(spec)
-    loader.exec_module(module)
-    sys.modules[name] = module
-    return module
+    return import_module_from_file(path=init_path, name=name, is_package=True)
 
 
 def package_modules(package: ModuleType) -> Generator[ModuleType, None, None]:

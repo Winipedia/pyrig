@@ -11,7 +11,8 @@ import re
 import sys
 from collections.abc import Callable, Generator, Iterable
 from importlib import import_module
-from importlib.util import module_from_spec, spec_from_file_location
+from importlib.machinery import SourceFileLoader
+from importlib.util import module_from_spec, spec_from_loader
 from pathlib import Path
 from pkgutil import iter_modules as pkgutil_iter_modules
 from types import ModuleType
@@ -128,7 +129,9 @@ def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
     return import_module_from_file(path, name=name)
 
 
-def import_module_from_file(path: Path, name: str) -> ModuleType:
+def import_module_from_file(
+    path: Path, name: str, *, is_package: bool = False
+) -> ModuleType:
     """Import a module directly from a ``.py`` file using ``importlib.util``.
 
     Resolves the path to absolute, builds a module spec from the file location,
@@ -139,6 +142,11 @@ def import_module_from_file(path: Path, name: str) -> ModuleType:
     Args:
         path: Path to the ``.py`` file (will be resolved to absolute path).
         name: The name to use for the imported module.
+        is_package: Whether the module being imported is a package. If ``True``,
+            the loader is created with ``is_package=True`` to ensure correct
+            handling of package semantics (e.g., relative imports). Default is
+            ``False`` for regular modules. Set to ``True`` when importing a package
+            from its ``__init__.py`` file.
 
     Returns:
         The imported and executed module.
@@ -147,18 +155,19 @@ def import_module_from_file(path: Path, name: str) -> ModuleType:
         ImportError: If the module spec or loader cannot be created.
         FileNotFoundError: If the file does not exist or cannot be read.
     """
-    path = path.resolve()
-    spec = spec_from_file_location(name, location=path)
+    loader = SourceFileLoader(name, path.as_posix())
+    spec = spec_from_loader(name=name, loader=loader, is_package=is_package)
     if spec is None:
         msg = f"Could not create spec for {path}"
         raise ImportError(msg)
-    loader = spec.loader
-    if loader is None:
-        msg = f"Could not create loader for {path}"
-        raise ImportError(msg)
+
     module = module_from_spec(spec)
-    loader.exec_module(module)
     sys.modules[name] = module
+    try:
+        loader.exec_module(module)
+    except Exception:
+        del sys.modules[name]
+        raise
     return module
 
 
