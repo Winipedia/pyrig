@@ -49,7 +49,7 @@ class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         """
         result = yaml.safe_load(read_text_utf8(self.path()))
         if result is None:
-            return cast("ConfigT", {})
+            return cast(ConfigT, {})
         return result
 
     def _dump(self, configs: ConfigT) -> None:

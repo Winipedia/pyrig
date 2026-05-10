@@ -260,6 +260,8 @@ class VersionConstraint:
           ``"<3.12.0"`` → ``"<=3.11"``.
         - ``micro == 0`` and ``minor == 0``: Drop both, decrement major —
           ``"<4.0.0"`` → ``"<=3"``.
+        - ``micro == 0`` and ``minor == 0`` and ``major == 0``: No valid version
+          exists below ``0.0.0`` — returns ``None``.
 
         Args:
             default: Inclusive upper bound to use when the constraint specifies no
