@@ -9,7 +9,7 @@ from typing import Any
 import tomlkit
 from tomlkit.items import Table
 
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
 
 
@@ -73,7 +73,7 @@ class TomlConfigFile(DictConfigFile):
             configs: Configuration dict to write.
         """
         configs = self.prettify_dict(configs)
-        with self.path().open("w") as f:
+        with open_path_with_utf8(self.path(), mode="w") as f:
             tomlkit.dump(configs, f, sort_keys=False)
 
     def prettify_dict(self, configs: ConfigDict) -> Table:

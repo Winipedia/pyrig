@@ -7,7 +7,7 @@ built-in ``json`` module with 4-space indentation.
 
 import json
 
-from pyrig.core.strings import read_text_utf8
+from pyrig.core.strings import open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import (
     ConfigData,
     ConfigFile,
@@ -69,7 +69,7 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         Args:
             configs: Configuration dict or list to serialize and write.
         """
-        with self.path().open("w") as f:
+        with open_path_with_utf8(self.path(), mode="w") as f:
             json.dump(configs, f, indent=4)
 
     def extension(self) -> str:
