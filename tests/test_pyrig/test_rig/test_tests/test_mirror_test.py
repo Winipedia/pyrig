@@ -73,6 +73,41 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
+    def test_class_skeleton_pattern(
+        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
+    ) -> None:
+        """Test method."""
+        content = """
+sdjshfjsabckdcjsbcbdjsabda
+
+
+
+class SomeClass:
+    '''Some docstring.
+
+    that is multiline.
+    '''
+
+
+sahckabcjscjsjdjdjshidw
+sahgcjsachsavcbschjbvsacjksabc
+"""
+        cls_name = "SomeClass"
+        pattern = my_test_mirror_test_config_file().class_skeleton_pattern(cls_name)
+        match = pattern.search(content)
+        assert match is not None
+        assert (
+            match.group(0)
+            == """
+
+class SomeClass:
+    '''Some docstring.
+
+    that is multiline.
+    '''
+"""
+        )
+
     def test_validate(
         self,
         my_test_mirror_test_config_file: type[MirrorTestConfigFile],
@@ -98,7 +133,7 @@ class TestMirrorTestConfigFile:
             assert '"""\n\n\ndef test_mirror_function' in content
             assert "NotImplementedError\n\n\nclass TestMirrorClass:" in content
 
-    def test_split_content_on_class_skeleton(
+    def test_extract_test_class_skeleton_from_content(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
@@ -123,13 +158,22 @@ def test_another_function():
     pass
 """
         test_class_name = "TestMirrorClass"
-        parts = my_test_mirror_test_config_file().split_content_on_class_skeleton(
-            test_module_content, test_class_name
+        skeleton = (
+            my_test_mirror_test_config_file().extract_test_class_skeleton_from_content(
+                test_module_content, test_class_name, default=""
+            )
         )
-        assert len(parts) == 2  # noqa: PLR2004
-        assert all(isinstance(part, str) for part in parts)
-        assert all("Some docstring." not in part for part in parts)
-        assert all("class TestMirrorClass" not in part for part in parts)
+        assert (
+            skeleton
+            == """
+
+class TestMirrorClass:
+    '''Some docstring.
+
+    that is multiline.
+    '''
+"""
+        )
 
     def test_test_class_skeleton_docstring(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
