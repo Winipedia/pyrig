@@ -57,7 +57,7 @@ def discard_parent_methods(
     return (
         method
         for method in methods
-        if obj_module(method).__name__ == cls.__module__
+        if obj_module(method) is obj_module(cls)
         and unwrapped_obj(method).__name__ in cls.__dict__
     )
 
@@ -82,7 +82,7 @@ def module_classes(module: ModuleType) -> Generator[type]:
     return (
         obj
         for _, obj in obj_members(module, inspect.isclass)
-        if obj_module(obj, default).__name__ == module.__name__
+        if obj_module(obj, default) is module
     )
 
 
