@@ -318,15 +318,13 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it
     def dump(self, configs: ConfigT) -> None:
         """Write configuration to disk and keep the load cache consistent.
 
-        Clears the ``load()`` cache before and after calling ``_dump()`` to
-        prevent stale data from being returned if anything reads the cache
-        during or after the write.
+        Clears the ``load()`` cache after calling ``_dump()`` allowing the
+        new content to be read on subsequent ``load()`` calls.
 
         Args:
             configs: Configuration data to write.
         """
         typer.echo(f"Updating {self}")
-        self.load.cache_clear()
         self._dump(configs)
         self.load.cache_clear()
 
