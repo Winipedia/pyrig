@@ -75,12 +75,13 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         4. Removing any pyrig-specific entry that already appears in the
            baseline to avoid duplication.
         5. Returning the baseline lines, then the remaining pyrig-specific
-           additions, followed by a trailing empty string for a final newline.
+           additions, followed by a trailing empty string for a final newline
+           if any additions remain.
 
         Returns:
             Complete list of ``.gitignore`` lines with the baseline first,
             followed by any pyrig-specific additions not already present in
-            the baseline, and a trailing empty string.
+            the baseline, and a trailing empty string if additions are present.
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
         ignored_paths = {

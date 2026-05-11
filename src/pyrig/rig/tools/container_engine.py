@@ -18,7 +18,7 @@ class ContainerEngine(Tool):
 
     Example:
         >>> from pathlib import Path
-        >>> ContainerEngine.I.build_args(project_name="app:v1").run()
+        >>> ContainerEngine.I.build_args(project_name="app").run()
         >>> ContainerEngine.I.save_args(image_path=Path("dist/app.tar")).run()
     """
 
