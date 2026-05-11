@@ -108,7 +108,7 @@ class TomlConfigFile(DictConfigFile):
 
         Note that ``prettify_value()`` and ``prettify_dict()`` are mutually
         recursive: dicts inside lists will be fully converted, and lists inside
-        dicts will be formatted as multiline arrays.
+        dicts will be recursively prettified.
 
         Args:
             value: The Python value to convert.
