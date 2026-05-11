@@ -71,7 +71,7 @@ def mirror_function():
 
 
 class TestMirrorTestConfigFile:
-    """Test class."""
+    """Test class for MirrorTestConfigFile."""
 
     def test_class_skeleton_pattern(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
