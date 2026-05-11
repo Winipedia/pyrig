@@ -80,7 +80,8 @@ To create an executable builder, subclass `ExecutableBuilder` and implement two
 methods:
 
 - `entry_point_module()` — the module PyInstaller uses as its main script.
-- `app_icon_png_location()` — the file stem (without extension) and resource package of the PNG icon.
+- `app_icon_png_location()` — the file stem (without extension) and resource
+package of the PNG icon.
 
 ---
 
