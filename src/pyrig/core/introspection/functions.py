@@ -15,17 +15,17 @@ from pyrig.core.introspection.inspection import (
 def module_functions(
     module: ModuleType,
 ) -> Generator[Callable[..., Any], None, None]:
-    """Yield all functions defined directly in a module, excluding imports.
+    """Yield all funclike objects defined directly in a module, excluding imports.
 
-    A function is included only when its module matches the
+    A funclike object is included only when its module matches the
     module being inspected, which filters out any names that were imported from
     other modules.
 
     Args:
-        module: The module object to extract functions from.
+        module: The module object to extract funclike objects from.
 
     Yields:
-        Each function defined in ``module`` in the order returned by
+        Each funclike object defined in ``module`` in the order returned by
         ``inspect.getmembers_static``.
     """
     return (

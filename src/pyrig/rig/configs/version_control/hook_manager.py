@@ -1,7 +1,7 @@
 """Configuration management for version control hooks.
 
 Manages ``prek.toml`` with a local hook repository containing system-installed
-tools that run on every commit to enforce code quality across formatting,
+tools that run on various git stages to enforce code quality across formatting,
 linting, type checking, security, and Markdown style.
 """
 
@@ -24,7 +24,7 @@ from pyrig.rig.tools.version_control.hook_manager import (
 
 
 class VersionControlHookManagerConfigFile(TomlConfigFile):
-    """Manages ``prek.toml`` for pre-commit hook configuration.
+    """Manages ``prek.toml`` for version control hook configuration.
 
     Generates ``prek.toml`` at the project root with a single ``local``
     repository entry containing hooks that cover the full code-quality

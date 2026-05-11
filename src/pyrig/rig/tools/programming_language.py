@@ -28,7 +28,7 @@ class ProgrammingLanguage(Tool):
         return "python"
 
     def group(self) -> str:
-        """Return the badge group for the programming language.
+        """Return the tool group for the programming language.
 
         Returns:
             ``ToolGroup.PROJECT_INFO``.

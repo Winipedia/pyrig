@@ -28,8 +28,8 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
     """Base class for Markdown files with auto-generated project badges.
 
     Generates a Markdown header section consisting of the project name, grouped
-    badge rows (tooling, code quality, CI/CD, documentation, etc.), and a fenced
-    project description block read from pyproject.toml.
+    badge rows (tooling, code quality, CI/CD, documentation, etc.), and a
+    project description blockquote read from pyproject.toml.
 
     The ``merge_configs`` override handles stale files intelligently: when the
     file already exists but has an outdated description or badge URLs, it updates
@@ -67,12 +67,12 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         """Generate the initial Markdown content with badges and description.
 
         Produces an H1 header with the project name, followed by badge rows grouped
-        under HTML comment category labels, then the project description in a fenced
-        blockquote block.
+        under HTML comment category labels, then the project description as a
+        blockquote.
 
         Returns:
-            List of Markdown lines: H1 header, grouped badge rows, and a fenced
-            description block.
+            List of Markdown lines: H1 header, grouped badge rows, and a
+            description blockquote.
         """
         project_name = PackageManager.I.project_name()
         badges = self.badges()
@@ -97,7 +97,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
     def replace_description(self, content: str) -> str:
         """Replace the description block with the current one from pyproject.toml.
 
-        Locates the first fenced description block (text between the first two
+        Locates the first description block (text between the first two
         ``---`` dividers) and replaces its content with the current project
         description. Only the first occurrence is replaced, since the description
         is always at the top of the file.
@@ -107,7 +107,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
 
         Returns:
             Updated content with the current description in place of the old one.
-            If no ``---`` fence pattern is found, the content is returned unchanged.
+            If no ``---`` divider pattern is found, the content is returned unchanged.
         """
         expected_description = PyprojectConfigFile.I.project_description()
         pattern = r"---\s*\n(.*?)\n---"
