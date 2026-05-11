@@ -43,14 +43,9 @@ def resource_path(name: str, package: ModuleType) -> Path:
         Absolute path to the resource file.
 
     Note:
-        The path is resolved from within an ``as_file`` context manager. For
-        file-based packages (standard in development and PyInstaller builds), the
-        path points to the actual file and remains valid after this function
-        returns. For zip-imported packages, the temporary extraction may be cleaned
-        up once the context exits — though pyrig packages are always file-based, so
-        this is not a concern in practice.
-
-        The returned path is not validated for existence. Accessing a missing
-        resource will raise ``FileNotFoundError``.
+        The path is derived using ``importlib.resources.files`` and converted
+        directly to a ``Path`` object via ``str()``. The returned path is not
+        validated for existence. Accessing a missing resource will raise
+        ``FileNotFoundError``.
     """
     return Path(str(files(package) / name))

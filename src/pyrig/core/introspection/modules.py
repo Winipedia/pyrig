@@ -195,15 +195,15 @@ def import_module_with_default(
 ) -> ModuleType | Any:
     """Import a module by name, returning a default value if import fails.
 
-    Logs a debug message when falling back to the default. Only catches
-    ``ImportError``; other exceptions are not handled.
+    Logs a debug message including the caught exception when falling back to
+    the default. Catches all exceptions, not just ``ImportError``.
 
     Args:
         module_name: Dotted module name (e.g., ``"package.subpackage.module"``).
         default: Value to return if the module cannot be imported.
 
     Returns:
-        The imported module, or ``default`` if ``ImportError`` is raised.
+        The imported module, or ``default`` if any exception is raised.
     """
     try:
         return import_module(module_name)

@@ -283,7 +283,7 @@ class PyprojectConfigFile(TomlConfigFile):
 
         Args:
             dependencies: Primary dependency list. All entries are kept as-is.
-            additional: Optional supplementary dependencies. An entry is only included
+            additional: Supplementary dependencies. An entry is only included
                 if its package name does not already appear in ``dependencies``.
 
         Returns:

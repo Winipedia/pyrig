@@ -57,7 +57,11 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
         return test_zero_module
 
     def is_correct(self) -> bool:
-        """Considered correct if def test_zero() exists in the target file."""
+        """Considered correct if ``test_zero`` is a function in the target module.
+
+        Imports the target module and inspects its functions rather than scanning
+        raw file content.
+        """
         return test_zero.__name__ in (
             f.__name__  # ty:ignore[unresolved-attribute]
             for f in module_functions(self.module())

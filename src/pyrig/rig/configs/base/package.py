@@ -57,13 +57,13 @@ class PythonPackageConfigFile(PythonConfigFile):
     def _dump(self, configs: list[str]) -> None:
         """Write the file and initialise any uninitialised ancestor packages.
 
-        First delegates to the parent ``_dump`` to write the file content, then
-        calls ``make_package_dir`` on the file's parent directory. That call
-        walks up the directory tree, creating an ``__init__.py`` in every
-        directory that does not already have one, stopping when it reaches the
-        project source root (``PackageManager.I.source_root()``) or the tests source
-        root (``ProjectTester.I.tests_source_root()``). Those boundary directories
-        themselves are not modified.
+        First calls ``make_package_dir`` on the file's parent directory, walking
+        up the directory tree and creating an ``__init__.py`` in every directory
+        that does not already have one, stopping when it reaches the project source
+        root (``PackageManager.I.source_root()``) or the tests source root
+        (``ProjectTester.I.tests_source_root()``). Those boundary directories
+        themselves are not modified. Then delegates to the parent ``_dump`` to
+        write the file content.
 
         Each generated ``__init__.py`` is written with the project's standard
         init content (``ProgrammingLanguage.I.standard_init_content()``).
