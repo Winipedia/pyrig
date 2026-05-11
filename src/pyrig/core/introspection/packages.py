@@ -229,7 +229,7 @@ def walk_package(
             fully qualified names of the direct children of ``package``. Any
             child whose name matches a pattern is skipped entirely, along with
             all of its descendants, because excluded sub-packages are never recursed
-            into. Patterns are not propagated to deeper levels of the hierarchy.
+            into. Patterns are propagated to deeper levels of the hierarchy.
 
     Yields:
         ``(module, is_package)`` tuples for each visited module, where
@@ -238,6 +238,6 @@ def walk_package(
     for module, is_package in iter_modules(package, exclude=exclude):
         if is_package:
             yield module, True
-            yield from walk_package(module)
+            yield from walk_package(module, exclude=exclude)
         else:
             yield module, False
