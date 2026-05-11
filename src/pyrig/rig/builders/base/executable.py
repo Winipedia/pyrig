@@ -101,8 +101,8 @@ class ExecutableBuilder(BuilderConfigFile):
     def create_artifact(self, tmp_path: Path) -> None:
         """Build a PyInstaller executable.
 
-        Assembles the PyInstaller command-line options and runs PyInstaller.
-        The resulting executable is written to ``tmp_path``.
+        Gets the options for running Pyinstaller and runs it to build
+        the executable.
 
         Args:
             tmp_path: Temporary directory where the executable is created.
