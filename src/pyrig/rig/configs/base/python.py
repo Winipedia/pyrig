@@ -4,7 +4,16 @@ Provides ``PythonConfigFile`` as the base for all generated ``.py`` files,
 setting a fixed ``"py"`` extension on top of the string-based config system.
 """
 
+from types import ModuleType
+
+from pyrig.core.introspection.modules import (
+    import_module_with_file_fallback,
+    reimport_module,
+)
+from pyrig.core.introspection.packages import import_package_with_dir_fallback
+from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.string_ import StringConfigFile
+from pyrig.rig.utils.paths import root_path_as_module_name
 
 
 class PythonConfigFile(StringConfigFile):
@@ -43,3 +52,25 @@ class PythonConfigFile(StringConfigFile):
             ``"py"``
         """
         return "py"
+
+    def _dump(self, configs: ConfigList) -> None:
+        """Reimports the module after a dump to reflect possible changes."""
+        super()._dump(configs)
+        reimport_module(self.module())
+
+    def module(self) -> ModuleType:
+        """Import and return the module represented by this config file.
+
+        Uses a file fallback import strategy to ensure the module can be imported.
+
+        Returns:
+            Imported module corresponding to the config file's path.
+        """
+        is_init = self.stem() == "__init__"
+        if is_init:
+            import_func = import_package_with_dir_fallback
+            path = self.parent_path()
+        else:
+            import_func = import_module_with_file_fallback
+            path = self.path()
+        return import_func(path, root_path_as_module_name(path))

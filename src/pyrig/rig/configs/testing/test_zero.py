@@ -3,6 +3,7 @@
 from pathlib import Path
 from types import ModuleType
 
+from pyrig.core.introspection.functions import module_functions
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 from pyrig.rig.tests import test_zero as test_zero_module
 from pyrig.rig.tests.test_zero import test_zero
@@ -57,4 +58,7 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
 
     def is_correct(self) -> bool:
         """Considered correct if def test_zero() exists in the target file."""
-        return f"def {test_zero.__name__}()" in self.read_content()
+        return test_zero.__name__ in (
+            f.__name__  # ty:ignore[unresolved-attribute]
+            for f in module_functions(self.module())
+        )

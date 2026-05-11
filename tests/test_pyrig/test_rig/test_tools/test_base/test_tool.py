@@ -59,15 +59,11 @@ class TestTool:
 
     def test_subclasses_dev_dependencies(self) -> None:
         """Test method."""
-        result = Tool.subclasses_dev_dependencies()
-        # should be the same as the dev dependencies in pyproject.toml
-        no_version_from_toml = sorted(
-            [
-                PyprojectConfigFile.I.remove_version_from_dep(dep)
-                for dep in PyprojectConfigFile.I.dev_dependencies()
-            ]
-        )
-        assert result == no_version_from_toml
+        deps = Tool.subclasses_dev_dependencies()
+        toml_deps = PyprojectConfigFile.I.dev_dependencies()
+        toml_deps_no_versions = tuple(dep.split(">=")[0] for dep in toml_deps)
+
+        assert set(deps) == set(toml_deps_no_versions)
 
     def test_name(self) -> None:
         """Test method."""

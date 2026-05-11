@@ -16,9 +16,7 @@ from packaging.version import Version
 from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.strings import (
-    package_req_name_split_pattern,
-)
+from pyrig.core.strings import dependency_requirement_as_package_name
 from pyrig.rig import resources
 from pyrig.rig.cli import cli
 from pyrig.rig.configs.base.config_file import ConfigDict, Priority
@@ -110,7 +108,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "description": self.project_description(),
                 "readme": ReadmeConfigFile.I.path().as_posix(),
                 "requires-python": self.requires_python(),
-                "dependencies": self.make_dependency_versions(self.dependencies()),
+                "dependencies": self.dependencies(),
                 "authors": [
                     {"name": repo_owner},
                 ],
@@ -137,8 +135,8 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
             },
             "dependency-groups": {
-                "dev": self.make_dependency_versions(
-                    self.dev_dependencies(),
+                "dev": self.merge_additional_dependencies(
+                    dependencies=self.dev_dependencies(),
                     additional=Tool.subclasses_dev_dependencies(),
                 )
             },
@@ -271,10 +269,10 @@ class PyprojectConfigFile(TomlConfigFile):
 
         return [*python_version_classifiers, *os_classifiers, *typing_classifiers]
 
-    def make_dependency_versions(
+    def merge_additional_dependencies(
         self,
         dependencies: Iterable[str],
-        additional: Iterable[str] | None = None,
+        additional: Iterable[str],
     ) -> list[str]:
         """Merge and normalise two dependency lists into one sorted, deduplicated list.
 
@@ -291,36 +289,19 @@ class PyprojectConfigFile(TomlConfigFile):
         Returns:
             Sorted, deduplicated list combining both inputs.
         """
-        if additional is None:
-            additional = ()
-        stripped_dependencies = {
-            self.remove_version_from_dep(dep) for dep in dependencies
+        dependencies = set(dependencies)
+        normalized_dependencies = {
+            dependency_requirement_as_package_name(dep) for dep in dependencies
         }
-        filtered_additional = (
+        additional = (
             dep
             for dep in additional
-            if self.remove_version_from_dep(dep) not in stripped_dependencies
+            if dependency_requirement_as_package_name(dep)
+            not in normalized_dependencies
         )
         # Due to caching in load(), mutating in place causes bugs.
         # Always return a new structure instead of modifying.
-        return sorted({*dependencies, *filtered_additional})
-
-    def remove_version_from_dep(self, dep: str) -> str:
-        """Strip the version specifier from a dependency string.
-
-        Splits on all operator characters using the pattern from
-        ``pyrig.core.strings.package_req_name_split_pattern`` and returns the
-        first element.
-
-        Args:
-            dep: Dependency string with or without a version specifier
-                (e.g., ``"requests>=2.0,<3"`` or ``"requests"``).
-
-        Returns:
-            Package name with any version specifier removed
-            (e.g., ``"requests>=2.0,<3"`` → ``"requests"``).
-        """
-        return package_req_name_split_pattern().split(dep)[0]
+        return sorted({*dependencies, *additional})
 
     def dependencies(self, default: list[str] | None = None) -> list[str]:
         """Read runtime dependencies from pyproject.toml.
@@ -334,8 +315,7 @@ class PyprojectConfigFile(TomlConfigFile):
         """
         if default is None:
             default = [Pyrigger.I.name()]
-        deps: list[str] = self.load().get("project", {}).get("dependencies", default)
-        return deps
+        return self.load().get("project", {}).get("dependencies", default)
 
     def dev_dependencies(self) -> list[str]:
         """Read development dependencies from pyproject.toml.
@@ -344,8 +324,7 @@ class PyprojectConfigFile(TomlConfigFile):
             List of dependency strings from ``dependency-groups.dev``, or an empty
             list if that section is absent.
         """
-        dev_deps: list[str] = self.load().get("dependency-groups", {}).get("dev", [])
-        return dev_deps
+        return self.load().get("dependency-groups", {}).get("dev", [])
 
     def latest_possible_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"

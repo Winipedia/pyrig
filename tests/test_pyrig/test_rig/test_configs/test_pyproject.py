@@ -70,14 +70,6 @@ class TestPyprojectConfigFile:
         for classifier in classifiers:
             assert isinstance(classifier, str), f"Expected str, got {type(classifier)}"
 
-    def test_remove_version_from_dep(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
-    ) -> None:
-        """Test method."""
-        dep = "dep (>=1.0.0,<2.0.0)"
-        new_dep = my_test_pyproject_config_file().remove_version_from_dep(dep)
-        assert new_dep == "dep", f"Expected {new_dep}, got {dep}"
-
     def test_project_description(self) -> None:
         """Test method."""
         description = PyprojectConfigFile.I.project_description()
@@ -103,15 +95,16 @@ class TestPyprojectConfigFile:
         assert "build-system" in configs, "Expected 'build-system' key in configs"
         assert "tool" in configs, "Expected 'tool' key in configs"
 
-    def test_make_dependency_versions(
+    def test_merge_additional_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        dependencies = ["dep1", "dep1"]
-        deps_versions = my_test_pyproject_config_file().make_dependency_versions(
-            dependencies
+        dependencies = ["dep1", "dep1", "dep3[dev]"]
+        additional = ["dep3", "dep2"]
+        deps_versions = my_test_pyproject_config_file().merge_additional_dependencies(
+            dependencies, additional
         )
-        assert deps_versions == ["dep1"]
+        assert deps_versions == ["dep1", "dep2", "dep3[dev]"]
 
     def test_dependencies(self) -> None:
         """Test method."""

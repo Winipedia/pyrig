@@ -207,11 +207,12 @@ def import_module_with_default(
     """
     try:
         return import_module(module_name)
-    except ImportError:
+    except Exception as e:  # noqa: BLE001
         logger.debug(
-            "Could not import module %s, returning default value %s",
+            "Could not import module %s, returning default value %s. Exception: %s",
             module_name,
             default,
+            e,
         )
         return default
 

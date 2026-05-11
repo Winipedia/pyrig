@@ -2,9 +2,40 @@
 
 from pathlib import Path
 
-from pyrig.core.introspection.paths import module_name_as_path, package_name_as_path
+from pyrig.core.introspection.paths import (
+    module_name_as_path,
+    package_name_as_path,
+    path_as_module_name,
+)
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
+
+
+def root_path_as_module_name(path: Path) -> str:
+    """Convert a filesystem path relative to the project root to a dotted module name.
+
+    Selects the appropriate root directory based on the path:
+    - Paths starting with the tests source root (e.g., ``tests/``) are rooted
+      at the tests package, and the root is stripped from the resulting module name.
+    - All other paths are rooted at the source root (e.g., ``src/``), and the root is
+      stripped from the resulting module name.
+
+    Args:
+        path: Filesystem path relative to the project root.
+
+    Returns:
+        Dotted Python module name (
+            e.g., ``"mypackage.sub.module"`` or ``"tests.test_sub.test_module"``
+        ).
+    """
+    if path.is_relative_to(PackageManager.I.source_root()):
+        root = PackageManager.I.source_root()
+    elif path.is_relative_to(ProjectTester.I.tests_source_root()):
+        root = ProjectTester.I.tests_source_root()
+    else:
+        root = Path()
+    relative_path = path.relative_to(root)
+    return path_as_module_name(relative_path)
 
 
 def module_name_as_root_path(module_name: str) -> Path:

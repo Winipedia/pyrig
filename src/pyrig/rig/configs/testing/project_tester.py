@@ -8,8 +8,6 @@ hooks without explicit imports in each test file.
 from pathlib import Path
 from types import ModuleType
 
-from pyrig.core.introspection.modules import import_module_with_file_fallback
-from pyrig.core.introspection.paths import path_as_module_name
 from pyrig.rig.configs.base.copy_module_docstring import CopyModuleDocstringConfigFile
 from pyrig.rig.tests import conftest
 from pyrig.rig.tools.project_tester import ProjectTester
@@ -76,11 +74,7 @@ class ProjectTesterConfigFile(CopyModuleDocstringConfigFile):
             ``True`` if the conftest module name is present in the
             ``pytest_plugins`` list of the file on disk.
         """
-        module = import_module_with_file_fallback(
-            self.path(), path_as_module_name(self.path())
-        )
-        plugins = getattr(module, "pytest_plugins", [])
-        return conftest.__name__ in plugins
+        return conftest.__name__ in getattr(self.module(), "pytest_plugins", [])
 
     def plugin_definition(self) -> str:
         """Return the ``pytest_plugins`` assignment line for the generated file.

@@ -71,7 +71,6 @@ class PythonPackageConfigFile(PythonConfigFile):
         Args:
             configs: Lines of Python source code to write to the target file.
         """
-        super()._dump(configs)
         make_package_dir(
             self.path().parent,
             until=(
@@ -80,3 +79,4 @@ class PythonPackageConfigFile(PythonConfigFile):
             ),
             content=ProgrammingLanguage.I.standard_init_content(),
         )
+        super()._dump(configs)

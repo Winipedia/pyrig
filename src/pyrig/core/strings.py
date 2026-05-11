@@ -124,7 +124,7 @@ def split_on_uppercase(string: str) -> Generator[str, None, None]:
     return (s for s in re.split(r"(?=[A-Z])", string) if s)
 
 
-def package_req_name_split_pattern() -> re.Pattern[str]:
+def dependency_requirement_split_pattern() -> re.Pattern[str]:
     """Return a compiled regex pattern that matches non-package-name characters.
 
     The pattern matches any character that is not alphanumeric, an underscore,
@@ -143,7 +143,28 @@ def package_req_name_split_pattern() -> re.Pattern[str]:
         Compiled regex pattern matching characters outside a valid package name.
     """
     # re.compile is already internally cached by Python
-    return re.compile(r"[^a-zA-Z0-9_.\[\]-]")
+    return re.compile(r"[^a-zA-Z0-9_.-]")
+
+
+def dependency_requirement_as_package_name(dep_req: str) -> str:
+    """Extract the package name from a dependency requirement string.
+
+    Uses the split pattern to separate the package name from any version specifiers
+    or other extraneous characters. The resulting package name is converted from
+    kebab-case to snake_case to match Python package naming conventions.
+
+    Args:
+        dep_req: A dependency requirement string (e.g., ``"requests>=2.0,<3.0"`` or
+            ``"my-package[extra]==1.0.0"``).
+
+    Returns:
+        The package name in snake_case (
+            e.g., ``"requests"`` or ``"my_package[extra]"``
+        ).
+    """
+    return kebab_to_snake_case(
+        dependency_requirement_split_pattern().split(dep_req, maxsplit=1)[0]
+    )
 
 
 def make_name_from_obj(
