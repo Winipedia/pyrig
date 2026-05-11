@@ -70,10 +70,6 @@ class DependencyGraph(DiGraph):
             is a generator that yields normalized names of each declared dependency
             (yields nothing if the package declares no dependencies).
         """
-        name = dependency_requirement_as_package_name(dist.name)
-
-        deps = (
+        return dependency_requirement_as_package_name(dist.name), (
             dependency_requirement_as_package_name(req) for req in (dist.requires or [])
         )
-
-        return name, deps
