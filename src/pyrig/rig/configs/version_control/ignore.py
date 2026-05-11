@@ -104,8 +104,9 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         standard = self.standard_ignore_lines()
         standard_set = set(standard)
         needed = [line for line in needed if line not in standard_set]
-
-        return [*standard, *needed, ""]
+        if needed:
+            needed.append("")
+        return [*standard, *needed]
 
     def standard_ignore_lines(self) -> list[str]:
         """Return the bundled Python gitignore baseline as a list of lines.
