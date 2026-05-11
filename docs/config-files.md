@@ -65,8 +65,8 @@ item must be present.
 ### Caching
 
 `configs()` and `load()` are cached class-level results. `dump()` is a
-cache-invalidating wrapper: it clears the `load()` cache before and after
-writing, so that subsequent loads always see the current state.
+cache-invalidating wrapper: it clears the `load()` cache after writing,
+so that subsequent loads always see the current state.
 
 ---
 

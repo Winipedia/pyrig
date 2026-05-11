@@ -150,8 +150,8 @@ def import_module_from_file(
     """Import a module directly from a ``.py`` file using ``importlib`` machinery.
 
     Resolves the path to absolute, creates a ``SourceFileLoader`` and builds a
-    module spec via ``spec_from_loader``, then executes the loader. The module
-    is pre-registered in ``sys.modules`` before execution (required so that
+    module spec via ``spec_from_loader``, then executes the module using the loader.
+    The module is pre-registered in ``sys.modules`` before execution (required so that
     packages with internal imports can find themselves), and removed on failure,
     so failed loads do not leave invalid cache entries.
 

@@ -14,10 +14,9 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
     """GitHub Actions workflow that builds artifacts and a container image.
 
     Generates ``.github/workflows/build.yml``. The workflow triggers when the
-    health check workflow completes on the default branch (excluding scheduled
-    runs), builds artifacts across an OS matrix and a container image on
-    Ubuntu, then uploads both as GitHub Actions artifacts for the release
-    workflow to consume.
+    health check workflow completes on the default branch, builds artifacts
+    across an OS matrix and a container image on Ubuntu, then uploads both as
+    GitHub Actions artifacts for the release workflow to consume.
 
     Artifacts produced:
         - **Artifacts**: Built with ``pyrig build`` on Ubuntu, Windows, and macOS.
