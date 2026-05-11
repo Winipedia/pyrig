@@ -69,12 +69,12 @@ class ProjectTesterConfigFile(CopyModuleDocstringConfigFile):
     def is_correct(self) -> bool:
         """Return whether the generated conftest.py is considered valid.
 
-        The file is valid if the ``pytest_plugins`` assignment is already
-        present in the file on disk.
+        The file is valid if the conftest module name is registered in the
+        ``pytest_plugins`` list of the file on disk.
 
         Returns:
-            ``True`` if the ``pytest_plugins`` assignment is present in the
-            file on disk.
+            ``True`` if the conftest module name is present in the
+            ``pytest_plugins`` list of the file on disk.
         """
         module = import_module_with_file_fallback(
             self.path(), path_as_module_name(self.path())

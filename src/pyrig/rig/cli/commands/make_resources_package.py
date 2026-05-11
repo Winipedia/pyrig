@@ -9,8 +9,7 @@ def make_resources_package() -> None:
 
     Dynamically generates an ``InitConfigFile`` subclass bound to
     ``pyrig.rig.resources``, then validates it. If the file does not exist it
-    is created with the correct content; if it already exists it is left
-    unchanged.
+    is created with the correct content; if it already exists, it is not modified.
     """
     # create the file if not existent yet
     config_file = InitConfigFile.generate_subclass(resources)()
