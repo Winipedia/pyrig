@@ -67,7 +67,7 @@ class ContainerEngine(Tool):
         Returns:
             Args for 'podman build'.
         """
-        return self.args("build", "-t", project_name, ".", *args)
+        return self.args("build", "-t", project_name, *args, ".")
 
     def save_args(self, *args: str, image_path: Path) -> Args:
         """Construct podman save arguments.
