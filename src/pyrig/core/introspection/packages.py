@@ -124,6 +124,7 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
     Raises:
         FileNotFoundError: If the fallback import fails because the directory
             or its ``__init__.py`` does not exist.
+        ImportError: If the module spec cannot be created from the path.
     """
     return import_module_with_file_fallback(path=path, name=name, is_package=True)
 

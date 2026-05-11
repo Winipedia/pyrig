@@ -119,7 +119,7 @@ def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
 
     Raises:
         LookupError: If the defining module cannot be determined and
-            ``default`` is not provided.
+            ``default`` is ``None``.
     """
     unwrapped = unwrapped_obj(obj)
     module = inspect.getmodule(unwrapped)

@@ -11,8 +11,9 @@ from pyrig.rig.tools.project_tester import ProjectTester
 def remove_pycache() -> None:
     """Remove all __pycache__ directories in the project.
 
-    Recursively scans the src and tests roots and deletes every __pycache__
-    directory found, printing each path to standard output before removal.
+    Recursively scans the package root and tests package root and deletes
+    every __pycache__ directory found, printing each path to standard output
+    before removal.
     """
     roots = (ProjectTester.I.tests_package_root(), PackageManager.I.package_root())
     for root in roots:

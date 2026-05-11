@@ -25,7 +25,7 @@ def discover_subclasses_across_dependencies[T: type](
     cls: T,
     package: ModuleType,
 ) -> Generator[T, None, None]:
-    """Yield subclasses of ``cls`` across packages that depend on ``package``'s root.
+    """Yield subclasses of ``cls`` across ``package`` and dependent packages.
 
     The primary entry point for pyrig's plugin-style subclass discovery. Starting
     with ``package`` itself and then each installed package that depends on
@@ -46,8 +46,8 @@ def discover_subclasses_across_dependencies[T: type](
             ``<pkg>.rig`` in each dependent package.
 
     Yields:
-        Subclass types of ``cls`` discovered across all dependent packages, in
-        topological dependency order (base package first, then dependents).
+        Subclass types of ``cls`` discovered across ``package`` and all dependent
+        packages, in topological dependency order (base package first, then dependents).
 
     Example:
         >>> from pyrig.rig.configs.base.config_file import ConfigFile
