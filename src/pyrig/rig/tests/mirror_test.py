@@ -308,47 +308,67 @@ def {test_func_name}() -> None:
         Returns:
             Test module content with all missing class and method skeletons inserted.
         """
-        test_class_to_method_names = self.untested_class_and_method_names()
         for (
             test_class_name,
             test_method_names,
-        ) in test_class_to_method_names:
-            test_cls_skeleton = self.test_class_skeleton(test_class_name)
+        ) in self.untested_class_and_method_names():
+            test_cls_skeleton = self.extract_test_class_skeleton_from_content(
+                test_module_content,
+                test_class_name=test_class_name,
+                default=self.test_class_skeleton(test_class_name),
+            )
             test_cls_content = test_cls_skeleton + "".join(
                 self.test_method_skeleton(name) for name in test_method_names
             )
-            parts = self.split_content_on_class_skeleton(
-                test_module_content, test_class_name
-            )
+            parts = test_module_content.split(test_cls_skeleton)
             # insert the new content
             parts.insert(1, test_cls_content)
             test_module_content = "".join(parts)
 
         return test_module_content
 
-    def split_content_on_class_skeleton(
-        self, test_module_content: str, test_class_name: str
-    ) -> list[str]:
-        """Split the test module content on the skeleton of a specific test class.
+    def extract_test_class_skeleton_from_content(
+        self, test_module_content: str, test_class_name: str, default: str
+    ) -> str:
+        """Extract the skeleton of a specific test class from the test module content.
 
         Builds a regex pattern from the class skeleton (definition line plus docstring)
-        and uses it to split the content on the class skeleton.
+        and uses it to search the content for the class skeleton.
 
         Args:
-            test_module_content: The full test module content to split.
-            test_class_name: The name of the test class whose skeleton to split on.
+            test_module_content: The full test module content to search.
+            test_class_name: The name of the test class whose skeleton to extract.
+            default: The value to return if the class skeleton is not found.
 
         Returns:
-            List of strings resulting from splitting the content on the pattern.
+            The matched class skeleton string if found; ``default`` otherwise.
+        """
+        pattern = self.class_skeleton_pattern(test_class_name)
+        match = pattern.search(test_module_content)
+        return match.group(0) if match is not None else default
+
+    def class_skeleton_pattern(self, test_class_name: str) -> re.Pattern[str]:
+        """Return a regex pattern that matches the skeleton of a specific test class.
+
+        Builds a regex pattern from the class skeleton (definition line plus docstring)
+        that can be used to detect the presence of the skeleton in the test module
+        content.
+
+        Args:
+            test_class_name: The name of the test class whose skeleton to build a
+                pattern for.
+
+        Returns:
+            Compiled regex pattern matching the class skeleton.
         """
         cls_skeleton = self.test_class_skeleton(test_class_name)
         # use cls_skeleton as a regex pattern by replacing the docstring
         # with regex that matches any docstring
-        pattern = cls_skeleton.replace(
+        pattern_str = cls_skeleton.replace(
             self.test_class_skeleton_docstring(),
             r"(?:\"\"\".*?\"\"\"|\'\'\'.*?\'\'\')",
         )
-        return re.split(pattern, test_module_content, maxsplit=1, flags=re.DOTALL)
+        return re.compile(pattern_str, flags=re.DOTALL)
 
     def untested_class_and_method_names(
         self,
