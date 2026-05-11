@@ -521,7 +521,7 @@ class {test_class_name}:
             + cls.__name__
         )
 
-        def mirror_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
+        def mirror_module(_self: Self) -> ModuleType:
             return module
 
         subclass = type(
