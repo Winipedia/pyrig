@@ -47,7 +47,7 @@ def generator_has_items[T](
     first = next(gen, sentinel)
     if first is sentinel:
         return False, empty_generator()
-    return True, combine_generators(((first,)), gen)
+    return True, combine_generators((first,), gen)
 
 
 def combine_generators(*generators: Iterable[Any]) -> Generator[Any, None, None]:
