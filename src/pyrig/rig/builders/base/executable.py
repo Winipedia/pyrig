@@ -1,6 +1,5 @@
 """PyInstaller-based artifact builder for creating standalone executables."""
 
-import os
 import platform
 from abc import abstractmethod
 from collections.abc import Generator
@@ -144,7 +143,7 @@ class ExecutableBuilder(BuilderConfigFile):
             *(
                 arg
                 for src, dest in self.add_datas()
-                for arg in ("--add-data", f"{src}{os.pathsep}{dest}")
+                for arg in ("--add-data", f"{src}:{dest}")
             ),
         ]
 
@@ -157,8 +156,7 @@ class ExecutableBuilder(BuilderConfigFile):
         Returns:
             Absolute path to the entry point ``.py`` file.
         """
-        module = self.entry_point_module()
-        return module_file_path(module)
+        return module_file_path(self.entry_point_module())
 
     def add_datas(self) -> list[tuple[str, str]]:
         """Build the list of ``--add-data`` arguments for PyInstaller.
