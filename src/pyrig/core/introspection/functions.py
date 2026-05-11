@@ -32,7 +32,7 @@ def module_functions(
         func
         for _name, func in obj_members(module)
         if is_funclike(func)
-        if obj_module(func).__name__ == module.__name__
+        if obj_module(func) is module
     )
 
 
