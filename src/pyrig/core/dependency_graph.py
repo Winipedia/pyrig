@@ -10,8 +10,7 @@ from collections.abc import Generator
 
 from pyrig.core.graph import DiGraph
 from pyrig.core.strings import (
-    kebab_to_snake_case,
-    package_req_name_split_pattern,
+    dependency_requirement_as_package_name,
 )
 
 logger = logging.getLogger(__name__)
@@ -39,7 +38,9 @@ class DependencyGraph(DiGraph):
         Args:
             root: Name of the root package to build the graph around.
         """
-        super().__init__(root=self.normalize_package_name(root) if root else None)
+        super().__init__(
+            root=dependency_requirement_as_package_name(root) if root else None
+        )
 
     def build(self) -> None:
         """Build the graph from installed Python distributions."""
@@ -65,46 +66,14 @@ class DependencyGraph(DiGraph):
 
         Returns:
             A two-tuple of ``(normalized_name, deps_generator)`` where
-            ``normalized_name`` is the normalized package name (empty string
-            if the distribution has no name) and ``deps_generator`` is a
-            generator that yields normalized names of each declared dependency
+            ``normalized_name`` is the normalized package name and ``deps_generator``
+            is a generator that yields normalized names of each declared dependency
             (yields nothing if the package declares no dependencies).
         """
-        raw_name = dist.name
-        name = self.normalize_package_name(raw_name) if raw_name else ""
+        name = dependency_requirement_as_package_name(dist.name)
 
-        deps = (self.parse_package_name_from_req(req) for req in (dist.requires or []))
+        deps = (
+            dependency_requirement_as_package_name(req) for req in (dist.requires or [])
+        )
 
         return name, deps
-
-    def parse_package_name_from_req(self, req: str) -> str:
-        """Extract the package name from a PEP 508 requirement string.
-
-        Uses ``pyrig.core.strings.package_req_name_split_pattern`` to split
-        the requirement string at the first character that is not a valid
-        package-name character (i.e., not alphanumeric, hyphen, underscore,
-        period, or bracket). The leading segment is taken as the raw package
-        name and then normalized.
-
-        Args:
-            req: Requirement string (e.g., ``"requests>=2.0,<3.0"`` or
-                ``"package-name[extra]>=1.0"``).
-
-        Returns:
-            Normalized package name extracted from the requirement.
-        """
-        # Split on the first non-alphanumeric character (except -, _, and .)
-        # Uses module-level compiled pattern for performance
-        dep = package_req_name_split_pattern().split(req.strip(), maxsplit=1)[0].strip()
-        return self.normalize_package_name(dep)
-
-    def normalize_package_name(self, name: str) -> str:
-        """Normalize a package name by converting hyphens to underscores.
-
-        Args:
-            name: Package name to normalize.
-
-        Returns:
-            Package name with hyphens replaced by underscores.
-        """
-        return kebab_to_snake_case(name)

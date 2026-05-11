@@ -125,7 +125,7 @@ def obj_module(obj: Any, default: ModuleType | None = None) -> ModuleType:
     module = inspect.getmodule(unwrapped)
     if not module:
         msg = f"Could not determine module of {obj}"
-        if default:
+        if default is not None:
             return default
         raise LookupError(msg)
     return module

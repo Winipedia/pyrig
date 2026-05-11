@@ -5,7 +5,7 @@ resources, supporting both regular file-based packages and PyInstaller-bundled
 executables.
 """
 
-from importlib.resources import as_file, files
+from importlib.resources import files
 from pathlib import Path
 from types import ModuleType
 
@@ -53,6 +53,4 @@ def resource_path(name: str, package: ModuleType) -> Path:
         The returned path is not validated for existence. Accessing a missing
         resource will raise ``FileNotFoundError``.
     """
-    resource_path = files(package) / name
-    with as_file(resource_path) as path:
-        return path
+    return Path(str(files(package) / name))

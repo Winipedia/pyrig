@@ -73,6 +73,31 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class."""
 
+    def test_validate(
+        self,
+        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            config = my_test_mirror_test_config_file()
+            config.create_file()  # ensure file exists for content generation
+            assert config.read_content() == ""
+            config.validate()
+            assert (
+                my_test_mirror_test_config_file().module().__name__
+                == TESTS_MIRROR_MODULE_NAME
+            )
+            content = config.read_content()
+            assert "class TestMirrorClass" in content
+            assert "def test_mirror_method" in content
+            assert "def test_mirror_function" in content
+            assert "NotImplementedError" in content
+            assert content.endswith("\n")
+            # assert two lines between docstring and first class
+            assert '"""\n\n\ndef test_mirror_function' in content
+            assert "NotImplementedError\n\n\nclass TestMirrorClass:" in content
+
     def test_split_content_on_class_skeleton(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
@@ -123,9 +148,9 @@ def test_another_function():
             issubclass(subclass, MirrorTestConfigFile) for subclass in subclasses
         )
 
-    def test_all_mirror_modules(self) -> None:
+    def test_mirror_modules(self) -> None:
         """Test method."""
-        modules = tuple(MirrorTestConfigFile.L.all_mirror_modules())
+        modules = tuple(MirrorTestConfigFile.L.mirror_modules())
         assert mirror_test in modules
 
     def test_test_func_name(
@@ -155,22 +180,6 @@ def test_another_function():
         docstring = my_test_mirror_test_config_file().test_module_docstring()
         assert isinstance(docstring, str)
 
-    def test__dump(
-        self,
-        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
-        tmp_path: Path,
-    ) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            my_test_mirror_test_config_file().validate()
-            # assert teh file ends with empty line
-            path = my_test_mirror_test_config_file().path()
-            content = path.read_text()
-            assert content.endswith("\n")
-            # assert two lines between docstring and first class
-            assert '"""\n\n\ndef test_mirror_function' in content
-            assert "NotImplementedError\n\n\nclass TestMirrorClass:" in content
-
     def test_create_file(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
@@ -179,22 +188,6 @@ def test_another_function():
         my_test_mirror_test_config_file().create_file()
         test_module_name = my_test_mirror_test_config_file().test_module_name()
         assert test_module_name in sys.modules
-
-    def test_test_module_content(
-        self,
-        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
-        tmp_path: Path,
-    ) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            config = my_test_mirror_test_config_file()
-            config.create_file()  # ensure file exists for content generation
-            assert config.test_module_content() == ""
-            config.validate()
-            content = config.test_module_content()
-            assert "class TestMirrorClass" in content
-            assert "def test_mirror_method" in content
-            assert "def test_mirror_function" in content
 
     def test_test_func_prefix(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
@@ -300,18 +293,6 @@ def test_another_function():
         """Test method."""
         test_module_name = my_test_mirror_test_config_file().test_module_name()
         assert test_module_name == TESTS_MIRROR_MODULE_NAME
-
-    def test_test_module(
-        self,
-        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
-        tmp_path: Path,
-        create_module: Callable[[Path], ModuleType],
-    ) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            create_module(my_test_mirror_test_config_file().test_path())
-            test_module = my_test_mirror_test_config_file().test_module()
-            assert test_module.__name__ == TESTS_MIRROR_MODULE_NAME
 
     def test_test_module_content_with_skeletons(
         self,

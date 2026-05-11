@@ -15,15 +15,8 @@ class TestDependencyGraph:
         name = "pyrig"
         dist = importlib.metadata.distribution(name)
         result_name, result_deps = DEP_GRAPH.parse_name_and_deps(dist)
-        assert result_name == "pyrig", f"Expected 'pyrig', got '{result_name}'"
-        assert "typer" in result_deps, "Expected 'typer' to be in dependencies"
-
-    def test_normalize_package_name(self) -> None:
-        """Test method."""
-        name = "pyrig"
-        result = DEP_GRAPH.normalize_package_name(name)
-        expected = "pyrig"
-        assert result == expected, f"Expected '{expected}', got '{result}'"
+        assert result_name == "pyrig"
+        assert "typer" in result_deps
 
     def test___init__(self) -> None:
         """Test method."""
@@ -36,38 +29,7 @@ class TestDependencyGraph:
     def test_build(self) -> None:
         """Test method."""
         # Verify that known packages are in the graph
-        assert "pyrig" in DEP_GRAPH.nodes(), (
-            "Expected 'pyrig' to be a node in the graph"
-        )
-        assert "typer" in DEP_GRAPH.nodes(), (
-            "Expected 'typer' to be a node in the graph"
-        )
-        assert "requests" in DEP_GRAPH.nodes(), (
-            "Expected 'requests' to be a node in the graph"
-        )
-        assert "nonexistent_package" not in DEP_GRAPH.nodes(), (
-            "Expected 'nonexistent_package' to not be a node in the graph"
-        )
-
-    def test_parse_package_name_from_req(self) -> None:
-        """Test method."""
-        # Test simple package name
-        result = DEP_GRAPH.parse_package_name_from_req("requests")
-        assert result == "requests", f"Expected 'requests', got {result}"
-
-        # Test with version specifier
-        result = DEP_GRAPH.parse_package_name_from_req("requests>=2.0.0")
-        assert result == "requests", f"Expected 'requests', got {result}"
-
-        # Test with complex version specifier
-        result = DEP_GRAPH.parse_package_name_from_req("package-name>=1.0,<2.0")
-        assert result == "package_name", f"Expected 'package_name', got {result}"
-
-        # Test with extras
-        result = DEP_GRAPH.parse_package_name_from_req("package[extra]>=1.0")
-        expected = "package[extra]"
-        assert result == expected, f"Expected: {expected}, got {result}"
-
-        # Test with trailing spaces (leading spaces result in empty first split)
-        result = DEP_GRAPH.parse_package_name_from_req("  package-name  >=1.0")
-        assert result == "package_name", f"Expected 'package_name', got {result}"
+        assert "pyrig" in DEP_GRAPH.nodes()
+        assert "typer" in DEP_GRAPH.nodes()
+        assert "requests" in DEP_GRAPH.nodes()
+        assert "nonexistent_package" not in DEP_GRAPH.nodes()

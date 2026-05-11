@@ -26,7 +26,6 @@ from pyrig.core.introspection.inspection import (
 from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
     module_has_docstring,
-    reimport_module,
 )
 from pyrig.core.introspection.packages import discover_modules
 from pyrig.core.iterate import generator_has_items
@@ -105,26 +104,12 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
 
         Overrides the default discovery mechanism: instead of scanning for manually
         defined subclasses, creates one subclass per module returned by
-        ``all_mirror_modules()``.
+        ``mirror_modules()``.
 
         Returns:
             Generator of dynamically created subclasses, one per source module.
         """
-        return cls.generate_subclasses(cls.all_mirror_modules())
-
-    def _dump(self, configs: ConfigList) -> None:
-        """Write the test file and reimport the test module to pick up the new content.
-
-        Extends the parent dump by reimporting the test module after writing. This
-        clears the module cache so that subsequent introspection (e.g., by
-        ``is_correct()``) reflects the newly written skeletons rather than the stale
-        cached version.
-
-        Args:
-            configs: Lines of content to write to the test file.
-        """
-        super()._dump(configs)
-        reimport_module(self.test_module())
+        return cls.generate_subclasses(cls.mirror_modules())
 
     def stem(self) -> str:
         """Return the test file's base name without its extension.
@@ -223,28 +208,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return module_name_as_root_path(self.test_module_name())
 
-    def test_module(self) -> ModuleType:
-        """Import and return the test module object.
-
-        Uses a file-path fallback for modules that have not yet been added to
-        ``sys.modules`` (e.g., immediately after the file is created).
-
-        Returns:
-            The imported test module.
-        """
-        return import_module_with_file_fallback(
-            self.test_path(), name=self.test_module_name()
-        )
-
-    def test_module_content(self) -> str:
-        """Return the current on-disk content of the test file as a string.
-
-        Returns:
-            Source code of the test file, or an empty string if the file does not
-            exist yet.
-        """
-        return self.read_content()
-
     def test_module_content_with_skeletons(self) -> str:
         """Build the complete test module content with skeletons for untested code.
 
@@ -259,9 +222,9 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Full test module source ready to write to disk, preserving all existing
             test implementations.
         """
-        test_module_content = self.test_module_content()
+        test_module_content = self.read_content()
         # if module content has no docstring, add the default one
-        if not module_has_docstring(self.test_module()):
+        if not module_has_docstring(self.module()):
             test_module_content = self.test_module_docstring() + test_module_content
         test_module_content = self.test_module_content_with_func_skeletons(
             test_module_content
@@ -293,7 +256,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             source function that does not have a matching test function.
         """
         funcs = sorted_by_def_line(module_functions(self.mirror_module()))
-        test_funcs = module_functions(self.test_module())
+        test_funcs = module_functions(self.module())
 
         supposed_test_func_names = (self.test_func_name(f) for f in funcs)
         actual_test_func_names = {obj_qualname(f) for f in test_funcs}
@@ -407,7 +370,7 @@ def {test_func_name}() -> None:
             Only classes with at least one untested element are included.
         """
         classes = sorted_by_def_line(module_classes(self.mirror_module()))
-        test_classes = module_classes(self.test_module())
+        test_classes = module_classes(self.module())
 
         class_to_methods = (
             (
@@ -569,15 +532,14 @@ class {test_class_name}:
         return cast("type[Self]", subclass)
 
     @classmethod
-    def all_mirror_modules(cls) -> Generator[ModuleType, None, None]:
+    def mirror_modules(cls) -> Generator[ModuleType, None, None]:
         """Yield all modules from the project's source package.
 
         Returns:
             Generator of every module in the package declared by the active
             ``PackageManager``.
         """
-        package = import_module(PackageManager.I.package_name())
-        return discover_modules(package)
+        return discover_modules(import_module(PackageManager.I.package_name()))
 
     def test_func_name(self, func: Callable[..., Any]) -> str:
         """Return the expected test function name for a given source function.
