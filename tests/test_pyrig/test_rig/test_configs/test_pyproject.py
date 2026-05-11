@@ -231,6 +231,5 @@ class TestPyprojectConfigFile:
     def test_latest_python_version(self) -> None:
         """Test method."""
         latest_version = PyprojectConfigFile().latest_python_version()
-        assert isinstance(latest_version, Version), (
-            f"Expected Version, got {type(latest_version)}"
-        )
+        assert isinstance(latest_version, Version)
+        assert latest_version > Version("3.13")
