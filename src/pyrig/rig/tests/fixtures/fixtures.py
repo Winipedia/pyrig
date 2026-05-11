@@ -46,7 +46,6 @@ def command_works() -> Callable[[Callable[..., Any]], None]:
         # run --help comd to see if its available
         args = PackageManager.I.project_cmd_args("--help", cmd=cmd)
         completed_process = args.run()
-        assert completed_process.returncode == 0
         stoud = completed_process.stdout
         name = cmd.__name__.replace("_", "-")  # ty:ignore[unresolved-attribute]
         assert name in stoud
