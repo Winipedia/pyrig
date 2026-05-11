@@ -53,8 +53,8 @@ Calling `validate()` on a config file follows this sequence:
 then write `configs()` as the initial content.
 2. If the file is already correct — meaning it already contains all required
 keys and values — return immediately.
-3. Merge `configs()` into the current file content, filling any missing keys
-while leaving all existing content intact, then write the result.
+3. Merge `configs()` into the current file content, filling any missing and overriding
+mismatched keys while leaving all other content intact, then write the result.
 4. If the file is still not correct after merging, raise a `RuntimeError`.
 
 **Correctness** is evaluated by `is_correct()`, which checks whether `configs()`
