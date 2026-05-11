@@ -203,7 +203,7 @@ def mkcmd(
     Args:
         name: Name of the subcommand to create. Accepts kebab-case or snake_case.
         shared: If `True`, the stub is added to `rig/cli/shared_subcommands.py` instead,
-            making it accessible to projects that depend on this project.
+            making it accessible to every pyrig-based project in the ecosystem.
 
     Examples:
         $ uv run pyrig mkcmd my-command
