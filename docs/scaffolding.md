@@ -126,7 +126,7 @@ Health Check ──► Build ──► Release ──► Deploy
 | File | Purpose |
 |---|---|
 | `__init__.py` | Makes `tests/` a Python package |
-| `conftest.py` | Registers pyrig's fixture plugins with pytest via `pytest_plugins` |
+| `conftest.py` | Registers pyrig's pytest plugin via `pytest_plugins` |
 | `test_zero.py` | A single empty `test_zero` function so pytest never reports "no tests collected" |
 
 ## Tool-Generated Artifacts
