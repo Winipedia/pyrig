@@ -8,6 +8,7 @@ dependency.
 import logging
 from collections.abc import Generator
 from functools import cache
+from itertools import chain
 from types import ModuleType
 
 from pyrig.core.dependency_graph import DependencyGraph
@@ -66,9 +67,9 @@ def discover_subclasses_across_dependencies[T: type](
 
     return (
         subclass
-        for pkg in (
-            package,
-            *discover_equivalent_modules_across_dependents(module=package),
+        for pkg in chain(
+            (package,),
+            discover_equivalent_modules_across_dependents(module=package),
         )
         for subclass in discover_all_subclasses_across_package(
             cls,

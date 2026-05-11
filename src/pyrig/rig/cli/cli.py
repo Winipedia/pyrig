@@ -5,6 +5,7 @@ and shared sources across the package dependency chain. Built on Typer.
 """
 
 import logging
+from itertools import chain
 
 import typer
 
@@ -150,9 +151,9 @@ def add_shared_subcommands() -> None:
         dependent packages in topological order). When two packages define a
         command with the same name, the last registration takes precedence.
     """
-    for shared_subcommands_module in (
-        shared_subcommands,
-        *discover_equivalent_modules_across_dependents(
+    for shared_subcommands_module in chain(
+        (shared_subcommands,),
+        discover_equivalent_modules_across_dependents(
             shared_subcommands,
         ),
     ):
