@@ -139,11 +139,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return self.split_lines(self.test_module_content_with_skeletons())
 
     def should_override_content(self) -> bool:
-        """Instruct the parent class to replace file content entirely on each write.
-
-        Returns ``True`` so that ``merge_configs()`` discards the raw file content
-        and instead uses the output of ``lines()``, which already incorporates the
-        existing tests plus new skeletons.
+        """Return ``True`` to indicate that file content should be overriden on dumping.
 
         Returns:
             Always ``True``.

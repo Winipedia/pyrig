@@ -14,11 +14,9 @@ from pyrig.rig.tools.project_tester import ProjectTester
 def root_path_as_module_name(path: Path) -> str:
     """Convert a filesystem path relative to the project root to a dotted module name.
 
-    Selects the appropriate root directory based on the path:
-    - Paths starting with the tests source root (e.g., ``tests/``) are rooted
-      at the tests source root, which is an empty path (the project root itself).
-    - All other paths are rooted at the source root (e.g., ``src/``), and the root is
-      stripped from the resulting module name.
+    Selects the appropriate root directory based on the path.
+    Paths starting with any source roots (e.g., ``src/``) are stripped
+    from their root before constructing the resulting module name.
 
     Args:
         path: Filesystem path relative to the project root.
