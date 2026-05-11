@@ -17,7 +17,8 @@ if src_package_is_pyrig():
         def audit_args(self, *args: str) -> Args:
             """Override pip-audit command arguments construction.
 
-            Currently delegates to the base implementation. Can be overridden
-            to ignore specific vulnerabilities when needed for CI/CD.
+            It is used to ignore irrelevant vulnerabilities in dependencies,
+            so that the CI/CD passes the dependency audit check. It delegates
+            to the base whenever nothing needs to be ignored.
             """
             return super().audit_args(*args)
