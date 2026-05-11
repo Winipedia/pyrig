@@ -2,7 +2,7 @@
 
 Subclass `PythonPackageConfigFile` when a generated .py file must live inside a
 directory hierarchy where every ancestor directory is a valid Python package
-(i.e. contains an ``__init__.py``). After writing the file itself, the class
+(i.e. contains an ``__init__.py``). Before writing the file itself, the class
 automatically creates any missing ``__init__.py`` files up the directory tree,
 stopping at the project source root and tests source root so those boundaries
 are never touched.

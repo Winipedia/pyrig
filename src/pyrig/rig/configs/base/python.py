@@ -61,7 +61,9 @@ class PythonConfigFile(StringConfigFile):
     def module(self) -> ModuleType:
         """Import and return the module represented by this config file.
 
-        Uses a file fallback import strategy to ensure the module can be imported.
+        Uses a file fallback import strategy for regular modules, or a package
+        directory fallback strategy for ``__init__`` files, to ensure the module
+        can be imported.
 
         Returns:
             Imported module corresponding to the config file's path.
