@@ -16,7 +16,7 @@ import pytest
 from pyrig.core.introspection.packages import (
     walk_package,
 )
-from pyrig.core.iterate import generator_has_items
+from pyrig.core.iterate import iterator_has_items
 from pyrig.core.requests import internet_is_available
 from pyrig.core.strings import (
     make_summary_error_msg,
@@ -50,7 +50,7 @@ def all_config_files_correct() -> None:
         AssertionError: If any version-controlled config files are incorrect,
             listing the affected paths.
     """
-    has_incorrect_config_files, incorrect_config_files = generator_has_items(
+    has_incorrect_config_files, incorrect_config_files = iterator_has_items(
         ConfigFile.discard_correct_subclasses(
             ConfigFile.version_controlled_subclasses()
         )
@@ -78,7 +78,7 @@ def no_namespace_packages() -> None:
         AssertionError: If any namespace packages are found, listing the
             paths of the missing ``__init__.py`` files.
     """
-    has_namespace_packages, namespace_packages = generator_has_items(
+    has_namespace_packages, namespace_packages = iterator_has_items(
         find_namespace_packages()
     )
 
@@ -106,7 +106,7 @@ def all_modules_tested() -> None:
             module (either missing entirely or missing test coverage for one
             or more functions, classes, or methods), listing the affected paths.
     """
-    has_incorrect_subclasses, incorrect_subclasses = generator_has_items(
+    has_incorrect_subclasses, incorrect_subclasses = iterator_has_items(
         MirrorTestConfigFile.L.discard_correct_subclasses(
             MirrorTestConfigFile.L.concrete_subclasses()
         )

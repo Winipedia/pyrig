@@ -6,7 +6,7 @@ Ensures every source module, class, function and method has a test counterpart.
 import logging
 import re
 from abc import abstractmethod
-from collections.abc import Callable, Generator, Iterable
+from collections.abc import Callable, Generator, Iterable, Iterator
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
@@ -28,7 +28,7 @@ from pyrig.core.introspection.modules import (
     module_has_docstring,
 )
 from pyrig.core.introspection.packages import discover_modules
-from pyrig.core.iterate import generator_has_items
+from pyrig.core.iterate import iterator_has_items
 from pyrig.core.strings import make_name_from_obj
 from pyrig.rig import tests
 from pyrig.rig.configs.base.config_file import ConfigList
@@ -368,7 +368,7 @@ def {test_func_name}() -> None:
 
     def untested_class_and_method_names(
         self,
-    ) -> Generator[tuple[str, Generator[str, None, None]], None, None]:
+    ) -> Generator[tuple[str, Iterator[str]], None, None]:
         """Yield test class/method pairs for source classes that have untested elements.
 
         Compares source classes and their methods against the test module. For each
@@ -424,14 +424,16 @@ def {test_func_name}() -> None:
             )
             # add the test class name to the dict if there are untested methods
             # or if the test class is not in the test module at all
-            has_untested_methods, untested_test_methods_names = generator_has_items(
+            has_untested_methods, untested_test_methods_names = iterator_has_items(
                 untested_test_methods_names
             )
-            if has_untested_methods or (
-                supposed_test_class_name not in actual_test_class_to_test_methods_names
+            if (
+                not has_untested_methods
+                and supposed_test_class_name in actual_test_class_to_test_methods_names
             ):
-                logger.debug("Class %s has untested methods", supposed_test_class_name)
-                yield supposed_test_class_name, untested_test_methods_names
+                continue
+            logger.debug("Class %s has untested methods", supposed_test_class_name)
+            yield supposed_test_class_name, untested_test_methods_names
 
     def test_class_skeleton(self, test_class_name: str) -> str:
         '''Generate skeleton code for a test class.

@@ -4,11 +4,8 @@ from typing import Any
 
 from pyrig.core.iterate import (
     add_missing_dict_val,
-    combine_generators,
-    empty_generator,
-    generator_has_items,
-    generator_length,
     insert_missing_list_val,
+    iterator_has_items,
     merge_nested_structures,
     nested_structure_is_subset,
 )
@@ -83,46 +80,17 @@ def test_nested_structure_is_subset() -> None:
     assert is_nested_subset, "Expected subset to be subset of superset"
 
 
-def test_combine_generators() -> None:
-    """Test function."""
-    gen1 = (x for x in [1, 2, 3])
-    gen2 = (x for x in ["a", "b"])
-    combined_gen = combine_generators(gen1, gen2)
-    assert list(combined_gen) == [1, 2, 3, "a", "b"], (
-        "Expected combined generator to yield all items from both generators in order"
-    )
-
-    # assert gen1 and gen2 are exhausted after combining and consuming combined_gen
-    assert list(gen1) == [], "Expected gen1 to be exhausted after combining"
-    assert list(gen2) == [], "Expected gen2 to be exhausted after combining"
-
-
-def test_generator_length() -> None:
-    """Test function."""
-    length = 5
-    gen = (x for x in range(length))
-    assert generator_length(gen) == length, f"Expected generator length to be {length}"
-
-    gen = (x for x in [])
-    assert generator_length(gen) == 0, "Expected generator length to be 0"
-
-
-def test_empty_generator() -> None:
-    """Test function."""
-    assert list(empty_generator()) == [], "Expected empty generator to yield no items"
-
-
-def test_generator_has_items() -> None:
+def test_iterator_has_items() -> None:
     """Test function."""
     iterable_with_items = [1, 2, 3]
     gen = (x for x in iterable_with_items)
-    has_items, items = generator_has_items(gen)
+    has_items, items = iterator_has_items(gen)
     assert has_items is True
     assert list(items) == iterable_with_items
 
     empty_iterable: list[Any] = []
     gen = (x for x in empty_iterable)
-    has_items, items = generator_has_items(gen)
+    has_items, items = iterator_has_items(gen)
     assert has_items is False
 
 

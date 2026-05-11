@@ -1,6 +1,7 @@
 """Scaffolding helpers for creating subclass extension modules."""
 
 from importlib import import_module
+from itertools import chain
 
 from InquirerPy import inquirer
 
@@ -9,7 +10,6 @@ from pyrig.core.introspection.classes import (
     discard_abstract_classes,
 )
 from pyrig.core.introspection.modules import callable_obj_import_path
-from pyrig.core.iterate import combine_generators
 from pyrig.rig.configs.base.copy_module_docstring import CopyModuleDocstringConfigFile
 from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
@@ -77,7 +77,7 @@ def choose_subclass() -> type[DependencySubclass]:
     )
 
     choices = sorted(
-        combine_generators(concrete_choices, abstract_choices),
+        chain(concrete_choices, abstract_choices),
         key=lambda c: callable_obj_import_path(c["value"]),
     )
 

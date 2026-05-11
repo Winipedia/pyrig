@@ -16,13 +16,12 @@ from pyrig.core.introspection.inspection import (
     obj_qualname,
     unwrapped_obj,
 )
-from pyrig.core.iterate import generator_length
 
 
 def test_obj_members() -> None:
     """Test function."""
-    members = obj_members(test_obj_members)
-    assert generator_length(members) > 0
+    members = list(obj_members(test_obj_members))
+    assert len(members) > 0
 
 
 def test_def_line() -> None:

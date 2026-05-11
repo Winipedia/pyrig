@@ -5,85 +5,51 @@ recursive subset comparison and in-place merging of nested dicts and lists.
 """
 
 import logging
-from collections.abc import Callable, Generator, Iterable
-from typing import Any
+from collections.abc import Callable, Iterable, Iterator
+from itertools import chain
+from typing import Any, cast
 
 logger = logging.getLogger(__name__)
 
 
-def generator_has_items[T](
-    gen: Generator[T, Any, Any],
-) -> tuple[bool, Generator[T, Any, Any]]:
-    """Peek at a generator to check whether it yields any items.
+def iterator_has_items[T](
+    iterable: Iterator[T],
+) -> tuple[bool, Iterator[T]]:
+    """Peek at an iterable to check whether it yields any items.
 
-    Advances the generator by one item to determine if it is non-empty, then
-    reconstructs a new generator that prepends the consumed item so no data
+    Advances the iterable by one item to determine if it is non-empty, then
+    reconstructs a new iterable that prepends the consumed item so no data
     is lost.
 
     Args:
-        gen: The generator to inspect.
+        iterable: The iterable to inspect.
 
     Returns:
-        A two-element tuple ``(has_items, gen)`` where ``has_items`` is
-        ``True`` if the generator yielded at least one item, and ``gen`` is
-        a new generator that will yield all original items including the first.
+        A two-element tuple ``(has_items, iterable)`` where ``has_items`` is
+        ``True`` if the iterable yielded at least one item, and ``iterable`` is
+        a new iterable that will yield all original items including the first.
 
     Example:
         >>> gen = (x for x in [1, 2, 3])
-        >>> has_items, gen = generator_has_items(gen)
+        >>> has_items, gen = iterator_has_items(gen)
         >>> has_items
         True
         >>> list(gen)
         [1, 2, 3]
 
         >>> empty_gen = (x for x in [])
-        >>> has_items, empty_gen = generator_has_items(empty_gen)
+        >>> has_items, empty_gen = iterator_has_items(empty_gen)
         >>> has_items
         False
         >>> list(empty_gen)
         []
     """
     sentinel = object()
-    first = next(gen, sentinel)
+    first = next(iterable, sentinel)
     if first is sentinel:
-        return False, empty_generator()
-    return True, combine_generators((first,), gen)
-
-
-def combine_generators(*generators: Iterable[Any]) -> Generator[Any, None, None]:
-    """Chain multiple iterables into a single generator.
-
-    Args:
-        *generators: Iterables to chain together.
-
-    Yields:
-        Items from each iterable in the order provided.
-    """
-    for generator in generators:
-        yield from generator
-
-
-def empty_generator() -> Generator[Any, None, None]:
-    """Return a generator that yields no items."""
-    if False:
-        yield
-
-
-def generator_length(generator: Generator[Any, None, None]) -> int:
-    """Count the number of items in a generator by consuming it.
-
-    Warning:
-        This function exhausts the generator. Only use it when the generator
-        will not be needed afterward, or when it can be recreated cheaply.
-        If you need both the count and the items, convert to a list first.
-
-    Args:
-        generator: The generator to measure.
-
-    Returns:
-        The number of items yielded by the generator.
-    """
-    return sum(1 for _ in generator)
+        return False, iter(())
+    first = cast("T", first)
+    return True, chain((first,), iterable)
 
 
 def merge_nested_structures[T: dict[Any, Any] | list[Any]](
