@@ -19,6 +19,6 @@ if src_package_is_pyrig():
 
             It is used to ignore irrelevant vulnerabilities in dependencies,
             so that the CI/CD passes the dependency audit check. It delegates
-            to the base when nothing needs to be ignored.
+            to the base whenever nothing needs to be ignored.
             """
             return super().audit_args(*args)

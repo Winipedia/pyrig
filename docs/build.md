@@ -71,15 +71,17 @@ automatically:
 
 - Single-file mode, no console window.
 - Platform-appropriate icon (ICO on Windows, ICNS on macOS, PNG on Linux).
-- Automatic bundling of resource packages from the full pyrig dependency chain,
+- Automatic bundling of resource packages from packages that depend on pyrig,
   so that every `rig/resources/` package in the project's dependencies is
-  included and accessible at runtime via `importlib.resources`.
+  included and accessible at runtime via `importlib.resources`. Pyrig's own
+  resources are intentionally excluded.
 
 To create an executable builder, subclass `ExecutableBuilder` and implement two
 methods:
 
 - `entry_point_module()` — the module PyInstaller uses as its main script.
-- `app_icon_png_location()` — the name and resource package of the PNG icon.
+- `app_icon_png_location()` — the file stem (without extension) and resource
+package of the PNG icon.
 
 ---
 
