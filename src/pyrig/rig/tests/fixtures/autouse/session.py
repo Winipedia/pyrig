@@ -247,9 +247,7 @@ However, it failed. See the output below for details.
 
         # run cli without dev deps
         args = PackageManager.I.run_no_dev_args(project_name, "--help")
-        completed_process = args.run(
-            check=False,
-        )
+        completed_process = args.run(check=False, env=env)
         stdout = completed_process.stdout
         stderr = completed_process.stderr
         std_msg = stderr + stdout
