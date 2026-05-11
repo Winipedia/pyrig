@@ -110,7 +110,8 @@ class BranchProtectionConfigFile(ListJsonConfigFile):
                 ],
                 "bypass_actors": [
                     {
-                        "actor_id": 5,  # GitHub's standard ID for repository owner
+                        # 5 is GitHub's fixed ID for the Admin repository role
+                        "actor_id": 5,
                         "actor_type": "RepositoryRole",
                         "bypass_mode": "always",
                     }
