@@ -364,7 +364,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Returns:
             The highest allowed Python version at the requested precision level.
         """
-        constraint = self.load()["project"]["requires-python"]
+        constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)
         version = version_constraint.upper_inclusive()
         if version is None:
