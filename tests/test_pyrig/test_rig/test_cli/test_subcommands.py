@@ -3,6 +3,7 @@
 from collections.abc import Callable
 from typing import Any
 
+from pyrig.rig.cli import subcommands
 from pyrig.rig.cli.commands.build_artifacts import build_artifacts
 from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.commands.make_fixture import make_fixture
@@ -137,3 +138,15 @@ def test_resources(
     """Test function."""
     command_works(resources)
     command_calls_function(resources, make_resources_package)
+
+
+def test_module_docstring() -> None:
+    """Test module docstring."""
+    assert (
+        subcommands.__doc__
+        == """Project-specific CLI commands.
+
+All functions in this module are automatically discovered and registered
+as CLI commands for this project.
+"""
+    )
