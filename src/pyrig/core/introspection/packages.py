@@ -51,7 +51,7 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
 def make_init_file(path: Path, content: str) -> None:
     """Create an ``__init__.py`` file in the specified directory.
 
-    Prints the created path to stdout. No-op if ``__init__.py`` already
+    Prints a "Creating: {path}" message to stdout. No-op if ``__init__.py`` already
     exists in the directory.
 
     Args:
