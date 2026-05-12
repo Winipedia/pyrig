@@ -84,11 +84,14 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             the baseline, and a trailing empty string if additions are present.
         """
         # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
-        ignored_paths = {
+        ignored_paths = (
             cf().path().as_posix()
             for cf in ConfigFile.version_control_ignored_subclasses()
-        }
+        )
 
+        # needed will always be at least one item bc pyrig stuff is not in
+        # the standard gitignore, so we can safely add a trailing newline at
+        # the end of the file
         needed = [
             f"# {Pyrigger.I.name()} stuff",
             "__pycache__/",  # bc of python bytecode cache
@@ -105,9 +108,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         standard = self.standard_ignore_lines()
         standard_set = set(standard)
         needed = [line for line in needed if line not in standard_set]
-        if needed:
-            needed.append("")
-        return [*standard, *needed]
+        return [*standard, *needed, ""]
 
     def standard_ignore_lines(self) -> list[str]:
         """Return the bundled Python gitignore baseline as a list of lines.
