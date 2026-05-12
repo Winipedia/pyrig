@@ -39,7 +39,7 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class PythonPackageConfigFile(PythonConfigFile):
     """Base class for Python source files that require a valid package tree.
 
-    Extends `PythonConfigFile` so that, after writing the file, every ancestor
+    Extends `PythonConfigFile` so that, before writing the file, every ancestor
     directory up to (but not including) the project source root and tests source
     root is guaranteed to contain an ``__init__.py``. This makes the generated
     file immediately importable without any extra setup steps.
