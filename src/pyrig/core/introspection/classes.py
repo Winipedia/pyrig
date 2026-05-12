@@ -1,7 +1,7 @@
 """Utilities for introspecting and filtering Python classes."""
 
 import inspect
-from collections.abc import Callable, Generator, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from types import ModuleType
 from typing import Any
 
@@ -15,7 +15,7 @@ from pyrig.core.introspection.inspection import (
 
 def cls_methods(
     cls: type,
-) -> Generator[Callable[..., Any], None, None]:
+) -> Iterator[Callable[..., Any]]:
     """Extract all methods from a class, including inherited ones.
 
     Covers instance methods, static methods, class methods, and properties
@@ -38,7 +38,7 @@ def cls_methods(
 def discard_parent_methods(
     cls: type,
     methods: Iterable[Callable[..., Any]],
-) -> Generator[Callable[..., Any], None, None]:
+) -> Iterator[Callable[..., Any]]:
     """Filter methods to keep only those defined directly on a class.
 
     A method passes the filter only when both of the following hold:
@@ -62,7 +62,7 @@ def discard_parent_methods(
     )
 
 
-def module_classes(module: ModuleType) -> Generator[type]:
+def module_classes(module: ModuleType) -> Iterator[type]:
     """Extract all classes defined directly in a module, excluding imported ones.
 
     A sentinel ``ModuleType`` instance named after this function is used as the
@@ -107,7 +107,7 @@ def discover_all_subclasses[T: type](cls: T) -> set[T]:
 
 def discard_parent_classes[T: type](
     classes: Iterable[T],
-) -> Generator[T, None, None]:
+) -> Iterator[T]:
     """Yield only leaf classes, removing any ancestors present in the collection.
 
     A class is kept only when no other class in the collection is a strict subclass
@@ -134,7 +134,7 @@ def discard_parent_classes[T: type](
     )
 
 
-def discard_abstract_classes[T: type](classes: Iterable[T]) -> Generator[T, None, None]:
+def discard_abstract_classes[T: type](classes: Iterable[T]) -> Iterator[T]:
     """Filter out abstract classes from a collection.
 
     Uses ``inspect.isabstract`` to detect classes that have one or more

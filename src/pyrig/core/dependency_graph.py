@@ -6,7 +6,7 @@ relationships to support cross-package discovery in the pyrig ecosystem.
 
 import importlib.metadata
 import logging
-from collections.abc import Generator
+from collections.abc import Iterator
 
 from pyrig.core.graph import DiGraph
 from pyrig.core.strings import (
@@ -55,19 +55,19 @@ class DependencyGraph(DiGraph):
 
     def parse_name_and_deps(
         self, dist: importlib.metadata.Distribution
-    ) -> tuple[str, Generator[str, None, None]]:
+    ) -> tuple[str, Iterator[str]]:
         """Extract the package name and dependencies from a distribution.
 
         Reads the package name from ``dist.name`` and constructs a lazy
-        generator of normalized dependency names from ``dist.requires``.
+        iterator of normalized dependency names from ``dist.requires``.
 
         Args:
             dist: Distribution object to extract metadata from.
 
         Returns:
-            A two-tuple of ``(normalized_name, deps_generator)`` where
-            ``normalized_name`` is the normalized package name and ``deps_generator``
-            is a generator that yields normalized names of each declared dependency
+            A two-tuple of ``(normalized_name, deps_iterator)`` where
+            ``normalized_name`` is the normalized package name and ``deps_iterator``
+            is an iterator that yields normalized names of each declared dependency
             (yields nothing if the package declares no dependencies).
         """
         return dependency_requirement_as_package_name(dist.name), (

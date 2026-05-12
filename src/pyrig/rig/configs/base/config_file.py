@@ -2,7 +2,7 @@
 
 import logging
 from abc import abstractmethod
-from collections.abc import Generator, Iterable
+from collections.abc import Iterable, Iterator
 from functools import cache
 from pathlib import Path
 from types import ModuleType
@@ -182,7 +182,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
             cf().validate()
 
     @classmethod
-    def version_control_ignored_subclasses(cls) -> Generator[type[Self], None, None]:
+    def version_control_ignored_subclasses(cls) -> Iterator[type[Self]]:
         """Yield config file classes whose files are excluded from version control.
 
         Yields:
@@ -194,7 +194,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         )
 
     @classmethod
-    def version_controlled_subclasses(cls) -> Generator[type[Self], None, None]:
+    def version_controlled_subclasses(cls) -> Iterator[type[Self]]:
         """Yield config file classes whose files are tracked by version control.
 
         Yields:
@@ -208,7 +208,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
     @classmethod
     def discard_correct_subclasses(
         cls, subclasses: Iterable[type[Self]]
-    ) -> Generator[type[Self], None, None]:
+    ) -> Iterator[type[Self]]:
         """Yield only the incorrect config file classes from a collection.
 
         Used to filter out correct config files when validating a specific

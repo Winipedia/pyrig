@@ -2,7 +2,7 @@
 
 import platform
 from abc import abstractmethod
-from collections.abc import Generator
+from collections.abc import Iterator
 from pathlib import Path
 from types import ModuleType
 
@@ -176,7 +176,7 @@ class ExecutableBuilder(BuilderConfigFile):
             add_datas.extend(package_datas)
         return add_datas
 
-    def resource_packages(self) -> Generator[ModuleType, None, None]:
+    def resource_packages(self) -> Iterator[ModuleType]:
         """Yield resource packages from all pyrig-dependent packages.
 
         Discovers all ``resources`` modules from packages that depend on pyrig.
@@ -187,7 +187,7 @@ class ExecutableBuilder(BuilderConfigFile):
         (gitignore templates, licenses, etc.) are not useful to other applications.
 
         Returns:
-            Generator of module objects for each discovered ``resources`` package.
+            Iterator of module objects for each discovered ``resources`` package.
         """
         return discover_equivalent_modules_across_dependents(resources)
 

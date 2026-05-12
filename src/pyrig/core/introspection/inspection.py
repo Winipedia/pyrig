@@ -6,14 +6,14 @@ and decorator chains.
 """
 
 import inspect
-from collections.abc import Callable, Generator, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from types import ModuleType
 from typing import Any, cast
 
 
 def obj_members(
     obj: Any, predicate: Callable[[Any], bool] | None = None
-) -> Generator[tuple[str, Any], None, None]:
+) -> Iterator[tuple[str, Any]]:
     """Get all members of an object as name-value pairs using static introspection.
 
     Uses ``inspect.getmembers_static`` to retrieve members without invoking

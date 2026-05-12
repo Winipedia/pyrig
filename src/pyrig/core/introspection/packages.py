@@ -2,7 +2,7 @@
 
 import logging
 import re
-from collections.abc import Generator
+from collections.abc import Iterator
 from pathlib import Path
 from types import ModuleType
 
@@ -154,7 +154,7 @@ def import_package_from_dir(path: Path, name: str) -> ModuleType:
     return import_module_from_file(path=path, name=name, is_package=True)
 
 
-def discover_modules(package: ModuleType) -> Generator[ModuleType, None, None]:
+def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
     """Recursively discover all modules (non-packages) in a package.
 
     Walks the entire package hierarchy via ``walk_package`` and yields only
@@ -216,7 +216,7 @@ def discover_all_subclasses_across_package[T: type](
 def walk_package(
     package: ModuleType,
     exclude: tuple[str | re.Pattern[str], ...] = (),
-) -> Generator[tuple[ModuleType, bool], None, None]:
+) -> Iterator[tuple[ModuleType, bool]]:
     """Recursively walk and import all modules in a package hierarchy.
 
     Performs a depth-first traversal of ``package`` and its sub-packages.

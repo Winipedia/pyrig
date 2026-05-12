@@ -7,7 +7,7 @@ explicit registration.
 
 import json
 from abc import ABC, abstractmethod
-from collections.abc import Generator, Iterable
+from collections.abc import Iterable, Iterator
 from functools import cache
 from types import ModuleType
 from typing import Any, Self, TypeVar
@@ -143,7 +143,7 @@ Found subclasses:
         raise RuntimeError(msg)
 
     @classmethod
-    def concrete_subclasses(cls) -> Generator[type[Self], None, None]:
+    def concrete_subclasses(cls) -> Iterator[type[Self]]:
         """Yield all non-abstract subclasses discovered across dependent packages.
 
         Delegates to ``subclasses()`` and filters out abstract classes. Use
@@ -155,7 +155,7 @@ Found subclasses:
         return discard_abstract_classes(cls.subclasses())
 
     @classmethod
-    def subclasses(cls) -> Generator[type[Self], None, None]:
+    def subclasses(cls) -> Iterator[type[Self]]:
         """Yield all subclasses discovered across the package ecosystem.
 
         Searches every installed package that depends on the root package of
