@@ -1,14 +1,14 @@
 """Distributable artifact creation.
 
-Entry point for the ``build`` CLI command, which triggers the build process
-for all registered builders in the project.
+Entry point for the ``build`` CLI command, which validates all registered
+builders and triggers the build process for any whose artifact is missing.
 """
 
 from pyrig.rig.builders.base.builder import BuilderConfigFile
 
 
 def build_artifacts() -> None:
-    """Build all distributable artifacts for the project.
+    """Validate and build missing distributable artifacts for the project.
 
     Validates all concrete ``BuilderConfigFile`` subclasses.
     """

@@ -34,8 +34,7 @@ def command_works() -> Callable[[Callable[..., Any]], None]:
     """Return a callable that verifies a CLI command is registered and executable.
 
     The returned function runs the command with ``--help`` and asserts that
-    the process exits with return code 0 and that the command name appears
-    in stdout.
+    the command executes successfully and that its name appears in stdout.
 
     Returns:
         A callable ``(cmd) -> None`` that accepts a CLI function and asserts
