@@ -26,7 +26,7 @@ def make_fixture(name: str) -> None:
 
     name = kebab_to_snake_case(name)
     pytest_import = "import pytest"
-    if pytest_import not in content:
+    if pytest_import not in content.splitlines():
         content += f"""
 {pytest_import}
 """
