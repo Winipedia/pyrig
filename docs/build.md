@@ -92,10 +92,11 @@ placing the subclass anywhere under `<package>/rig/builders/`. The framework
 discovers it automatically via the same cross-package subclass discovery used
 everywhere else in pyrig.
 
-Two methods must be implemented:
+Some methods must be implemented:
 
 - `non_platform_stem()` — the base name of the artifact (without the platform
   suffix).
+- `extension()` — the file extension of the artifact (without the leading dot).
 - `create_artifact(tmp_path)` — writes the finished artifact to
   `tmp_path / self.filename()`.
 
