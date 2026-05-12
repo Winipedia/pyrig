@@ -23,9 +23,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
 
     Two jobs are defined:
 
-    - **publish-package**: Builds a Python wheel and publishes it to PyPI.
-      Publishing is conditional on the ``PYPI_TOKEN`` secret being present;
-      the step is skipped when the secret is absent.
+    - **publish-package**: Builds wheel and source distributions and publishes
+      them to PyPI. Publishing is conditional on the ``PYPI_TOKEN`` secret
+      being present; the step is skipped when the secret is absent.
     - **deploy-documentation**: Builds the MkDocs documentation site and
       deploys it to GitHub Pages. Requires ``pages: write`` and
       ``id-token: write`` job-level permissions.
@@ -116,12 +116,13 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     def steps_package(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the publish-package job.
 
-        Combines core setup with a wheel build and a conditional PyPI publish.
-        The publish step reads ``PYPI_TOKEN`` from secrets and echoes a skip
-        message when the secret is absent.
+        Combines core setup with a distribution build and a conditional PyPI
+        publish. The publish step reads ``PYPI_TOKEN`` from secrets and echoes
+        a skip message when the secret is absent.
 
         Returns:
-            Ordered list of step dicts: core setup, build wheel, publish to PyPI.
+            Ordered list of step dicts: core setup, build wheel and source
+            distributions, publish to PyPI.
         """
         return [
             *self.steps_core_setup(),
