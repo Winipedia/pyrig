@@ -32,7 +32,8 @@ automatically at runtime.
 A `typer.Typer` instance (`app`) is defined in `pyrig.rig.cli.cli`.
 It is fully configured and working from the start and registers
 every function defined in `my_project.rig.cli.subcommands` as a command.
-Functions in `my_project.rig.cli.shared_subcommands` are also registered.
+Functions from `shared_subcommands` modules across all packages in the
+dependency chain are also registered.
 
 ---
 
