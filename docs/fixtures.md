@@ -77,7 +77,8 @@ They act as continuous project health checks, turning a passing test suite into
 a guarantee that the project is structurally sound.
 
 - **`all_modules_tested`** — checks that every source module has a fully
-mirrored test module.
+mirrored test module (either missing entirely or missing test coverage for one
+or more functions, classes, or methods).
 - **`all_config_files_correct`** — checks that all version-controlled config
 files match their expected content.
 - **`no_namespace_packages`** — all package directories have an `__init__.py`.
