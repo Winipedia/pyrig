@@ -9,6 +9,8 @@ from collections.abc import Callable, Iterable, Iterator
 from itertools import chain
 from typing import Any, cast
 
+_MISSING = object()
+
 logger = logging.getLogger(__name__)
 
 
@@ -144,7 +146,7 @@ def nested_structure_is_subset(  # noqa: C901
 
         def get_actual(key_or_index: Any) -> Any:
             """Return the value for ``key_or_index`` from the superset dict."""
-            return superset.get(key_or_index)
+            return superset.get(key_or_index, _MISSING)
 
     elif isinstance(subset, list) and isinstance(superset, list):
         iterable = enumerate(subset)

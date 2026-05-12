@@ -38,11 +38,15 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
         """
         docstring = self.copy_module().__doc__ or self.default_docstring()
         double_triple_quotes, single_triple_quotes = '"""', "'''"
-        triple_quotes = (
-            double_triple_quotes
-            if double_triple_quotes not in docstring
-            else single_triple_quotes
-        )
+        if double_triple_quotes not in docstring:
+            triple_quotes = double_triple_quotes
+        elif single_triple_quotes not in docstring:
+            triple_quotes = single_triple_quotes
+        else:
+            docstring = docstring.replace(single_triple_quotes, "\\'\\'\\'")
+            triple_quotes = single_triple_quotes
+        if triple_quotes == double_triple_quotes and docstring.endswith('"'):
+            docstring = docstring[:-1] + '\\"'
         return self.split_lines(f"{triple_quotes}{docstring}{triple_quotes}\n")
 
     def is_correct(self) -> bool:

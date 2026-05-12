@@ -79,8 +79,8 @@ class DiGraph(ABC):
         """
         keep = self.ancestors(root) | {root}
         self._nodes = keep
-        self._edges = {n: self._edges[n] & keep for n in keep}
-        self._reverse_edges = {n: self._reverse_edges[n] & keep for n in keep}
+        self._edges = {n: self._edges.get(n, set()) & keep for n in keep}
+        self._reverse_edges = {n: self._reverse_edges.get(n, set()) & keep for n in keep}
 
     def add_edge(self, source: str, target: str) -> None:
         """Add a directed edge from source to target.
