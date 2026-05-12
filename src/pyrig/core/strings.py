@@ -7,7 +7,7 @@ and formatted output helpers.
 """
 
 import re
-from collections.abc import Callable, Generator, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -100,7 +100,7 @@ def snake_to_kebab_case(value: str) -> str:
     return value.replace("_", "-")
 
 
-def split_on_uppercase(string: str) -> Generator[str, None, None]:
+def split_on_uppercase(string: str) -> Iterator[str]:
     """Split a string at uppercase letter boundaries.
 
     Uses a zero-width lookahead regex to split just before every ASCII uppercase
@@ -110,7 +110,7 @@ def split_on_uppercase(string: str) -> Generator[str, None, None]:
         string: The string to split (e.g., ``"MyClassName"``).
 
     Returns:
-        Generator of non-empty substrings. Each substring starts either at the
+        Iterator of non-empty substrings. Each substring starts either at the
         beginning of the original string or just before an uppercase letter.
 
     Example:

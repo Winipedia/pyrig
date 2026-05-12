@@ -6,7 +6,7 @@ Ensures every source module, class, function and method has a test counterpart.
 import logging
 import re
 from abc import abstractmethod
-from collections.abc import Callable, Generator, Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
@@ -99,7 +99,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return tests
 
     @classmethod
-    def concrete_subclasses(cls) -> Generator[type[Self], None, None]:
+    def concrete_subclasses(cls) -> Iterator[type[Self]]:
         """Yield dynamically generated subclasses for all source modules.
 
         Overrides the default discovery mechanism: instead of scanning for manually
@@ -107,7 +107,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         ``mirror_modules()``.
 
         Returns:
-            Generator of dynamically created subclasses, one per source module.
+            Iterator of dynamically created subclasses, one per source module.
         """
         return cls.generate_subclasses(cls.mirror_modules())
 
@@ -240,7 +240,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             self.test_func_skeleton(name) for name in self.untested_func_names()
         )
 
-    def untested_func_names(self) -> Generator[str, None, None]:
+    def untested_func_names(self) -> Iterator[str]:
         """Yield test function names for functions that have no corresponding test.
 
         Compares the source module's functions against the test module's functions.
@@ -248,7 +248,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         source order.
 
         Returns:
-            Generator of expected test function names (e.g., ``"test_foo"``) for each
+            Iterator of expected test function names (e.g., ``"test_foo"``) for each
             source function that does not have a matching test function.
         """
         funcs = sorted_by_def_line(module_functions(self.mirror_module()))
@@ -368,7 +368,7 @@ def {test_func_name}() -> None:
 
     def untested_class_and_method_names(
         self,
-    ) -> Generator[tuple[str, Iterator[str]], None, None]:
+    ) -> Iterator[tuple[str, Iterator[str]]]:
         """Yield test class/method pairs for source classes that have untested elements.
 
         Compares source classes and their methods against the test module. For each
@@ -381,8 +381,8 @@ def {test_func_name}() -> None:
         excluded.
 
         Returns:
-            Generator of ``(test_class_name, missing_test_methods)`` tuples, where
-            ``missing_test_methods`` is itself a generator of method name strings.
+            Iterator of ``(test_class_name, missing_test_methods)`` tuples, where
+            ``missing_test_methods`` is itself an iterator of method name strings.
             Only classes with at least one untested element are included.
         """
         classes = sorted_by_def_line(module_classes(self.mirror_module()))
@@ -492,9 +492,7 @@ class {test_class_name}:
 '''
 
     @classmethod
-    def generate_subclasses(
-        cls, modules: Iterable[ModuleType]
-    ) -> Generator[type[Self], None, None]:
+    def generate_subclasses(cls, modules: Iterable[ModuleType]) -> Iterator[type[Self]]:
         """Yield a dynamically created config subclass for each module.
 
         Convenience wrapper around ``generate_subclass()`` for batch processing.
@@ -503,7 +501,7 @@ class {test_class_name}:
             modules: Source modules to create test config subclasses for.
 
         Returns:
-            Generator yielding one subclass per module, in input order.
+            Iterator yielding one subclass per module, in input order.
         """
         return (cls.generate_subclass(m) for m in modules)
 
@@ -550,11 +548,11 @@ class {test_class_name}:
         return cast("type[Self]", subclass)
 
     @classmethod
-    def mirror_modules(cls) -> Generator[ModuleType, None, None]:
+    def mirror_modules(cls) -> Iterator[ModuleType]:
         """Yield all modules from the project's source package.
 
         Returns:
-            Generator of every module in the package declared by the active
+            Iterator of every module in the package declared by the active
             ``PackageManager``.
         """
         return discover_modules(import_module(PackageManager.I.package_name()))

@@ -1,7 +1,7 @@
 """Utilities for detecting and extracting callable objects from modules."""
 
 import inspect
-from collections.abc import Callable, Generator
+from collections.abc import Callable, Iterator
 from types import ModuleType
 from typing import Any
 
@@ -14,7 +14,7 @@ from pyrig.core.introspection.inspection import (
 
 def module_functions(
     module: ModuleType,
-) -> Generator[Callable[..., Any], None, None]:
+) -> Iterator[Callable[..., Any]]:
     """Yield all funclike objects defined directly in a module, excluding imports.
 
     A funclike object is included only when its module matches the

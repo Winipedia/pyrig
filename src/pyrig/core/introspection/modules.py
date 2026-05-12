@@ -9,7 +9,7 @@ loading user project modules not yet on ``sys.path``.
 import logging
 import re
 import sys
-from collections.abc import Callable, Generator, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from importlib import import_module
 from importlib.machinery import SourceFileLoader
 from importlib.util import module_from_spec, spec_from_loader
@@ -253,14 +253,14 @@ def module_has_docstring(module: ModuleType) -> bool:
     return module.__doc__ is not None
 
 
-def import_modules(module_names: Iterable[str]) -> Generator[ModuleType, None, None]:
+def import_modules(module_names: Iterable[str]) -> Iterator[ModuleType]:
     """Import multiple modules by name.
 
     Args:
         module_names: Iterable of dotted module names to import.
 
     Returns:
-        Generator of imported module objects corresponding to the input names.
+        Iterator of imported module objects corresponding to the input names.
     """
     return (import_module(name) for name in module_names)
 
@@ -268,7 +268,7 @@ def import_modules(module_names: Iterable[str]) -> Generator[ModuleType, None, N
 def iter_modules(
     package: ModuleType,
     exclude: tuple[str | re.Pattern[str], ...] = (),
-) -> Generator[tuple[ModuleType, bool], None, None]:
+) -> Iterator[tuple[ModuleType, bool]]:
     """Iterate over and import all direct children of a package.
 
     Uses ``pkgutil.iter_modules`` to discover the direct children of ``package``
@@ -290,7 +290,7 @@ def iter_modules(
             Matching children are skipped.
 
     Returns:
-        Generator of ``(module, is_package)`` pairs where ``module`` is the
+        Iterator of ``(module, is_package)`` pairs where ``module`` is the
         imported child and ``is_package`` is ``True`` when the child is itself
         a sub-package.
     """

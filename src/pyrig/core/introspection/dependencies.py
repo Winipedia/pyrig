@@ -6,7 +6,7 @@ dependency.
 """
 
 import logging
-from collections.abc import Generator
+from collections.abc import Iterator
 from functools import cache
 from itertools import chain
 from types import ModuleType
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 def discover_subclasses_across_dependencies[T: type](
     cls: T,
     package: ModuleType,
-) -> Generator[T, None, None]:
+) -> Iterator[T]:
     """Yield subclasses of ``cls`` across ``package`` and dependent packages.
 
     The primary entry point for pyrig's plugin-style subclass discovery. Starting
@@ -80,7 +80,7 @@ def discover_subclasses_across_dependencies[T: type](
 
 def discover_equivalent_modules_across_dependents(
     module: ModuleType,
-) -> Generator[ModuleType, None, None]:
+) -> Iterator[ModuleType]:
     """Yield the equivalent module from every package that depends on ``module``'s root.
 
     Given a module (e.g., ``pyrig.rig.configs``), infers the root package
