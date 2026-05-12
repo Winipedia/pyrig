@@ -727,13 +727,11 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         if step is None:
             step = {}
-        with_ = step.setdefault("with", {})
         if repo_token:
-            with_["token"] = self.insert_repo_token()
+            step.setdefault("with", {})["token"] = self.insert_repo_token()
         return self.step(
             step_func=self.step_checkout_repository,
             uses="actions/checkout@main",
-            with_=with_,
             step=step,
         )
 
