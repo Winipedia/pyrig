@@ -45,8 +45,7 @@ class {class_name}(Base{class_name}):
 def choose_subclass() -> type[DependencySubclass]:
     """Present an interactive fuzzy prompt and return the chosen class.
 
-    Discovers all concrete and abstract ``RigDependencySubclass`` subclasses,
-    formats them for display (
+    Discovers all leaf ``RigDependencySubclass`` subclasses, formats them for display (
         concrete classes use the string representation of an instance,
         abstract classes use their module and class name
     ), sorts them alphabetically by import path, and delegates selection to an

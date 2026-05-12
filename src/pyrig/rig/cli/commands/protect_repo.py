@@ -12,9 +12,9 @@ from pyrig.rig.configs.remote_version_control.branch_protection import (
 def protect_repository() -> None:
     """Apply security protections to the GitHub repository.
 
-    This is the CLI entry point for ``pyrig protect-repo``. It delegates entirely
-    to ``BranchProtectionConfigFile.I.protect_repo``, which applies two categories
-    of protections:
+    This function is called by the ``pyrig protect-repo`` CLI entry point.
+    It delegates entirely to ``BranchProtectionConfigFile.I.protect_repo``,
+    which applies two categories of protections:
 
     - **Repository settings**: description, default branch, delete-on-merge,
       and merge method restrictions (squash and rebase only).

@@ -29,7 +29,7 @@ When `ConfigFile.subclasses()` (or `Tool.subclasses()`, etc.) is called, it:
 
 1. Builds a directed graph of all installed packages rooted at `pyrig` using
    `importlib.metadata`.
-2. For every package in that ancestor set it locates the equivalent sub-package
+2. For every package in that dependent set it locates the equivalent sub-package
    (e.g. `myproject.rig.configs` mirrors `pyrig.rig.configs`).
 3. Imports every module in that sub-package and collects all leaf subclasses
 (discarding intermediate parent classes).

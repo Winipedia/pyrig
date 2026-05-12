@@ -45,8 +45,8 @@ class BuilderConfigFile(ListConfigFile):
        (default: ``dist/``).
     4. The temporary directory and its contents are deleted automatically.
 
-    Subclasses must implement ``non_platform_stem()`` and ``create_artifact()``
-    to define their build logic.
+    Subclasses must implement ``non_platform_stem()``, ``extension()``, and
+    ``create_artifact()`` to define their build logic.
 
     Example:
         Basic builder subclass::

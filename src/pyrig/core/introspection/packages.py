@@ -107,7 +107,7 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
     with ``is_package=True``:
 
     1. Attempts a standard import via ``importlib.import_module``.
-    2. If the module is not found, falls back to importing directly from
+    2. If standard import fails, it falls back to importing directly from
        the directory at ``path`` via ``import_module_from_file``.
 
     The fallback handles packages not yet registered in ``sys.modules``,
