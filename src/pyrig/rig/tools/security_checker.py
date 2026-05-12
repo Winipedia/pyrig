@@ -3,7 +3,7 @@
 Wraps SecurityChecker commands and information.
 """
 
-from collections.abc import Generator
+from collections.abc import Iterator
 from pathlib import Path
 
 from pyrig.core.subprocesses import Args
@@ -80,14 +80,14 @@ class SecurityChecker(Tool):
         """
         return self.args(*args)
 
-    def target_posix_paths(self) -> Generator[str, None, None]:
+    def target_posix_paths(self) -> Iterator[str]:
         """Yield the target scan paths as POSIX strings.
 
         Converts each path from ``target_paths`` to its POSIX string
         representation, which Bandit expects on the command line.
 
         Returns:
-            Generator yielding a POSIX path string for each target scan directory.
+            Iterator yielding a POSIX path string for each target scan directory.
         """
         return (path.as_posix() for path in self.target_paths())
 

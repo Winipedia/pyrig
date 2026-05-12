@@ -5,7 +5,7 @@ the source root and tests directory of a project.
 """
 
 import logging
-from collections.abc import Generator
+from collections.abc import Iterator
 
 from setuptools import find_namespace_packages as _find_namespace_packages
 from setuptools import find_packages as _find_packages
@@ -16,7 +16,7 @@ from pyrig.rig.tools.project_tester import ProjectTester
 logger = logging.getLogger(__name__)
 
 
-def find_namespace_packages() -> Generator[str, None, None]:
+def find_namespace_packages() -> Iterator[str]:
     """Yield packages that exist only as implicit namespace packages.
 
     Compares full namespace-package discovery (including directories without
@@ -27,7 +27,7 @@ def find_namespace_packages() -> Generator[str, None, None]:
     without requiring an ``__init__.py`` file.
 
     Returns:
-        Generator of dot-separated package name strings for each discovered
+        Iterator of dot-separated package name strings for each discovered
         namespace-only package. Yields nothing if no namespace packages exist.
     """
     logger.debug("Discovering namespace packages")
