@@ -67,9 +67,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         1. Collecting the file paths of all ``ConfigFile`` subclasses whose
            ``version_control_ignored()`` returns ``True`` (e.g. ``.env``,
            ``.scratch.py``).
-        2. Building a list of pyrig-specific patterns covering tool caches
-           (pytest, ruff, rumdl), build artifacts, the virtual environment,
-           the docs output directory, and those collected paths.
+        2. Building a list of pyrig-specific patterns.
         3. Reading the bundled Python gitignore baseline via
            ``standard_ignore_lines()``.
         4. Removing any pyrig-specific entry that already appears in the

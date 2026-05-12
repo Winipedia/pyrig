@@ -57,25 +57,6 @@ class ContainerfileConfigFile(StringConfigFile):
         added. This maximizes Docker/Podman build cache reuse when only source
         code changes.
 
-        The generated layer sequence is:
-
-        1. ``FROM python:{version}-slim`` — base image pinned to the highest
-           Python version allowed by the project's ``requires-python`` constraint.
-        2. ``WORKDIR /{project_name}`` — set the container working directory.
-        3. ``COPY --from=ghcr.io/astral-sh/uv:latest`` — copy the uv binary
-           directly from the official uv image.
-        4. ``COPY {readme} {license} {pyproject.toml} {uv.lock} ./`` — copy
-           metadata files needed for dependency installation.
-        5. ``RUN useradd -m -u 1000 appuser`` — create the non-root runtime user.
-        6. ``RUN chown -R appuser:appuser .`` — transfer ownership of the workdir.
-        7. ``USER appuser`` — switch to the non-root user for all subsequent steps.
-        8. ``COPY --chown=appuser:appuser {package_root} {package_root}`` — copy
-           the package source tree with correct ownership.
-        9. ``RUN uv sync --no-group dev`` — install production dependencies only.
-        10. ``RUN rm {metadata_files}`` — remove metadata files to reduce image size.
-        11. ``ENTRYPOINT ["uv", "run", "{project_name}"]`` — set the project CLI
-            as the container entrypoint.
-
         Returns:
             List of Containerfile instruction strings followed by a trailing
             empty string.

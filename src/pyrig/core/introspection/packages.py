@@ -227,8 +227,8 @@ def walk_package(
     Args:
         package: Root package to start traversal from.
         exclude: tuple of strings or compiled regex patterns matched against
-            fully qualified names of the direct children of ``package``. Any
-            child whose name matches a pattern is skipped entirely, along with
+            fully qualified names of modules at every level of the hierarchy.
+            Any child whose name matches a pattern is skipped entirely, along with
             all of its descendants, because excluded sub-packages are never recursed
             into. Patterns are propagated to deeper levels of the hierarchy.
 

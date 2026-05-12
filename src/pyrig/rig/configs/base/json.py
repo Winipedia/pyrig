@@ -2,7 +2,7 @@
 
 Base infrastructure for managing JSON configuration files within the
 declarative ``ConfigFile`` system. Files are read and written using Python's
-built-in ``json`` module with 4-space indentation.
+built-in ``json`` module.
 """
 
 import json
