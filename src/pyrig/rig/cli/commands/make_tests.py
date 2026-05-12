@@ -12,7 +12,8 @@ def make_tests() -> None:
     in the project's source package, creates a dynamic
     ``MirrorTestConfigFile`` subclass for each one, and validates it—writing
     or updating the corresponding test file with ``NotImplementedError`` stubs
-    for any functions, classes, or methods that do not yet have tests.
+    for any functions or methods, and class skeletons for any classes, that do
+    not yet have tests.
 
     The operation is non-destructive: existing test implementations are never
     overwritten.
