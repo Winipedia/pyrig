@@ -18,7 +18,7 @@ from pkgutil import iter_modules as pkgutil_iter_modules
 from types import ModuleType
 from typing import Any
 
-from pyrig.core.introspection.paths import module_file_path
+from pyrig.core.introspection.paths import module_file_path, package_dir_path
 from pyrig.core.strings import read_text_utf8
 
 logger = logging.getLogger(__name__)
@@ -103,7 +103,7 @@ def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleTy
     Returns:
         A freshly imported module object, distinct from the original.
     """
-    module_path = module_file_path(module)
+    module_path = package_dir_path(module) if is_package else module_file_path(module)
     # Remove from cache
     del sys.modules[module.__name__]
     return import_module_with_file_fallback(
