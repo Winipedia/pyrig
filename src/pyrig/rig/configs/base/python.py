@@ -56,7 +56,7 @@ class PythonConfigFile(StringConfigFile):
     def _dump(self, configs: ConfigList) -> None:
         """Reimports the module after a dump to reflect possible changes."""
         super()._dump(configs)
-        reimport_module(self.module())
+        reimport_module(self.module(), is_package=self.is_init_file())
 
     def module(self) -> ModuleType:
         """Import and return the module represented by this config file.
@@ -68,11 +68,18 @@ class PythonConfigFile(StringConfigFile):
         Returns:
             Imported module corresponding to the config file's path.
         """
-        is_init = self.stem() == "__init__"
-        if is_init:
+        if self.is_init_file():
             import_func = import_package_with_dir_fallback
             path = self.parent_path()
         else:
             import_func = import_module_with_file_fallback
             path = self.path()
         return import_func(path, root_path_as_module_name(path))
+
+    def is_init_file(self) -> bool:
+        """Check if this config file is an ``__init__.py``.
+
+        Returns:
+            True if the file stem is ``"__init__"``, False otherwise.
+        """
+        return self.stem() == "__init__"

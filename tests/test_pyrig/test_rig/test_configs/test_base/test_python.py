@@ -11,6 +11,11 @@ from pyrig.rig.configs.testing.test_zero import ZeroTestConfigFile
 class TestPythonConfigFile:
     """Test class."""
 
+    def test_is_init_file(self) -> None:
+        """Test method."""
+        assert not ZeroTestConfigFile.I.is_init_file()
+        assert PackageInitConfigFile.I.is_init_file()
+
     def test__dump(self, mocker: MockerFixture) -> None:
         """Test method."""
         module_before = ZeroTestConfigFile.I.module()

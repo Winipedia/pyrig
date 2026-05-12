@@ -133,7 +133,8 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         expected_badges = (badge for group in self.badges().values() for badge in group)
 
         # only consider content before description
-        badges_content = content.split("---", 1)[0]
+        old_badges_content = content.split("---", 1)[0]
+        badges_content = old_badges_content
         for badge in expected_badges:
             # extract the alt text from the badge markdown — used as stable identifier
             alt_text_match = re.search(r"\[!\[(.*?)\]", badge)
@@ -146,7 +147,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
                 pattern, lambda _, badge=badge: badge, badges_content
             )
         # replace the old badges content with the updated one
-        return content.replace(content.split("---", 1)[0], badges_content)
+        return content.replace(old_badges_content, badges_content, 1)
 
     def badges(self) -> dict[str, list[str]]:
         """Collect all project badges grouped by category.
