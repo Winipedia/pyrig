@@ -1,7 +1,7 @@
 """Shared CLI commands available across all dependent projects.
 
 Every function defined here is automatically discovered and registered
-as a CLI command in all projects that depend on this project.
+as a CLI command in this project and all projects that depend on this project.
 """
 
 
