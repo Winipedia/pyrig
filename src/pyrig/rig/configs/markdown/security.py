@@ -14,9 +14,9 @@ SECURITY_TEMPLATE = """# Security Policy
 
 ## Reporting a Vulnerability
 
-**Please do not report security vulnerabilities through public issues.**
+**Please do not report security vulnerabilities publicly.**
 
-Instead, please report them via email to
+Instead, please report them privately via email to
 [INSERT CONTACT METHOD].
 
 Include:
@@ -28,11 +28,8 @@ Include:
 
 ## Response
 
-We will:
-
-1. Acknowledge your report as soon as possible
-2. Investigate and keep you informed of progress
-3. Credit you when the issue is fixed (unless you prefer anonymity)
+The vulnerability will be investigated, and a fix will be released as soon as
+reasonably possible.
 """
 
 
