@@ -417,13 +417,14 @@ def {test_func_name}() -> None:
                     supposed_test_class_name, ()
                 )
             )
+            # actual_test_methods_names is a cell variable rebound each iteration;
+            # callers must consume each inner iterator before advancing the outer one,
+            # otherwise remaining items filter against the last iteration's set.
             untested_test_methods_names = (
                 tmn
                 for tmn in supposed_test_methods_names
                 if tmn not in actual_test_methods_names
             )
-            # add the test class name to the dict if there are untested methods
-            # or if the test class is not in the test module at all
             has_untested_methods, untested_test_methods_names = iterator_has_items(
                 untested_test_methods_names
             )
