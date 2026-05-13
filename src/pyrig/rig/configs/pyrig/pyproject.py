@@ -77,21 +77,3 @@ if src_package_is_pyrig():
                 "Topic :: System :: Software Distribution",
             )
             return [*dev_statuses, *intended_audiences, *topics, *classifiers]
-
-        def dependencies(self, default: list[str] | None = None) -> list[str]:
-            """Read runtime dependencies with a pyrig-specific default.
-
-            Overrides the base default from ``[Pyrigger.I.name()]`` to
-            ``["typer"]``, reflecting that typer is pyrig's own primary runtime
-            dependency.
-
-            Args:
-                default: Fallback list used when ``project.dependencies`` is
-                    absent in pyproject.toml. Defaults to ``["typer"]``.
-
-            Returns:
-                Dependency list from pyproject.toml, or ``default`` if absent.
-            """
-            if default is None:
-                default = ["typer"]
-            return super().dependencies(default)
