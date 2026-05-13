@@ -369,12 +369,12 @@ def {test_func_name}() -> None:
     def untested_class_and_method_names(
         self,
     ) -> Iterator[tuple[str, Iterator[str]]]:
-        """Yield test class/method pairs for source classes that have untested elements.
+        """Yield test class/method pairs for source classes that have untested methods.
 
         Compares source classes and their methods against the test module. For each
         source class, computes the expected test class name and the expected test
-        method names. A tuple is yielded when the test class is entirely absent or
-        when at least one method is missing from an existing test class.
+        method names. A tuple is yielded only when at least one method is untested.
+        Source classes with no direct methods are skipped entirely.
 
         Classes and their methods are processed in source definition order. Only
         methods defined directly on the class are considered; inherited methods are
@@ -383,7 +383,7 @@ def {test_func_name}() -> None:
         Returns:
             Iterator of ``(test_class_name, missing_test_methods)`` tuples, where
             ``missing_test_methods`` is itself an iterator of method name strings.
-            Only classes with at least one untested element are included.
+            Only classes with at least one untested method are included.
         """
         classes = sorted_by_def_line(module_classes(self.mirror_module()))
         test_classes = module_classes(self.module())

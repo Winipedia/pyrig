@@ -11,7 +11,8 @@ called the **mirror test framework**, and it is built on top of the same
 ## The Core Idea
 
 The test tree mirrors the source tree, one file for one file, one test class for
-one source class, one test function/method for every source function/method. The
+every source class that has direct methods, one test function/method for every
+source function/method. The
 expected test module for `src/my_project/utils.py` is always
 `tests/test_my_project/test_utils.py`. The expected test class for `MyHelper` is
 `TestMyHelper`. The expected test function for `do_something` is `test_do_something`.
@@ -34,7 +35,8 @@ implementations plus new stubs for every source symbol that does not yet have a
 test. `_configs()` builds and returns that full content via `lines()` by
 reading the existing file and appending skeletons for any untested symbols.
 `validate()` (inherited from `ConfigFile`) writes the result when the file
-is missing or incorrect — it never removes existing test implementations.
+is missing or incorrect — it never removes existing test implementations,
+but inserts stubs for any missing tests.
 
 Each stub is a minimal placeholder:
 
@@ -51,21 +53,15 @@ Each stub is a minimal placeholder:
   ```python
   class Test<Name>:
       """Test class."""
+
+      def test_<method>(self) -> None:
+          """Test method."""
+          raise NotImplementedError
   ```
-
-- **Methods** become:
-
-  ```python
-  def test_<name>(self) -> None:
-      """Test method."""
-      raise NotImplementedError
-  ```
-
-  inserted into the matching test class
 
 Stubs signal intent — they mark code that needs a test without pretending the
 test is implemented. Running the suite with an unimplemented stub fails that
-specific test, not the whole suite silently.
+specific test because of `raise NotImplementedError`, not the whole suite silently.
 
 ---
 
