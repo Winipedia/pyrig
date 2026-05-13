@@ -26,3 +26,26 @@ def test_remove_pycache(
         assert pycache_tests_path.exists()
         remove_pycache()
         assert not pycache_tests_path.exists()
+
+        # Test with no __pycache__ directories
+        remove_pycache()
+        assert not pycache_path.exists()
+        assert not pycache_tests_path.exists()
+
+        # check with nested __pycache__ directories
+        nested_path = package_root_path / "nested"
+        nested_path.mkdir()
+        nested_pycache_path = nested_path / "__pycache__"
+        nested_pycache_path.mkdir()
+        assert nested_pycache_path.exists()
+        deep_nested_pycache_path = package_root_path / "deep" / "nested" / "__pycache__"
+        deep_nested_pycache_path.mkdir(parents=True)
+        assert deep_nested_pycache_path.exists()
+        double_nested_pycache_path = (
+            package_root_path / "deep" / "__pycache__" / "__pycache__" / "__pycache__"
+        )
+        double_nested_pycache_path.mkdir(parents=True)
+        assert double_nested_pycache_path.exists()
+        remove_pycache()
+        assert not nested_pycache_path.exists()
+        assert not deep_nested_pycache_path.exists()

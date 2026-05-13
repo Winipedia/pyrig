@@ -17,9 +17,7 @@ def remove_pycache() -> None:
     """
     roots = (ProjectTester.I.tests_package_root(), PackageManager.I.package_root())
     for root in roots:
-        # consume generator into a tuple to avoid potentially
-        # modifying the directory tree while iterating
-        for pycache in tuple(root.rglob("__pycache__")):
+        for pycache in root.rglob("__pycache__"):
             if pycache.is_dir():
                 typer.echo(f"Removing {pycache}")
                 shutil.rmtree(pycache)
