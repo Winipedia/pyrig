@@ -428,13 +428,9 @@ def {test_func_name}() -> None:
             has_untested_methods, untested_test_methods_names = iterator_has_items(
                 untested_test_methods_names
             )
-            if (
-                not has_untested_methods
-                and supposed_test_class_name in actual_test_class_to_test_methods_names
-            ):
-                continue
-            logger.debug("Class %s has untested methods", supposed_test_class_name)
-            yield supposed_test_class_name, untested_test_methods_names
+            if has_untested_methods:
+                logger.debug("Class %s has untested methods", supposed_test_class_name)
+                yield supposed_test_class_name, untested_test_methods_names
 
     def test_class_skeleton(self, test_class_name: str) -> str:
         '''Generate skeleton code for a test class.
