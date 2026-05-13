@@ -536,15 +536,14 @@ class VersionController(Tool):
             subprocess.CalledProcessError: If no remote origin URL is configured.
         """
         url = self.remote_url(check=True)
-        url = (
-            url.removesuffix(".git")
-            # SSH format: git@github.com:owner/repo.git
-            .removeprefix("git@github.com:")
-            # HTTPS format: https://github.com/owner/repo.git
-            .removeprefix("https://github.com/")
-        )
-        # the url left must have the format: owner/repo
-        owner = next(iter(url.split("/")))
+        # possible formats:
+        # ssh://git@github.com/owner/repo.git
+        # git@github.com:owner/repo.git
+        # https://github.com/owner/repo.git
+        url = url.split("github.com", 1)[-1]  # split off the domain, keep the path
+        url = url.removeprefix("/").removeprefix(":")
+        # the url left must have the format: owner/repo.git
+        owner = url.split("/")[0]
         logger.debug("Extracted owner from remote URL: %s", owner)
         return owner
 
