@@ -75,7 +75,3 @@ class TestTool:
         # Tool is abstract, test through concrete implementation
         result = PackageManager.I.args("run", "pytest")
         assert result == ("uv", "run", "pytest")
-
-
-class TestToolGroup:
-    """Test class."""
