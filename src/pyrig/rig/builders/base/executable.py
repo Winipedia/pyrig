@@ -199,7 +199,7 @@ class ExecutableBuilder(BuilderConfigFile):
 
         - Windows: ``.ico``
         - macOS: ``.icns``
-        - Linux: ``.png``
+        - all other platforms: ``.png``
 
         Args:
             tmp_path: Directory where the converted icon file is written.
