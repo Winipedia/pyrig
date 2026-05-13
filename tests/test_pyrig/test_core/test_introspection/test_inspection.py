@@ -6,9 +6,11 @@ tests.test_pyrig.test_modules.test_inspection
 import os
 from collections.abc import Callable
 from functools import wraps
+from types import ModuleType
 
 import pytest
 
+from pyrig.core.introspection.classes import classproperty
 from pyrig.core.introspection.inspection import (
     def_line,
     obj_members,
@@ -184,6 +186,16 @@ def test_obj_module() -> None:
     # take an obj without a module and check if raises LookupError
     with pytest.raises(LookupError):
         obj_module("string without module")
+
+    with pytest.raises(LookupError):
+        # classproperty has fget in slots so it will unwrap to a
+        # C member object that has no module, so should raise LookupError
+        # we do not want this case handled to keep logic simpler
+        # it should be skipped in module_classes with the default
+        obj_module(classproperty)
+
+    module = obj_module(classproperty, default=ModuleType("default_module"))
+    assert module.__name__ == "default_module"
 
 
 def test_sorted_by_def_line() -> None:
