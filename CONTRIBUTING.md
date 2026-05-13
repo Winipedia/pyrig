@@ -1,33 +1,29 @@
 # Contributing
 
-Contributions are welcome! This document explains how to contribute.
+Contributions are welcome!
 
 ## Issues
 
-Issues help improve this project.
-
-- **Ideas** - Suggest new features or improvements
-- **Problems** - Report bugs with steps to reproduce
-- **Questions** - Ask if something is unclear
-
 Before opening an issue, please search existing ones to avoid duplicates.
+
+Use issues for:
+
+- **Ideas** — Suggest new features or improvements
+- **Problems** — Report bugs with steps to reproduce
+- **Questions** — Ask if something is unclear
 
 ## Pull Requests
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes with clear messages
-4. Push to your fork
-5. Open a pull request
+1. Clone the repository
+2. Create a branch (`git checkout -b your-feature`)
+3. Make your changes
+4. Commit your changes with clear messages
+5. Push your branch and open a pull request
 
 ### Guidelines
 
-- Reference related issues in your PR
+- Reference related issues in the PR description
 - Keep changes focused and atomic
-- Update documentation if needed
-- Follow existing code style
-- Ensure tests pass
-
-## Code of Conduct
-
-Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
+- Update documentation when behavior changes
+- Match the existing code style
+- All checks must pass before merge
