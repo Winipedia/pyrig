@@ -133,7 +133,7 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         expected_badges = (badge for group in self.badges().values() for badge in group)
 
         # only consider content before description
-        old_badges_content = content.split("---", 1)[0]
+        old_badges_content = content.split("\n---\n\n>", 1)[0]
         badges_content = old_badges_content
         for badge in expected_badges:
             # extract the alt text from the badge markdown — used as stable identifier
