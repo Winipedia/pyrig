@@ -89,6 +89,6 @@ class ContainerEngine(Tool):
             "save",
             "-o",
             image_path.as_posix(),
-            image_path.stem,
             *args,
+            image_path.stem,
         )
