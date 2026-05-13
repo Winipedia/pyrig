@@ -7,10 +7,6 @@ from pyrig.rig.configs.pyrig.pyproject import PyprojectConfigFile
 class TestPyprojectConfigFile:
     """Test class."""
 
-    def test_dependencies(self) -> None:
-        """Test method."""
-        assert isinstance(PyprojectConfigFile().dependencies(), list)
-
     def test_make_python_version_classifiers(self) -> None:
         """Test method."""
         # no L for Base bc it would just use pyrigs Pyproject

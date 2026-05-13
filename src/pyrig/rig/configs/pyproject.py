@@ -28,7 +28,6 @@ from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
-from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.type_checker import TypeChecker
 from pyrig.rig.tools.version_control.remote import (
@@ -220,29 +219,27 @@ class PyprojectConfigFile(TomlConfigFile):
             raise LookupError(msg)
         return next(iter(licenses))
 
-    def project_version(self, default: str = "0.1.0") -> str:
+    def project_version(self) -> str:
         """Read the project version from pyproject.toml.
 
-        Args:
-            default: Fallback value when the ``version`` key is absent. Defaults
-                to ``"0.1.0"``, matching uv's initial scaffold value.
-
         Returns:
-            Version string from pyproject.toml, or ``default`` if absent.
+            Version string from pyproject.toml, or ``"0.1.0"`` if absent
+            (matching uv's initial scaffold value).
         """
-        return str(self.load().get("project", {}).get("version", default))
+        return self.load().get("project", {}).get("version", "0.1.0")
 
-    def project_description(self, default: str = "Add your description here") -> str:
+    def project_description(self) -> str:
         """Read the project description from pyproject.toml.
 
-        Args:
-            default: Fallback value when the ``description`` key is absent. Defaults
-                to ``"Add your description here"``, matching uv's initial scaffold.
-
         Returns:
-            Description string from pyproject.toml, or ``default`` if absent.
+            Description string from pyproject.toml, or
+            ``"Add your description here"`` if absent (matching uv's initial scaffold).
         """
-        return str(self.load().get("project", {}).get("description", default))
+        return (
+            self.load()
+            .get("project", {})
+            .get("description", "Add your description here")
+        )
 
     def make_python_version_classifiers(self) -> list[str]:
         """Build the PyPI trove classifiers for the project.
@@ -303,19 +300,13 @@ class PyprojectConfigFile(TomlConfigFile):
         # Always return a new structure instead of modifying.
         return sorted({*dependencies, *additional})
 
-    def dependencies(self, default: list[str] | None = None) -> list[str]:
+    def dependencies(self) -> list[str]:
         """Read runtime dependencies from pyproject.toml.
 
-        Args:
-            default: Fallback list when the ``project.dependencies`` key is absent.
-                Defaults to a list containing the current pyrig package name.
-
         Returns:
-            List of dependency strings from pyproject.toml, or ``default`` if absent.
+            List of dependency strings from pyproject.toml, or an empty list if absent.
         """
-        if default is None:
-            default = [Pyrigger.I.name()]
-        return self.load().get("project", {}).get("dependencies", default)
+        return self.load().get("project", {}).get("dependencies", [])
 
     def dev_dependencies(self) -> list[str]:
         """Read development dependencies from pyproject.toml.
@@ -389,23 +380,24 @@ class PyprojectConfigFile(TomlConfigFile):
             upper_default=self.latest_python_version(level="minor"),
         )
 
-    def requires_python(self, default: str | None = None) -> str:
+    def requires_python(self) -> str:
         """Read the requires-python constraint from pyproject.toml.
 
-        Args:
-            default: Fallback specifier when the ``requires-python`` key is absent.
-                When ``None`` (the default), constructs ``">=<current minor version>"``
-                from the running Python interpreter (e.g., ``">=3.10"``).
+        If the field is absent, defaults to a specifier that matches the current Python
+        version (e.g., ``">=3.12"`` for Python 3.12), ensuring that the generated
+        pyproject.toml is always valid.
 
         Returns:
-            PEP 440 version specifier string (e.g., ``">=3.10"``).
+            PEP 440 version specifier string (e.g., ``">=3.13"``).
         """
-        if default is None:
-            current_version = adjust_version_to_level(
-                Version(platform.python_version()), level="minor"
-            )
-            default = f">={current_version}"
-        return str(self.load().get("project", {}).get("requires-python", default))
+        current_version = adjust_version_to_level(
+            Version(platform.python_version()), level="minor"
+        )
+        return (
+            self.load()
+            .get("project", {})
+            .get("requires-python", f">={current_version}")
+        )
 
     def latest_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"

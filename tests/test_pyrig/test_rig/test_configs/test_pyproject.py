@@ -8,6 +8,7 @@ import pytest
 from packaging.version import Version
 from pytest_mock import MockerFixture
 
+from pyrig.core.strings import dependency_requirement_as_package_name
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
@@ -110,13 +111,16 @@ class TestPyprojectConfigFile:
         """Test method."""
         # dependencies may raise if dependencies key doesn't exist
         # This is expected behavior for the test config
-        deps = PyprojectConfigFile.I.dependencies()
-        assert isinstance(deps, list), f"Expected list, got {type(deps)}"
+        deps = [
+            dependency_requirement_as_package_name(dep)
+            for dep in PyprojectConfigFile.I.dependencies()
+        ]
+        assert deps == ["typer"]
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
         dev_deps = PyprojectConfigFile.I.dev_dependencies()
-        assert isinstance(dev_deps, list), f"Expected list, got {type(dev_deps)}"
+        assert isinstance(dev_deps, list)
 
     def test_latest_possible_python_version(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
