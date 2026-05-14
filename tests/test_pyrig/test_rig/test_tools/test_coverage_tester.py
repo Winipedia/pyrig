@@ -42,7 +42,7 @@ class TestCoverageTester:
         """Test method."""
         result = CoverageTester.I.badge_urls()
         assert result == (
-            "https://img.shields.io/badge/coverage->=100%25-hsl(120,80%25,45%25)?logo=codecov",
+            "https://img.shields.io/badge/coverage->=100%25-hsl(120,80%25,45%25)?logo=codecov&logoColor=white",
             "https://github.com/pytest-dev/pytest-cov",
         )
 
