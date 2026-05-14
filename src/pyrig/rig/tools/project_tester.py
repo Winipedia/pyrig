@@ -16,10 +16,6 @@ class ProjectTester(Tool):
     prefix) used throughout the project for path resolution, config
     generation, and mirror-test discovery. Also constructs pytest command
     Args objects for both local and CI execution.
-
-    Example:
-        >>> ProjectTester.I.run_tests_in_ci_args().run()
-        >>> ProjectTester.I.run_tests_in_ci_args("tests/test_module.py").run()
     """
 
     def name(self) -> str:
@@ -101,23 +97,8 @@ class ProjectTester(Tool):
         """
         return "test_"
 
-    def run_tests_in_ci_args(self, *args: str) -> Args:
-        """Construct pytest arguments for CI execution.
-
-        Prepends ``--log-cli-level=INFO`` for live log output. The resulting
-        command is used in CI workflow steps (e.g., the health check
-        workflow's test step).
-
-        Args:
-            *args: Additional pytest arguments to append.
-
-        Returns:
-            Args for ``pytest`` with CI flags prepended.
-        """
-        return self.test_args("--log-cli-level=INFO", *args)
-
     def test_args(self, *args: str) -> Args:
-        """Construct pytest command arguments.
+        """Construct pytest command arguments to run tests.
 
         Prepends the ``pytest`` command name to the given arguments.
 
