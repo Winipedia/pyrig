@@ -1,4 +1,4 @@
-"""Coverage testing wrapper for pytest-cov and Codecov.io integration.
+"""Coverage testing wrapper for local and remote code coverage integration.
 
 Wraps CoverageTester commands and information.
 """
