@@ -106,8 +106,7 @@ class ProjectTester(Tool):
         """Construct pytest arguments for CI execution.
 
         Prepends ``--log-cli-level=INFO`` for live log output followed by
-        coverage XML reporting args from
-        :meth:`~pyrig.rig.tools.project_coverage_tester.CoverageTester.additional_ci_args`.
+        coverage XML reporting args.
         The resulting command is used in CI workflow steps (e.g., the
         build workflow's test step).
 
