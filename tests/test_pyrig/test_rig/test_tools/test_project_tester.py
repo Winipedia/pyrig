@@ -54,7 +54,6 @@ class TestProjectTester:
         assert result == (
             "pytest",
             "--log-cli-level=INFO",
-            "--cov-report=xml",
         )
 
     def test_tests_package_name(self) -> None:
