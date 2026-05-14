@@ -23,10 +23,10 @@ from pyrig.rig.configs.base.config_file import ConfigDict, Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tools.base.tool import Tool
+from pyrig.rig.tools.coverage_tester import CoverageTester
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_coverage_tester import CoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.type_checker import TypeChecker
