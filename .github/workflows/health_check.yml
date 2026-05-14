@@ -86,7 +86,7 @@ jobs:
       run: uv sync
     - name: Run Tests
       id: run-tests
-      run: uv run pytest --log-cli-level=INFO
+      run: uv run pytest
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   health-check:

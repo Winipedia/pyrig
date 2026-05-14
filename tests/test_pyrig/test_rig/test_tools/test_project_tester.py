@@ -48,14 +48,6 @@ class TestProjectTester:
         result = ProjectTester.I.name()
         assert result == "pytest"
 
-    def test_run_tests_in_ci_args(self) -> None:
-        """Test method."""
-        result = ProjectTester.I.run_tests_in_ci_args()
-        assert result == (
-            "pytest",
-            "--log-cli-level=INFO",
-        )
-
     def test_tests_package_name(self) -> None:
         """Test method."""
         result = ProjectTester.I.tests_package_name()

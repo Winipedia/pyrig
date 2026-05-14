@@ -896,7 +896,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         if step is None:
             step = {}
-        run = str(PackageManager.I.run_args(*ProjectTester.I.run_tests_in_ci_args()))
+        run = str(PackageManager.I.run_args(*ProjectTester.I.test_args()))
         return self.step(
             step_func=self.step_run_tests,
             run=run,
