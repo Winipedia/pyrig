@@ -130,24 +130,6 @@ publish your project as a package to PyPI.
 5. **Copy token immediately** (you won't see it again)
 6. Add token to your repository secrets as `PYPI_TOKEN`
 
-**Codecov Account** - **Recommended** (for coverage badge and reporting):
-
-1. Visit [codecov.io](https://codecov.io)
-2. Click "Log in with GitHub" to create account and link it with GitHub
-3. That's it - your account is ready
-
-**Codecov Token (CODECOV_TOKEN)** - **Recommended** (for uploading coverage):
-
-If this token is not set, the coverage upload step in the CI/CD pipeline
-will attempt an upload but not fail the pipeline if it does not succeed.
-The Codecov badge will simply not display coverage information in
-your README.md until you set it up.
-
-1. Go to your repository on Codecov
-2. Navigate to Settings → General
-3. Copy the repository upload token
-4. Add token to your GitHub repository secrets as `CODECOV_TOKEN`
-
 ## Setup Steps
 
 ### 1. Create GitHub Repository

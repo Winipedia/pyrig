@@ -1,26 +1,18 @@
-"""Coverage testing wrapper for local and remote code coverage integration.
+"""Coverage testing wrapper for the code coverage tool.
 
 Wraps CoverageTester commands and information.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class CoverageTester(Tool):
-    """Pytest-cov configuration and Codecov.io integration.
+    """Pytest-cov configuration and static coverage badge.
 
-    Constructs pytest-cov command arguments for local and CI coverage runs,
-    and builds Codecov.io badge and dashboard URLs. The coverage threshold
-    and package name are resolved dynamically, allowing subclasses to
-    override individual settings without duplicating argument construction.
-
-    Example:
-        >>> CoverageTester.I.additional_args()
-        ('--cov=mypackage', '--cov-report=term-missing', '--cov-fail-under=90')
-        >>> CoverageTester.I.remote_coverage_url()
-        'https://codecov.io/gh/owner/repo'
+    Constructs pytest-cov command arguments and builds a static shields.io
+    coverage badge URL whose value and color are derived from the configured
+    threshold.
     """
 
     def name(self) -> str:
@@ -40,20 +32,20 @@ class CoverageTester(Tool):
         return ToolGroup.TESTING
 
     def badge_urls(self) -> tuple[str, str]:
-        """Get the Codecov badge image URL and dashboard URL.
+        """Get the static shields.io coverage badge image URL and link URL.
 
-        The badge image URL points to an SVG coverage badge on Codecov's CDN
-        scoped to the default branch. The dashboard URL is the Codecov project
-        page for the current repository.
+        The badge image URL is a shields.io static badge whose value is the
+        configured coverage threshold and whose color is derived from
+        :meth:`coverage_color`. The link URL points to the pytest-cov project
+        page.
 
         Returns:
-            Tuple of (badge_image_url, dashboard_url), where badge_image_url
-            is the SVG badge URL including the default branch, and dashboard_url
-            is the Codecov project dashboard URL.
+            Tuple of ``(badge_image_url, link_url)``.
         """
+        hue, saturation, lightness = self.coverage_color()
         return (
-            f"{self.remote_coverage_url()}/branch/{VersionController.I.default_branch()}/graph/badge.svg",
-            self.remote_coverage_url(),
+            f"https://img.shields.io/badge/coverage->={self.coverage_threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov",
+            "https://github.com/pytest-dev/pytest-cov",
         )
 
     def additional_args(self) -> tuple[str, ...]:
@@ -75,16 +67,17 @@ class CoverageTester(Tool):
             f"--cov-fail-under={self.coverage_threshold()}",
         )
 
-    def additional_ci_args(self) -> tuple[str, ...]:
-        """Get additional pytest-cov arguments for CI test runs.
+    def coverage_color(self) -> tuple[int, int, int]:
+        """Get the badge color derived from the coverage threshold.
 
-        Added on top of ``additional_args()`` during CI execution to produce an
-        XML coverage report, which is required for uploading results to Codecov.
+        Interpolates the hue on a red-to-green spectrum where 0% coverage is
+        red (hue 0), 50% is yellow (hue 60), and 100% is green (hue 120).
 
         Returns:
-            Tuple containing ``--cov-report=xml``.
+            Tuple of ``(hue, saturation, lightness)`` values.
         """
-        return ("--cov-report=xml",)
+        hue = int((self.coverage_threshold() / 100) * 120)
+        return hue, 80, 45
 
     def coverage_threshold(self) -> int:
         """Get the minimum required coverage percentage.
@@ -97,29 +90,3 @@ class CoverageTester(Tool):
             90
         """
         return 90
-
-    def remote_coverage_url(self) -> str:
-        """Construct the Codecov project dashboard URL for the current repository.
-
-        Resolves the repository owner from the git remote and
-        the repository name from the project name.
-
-        Returns:
-            URL in the format ``https://codecov.io/gh/{owner}/{repo}``.
-        """
-        owner, repo = (
-            VersionController.I.repo_owner(check_repo_url=False),
-            PackageManager.I.project_name(),
-        )
-        return f"https://codecov.io/gh/{owner}/{repo}"
-
-    def access_token_key(self) -> str:
-        """Get the environment variable name for the Codecov upload token.
-
-        This key is referenced in CI workflow definitions to inject the
-        Codecov authentication token when uploading coverage reports.
-
-        Returns:
-            'CODECOV_TOKEN'
-        """
-        return "CODECOV_TOKEN"

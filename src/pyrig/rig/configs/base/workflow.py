@@ -18,7 +18,6 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.container_engine import (
     ContainerEngine,
 )
-from pyrig.rig.tools.coverage_tester import CoverageTester
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_index import PackageIndex
@@ -904,44 +903,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_upload_coverage_report(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that uploads the coverage report to Codecov.
-
-        Requires a Codecov account linked to the repository (log in at
-        codecov.io with GitHub).
-
-        - **Private repos**: ``CODECOV_TOKEN`` secret is required.
-        - **Public repos**: ``CODECOV_TOKEN`` is recommended.  Tokenless
-          upload can be enabled in Codecov settings (Settings > General).
-
-        When ``CODECOV_TOKEN`` is not configured, ``fail_ci_if_error`` is set
-        to ``false`` so a missing token does not break the CI run.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step using ``codecov/codecov-action@main``.
-        """
-        #  make fail_ci_if_error true if token exists and false if it doesn't
-        fail_ci_if_error = self.insert_var(
-            f"{self.codecov_token_var()} && 'true' || 'false'"
-        )
-        return self.step(
-            step_func=self.step_upload_coverage_report,
-            uses="codecov/codecov-action@main",
-            with_={
-                "files": "coverage.xml",
-                "token": self.insert_codecov_token(),
-                "fail_ci_if_error": fail_ci_if_error,
-            },
-            step=step,
-        )
-
     def step_build_wheel(
         self,
         *,
@@ -1459,14 +1420,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.secrets_var("GITHUB_TOKEN")
 
-    def codecov_token_var(self) -> str:
-        """Get the raw secrets expression for ``CODECOV_TOKEN``.
-
-        Returns:
-            ``"secrets.CODECOV_TOKEN"``
-        """
-        return self.secrets_var(CoverageTester.I.access_token_key())
-
     def pypi_token_var(self) -> str:
         """Get the raw secrets expression for ``PYPI_TOKEN``.
 
@@ -1555,14 +1508,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             secret.
         """
         return self.insert_var(self.github_token_var())
-
-    def insert_codecov_token(self) -> str:
-        """Get the ``${{ secrets.CODECOV_TOKEN }}`` expression.
-
-        Returns:
-            GitHub Actions expression for the ``CODECOV_TOKEN`` secret.
-        """
-        return self.insert_var(self.codecov_token_var())
 
     def insert_repository_name(self) -> str:
         """Get the expression that resolves to the repository name.

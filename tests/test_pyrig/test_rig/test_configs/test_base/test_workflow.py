@@ -76,13 +76,6 @@ class TestWorkflowConfigFile:
             HealthCheckWorkflowConfigFile.I.github_token_var() == "secrets.GITHUB_TOKEN"
         )
 
-    def test_codecov_token_var(self) -> None:
-        """Test method."""
-        assert (
-            HealthCheckWorkflowConfigFile.I.codecov_token_var()
-            == "secrets.CODECOV_TOKEN"
-        )
-
     def test_pypi_token_var(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile.I.pypi_token_var() == "secrets.PYPI_TOKEN"
@@ -492,13 +485,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_run_tests()
         assert "run" in result
 
-    def test_step_upload_coverage_report(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_upload_coverage_report()
-        assert "uses" in result, "Expected 'uses' in step"
-
     def test_step_run_pre_commit_hooks(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -554,14 +540,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().insert_repo_token()
         assert result == "${{ secrets.REPO_TOKEN }}"
-
-    def test_insert_codecov_token(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_codecov_token()
-        expected = "${{ secrets.CODECOV_TOKEN }}"
-        assert result == expected, f"Expected {expected}, got {result}"
 
     def test_insert_pypi_token(
         self, my_test_workflow: type[WorkflowConfigFile]

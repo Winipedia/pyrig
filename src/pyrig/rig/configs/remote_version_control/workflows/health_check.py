@@ -115,7 +115,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
 
         Returns:
             Job configuration with a matrix strategy, dynamic ``runs-on``
-            value, and steps for setup, testing, and coverage upload.
+            value, and steps for setup and testing.
         """
         return self.job(
             job_func=self.job_matrix_health_checks,
@@ -153,8 +153,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
 
         Returns:
             Steps that set up the environment for the current matrix OS and
-            Python version, run the test suite, and upload the coverage report
-            to Codecov.
+            Python version and run the test suite.
         """
         return [
             *self.steps_core_matrix_setup(
@@ -162,7 +161,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
                 update_dependencies=True,
             ),
             self.step_run_tests(),
-            self.step_upload_coverage_report(),
         ]
 
     def steps_health_checks(self) -> list[dict[str, Any]]:
