@@ -44,7 +44,7 @@ class CoverageTester(Tool):
         """
         hue, saturation, lightness = self.coverage_color()
         return (
-            f"https://img.shields.io/badge/coverage->={self.coverage_threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov",
+            f"https://img.shields.io/badge/coverage->={self.coverage_threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white",
             "https://github.com/pytest-dev/pytest-cov",
         )
 
