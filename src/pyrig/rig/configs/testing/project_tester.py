@@ -21,11 +21,6 @@ class ProjectTesterConfigFile(CopyModuleDocstringConfigFile):
     ``pytest_plugins`` assignment that registers that module as a pytest plugin.
     This gives the target project automatic access to all of pyrig\'s test
     fixtures and hooks without needing explicit imports in each test file.
-
-    Example:
-        Generate or update ``tests/conftest.py``::
-
-            ProjectTesterConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:

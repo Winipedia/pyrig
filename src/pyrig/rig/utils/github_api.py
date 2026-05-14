@@ -43,13 +43,6 @@ def create_or_update_ruleset(
     Raises:
         KeyError: If ``name`` is not provided in ``ruleset_params``.
         github.GithubException: If the API request fails.
-
-    Examples:
-        >>> create_or_update_ruleset(
-        ...     token="ghp_...", owner="myorg", repo_name="myrepo",
-        ...     name="main-protection", target="branch",
-        ...     enforcement="active", rules=[{"type": "deletion"}],
-        ... )
     """
     logger.debug("Creating or updating ruleset: %s", ruleset_params["name"])
     ruleset_name: str = ruleset_params["name"]
@@ -205,11 +198,6 @@ def repository(token: str, owner: str, repo_name: str) -> "Repository":
         github.UnknownObjectException: If the repository does not exist or
             the token does not have access to it.
         github.BadCredentialsException: If the token is invalid or expired.
-
-    Examples:
-        >>> repo = repository(token="ghp_...", owner="myorg", repo_name="myrepo")
-        >>> print(repo.full_name)
-        myorg/myrepo
     """
     with Github(auth=Token(token)) as client:
         return client.get_repo(f"{owner}/{repo_name}")

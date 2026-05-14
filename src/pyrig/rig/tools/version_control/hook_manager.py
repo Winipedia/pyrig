@@ -15,15 +15,6 @@ class VersionControlHookManager(Tool):
 
     Pre-commit hooks enforce code quality by running configured linters,
     formatters, and static checks before each commit is accepted.
-
-    Example:
-        Install hooks once during project setup:
-
-        >>> VersionControlHookManager.I.install_args().run()
-
-        Run all hooks against the full project (e.g., in CI):
-
-        >>> VersionControlHookManager.I.run_all_files_args().run()
     """
 
     def name(self) -> str:

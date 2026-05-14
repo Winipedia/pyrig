@@ -55,9 +55,6 @@ def mkroot() -> None:
 
     Idempotent: safe to run multiple times. Re-run after adding a new pyrig
     dependency to pick up the config files it contributes.
-
-    Example:
-        $ uv run pyrig mkroot
     """
     from pyrig.rig.cli.commands.make_root import make_project_root  # noqa: PLC0415
 
@@ -77,9 +74,6 @@ def mktests() -> None:
     added. This command is idempotent and safe to run multiple times.
     Run it after refactors, moving files around, or adding new source code to
     ensure all new code has corresponding tests.
-
-    Example:
-        $ uv run pyrig mktests
     """
     from pyrig.rig.cli.commands.make_tests import make_tests  # noqa: PLC0415
 
@@ -93,9 +87,6 @@ def mkinits() -> None:
     `__init__.py` file, then creates one with minimal content.
     Existing `__init__.py` files are left untouched; only missing ones are created.
     This command is idempotent and safe to run multiple times.
-
-    Example:
-        $ uv run pyrig mkinits
     """
     from pyrig.rig.cli.commands.make_inits import make_init_files  # noqa: PLC0415
 
@@ -114,9 +105,6 @@ def build() -> None:
     Extend pyrig by subclassing `BuilderConfigFile` (for custom builds) or
     `ExecutableBuilder` (for standalone executables) and placing the subclass
     inside your project's `builders` package.
-
-    Example:
-        $ uv run pyrig build
     """
     from pyrig.rig.cli.commands.build_artifacts import build_artifacts  # noqa: PLC0415
 
@@ -174,9 +162,6 @@ def resources() -> None:
 
     This command is idempotent and safe to run multiple times.
     If the file already exists, it is not modified.
-
-    Example:
-        $ uv run pyrig resources
     """
     from pyrig.rig.cli.commands.make_resources_package import (  # noqa: PLC0415
         make_resources_package,
@@ -226,9 +211,6 @@ def subcls() -> None:
     project (or validates it if it already exists), copies the source module's
     docstring into it, and appends a ready-to-edit subclass skeleton that
     imports and extends the class you chose.
-
-    Example:
-        $ uv run pyrig subcls
     """
     from pyrig.rig.cli.commands.make_subclass import make_subclass  # noqa: PLC0415
 
@@ -246,9 +228,6 @@ def mkfixture(
 
     The name is normalized from kebab-case to snake_case so it forms a valid
     Python identifier (e.g. `my-new-fixture` becomes `my_new_fixture`).
-
-    Example:
-        $ uv run pyrig mkfixture my-new-fixture
     """
     from pyrig.rig.cli.commands.make_fixture import make_fixture  # noqa: PLC0415
 
@@ -265,9 +244,6 @@ def scratch() -> None:
 
     The file is executed with `runpy.run_path` in a fresh, isolated namespace
     so it has no side-effects on the calling environment.
-
-    Example:
-        $ uv run pyrig scratch
     """
     from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
 
@@ -284,9 +260,6 @@ def rmpyc() -> None:
 
     Safe to run multiple times — only directories that currently exist are
     removed.
-
-    Example:
-        $ uv run pyrig rmpyc
     """
     from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
 

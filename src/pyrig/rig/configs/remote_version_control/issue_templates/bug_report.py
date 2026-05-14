@@ -18,9 +18,6 @@ class BugReportConfigFile(DictYmlConfigFile):
     The file is considered correct when it contains at least all the keys and
     values defined in ``_configs()``. Users may add extra keys without the
     system reverting their additions.
-
-    Example:
-        >>> BugReportConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:

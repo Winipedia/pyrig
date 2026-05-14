@@ -19,11 +19,6 @@ class VersionController(Tool):
     command.  ``Args`` objects can be executed directly via ``.run()`` or
     converted to a string for embedding in shell scripts and workflow files.
     All commands are automatically prefixed with ``git``.
-
-    Example:
-        >>> VersionController.I.init_args().run()
-        >>> VersionController.I.add_all_args().run()
-        >>> VersionController.I.commit_with_message_args(msg="Initial commit").run()
     """
 
     def name(self) -> str:

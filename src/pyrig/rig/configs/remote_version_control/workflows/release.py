@@ -32,12 +32,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     Permissions required:
         - ``contents: write`` — push tags and create releases.
         - ``actions: read`` — download artifacts from the triggering run.
-
-    Example:
-        >>> from pyrig.rig.configs.remote_version_control.workflows.release import (
-        ...     ReleaseWorkflowConfigFile,
-        ... )
-        >>> ReleaseWorkflowConfigFile.I.validate()
     """
 
     def stem(self) -> str:

@@ -12,10 +12,6 @@ class MarkdownLinter(Tool):
 
     Constructs rumdl command-line arguments for linting and auto-fixing
     markdown files.
-
-    Example:
-        >>> MarkdownLinter.I.check_args().run()
-        >>> MarkdownLinter.I.check_fix_args().run()
     """
 
     def name(self) -> str:

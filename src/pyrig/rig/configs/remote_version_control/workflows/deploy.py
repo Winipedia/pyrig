@@ -29,15 +29,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     - **deploy-documentation**: Builds the MkDocs documentation site and
       deploys it to GitHub Pages. Requires ``pages: write`` and
       ``id-token: write`` job-level permissions.
-
-    Example:
-        Generate or validate the workflow file::
-
-            from pyrig.rig.configs.remote_version_control.workflows.deploy import (
-                DeployWorkflowConfigFile,
-            )
-
-            DeployWorkflowConfigFile.I.validate()
     """
 
     def stem(self) -> str:

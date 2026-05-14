@@ -22,11 +22,6 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     Reads the covenant text from a bundled resource file and substitutes the
     project's version control email address for the ``[INSERT CONTACT METHOD]``
     placeholder.
-
-    Examples:
-        Generate CODE_OF_CONDUCT.md::
-
-            CodeOfConductConfigFile.I.validate()
     """
 
     def stem(self) -> str:

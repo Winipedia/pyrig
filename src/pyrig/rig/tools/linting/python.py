@@ -13,10 +13,6 @@ class PythonLinter(Tool):
     Ruff is a fast Python linter and formatter written in Rust.
     This class constructs command-line arguments for ruff's check,
     auto-fix, and format operations.
-
-    Example:
-        >>> PythonLinter.I.check_fix_args().run()
-        >>> PythonLinter.I.format_args().run()
     """
 
     def name(self) -> str:

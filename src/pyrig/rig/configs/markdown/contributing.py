@@ -47,11 +47,6 @@ class ContributingConfigFile(MarkdownConfigFile):
     Generates a standard contribution guide covering issue reporting and the
     pull request workflow. Suitable for both private and public repositories.
     Users may customize the file content after initial generation.
-
-    Examples:
-        Generate or validate CONTRIBUTING.md::
-
-            ContributingConfigFile.I.validate()
     """
 
     def stem(self) -> str:

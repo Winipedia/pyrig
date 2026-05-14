@@ -37,11 +37,6 @@ class Pyrigger(Tool):
     Operations:
         - Command construction: Build ``Args`` for any pyrig subcommand
         - Project initialization: Orchestrate the full ordered setup sequence
-
-    Example:
-        >>> from pyrig.rig.cli.subcommands import build
-        >>> Pyrigger.I.cmd_args(cmd=build).run()
-        >>> Pyrigger.I.init_project()
     """
 
     def name(self) -> str:

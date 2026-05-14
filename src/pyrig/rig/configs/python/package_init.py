@@ -20,9 +20,6 @@ class PackageInitConfigFile(InitConfigFile):
 
     After writing the file, removes the root-level ``main.py`` that ``uv init``
     creates as boilerplate, since pyrig-managed projects do not use it.
-
-    Example:
-        >>> PackageInitConfigFile.I.validate()
     """
 
     def create_file(self) -> None:

@@ -12,10 +12,6 @@ class PackageIndex(Tool):
 
     Constructs the PyPI project URL and shields.io version badge for the
     current project. The package name is read from ``PackageManager.I.project_name()``.
-
-    Example:
-        >>> PackageIndex.I.package_index_url()
-        'https://pypi.org/project/pyrig'
     """
 
     def name(self) -> str:

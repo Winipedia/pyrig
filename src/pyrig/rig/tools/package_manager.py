@@ -25,10 +25,6 @@ class PackageManager(Tool):
     Subclass and override ``build_system_requires``, ``build_backend``,
     ``source_root``, or ``dev_dependencies`` to adapt pyrig to a different
     build back-end or project layout.
-
-    Example:
-        >>> PackageManager.I.install_dependencies_args().run()
-        >>> PackageManager.I.add_dev_dependencies_args("ruff", "pytest").run()
     """
 
     def name(self) -> str:
