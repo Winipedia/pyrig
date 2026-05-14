@@ -23,7 +23,7 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_index import PackageIndex
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
-from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
+from pyrig.rig.tools.project_coverage_tester import CoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.hook_manager import (
@@ -1465,7 +1465,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             ``"secrets.CODECOV_TOKEN"``
         """
-        return self.secrets_var(ProjectCoverageTester.I.access_token_key())
+        return self.secrets_var(CoverageTester.I.access_token_key())
 
     def pypi_token_var(self) -> str:
         """Get the raw secrets expression for ``PYPI_TOKEN``.

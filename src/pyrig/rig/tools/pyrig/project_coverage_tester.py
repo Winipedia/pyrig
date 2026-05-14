@@ -7,18 +7,18 @@ projects using pyrig as a dependency keep the base threshold.
 
 from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.rig.tools.project_coverage_tester import (
-    ProjectCoverageTester as BaseProjectCoverageTester,
+    CoverageTester as BaseCoverageTester,
 )
 
 if src_package_is_pyrig():
 
-    class ProjectCoverageTester(BaseProjectCoverageTester):
+    class CoverageTester(BaseCoverageTester):
         """Pyrig-specific coverage tester.
 
         Overrides the base coverage threshold to require 100% test coverage.
         Only instantiated when pyrig is the current project (via conditional
         class definition). Other projects using pyrig as a dependency will use
-        the base ``ProjectCoverageTester`` with the default threshold instead.
+        the base ``CoverageTester`` with the default threshold instead.
         """
 
         def coverage_threshold(self) -> int:

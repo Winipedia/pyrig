@@ -1,6 +1,6 @@
 """Coverage testing wrapper for pytest-cov and Codecov.io integration.
 
-Wraps ProjectCoverageTester commands and information.
+Wraps CoverageTester commands and information.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
@@ -8,7 +8,7 @@ from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
-class ProjectCoverageTester(Tool):
+class CoverageTester(Tool):
     """Pytest-cov configuration and Codecov.io integration.
 
     Constructs pytest-cov command arguments for local and CI coverage runs,
@@ -17,9 +17,9 @@ class ProjectCoverageTester(Tool):
     override individual settings without duplicating argument construction.
 
     Example:
-        >>> ProjectCoverageTester.I.additional_args()
+        >>> CoverageTester.I.additional_args()
         ('--cov=mypackage', '--cov-report=term-missing', '--cov-fail-under=90')
-        >>> ProjectCoverageTester.I.remote_coverage_url()
+        >>> CoverageTester.I.remote_coverage_url()
         'https://codecov.io/gh/owner/repo'
     """
 
