@@ -7,7 +7,6 @@ from pathlib import Path
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
-from pyrig.rig.tools.coverage_tester import CoverageTester
 
 
 class ProjectTester(Tool):
@@ -105,10 +104,9 @@ class ProjectTester(Tool):
     def run_tests_in_ci_args(self, *args: str) -> Args:
         """Construct pytest arguments for CI execution.
 
-        Prepends ``--log-cli-level=INFO`` for live log output followed by
-        coverage XML reporting args.
-        The resulting command is used in CI workflow steps (e.g., the
-        build workflow's test step).
+        Prepends ``--log-cli-level=INFO`` for live log output. The resulting
+        command is used in CI workflow steps (e.g., the health check
+        workflow's test step).
 
         Args:
             *args: Additional pytest arguments to append.
@@ -116,9 +114,7 @@ class ProjectTester(Tool):
         Returns:
             Args for ``pytest`` with CI flags prepended.
         """
-        return self.test_args(
-            "--log-cli-level=INFO", *CoverageTester.I.additional_ci_args(), *args
-        )
+        return self.test_args("--log-cli-level=INFO", *args)
 
     def test_args(self, *args: str) -> Args:
         """Construct pytest command arguments.

@@ -86,16 +86,9 @@ jobs:
       run: uv sync
     - name: Run Tests
       id: run-tests
-      run: uv run pytest --log-cli-level=INFO --cov-report=xml
+      run: uv run pytest --log-cli-level=INFO
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
-    - name: Upload Coverage Report
-      id: upload-coverage-report
-      uses: codecov/codecov-action@main
-      with:
-        files: coverage.xml
-        token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: ${{ secrets.CODECOV_TOKEN && 'true' || 'false' }}
   health-check:
     needs:
     - matrix-health-checks

@@ -92,13 +92,13 @@ class PyprojectConfigFile(TomlConfigFile):
         Returns:
             Nested dict matching the expected pyproject.toml structure.
         """
-        repo_owner = VersionController.I.repo_owner(check_repo_url=False)
-        tests_package_root = ProjectTester.I.tests_package_root().as_posix()
-
         # local import as ReadmeConfigFile inherits from BadgesMarkdownConfigFile
         # which needs pyproject info for badges, and pyproject needs the
         # readme path for metadata. This avoids circular import issues.
         from pyrig.rig.configs.markdown.readme import ReadmeConfigFile  # noqa: PLC0415
+
+        repo_owner = VersionController.I.repo_owner(check_repo_url=False)
+        tests_package_root = ProjectTester.I.tests_package_root().as_posix()
 
         return {
             "project": {
@@ -162,7 +162,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 ProjectTester.I.name(): {
                     "ini_options": {
-                        "testpaths": [f"{tests_package_root}"],
+                        "testpaths": [tests_package_root],
                         "addopts": " ".join(CoverageTester.I.additional_args()),
                     }
                 },

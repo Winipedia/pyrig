@@ -93,7 +93,6 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             f"# {Pyrigger.I.name()} stuff",
             "__pycache__/",  # bc of python bytecode cache
             ".coverage",  # bc of pytest-cov
-            "coverage.xml",  # bc of pytest-cov
             ".pytest_cache/",  # bc of pytest cache
             ".ruff_cache/",  # bc of ruff cache
             ".rumdl_cache/",  # bc of rumdl cache
