@@ -15,11 +15,6 @@ class ContainerEngine(Tool):
     Constructs podman command arguments for building and saving container images.
     Typical usage: call ``build_args`` to build the image, then ``save_args``
     to export it as a tar archive.
-
-    Example:
-        >>> from pathlib import Path
-        >>> ContainerEngine.I.build_args(project_name="app").run()
-        >>> ContainerEngine.I.save_args(image_path=Path("dist/app.tar")).run()
     """
 
     def name(self) -> str:

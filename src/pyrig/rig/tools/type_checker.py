@@ -11,10 +11,6 @@ class TypeChecker(Tool):
     """Type-safe wrapper for the ty type checker.
 
     Constructs ``ty check`` command arguments for running static type checks.
-
-    Example:
-        >>> TypeChecker.I.check_args().run()
-        >>> TypeChecker.I.check_args("src/").run()
     """
 
     def name(self) -> str:

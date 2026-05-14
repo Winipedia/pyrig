@@ -17,9 +17,6 @@ class DocsBuilder(Tool):
 
     Provides methods for constructing mkdocs command arguments and
     generating documentation-related URLs and badges for GitHub Pages.
-
-    Example:
-        >>> DocsBuilder.I.build_args().run()
     """
 
     def name(self) -> str:

@@ -16,15 +16,6 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
     baseline with pyrig-specific additions such as tool caches, build artifacts, and
     the paths of config files that are excluded from version control (e.g. ``.env``,
     ``.scratch.py``). Entries already present in the baseline are never duplicated.
-
-    Examples:
-        Validate the ``.gitignore`` file::
-
-            VersionControllerIgnoreConfigFile.I.validate()
-
-        Load the current patterns::
-
-            patterns = VersionControllerIgnoreConfigFile.I.load()
     """
 
     def stem(self) -> str:

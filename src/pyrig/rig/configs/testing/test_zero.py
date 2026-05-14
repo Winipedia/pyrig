@@ -28,11 +28,6 @@ class ZeroTestConfigFile(CopyModuleConfigFile):
         The class is named ``ZeroTestConfigFile`` rather than
         ``TestZeroConfigFile`` to prevent pytest from collecting it as a test
         class when it is imported into test files.
-
-    Example:
-        Generate ``test_zero.py`` for the current project::
-
-            ZeroTestConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:

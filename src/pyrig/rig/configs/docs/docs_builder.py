@@ -23,9 +23,6 @@ class DocsBuilderConfigFile(DictYmlConfigFile):
     palette toggle, navigation entries for the Home and API pages, and
     the search, mermaid2, and mkdocstrings plugins configured for
     Google-style docstring rendering.
-
-    Example:
-        >>> DocsBuilderConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:

@@ -19,10 +19,6 @@ class SecurityChecker(Tool):
     common security vulnerabilities. The primary entry point is
     ``run_with_config_args``, which reads Bandit settings from
     ``pyproject.toml`` and scans the project's source and test directories.
-
-    Example:
-        >>> SecurityChecker.I.run_with_config_args().run()
-        >>> SecurityChecker.I.run_args("-r", "src/").run()
     """
 
     def name(self) -> str:

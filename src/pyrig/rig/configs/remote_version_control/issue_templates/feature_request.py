@@ -12,9 +12,6 @@ class FeatureRequestConfigFile(DictYmlConfigFile):
     Generates and validates the GitHub issue form that contributors use to
     submit feature requests. The form guides contributors through describing
     what they want, why they need it, and how it might work.
-
-    Example:
-        >>> FeatureRequestConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:

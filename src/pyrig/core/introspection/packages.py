@@ -76,10 +76,6 @@ def src_package_is_pyrig() -> bool:
 
     Returns:
         True if the current working directory is named ``pyrig``.
-
-    Examples:
-        >>> if src_package_is_pyrig():
-        ...     print("Running in pyrig development mode")
     """
     return src_package_is_package(pyrig)
 
@@ -193,14 +189,6 @@ def discover_all_subclasses_across_package[T: type](
     Returns:
         Set of all subclass types of ``cls`` that are defined within
         ``package``. Does not include ``cls`` itself.
-
-    Example:
-        >>> from pyrig.rig.configs.base.config_file import ConfigFile
-        >>> from pyrig.rig import configs
-        >>> discovered = discover_all_subclasses_across_package(
-        ...     ConfigFile,
-        ...     package=configs,
-        ... )
     """
     # exhaust the generator to trigger imports, but ignore the output
     _ = tuple(walk_package(package))

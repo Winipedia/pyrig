@@ -31,15 +31,6 @@ class VersionControlHookManagerConfigFile(TomlConfigFile):
     pipeline.  All hooks use ``language: system``, meaning the tools must be
     installed on the host.
 
-    Examples:
-        Generate prek.toml::
-
-            VersionControlHookManagerConfigFile.I.validate()
-
-        Install hooks::
-
-            prek install
-
     Note:
         Run ``prek install`` once after generating the config to register the
         hooks with git.

@@ -16,9 +16,6 @@ class ContainerfileConfigFile(StringConfigFile):
     Produces a Containerfile with a Python slim base image, uv as the package
     manager, a non-root runtime user (appuser, UID 1000), and layer ordering
     optimized for cache reuse. Compatible with Docker, Podman, and buildah.
-
-    Example:
-        >>> ContainerfileConfigFile.I.validate()
     """
 
     def stem(self) -> str:

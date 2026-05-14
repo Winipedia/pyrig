@@ -13,9 +13,6 @@ class ConfigConfigFile(DictYmlConfigFile):
     ``.github/ISSUE_TEMPLATE/config.yml``. The default configuration disables
     blank issues, requiring contributors to use one of the provided issue
     templates when opening a new issue.
-
-    Example:
-        >>> ConfigConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:

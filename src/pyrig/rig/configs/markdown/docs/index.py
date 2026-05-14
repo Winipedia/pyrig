@@ -19,9 +19,6 @@ class IndexConfigFile(BadgesMarkdownConfigFile):
     header, followed by the grouped status badges and project description
     provided by the badge-augmented Markdown base class. The file is registered
     as the "Home" entry in ``mkdocs.yml`` navigation.
-
-    Example:
-        >>> IndexConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:

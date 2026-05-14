@@ -40,9 +40,6 @@ class PullRequestTemplateConfigFile(MarkdownConfigFile):
     that the file contains non-empty content. This lets
     contributors freely customize the template after initial generation
     without triggering unwanted regeneration on subsequent ``validate`` calls.
-
-    Example:
-        >>> PullRequestTemplateConfigFile.I.validate()
     """
 
     def parent_path(self) -> Path:
