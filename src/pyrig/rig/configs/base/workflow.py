@@ -18,12 +18,12 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.container_engine import (
     ContainerEngine,
 )
+from pyrig.rig.tools.coverage_tester import CoverageTester
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_index import PackageIndex
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
-from pyrig.rig.tools.project_coverage_tester import CoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.hook_manager import (
