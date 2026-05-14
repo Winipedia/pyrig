@@ -49,15 +49,6 @@ def discover_subclasses_across_dependencies[T: type](
     Yields:
         Subclass types of ``cls`` discovered across ``package`` and all dependent
         packages, in topological dependency order (base package first, then dependents).
-
-    Example:
-        >>> from pyrig.rig.configs.base.config_file import ConfigFile
-        >>> from pyrig.rig import configs
-        >>> subclasses = list(discover_subclasses_across_dependencies(
-        ...     cls=ConfigFile,
-        ...     package=configs,
-        ... ))
-        >>> # Returns concrete ConfigFile implementations across the pyrig ecosystem.
     """
     logger.debug(
         "Discovering subclasses of %s from modules in packages depending on %s",
@@ -101,12 +92,6 @@ def discover_equivalent_modules_across_dependents(
     Yields:
         Successfully imported module objects in topological order. Packages whose
         equivalent module path cannot be imported are silently skipped.
-
-    Example:
-        >>> from pyrig import core
-        >>> modules = list(discover_equivalent_modules_across_dependents(core))
-        >>> # Returns the corresponding module from each dependent package.
-        >>> # Does not include pyrig.core itself.
     """
     dependency = root_module(module)
     logger.debug(

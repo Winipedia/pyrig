@@ -12,11 +12,6 @@ class DotScratchConfigFile(PythonConfigFile):
     It is automatically excluded from version control via .gitignore and is
     never committed to the repository. Validation only checks that the file
     exists; content is intentionally left free for the user to modify.
-
-    Examples:
-        Generate .scratch.py::
-
-            DotScratchConfigFile.I.validate()
     """
 
     def is_correct(self) -> bool:

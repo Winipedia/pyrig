@@ -258,13 +258,5 @@ def make_linked_badge_markdown(
 
     Returns:
         Markdown string in the form ``[![alt_text](badge_url)](link_url)``.
-
-    Example:
-        >>> make_linked_badge_markdown(
-        ...     badge_url="https://img.shields.io/badge/tests-passing-brightgreen",
-        ...     link_url="https://github.com/user/repo/actions",
-        ...     alt_text="Tests",
-        ... )
-        '[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/user/repo/actions)'
     """
     return f"[![{alt_text}]({badge_url})]({link_url})"

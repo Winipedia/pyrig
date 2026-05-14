@@ -17,11 +17,7 @@ class ApiConfigFile(MarkdownConfigFile):
     into all public members, their signatures, docstrings, and source links.
 
     Example:
-        Generate or update ``docs/api.md``::
-
-            ApiConfigFile.I.validate()
-
-        Resulting file content::
+        Generated ``docs/api.md`` content::
 
             # API Reference
 

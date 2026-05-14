@@ -14,10 +14,5 @@ def run_scratch_file() -> None:
 
     Raises:
         FileNotFoundError: If .scratch.py does not exist at the project root.
-
-    Examples:
-        Via the CLI::
-
-            $ uv run pyrig scratch
     """
     run_path(DotScratchConfigFile.I.path().as_posix())

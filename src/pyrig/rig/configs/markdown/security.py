@@ -44,11 +44,6 @@ class SecurityConfigFile(MarkdownConfigFile):
     Any non-empty SECURITY.md is treated as valid, so users can replace or
     extend the generated template with their own policy without triggering
     validation failures.
-
-    Example:
-        Generate or update SECURITY.md::
-
-            SecurityConfigFile.I.validate()
     """
 
     def stem(self) -> str:

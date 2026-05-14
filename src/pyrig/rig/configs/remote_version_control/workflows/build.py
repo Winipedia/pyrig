@@ -28,15 +28,6 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
     check run succeeded *and* was not a scheduled (cron) run. This prevents
     unnecessary artifact builds and downstream releases on nightly health
     check runs.
-
-    Examples:
-        Generate the ``build.yml`` workflow file::
-
-            from pyrig.rig.configs.remote_version_control.workflows.build import (
-                BuildWorkflowConfigFile,
-            )
-
-            BuildWorkflowConfigFile.I.validate()
     """
 
     def stem(self) -> str:

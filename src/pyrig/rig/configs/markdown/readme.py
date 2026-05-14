@@ -15,11 +15,6 @@ class ReadmeConfigFile(BadgesMarkdownConfigFile):
     Inherits badge generation, description management, and merge logic from
     ``BadgesMarkdownConfigFile``. Places README.md at the project root and fixes
     the filename stem to ``"README"``.
-
-    Examples:
-        Validate or generate README.md::
-
-            ReadmeConfigFile.I.validate()
     """
 
     def stem(self) -> str:
