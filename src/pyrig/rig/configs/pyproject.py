@@ -26,7 +26,7 @@ from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_coverage_tester import ProjectCoverageTester
+from pyrig.rig.tools.project_coverage_tester import CoverageTester
 from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.type_checker import TypeChecker
@@ -163,7 +163,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 ProjectTester.I.name(): {
                     "ini_options": {
                         "testpaths": [f"{tests_package_root}"],
-                        "addopts": " ".join(ProjectCoverageTester.I.additional_args()),
+                        "addopts": " ".join(CoverageTester.I.additional_args()),
                     }
                 },
                 SecurityChecker.I.name(): {
