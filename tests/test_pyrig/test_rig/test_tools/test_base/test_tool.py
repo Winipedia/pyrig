@@ -16,7 +16,7 @@ class TestTool:
     def test_subclasses_version_control_ignore_paths(self) -> None:
         """Test method."""
         ignore_paths = Tool.subclasses_version_control_ignore_paths()
-        for path in (".venv", "dist/", ".coverage", "pytest_cache/"):
+        for path in (".venv", "dist/", ".coverage", ".pytest_cache/"):
             assert path in ignore_paths
 
     def test___str__(self) -> None:

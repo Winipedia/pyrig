@@ -9,7 +9,7 @@ class TestCoverageTester:
 
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
-        assert CoverageTester.I.version_control_ignore_paths() == (".coverage")
+        assert CoverageTester.I.version_control_ignore_paths() == (".coverage",)
 
     def test_additional_args(self) -> None:
         """Test method."""

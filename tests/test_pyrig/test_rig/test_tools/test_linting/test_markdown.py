@@ -9,7 +9,7 @@ class TestMarkdownLinter:
 
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
-        assert MarkdownLinter.I.version_control_ignore_paths() == ("rumdl_cache/",)
+        assert MarkdownLinter.I.version_control_ignore_paths() == (".rumdl_cache/",)
 
     def test_group(self) -> None:
         """Test method."""

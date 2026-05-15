@@ -9,7 +9,7 @@ class TestPythonLinter:
 
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
-        assert PythonLinter.I.version_control_ignore_paths() == ("ruff_cache/",)
+        assert PythonLinter.I.version_control_ignore_paths() == (".ruff_cache/",)
 
     def test_pydocstyle(self) -> None:
         """Test method."""
