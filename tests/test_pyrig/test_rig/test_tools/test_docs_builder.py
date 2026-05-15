@@ -9,6 +9,10 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
+    def test_version_control_ignore_paths(self) -> None:
+        """Test method."""
+        assert DocsBuilder.I.version_control_ignore_paths() == ("/site",)
+
     def test_documentation_url(self) -> None:
         """Test method."""
         result = DocsBuilder.I.documentation_url()

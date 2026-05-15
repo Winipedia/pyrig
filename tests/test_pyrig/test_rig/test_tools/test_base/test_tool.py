@@ -9,6 +9,16 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestTool:
     """Test class."""
 
+    def test_version_control_ignore_paths(self) -> None:
+        """Test method."""
+        assert PackageManager.I.version_control_ignore_paths() == (".venv", "dist/")
+
+    def test_subclasses_version_control_ignore_paths(self) -> None:
+        """Test method."""
+        ignore_paths = Tool.subclasses_version_control_ignore_paths()
+        for path in (".venv", "dist/", ".coverage", "pytest_cache/"):
+            assert path in ignore_paths
+
     def test___str__(self) -> None:
         """Test method."""
         assert "uv" in str(PackageManager.I)

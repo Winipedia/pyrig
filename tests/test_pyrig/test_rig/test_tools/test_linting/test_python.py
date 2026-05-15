@@ -7,6 +7,10 @@ from pyrig.rig.tools.linting.python import PythonLinter
 class TestPythonLinter:
     """Test class."""
 
+    def test_version_control_ignore_paths(self) -> None:
+        """Test method."""
+        assert PythonLinter.I.version_control_ignore_paths() == ("ruff_cache/",)
+
     def test_pydocstyle(self) -> None:
         """Test method."""
         assert PythonLinter.I.pydocstyle() == "google"
