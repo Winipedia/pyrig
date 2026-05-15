@@ -41,6 +41,10 @@ class ProjectTester(Tool):
             "https://pytest.org",
         )
 
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return paths to ignore in version control."""
+        return (".pytest_cache/",)
+
     def dev_dependencies(self) -> tuple[str, ...]:
         """Get the dev dependencies required by this tool.
 

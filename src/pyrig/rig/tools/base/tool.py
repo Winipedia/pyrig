@@ -99,6 +99,20 @@ class Tool(RigDependencySubclass):
             is the page the user is taken to when clicking the badge.
         """
 
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return a tuple of file paths to ignore for version control.
+
+        Used by pyrig's project initialization logic to automatically add
+        tool-specific files (e.g., cache directories) to the
+        project's ``.gitignore``. Override in a subclass to specify the paths
+        relevant to that tool.
+
+        Returns:
+            A tuple of file paths (relative to the project root) that should be
+            added to version control ignore files. Defaults to an empty tuple.
+        """
+        return ()
+
     @classmethod
     def dependency_package(cls) -> ModuleType:
         """Return the ``pyrig.rig.tools`` package as the subclass discovery scope.
@@ -150,6 +164,19 @@ class Tool(RigDependencySubclass):
             dep
             for subclass in cls.concrete_subclasses()
             for dep in subclass().dev_dependencies()
+        )
+
+    @classmethod
+    def subclasses_version_control_ignore_paths(cls) -> list[str]:
+        """Return a sorted list of version control ignore paths for all tools.
+
+        Iterates every concrete ``Tool`` subclass and collects its
+        ``version_control_ignore_paths`` to produce a unified, sorted list
+        """
+        return sorted(
+            path
+            for subclass in cls.concrete_subclasses()
+            for path in subclass().version_control_ignore_paths()
         )
 
     @classmethod

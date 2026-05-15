@@ -54,6 +54,10 @@ class PackageManager(Tool):
             "https://github.com/astral-sh/uv",
         )
 
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return paths to ignore in version control."""
+        return (".venv", "dist/")
+
     def package_root(self) -> Path:
         """Return the root directory of the project's main package.
 
