@@ -13,11 +13,12 @@ from typing import Literal
 import spdx_matcher
 from packaging.version import Version
 
+from pyrig.core.introspection.modules import leaf_module_name
 from pyrig.core.resources import (
     resource_content,
 )
 from pyrig.core.strings import dependency_requirement_as_package_name
-from pyrig.rig import resources
+from pyrig.rig import resources, tests
 from pyrig.rig.cli import cli
 from pyrig.rig.configs.base.config_file import ConfigDict, Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
@@ -98,8 +99,7 @@ class PyprojectConfigFile(TomlConfigFile):
         from pyrig.rig.configs.markdown.readme import ReadmeConfigFile  # noqa: PLC0415
 
         repo_owner = VersionController.I.repo_owner(check_repo_url=False)
-        tests_package_root = ProjectTester.I.tests_package_root().as_posix()
-
+        rig_tests_dir_name = leaf_module_name(tests)
         return {
             "project": {
                 "name": PackageManager.I.project_name(),
@@ -150,7 +150,7 @@ class PyprojectConfigFile(TomlConfigFile):
                         "ignore": ["COM812", "ANN401"],
                         "fixable": ["ALL"],
                         "per-file-ignores": {
-                            f"**/{tests_package_root}/**/*.py": ["S101"],
+                            f"**/{rig_tests_dir_name}/**/*.py": ["S101"],
                         },
                         "pydocstyle": {"convention": PythonLinter.I.pydocstyle()},
                     },
@@ -162,7 +162,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 },
                 ProjectTester.I.name(): {
                     "ini_options": {
-                        "testpaths": [tests_package_root],
+                        "testpaths": [ProjectTester.I.tests_package_root().as_posix()],
                         "addopts": " ".join(CoverageTester.I.additional_args()),
                     }
                 },
@@ -170,7 +170,7 @@ class PyprojectConfigFile(TomlConfigFile):
                     "assert_used": {
                         "skips": [
                             # to ignore asserts for the rig tests package
-                            f"*/{tests_package_root}/*.py",
+                            f"*/{rig_tests_dir_name}/*.py",
                             # to ignore asserts in test folders like tests/test_utils/
                             f"*/{ProjectTester.I.test_module_prefix()}*/*.py",
                         ],

@@ -15,6 +15,7 @@ class TestCoverageTester:
         """Test method."""
         assert CoverageTester.I.additional_args() == (
             "--cov=pyrig",
+            "--cov-branch",
             "--cov-report=term-missing",
             "--cov-fail-under=100",
         )
