@@ -29,6 +29,13 @@ def my_test_gitignore_config_file(
 class TestVersionControllerIgnoreConfigFile:
     """Test class."""
 
+    def test_additional_ignore_lines(self) -> None:
+        """Test method."""
+        lines = VersionControllerIgnoreConfigFile.I.additional_ignore_lines()
+        assert "__pycache__/" in lines
+        assert ".env" in lines
+        assert ".scratch.py" in lines
+
     def test_extension(self) -> None:
         """Test method."""
         result = VersionControllerIgnoreConfigFile.I.extension()
