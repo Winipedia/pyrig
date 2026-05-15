@@ -67,6 +67,7 @@ class CoverageTester(Tool):
         """
         return (
             f"--cov={PackageManager.I.package_name()}",
+            "--cov-branch",
             "--cov-report=term-missing",
             f"--cov-fail-under={self.threshold()}",
         )

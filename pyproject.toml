@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "11.15.2"
+version = "11.16.0"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -105,7 +105,7 @@ error-on-warning = true
 testpaths = [
     "tests",
 ]
-addopts = "--cov=pyrig --cov-report=term-missing --cov-fail-under=100"
+addopts = "--cov=pyrig --cov-branch --cov-report=term-missing --cov-fail-under=100"
 
 [tool.bandit.assert_used]
 skips = [
