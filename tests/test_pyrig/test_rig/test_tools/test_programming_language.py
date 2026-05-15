@@ -8,6 +8,10 @@ from pyrig.rig.tools.programming_language import ProgrammingLanguage
 class TestProgrammingLanguage:
     """Test class."""
 
+    def test_version_control_ignore_paths(self) -> None:
+        """Test method."""
+        assert ProgrammingLanguage().version_control_ignore_paths() == ("__pycache__/",)
+
     def test_standard_init_content(self) -> None:
         """Test method."""
         assert isinstance(ProgrammingLanguage().standard_init_content(), str)

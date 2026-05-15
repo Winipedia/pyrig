@@ -9,6 +9,10 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
+    def test_version_control_ignore_paths(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.version_control_ignore_paths() == ("pytest_cache/",)
+
     def test_test_module_prefix(self) -> None:
         """Test method."""
         assert ProjectTester.I.test_module_prefix() == "test_"

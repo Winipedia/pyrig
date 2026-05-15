@@ -10,6 +10,10 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_version_control_ignore_paths(self) -> None:
+        """Test method."""
+        assert PackageManager.I.version_control_ignore_paths() == (".venv", "dist/")
+
     def test_lock_file(self) -> None:
         """Test method."""
         assert PackageManager.I.lock_file() == Path("uv.lock")

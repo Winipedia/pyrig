@@ -7,6 +7,10 @@ from pyrig.rig.tools.linting.markdown import MarkdownLinter
 class TestMarkdownLinter:
     """Test class."""
 
+    def test_version_control_ignore_paths(self) -> None:
+        """Test method."""
+        assert MarkdownLinter.I.version_control_ignore_paths() == ("rumdl_cache/",)
+
     def test_group(self) -> None:
         """Test method."""
         result = MarkdownLinter.I.group()
