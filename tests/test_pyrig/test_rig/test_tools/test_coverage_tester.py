@@ -15,17 +15,17 @@ class TestCoverageTester:
             "--cov-fail-under=100",
         )
 
-    def test_coverage_threshold(self) -> None:
+    def test_threshold(self) -> None:
         """Test method."""
-        coverage_threshold = 90
-        assert CoverageTester().coverage_threshold() == coverage_threshold
+        threshold = 90
+        assert CoverageTester().threshold() == threshold
         override_threshold = 100
-        assert CoverageTester.I.coverage_threshold() == override_threshold
+        assert CoverageTester.I.threshold() == override_threshold
 
-    def test_coverage_color(self) -> None:
+    def test_color(self) -> None:
         """Test method."""
-        assert CoverageTester().coverage_color() == (108, 80, 45)
-        assert CoverageTester.I.coverage_color() == (120, 80, 45)
+        assert CoverageTester().color() == (108, 80, 45)
+        assert CoverageTester.I.color() == (120, 80, 45)
 
     def test_name(self) -> None:
         """Test method."""

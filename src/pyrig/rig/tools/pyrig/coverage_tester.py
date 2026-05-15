@@ -21,7 +21,7 @@ if src_package_is_pyrig():
         the base ``CoverageTester`` with the default threshold instead.
         """
 
-        def coverage_threshold(self) -> int:
+        def threshold(self) -> int:
             """Get the minimum test coverage percentage threshold.
 
             Returns:
