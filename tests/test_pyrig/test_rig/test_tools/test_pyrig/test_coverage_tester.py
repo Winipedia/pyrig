@@ -9,8 +9,8 @@ from pyrig.rig.tools.pyrig.coverage_tester import CoverageTester
 class TestCoverageTester:
     """Test class."""
 
-    def test_coverage_threshold(self) -> None:
+    def test_threshold(self) -> None:
         """Test method."""
-        coverage_threshold = 100
-        assert BaseCoverageTester.I.coverage_threshold() == coverage_threshold
+        threshold = 100
+        assert BaseCoverageTester.I.threshold() == threshold
         assert BaseCoverageTester.L is CoverageTester

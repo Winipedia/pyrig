@@ -36,15 +36,15 @@ class CoverageTester(Tool):
 
         The badge image URL is a shields.io static badge whose value is the
         configured coverage threshold and whose color is derived from
-        :meth:`coverage_color`. The link URL points to the pytest-cov project
+        :meth:`color`. The link URL points to the pytest-cov project
         page.
 
         Returns:
             Tuple of ``(badge_image_url, link_url)``.
         """
-        hue, saturation, lightness = self.coverage_color()
+        hue, saturation, lightness = self.color()
         return (
-            f"https://img.shields.io/badge/coverage->={self.coverage_threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white",
+            f"https://img.shields.io/badge/coverage->={self.threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white",
             "https://github.com/pytest-dev/pytest-cov",
         )
 
@@ -64,10 +64,10 @@ class CoverageTester(Tool):
         return (
             f"--cov={PackageManager.I.package_name()}",
             "--cov-report=term-missing",
-            f"--cov-fail-under={self.coverage_threshold()}",
+            f"--cov-fail-under={self.threshold()}",
         )
 
-    def coverage_color(self) -> tuple[int, int, int]:
+    def color(self) -> tuple[int, int, int]:
         """Get the badge color derived from the coverage threshold.
 
         Interpolates the hue on a red-to-green spectrum where 0% coverage is
@@ -76,10 +76,10 @@ class CoverageTester(Tool):
         Returns:
             Tuple of ``(hue, saturation, lightness)`` values.
         """
-        hue = int((self.coverage_threshold() / 100) * 120)
+        hue = int((self.threshold() / 100) * 120)
         return hue, 80, 45
 
-    def coverage_threshold(self) -> int:
+    def threshold(self) -> int:
         """Get the minimum required coverage percentage.
 
         Acts as the base default. Subclasses should override this method to
