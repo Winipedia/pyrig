@@ -53,49 +53,20 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
     def lines(self) -> list[str]:
         """Build the complete list of lines for ``.gitignore``.
 
-        Assembles the final pattern list by:
-
-        1. Collecting the file paths of all ``ConfigFile`` subclasses whose
-           ``version_control_ignored()`` returns ``True`` (e.g. ``.env``,
-           ``.scratch.py``).
-        2. Building a list of pyrig-specific patterns.
-        3. Reading the bundled Python gitignore baseline via
-           ``standard_ignore_lines()``.
-        4. Removing any pyrig-specific entry that already appears in the
-           baseline to avoid duplication.
-        5. Returning the baseline lines, then the remaining pyrig-specific
-           additions, followed by a trailing empty string for a final newline.
+        Assembles the final pattern list by merging the standard Python gitignore
+        baseline with pyrig-specific additions.
 
         Returns:
             Complete list of ``.gitignore`` lines with the baseline first,
             followed by any pyrig-specific additions not already present in
             the baseline, and a trailing empty string.
         """
-        # fetch the standard github gitignore via https://github.com/github/gitignore/blob/main/Python.gitignore
-        ignored_paths = (
-            cf().path().as_posix()
-            for cf in ConfigFile.version_control_ignored_subclasses()
-        )
-
-        # needed will always be at least one item bc pyrig stuff is not in
-        # the standard gitignore, so we can safely add a trailing newline at
-        # the end of the file
-        needed = [
-            f"# {Pyrigger.I.name()} stuff",
-            "__pycache__/",  # bc of python bytecode cache
-            ".coverage",  # bc of pytest-cov
-            ".pytest_cache/",  # bc of pytest cache
-            ".ruff_cache/",  # bc of ruff cache
-            ".rumdl_cache/",  # bc of rumdl cache
-            ".venv",  # bc of uv venv
-            "dist/",  # bc of uv publish
-            "/site",  # bc of mkdocs
-            *ignored_paths,  # ignored config files (e.g. .scratch.py, .env)
-        ]
         standard = self.standard_ignore_lines()
         standard_set = set(standard)
-        needed = [line for line in needed if line not in standard_set]
-        return [*standard, *needed, ""]
+        additional = [
+            line for line in self.additional_ignore_lines() if line not in standard_set
+        ]
+        return [*standard, *additional, ""]
 
     def standard_ignore_lines(self) -> list[str]:
         """Return the bundled Python gitignore baseline as a list of lines.
@@ -108,3 +79,32 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             Lines from the bundled Python gitignore baseline.
         """
         return self.split_lines(resource_content("GITIGNORE", resources))
+
+    def additional_ignore_lines(self) -> list[str]:
+        """Additional lines to be ignored.
+
+        Builds a list of pyrig-specific patterns to be added to the gitignore.
+        They are only added if not already present in the standard baseline
+        to avoid duplication.
+        This will always include at least the line ``# Pyrigger stuff`` as a header for
+        the pyrig-specific entries.
+        Some enries here are already covered by the standard Python gitignore, but are
+        included here to be sure as they are almost garantueed to occur in a
+        pyrig project.
+        """
+        ignored_paths = (
+            cf().path().as_posix()
+            for cf in ConfigFile.version_control_ignored_subclasses()
+        )
+        return [
+            f"# {Pyrigger.I.name()} stuff",
+            "__pycache__/",  # bc of python bytecode cache
+            ".coverage",  # bc of pytest-cov
+            ".pytest_cache/",  # bc of pytest cache
+            ".ruff_cache/",  # bc of ruff cache
+            ".rumdl_cache/",  # bc of rumdl cache
+            ".venv",  # bc of uv venv
+            "dist/",  # bc of uv publish
+            "/site",  # bc of mkdocs
+            *ignored_paths,  # ignored config files (e.g. .scratch.py, .env)
+        ]
