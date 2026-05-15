@@ -47,6 +47,10 @@ class DocsBuilder(Tool):
             "https://www.mkdocs.org",
         )
 
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return paths to ignore in version control."""
+        return ("/site",)
+
     def dev_dependencies(self) -> tuple[str, ...]:
         """Get the development dependencies required for MkDocs documentation.
 

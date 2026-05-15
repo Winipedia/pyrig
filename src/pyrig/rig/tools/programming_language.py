@@ -50,6 +50,10 @@ class ProgrammingLanguage(Tool):
             "https://www.python.org",
         )
 
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return a tuple of file paths to ignore for version control."""
+        return ("__pycache__/",)
+
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return an empty tuple — Python is the runtime, not a dev dependency.
 

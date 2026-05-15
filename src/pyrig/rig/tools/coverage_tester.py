@@ -48,6 +48,10 @@ class CoverageTester(Tool):
             "https://github.com/pytest-dev/pytest-cov",
         )
 
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return paths to ignore in version control."""
+        return (".coverage",)
+
     def additional_args(self) -> tuple[str, ...]:
         """Get pytest-cov arguments for local test runs.
 

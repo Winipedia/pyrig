@@ -6,6 +6,7 @@ from pyrig.core.resources import resource_content
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
+from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
@@ -92,19 +93,12 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         included here to be sure as they are almost garantueed to occur in a
         pyrig project.
         """
-        ignored_paths = (
+        config_file_paths = (
             cf().path().as_posix()
             for cf in ConfigFile.version_control_ignored_subclasses()
         )
         return [
             f"# {Pyrigger.I.name()} stuff",
-            "__pycache__/",  # bc of python bytecode cache
-            ".coverage",  # bc of pytest-cov
-            ".pytest_cache/",  # bc of pytest cache
-            ".ruff_cache/",  # bc of ruff cache
-            ".rumdl_cache/",  # bc of rumdl cache
-            ".venv",  # bc of uv venv
-            "dist/",  # bc of uv publish
-            "/site",  # bc of mkdocs
-            *ignored_paths,  # ignored config files (e.g. .scratch.py, .env)
+            *Tool.subclasses_version_control_ignore_paths(),
+            *config_file_paths,
         ]

@@ -38,6 +38,10 @@ class PythonLinter(Tool):
             "https://github.com/astral-sh/ruff",
         )
 
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return paths to ignore in version control."""
+        return (".ruff_cache/",)
+
     def pydocstyle(self) -> str:
         """Return the docstring convention enforced by Ruff.
 

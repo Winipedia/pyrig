@@ -42,6 +42,10 @@ class MarkdownLinter(Tool):
             "https://github.com/rvben/rumdl",
         )
 
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return paths to ignore in version control."""
+        return (".rumdl_cache/",)
+
     def check_fix_args(self, *args: str) -> Args:
         """Construct rumdl check arguments with auto-fix enabled.
 
