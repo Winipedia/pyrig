@@ -42,6 +42,12 @@ class TestVersionController:
         username_mock.assert_called_once()
         remote_mock.assert_called_once()
 
+        username_mock.return_value = "TestUser"
+        result = VersionController()._repo_owner(  # noqa: SLF001
+            check_repo_url=False
+        )
+        assert result == "TestUser"
+
         # make it return a https remote url
         remote_mock.return_value = "https://github.com/OWNER/REPO.git"
         result = VersionController()._repo_owner(  # noqa: SLF001

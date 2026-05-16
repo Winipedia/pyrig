@@ -1,6 +1,7 @@
 """test module."""
 
 from github.Repository import Repository
+from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.remote_version_control.branch_protection import (
     BranchProtectionConfigFile,
@@ -50,7 +51,7 @@ def test_ruleset_exists() -> None:
     assert ruleset_id > 0, f"Expected ruleset id > 0, got {ruleset_id}"
 
 
-def test_create_or_update_ruleset() -> None:
+def test_create_or_update_ruleset(mocker: MockerFixture) -> None:
     """Test function."""
     token = BranchProtectionConfigFile.I.repo_token()
     owner, repo_name = VersionController.I.repo_owner(), PackageManager.I.project_name()
@@ -60,6 +61,22 @@ def test_create_or_update_ruleset() -> None:
         repo_name=repo_name,
         **BranchProtectionConfigFile.I.load()[0],
     )
+
+    mock_exists = mocker.patch(
+        ruleset_exists.__module__ + "." + ruleset_exists.__name__, return_value=0
+    )
+    mock_github_api_request = mocker.patch(
+        github_api_request.__module__ + "." + github_api_request.__name__,
+        return_value={"hello": "world"},
+    )
+    create_or_update_ruleset(
+        token=token,
+        owner=owner,
+        repo_name=repo_name,
+        **BranchProtectionConfigFile.I.load()[0],
+    )
+    mock_exists.assert_called_once()
+    mock_github_api_request.assert_called_once()
 
 
 def test_github_api_request() -> None:
