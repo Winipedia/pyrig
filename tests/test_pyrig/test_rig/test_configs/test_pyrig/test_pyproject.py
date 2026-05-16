@@ -49,3 +49,8 @@ class TestPyprojectConfigFile:
         module = reimport_module(pyproject)
         mock_src_package_is_package.assert_called_once()
         assert not hasattr(module, PyprojectConfigFile.__name__)
+
+        # release the mock and reimport to reset state for other tests
+        mock_src_package_is_package.stop()
+        reimport_module(pyproject)
+        assert hasattr(pyproject, PyprojectConfigFile.__name__)
