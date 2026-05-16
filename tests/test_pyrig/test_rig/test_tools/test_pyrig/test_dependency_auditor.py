@@ -1,15 +1,22 @@
 """Test module."""
 
+from pytest_mock import MockerFixture
+
+from pyrig.core.introspection.modules import reimport_module
+from pyrig.core.introspection.packages import (
+    src_package_is_package,
+)
 from pyrig.rig.tools.dependency_auditor import (
     DependencyAuditor as BaseDependencyAuditor,
 )
+from pyrig.rig.tools.pyrig import dependency_auditor
 from pyrig.rig.tools.pyrig.dependency_auditor import DependencyAuditor
 
 
 class TestDependencyAuditor:
     """Test class."""
 
-    def test_audit_args(self) -> None:
+    def test_audit_args(self, mocker: MockerFixture) -> None:
         """Test method."""
         args = DependencyAuditor.I.audit_args()
         ignore_vulns_indexes = [
@@ -27,3 +34,11 @@ class TestDependencyAuditor:
             ), f"""Expected vulnerability {vuln} to be in pip-audit output.
 This probably means the vulnerability is no longer relevant
 and the override should be updated to no longer ignore it."""
+
+        mock_src_package_is_package = mocker.patch(
+            src_package_is_package.__module__ + "." + src_package_is_package.__name__,
+            return_value=False,
+        )
+        module = reimport_module(dependency_auditor)
+        mock_src_package_is_package.assert_called_once()
+        assert not hasattr(module, DependencyAuditor.__name__)
