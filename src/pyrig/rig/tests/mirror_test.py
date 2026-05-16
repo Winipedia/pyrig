@@ -25,7 +25,6 @@ from pyrig.core.introspection.inspection import (
 )
 from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
-    module_has_docstring,
 )
 from pyrig.core.introspection.packages import discover_modules
 from pyrig.core.iterate import iterator_has_items
@@ -149,6 +148,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
     def create_file(self) -> None:
         """Create the test file on disk and register it in ``sys.modules``."""
         super().create_file()
+        self.write_content(self.test_module_docstring())
         import_module_with_file_fallback(self.path(), name=self.test_module_name())
 
     def is_correct(self) -> bool:
@@ -219,9 +219,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             test implementations.
         """
         test_module_content = self.read_content()
-        # if module content has no docstring, add the default one
-        if not module_has_docstring(self.module()):
-            test_module_content = self.test_module_docstring() + test_module_content
         test_module_content = self.test_module_content_with_func_skeletons(
             test_module_content
         )

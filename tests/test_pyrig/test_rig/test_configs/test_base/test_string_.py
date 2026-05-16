@@ -5,6 +5,7 @@ from contextlib import chdir
 from pathlib import Path
 
 import pytest
+from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
@@ -80,6 +81,7 @@ class TestStringConfigFile:
         self,
         my_test_string_config_file: type[StringConfigFile],
         tmp_path: Path,
+        mocker: MockerFixture,
     ) -> None:
         """Test method."""
         with chdir(tmp_path):
@@ -88,6 +90,15 @@ class TestStringConfigFile:
             my_test_string_config_file().dump(["New content.", ""])
             added_configs = my_test_string_config_file().merge_configs()
             assert added_configs == ["Test content.", "New content.", ""]
+
+            mock_should_override_content = mocker.patch.object(
+                StringConfigFile,
+                StringConfigFile.should_override_content.__name__,
+                return_value=True,
+            )
+            overridden_configs = my_test_string_config_file().merge_configs()
+            assert overridden_configs == ["Test content."]
+            mock_should_override_content.assert_called_once()
 
     def test_join_lines(
         self, my_test_string_config_file: type[StringConfigFile]

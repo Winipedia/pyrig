@@ -24,6 +24,7 @@ class TestCoverageTester:
             src_package_is_package.__module__ + "." + src_package_is_package.__name__,
             return_value=False,
         )
+        assert hasattr(coverage_tester, CoverageTester.__name__)
         module = reimport_module(coverage_tester)
         mock_src_package_is_package.assert_called_once()
         assert not hasattr(module, CoverageTester.__name__)

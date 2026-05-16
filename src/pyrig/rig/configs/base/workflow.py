@@ -393,7 +393,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
     def strategy_matrix_os_and_python_version(
         self,
         os: list[str] | None = None,
-        python_version: list[str] | None = None,
+        python_versions: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
         strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -403,7 +403,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             os: Runner labels to test against.  Defaults to Ubuntu, Windows,
                 and macOS latest (``ubuntu-latest``, ``windows-latest``,
                 ``macos-latest``).
-            python_version: Python version strings to test against.  Defaults
+            python_versions: Python version strings to test against.  Defaults
                 to all versions returned by
                 :meth:`~pyrig.rig.configs.pyproject.PyprojectConfigFile.supported_python_versions`.
             matrix: Additional matrix dimensions to merge in.
@@ -415,21 +415,21 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.strategy_matrix(
             matrix=self.matrix_os_and_python_version(
-                os=os, python_version=python_version, matrix=matrix
+                os=os, python_versions=python_versions, matrix=matrix
             ),
             strategy=strategy,
         )
 
     def strategy_matrix_python_version(
         self,
-        python_version: list[str] | None = None,
+        python_versions: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
         strategy: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create a strategy with Python version matrix.
 
         Args:
-            python_version: Python version strings to test against.  Defaults
+            python_versions: Python version strings to test against.  Defaults
                 to all versions returned by
                 :meth:`~pyrig.rig.configs.pyproject.PyprojectConfigFile.supported_python_versions`.
             matrix: Additional matrix dimensions to merge in.
@@ -440,7 +440,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.strategy_matrix(
             matrix=self.matrix_python_version(
-                python_version=python_version, matrix=matrix
+                python_versions=python_versions, matrix=matrix
             ),
             strategy=strategy,
         )
@@ -511,7 +511,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
     def matrix_os_and_python_version(
         self,
         os: list[str] | None = None,
-        python_version: list[str] | None = None,
+        python_versions: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
     ) -> dict[str, Any]:
         """Create a matrix with OS and Python version dimensions.
@@ -520,7 +520,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             os: Runner labels to include.  Defaults to Ubuntu, Windows, and
                 macOS latest (``ubuntu-latest``, ``windows-latest``,
                 ``macos-latest``).
-            python_version: Python version strings to include.  Defaults to
+            python_versions: Python version strings to include.  Defaults to
                 all versions returned by
                 :meth:`~pyrig.rig.configs.pyproject.PyprojectConfigFile.supported_python_versions`.
             matrix: Additional matrix dimensions to merge in.
@@ -532,7 +532,7 @@ class WorkflowConfigFile(DictYmlConfigFile):
             matrix = {}
         os_matrix = self.matrix_os(os=os, matrix=matrix)["os"]
         python_version_matrix = self.matrix_python_version(
-            python_version=python_version, matrix=matrix
+            python_versions=python_versions, matrix=matrix
         )["python-version"]
         matrix["os"] = os_matrix
         matrix["python-version"] = python_version_matrix
@@ -565,13 +565,13 @@ class WorkflowConfigFile(DictYmlConfigFile):
     def matrix_python_version(
         self,
         *,
-        python_version: list[str] | None = None,
+        python_versions: list[str] | None = None,
         matrix: dict[str, list[Any]] | None = None,
     ) -> dict[str, Any]:
         """Create a matrix with Python version dimension.
 
         Args:
-            python_version: Python version strings to include.  Defaults to
+            python_versions: Python version strings to include.  Defaults to
                 all versions returned by
                 :meth:`~pyrig.rig.configs.pyproject.PyprojectConfigFile.supported_python_versions`.
             matrix: Additional matrix dimensions to merge in.
@@ -579,13 +579,13 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             Matrix dict with the ``python-version`` key populated.
         """
-        if python_version is None:
-            python_version = [
+        if python_versions is None:
+            python_versions = [
                 str(v) for v in PyprojectConfigFile.I.supported_python_versions()
             ]
         if matrix is None:
             matrix = {}
-        matrix["python-version"] = python_version
+        matrix["python-version"] = python_versions
         return self.matrix(matrix=matrix)
 
     def matrix(self, matrix: dict[str, list[Any]]) -> dict[str, Any]:

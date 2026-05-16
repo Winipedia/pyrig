@@ -104,9 +104,9 @@ class StringConfigFile(ListConfigFile):
             Merged list of lines with required content first.
         """
         expected_lines = self.configs()
-        if not self.should_override_content() and (actual_lines := self.load()):
-            expected_lines = [*expected_lines, *actual_lines]
-        return expected_lines
+        if self.should_override_content():
+            return expected_lines
+        return [*expected_lines, *self.load()]
 
     def is_correct(self) -> bool:
         r"""Check whether the file contains all required content.
