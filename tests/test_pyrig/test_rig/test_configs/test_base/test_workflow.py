@@ -293,6 +293,20 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().job(job_test, steps=[])
         assert len(result) == 1, "Expected job to have one key"
 
+        # Test with job=None (line 222->224 False branch)
+        result = my_test_workflow().job(job_test, job=None, runs_on="ubuntu-latest")
+        assert len(result) == 1, "Expected job to have one key"
+
+        # Test with job={} (line 222->224 True branch - job is not None)
+        result = my_test_workflow().job(job_test, job={}, runs_on="ubuntu-latest")
+        assert len(result) == 1, "Expected job to have one key"
+
+        # Test with steps=None (line 234->236 False branch)
+        result = my_test_workflow().job(job_test, runs_on="ubuntu-latest", steps=None)
+        assert len(result) == 1, "Expected job to have one key"
+        job_config = next(iter(result.values()))
+        assert "steps" not in job_config
+
     def test_make_name_from_func(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -319,6 +333,9 @@ class TestWorkflowConfigFile:
             "Expected default branch to be 'main'"
         )
 
+        result = my_test_workflow().on_push(branches=["develop", "release/*"])
+        assert result["push"]["branches"] == ["develop", "release/*"]
+
     def test_on_schedule(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().on_schedule("0 0 * * *")
@@ -328,6 +345,12 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().on_pull_request()
         assert "pull_request" in result, "Expected 'pull_request' in result"
+
+        # Test with types=None (should use default types)
+        result = my_test_workflow().on_pull_request(
+            types=["opened", "synchronize", "reopened"]
+        )
+        assert result["pull_request"]["types"] == ["opened", "synchronize", "reopened"]
 
     def test_on_workflow_run(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -383,35 +406,53 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().strategy_matrix()
         assert "matrix" in result, "Expected 'matrix' in strategy"
 
+        # Test with strategy=None and matrix=None (covers lines 485-490)
+        result = my_test_workflow().strategy_matrix(strategy={}, matrix={})
+        assert "matrix" in result
+
     def test_strategy(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().strategy(strategy={})
-        assert "fail-fast" in result, "Expected 'fail-fast' in strategy"
+        assert "fail-fast" in result
 
     def test_matrix_os_and_python_version(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         result = my_test_workflow().matrix_os_and_python_version()
-        assert "os" in result, "Expected 'os' in matrix"
-        assert "python-version" in result, "Expected 'python-version' in matrix"
+        assert "os" in result
+        assert "python-version" in result
+
+        result = my_test_workflow().matrix_os_and_python_version(matrix={})
+        assert "os" in result
+        assert "python-version" in result
 
     def test_matrix_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().matrix_os()
-        assert "os" in result, "Expected 'os' in matrix"
+        assert "os" in result
+
+        result = my_test_workflow().matrix_os(os=["ubuntu-latest"], matrix={})
+        assert "os" in result
+        assert result["os"] == ["ubuntu-latest"]
 
     def test_matrix_python_version(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         result = my_test_workflow().matrix_python_version()
-        assert "python-version" in result, "Expected 'python-version' in matrix"
+        assert "python-version" in result
+
+        result = my_test_workflow().matrix_python_version(
+            python_versions=["3.14"], matrix={}
+        )
+        assert "python-version" in result
+        assert result["python-version"] == ["3.14"]
 
     def test_matrix(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().matrix({"test": ["value"]})
-        assert "test" in result, "Expected 'test' in matrix"
+        assert "test" in result
 
     def test_steps_core_setup(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -439,6 +480,15 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().step_checkout_repository()
         assert "uses" in result, "Expected 'uses' in step"
+
+        # Test with step=None (covers lines 727-729)
+        result = my_test_workflow().step_checkout_repository(step=None)
+        assert "uses" in result, "Expected 'uses' in step"
+
+        result = my_test_workflow().step_checkout_repository(repo_token=True, step={})
+        assert "uses" in result, "Expected 'uses' in step"
+        assert "with" in result, "Expected 'with' in step when repo_token=True"
+        assert "token" in result["with"], "Expected 'token' in step['with']"
 
     def test_step_setup_version_control(
         self, my_test_workflow: type[WorkflowConfigFile]

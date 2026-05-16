@@ -34,3 +34,12 @@ def test_make_fixture(tmp_path: Path) -> None:
         assert content.endswith("\n")
         assert '"""\n\nimport pytest' in content
         assert "pytest\n\n\n@pytest.fixture" in content
+
+        make_fixture("another-fixture")
+        content = fixtures_file.read_text()
+        assert "def another_fixture() -> None:" in content
+        assert content.count("@pytest.fixture") == 2  # noqa: PLR2004
+        assert content.count("import pytest") == 1
+        assert content.endswith("\n")
+        assert '"""\n\nimport pytest' in content
+        assert "pytest\n\n\n@pytest.fixture" in content

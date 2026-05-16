@@ -14,10 +14,13 @@ def test_remove_pycache(
     with chdir(tmp_project_root_path):
         package_root_path, _ = tmp_package_root_path
         pycache_path = package_root_path / "__pycache__"
+        module_path = package_root_path / "module.py"
+        module_path.touch()
         pycache_path.mkdir()
         assert pycache_path.exists()
         remove_pycache()
         assert not pycache_path.exists()
+        assert module_path.exists()
 
         tests_path = Path("tests")
         tests_path.mkdir()

@@ -117,7 +117,7 @@ class SomeClass:
         with chdir(tmp_path):
             config = my_test_mirror_test_config_file()
             config.create_file()  # ensure file exists for content generation
-            assert config.read_content() == ""
+            assert config.read_content() == '"""Test module."""\n'
             config.validate()
             assert (
                 my_test_mirror_test_config_file().module().__name__

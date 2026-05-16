@@ -1,6 +1,7 @@
 """Tests for pyrig.os.os module."""
 
 import logging
+from pathlib import Path
 from subprocess import CalledProcessError  # nosec: B404
 
 import pytest
@@ -27,7 +28,7 @@ def test_run_subprocess(
     # mock run to raise CalledProcessError
     mock_run = mocker.patch("subprocess.run", side_effect=CalledProcessError(1, cmd))
     with caplog.at_level(logging.ERROR), pytest.raises(CalledProcessError):
-        run_subprocess(cmd)
+        run_subprocess(cmd, cwd=Path())
     mock_run.assert_called_once()
     # Check that the error was logged
     assert any(
