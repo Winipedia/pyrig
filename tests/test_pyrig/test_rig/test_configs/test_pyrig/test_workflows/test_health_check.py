@@ -32,3 +32,8 @@ class TestHealthCheckWorkflowConfigFile:
         module = reimport_module(health_check)
         mock_src_package_is_package.assert_called_once()
         assert not hasattr(module, HealthCheckWorkflowConfigFile.__name__)
+
+        # release the mock and reimport to reset state for other tests
+        mock_src_package_is_package.stop()
+        reimport_module(health_check)
+        assert hasattr(health_check, HealthCheckWorkflowConfigFile.__name__)

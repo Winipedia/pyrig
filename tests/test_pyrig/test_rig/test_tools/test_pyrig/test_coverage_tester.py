@@ -28,3 +28,8 @@ class TestCoverageTester:
         module = reimport_module(coverage_tester)
         mock_src_package_is_package.assert_called_once()
         assert not hasattr(module, CoverageTester.__name__)
+
+        # release the mock and reimport to reset state for other tests
+        mock_src_package_is_package.stop()
+        reimport_module(coverage_tester)
+        assert hasattr(coverage_tester, CoverageTester.__name__)
