@@ -49,6 +49,13 @@ def test_remove_pycache(
         )
         double_nested_pycache_path.mkdir(parents=True)
         assert double_nested_pycache_path.exists()
+        # A file named __pycache__ should be matched by rglob but skipped
+        # because it is not a directory.
+        pycache_file = package_root_path / "file_only" / "__pycache__"
+        pycache_file.parent.mkdir()
+        pycache_file.touch()
+        assert pycache_file.is_file()
         remove_pycache()
         assert not nested_pycache_path.exists()
         assert not deep_nested_pycache_path.exists()
+        assert pycache_file.is_file()

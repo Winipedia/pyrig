@@ -50,6 +50,30 @@ def test_make_package_dir(tmp_path: Path) -> None:
         assert not (Path.cwd() / "__init__.py").exists()
 
 
+def test_make_package_dir_path_not_under_cwd(
+    tmp_path: Path, mocker: MockerFixture
+) -> None:
+    """Test the loop exhausts when the path shares no ancestor with cwd."""
+    cwd_dir = tmp_path / "cwd"
+    cwd_dir.mkdir()
+    elsewhere = tmp_path / "elsewhere" / "deep" / "pkg"
+
+    # Mock make_init_file so the test does not write __init__.py files into
+    # ancestor directories like /tmp or /.
+    make_init_file_mock = mocker.patch(
+        make_init_file.__module__ + "." + make_init_file.__name__, return_value=None
+    )
+
+    with chdir(cwd_dir):
+        make_package_dir(elsewhere, until=(), content="")
+
+    assert elsewhere.exists()
+    # The for loop should have iterated over the path and every ancestor
+    # without breaking, since neither cwd nor Path() appear in the chain.
+    expected_call_count = 1 + len(elsewhere.parents)
+    assert make_init_file_mock.call_count == expected_call_count
+
+
 def test_src_package_is_pyrig() -> None:
     """Test function."""
     assert src_package_is_pyrig()

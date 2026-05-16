@@ -195,6 +195,32 @@ class TestDiGraph:
         # Ancestors of non-existent node
         assert graph.ancestors("x") == set()
 
+    def test_ancestors_with_duplicate_queue_entries(self) -> None:
+        """Test ancestors when a node is queued twice before being visited."""
+        graph = MyTestDiGraph()
+        # Diamond: c depends on both a and b, both a and b depend on target.
+        # Initial queue contains {a, b}; processing either adds c, then the
+        # other also adds c (since c isn't visited yet) → c appears twice.
+        graph.add_edge("a", "target")
+        graph.add_edge("b", "target")
+        graph.add_edge("c", "a")
+        graph.add_edge("c", "b")
+
+        assert graph.ancestors("target") == {"a", "b", "c"}
+
+    def test_ancestors_with_already_visited_neighbor(self) -> None:
+        """Test ancestors when a neighbor is encountered after being visited."""
+        graph = MyTestDiGraph()
+        # c -> a -> b -> target and c -> target.
+        # When traversing from a's reverse edges we hit c, which is already
+        # visited via the direct edge from target.
+        graph.add_edge("b", "target")
+        graph.add_edge("c", "target")
+        graph.add_edge("a", "b")
+        graph.add_edge("c", "a")
+
+        assert graph.ancestors("target") == {"a", "b", "c"}
+
     def test_topological_sort_subgraph(self) -> None:
         """Test topological sorting of a subgraph."""
         graph = MyTestDiGraph()
@@ -251,3 +277,15 @@ class TestDiGraph:
 
         result = graph.topological_sort_subgraph({"a"})
         assert result == ["a"]
+
+    def test_topological_sort_subgraph_ignores_dependents_outside_subset(
+        self,
+    ) -> None:
+        """Test that reverse edges to nodes outside the subset are ignored."""
+        graph = MyTestDiGraph()
+        # outsider depends on b (outsider -> b). When sorting just {b}, the
+        # reverse-edge iteration finds outsider but it is not in the subset.
+        graph.add_edge("outsider", "b")
+
+        result = graph.topological_sort_subgraph({"b"})
+        assert result == ["b"]
