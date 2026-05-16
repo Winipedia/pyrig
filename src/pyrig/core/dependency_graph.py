@@ -47,10 +47,9 @@ class DependencyGraph(DiGraph):
         logger.debug("Building dependency graph from installed distributions")
         for dist in importlib.metadata.distributions():
             name, deps = self.parse_name_and_deps(dist)
-            if name:
-                self.add_node(name)
-                for dep in deps:
-                    self.add_edge(name, dep)  # package → dependency
+            self.add_node(name)
+            for dep in deps:
+                self.add_edge(name, dep)  # package → dependency
         logger.debug("Dependency graph built with %d packages", len(self.nodes()))
 
     def parse_name_and_deps(

@@ -26,6 +26,8 @@ class TestDependencyGraph:
         num_nodes = len(DEP_GRAPH.nodes())
         assert num_nodes > 0, "Expected graph to have nodes after initialization"
 
+        assert "" not in DEP_GRAPH.nodes()
+
     def test_build(self) -> None:
         """Test method."""
         # Verify that known packages are in the graph
