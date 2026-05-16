@@ -32,7 +32,7 @@ def test_discover_equivalent_modules_across_dependents(mocker: MockerFixture) ->
     mock_all_deps.assert_called_once()
 
     mock_all_deps.return_value = [typer]
-    modules = tuple(discover_equivalent_modules_across_dependents(core))
+    modules = tuple(discover_equivalent_modules_across_dependents(rig))
     assert not modules
 
 
