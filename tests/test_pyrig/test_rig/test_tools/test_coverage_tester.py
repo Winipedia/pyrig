@@ -11,13 +11,17 @@ class TestCoverageTester:
         """Test method."""
         assert CoverageTester.I.version_control_ignore_paths() == (".coverage",)
 
-    def test_additional_args(self) -> None:
+    def test_additional_test_args(self) -> None:
         """Test method."""
-        assert CoverageTester.I.additional_args() == (
+        assert tuple(CoverageTester.I.additional_test_args()) == (
             "--cov=pyrig",
             "--cov-branch",
             "--cov-report=term-missing",
             "--cov-fail-under=100",
+        )
+        assert (
+            str(CoverageTester.I.additional_test_args())
+            == "--cov=pyrig --cov-branch --cov-report=term-missing --cov-fail-under=100"
         )
 
     def test_threshold(self) -> None:

@@ -3,6 +3,7 @@
 Wraps CoverageTester commands and information.
 """
 
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.package_manager import PackageManager
 
@@ -52,24 +53,26 @@ class CoverageTester(Tool):
         """Return paths to ignore in version control."""
         return (".coverage",)
 
-    def additional_args(self) -> tuple[str, ...]:
+    def additional_test_args(self) -> Args:
         """Get pytest-cov arguments for local test runs.
 
         These arguments are added to ``[tool.pytest.ini_options] addopts`` in
         ``pyproject.toml``, so they apply to every local ``pytest`` invocation.
 
         Returns:
-            Tuple of pytest-cov CLI flags:
+            Args: Tuple of pytest-cov CLI flags:
                 ``--cov=<package_name>``: enables coverage tracking for the package.
                 ``--cov-report=term-missing``: prints uncovered lines to the terminal.
                 ``--cov-fail-under=<threshold>``: fails the run if coverage drops
                 below the configured threshold.
         """
-        return (
-            f"--cov={PackageManager.I.package_name()}",
-            "--cov-branch",
-            "--cov-report=term-missing",
-            f"--cov-fail-under={self.threshold()}",
+        return Args(
+            (
+                f"--cov={PackageManager.I.package_name()}",
+                "--cov-branch",
+                "--cov-report=term-missing",
+                f"--cov-fail-under={self.threshold()}",
+            )
         )
 
     def color(self) -> tuple[int, int, int]:

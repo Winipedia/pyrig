@@ -163,7 +163,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 ProjectTester.I.name(): {
                     "ini_options": {
                         "testpaths": [ProjectTester.I.tests_package_root().as_posix()],
-                        "addopts": " ".join(CoverageTester.I.additional_args()),
+                        "addopts": str(CoverageTester.I.additional_test_args()),
                     }
                 },
                 SecurityChecker.I.name(): {
