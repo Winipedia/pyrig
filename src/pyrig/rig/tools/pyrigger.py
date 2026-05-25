@@ -21,7 +21,6 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.subcommands import mkroot, mktests
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.version_control.hook_manager import (
     VersionControlHookManager,
 )
@@ -145,7 +144,6 @@ class Pyrigger(Tool):
             "Installing version control hooks": (
                 VersionControlHookManager.I.install_args()
             ),
-            "Running tests": ProjectTester.I.test_args(),
             "Adding files to version control": VersionController.I.add_all_args(),
             "Committing initial changes": VersionController.I.commit_with_message_args(
                 msg=f"{self.name()}: Initial commit"
