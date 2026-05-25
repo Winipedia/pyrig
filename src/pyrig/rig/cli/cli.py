@@ -68,9 +68,12 @@ def configure_logging(verbose: int, quiet: int) -> None:
     level -= step * verbose
     level += step * quiet
 
-    if verbose >= 3:  # noqa: PLR2004
+    verbose_timestamps = 3
+    verbose_modules = 2
+
+    if verbose >= verbose_timestamps:
         fmt = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
-    elif verbose == 2:  # noqa: PLR2004
+    elif verbose == verbose_modules:
         fmt = "%(levelname)s [%(name)s] %(message)s"
     elif verbose == 1:
         fmt = "%(levelname)s: %(message)s"
