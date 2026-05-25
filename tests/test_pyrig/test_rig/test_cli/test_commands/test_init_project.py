@@ -6,6 +6,7 @@ import shutil
 from contextlib import chdir
 from pathlib import Path
 
+import pytest
 import tomlkit
 from pytest_mock import MockerFixture
 
@@ -14,6 +15,7 @@ from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
@@ -27,7 +29,7 @@ def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
     pyrigger_init_project_mock.assert_called_once()
 
 
-def test_init_project(tmp_path: Path) -> None:
+def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     """Test function."""
     # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
@@ -97,8 +99,12 @@ def test_init_project(tmp_path: Path) -> None:
         # also checks if the init process works
         args = PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=init))
         res = args.run(env=clean_env)
+        assert res.returncode == 0
 
-        assert res.returncode == 0, f"Expected returncode 0, got {res.returncode}"
+        # run tests
+        args = PackageManager.I.run_args(*ProjectTester.I.test_args())
+        res = args.run(env=clean_env, check=False)
+        assert res.returncode == pytest.ExitCode.NO_TESTS_COLLECTED
 
         # assert the packages own cli is available
         args = PackageManager.I.run_args(project_name, "--help")
