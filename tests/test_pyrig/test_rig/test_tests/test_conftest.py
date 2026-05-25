@@ -25,3 +25,8 @@ pyrig and all pyrig dependent packages, collecting all Python modules except
 ``__init__.py`` modules and registers them as plugins.
 """  # noqa: E501
     )
+
+
+def test_pytest_sessionfinish() -> None:
+    """Test function."""
+    raise NotImplementedError

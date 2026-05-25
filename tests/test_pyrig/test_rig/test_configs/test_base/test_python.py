@@ -5,7 +5,7 @@ from pytest_mock import MockerFixture
 from pyrig.rig.configs.base.python import PythonConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.configs.python.package_init import PackageInitConfigFile
-from pyrig.rig.configs.testing.test_zero import ZeroTestConfigFile
+from pyrig.rig.configs.testing.project_tester import ProjectTesterConfigFile
 
 
 class TestPythonConfigFile:
@@ -13,29 +13,29 @@ class TestPythonConfigFile:
 
     def test_is_init_file(self) -> None:
         """Test method."""
-        assert not ZeroTestConfigFile.I.is_init_file()
+        assert not ProjectTesterConfigFile.I.is_init_file()
         assert PackageInitConfigFile.I.is_init_file()
 
     def test__dump(self, mocker: MockerFixture) -> None:
         """Test method."""
-        module_before = ZeroTestConfigFile.I.module()
+        module_before = ProjectTesterConfigFile.I.module()
         dump_mock = mocker.patch.object(StringConfigFile, "_dump")
-        ZeroTestConfigFile.I._dump([])  # noqa: SLF001
+        ProjectTesterConfigFile.I._dump([])  # noqa: SLF001
         dump_mock.assert_called_once()
-        module_after = ZeroTestConfigFile.I.module()
+        module_after = ProjectTesterConfigFile.I.module()
         assert module_before is not module_after
         assert module_before.__name__ == module_after.__name__
         assert module_before.__file__ == module_after.__file__
 
     def test_module(self) -> None:
         """Test method."""
-        assert ZeroTestConfigFile.I.module().__name__ == "tests.test_zero"
+        assert ProjectTesterConfigFile.I.module().__name__ == "tests.conftest"
 
         assert PackageInitConfigFile.I.module().__name__ == "pyrig"
 
     def test_extension(self) -> None:
         """Test method."""
         expected = "py"
-        assert issubclass(ZeroTestConfigFile, PythonConfigFile)
-        actual = ZeroTestConfigFile().extension()
+        assert issubclass(ProjectTesterConfigFile, PythonConfigFile)
+        actual = ProjectTesterConfigFile().extension()
         assert actual == expected, f"Expected {expected}, got {actual}"
