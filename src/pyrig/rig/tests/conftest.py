@@ -12,11 +12,20 @@ pyrig and all pyrig dependent packages, collecting all Python modules except
 from itertools import chain
 from pathlib import Path
 
+import pytest
+
 from pyrig.core.introspection.dependencies import (
     discover_equivalent_modules_across_dependents,
 )
 from pyrig.core.introspection.paths import package_dir_path, path_as_module_name
 from pyrig.rig.tests import fixtures
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: pytest.ExitCode) -> None:
+    """Hook to modify the exit status when no tests are collected."""
+    if exitstatus == pytest.ExitCode.NO_TESTS_COLLECTED:
+        session.exitstatus = pytest.ExitCode.OK
+
 
 module_names: list[str] = []
 for package in chain(
