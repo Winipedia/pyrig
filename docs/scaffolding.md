@@ -59,8 +59,7 @@ my-project/
 │
 └── tests/
     ├── __init__.py                         # Tests package init
-    ├── conftest.py                         # Pytest plugin registration for pyrig
-    └── test_zero.py                        # Placeholder test for pyrig
+    └── conftest.py                         # Pytest plugin registration for pyrig
 ```
 
 ## File Descriptions
@@ -127,7 +126,6 @@ Health Check ──► Build ──► Release ──► Deploy
 |---|---|
 | `__init__.py` | Makes `tests/` a Python package |
 | `conftest.py` | Registers pyrig's pytest plugin via `pytest_plugins` |
-| `test_zero.py` | A single empty `test_zero` function so pytest never reports "no tests collected" |
 
 ## Tool-Generated Artifacts
 
