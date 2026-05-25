@@ -3,7 +3,12 @@
 tests.test_pyrig.test_testing.test_tests.test_conftest
 """
 
+from types import SimpleNamespace
+
+import pytest
+
 from pyrig.rig.tests import conftest
+from pyrig.rig.tests.conftest import pytest_sessionfinish
 
 
 def test_module_docstring() -> None:
@@ -28,5 +33,12 @@ pyrig and all pyrig dependent packages, collecting all Python modules except
 
 
 def test_pytest_sessionfinish() -> None:
-    """Test function."""
-    raise NotImplementedError
+    """Test func."""
+    session = SimpleNamespace(exitstatus=None)
+
+    pytest_sessionfinish(
+        session,  # ty:ignore[invalid-argument-type]
+        pytest.ExitCode.NO_TESTS_COLLECTED,
+    )
+
+    assert session.exitstatus == pytest.ExitCode.OK
