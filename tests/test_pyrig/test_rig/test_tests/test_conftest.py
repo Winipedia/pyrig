@@ -34,11 +34,21 @@ pyrig and all pyrig dependent packages, collecting all Python modules except
 
 def test_pytest_sessionfinish() -> None:
     """Test func."""
-    session = SimpleNamespace(exitstatus=None)
+    session = SimpleNamespace(exitstatus=pytest.ExitCode.NO_TESTS_COLLECTED)
 
     pytest_sessionfinish(
         session,  # ty:ignore[invalid-argument-type]
-        pytest.ExitCode.NO_TESTS_COLLECTED,
+        session.exitstatus,
     )
 
     assert session.exitstatus == pytest.ExitCode.OK
+
+    session.exitstatus = pytest.ExitCode.TESTS_FAILED
+    pytest_sessionfinish(
+        session,  # ty:ignore[invalid-argument-type]
+        session.exitstatus,
+    )
+
+    assert session.exitstatus == pytest.ExitCode.TESTS_FAILED
+    assert session.exitstatus != pytest.ExitCode.OK
+    assert session.exitstatus != pytest.ExitCode.NO_TESTS_COLLECTED
