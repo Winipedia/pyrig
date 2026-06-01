@@ -78,7 +78,7 @@ class PackageManager(Tool):
         Returns:
             Python-importable package name derived from the project name.
         """
-        return CLI.I.package_name_from_project_name(self.project_name())
+        return CLI.I.project_name_as_package_name(self.project_name())
 
     def project_name(self) -> str:
         """Return the project name.
