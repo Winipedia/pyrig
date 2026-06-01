@@ -20,14 +20,14 @@ class TestCLI:
         """Test method."""
         assert CLI.I.package_name() == kebab_to_snake_case(CLI.I.project_name())
 
-    def test_package_name_from_project_name(self) -> None:
+    def test_project_name_as_package_name(self) -> None:
         """Test method."""
         name = "some-name"
-        assert CLI.I.package_name_from_project_name(name) == "some_name"
+        assert CLI.I.project_name_as_package_name(name) == "some_name"
         name = "some_name"
-        assert CLI.I.package_name_from_project_name(name) == "some_name"
+        assert CLI.I.project_name_as_package_name(name) == "some_name"
         name = "somename"
-        assert CLI.I.package_name_from_project_name(name) == "somename"
+        assert CLI.I.project_name_as_package_name(name) == "somename"
 
     def test_dependency_package(self) -> None:
         """Test method."""

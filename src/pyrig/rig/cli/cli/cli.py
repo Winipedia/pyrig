@@ -250,9 +250,9 @@ class CLI(RigDependencySubclass):
         Returns:
             The package name of the invoking project, derived from the project name.
         """
-        return self.package_name_from_project_name(self.project_name())
+        return self.project_name_as_package_name(self.project_name())
 
-    def package_name_from_project_name(self, project_name: str) -> str:
+    def project_name_as_package_name(self, project_name: str) -> str:
         """Return the package name derived from the project name.
 
         Converts the project name from kebab-case to snake_case, so a
