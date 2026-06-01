@@ -3,6 +3,7 @@
 import logging
 import re
 from collections.abc import Iterator
+from functools import cache
 from pathlib import Path
 from types import ModuleType
 
@@ -190,8 +191,7 @@ def discover_all_subclasses_across_package[T: type](
         Set of all subclass types of ``cls`` that are defined within
         ``package``. Does not include ``cls`` itself.
     """
-    # exhaust the generator to trigger imports, but ignore the output
-    _ = tuple(walk_package(package))
+    register_package_modules(package)
     subclasses = discover_all_subclasses(cls)
     # remove all not in the package
     return {
@@ -199,6 +199,25 @@ def discover_all_subclasses_across_package[T: type](
         for subclass in subclasses
         if subclass.__module__.startswith(package.__name__ + ".")
     }
+
+
+@cache
+def register_package_modules(package: ModuleType) -> None:
+    """Import all modules in a package to trigger side effects.
+
+    This is makes sure that the modules are in sys.modules and their code has run.
+    So that things like classes and functions are registered.
+
+    Args:
+        package: Package to import all modules from.
+
+    Note:
+        This function is cached to avoid redundant imports and improve performance
+        when called multiple times with the same package because a module only needs
+        to be registered once.
+    """
+    # exhaust the generator to trigger imports, but ignore the output
+    _ = tuple(walk_package(package))
 
 
 def walk_package(

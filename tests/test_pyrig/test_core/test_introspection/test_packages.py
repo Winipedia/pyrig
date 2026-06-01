@@ -3,6 +3,7 @@
 import sys
 from contextlib import chdir
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 import typer
@@ -19,6 +20,7 @@ from pyrig.core.introspection.packages import (
     import_package_with_dir_fallback,
     make_init_file,
     make_package_dir,
+    register_package_modules,
     src_package_is_package,
     src_package_is_pyrig,
     walk_package,
@@ -175,3 +177,17 @@ def test_discover_modules() -> None:
     assert packages in modules
     # is a package module, not a regular module, so should be excluded
     assert introspection not in modules
+
+
+def test_register_package_modules(mocker: MockerFixture) -> None:
+    """Test function."""
+    package = ModuleType(test_register_package_modules.__name__)
+    mock_walk_package = mocker.patch(
+        walk_package.__module__ + "." + walk_package.__name__,
+        return_value=iter([]),
+    )
+    register_package_modules(package)
+    mock_walk_package.assert_called_once_with(package)
+    register_package_modules(package)
+    # should only call walk_package once due to caching
+    mock_walk_package.assert_called_once_with(package)
