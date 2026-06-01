@@ -8,10 +8,10 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.core.strings import (
-    kebab_to_snake_case,
     snake_to_kebab_case,
 )
 from pyrig.core.subprocesses import Args
+from pyrig.rig.cli.cli.cli import CLI
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
 
 
@@ -78,18 +78,7 @@ class PackageManager(Tool):
         Returns:
             Python-importable package name derived from the project name.
         """
-        return self.package_name_from_project_name(self.project_name())
-
-    def package_name_from_project_name(self, project_name: str) -> str:
-        """Return the package name derived from the project name.
-
-        Converts the project name from kebab-case to snake_case, so a
-        project named ``my-project`` has the package name ``my_project``.
-
-        Returns:
-            Python-importable package name derived from the project name.
-        """
-        return kebab_to_snake_case(project_name)
+        return CLI.I.package_name_from_project_name(self.project_name())
 
     def project_name(self) -> str:
         """Return the project name.

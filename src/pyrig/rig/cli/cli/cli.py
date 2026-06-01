@@ -22,8 +22,8 @@ from pyrig.core.introspection.modules import (
     import_module_with_default,
     module_name_replacing_start_module,
 )
+from pyrig.core.strings import kebab_to_snake_case
 from pyrig.rig.cli import cli, shared_subcommands, subcommands
-from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
@@ -194,10 +194,7 @@ class CLI(RigDependencySubclass):
             registration is silently skipped.
         """
         subcommands_module_name = module_name_replacing_start_module(
-            subcommands,
-            new_start_module_name=PackageManager.I.package_name_from_project_name(
-                self.project_name()
-            ),
+            subcommands, new_start_module_name=self.package_name()
         )
         subcommands_module = import_module_with_default(subcommands_module_name)
 
@@ -240,6 +237,31 @@ class CLI(RigDependencySubclass):
             sub_cmds = module_functions(shared_subcommands_module)
             for sub_cmd in sub_cmds:
                 app.command()(sub_cmd)
+
+    def package_name(self) -> str:
+        """Return the package name of the invoking project.
+
+        Derives the package name from the project name (the basename of
+        ``sys.argv[0]``) by converting it from kebab-case to snake_case.
+
+        For example, if the project is invoked as ``uv run my-project``, the
+        package name would be ``my_project``.
+
+        Returns:
+            The package name of the invoking project, derived from the project name.
+        """
+        return self.package_name_from_project_name(self.project_name())
+
+    def package_name_from_project_name(self, project_name: str) -> str:
+        """Return the package name derived from the project name.
+
+        Converts the project name from kebab-case to snake_case, so a
+        project named ``my-project`` has the package name ``my_project``.
+
+        Returns:
+            Python-importable package name derived from the project name.
+        """
+        return kebab_to_snake_case(project_name)
 
     def project_name(self) -> str:
         """Extract the invoking project name from the command-line entry point.
