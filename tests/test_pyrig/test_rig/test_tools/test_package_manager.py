@@ -10,15 +10,6 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
-    def test_package_name_from_project_name(self) -> None:
-        """Test method."""
-        name = "some-name"
-        assert PackageManager.I.package_name_from_project_name(name) == "some_name"
-        name = "some_name"
-        assert PackageManager.I.package_name_from_project_name(name) == "some_name"
-        name = "somename"
-        assert PackageManager.I.package_name_from_project_name(name) == "somename"
-
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
         assert PackageManager.I.version_control_ignore_paths() == (".venv", "dist/")

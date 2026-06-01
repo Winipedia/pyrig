@@ -6,6 +6,7 @@ import typer
 from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.modules import import_module_with_default
+from pyrig.core.strings import kebab_to_snake_case
 from pyrig.rig.cli import cli as cli_package
 from pyrig.rig.cli import subcommands as subcommands_module
 from pyrig.rig.cli.cli import cli as cli_module
@@ -14,6 +15,19 @@ from pyrig.rig.cli.cli.cli import CLI
 
 class TestCLI:
     """Test class."""
+
+    def test_package_name(self) -> None:
+        """Test method."""
+        assert CLI.I.package_name() == kebab_to_snake_case(CLI.I.project_name())
+
+    def test_package_name_from_project_name(self) -> None:
+        """Test method."""
+        name = "some-name"
+        assert CLI.I.package_name_from_project_name(name) == "some_name"
+        name = "some_name"
+        assert CLI.I.package_name_from_project_name(name) == "some_name"
+        name = "somename"
+        assert CLI.I.package_name_from_project_name(name) == "somename"
 
     def test_dependency_package(self) -> None:
         """Test method."""
