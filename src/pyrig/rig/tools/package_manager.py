@@ -78,7 +78,18 @@ class PackageManager(Tool):
         Returns:
             Python-importable package name derived from the project name.
         """
-        return kebab_to_snake_case(self.project_name())
+        return self.package_name_from_project_name(self.project_name())
+
+    def package_name_from_project_name(self, project_name: str) -> str:
+        """Return the package name derived from the project name.
+
+        Converts the project name from kebab-case to snake_case, so a
+        project named ``my-project`` has the package name ``my_project``.
+
+        Returns:
+            Python-importable package name derived from the project name.
+        """
+        return kebab_to_snake_case(project_name)
 
     def project_name(self) -> str:
         """Return the project name.

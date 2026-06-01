@@ -19,7 +19,7 @@ from pyrig.core.resources import (
 )
 from pyrig.core.strings import dependency_requirement_as_package_name
 from pyrig.rig import resources, tests
-from pyrig.rig.cli import cli
+from pyrig.rig.cli import main
 from pyrig.rig.configs.base.config_file import ConfigDict, Priority
 from pyrig.rig.configs.base.toml import TomlConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
@@ -129,7 +129,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "keywords": [],
                 "scripts": {
                     PackageManager.I.project_name(): (
-                        f"{cli.__name__}:{cli.main.__name__}"
+                        f"{main.__name__}:{main.main.__name__}"
                     )
                 },
             },

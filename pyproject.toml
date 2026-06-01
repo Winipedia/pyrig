@@ -51,7 +51,7 @@ Issues = "https://github.com/Winipedia/pyrig/issues"
 Changelog = "https://github.com/Winipedia/pyrig/releases"
 
 [project.scripts]
-pyrig = "pyrig.rig.cli.cli:main"
+pyrig = "pyrig.rig.cli.main:main"
 
 [dependency-groups]
 dev = [

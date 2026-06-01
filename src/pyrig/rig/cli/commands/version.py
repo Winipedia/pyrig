@@ -4,7 +4,7 @@ from importlib.metadata import version
 
 import typer
 
-from pyrig.core.cli import project_name_from_argv
+from pyrig.rig.cli.cli.cli import CLI
 
 
 def project_version() -> None:
@@ -19,5 +19,5 @@ def project_version() -> None:
     ``importlib.metadata.version``. The project must be installed (editable
     installs are sufficient) for this to work.
     """
-    project_name = project_name_from_argv()
+    project_name = CLI.I.project_name()
     typer.echo(f"{project_name} version {version(project_name)}")
