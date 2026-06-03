@@ -105,3 +105,17 @@ stages = [
     "post-merge",
     "post-rewrite",
 ]
+
+[[repos.hooks]]
+id = "audit-dependencies"
+name = "audit-dependencies"
+entry = "pip-audit"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-push",
+    "post-checkout",
+    "post-merge",
+    "post-rewrite",
+]
