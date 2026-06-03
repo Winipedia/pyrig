@@ -13,6 +13,7 @@ from pyrig.core.subprocesses import (
 )
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.toml import TomlConfigFile
+from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
@@ -87,6 +88,11 @@ class VersionControlHookManagerConfigFile(TomlConfigFile):
             self.hook(
                 "install-dependencies",
                 PackageManager.I.install_dependencies_args(),
+                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
+            ),
+            self.hook(
+                "audit-dependencies",
+                DependencyAuditor.I.audit_args(),
                 stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
             ),
         ]
