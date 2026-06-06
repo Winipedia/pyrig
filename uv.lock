@@ -1223,7 +1223,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "12.0.2"
+version = "12.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
@@ -1241,6 +1241,7 @@ dev = [
     { name = "pygithub" },
     { name = "pyrig-codecov" },
     { name = "pyrig-dev" },
+    { name = "pyrig-pypi" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
@@ -1264,6 +1265,7 @@ dev = [
     { name = "pygithub", specifier = ">=2.8.1" },
     { name = "pyrig-codecov", specifier = ">=1.1.0" },
     { name = "pyrig-dev", specifier = ">=0.1.19" },
+    { name = "pyrig-pypi", specifier = ">=1.0.0" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-mock", specifier = ">=3.15.1" },
@@ -1301,6 +1303,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/92/d0/a619035cb62ddbe2ade50b43e91bbd7824be4cca88624bbad6d881049944/pyrig_dev-1.0.0.tar.gz", hash = "sha256:7d16d2f9d51a34f5b77a5430d44f75284b578da53abf4d5d0e77be8e0de938e3", size = 1839, upload-time = "2026-05-04T10:59:18.646Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ab/51/4501c5ac6f791581c4d03bac63f075409195b5653e9b7579622c9e92cc09/pyrig_dev-1.0.0-py3-none-any.whl", hash = "sha256:71d438459214fad7692c493ac8cb7b2045dc285d66530ad5dbe6523dba84fa88", size = 2077, upload-time = "2026-05-04T10:59:19.255Z" },
+]
+
+[[package]]
+name = "pyrig-pypi"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyrig" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d3/b0/f0d879d71a9a75c0521c697bae3a3c8b7a44e81d6c233752e6f60c6a26d0/pyrig_pypi-1.0.0.tar.gz", hash = "sha256:5ad7d5e0d1a07f1260f2d50bcbb787118dbdbb84add6ffbf9aa3c3c6b90a28f2", size = 5518, upload-time = "2026-06-06T22:30:55.488Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/fe/7ce3bdd7c339c143fbbcd4457485fcf7e1ef8b5b35fca2b4486b074674c6/pyrig_pypi-1.0.0-py3-none-any.whl", hash = "sha256:fec5255d2c1907d9584d14be8c38d43d809245d0fb533bc847ea6008efb4802f", size = 9307, upload-time = "2026-06-06T22:30:54.485Z" },
 ]
 
 [[package]]
