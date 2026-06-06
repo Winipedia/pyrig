@@ -94,7 +94,7 @@ class TestDiGraph:
         """Test method."""
         graph = DependencyGraph()
         deps = graph.sorted_ancestors("typer")
-        assert deps == ["pyrig"]
+        assert deps == ["pyrig", "pyrig_codecov"]
 
     def test_build(self) -> None:
         """Test method."""

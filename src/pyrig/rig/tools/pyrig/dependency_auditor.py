@@ -1,12 +1,12 @@
 """Pyrig specific dependency auditor override."""
 
 from pyrig.core.introspection.packages import src_package_is_pyrig
-from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.dependency_auditor import (
-    DependencyAuditor as BaseDependencyAuditor,
-)
 
 if src_package_is_pyrig():
+    from pyrig.core.subprocesses import Args
+    from pyrig.rig.tools.dependency_auditor import (
+        DependencyAuditor as BaseDependencyAuditor,
+    )
 
     class DependencyAuditor(BaseDependencyAuditor):
         """Pyrig-specific dependency auditor.

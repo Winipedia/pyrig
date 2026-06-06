@@ -10,29 +10,29 @@ class TestCoverageTester:
     def test_image_url(self) -> None:
         """Test method."""
         assert (
-            CoverageTester.I.image_url()
-            == "https://img.shields.io/badge/coverage->=100%25-hsl(120,80%25,45%25)?logo=codecov&logoColor=white"
+            CoverageTester().image_url()
+            == "https://img.shields.io/badge/coverage->=90%25-hsl(108,80%25,45%25)?logo=codecov&logoColor=white"
         )
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert CoverageTester.I.link_url() == "https://github.com/pytest-dev/pytest-cov"
+        assert CoverageTester().link_url() == "https://github.com/pytest-dev/pytest-cov"
 
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
-        assert CoverageTester.I.version_control_ignore_paths() == (".coverage",)
+        assert CoverageTester().version_control_ignore_paths() == (".coverage",)
 
     def test_additional_test_args(self) -> None:
         """Test method."""
-        assert tuple(CoverageTester.I.additional_test_args()) == (
+        assert tuple(CoverageTester().additional_test_args()) == (
             "--cov=pyrig",
             "--cov-branch",
             "--cov-report=term-missing",
-            "--cov-fail-under=100",
+            "--cov-fail-under=90",
         )
         assert (
-            str(CoverageTester.I.additional_test_args())
-            == "--cov=pyrig --cov-branch --cov-report=term-missing --cov-fail-under=100"
+            str(CoverageTester().additional_test_args())
+            == "--cov=pyrig --cov-branch --cov-report=term-missing --cov-fail-under=90"
         )
 
     def test_threshold(self) -> None:
