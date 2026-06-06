@@ -1223,7 +1223,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "12.0.0"
+version = "12.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
@@ -1239,6 +1239,7 @@ dev = [
     { name = "pip-audit" },
     { name = "prek" },
     { name = "pygithub" },
+    { name = "pyrig-codecov" },
     { name = "pyrig-dev" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -1261,6 +1262,7 @@ dev = [
     { name = "pip-audit", specifier = ">=2.10.0" },
     { name = "prek", specifier = ">=0.3.2" },
     { name = "pygithub", specifier = ">=2.8.1" },
+    { name = "pyrig-codecov", specifier = ">=1.1.0" },
     { name = "pyrig-dev", specifier = ">=0.1.19" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
@@ -1268,6 +1270,18 @@ dev = [
     { name = "ruff", specifier = ">=0.15.0" },
     { name = "rumdl", specifier = ">=0.1.17" },
     { name = "ty", specifier = ">=0.0.16" },
+]
+
+[[package]]
+name = "pyrig-codecov"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyrig" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/95/0e/ef21d96c6b382eb6fda9dc9d53ee06029f82448013fe4bde57f6f6e085d7/pyrig_codecov-1.1.0.tar.gz", hash = "sha256:0e4659aa6366f6eb8af1f45354bb69dc22d9dbd514633997cc9d5fd9481997de", size = 5183, upload-time = "2026-06-06T17:41:32.987Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/e9/552c4f569f157901c472a862d5d3e3820b10c66d6d07243f3d41c37758c4/pyrig_codecov-1.1.0-py3-none-any.whl", hash = "sha256:9ced1873e66a87ea2f2cb1c5d388c9960577a7221397ffee86f127fb7a81c676", size = 8470, upload-time = "2026-06-06T17:41:31.819Z" },
 ]
 
 [[package]]

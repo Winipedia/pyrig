@@ -2,10 +2,11 @@
 
 from typing import Any
 
-from pyrig.core.introspection.packages import src_package_is_pyrig
-from pyrig.rig.configs.remote_version_control.workflows.health_check import (
+from pyrig_codecov.rig.configs.remote_version_control.workflows.health_check import (
     HealthCheckWorkflowConfigFile as BaseHealthCheckWorkflowConfigFile,
 )
+
+from pyrig.core.introspection.packages import src_package_is_pyrig
 from pyrig.rig.tools.version_control.remote import RemoteVersionController
 
 if src_package_is_pyrig():
