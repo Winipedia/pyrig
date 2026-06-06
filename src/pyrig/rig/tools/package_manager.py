@@ -169,7 +169,6 @@ class PackageManager(Tool):
         Returns:
             Empty tuple.
         """
-        # uv is a system dependency, so we don't have a dev dependency for it
         return ()
 
     def project_cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
@@ -325,26 +324,3 @@ class PackageManager(Tool):
             Args for ``uv version <args...>``.
         """
         return self.args("version", *args)
-
-    def build_args(self, *args: str) -> Args:
-        """Construct ``Args`` for ``uv build``.
-
-        Args:
-            *args: Additional arguments for the build command.
-
-        Returns:
-            Args for ``uv build <args...>``.
-        """
-        return self.args("build", *args)
-
-    def publish_args(self, *args: str, token: str) -> Args:
-        """Construct ``Args`` for publishing the package to PyPI.
-
-        Args:
-            *args: Additional arguments for the publish command.
-            token: PyPI authentication token (keyword-only).
-
-        Returns:
-            Args for ``uv publish --token <token> <args...>``.
-        """
-        return self.args("publish", "--token", token, *args)

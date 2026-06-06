@@ -138,16 +138,6 @@ class TestPackageManager:
         result = PackageManager.I.update_self_args()
         assert result == ("uv", "self", "update")
 
-    def test_build_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.build_args()
-        assert result == ("uv", "build")
-
-    def test_publish_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.publish_args(token="my-token")  # noqa: S106  # nosec B106
-        assert result == ("uv", "publish", "--token", "my-token")
-
     def test_version_args(self) -> None:
         """Test method."""
         result = PackageManager.I.version_args()
