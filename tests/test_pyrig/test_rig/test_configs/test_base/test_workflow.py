@@ -76,10 +76,6 @@ class TestWorkflowConfigFile:
             HealthCheckWorkflowConfigFile.I.github_token_var() == "secrets.GITHUB_TOKEN"
         )
 
-    def test_pypi_token_var(self) -> None:
-        """Test method."""
-        assert HealthCheckWorkflowConfigFile.I.pypi_token_var() == "secrets.PYPI_TOKEN"
-
     def test_secrets_var(self) -> None:
         """Test method."""
         assert (
@@ -135,23 +131,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().step_deploy_documentation()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
-
-    def test_run_if_condition(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        run = "echo test"
-        condition = "condition"
-        result = my_test_workflow().run_if_condition(run, condition)
-        assert (
-            result
-            == 'if [ ${{ condition }} ]; then echo test; else echo "Skipping step due to failed condition: condition."; fi'  # noqa: E501
-        )
-
-    def test_if_pypi_token_configured(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().if_pypi_token_configured()
-        assert result == "${{ secrets.PYPI_TOKEN != '' }}"
 
     def test_step_save_container_image(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -504,18 +483,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
 
-    def test_step_build_wheel(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().step_build_wheel()
-        assert "run" in result
-
-    def test_step_publish_to_pypi(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_publish_to_pypi()
-        assert "run" in result
-
     def test_step_install_dependencies(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -590,13 +557,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().insert_repo_token()
         assert result == "${{ secrets.REPO_TOKEN }}"
-
-    def test_insert_pypi_token(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_pypi_token()
-        assert result == "${{ secrets.PYPI_TOKEN }}"
 
     def test_insert_version(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""

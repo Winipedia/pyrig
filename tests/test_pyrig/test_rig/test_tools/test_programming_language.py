@@ -8,6 +8,17 @@ from pyrig.rig.tools.programming_language import ProgrammingLanguage
 class TestProgrammingLanguage:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            ProgrammingLanguage.I.image_url()
+            == "https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert ProgrammingLanguage.I.link_url() == "https://www.python.org"
+
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
         assert ProgrammingLanguage().version_control_ignore_paths() == ("__pycache__/",)
@@ -31,12 +42,6 @@ class TestProgrammingLanguage:
     def test_group(self) -> None:
         """Test method."""
         assert ProgrammingLanguage().group() == ToolGroup.PROJECT_INFO
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        badge_image_url, badge_link_url = ProgrammingLanguage().badge_urls()
-        assert isinstance(badge_image_url, str)
-        assert isinstance(badge_link_url, str)
 
 
 def test_module_docstring() -> None:

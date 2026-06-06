@@ -129,7 +129,7 @@ class LicenseConfigFile(StringConfigFile):
         badge_url = self.license_badge_url()
         repo_url = RemoteVersionController.I.repo_url()
         return make_linked_badge_markdown(
-            badge_url=badge_url,
+            image_url=badge_url,
             link_url=f"{repo_url}/blob/main/{self.stem()}",
             alt_text="License",
         )

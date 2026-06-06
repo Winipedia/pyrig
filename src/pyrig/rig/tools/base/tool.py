@@ -33,10 +33,10 @@ class Tool(RigDependencySubclass):
     """Abstract base class for CLI tool wrappers.
 
     All tools in pyrig (linter, package manager, type checker, etc.) subclass
-    ``Tool``. A subclass implements the three abstract methods to provide its
-    identity (``name``), badge metadata (``group``, ``badge_urls``), and then
-    adds ``*_args`` methods that return ``Args`` objects for each supported
-    command.
+    ``Tool``. A subclass implements the four abstract methods to provide its
+    identity (``name``), badge metadata (``group``, ``image_url``,
+    ``link_url``), and then adds ``*_args`` methods that return ``Args`` objects
+    for each supported command.
 
     The ``Tool.I`` shortcut gives access to a cached singleton instance of the
     leaf subclass, which is the primary way tools are invoked from pyrig internals.
@@ -47,8 +47,10 @@ class Tool(RigDependencySubclass):
         ...         return "mytool"
         ...     def group(self) -> str:
         ...         return ToolGroup.TOOLING
-        ...     def badge_urls(self) -> tuple[str, str]:
-        ...         return ("https://img.shields.io/badge/my-badge", "https://mytool.io")
+        ...     def image_url(self) -> str:
+        ...         return "https://img.shields.io/badge/my-badge"
+        ...     def link_url(self) -> str:
+        ...         return "https://mytool.io"
         ...     def build_args(self, *args: str) -> Args:
         ...         return self.args("build", *args)
         >>> MyTool.I.build_args("--verbose")
@@ -86,17 +88,23 @@ class Tool(RigDependencySubclass):
         """
 
     @abstractmethod
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and link URL for this tool.
+    def image_url(self) -> str:
+        """Return the URL of the badge image for this tool.
 
-        These URLs are used to render a Markdown badge in the project
-        ``README.md``. The badge image is typically hosted on shields.io or
-        a similar service.
+        This is used to render a markdown badges.
 
         Returns:
-            A two-element tuple ``(badge_image_url, link_url)`` where
-            ``badge_image_url`` is the URL of the badge image and ``link_url``
-            is the page the user is taken to when clicking the badge.
+            The URL of the badge image as a string.
+        """
+
+    @abstractmethod
+    def link_url(self) -> str:
+        """Return the URL that the badge should link to for this tool.
+
+        This is used to render a markdown badges.
+
+        Returns:
+            The URL that the badge should link to as a string.
         """
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
@@ -195,16 +203,15 @@ class Tool(RigDependencySubclass):
     def badge(self) -> str:
         """Return the Markdown badge string for this tool.
 
-        Combines the URLs from ``badge_urls`` into a Markdown inline image
+        Combines ``image_url`` and ``link_url`` into a Markdown inline image
         that links to the tool's home page. The class name is used as alt text.
 
         Returns:
-            A Markdown string in the form ``[![ClassName](badge_url)](link_url)``.
+            A Markdown string in the form ``[![ClassName](image_url)](link_url)``.
         """
-        badge, page = self.badge_urls()
         return make_linked_badge_markdown(
-            badge_url=badge,
-            link_url=page,
+            image_url=self.image_url(),
+            link_url=self.link_url(),
             alt_text=self.__class__.__name__,
         )
 

@@ -27,16 +27,21 @@ class PythonLinter(Tool):
         """Return the badge group this tool belongs to."""
         return ToolGroup.CODE_QUALITY
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and project link URL for Ruff.
+    def image_url(self) -> str:
+        """Return the badge image URL for Ruff.
 
         Returns:
-            A tuple of ``(badge_image_url, project_url)``.
+            The URL of the badge image as a string.
         """
-        return (
-            "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json",
-            "https://github.com/astral-sh/ruff",
-        )
+        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"
+
+    def link_url(self) -> str:
+        """Return the project link URL for Ruff.
+
+        Returns:
+            The URL of the Ruff project page as a string.
+        """
+        return "https://github.com/astral-sh/ruff"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return paths to ignore in version control."""

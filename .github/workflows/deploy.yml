@@ -15,30 +15,6 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
   UV_NO_SYNC: 1
 jobs:
-  package:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    steps:
-    - name: Checkout Repository
-      id: checkout-repository
-      uses: actions/checkout@main
-    - name: Setup Version Control
-      id: setup-version-control
-      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        && git config --global user.name "github-actions[bot]"
-    - name: Setup Package Manager
-      id: setup-package-manager
-      uses: astral-sh/setup-uv@main
-      with:
-        python-version: '3.14'
-    - name: Build Wheel
-      id: build-wheel
-      run: uv build
-    - name: Publish To Pypi
-      id: publish-to-pypi
-      run: 'if [ ${{ secrets.PYPI_TOKEN }} ]; then uv publish --token ${{ secrets.PYPI_TOKEN
-        }}; else echo "Skipping step due to failed condition: secrets.PYPI_TOKEN.";
-        fi'
   documentation:
     permissions:
       pages: write

@@ -31,7 +31,7 @@ Pull Request / Push / Schedule / Manual
              │ completes
              ▼
     ┌─────────────────┐
-    │     Deploy      │  ← publishes to PyPI + GitHub Pages
+    │     Deploy      │  ← deploys documentation to GitHub Pages
     └─────────────────┘
 ```
 
@@ -93,14 +93,8 @@ locally and pushing the resulting commit to the default branch.
 
 **Trigger:** `Release` workflow completes.
 
-Two independent jobs run in this final stage, both gated on the triggering
-release having succeeded:
-
-- **`package`** — builds Python distribution packages (wheel and source
-  distribution) and publishes them to PyPI using the `PYPI_TOKEN` secret.
-  The publish step is conditional: if `PYPI_TOKEN` is not configured in the
-  repository secrets, the step is skipped rather than failing. This makes
-  the workflow safe to run for projects that are not yet published to PyPI.
+One job runs in this final stage, gated on the triggering release having
+succeeded:
 
 - **`documentation`** — builds the MkDocs documentation site and
   deploys it to GitHub Pages. This job requires `pages: write` and

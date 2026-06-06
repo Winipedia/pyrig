@@ -29,17 +29,21 @@ class ContainerEngine(Tool):
         """Returns the group the tool belongs to."""
         return ToolGroup.TOOLING
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and the project link URL.
+    def image_url(self) -> str:
+        """Return the badge image URL for this tool.
 
         Returns:
-            A two-element tuple where the first element is the shield badge
-            image URL and the second is the URL that the badge links to.
+            The URL of the badge image as a string.
         """
-        return (
-            "https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6",
-            "https://podman.io",
-        )
+        return "https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6"
+
+    def link_url(self) -> str:
+        """Return the URL that the badge should link to for this tool.
+
+        Returns:
+            The URL of the project page as a string.
+        """
+        return "https://podman.io"
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool dependencies.

@@ -20,7 +20,6 @@ from pyrig.rig.tools.container_engine import (
 )
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.docs_builder import DocsBuilder
-from pyrig.rig.tools.package_index import PackageIndex
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.project_tester import ProjectTester
@@ -903,28 +902,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_build_wheel(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that packages the project as a Python wheel.
-
-        Runs ``uv build`` to produce wheel and source distributions in the
-        ``dist/`` directory.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that runs ``uv build``.
-        """
-        return self.step(
-            step_func=self.step_build_wheel,
-            run=str(PackageManager.I.build_args()),
-            step=step,
-        )
-
     def step_build_artifacts(
         self,
         *,
@@ -1223,31 +1200,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_publish_to_pypi(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that publishes the wheel to PyPI.
-
-        The publish command is wrapped in a shell conditional: if
-        ``PYPI_TOKEN`` is configured the step runs ``uv publish``; otherwise
-        it prints a skip message and exits successfully.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that conditionally publishes to PyPI using ``PYPI_TOKEN``.
-        """
-        run = str(PackageManager.I.publish_args(token=self.insert_pypi_token()))
-        run_if = self.run_if_condition(run, self.pypi_token_var())
-        return self.step(
-            step_func=self.step_publish_to_pypi,
-            run=run_if,
-            step=step,
-        )
-
     def step_create_tag(
         self,
         *,
@@ -1420,14 +1372,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
         """
         return self.secrets_var("GITHUB_TOKEN")
 
-    def pypi_token_var(self) -> str:
-        """Get the raw secrets expression for ``PYPI_TOKEN``.
-
-        Returns:
-            ``"secrets.PYPI_TOKEN"``
-        """
-        return self.secrets_var(PackageIndex.I.access_token_key())
-
     def secrets_var(self, name: str) -> str:
         """Build the raw GitHub secrets expression for a secret name.
 
@@ -1449,14 +1393,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             GitHub Actions expression for the ``REPO_TOKEN`` secret.
         """
         return self.insert_var(self.repo_token_var())
-
-    def insert_pypi_token(self) -> str:
-        """Get the ``${{ secrets.PYPI_TOKEN }}`` expression.
-
-        Returns:
-            GitHub Actions expression for the ``PYPI_TOKEN`` secret.
-        """
-        return self.insert_var(self.pypi_token_var())
 
     def insert_version(self) -> str:
         """Build the shell expression that resolves to the project version.
@@ -1620,39 +1556,3 @@ class WorkflowConfigFile(DictYmlConfigFile):
             ``github.event.workflow_run.event != 'schedule'``.
         """
         return self.insert_var("github.event.workflow_run.event != 'schedule'")
-
-    def if_pypi_token_configured(self) -> str:
-        """Build a condition that is true when ``PYPI_TOKEN`` is configured.
-
-        Returns:
-            GitHub Actions expression checking
-            ``secrets.PYPI_TOKEN != ''``.
-        """
-        return self.insert_var(f"{self.pypi_token_var()} != ''")
-
-    # Runs
-    # ----------------------------------------------------------------------------
-    def run_if_condition(self, run: str, condition: str) -> str:
-        """Build a shell command that runs conditionally.
-
-        Wraps ``run`` in a bash ``if`` statement: if the evaluated condition
-        is truthy the command executes; otherwise a skip message is echoed
-        and the step exits successfully.  This avoids failing a job when an
-        optional secret (e.g. ``PYPI_TOKEN``) is not configured.
-
-        Args:
-            run: The shell command to execute when the condition is met.
-            condition: A raw GitHub expression (without ``${{ }}`` wrappers).
-
-        Returns:
-            A bash snippet:
-            ``if [ ${{ <condition> }} ]; then <run>; else echo "Skipping step due to failed condition: <condition>."; fi``.
-        """  # noqa: E501
-        condition_check = self.insert_var(condition)
-        # make a script that runs the command if the token is configured
-        # and echos a message if it is not
-        condition_as_str = (
-            condition_check.strip().removeprefix("${{").removesuffix("}}").strip()
-        )
-        msg = f"Skipping step due to failed condition: {condition_as_str}."
-        return f'if [ {condition_check} ]; then {run}; else echo "{msg}"; fi'

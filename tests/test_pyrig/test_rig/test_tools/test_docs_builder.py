@@ -9,6 +9,17 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            DocsBuilder.I.image_url()
+            == "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert DocsBuilder.I.link_url() == "https://www.mkdocs.org"
+
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
         assert DocsBuilder.I.version_control_ignore_paths() == ("/site",)
@@ -32,12 +43,6 @@ class TestDocsBuilder:
         result = DocsBuilder.I.group()
         assert isinstance(result, str)
         assert result == "documentation"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = DocsBuilder.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

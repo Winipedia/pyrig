@@ -32,22 +32,25 @@ class CoverageTester(Tool):
         """
         return ToolGroup.TESTING
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Get the static shields.io coverage badge image URL and link URL.
+    def image_url(self) -> str:
+        """Return the badge image URL for this tool.
 
-        The badge image URL is a shields.io static badge whose value is the
-        configured coverage threshold and whose color is derived from
-        :meth:`color`. The link URL points to the pytest-cov project
-        page.
+        The color is dynamically generated based on the coverage threshold:
+        0% is red, 50% is yellow, and 100% is green.
 
         Returns:
-            Tuple of ``(badge_image_url, link_url)``.
+            The URL of the badge image as a string.
         """
         hue, saturation, lightness = self.color()
-        return (
-            f"https://img.shields.io/badge/coverage->={self.threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white",
-            "https://github.com/pytest-dev/pytest-cov",
-        )
+        return f"https://img.shields.io/badge/coverage->={self.threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white"
+
+    def link_url(self) -> str:
+        """Return the link URL for this tool.
+
+        Returns:
+            The URL of the project page as a string.
+        """
+        return "https://github.com/pytest-dev/pytest-cov"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return paths to ignore in version control."""

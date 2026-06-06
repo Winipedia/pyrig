@@ -81,7 +81,7 @@ my-project/
 
 | File | Purpose |
 |---|---|
-| `README.md` | Project overview with badges for security, tooling, documentation, code quality, PyPI version, Python version, license, testing (pytest, coverage), CI/CD status and more |
+| `README.md` | Project overview with badges for security, tooling, documentation, code quality, Python version, license, testing (pytest, coverage), CI/CD status and more |
 | `CONTRIBUTING.md` | Guidelines for contributors: setup, workflow, and standards |
 | `CODE_OF_CONDUCT.md` | Contributor Covenant v2.1 code of conduct |
 | `SECURITY.md` | Security vulnerability reporting policy |

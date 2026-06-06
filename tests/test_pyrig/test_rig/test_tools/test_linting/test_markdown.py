@@ -7,6 +7,17 @@ from pyrig.rig.tools.linting.markdown import MarkdownLinter
 class TestMarkdownLinter:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            MarkdownLinter.I.image_url()
+            == "https://img.shields.io/badge/markdown-rumdl-darkgreen"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert MarkdownLinter.I.link_url() == "https://github.com/rvben/rumdl"
+
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
         assert MarkdownLinter.I.version_control_ignore_paths() == (".rumdl_cache/",)
@@ -16,12 +27,6 @@ class TestMarkdownLinter:
         result = MarkdownLinter.I.group()
         assert isinstance(result, str)
         assert result == "code-quality"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = MarkdownLinter.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_name(self) -> None:
         """Test method."""

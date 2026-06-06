@@ -37,12 +37,21 @@ class SecurityChecker(Tool):
         """
         return ToolGroup.SECURITY
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and project page URL."""
-        return (
-            "https://img.shields.io/badge/security-bandit-yellow.svg",
-            "https://github.com/PyCQA/bandit",
-        )
+    def image_url(self) -> str:
+        """Return the badge image URL for this tool.
+
+        Returns:
+            The URL of the badge image as a string.
+        """
+        return "https://img.shields.io/badge/security-bandit-yellow.svg"
+
+    def link_url(self) -> str:
+        """Return the link URL for this tool.
+
+        Returns:
+            The URL of the project page as a string.
+        """
+        return "https://github.com/PyCQA/bandit"
 
     def run_with_config_args(self, *args: str) -> Args:
         """Construct Bandit arguments using ``pyproject.toml`` configuration.

@@ -35,17 +35,21 @@ class DocsBuilder(Tool):
         """
         return ToolGroup.DOCUMENTATION
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and target link URL for MkDocs.
+    def image_url(self) -> str:
+        """Return the badge image URL for MkDocs.
 
         Returns:
-            Tuple of ``(badge_image_url, link_url)`` where ``badge_image_url``
-            is the shields.io badge and ``link_url`` points to mkdocs.org.
+            The URL of the badge image as a string.
         """
-        return (
-            "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white",
-            "https://www.mkdocs.org",
-        )
+        return "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white"
+
+    def link_url(self) -> str:
+        """Return the link URL for MkDocs.
+
+        Returns:
+            The URL of the MkDocs project page as a string.
+        """
+        return "https://www.mkdocs.org"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return paths to ignore in version control."""
@@ -100,7 +104,7 @@ class DocsBuilder(Tool):
             ``[![Documentation](badge_url)](documentation_url)``.
         """
         return make_linked_badge_markdown(
-            badge_url="https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white",
+            image_url="https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white",
             link_url=self.documentation_url(),
             alt_text="Documentation",
         )

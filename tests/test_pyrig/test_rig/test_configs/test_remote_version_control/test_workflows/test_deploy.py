@@ -1,22 +1,8 @@
 """module."""
 
-from collections.abc import Callable
-
-import pytest
-
 from pyrig.rig.configs.remote_version_control.workflows.deploy import (
     DeployWorkflowConfigFile,
 )
-
-
-@pytest.fixture
-def my_test_deploy_workflow(
-    config_file_factory: Callable[
-        [type[DeployWorkflowConfigFile]], type[DeployWorkflowConfigFile]
-    ],
-) -> type[DeployWorkflowConfigFile]:
-    """Create a test deploy workflow class with tmp_path."""
-    return config_file_factory(DeployWorkflowConfigFile)
 
 
 class TestDeployWorkflowConfigFile:
@@ -29,43 +15,22 @@ class TestDeployWorkflowConfigFile:
     def test_job_documentation(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.job_documentation()
-        assert len(result) == 1, f"Expected job to have one key, got {result}"
+        assert len(result) == 1
         job_name = next(iter(result.keys()))
-        assert "steps" in result[job_name], "Expected 'steps' in job"
+        assert "steps" in result[job_name]
 
     def test_steps_documentation(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.steps_documentation()
-        assert len(result) > 0, f"Expected steps to be non-empty, got {result}"
+        assert len(result) > 0
 
-    def test_workflow_triggers(
-        self, my_test_deploy_workflow: type[DeployWorkflowConfigFile]
-    ) -> None:
+    def test_workflow_triggers(self) -> None:
         """Test method."""
-        result = my_test_deploy_workflow().workflow_triggers()
+        result = DeployWorkflowConfigFile.I.workflow_triggers()
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
-        assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
+        assert "workflow_run" in result
 
-    def test_jobs(
-        self, my_test_deploy_workflow: type[DeployWorkflowConfigFile]
-    ) -> None:
+    def test_jobs(self) -> None:
         """Test method."""
-        result = my_test_deploy_workflow().jobs()
-        assert len(result) > 0, "Expected jobs to be non-empty"
-
-    def test_job_package(
-        self, my_test_deploy_workflow: type[DeployWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_deploy_workflow().job_package()
-        assert len(result) == 1, "Expected job to have one key"
-        job_name = next(iter(result.keys()))
-        assert "steps" in result[job_name], "Expected 'steps' in job"
-        assert "if" in result[job_name], "Expected 'if' condition in job"
-
-    def test_steps_package(
-        self, my_test_deploy_workflow: type[DeployWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_deploy_workflow().steps_package()
-        assert len(result) > 0, "Expected steps to be non-empty"
+        result = DeployWorkflowConfigFile.I.jobs()
+        assert len(result) > 0

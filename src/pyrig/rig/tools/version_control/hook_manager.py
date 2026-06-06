@@ -33,16 +33,21 @@ class VersionControlHookManager(Tool):
         """
         return ToolGroup.CODE_QUALITY
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the prek badge image URL and project page URL.
+    def image_url(self) -> str:
+        """Return the URL of the badge image for this tool.
 
         Returns:
-            A tuple of (badge_image_url, project_page_url).
+            The URL of the badge image as a string.
         """
-        return (
-            "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json",
-            "https://github.com/j178/prek",
-        )
+        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json"
+
+    def link_url(self) -> str:
+        """Return the URL that the badge should link to for this tool.
+
+        Returns:
+            The URL of the project page as a string.
+        """
+        return "https://github.com/j178/prek"
 
     def install_args(self, *args: str) -> Args:
         """Construct arguments to install prek hooks into the local git repository.

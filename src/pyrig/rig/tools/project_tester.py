@@ -30,16 +30,23 @@ class ProjectTester(Tool):
         """Get the tool group for this tool."""
         return ToolGroup.TESTING
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Get the pytest badge image URL and the pytest project page URL.
+    def image_url(self) -> str:
+        """Return the badge image URL for this tool.
 
         Returns:
-            Tuple of ``(badge_image_url, project_page_url)``.
+            The URL of the badge image as a string.
         """
         return (
-            "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest",
-            "https://pytest.org",
+            "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest"
         )
+
+    def link_url(self) -> str:
+        """Return the link URL for this tool.
+
+        Returns:
+            The URL of the pytest project page as a string.
+        """
+        return "https://pytest.org"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return paths to ignore in version control."""

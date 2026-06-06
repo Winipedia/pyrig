@@ -10,6 +10,17 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 class TestPyrigger:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            Pyrigger.I.image_url()
+            == "https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert Pyrigger.I.link_url() == "https://github.com/Winipedia/pyrig"
+
     def test_setup_steps(self) -> None:
         """Test that setup_steps returns a non-empty list of callables."""
         steps = Pyrigger.I.setup_steps()
@@ -31,12 +42,6 @@ class TestPyrigger:
         result = Pyrigger.I.group()
         assert isinstance(result, str)
         assert result == "tooling"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = Pyrigger.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

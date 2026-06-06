@@ -54,12 +54,21 @@ class Pyrigger(Tool):
         """
         return ToolGroup.TOOLING
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Get pyrig badge image URL and GitHub page URL."""
-        return (
-            f"https://img.shields.io/badge/built%20with-{self.name()}-3776AB?logo=buildkite&logoColor=black",
-            f"https://github.com/Winipedia/{self.name()}",
-        )
+    def image_url(self) -> str:
+        """Return the badge image URL for pyrig.
+
+        Returns:
+            The URL of the badge image as a string.
+        """
+        return f"https://img.shields.io/badge/built%20with-{self.name()}-3776AB?logo=buildkite&logoColor=black"
+
+    def link_url(self) -> str:
+        """Return the link URL for pyrig.
+
+        Returns:
+            The URL of the GitHub repository page as a string.
+        """
+        return f"https://github.com/Winipedia/{self.name()}"
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Get the development package dependencies for pyrig.

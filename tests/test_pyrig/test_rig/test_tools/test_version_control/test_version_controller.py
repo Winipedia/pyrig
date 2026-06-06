@@ -9,6 +9,17 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class TestVersionController:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            VersionController.I.image_url()
+            == "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert VersionController.I.link_url() == "https://git-scm.com"
+
     def test_owner_from_remote_url(self) -> None:
         """Test method."""
         assert VersionController.I.owner_from_remote_url() == "Winipedia"
@@ -67,12 +78,6 @@ class TestVersionController:
         result = VersionController.I.group()
         assert isinstance(result, str)
         assert result == "tooling"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = VersionController.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
