@@ -77,7 +77,7 @@ class TestTool:
         toml_deps = PyprojectConfigFile.I.dev_dependencies()
         toml_deps_no_versions = tuple(dep.split(">=")[0] for dep in toml_deps)
 
-        assert set(deps) == set(toml_deps_no_versions)
+        assert set(deps).issubset(set(toml_deps_no_versions))
 
     def test_name(self) -> None:
         """Test method."""

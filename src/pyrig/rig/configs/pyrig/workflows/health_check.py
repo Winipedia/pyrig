@@ -1,15 +1,15 @@
 """Pyrig specific override of the HealthCheckWorkflowConfigFile."""
 
-from typing import Any
-
-from pyrig_codecov.rig.configs.remote_version_control.workflows.health_check import (
-    HealthCheckWorkflowConfigFile as BaseHealthCheckWorkflowConfigFile,
-)
-
 from pyrig.core.introspection.packages import src_package_is_pyrig
-from pyrig.rig.tools.version_control.remote import RemoteVersionController
 
 if src_package_is_pyrig():
+    from typing import Any
+
+    from pyrig_codecov.rig.configs.remote_version_control.workflows.health_check import (  # noqa: E501
+        HealthCheckWorkflowConfigFile as BaseHealthCheckWorkflowConfigFile,
+    )
+
+    from pyrig.rig.tools.version_control.remote import RemoteVersionController
 
     class HealthCheckWorkflowConfigFile(BaseHealthCheckWorkflowConfigFile):
         """Pyrig specific override of the health check workflow config file."""
