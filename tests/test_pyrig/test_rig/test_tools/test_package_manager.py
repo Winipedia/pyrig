@@ -148,6 +148,11 @@ class TestPackageManager:
         result = PackageManager.I.version_short_args()
         assert result == ("uv", "version", "--short")
 
+    def test_build_args(self) -> None:
+        """Test method."""
+        result = PackageManager.I.build_args()
+        assert result == ("uv", "build")
+
 
 def test_module_docstring() -> None:
     """Test module docstring."""
