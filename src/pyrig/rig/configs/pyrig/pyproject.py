@@ -10,10 +10,12 @@ repository, leaving dependent projects unaffected.
 """
 
 from pyrig.core.introspection.packages import src_package_is_pyrig
-from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyprojectConfigFile
 
 if src_package_is_pyrig():
+    from pyrig.rig.configs.base.config_file import ConfigDict
+    from pyrig.rig.configs.pyproject import (
+        PyprojectConfigFile as BasePyprojectConfigFile,
+    )
 
     class PyprojectConfigFile(BasePyprojectConfigFile):
         """Pyrig-specific pyproject.toml configuration.
