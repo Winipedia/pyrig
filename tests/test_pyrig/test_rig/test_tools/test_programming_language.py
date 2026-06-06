@@ -11,7 +11,7 @@ class TestProgrammingLanguage:
     def test_image_url(self) -> None:
         """Test method."""
         assert (
-            ProgrammingLanguage.I.image_url()
+            ProgrammingLanguage().image_url()
             == "https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white"
         )
 
