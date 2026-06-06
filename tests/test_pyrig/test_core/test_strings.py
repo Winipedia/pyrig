@@ -122,7 +122,7 @@ def test_make_summary_error_msg() -> None:
 def test_make_linked_badge_markdown() -> None:
     """Test function."""
     result = make_linked_badge_markdown(
-        badge_url="https://example.com/badge.svg",
+        image_url="https://example.com/badge.svg",
         link_url="https://example.com/",
         alt_text="Example Badge",
     )

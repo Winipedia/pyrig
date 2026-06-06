@@ -9,17 +9,22 @@ from pyrig.rig.tools.container_engine import ContainerEngine
 class TestContainerEngine:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            ContainerEngine.I.image_url()
+            == "https://img.shields.io/badge/Container-Podman-A23CD6?logo=podman&logoColor=grey&colorA=0D1F3F&colorB=A23CD6"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert ContainerEngine.I.link_url() == "https://podman.io"
+
     def test_group(self) -> None:
         """Test method."""
         result = ContainerEngine.I.group()
         assert isinstance(result, str)
         assert result == "tooling"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = ContainerEngine.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

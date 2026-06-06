@@ -9,6 +9,17 @@ from pyrig.rig.tools.version_control.hook_manager import (
 class TestVersionControlHookManager:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            VersionControlHookManager.I.image_url()
+            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert VersionControlHookManager.I.link_url() == "https://github.com/j178/prek"
+
     def test_run_all_files_stage_pre_commit_args(self) -> None:
         """Test method."""
         assert VersionControlHookManager.I.run_all_files_stage_pre_commit_args() == (
@@ -36,12 +47,6 @@ class TestVersionControlHookManager:
         result = VersionControlHookManager.I.group()
         assert isinstance(result, str)
         assert result == "code-quality"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = VersionControlHookManager.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_name(self) -> None:
         """Test method."""

@@ -7,6 +7,17 @@ from pyrig.rig.tools.linting.python import PythonLinter
 class TestPythonLinter:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            PythonLinter.I.image_url()
+            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert PythonLinter.I.link_url() == "https://github.com/astral-sh/ruff"
+
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
         assert PythonLinter.I.version_control_ignore_paths() == (".ruff_cache/",)
@@ -20,12 +31,6 @@ class TestPythonLinter:
         result = PythonLinter.I.group()
         assert isinstance(result, str)
         assert result == "code-quality"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = PythonLinter.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_name(self) -> None:
         """Test method."""

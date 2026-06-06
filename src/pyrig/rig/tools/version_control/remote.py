@@ -36,21 +36,25 @@ class RemoteVersionController(Tool):
         """
         return ToolGroup.TOOLING
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the GitHub star-count badge image URL and repository page URL.
+    def image_url(self) -> str:
+        """Return the badge image URL for GitHub.
 
         Returns:
-            Tuple of (badge_image_url, link_url) where the badge image shows
-            the repository star count using the shields.io social style.
+            The URL of the badge image as a string.
         """
         owner, repo = (
             VersionController.I.repo_owner(check_repo_url=False),
             PackageManager.I.project_name(),
         )
-        return (
-            f"https://img.shields.io/github/stars/{owner}/{repo}?style=social",
-            self.repo_url(),
-        )
+        return f"https://img.shields.io/github/stars/{owner}/{repo}?style=social"
+
+    def link_url(self) -> str:
+        """Return the link URL for GitHub.
+
+        Returns:
+            The URL of the GitHub repository page as a string.
+        """
+        return self.repo_url()
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Get tool development dependencies.
@@ -76,7 +80,7 @@ class RemoteVersionController(Tool):
         badge_url = self.cicd_badge_url(workflow_name, label)
         cicd_url = self.cicd_url(workflow_name)
         return make_linked_badge_markdown(
-            badge_url=badge_url,
+            image_url=badge_url,
             link_url=cicd_url,
             alt_text=label,
         )

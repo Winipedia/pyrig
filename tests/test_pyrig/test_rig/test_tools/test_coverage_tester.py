@@ -7,6 +7,17 @@ from pyrig.rig.tools.coverage_tester import CoverageTester
 class TestCoverageTester:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            CoverageTester.I.image_url()
+            == "https://img.shields.io/badge/coverage->=100%25-hsl(120,80%25,45%25)?logo=codecov&logoColor=white"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert CoverageTester.I.link_url() == "https://github.com/pytest-dev/pytest-cov"
+
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
         assert CoverageTester.I.version_control_ignore_paths() == (".coverage",)
@@ -46,14 +57,6 @@ class TestCoverageTester:
         result = CoverageTester.I.group()
         assert isinstance(result, str)
         assert result == "testing"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = CoverageTester.I.badge_urls()
-        assert result == (
-            "https://img.shields.io/badge/coverage->=100%25-hsl(120,80%25,45%25)?logo=codecov&logoColor=white",
-            "https://github.com/pytest-dev/pytest-cov",
-        )
 
 
 def test_module_docstring() -> None:

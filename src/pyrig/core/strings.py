@@ -245,18 +245,18 @@ Found errors at:
 
 
 def make_linked_badge_markdown(
-    badge_url: str,
+    image_url: str,
     link_url: str,
     alt_text: str,
 ) -> str:
     """Return Markdown for a clickable badge image.
 
     Args:
-        badge_url: URL of the badge image.
-        link_url: URL the badge should link to when clicked.
+        image_url: URL of the image.
+        link_url: URL the image should link to when clicked.
         alt_text: Alternative text for the image (used for accessibility).
 
     Returns:
-        Markdown string in the form ``[![alt_text](badge_url)](link_url)``.
+        Markdown string in the form ``[![alt_text](image_url)](link_url)``.
     """
-    return f"[![{alt_text}]({badge_url})]({link_url})"
+    return f"[![{alt_text}]({image_url})]({link_url})"

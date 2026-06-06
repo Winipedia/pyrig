@@ -4,15 +4,14 @@ Wraps ProgrammingLanguage commands and information.
 """
 
 from pyrig.rig.tools.base.tool import Tool, ToolGroup
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 class ProgrammingLanguage(Tool):
     """Tool wrapper for the Python programming language.
 
     Provides Python-specific metadata and constants used across the project,
-    such as the PyPI badge, the bytecode suppression environment variable, and
-    the standard ``__init__.py`` content written to namespace packages.
+    such as the language badge, the bytecode suppression environment variable,
+    and the standard ``__init__.py`` content written to namespace packages.
 
     Python is the only supported language; this wrapper exists to give a
     single, consistent access point for language-level details so callers
@@ -35,20 +34,21 @@ class ProgrammingLanguage(Tool):
         """
         return ToolGroup.PROJECT_INFO
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and link URL for the Python version badge.
-
-        The image URL points to a shields.io badge that displays the supported
-        Python versions for this project as published on PyPI. The link URL
-        points to the official Python website.
+    def image_url(self) -> str:
+        """Return the badge image URL for Python.
 
         Returns:
-            A tuple of ``(image_url, link_url)``.
+            The URL of the badge image as a string.
         """
-        return (
-            f"https://img.shields.io/pypi/pyversions/{PackageManager.I.project_name()}",
-            "https://www.python.org",
-        )
+        return "https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white"
+
+    def link_url(self) -> str:
+        """Return the link URL for Python.
+
+        Returns:
+            The URL of the official Python website as a string.
+        """
+        return "https://www.python.org"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return a tuple of file paths to ignore for version control."""

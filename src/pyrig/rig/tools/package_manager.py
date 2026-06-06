@@ -43,16 +43,21 @@ class PackageManager(Tool):
         """
         return ToolGroup.TOOLING
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the uv badge image URL and project page URL.
+    def image_url(self) -> str:
+        """Return the badge image URL for this tool.
 
         Returns:
-            Tuple of (badge_image_url, project_page_url).
+            The URL of the badge image as a string.
         """
-        return (
-            "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json",
-            "https://github.com/astral-sh/uv",
-        )
+        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json"
+
+    def link_url(self) -> str:
+        """Return the URL that the badge should link to for this tool.
+
+        Returns:
+            The URL of the project page as a string.
+        """
+        return "https://github.com/astral-sh/uv"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return paths to ignore in version control."""

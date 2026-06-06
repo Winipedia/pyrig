@@ -30,17 +30,21 @@ class MarkdownLinter(Tool):
         """
         return ToolGroup.CODE_QUALITY
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and link URLs for rumdl.
+    def image_url(self) -> str:
+        """Return the badge image URL for rumdl.
 
         Returns:
-            A tuple of ``(badge_url, link_url)`` where ``badge_url`` is the
-            shield image URL and ``link_url`` is the rumdl project page.
+            The URL of the badge image as a string.
         """
-        return (
-            "https://img.shields.io/badge/markdown-rumdl-darkgreen",
-            "https://github.com/rvben/rumdl",
-        )
+        return "https://img.shields.io/badge/markdown-rumdl-darkgreen"
+
+    def link_url(self) -> str:
+        """Return the link URL for rumdl.
+
+        Returns:
+            The URL of the rumdl project page as a string.
+        """
+        return "https://github.com/rvben/rumdl"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return paths to ignore in version control."""

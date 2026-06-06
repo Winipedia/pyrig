@@ -37,16 +37,21 @@ class VersionController(Tool):
         """
         return ToolGroup.TOOLING
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge image URL and its linked page URL for Git.
+    def image_url(self) -> str:
+        """Return the badge image URL for Git.
 
         Returns:
-            A ``(badge_url, page_url)`` tuple of strings.
+            The URL of the badge image as a string.
         """
-        return (
-            "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white",
-            "https://git-scm.com",
-        )
+        return "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white"
+
+    def link_url(self) -> str:
+        """Return the link URL for Git.
+
+        Returns:
+            The URL of the Git project page as a string.
+        """
+        return "https://git-scm.com"
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return development dependencies for this tool.

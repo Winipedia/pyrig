@@ -224,9 +224,9 @@ where to define it and how to import it and all that.
 ## Usage Recommendations
 
 Our suggestion is that you use pyrig only once to create your own personal
-package and publish it to PyPI, so that you can customize it once with all
-behaviour you want for your projects, and after that you can simply use your
-package to start new projects by running:
+package, so that you can customize it once with all behaviour you want for your
+projects, and after that you can simply use your package to start new projects
+by running:
 
 ```bash
 uv init my-new-project

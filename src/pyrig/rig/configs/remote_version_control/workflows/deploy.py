@@ -1,4 +1,4 @@
-"""GitHub Actions workflow for deploying to PyPI and GitHub Pages.
+"""GitHub Actions workflow for deploying documentation to GitHub Pages.
 
 Provides the ``DeployWorkflowConfigFile`` class, which generates the
 ``.github/workflows/deploy.yml`` workflow file. This workflow is the final
@@ -18,14 +18,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     """Generates the GitHub Actions workflow for deployment.
 
     Produces ``.github/workflows/deploy.yml``, which runs automatically when
-    ``ReleaseWorkflowConfigFile`` completes. Both jobs are gated on a successful
+    ``ReleaseWorkflowConfigFile`` completes. The job is gated on a successful
     triggering run.
 
-    Two jobs are defined:
+    One job is defined:
 
-    - **publish-package**: Builds wheel and source distributions and publishes
-      them to PyPI. Publishing is conditional on the ``PYPI_TOKEN`` secret
-      being present; the step is skipped when the secret is absent.
     - **deploy-documentation**: Builds the MkDocs documentation site and
       deploys it to GitHub Pages. Requires ``pages: write`` and
       ``id-token: write`` job-level permissions.
@@ -44,8 +41,8 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
 
         Extends the default ``workflow_dispatch`` trigger inherited from the
         base class with a ``workflow_run`` trigger that fires whenever
-        ``ReleaseWorkflowConfigFile`` completes. Both jobs further guard
-        themselves with an ``if`` condition checked via
+        ``ReleaseWorkflowConfigFile`` completes. The job further guards
+        itself with an ``if`` condition checked via
         :meth:`if_workflow_run_is_success`.
 
         Returns:
@@ -64,27 +61,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """Build the top-level jobs configuration.
 
         Returns:
-            Dict containing the publish-package and deploy-documentation jobs.
+            Dict containing the deploy-documentation job.
         """
-        jobs: ConfigDict = {}
-        jobs.update(self.job_package())
-        jobs.update(self.job_documentation())
-        return jobs
-
-    def job_package(self) -> ConfigDict:
-        """Build the job that packages and publishes the project to PyPI.
-
-        The job runs only when the triggering workflow run succeeded. Steps
-        are provided by :meth:`steps_package`.
-
-        Returns:
-            Dict mapping the derived job ID to its configuration.
-        """
-        return self.job(
-            job_func=self.job_package,
-            steps=self.steps_package(),
-            if_condition=self.if_workflow_run_is_success(),
-        )
+        return {**self.job_documentation()}
 
     def job_documentation(self) -> ConfigDict:
         """Build the job that deploys the MkDocs documentation to GitHub Pages.
@@ -103,23 +82,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_documentation(),
             if_condition=self.if_workflow_run_is_success(),
         )
-
-    def steps_package(self) -> list[dict[str, Any]]:
-        """Build the ordered steps for the publish-package job.
-
-        Combines core setup with a distribution build and a conditional PyPI
-        publish. The publish step reads ``PYPI_TOKEN`` from secrets and echoes
-        a skip message when the secret is absent.
-
-        Returns:
-            Ordered list of step dicts: core setup, build wheel and source
-            distributions, publish to PyPI.
-        """
-        return [
-            *self.steps_core_setup(),
-            self.step_build_wheel(),
-            self.step_publish_to_pypi(),
-        ]
 
     def steps_documentation(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the deploy-documentation job.

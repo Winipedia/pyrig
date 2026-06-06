@@ -9,6 +9,17 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestTool:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            PackageManager.I.image_url()
+            == "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert PackageManager.I.link_url() == "https://github.com/astral-sh/uv"
+
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
         assert PackageManager.I.version_control_ignore_paths() == (".venv", "dist/")
@@ -38,13 +49,6 @@ class TestTool:
         result = PackageManager.I.group()
         assert isinstance(result, str)
         assert result == "tooling"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = PackageManager.I.badge_urls()
-        assert isinstance(result, tuple)
-
-        assert all(isinstance(url, str) for url in result)
 
     def test_badge(self) -> None:
         """Test method."""

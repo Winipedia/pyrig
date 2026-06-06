@@ -9,6 +9,19 @@ from pyrig.rig.tools.version_control.remote import (
 class TestRemoteVersionController:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            RemoteVersionController.I.image_url()
+            == "https://img.shields.io/github/stars/Winipedia/pyrig?style=social"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert (
+            RemoteVersionController.I.link_url() == "https://github.com/Winipedia/pyrig"
+        )
+
     def test_access_token_key(self) -> None:
         """Test method."""
         assert RemoteVersionController.I.access_token_key() == "REPO_TOKEN"
@@ -28,12 +41,6 @@ class TestRemoteVersionController:
         result = RemoteVersionController.I.group()
         assert isinstance(result, str)
         assert result == "tooling"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = RemoteVersionController.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

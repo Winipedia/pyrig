@@ -40,15 +40,18 @@ class DependencyAuditor(Tool):
         """Return the tool group used for badge organisation."""
         return ToolGroup.SECURITY
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the pip-audit badge image URL and project link URL.
+    def image_url(self) -> str:
+        """Return the badge image URL for pip-audit.
 
         Returns:
-            A tuple of ``(badge_image_url, project_url)`` where
-            ``badge_image_url`` is the shields.io badge and
-            ``project_url`` is the pip-audit GitHub page.
+            The URL of the badge image as a string.
         """
-        return (
-            "https://img.shields.io/badge/security-pip--audit-blue?logo=python",
-            "https://github.com/pypa/pip-audit",
-        )
+        return "https://img.shields.io/badge/security-pip--audit-blue?logo=python"
+
+    def link_url(self) -> str:
+        """Return the link URL for pip-audit.
+
+        Returns:
+            The URL of the pip-audit project page as a string.
+        """
+        return "https://github.com/pypa/pip-audit"

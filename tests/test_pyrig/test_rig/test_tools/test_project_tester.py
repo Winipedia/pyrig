@@ -9,6 +9,17 @@ from pyrig.rig.tools.project_tester import ProjectTester
 class TestProjectTester:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            ProjectTester.I.image_url()
+            == "https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.link_url() == "https://pytest.org"
+
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
         assert ProjectTester.I.version_control_ignore_paths() == (".pytest_cache/",)
@@ -30,12 +41,6 @@ class TestProjectTester:
         result = ProjectTester.I.group()
         assert isinstance(result, str)
         assert result == "testing"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = ProjectTester.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

@@ -29,12 +29,21 @@ class TypeChecker(Tool):
         """
         return ToolGroup.CODE_QUALITY
 
-    def badge_urls(self) -> tuple[str, str]:
-        """Return the badge and linked page URLs."""
-        return (
-            "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json",
-            "https://github.com/astral-sh/ty",
-        )
+    def image_url(self) -> str:
+        """Return the badge image URL for ty.
+
+        Returns:
+            The URL of the badge image as a string.
+        """
+        return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json"
+
+    def link_url(self) -> str:
+        """Return the project link URL for ty.
+
+        Returns:
+            The URL of the ty project page as a string.
+        """
+        return "https://github.com/astral-sh/ty"
 
     def check_args(self, *args: str) -> Args:
         """Construct ty check arguments.

@@ -9,6 +9,17 @@ from pyrig.rig.tools.security_checker import SecurityChecker
 class TestSecurityChecker:
     """Test class."""
 
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            SecurityChecker.I.image_url()
+            == "https://img.shields.io/badge/security-bandit-yellow.svg"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert SecurityChecker.I.link_url() == "https://github.com/PyCQA/bandit"
+
     def test_target_paths(self) -> None:
         """Test method."""
         assert SecurityChecker.I.target_paths() == (
@@ -27,12 +38,6 @@ class TestSecurityChecker:
         result = SecurityChecker.I.group()
         assert isinstance(result, str)
         assert result == "security"
-
-    def test_badge_urls(self) -> None:
-        """Test method."""
-        result = SecurityChecker.I.badge_urls()
-        assert isinstance(result, tuple)
-        assert all(isinstance(url, str) for url in result)
 
     def test_name(self) -> None:
         """Test method."""

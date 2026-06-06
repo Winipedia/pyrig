@@ -20,9 +20,9 @@ uv run pyrig init
 This will set up a complete python project with all of pyrig's best practices
 fully working from the start. The only thing the full setup guide will add to this
 is setting up your repository with GitHub and the CI/CD pipeline properly.
-We recommend following the full setup guide, especially if your project is
-a package you want to publish, you want to build executable artifacts or
-anything that needs a remote repository and/or CI/CD to work,
+We recommend following the full setup guide, especially if you want to build
+executable artifacts or anything that needs a remote repository and/or CI/CD
+to work,
 but if you just want to get going with a local project and add the repository
 and CI/CD setup later, this is the fastest way to get started.
 
@@ -109,26 +109,6 @@ Fine-grained tokens
 3. Generate token
 4. **Copy token immediately** (you won't see it again)
 5. Add token to your repository secrets as `REPO_TOKEN`
-
-**PyPI Account** - **Optional** (for publishing):
-
-If you plan to publish your project as a package to PyPI,
-you will need an account at [pypi.org](https://pypi.org).
-If you do not plan to publish to PyPI, you can skip this step.
-
-**PyPI Token (PYPI_TOKEN)** - **Optional** (for publishing):
-
-The part in the CI/CD pipeline that publishes to PyPI is automatically
-skipped if this token is not set, so only set this up if you plan to
-publish your project as a package to PyPI.
-
-1. Create account at [pypi.org](https://pypi.org)
-2. Create an API token
-3. Scope: "Entire account" (recommended change to specific project after first
-   publish)
-4. Click "Add token"
-5. **Copy token immediately** (you won't see it again)
-6. Add token to your repository secrets as `PYPI_TOKEN`
 
 ## Setup Steps
 
