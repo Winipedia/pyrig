@@ -324,3 +324,14 @@ class PackageManager(Tool):
             Args for ``uv version <args...>``.
         """
         return self.args("version", *args)
+
+    def build_args(self, *args: str) -> Args:
+        """Construct ``Args`` for ``uv build``.
+
+        Args:
+            *args: Additional arguments for the build command.
+
+        Returns:
+            Args for ``uv build <args...>``.
+        """
+        return self.args("build", *args)
