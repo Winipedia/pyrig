@@ -2,6 +2,8 @@
 
 import inspect
 
+import pytest
+
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -12,9 +14,6 @@ from pyrig.rig.configs.version_control.ignore import (
 )
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
-from pyrig.rig.tools.dependency_auditor import DependencyAuditor
-from pyrig.rig.tools.docs_builder import DocsBuilder
-from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 
@@ -27,11 +26,10 @@ class TestDependencySubclass:
         assert issubclass(leaf, ProgrammingLanguage)
         assert ProgrammingLanguage.leaf() is ProgrammingLanguage.leaf().leaf()
 
-        merged = Tool.leaf()
-        assert issubclass(merged, Tool)
-        assert issubclass(merged, PackageManager)
-        assert issubclass(merged, DependencyAuditor)
-        assert issubclass(merged, DocsBuilder)
+        with pytest.raises(
+            RuntimeError, match=r"Multiple leaf subclasses found for .*."
+        ):
+            _ = Tool.leaf()
 
     def test___str__(self) -> None:
         """Test method."""

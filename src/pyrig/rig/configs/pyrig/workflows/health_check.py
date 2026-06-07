@@ -5,9 +5,10 @@ from pyrig.core.introspection.packages import src_package_is_pyrig
 if src_package_is_pyrig():
     from typing import Any
 
-    from pyrig.rig.configs.remote_version_control.workflows.health_check import (
+    from pyrig_codecov.rig.configs.remote_version_control.workflows.health_check import (  # noqa: E501
         HealthCheckWorkflowConfigFile as BaseHealthCheckWorkflowConfigFile,
     )
+
     from pyrig.rig.tools.version_control.remote import RemoteVersionController
 
     class HealthCheckWorkflowConfigFile(BaseHealthCheckWorkflowConfigFile):
