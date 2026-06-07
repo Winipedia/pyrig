@@ -167,10 +167,10 @@ def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
     return (module for module, is_pkg in walk_package(package) if not is_pkg)
 
 
-def discover_all_subclasses_across_package[T: type](
-    cls: T,
+def discover_all_subclasses_across_package[T](
+    cls: type[T],
     package: ModuleType,
-) -> set[T]:
+) -> set[type[T]]:
     """Discover all subclasses of ``cls`` defined within a package.
 
     Addresses the limitation of ``__subclasses__()``, which only sees classes

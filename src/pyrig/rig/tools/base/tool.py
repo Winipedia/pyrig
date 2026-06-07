@@ -1,11 +1,10 @@
 """Abstract base classes for tool wrappers.
 
-Defines the ``Tool`` base class and ``ToolGroup`` constants that all tool
+Defines the ``Tool`` base class and ``Group`` constants that all tool
 wrappers in pyrig and downstream packages must implement.
 """
 
 from abc import abstractmethod
-from collections import defaultdict
 from types import ModuleType
 
 from pyrig.core.strings import make_linked_badge_markdown
@@ -14,7 +13,7 @@ from pyrig.rig import tools
 from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
-class ToolGroup:
+class Group:
     """Named constants for tool badge groups.
 
     Used to categorize tool badges when rendering the project ``README.md``.
@@ -27,6 +26,9 @@ class ToolGroup:
     SECURITY = "security"
     TOOLING = "tooling"
     TESTING = "testing"
+
+
+ToolGroup = Group
 
 
 class Tool(RigDependencySubclass):
@@ -46,7 +48,7 @@ class Tool(RigDependencySubclass):
         ...     def name(self) -> str:
         ...         return "mytool"
         ...     def group(self) -> str:
-        ...         return ToolGroup.TOOLING
+        ...         return Group.TOOLING
         ...     def image_url(self) -> str:
         ...         return "https://img.shields.io/badge/my-badge"
         ...     def link_url(self) -> str:
@@ -81,10 +83,10 @@ class Tool(RigDependencySubclass):
         """Return the badge group this tool belongs to.
 
         Groups are used to categorize badges when rendering the project
-        ``README.md``. Use one of the ``ToolGroup`` constants as the return value.
+        ``README.md``. Use one of the ``Group`` constants as the return value.
 
         Returns:
-            A ``ToolGroup`` constant string (e.g., ``ToolGroup.TESTING``).
+            A ``Group`` constant string (e.g., ``Group.TESTING``).
         """
 
     @abstractmethod
@@ -136,8 +138,8 @@ class Tool(RigDependencySubclass):
         return tools
 
     @classmethod
-    def grouped_badges(cls) -> defaultdict[str, list[str]]:
-        """Return all tool badges grouped by their ``ToolGroup`` category.
+    def grouped_badges(cls) -> dict[str, list[str]]:
+        """Return all tool badges grouped by their ``Group`` category.
 
         Collects every concrete ``Tool`` subclass, sorts them by ``sort_key``,
         and builds a mapping from group name to the list of Markdown badge
@@ -149,11 +151,28 @@ class Tool(RigDependencySubclass):
             badge strings for the tools in that group.
         """
         subclasses = cls.subclasses_sorted(cls.concrete_subclasses())
-        groups: defaultdict[str, list[str]] = defaultdict(list)
+        groups = {g: [] for g in cls.groups()}
         for tool in subclasses:
             t = tool()
-            groups[t.group()].append(t.badge())
+            badge = t.badge()
+            group = groups[t.group()]
+            if badge in group:
+                continue
+            group.append(badge)
         return groups
+
+    @classmethod
+    def groups(cls) -> tuple[str, ...]:
+        """Get the ordering of the tool groups."""
+        return (
+            Group.SECURITY,
+            Group.CI_CD,
+            Group.CODE_QUALITY,
+            Group.TESTING,
+            Group.TOOLING,
+            Group.DOCUMENTATION,
+            Group.PROJECT_INFO,
+        )
 
     @classmethod
     def subclasses_dev_dependencies(cls) -> list[str]:
@@ -186,19 +205,6 @@ class Tool(RigDependencySubclass):
             for subclass in cls.concrete_subclasses()
             for path in subclass().version_control_ignore_paths()
         )
-
-    @classmethod
-    def sort_key(cls) -> str:
-        """Return the tool name as a sort key for stable alphabetical ordering.
-
-        Overrides ``DependencySubclass.sort_key`` to sort by the tool's
-        executable name rather than the class name, giving predictable ordering
-        independent of class naming conventions.
-
-        Returns:
-            The tool's executable name (same as ``name()``).
-        """
-        return cls().name()
 
     def badge(self) -> str:
         """Return the Markdown badge string for this tool.

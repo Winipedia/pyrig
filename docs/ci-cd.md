@@ -60,9 +60,8 @@ merging PRs, since it runs on every PR and blocks merging until it passes.
 
 **File:** `.github/workflows/build.yml`
 
-This workflow builds all artifacts on every operating system via a matrix strategy.
-It also builds a container image on linux using the generated `Containerfile`
-and then adds all of these artifacts to the workflow's artifact store,
+This workflow builds all artifacts on every operating system via a matrix strategy
+and then adds these artifacts to the workflow's artifact store,
 making them available for the next stage in the pipeline.
 
 ---

@@ -6,7 +6,7 @@ Wraps ProjectTester commands and information.
 from pathlib import Path
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class ProjectTester(Tool):
@@ -28,7 +28,7 @@ class ProjectTester(Tool):
 
     def group(self) -> str:
         """Get the tool group for this tool."""
-        return ToolGroup.TESTING
+        return Group.TESTING
 
     def image_url(self) -> str:
         """Return the badge image URL for this tool.

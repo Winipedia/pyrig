@@ -4,7 +4,7 @@ Wraps version control hook manager commands and information.
 """
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class VersionControlHookManager(Tool):
@@ -29,9 +29,9 @@ class VersionControlHookManager(Tool):
         """Return the tool group used for badge grouping.
 
         Returns:
-            ToolGroup.CODE_QUALITY.
+            Group.CODE_QUALITY.
         """
-        return ToolGroup.CODE_QUALITY
+        return Group.CODE_QUALITY
 
     def image_url(self) -> str:
         """Return the URL of the badge image for this tool.

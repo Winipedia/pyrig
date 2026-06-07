@@ -59,13 +59,6 @@ class TestWorkflowConfigFile:
         step = HealthCheckWorkflowConfigFile.I.step_push_tag()
         assert "run" in step
 
-    def test_step_make_distribution_directory(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        step = my_test_workflow().step_make_distribution_directory()
-        assert "run" in step
-
     def test_repo_token_var(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile.I.repo_token_var() == "secrets.REPO_TOKEN"
@@ -132,13 +125,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_deploy_documentation()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
 
-    def test_step_save_container_image(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        step = my_test_workflow().step_save_container_image()
-        assert "run" in step
-
     def test_insert_var(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         condition = "condition"
@@ -155,20 +141,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().combined_if(*conditions, operator="&&")
         expected = "${{ condition1 && condition2 }}"
         assert result == expected, f"Expected '{expected}', got {result}"
-
-    def test_step_install_container_engine(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_install_container_engine()
-        assert "uses" in result, f"Expected 'uses' in step, got {result}"
-
-    def test_step_build_container_image(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_build_container_image()
-        assert "run" in result, f"Expected 'run' in step, got {result}"
 
     def test_steps_core_installed_setup(
         self, my_test_workflow: type[WorkflowConfigFile]

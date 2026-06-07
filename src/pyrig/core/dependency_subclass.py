@@ -6,11 +6,12 @@ explicit registration.
 """
 
 import json
+import logging
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator
 from functools import cache
 from types import ModuleType
-from typing import Any, Self, TypeVar
+from typing import Any, Self, TypeVar, cast
 
 from pyrig.core.introspection.classes import (
     classproperty,
@@ -20,6 +21,8 @@ from pyrig.core.introspection.classes import (
 from pyrig.core.introspection.dependencies import (
     discover_subclasses_across_dependencies,
 )
+
+logger = logging.getLogger(__name__)
 
 T = TypeVar("T", bound="DependencySubclass")
 
@@ -104,28 +107,32 @@ class DependencySubclass(ABC):
         that repeated accesses do not re-run the discovery.
 
         Returns:
-            The single leaf subclass type. May be abstract.
-
-        Raises:
-            RuntimeError: If more than one leaf subclass is found.
+            The resolved leaf subclass type. May be abstract, and may be a
+            dynamically synthesized merge of multiple leaves (see ``leaf()``).
         """
         return cls.leaf()
 
     @classmethod
     def leaf(cls) -> type[Self]:
-        """Return the single leaf subclass found across dependent packages.
+        """Return the leaf subclass found across dependent packages.
 
-        Expects at most one result from ``subclasses()``. If no subclasses
-        are found the class itself is returned. Raises ``RuntimeError`` if
-        multiple subclasses are found, because a "leaf" must be
-        unambiguous: exactly one active implementation is allowed.
+        Discovers every leaf subclass via ``subclasses()`` and resolves
+        them to a single class:
+
+        - No subclasses found: returns ``cls`` itself.
+        - Exactly one leaf: returns that leaf.
+        - Multiple leaves: logs a warning and returns a dynamically created
+          subclass that inherits from every leaf. The leaves are ordered by
+          ``sort_key()`` so the result is deterministic and earlier-sorted
+          leaves take precedence in the method resolution order.
+          Cooperative ``super()`` overrides from every leaf are combined;
+          genuinely conflicting overrides resolve by MRO order, which is why
+          the warning advises defining an explicit merged subclass when the
+          overrides interact.
 
         Returns:
-            The sole leaf subclass type. May be abstract.
-
-        Raises:
-            RuntimeError: If more than one subclass is discovered across
-                the dependent packages.
+            The resolved leaf subclass. May be abstract. When multiple
+            leaves are found, a synthesized subclass combining all of them.
         """
         subclasses = cls.subclasses()
         leaf = next(subclasses, cls)
@@ -133,14 +140,24 @@ class DependencySubclass(ABC):
         if second is None:
             return leaf
 
-        msg = f"""Multiple leaf subclasses found for {cls}.
-Defining multiple leaf subclasses is ambiguous.
-This can happen if more than one leaf subclass is defined
-across all the dependent packages.
+        # Sort for a deterministic MRO: earlier-sorted leaves take precedence.
+        leaves = cls.subclasses_sorted([leaf, second, *subclasses])
 
-Found subclasses:
-{json.dumps([str(subcls) for subcls in (leaf, second, *subclasses)], indent=4)}"""
-        raise RuntimeError(msg)
+        logger.warning(
+            """Multiple leaf subclasses found for %s: %s.
+A subclass with all leaves as parents will be created to resolve this.
+Defining multiple leaf subclasses can lead to conflicting behaviour
+if their overrides interact with each other in an incompatible way.
+This is safe if the overrides do not affect each other, but if they do then
+please resolve it yourself by defining your own final subclass with these
+leaves as parents and reconciling any conflicts with explicit overrides.
+""",
+            cls,
+            json.dumps([str(subcls) for subcls in leaves], indent=4),
+        )
+
+        merged = type(leaves[0].__name__, tuple(leaves), {})
+        return cast("type[Self]", merged)
 
     @classmethod
     def concrete_subclasses(cls) -> Iterator[type[Self]]:

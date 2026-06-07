@@ -15,9 +15,6 @@ from pyrig.rig.cli.subcommands import build, protect_repo
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import DictYmlConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.container_engine import (
-    ContainerEngine,
-)
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
@@ -925,107 +922,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
             step=step,
         )
 
-    def step_install_container_engine(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that installs Podman as the container engine.
-
-        Uses the ``redhat-actions/podman-install`` GitHub Action.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that installs Podman on the runner.
-        """
-        return self.step(
-            step_func=self.step_install_container_engine,
-            uses="redhat-actions/podman-install@main",
-            with_={"github-token": self.insert_github_token()},
-            step=step,
-        )
-
-    def step_build_container_image(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that creates the project container image.
-
-        Runs the container engine build command derived from
-        :meth:`~pyrig.rig.tools.container_engine.ContainerEngine.build_args`.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that builds the container image from the project's
-            Containerfile.
-        """
-        return self.step(
-            step_func=self.step_build_container_image,
-            run=str(
-                ContainerEngine.I.build_args(
-                    project_name=PackageManager.I.project_name()
-                )
-            ),
-            step=step,
-        )
-
-    def step_save_container_image(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that exports the container image to a tar archive.
-
-        The archive is written to ``dist/<project-name>.tar`` so it can be
-        uploaded as a workflow artifact.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that saves the container image using the container engine's
-            save command.
-        """
-        image_file = Path(f"{PackageManager.I.project_name()}.tar")
-        image_path = BuilderConfigFile.dist_dir_path() / image_file
-        return self.step(
-            step_func=self.step_save_container_image,
-            run=str(
-                ContainerEngine.I.save_args(
-                    image_path=image_path,
-                )
-            ),
-            step=step,
-        )
-
-    def step_make_distribution_directory(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that creates the distribution directory.
-
-        Creates the ``dist/`` directory if it does not already exist so that
-        subsequent steps that write files there (e.g. the container image tar
-        archive) do not fail.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that runs ``mkdir -p dist``.
-        """
-        return self.step(
-            step_func=self.step_make_distribution_directory,
-            run=f"mkdir -p {BuilderConfigFile.dist_dir_path().as_posix()}",
-            step=step,
-        )
-
     def step_build_documentation(
         self,
         *,
@@ -1273,7 +1169,6 @@ class WorkflowConfigFile(DictYmlConfigFile):
     def step_upload_artifacts(
         self,
         *,
-        name: str | None = None,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Build a step that uploads build artifacts.
@@ -1288,12 +1183,13 @@ class WorkflowConfigFile(DictYmlConfigFile):
         Returns:
             Step using ``actions/upload-artifact@main``.
         """
-        if name is None:
-            name = self.insert_artifact_name()
         return self.step(
             step_func=self.step_upload_artifacts,
             uses="actions/upload-artifact@main",
-            with_={"name": name, "path": BuilderConfigFile.dist_dir_path().as_posix()},
+            with_={
+                "name": self.insert_artifact_name(),
+                "path": BuilderConfigFile.dist_dir_path().as_posix(),
+            },
             step=step,
         )
 

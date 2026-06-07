@@ -29,14 +29,6 @@ class TestPackageManager:
         """Test method."""
         assert PackageManager.I.lock_file() == Path("uv.lock")
 
-    def test_container_image(self) -> None:
-        """Test method."""
-        assert PackageManager.I.container_image() == (
-            "ghcr.io/astral-sh/uv:latest",
-            "/uv",
-            "/usr/local/bin/uv",
-        )
-
     def test_source_root(self) -> None:
         """Test method."""
         assert PackageManager.I.source_root() == Path("src")

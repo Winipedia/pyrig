@@ -7,7 +7,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
 
@@ -33,9 +33,9 @@ class SecurityChecker(Tool):
         """Get the badge group this tool belongs to.
 
         Returns:
-            ``ToolGroup.SECURITY``
+            ``Group.SECURITY``
         """
-        return ToolGroup.SECURITY
+        return Group.SECURITY
 
     def image_url(self) -> str:
         """Return the badge image URL for this tool.

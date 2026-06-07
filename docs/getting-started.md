@@ -73,25 +73,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv --version
 ```
 
-**Podman** (for containerization):
-If you do not plan to use containerization in your project,
-you can skip installing Podman as it is not required for any processes
-except in the CI/CD workflows that builds an image and adds it to your releases.
-However, if you want to use the containerization locally,
-you will need to have Podman installed.
-
-```bash
-# Linux
-sudo apt install podman  # Debian/Ubuntu
-sudo dnf install podman  # Fedora
-
-# macOS
-brew install podman
-
-# Verify installation
-podman --version
-```
-
 ### Accounts & Tokens
 
 **GitHub Account**:

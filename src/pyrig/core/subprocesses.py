@@ -141,7 +141,7 @@ def run_subprocess(  # noqa: PLR0913
     * Defaults ``cwd`` to the current directory when not provided.
 
     This is the underlying execution primitive used by all ``Tool`` wrappers
-    (``PackageManager``, ``PythonLinter``, ``ContainerEngine``, etc.).
+    (``PackageManager``, ``PythonLinter``, ``SecurityChecker``, etc.).
 
     Args:
         args: Command and arguments as a sequence (e.g., ``["git", "status"]``).

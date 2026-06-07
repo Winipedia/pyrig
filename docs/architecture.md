@@ -56,12 +56,18 @@ efficiency and speed — the system would work even if all subclasses were defin
 directly under `pyrig.rig`. However, it is recommended to follow the established
 structure to be specific and avoid ambiguity.
 
-The `.L` classproperty returns the cached **leaf subclass** — the single
-outermost override across all dependencies (returns the class type, which may
-be abstract or concrete). `.I` returns a cached instance of that leaf class.
-These two shortcuts are used throughout the codebase for all usages of
-subclasses of `DependencySubclass` to allow downstream projects to override
-any part of the system by simply defining a new subclass in the right place. :
+The `.L` classproperty returns the cached **leaf subclass** — the outermost
+override across all dependencies (returns the class type, which may be
+abstract or concrete). When a single leaf is found it is returned directly;
+when multiple independent leaves are found (e.g. two installed plugins each
+extend the same class) they are merged into a dynamically created subclass
+that inherits from all of them, ordered by `sort_key()` so the result is
+deterministic. A warning is logged in that case, since interacting overrides
+may need to be reconciled explicitly in your own combined subclass. `.I`
+returns a cached instance of that leaf class. These two shortcuts are used
+throughout the codebase for all usages of subclasses of `DependencySubclass`
+to allow downstream projects to override any part of the system by simply
+defining a new subclass in the right place. :
 
 ```python
 PackageManager.I.install_dependencies_args().run()

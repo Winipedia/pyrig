@@ -6,7 +6,7 @@ Wraps RemoteVersionController commands and information.
 import os
 
 from pyrig.core.strings import make_linked_badge_markdown
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
@@ -32,9 +32,9 @@ class RemoteVersionController(Tool):
         """Get the badge group this tool belongs to.
 
         Returns:
-            `ToolGroup.TOOLING`
+            `Group.TOOLING`
         """
-        return ToolGroup.TOOLING
+        return Group.TOOLING
 
     def image_url(self) -> str:
         """Return the badge image URL for GitHub.

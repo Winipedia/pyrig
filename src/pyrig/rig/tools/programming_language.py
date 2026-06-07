@@ -3,7 +3,7 @@
 Wraps ProgrammingLanguage commands and information.
 """
 
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class ProgrammingLanguage(Tool):
@@ -30,9 +30,9 @@ class ProgrammingLanguage(Tool):
         """Return the tool group for the programming language.
 
         Returns:
-            ``ToolGroup.PROJECT_INFO``.
+            ``Group.PROJECT_INFO``.
         """
-        return ToolGroup.PROJECT_INFO
+        return Group.PROJECT_INFO
 
     def image_url(self) -> str:
         """Return the badge image URL for Python.
