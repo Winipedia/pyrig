@@ -102,7 +102,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         health_checks_job_id = self.make_id_from_func(self.job_health_checks)
         return self.job(
             job_func=self.job_health_check,
-            needs=[matrix_health_checks_job_id, health_checks_job_id],
+            needs=[health_checks_job_id, matrix_health_checks_job_id],
             steps=self.steps_aggregate_jobs(),
         )
 
