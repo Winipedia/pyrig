@@ -12,7 +12,7 @@ from pyrig.core.strings import (
 )
 from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.cli.cli import CLI
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class PackageManager(Tool):
@@ -39,9 +39,9 @@ class PackageManager(Tool):
         """Return the badge group this tool belongs to.
 
         Returns:
-            ``ToolGroup.TOOLING``
+            ``Group.TOOLING``
         """
-        return ToolGroup.TOOLING
+        return Group.TOOLING
 
     def image_url(self) -> str:
         """Return the badge image URL for this tool.
@@ -111,18 +111,6 @@ class PackageManager(Tool):
             ``Path("uv.lock")`` relative to the project root.
         """
         return Path("uv.lock")
-
-    def container_image(self) -> tuple[str, str, str]:
-        """Return the container image coordinates for copying uv.
-
-        Used when generating a ``Containerfile`` to add a
-        ``COPY --from=<image> <src> <dst>`` directive that installs uv
-        into the container image.
-
-        Returns:
-            Tuple of (image_name, path_in_source_image, path_in_target_image).
-        """
-        return "ghcr.io/astral-sh/uv:latest", "/uv", "/usr/local/bin/uv"
 
     def build_system_requires(self) -> list[str]:
         """Return the ``[build-system].requires`` value for ``pyproject.toml``.

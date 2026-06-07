@@ -1,13 +1,24 @@
 """Tests module."""
 
+from itertools import chain
+
+from pytest_mock import MockerFixture
+
 from pyrig.rig import tools
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.base.tool import Tool
+from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
 
 
 class TestTool:
     """Test class."""
+
+    def test_groups(self) -> None:
+        """Test method."""
+        all_groups = [v for k, v in vars(Group).items() if k.isupper()]
+        groups = Tool.groups()
+        assert set(groups) == set(all_groups)
+        assert len(groups) > 1
 
     def test_image_url(self) -> None:
         """Test method."""
@@ -39,11 +50,6 @@ class TestTool:
         result = Tool.dependency_package()
         assert result == tools
 
-    def test_sort_key(self) -> None:
-        """Test method."""
-        result = PackageManager.sort_key()
-        assert isinstance(result, str)
-
     def test_group(self) -> None:
         """Test method."""
         result = PackageManager.I.group()
@@ -57,14 +63,23 @@ class TestTool:
         assert "uv" in result
         assert "[![" in result
 
-    def test_grouped_badges(self) -> None:
+    def test_grouped_badges(self, mocker: MockerFixture) -> None:
         """Test method."""
-        result = Tool.grouped_badges()
-        assert isinstance(result, dict)
-        assert len(result) > 0
+        badges1 = Tool.grouped_badges()
+        assert isinstance(badges1, dict)
+        assert len(badges1) > 0
         assert all(
-            isinstance(k, str) and isinstance(v, list) for k, v in result.items()
+            isinstance(k, str) and isinstance(v, list) for k, v in badges1.items()
         )
+
+        subclasses_mock = mocker.patch.object(
+            Tool,
+            Tool.subclasses.__name__,
+            return_value=chain(Tool.subclasses(), Tool.subclasses()),
+        )
+        badges2 = Tool.grouped_badges()
+        subclasses_mock.assert_called_once()
+        assert badges2 == badges1
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

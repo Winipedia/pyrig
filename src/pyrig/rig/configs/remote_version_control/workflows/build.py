@@ -1,4 +1,4 @@
-"""GitHub Actions workflow configuration for building artifacts and container images."""
+"""GitHub Actions workflow configuration for building project artifacts."""
 
 from typing import Any
 
@@ -11,20 +11,17 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class BuildWorkflowConfigFile(WorkflowConfigFile):
-    """GitHub Actions workflow that builds artifacts and a container image.
+    """GitHub Actions workflow that builds project artifacts.
 
     Generates ``.github/workflows/build.yml``. The workflow triggers when the
     health check workflow completes on the default branch (excluding scheduled
-    runs), builds artifacts across an OS matrix and a container image on
-    Ubuntu, then uploads both as GitHub Actions artifacts for the release
-    workflow to consume.
+    runs), builds artifacts across an OS matrix, then uploads them as GitHub
+    Actions artifacts for the release workflow to consume.
 
     Artifacts produced:
         - **Artifacts**: Built with ``pyrig build`` on Ubuntu, Windows, and macOS.
-        - **Container image**: Built with Podman, saved as a
-          ``dist/<project>.tar`` archive.
 
-    Both artifact jobs are guarded so they only run when the triggering health
+    The artifact job is guarded so it only runs when the triggering health
     check run succeeded *and* was not a scheduled (cron) run. This prevents
     unnecessary artifact builds and downstream releases on nightly health
     check runs.
@@ -64,13 +61,9 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         """Return all jobs for the build workflow.
 
         Returns:
-            Dict with two jobs: one that builds artifacts across an OS
-            matrix and one that builds the container image on Ubuntu.
+            Dict with a single job that builds artifacts across an OS matrix.
         """
-        jobs: ConfigDict = {}
-        jobs.update(self.job_artifacts())
-        jobs.update(self.job_container_image())
-        return jobs
+        return {**self.job_artifacts()}
 
     def job_artifacts(self) -> ConfigDict:
         """Return the job configuration for building artifacts across an OS matrix.
@@ -98,31 +91,6 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_artifacts(),
         )
 
-    def job_container_image(self) -> ConfigDict:
-        """Return the job configuration for building the project container image.
-
-        The job runs only when both of these conditions hold:
-            - The triggering health check workflow run completed successfully.
-            - The triggering run was not a scheduled (cron) run.
-
-        Runs on a single Ubuntu runner because container image builds target
-        Linux deployments and do not require a cross-platform matrix.
-
-        Returns:
-            Dict mapping the job ID to its configuration, including the
-            conditional guard and container build steps.
-        """
-        return self.job(
-            job_func=self.job_container_image,
-            if_condition=self.combined_if(
-                self.if_workflow_run_is_success(),
-                self.if_workflow_run_is_not_cron_triggered(),
-                operator="&&",
-            ),
-            runs_on=self.UBUNTU_LATEST,
-            steps=self.steps_container_image(),
-        )
-
     def steps_artifacts(self) -> list[dict[str, Any]]:
         """Return the ordered steps for the artifact build job.
 
@@ -139,19 +107,4 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
             *self.steps_core_matrix_setup(),
             self.step_build_artifacts(),
             self.step_upload_artifacts(),
-        ]
-
-    def steps_container_image(self) -> list[dict[str, Any]]:
-        """Return the ordered steps for the container image build job.
-
-        Returns:
-            Ordered list of step configuration dicts.
-        """
-        return [
-            *self.steps_core_setup(),
-            self.step_install_container_engine(),
-            self.step_make_distribution_directory(),
-            self.step_build_container_image(),
-            self.step_save_container_image(),
-            self.step_upload_artifacts(name="container-image"),
         ]

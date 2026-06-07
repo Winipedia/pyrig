@@ -7,7 +7,7 @@ from pathlib import Path
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
@@ -31,9 +31,9 @@ class DocsBuilder(Tool):
         """Get the badge group for this tool.
 
         Returns:
-            ``ToolGroup.DOCUMENTATION`` for grouping in generated badge lists.
+            ``Group.DOCUMENTATION`` for grouping in generated badge lists.
         """
-        return ToolGroup.DOCUMENTATION
+        return Group.DOCUMENTATION
 
     def image_url(self) -> str:
         """Return the badge image URL for MkDocs.

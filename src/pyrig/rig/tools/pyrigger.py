@@ -19,7 +19,7 @@ from pyrig.core.strings import (
 )
 from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.subcommands import mkroot, mktests
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.hook_manager import (
     VersionControlHookManager,
@@ -50,9 +50,9 @@ class Pyrigger(Tool):
         """Returns the group the tool belongs to.
 
         Returns:
-            `ToolGroup.TOOLING`
+            `Group.TOOLING`
         """
-        return ToolGroup.TOOLING
+        return Group.TOOLING
 
     def image_url(self) -> str:
         """Return the badge image URL for pyrig.

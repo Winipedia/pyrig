@@ -86,7 +86,7 @@ def module_classes(module: ModuleType) -> Iterator[type]:
     )
 
 
-def discover_all_subclasses[T: type](cls: T) -> set[T]:
+def discover_all_subclasses[T](cls: type[T]) -> set[type[T]]:
     """Recursively discover all subclasses of a class already loaded in memory.
 
     Traverses the live subclass registry via ``__subclasses__()`` without
@@ -105,9 +105,9 @@ def discover_all_subclasses[T: type](cls: T) -> set[T]:
     return subclasses
 
 
-def discard_parent_classes[T: type](
-    classes: Iterable[T],
-) -> Iterator[T]:
+def discard_parent_classes[T](
+    classes: Iterable[type[T]],
+) -> Iterator[type[T]]:
     """Yield only leaf classes, removing any ancestors present in the collection.
 
     A class is kept only when no other class in the collection is a strict subclass
@@ -134,7 +134,7 @@ def discard_parent_classes[T: type](
     )
 
 
-def discard_abstract_classes[T: type](classes: Iterable[T]) -> Iterator[T]:
+def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
     """Filter out abstract classes from a collection.
 
     Uses ``inspect.isabstract`` to detect classes that have one or more

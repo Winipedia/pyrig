@@ -7,7 +7,7 @@ import logging
 from functools import cache
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +33,9 @@ class VersionController(Tool):
         """Return the badge group this tool belongs to.
 
         Returns:
-            ``ToolGroup.TOOLING``
+            ``Group.TOOLING``
         """
-        return ToolGroup.TOOLING
+        return Group.TOOLING
 
     def image_url(self) -> str:
         """Return the badge image URL for Git.

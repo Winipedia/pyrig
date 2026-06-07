@@ -26,7 +26,6 @@ my-project/
 ├── .scratch.py                             # Scratch file for code experimentation
 ├── branch-protection.json                  # GitHub branch protection ruleset definition
 ├── CODE_OF_CONDUCT.md                      # Contributor Covenant code of conduct
-├── Containerfile                           # Podman container image definition
 ├── CONTRIBUTING.md                         # Contribution guidelines
 ├── LICENSE                                 # MIT license
 ├── mkdocs.yml                              # MkDocs documentation site configuration
@@ -86,12 +85,6 @@ my-project/
 | `CODE_OF_CONDUCT.md` | Contributor Covenant v2.1 code of conduct |
 | `SECURITY.md` | Security vulnerability reporting policy |
 | `LICENSE` | MIT license |
-
-### Containerization
-
-| File | Purpose |
-|---|---|
-| `Containerfile` | Podman-compatible container image definition for running the project |
 
 ### `.github/`
 

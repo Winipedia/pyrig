@@ -10,13 +10,13 @@ from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.configs.remote_version_control.workflows.deploy import (
+    DeployWorkflowConfigFile,
+)
 from pyrig.rig.configs.remote_version_control.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
-from pyrig.rig.configs.remote_version_control.workflows.release import (
-    ReleaseWorkflowConfigFile,
-)
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.remote import (
@@ -164,18 +164,18 @@ class BadgesMarkdownConfigFile(MarkdownConfigFile):
         """
         badge_groups = Tool.grouped_badges()
 
-        badge_groups[ToolGroup.PROJECT_INFO].extend(
+        badge_groups[Group.PROJECT_INFO].extend(
             [
                 LicenseConfigFile.I.license_badge(),
             ]
         )
-        badge_groups[ToolGroup.CI_CD].extend(
+        badge_groups[Group.CI_CD].extend(
             [
                 RemoteVersionController.I.cicd_badge(
                     HealthCheckWorkflowConfigFile.I.stem(), "CI"
                 ),
                 RemoteVersionController.I.cicd_badge(
-                    ReleaseWorkflowConfigFile.I.stem(), "CD"
+                    DeployWorkflowConfigFile.I.stem(), "CD"
                 ),
             ]
         )

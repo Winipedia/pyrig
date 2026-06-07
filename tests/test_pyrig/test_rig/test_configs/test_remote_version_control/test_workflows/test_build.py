@@ -26,20 +26,6 @@ class TestBuildWorkflowConfigFile:
         """Test method."""
         assert BuildWorkflowConfigFile.I.stem() == "build"
 
-    def test_job_container_image(
-        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_build_workflow().job_container_image()
-        assert len(result) == 1, f"Expected job to have one key, got {result}"
-
-    def test_steps_container_image(
-        self, my_test_build_workflow: type[BuildWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_build_workflow().steps_container_image()
-        assert len(result) > 0, f"Expected some steps, got {result}"
-
     def test_workflow_triggers(
         self, my_test_build_workflow: type[BuildWorkflowConfigFile]
     ) -> None:

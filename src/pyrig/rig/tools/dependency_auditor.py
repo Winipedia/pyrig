@@ -4,7 +4,7 @@ Wraps the dependency auditor commands and information.
 """
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class DependencyAuditor(Tool):
@@ -38,7 +38,7 @@ class DependencyAuditor(Tool):
 
     def group(self) -> str:
         """Return the tool group used for badge organisation."""
-        return ToolGroup.SECURITY
+        return Group.SECURITY
 
     def image_url(self) -> str:
         """Return the badge image URL for pip-audit.

@@ -22,10 +22,10 @@ from pyrig.core.introspection.packages import discover_all_subclasses_across_pac
 logger = logging.getLogger(__name__)
 
 
-def discover_subclasses_across_dependencies[T: type](
-    cls: T,
+def discover_subclasses_across_dependencies[T](
+    cls: type[T],
     package: ModuleType,
-) -> Iterator[T]:
+) -> Iterator[type[T]]:
     """Yield subclasses of ``cls`` across ``package`` and dependent packages.
 
     The primary entry point for pyrig's plugin-style subclass discovery. Starting

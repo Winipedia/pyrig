@@ -4,7 +4,7 @@ Wraps python linter commands and information.
 """
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.base.tool import Tool, ToolGroup
+from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class PythonLinter(Tool):
@@ -25,7 +25,7 @@ class PythonLinter(Tool):
 
     def group(self) -> str:
         """Return the badge group this tool belongs to."""
-        return ToolGroup.CODE_QUALITY
+        return Group.CODE_QUALITY
 
     def image_url(self) -> str:
         """Return the badge image URL for Ruff.
