@@ -28,9 +28,6 @@ class Group:
     TESTING = "testing"
 
 
-ToolGroup = Group
-
-
 class Tool(RigDependencySubclass):
     """Abstract base class for CLI tool wrappers.
 
