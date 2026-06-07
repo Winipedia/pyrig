@@ -147,18 +147,14 @@ class Tool(RigDependencySubclass):
         ``README.md``.
 
         Returns:
-            A ``defaultdict`` mapping each group name to a list of Markdown
-            badge strings for the tools in that group.
+            A ``dict`` mapping each group name to a list of Markdown badge
+            strings for the tools in that group.
         """
         subclasses = cls.subclasses_sorted(cls.concrete_subclasses())
-        groups = {g: [] for g in cls.groups()}
-        for tool in subclasses:
-            t = tool()
-            badge = t.badge()
-            group = groups[t.group()]
-            if badge in group:
-                continue
-            group.append(badge)
+        groups: dict[str, list[str]] = {g: [] for g in cls.groups()}
+        for subclass in subclasses:
+            tool = subclass()
+            groups[tool.group()].append(tool.badge())
         return groups
 
     @classmethod
