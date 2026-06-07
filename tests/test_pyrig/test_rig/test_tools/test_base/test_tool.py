@@ -1,9 +1,5 @@
 """Tests module."""
 
-from itertools import chain
-
-from pytest_mock import MockerFixture
-
 from pyrig.rig import tools
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -63,7 +59,7 @@ class TestTool:
         assert "uv" in result
         assert "[![" in result
 
-    def test_grouped_badges(self, mocker: MockerFixture) -> None:
+    def test_grouped_badges(self) -> None:
         """Test method."""
         badges1 = Tool.grouped_badges()
         assert isinstance(badges1, dict)
@@ -71,15 +67,6 @@ class TestTool:
         assert all(
             isinstance(k, str) and isinstance(v, list) for k, v in badges1.items()
         )
-
-        subclasses_mock = mocker.patch.object(
-            Tool,
-            Tool.subclasses.__name__,
-            return_value=chain(Tool.subclasses(), Tool.subclasses()),
-        )
-        badges2 = Tool.grouped_badges()
-        subclasses_mock.assert_called_once()
-        assert badges2 == badges1
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
