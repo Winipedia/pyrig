@@ -68,7 +68,7 @@ def make_init_file(path: Path, content: str) -> None:
     write_text_utf8(path, content)
 
 
-def src_package_is_package(package: ModuleType) -> bool:
+def is_src_package(package: ModuleType) -> bool:
     """Check if the given module is the top-level package of the current project.
 
     Compares the current working directory name against the kebab-case form

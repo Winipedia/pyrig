@@ -18,10 +18,10 @@ from pyrig.core.introspection.packages import (
     discover_modules,
     import_package_from_dir,
     import_package_with_dir_fallback,
+    is_src_package,
     make_init_file,
     make_package_dir,
     register_package_modules,
-    src_package_is_package,
     walk_package,
 )
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -75,10 +75,10 @@ def test_make_package_dir_path_not_under_cwd(
     assert make_init_file_mock.call_count == expected_call_count
 
 
-def test_src_package_is_package() -> None:
+def test_is_src_package() -> None:
     """Test function."""
-    assert src_package_is_package(pyrig)
-    assert not src_package_is_package(typer)
+    assert is_src_package(pyrig)
+    assert not is_src_package(typer)
 
 
 def test_import_package_with_dir_fallback(
