@@ -22,7 +22,6 @@ from pyrig.core.introspection.packages import (
     make_package_dir,
     register_package_modules,
     src_package_is_package,
-    src_package_is_pyrig,
     walk_package,
 )
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -74,11 +73,6 @@ def test_make_package_dir_path_not_under_cwd(
     # without breaking, since neither cwd nor Path() appear in the chain.
     expected_call_count = 1 + len(elsewhere.parents)
     assert make_init_file_mock.call_count == expected_call_count
-
-
-def test_src_package_is_pyrig() -> None:
-    """Test function."""
-    assert src_package_is_pyrig()
 
 
 def test_src_package_is_package() -> None:

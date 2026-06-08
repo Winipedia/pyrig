@@ -9,7 +9,6 @@ from types import ModuleType
 
 import typer
 
-import pyrig
 from pyrig.core.introspection.classes import discover_all_subclasses
 from pyrig.core.introspection.modules import (
     import_module_from_file,
@@ -67,18 +66,6 @@ def make_init_file(path: Path, content: str) -> None:
     typer.echo(f"Creating: {path}")
 
     write_text_utf8(path, content)
-
-
-def src_package_is_pyrig() -> bool:
-    """Check if the current project is pyrig itself.
-
-    Returns ``True`` when pyrig is being run from its own development
-    repository rather than as an installed dependency in another project.
-
-    Returns:
-        True if the current working directory is named ``pyrig``.
-    """
-    return src_package_is_package(pyrig)
 
 
 def src_package_is_package(package: ModuleType) -> bool:
