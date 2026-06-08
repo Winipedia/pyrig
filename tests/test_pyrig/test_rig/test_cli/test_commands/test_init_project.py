@@ -125,8 +125,8 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
         # assert pyproject.toml contains not pyrig specific overrides
         pyproject_toml = tomlkit.parse((PyprojectConfigFile.I.path()).read_text())
-        keywords = pyproject_toml.get("project", {}).get("keywords")
-        assert keywords == []
+        classifiers = pyproject_toml["project"]["classifiers"]
+        assert classifiers == PyprojectConfigFile().make_classifiers()
 
         package_dir = src_project_dir / "src" / "src_project"
         assert package_dir.exists(), f"Expected {package_dir} to be created"

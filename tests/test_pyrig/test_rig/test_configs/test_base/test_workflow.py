@@ -473,6 +473,8 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().step_run_tests()
         assert "run" in result
+        result = my_test_workflow().step_run_tests(step={})
+        assert "run" in result
 
     def test_step_run_pre_commit_hooks(
         self, my_test_workflow: type[WorkflowConfigFile]

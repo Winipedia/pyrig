@@ -12,6 +12,11 @@ license-files = [
     "LICENSE",
 ]
 classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
@@ -20,11 +25,6 @@ classifiers = [
     "Topic :: Software Development :: Testing",
     "Topic :: System :: Installation/Setup",
     "Topic :: System :: Software Distribution",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Operating System :: OS Independent",
-    "Typing :: Typed",
 ]
 keywords = [
     "project-setup",
@@ -34,7 +34,6 @@ keywords = [
     "testing",
     "ci-cd",
     "devops",
-    "packaging",
 ]
 
 [[project.authors]]
