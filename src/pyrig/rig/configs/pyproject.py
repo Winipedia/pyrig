@@ -117,7 +117,7 @@ class PyprojectConfigFile(TomlConfigFile):
                 "license": self.detect_project_license(),
                 "license-files": [LicenseConfigFile.I.path().as_posix()],
                 "classifiers": [
-                    *self.make_python_version_classifiers(),
+                    *self.make_classifiers(),
                 ],
                 "urls": {
                     "Homepage": RemoteVersionController.I.repo_url(),
@@ -126,7 +126,6 @@ class PyprojectConfigFile(TomlConfigFile):
                     "Issues": RemoteVersionController.I.issues_url(),
                     "Changelog": RemoteVersionController.I.releases_url(),
                 },
-                "keywords": [],
                 "scripts": {
                     PackageManager.I.project_name(): (
                         f"{main.__name__}:{main.main.__name__}"
@@ -241,7 +240,7 @@ class PyprojectConfigFile(TomlConfigFile):
             .get("description", "Add your description here")
         )
 
-    def make_python_version_classifiers(self) -> list[str]:
+    def make_classifiers(self) -> list[str]:
         """Build the PyPI trove classifiers for the project.
 
         Generates a ``Programming Language :: Python :: X.Y`` classifier for every

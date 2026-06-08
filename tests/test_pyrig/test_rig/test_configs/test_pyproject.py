@@ -64,9 +64,9 @@ class TestPyprojectConfigFile:
         version = PyprojectConfigFile.I.project_version()
         assert isinstance(version, str), f"Expected str, got {type(version)}"
 
-    def test_make_python_version_classifiers(self) -> None:
+    def test_make_classifiers(self) -> None:
         """Test method."""
-        classifiers = PyprojectConfigFile.I.make_python_version_classifiers()
+        classifiers = PyprojectConfigFile.I.make_classifiers()
         assert isinstance(classifiers, list), f"Expected list, got {type(classifiers)}"
         for classifier in classifiers:
             assert isinstance(classifier, str), f"Expected str, got {type(classifier)}"
