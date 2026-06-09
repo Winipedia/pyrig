@@ -29,6 +29,7 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.type_checker import TypeChecker
 from pyrig.rig.tools.version_control.remote import (
@@ -116,9 +117,8 @@ class PyprojectConfigFile(TomlConfigFile):
                 ],
                 "license": self.detect_project_license(),
                 "license-files": [LicenseConfigFile.I.path().as_posix()],
-                "classifiers": [
-                    *self.make_classifiers(),
-                ],
+                "classifiers": self.make_classifiers(),
+                "keywords": self.make_keywords(),
                 "urls": {
                     "Homepage": RemoteVersionController.I.repo_url(),
                     "Documentation": DocsBuilder.I.documentation_url(),
@@ -271,6 +271,18 @@ class PyprojectConfigFile(TomlConfigFile):
         ]
 
         return [*python_version_classifiers, *os_classifiers, *typing_classifiers]
+
+    def make_keywords(self) -> list[str]:
+        """Get the keywords applied to every package published via this plugin.
+
+        Adds the ``pyrig`` ecosystem keyword. It is universally accurate
+        because any package published through this plugin is a pyrig project,
+        and it aids discoverability of the pyrig ecosystem in PyPI search.
+
+        Returns:
+            ``["pyrig"]``
+        """
+        return [Pyrigger.I.name()]
 
     def merge_additional_dependencies(
         self,
