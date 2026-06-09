@@ -67,9 +67,9 @@ class TestPyprojectConfigFile:
     def test_make_classifiers(self) -> None:
         """Test method."""
         classifiers = PyprojectConfigFile.I.make_classifiers()
-        assert isinstance(classifiers, list), f"Expected list, got {type(classifiers)}"
+        assert isinstance(classifiers, list)
         for classifier in classifiers:
-            assert isinstance(classifier, str), f"Expected str, got {type(classifier)}"
+            assert isinstance(classifier, str)
 
     def test_project_description(self) -> None:
         """Test method."""
