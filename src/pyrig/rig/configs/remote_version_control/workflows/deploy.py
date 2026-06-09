@@ -23,7 +23,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
 
     One job is defined:
 
-    - **deploy-documentation**: Builds the MkDocs documentation site and
+    - **documentation**: Builds the MkDocs documentation site and
       deploys it to GitHub Pages. Requires ``pages: write`` and
       ``id-token: write`` job-level permissions.
     """
@@ -61,7 +61,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         """Build the top-level jobs configuration.
 
         Returns:
-            Dict containing the deploy-documentation job.
+            Dict containing the documentation job.
         """
         return {**self.job_documentation()}
 
@@ -84,7 +84,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         )
 
     def steps_documentation(self) -> list[dict[str, Any]]:
-        """Build the ordered steps for the deploy-documentation job.
+        """Build the ordered steps for the documentation job.
 
         Combines core installed-setup steps with the full documentation build
         and GitHub Pages deployment sequence.

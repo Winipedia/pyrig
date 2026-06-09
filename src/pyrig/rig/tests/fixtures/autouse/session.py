@@ -187,7 +187,7 @@ However, it failed. See the output below for details.
     # shutil copy the project to tmp_project_root
     shutil.copytree(PackageManager.I.source_root(), temp_source_root)
 
-    # copy pyproject.toml and uv.lock to tmp_path
+    # copy the project config files (pyproject.toml, README, LICENSE) to tmp_path
     configs = (
         PyprojectConfigFile.I.path(),
         ReadmeConfigFile.I.path(),

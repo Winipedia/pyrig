@@ -14,12 +14,12 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
 
     Three jobs run as part of this workflow:
 
-    1. ``health_checks`` — a single-runner job that applies all pre-commit
+    1. ``health-checks`` — a single-runner job that applies all pre-commit
        hooks (linting, formatting, type checking, security, markdown), audits
        dependencies for known CVEs, and enforces branch protection settings.
-    2. ``matrix_health_checks`` — a matrix job that runs the full test suite
+    2. ``matrix-health-checks`` — a matrix job that runs the full test suite
        with coverage reporting across all supported OS and Python versions.
-    3. ``health_check`` — a fan-in job that waits for both jobs above to
+    3. ``health-check`` — a fan-in job that waits for both jobs above to
        succeed. Its job ID is registered as the required status check in the
        branch protection ruleset, making it the single gate for merging.
     """
@@ -73,8 +73,8 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """Return all jobs for the health check workflow.
 
         Returns:
-            Dict containing the ``health_checks`` job, the
-            ``matrix_health_checks`` job, and the ``health_check``
+            Dict containing the ``health-checks`` job, the
+            ``matrix-health-checks`` job, and the ``health-check``
             aggregation job.
         """
         jobs: ConfigDict = {}
@@ -86,9 +86,9 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     def job_health_check(self) -> ConfigDict:
         """Return the fan-in aggregation job.
 
-        This job depends on both ``health_checks`` and
-        ``matrix_health_checks`` completing successfully. Its job ID
-        (``"health_check"``) is registered as the sole required status check
+        This job depends on both ``health-checks`` and
+        ``matrix-health-checks`` completing successfully. Its job ID
+        (``"health-check"``) is registered as the sole required status check
         in the branch protection ruleset, making it the single gate that must
         pass before any pull request can be merged.
 

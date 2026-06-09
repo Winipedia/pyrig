@@ -23,9 +23,8 @@ def init() -> None:
         5.  uv sync             (re-install to apply updated pyproject.toml)
         6.  pyrig mktests       (generate test skeletons)
         7.  prek install        (install pre-commit hooks)
-        8.  pytest              (run the test suite)
-        9.  git add .           (stage all files for commit)
-        10. git commit          (initial commit)
+        8.  git add .           (stage all files for commit)
+        9.  git commit          (initial commit)
 
     Each step runs sequentially and is tracked with a progress bar.
     The process stops immediately if any step fails.

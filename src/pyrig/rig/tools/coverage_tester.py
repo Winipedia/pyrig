@@ -65,6 +65,7 @@ class CoverageTester(Tool):
         Returns:
             Args: Tuple of pytest-cov CLI flags:
                 ``--cov=<package_name>``: enables coverage tracking for the package.
+                ``--cov-branch``: enables branch coverage measurement.
                 ``--cov-report=term-missing``: prints uncovered lines to the terminal.
                 ``--cov-fail-under=<threshold>``: fails the run if coverage drops
                 below the configured threshold.

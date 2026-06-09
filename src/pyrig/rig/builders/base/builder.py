@@ -51,7 +51,7 @@ class BuilderConfigFile(ListConfigFile):
     Example:
         Basic builder subclass::
 
-            class ExecutableBuilder(BuilderConfigFile):
+            class MyBuilder(BuilderConfigFile):
 
                 def non_platform_stem(self) -> str:
                     return "myapp"
