@@ -32,6 +32,12 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
+    def test_make_keywords(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile().make_keywords() == ["pyrig"]
+        assert PyprojectConfigFile.I.make_keywords()[0] == "pyrig"
+        assert len(PyprojectConfigFile.I.make_keywords()) > 1
+
     def test_stem(self) -> None:
         """Test method."""
         assert PyprojectConfigFile.I.stem() == "pyproject"
