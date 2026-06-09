@@ -1,7 +1,11 @@
 """tests module."""
 
+import pyrig_codecov
+import pyrig_dev
+import pyrig_pypi
 import pytest
 
+import pyrig
 from pyrig.core.dependency_graph import DependencyGraph
 from pyrig.core.graph import DiGraph
 
@@ -94,7 +98,12 @@ class TestDiGraph:
         """Test method."""
         graph = DependencyGraph()
         deps = graph.sorted_ancestors("typer")
-        assert deps == ["pyrig", "pyrig_codecov", "pyrig_pypi"]
+        assert deps == [
+            pyrig.__name__,
+            pyrig_codecov.__name__,
+            pyrig_dev.__name__,
+            pyrig_pypi.__name__,
+        ]
 
     def test_build(self) -> None:
         """Test method."""
