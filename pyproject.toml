@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "12.5.2"
+version = "12.6.0"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -18,20 +18,24 @@ classifiers = [
     "Operating System :: OS Independent",
     "Typing :: Typed",
     "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Code Generators",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Software Development :: Testing",
     "Topic :: System :: Installation/Setup",
-    "Topic :: System :: Software Distribution",
 ]
 keywords = [
     "project-setup",
-    "automation",
     "scaffolding",
-    "cli",
-    "testing",
+    "boilerplate",
+    "project-template",
+    "automation",
+    "configuration",
+    "developer-tools",
+    "code-quality",
     "ci-cd",
     "devops",
 ]
