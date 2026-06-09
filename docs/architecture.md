@@ -159,7 +159,7 @@ project structure.
 
 ## CLI Dispatch
 
-The single entry point `pyrig.rig.cli.cli:main` is shared by pyrig and every
+The single entry point `pyrig.rig.cli.main:main` is shared by pyrig and every
 downstream project. On startup it:
 
 1. Derives the calling package name from `sys.argv[0]` (the console-script path).

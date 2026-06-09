@@ -1175,9 +1175,10 @@ class WorkflowConfigFile(DictYmlConfigFile):
 
         Uploads the entire ``dist/`` directory as a named GitHub Actions
         artifact so it can be downloaded by downstream jobs or workflow runs.
+        The artifact name defaults to ``<project>-<runner.os>`` via
+        :meth:`insert_artifact_name`.
 
         Args:
-            name: Artifact name.  Defaults to ``<project>-<runner.os>``.
             step: Additional keys to merge into the step configuration.
 
         Returns:

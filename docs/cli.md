@@ -18,7 +18,7 @@ and `pyrig mkroot`:
 
 ```toml
 [project.scripts]
-my-project = "pyrig.rig.cli.cli:main"
+my-project = "pyrig.rig.cli.main:main"
 ```
 
 From that point on, `uv run my-project <command>` delegates to pyrig's entry
@@ -29,11 +29,12 @@ automatically at runtime.
 
 ## The Typer App
 
-A `typer.Typer` instance (`app`) is defined in `pyrig.rig.cli.cli`.
-It is fully configured and working from the start and registers
-every function defined in `my_project.rig.cli.subcommands` as a command.
+A `RigDependencySubclass` named `CLI` is defined in `pyrig.rig.cli.cli.cli`.
+Its `app()` method builds a fully configured `typer.Typer` application that
+registers every function defined in `my_project.rig.cli.subcommands` as a command.
 Functions from `shared_subcommands` modules across all packages in the
-dependency chain are also registered.
+dependency chain are also registered. Because `CLI` is a `RigDependencySubclass`,
+a dependent project can override any step of the build by subclassing it.
 
 ---
 
