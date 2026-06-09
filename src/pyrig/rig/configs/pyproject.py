@@ -246,6 +246,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Generates a ``Programming Language :: Python :: X.Y`` classifier for every
         Python minor version in the project's supported range (derived from
         ``requires-python``), plus the fixed classifiers
+        ``Programming Language :: Python``, ``Programming Language :: Python :: 3``,
         ``Programming Language :: Python :: 3 :: Only``,
         ``Operating System :: OS Independent`` and ``Typing :: Typed``.
 
@@ -254,6 +255,8 @@ class PyprojectConfigFile(TomlConfigFile):
             field in pyproject.toml.
         """
         python_version_classifiers = [
+            "Programming Language :: Python",
+            "Programming Language :: Python :: 3",
             "Programming Language :: Python :: 3 :: Only",
             *(
                 f"Programming Language :: Python :: {v.major}.{v.minor}"
