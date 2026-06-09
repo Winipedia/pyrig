@@ -26,6 +26,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Software Development :: Testing",
+    "Topic :: System :: Software Distribution",
     "Topic :: System :: Installation/Setup",
 ]
 keywords = [
