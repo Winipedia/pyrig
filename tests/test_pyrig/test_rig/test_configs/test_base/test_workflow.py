@@ -471,10 +471,15 @@ class TestWorkflowConfigFile:
 
     def test_step_run_tests(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().step_run_tests()
-        assert "run" in result
-        result = my_test_workflow().step_run_tests(step={})
-        assert "run" in result
+        step = my_test_workflow().step_run_tests()
+        assert "run" in step
+        step = my_test_workflow().step_run_tests(step={})
+        assert "run" in step
+
+        assert "env" not in step
+
+        health_check_step = HealthCheckWorkflowConfigFile.I.step_run_tests()
+        assert health_check_step["env"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}  # nosec: B105
 
     def test_step_run_pre_commit_hooks(
         self, my_test_workflow: type[WorkflowConfigFile]
