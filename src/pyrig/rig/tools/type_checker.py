@@ -52,6 +52,6 @@ class TypeChecker(Tool):
             *args: Additional arguments appended after ``ty check``.
 
         Returns:
-            Args for 'ty check [args]'.
+            Args for ``ty check [args]``.
         """
         return self.args("check", *args)
