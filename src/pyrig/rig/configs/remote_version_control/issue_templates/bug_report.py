@@ -3,10 +3,10 @@
 from pathlib import Path
 
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.yml import DictYmlConfigFile
+from pyrig.rig.configs.base.yml import YMLDictConfigFile
 
 
-class BugReportConfigFile(DictYmlConfigFile):
+class BugReportConfigFile(YMLDictConfigFile):
     """Manage ``.github/ISSUE_TEMPLATE/bug_report.yml``.
 
     Generates and validates the GitHub bug report issue template, which

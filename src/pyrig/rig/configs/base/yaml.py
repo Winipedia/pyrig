@@ -5,9 +5,9 @@ safe_load and safe_dump for secure parsing and serialization.
 
 Example:
     >>> from pathlib import Path
-    >>> from pyrig.rig.configs.base.yaml import YamlConfigFile
+    >>> from pyrig.rig.configs.base.yaml import YAMLConfigFile
     >>>
-    >>> class MyWorkflowConfigFile(YamlConfigFile):
+    >>> class MyWorkflowConfigFile(YAMLConfigFile):
     ...
     ...     def parent_path(self) -> Path:
     ...         return Path(".github/workflows")
@@ -25,7 +25,7 @@ from pyrig.core.strings import open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigData, ConfigFile
 
 
-class YamlConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
+class YAMLConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     """Base class for YAML configuration files.
 
     Implements YAML-specific load and dump operations for the ConfigFile

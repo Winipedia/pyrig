@@ -5,18 +5,18 @@ from pathlib import Path
 
 from pytest_mock import MockerFixture
 
-from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
+from pyrig.rig.configs.base.badges import BadgesConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
-class TestBadgesMarkdownConfigFile:
+class TestBadgesConfigFile:
     """Test class."""
 
     def test_merge_configs(self, tmp_project_root_path: Path) -> None:
         """Test method."""
-        assert issubclass(ReadmeConfigFile, BadgesMarkdownConfigFile)
+        assert issubclass(ReadmeConfigFile, BadgesConfigFile)
         assert ReadmeConfigFile.I.is_correct()
 
         with chdir(tmp_project_root_path):
@@ -97,8 +97,8 @@ class TestBadgesMarkdownConfigFile:
 
     def test_badges(self) -> None:
         """Test method."""
-        assert issubclass(ReadmeConfigFile, BadgesMarkdownConfigFile), (
-            "ReadmeConfigFile should inherit from BadgesMarkdownConfigFile"
+        assert issubclass(ReadmeConfigFile, BadgesConfigFile), (
+            "ReadmeConfigFile should inherit from BadgesConfigFile"
         )
         badges = ReadmeConfigFile().badges()
         assert isinstance(badges, dict)

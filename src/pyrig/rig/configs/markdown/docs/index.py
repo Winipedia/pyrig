@@ -7,12 +7,12 @@ header.
 
 from pathlib import Path
 
-from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
+from pyrig.rig.configs.base.badges import BadgesConfigFile
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
 
 
-class IndexConfigFile(BadgesMarkdownConfigFile):
+class IndexConfigFile(BadgesConfigFile):
     """Configuration manager for the MkDocs home page (``docs/index.md``).
 
     Produces ``docs/index.md`` with a ``# {project_name} Documentation`` H1

@@ -3,10 +3,10 @@
 from pathlib import Path
 
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.yml import DictYmlConfigFile
+from pyrig.rig.configs.base.yml import YMLDictConfigFile
 
 
-class ConfigConfigFile(DictYmlConfigFile):
+class ConfigConfigFile(YMLDictConfigFile):
     """Manage ``.github/ISSUE_TEMPLATE/config.yml``.
 
     Controls GitHub's issue template chooser by generating

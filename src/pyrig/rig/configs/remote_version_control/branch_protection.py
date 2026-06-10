@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.json import ListJsonConfigFile
+from pyrig.rig.configs.base.json import JSONListConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.remote_version_control.workflows.health_check import (
@@ -25,7 +25,7 @@ from pyrig.rig.utils.github_api import create_or_update_ruleset, repository
 logger = logging.getLogger(__name__)
 
 
-class BranchProtectionConfigFile(ListJsonConfigFile):
+class BranchProtectionConfigFile(JSONListConfigFile):
     """Configuration file for GitHub branch protection rulesets.
 
     Generates and manages ``branch-protection.json``, which defines a GitHub

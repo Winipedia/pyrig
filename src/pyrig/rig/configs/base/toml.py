@@ -13,7 +13,7 @@ from pyrig.core.strings import open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
 
 
-class TomlConfigFile(DictConfigFile):
+class TOMLConfigFile(DictConfigFile):
     """Base class for TOML configuration files.
 
     Implements TOML-specific file I/O using tomlkit, which preserves formatting,
@@ -29,7 +29,7 @@ class TomlConfigFile(DictConfigFile):
         - ``_configs()``: Expected TOML configuration structure.
 
     Example:
-        >>> class MyConfigFile(TomlConfigFile):
+        >>> class MyConfigFile(TOMLConfigFile):
         ...
         ...     def parent_path(self) -> Path:
         ...         return Path()

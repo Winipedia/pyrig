@@ -6,16 +6,16 @@ from typing import Any
 
 import pytest
 
-from pyrig.rig.configs.base.toml import TomlConfigFile
+from pyrig.rig.configs.base.toml import TOMLConfigFile
 
 
 @pytest.fixture
 def my_test_toml_config_file(
-    config_file_factory: Callable[[type[TomlConfigFile]], type[TomlConfigFile]],
-) -> type[TomlConfigFile]:
+    config_file_factory: Callable[[type[TOMLConfigFile]], type[TOMLConfigFile]],
+) -> type[TOMLConfigFile]:
     """Create a test toml config file class with tmp_path."""
 
-    class MyTestTomlConfigFile(config_file_factory(TomlConfigFile)):  # ty: ignore[unsupported-base]
+    class MyTestTOMLConfigFile(config_file_factory(TOMLConfigFile)):  # ty: ignore[unsupported-base]
         """Test toml config file with tmp_path override."""
 
         def parent_path(self) -> Path:
@@ -30,14 +30,14 @@ def my_test_toml_config_file(
             """Get the config."""
             return {"key": "value"}
 
-    return MyTestTomlConfigFile
+    return MyTestTOMLConfigFile
 
 
-class TestTomlConfigFile:
+class TestTOMLConfigFile:
     """Test class."""
 
     def test_prettify_value(
-        self, my_test_toml_config_file: type[TomlConfigFile]
+        self, my_test_toml_config_file: type[TOMLConfigFile]
     ) -> None:
         """Test method."""
         # scalar passthrough
@@ -61,34 +61,34 @@ class TestTomlConfigFile:
         assert result[0]["hooks"][0]["id"] == "test"
 
     def test_prettify_dict(
-        self, my_test_toml_config_file: type[TomlConfigFile]
+        self, my_test_toml_config_file: type[TOMLConfigFile]
     ) -> None:
         """Test method."""
         expected = {"key": ["value"]}
         actual = my_test_toml_config_file().prettify_dict({"key": ["value"]})
         assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test_pretty_dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
+    def test_pretty_dump(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
         """Test method."""
         my_test_toml_config_file().pretty_dump({"key": ["value"]})
         assert my_test_toml_config_file().load() == {"key": ["value"]}, (
             "Expected dump to work"
         )
 
-    def test__load(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
+    def test__load(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
         """Test method."""
         my_test_toml_config_file().validate()
         expected = {"key": "value"}
         actual = my_test_toml_config_file().load()
         assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test__dump(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
+    def test__dump(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
         """Test method."""
         my_test_toml_config_file().dump({"key": "value"})
         assert my_test_toml_config_file().load() == {"key": "value"}, (
             "Expected dump to work"
         )
 
-    def test_extension(self, my_test_toml_config_file: type[TomlConfigFile]) -> None:
+    def test_extension(self, my_test_toml_config_file: type[TOMLConfigFile]) -> None:
         """Test method."""
         assert my_test_toml_config_file().extension() == "toml", "Expected toml"

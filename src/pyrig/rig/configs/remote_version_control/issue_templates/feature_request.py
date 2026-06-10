@@ -3,10 +3,10 @@
 from pathlib import Path
 
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.yml import DictYmlConfigFile
+from pyrig.rig.configs.base.yml import YMLDictConfigFile
 
 
-class FeatureRequestConfigFile(DictYmlConfigFile):
+class FeatureRequestConfigFile(YMLDictConfigFile):
     """Manages ``.github/ISSUE_TEMPLATE/feature_request.yml``.
 
     Generates and validates the GitHub issue form that contributors use to

@@ -21,7 +21,7 @@ from pyrig.core.strings import dependency_requirement_as_package_name
 from pyrig.rig import resources, tests
 from pyrig.rig.cli import main
 from pyrig.rig.configs.base.config_file import ConfigDict, Priority
-from pyrig.rig.configs.base.toml import TomlConfigFile
+from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.coverage_tester import CoverageTester
@@ -38,7 +38,7 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 from pyrig.rig.utils.versions import VersionConstraint, adjust_version_to_level
 
 
-class PyprojectConfigFile(TomlConfigFile):
+class PyprojectConfigFile(TOMLConfigFile):
     """Generates and validates the project's pyproject.toml file.
 
     Builds the complete configuration structure from live project data: project
@@ -93,7 +93,7 @@ class PyprojectConfigFile(TomlConfigFile):
         Returns:
             Nested dict matching the expected pyproject.toml structure.
         """
-        # local import as ReadmeConfigFile inherits from BadgesMarkdownConfigFile
+        # local import as ReadmeConfigFile inherits from BadgesConfigFile
         # which needs pyproject info for badges, and pyproject needs the
         # readme path for metadata. This avoids circular import issues.
         from pyrig.rig.configs.markdown.readme import ReadmeConfigFile  # noqa: PLC0415

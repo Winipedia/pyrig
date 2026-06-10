@@ -15,7 +15,7 @@ from pyrig.rig.configs.base.config_file import (
 )
 
 
-class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
+class JSONConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     """Base class for JSON configuration files.
 
     Implements the ``_load``, ``_dump``, and ``extension`` abstract methods from
@@ -31,7 +31,7 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
     - ``_configs()``: Expected configuration content (dict or list).
 
     Example:
-        >>> class MyConfigFile(JsonConfigFile):
+        >>> class MyConfigFile(JSONConfigFile):
         ...
         ...     def parent_path(self) -> Path:
         ...         return Path()
@@ -81,7 +81,7 @@ class JsonConfigFile[ConfigT: ConfigData](ConfigFile[ConfigT]):
         return "json"
 
 
-class ListJsonConfigFile(JsonConfigFile[ConfigList]):
+class JSONListConfigFile(JSONConfigFile[ConfigList]):
     """Concrete base for JSON configuration files whose top-level structure is a list.
 
     Fixes the ``ConfigT`` type parameter to ``ConfigList`` so that ``_load``

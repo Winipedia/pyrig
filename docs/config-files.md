@@ -79,9 +79,9 @@ Every final concrete file class inherits from one of these bases.
 
 Some examples:
 
-- `TomlConfigFile` — for config files in TOML format.
+- `TOMLConfigFile` — for config files in TOML format.
 - `MarkdownConfigFile` — for Markdown files
-- `YamlConfigFile` — for YAML files
+- `YAMLConfigFile` — for YAML files
 - `PythonConfigFile` — for Python files
 
 If you need more specific information check out the [CodeWiki](https://codewiki.google/github.com/winipedia/pyrig)

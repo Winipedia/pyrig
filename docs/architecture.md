@@ -105,12 +105,12 @@ A class hierarchy of format-specific bases builds on top of `ConfigFile`:
 ```text
 ConfigFile
  ├── DictConfigFile
- │    └── TomlConfigFile       → pyproject.toml, prek.toml …
- ├── YamlConfigFile
- │    └── YmlConfigFile
- │         └── DictYmlConfigFile    → GitHub Actions workflows
- ├── JsonConfigFile
- │    └── ListJsonConfigFile   → branch-protection.json
+ │    └── TOMLConfigFile       → pyproject.toml, prek.toml …
+ ├── YAMLConfigFile
+ │    └── YMLConfigFile
+ │         └── YMLDictConfigFile    → GitHub Actions workflows
+ ├── JSONConfigFile
+ │    └── JSONListConfigFile   → branch-protection.json
  └── ListConfigFile
       ├── StringConfigFile
       │    └── MarkdownConfigFile  → README.md, CONTRIBUTING.md …
@@ -189,7 +189,7 @@ The four generated GitHub Actions workflows are chained via `workflow_run` trigg
 Health Check ──► Build ──► Release ──► Deploy
 ```
 
-Each workflow is a `WorkflowConfigFile` subclass (`DictYmlConfigFile`) that
+Each workflow is a `WorkflowConfigFile` subclass (`YMLDictConfigFile`) that
 assembles the YAML structure from composable building-block methods (`job()`,
 `step_run_tests()`, `steps_core_installed_setup()`, etc.). The generated YAML is
 checked into the repository and kept in sync by `pyrig mkroot`.
