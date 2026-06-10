@@ -692,7 +692,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             )
         return [
             self.step_checkout_repository(repo_token=repo_token),
-            self.step_setup_version_control(),
             self.step_setup_package_manager(python_version=python_version),
         ]
 
@@ -727,39 +726,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.step(
             step_func=self.step_checkout_repository,
             uses="actions/checkout@main",
-            step=step,
-        )
-
-    def step_setup_version_control(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that configures the git user identity.
-
-        Sets ``user.email`` and ``user.name`` globally on the runner so that
-        automated commits made during the workflow are attributed to
-        ``github-actions[bot]``.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that runs two ``git config --global`` commands.
-        """
-        return self.step(
-            step_func=self.step_setup_version_control,
-            run=str(
-                VersionController.I.config_global_user_email_args(
-                    email='"github-actions[bot]@users.noreply.github.com"',
-                ),
-            )
-            + " && "
-            + str(
-                VersionController.I.config_global_user_name_args(
-                    name='"github-actions[bot]"'
-                )
-            ),
             step=step,
         )
 
