@@ -2,6 +2,7 @@
 
 from pytest_mock import MockerFixture
 
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.version_control import version_controller
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
@@ -89,11 +90,16 @@ class TestVersionController:
         result = VersionController.I.config_get_user_email_args()
         assert result == ("git", "config", "--get", "user.email")
 
-    def test_email(self) -> None:
+    def test_email(self, mocker: MockerFixture) -> None:
         """Test method."""
+        run_mock = mocker.patch.object(
+            Args,
+            Args.run_cached.__name__,
+            return_value=mocker.Mock(stdout="some.email@here.com\n"),
+        )
         result = VersionController.I.email()
-        assert isinstance(result, str)
-        assert len(result) > 0
+        run_mock.assert_called_once()
+        assert result == "some.email@here.com"
 
     def test_default_branch(self) -> None:
         """Test method."""
@@ -192,13 +198,6 @@ class TestVersionController:
         result = VersionController.I.config_args("user.email", "test@example.com")
         assert result == ("git", "config", "user.email", "test@example.com")
 
-    def test_config_global_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_global_args(
-            "user.email", "test@example.com"
-        )
-        assert result == ("git", "config", "--global", "user.email", "test@example.com")
-
     def test_config_local_args(self) -> None:
         """Test method."""
         result = VersionController.I.config_local_args("user.email", "test@example.com")
@@ -216,18 +215,6 @@ class TestVersionController:
         result = VersionController.I.config_local_user_name_args(name="Test User")
         assert result == ("git", "config", "--local", "user.name", "Test User")
 
-    def test_config_global_user_email_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_global_user_email_args(
-            email="test@example.com"
-        )
-        assert result == ("git", "config", "--global", "user.email", "test@example.com")
-
-    def test_config_global_user_name_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_global_user_name_args(name="Test User")
-        assert result == ("git", "config", "--global", "user.name", "Test User")
-
     def test_repo_owner(self) -> None:
         """Test method."""
         result = VersionController.I.repo_owner()
@@ -238,10 +225,16 @@ class TestVersionController:
         result = VersionController.I.remote_url()
         assert isinstance(result, str)
 
-    def test_username(self) -> None:
+    def test_username(self, mocker: MockerFixture) -> None:
         """Test method."""
+        run_mock = mocker.patch.object(
+            Args,
+            Args.run_cached.__name__,
+            return_value=mocker.Mock(stdout="Some User\n"),
+        )
         result = VersionController.I.username()
-        assert isinstance(result, str)
+        run_mock.assert_called_once()
+        assert result == "Some User"
 
     def test_diff(self) -> None:
         """Test method."""

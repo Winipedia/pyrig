@@ -270,30 +270,6 @@ class VersionController(Tool):
         """
         return self.config_local_args("user.name", name, *args)
 
-    def config_global_user_email_args(self, *args: str, email: str) -> Args:
-        """Build arguments to set the global user email.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            email: The email address to configure.
-
-        Returns:
-            Args for ``git config --global user.email <email> [args]``.
-        """
-        return self.config_global_args("user.email", email, *args)
-
-    def config_global_user_name_args(self, *args: str, name: str) -> Args:
-        """Build arguments to set the global user name.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            name: The user name to configure.
-
-        Returns:
-            Args for ``git config --global user.name <name> [args]``.
-        """
-        return self.config_global_args("user.name", name, *args)
-
     def config_local_args(self, *args: str) -> Args:
         """Build arguments for ``git config --local``.
 
@@ -307,20 +283,6 @@ class VersionController(Tool):
             Args for ``git config --local [args]``.
         """
         return self.config_args("--local", *args)
-
-    def config_global_args(self, *args: str) -> Args:
-        """Build arguments for ``git config --global``.
-
-        Global scope means changes apply to the current user's git configuration
-        across all repositories on the machine.
-
-        Args:
-            *args: Configuration key/value pairs or additional flags.
-
-        Returns:
-            Args for ``git config --global [args]``.
-        """
-        return self.config_args("--global", *args)
 
     # -------------------------------------------------------------------------
     # Configuration - read/get
