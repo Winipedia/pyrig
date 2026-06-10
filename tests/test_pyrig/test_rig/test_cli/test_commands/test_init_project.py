@@ -29,7 +29,7 @@ def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
     pyrigger_init_project_mock.assert_called_once()
 
 
-def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
+def test_init_project(tmp_path: Path) -> None:
     """Test function."""
     # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
@@ -125,8 +125,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
         # assert pyproject.toml contains not pyrig specific overrides
         pyproject_toml = tomlkit.parse((PyprojectConfigFile.I.path()).read_text())
-        classifiers = pyproject_toml["project"]["classifiers"]
-        assert classifiers == PyprojectConfigFile().make_classifiers()
+        assert "classifiers" not in pyproject_toml["project"]
 
         package_dir = src_project_dir / "src" / "src_project"
         assert package_dir.exists(), f"Expected {package_dir} to be created"

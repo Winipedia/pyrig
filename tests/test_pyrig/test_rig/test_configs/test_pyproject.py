@@ -32,12 +32,6 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
-    def test_make_keywords(self) -> None:
-        """Test method."""
-        assert PyprojectConfigFile().make_keywords() == ["pyrig"]
-        assert PyprojectConfigFile.I.make_keywords()[0] == "pyrig"
-        assert len(PyprojectConfigFile.I.make_keywords()) > 1
-
     def test_stem(self) -> None:
         """Test method."""
         assert PyprojectConfigFile.I.stem() == "pyproject"
@@ -69,13 +63,6 @@ class TestPyprojectConfigFile:
         """Test method."""
         version = PyprojectConfigFile.I.project_version()
         assert isinstance(version, str), f"Expected str, got {type(version)}"
-
-    def test_make_classifiers(self) -> None:
-        """Test method."""
-        classifiers = PyprojectConfigFile.I.make_classifiers()
-        assert isinstance(classifiers, list)
-        for classifier in classifiers:
-            assert isinstance(classifier, str)
 
     def test_project_description(self) -> None:
         """Test method."""
