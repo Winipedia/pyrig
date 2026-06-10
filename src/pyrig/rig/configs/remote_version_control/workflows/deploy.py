@@ -96,7 +96,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return [
             *self.steps_core_installed_setup(),
             self.step_build_documentation(),
-            self.step_enable_pages(),
+            self.step_configure_pages(),
             self.step_upload_documentation(),
             self.step_deploy_documentation(),
         ]

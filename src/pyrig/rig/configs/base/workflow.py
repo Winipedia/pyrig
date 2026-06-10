@@ -884,7 +884,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             step=step,
         )
 
-    def step_enable_pages(
+    def step_configure_pages(
         self,
         *,
         step: dict[str, Any] | None = None,
@@ -909,7 +909,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Step that enables GitHub Pages using ``REPO_TOKEN``.
         """
         return self.step(
-            step_func=self.step_enable_pages,
+            step_func=self.step_configure_pages,
             uses="actions/configure-pages@main",
             with_={"token": self.insert_repo_token(), "enablement": "true"},
             step=step,
