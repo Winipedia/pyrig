@@ -2,7 +2,10 @@
 
 from pathlib import Path
 
+from pytest_mock import MockerFixture
+
 from pyrig.rig.configs.code_of_conduct import CodeOfConductConfigFile
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class TestCodeOfConductConfigFile:
@@ -12,15 +15,29 @@ class TestCodeOfConductConfigFile:
         """Test method."""
         assert CodeOfConductConfigFile.I.is_correct()
 
-    def test_contributor_covenant_with_contact_method(self) -> None:
+    def test_contributor_covenant_with_contact_method(
+        self, mocker: MockerFixture
+    ) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.I.contributor_covenant_with_contact_method()
-        assert len(result) > 0
+        email_mock = mocker.patch.object(
+            VersionController,
+            VersionController.email.__name__,
+            return_value="some.email@here.com",
+        )
+        content = CodeOfConductConfigFile.I.contributor_covenant_with_contact_method()
+        email_mock.assert_called_once()
+        assert "some.email@here.com" in content
 
-    def test_contact_method(self) -> None:
+    def test_contact_method(self, mocker: MockerFixture) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.I.contact_method()
-        assert len(result) > 0
+        email_mock = mocker.patch.object(
+            VersionController,
+            VersionController.email.__name__,
+            return_value="some.email@here.com",
+        )
+        method = CodeOfConductConfigFile.I.contact_method()
+        email_mock.assert_called_once()
+        assert method == "<some.email@here.com>"
 
     def test_stem(self) -> None:
         """Test method."""
@@ -32,10 +49,17 @@ class TestCodeOfConductConfigFile:
         result = CodeOfConductConfigFile.I.parent_path()
         assert result == Path()
 
-    def test_lines(self) -> None:
+    def test_lines(self, mocker: MockerFixture) -> None:
         """Test method."""
+        email_mock = mocker.patch.object(
+            VersionController,
+            VersionController.email.__name__,
+            return_value="some.email@here.com",
+        )
         lines = CodeOfConductConfigFile.I.lines()
-        assert len(lines) > 0
+        email_mock.assert_called_once()
+        assert len(lines) > 1
+        assert "<some.email@here.com>." in lines
 
     def test_contributor_covenant(self) -> None:
         """Test method."""
