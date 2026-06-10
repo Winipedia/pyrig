@@ -31,9 +31,6 @@ jobs:
       uses: astral-sh/setup-uv@main
       with:
         python-version: '3.14'
-    - name: Install Dependencies
-      id: install-dependencies
-      run: uv sync
     - name: Create Tag
       id: create-tag
       run: git tag v$(uv version --short)
