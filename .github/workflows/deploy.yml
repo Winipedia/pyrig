@@ -6,7 +6,6 @@ name: Deploy
     - Release
     types:
     - completed
-permissions: {}
 run-name: Deploy
 defaults:
   run:
@@ -40,7 +39,7 @@ jobs:
       id: enable-pages
       uses: actions/configure-pages@main
       with:
-        token: ${{ secrets.REPO_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         enablement: 'true'
     - name: Upload Documentation
       id: upload-documentation

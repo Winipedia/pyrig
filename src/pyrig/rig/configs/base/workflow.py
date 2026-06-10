@@ -34,7 +34,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     """Abstract base class for generating GitHub Actions workflow YAML files.
 
     Subclasses define specific workflows by implementing :meth:`jobs` and
-    optionally overriding the trigger, permission, and environment methods.
+    optionally overriding the trigger and environment methods.
     The base class provides a rich set of composable building blocks for steps,
     jobs, strategies, triggers, and expression helpers so subclasses can
     assemble complete workflows without writing raw YAML.
@@ -42,7 +42,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
     Subclasses should:
         1. Implement :meth:`jobs` to define the workflow jobs.
         2. Override :meth:`workflow_triggers` to control when the workflow runs.
-        3. Override :meth:`permissions` if the workflow needs elevated access.
+        3. Pass ``permissions`` to :meth:`job` for jobs that need elevated
+           access to the automatic ``GITHUB_TOKEN``.
 
     Attributes:
         UBUNTU_LATEST (str): Runner label for Ubuntu (``"ubuntu-latest"``)
@@ -79,13 +80,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         Returns:
             Top-level workflow configuration with ``name``, ``on``,
-            ``permissions``, ``run-name``, ``defaults``, ``env``, and ``jobs``
-            keys populated from the overridable methods.
+            ``run-name``, ``defaults``, ``env``, and ``jobs`` keys populated
+            from the overridable methods.
         """
         return {
             "name": self.workflow_name(),
             "on": self.workflow_triggers(),
-            "permissions": self.permissions(),
             "run-name": self.run_name(),
             "defaults": self.defaults(),
             "env": self.global_env(),
@@ -122,17 +122,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Dict of trigger configurations.
         """
         return self.on_workflow_dispatch()
-
-    def permissions(self) -> ConfigDict:
-        """Get the workflow permissions.
-
-        Override to request additional permissions.
-        Default is no extra permissions.
-
-        Returns:
-            Dict of permission settings.
-        """
-        return {}
 
     def defaults(self) -> ConfigDict:
         """Get the workflow defaults.
@@ -607,7 +596,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         *,
         python_version: str | None = None,
         update_dependencies: bool = False,
-        repo_token: bool = False,
     ) -> list[dict[str, Any]]:
         """Build setup steps for matrix jobs.
 
@@ -620,7 +608,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 latest supported minor version.
             update_dependencies: Whether to include a step that updates all
                 dependencies to their latest allowed versions before installing.
-            repo_token: Use ``REPO_TOKEN`` for checkout authentication.
 
         Returns:
             Ordered list of step configuration dicts.
@@ -628,7 +615,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return [
             *self.steps_core_installed_setup(
                 python_version=python_version,
-                repo_token=repo_token,
                 update_dependencies=update_dependencies,
             ),
         ]
@@ -638,7 +624,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         *,
         python_version: str | None = None,
         update_dependencies: bool = False,
-        repo_token: bool = False,
     ) -> list[dict[str, Any]]:
         """Build setup steps that also install dependencies.
 
@@ -650,7 +635,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 minor version supported by the project.
             update_dependencies: Whether to include a step that updates all
                 dependencies to their latest allowed versions before installing.
-            repo_token: Use ``REPO_TOKEN`` for checkout authentication.
 
         Returns:
             Ordered list of step configuration dicts.
@@ -659,7 +643,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return [
             *self.steps_core_setup(
                 python_version=python_version,
-                repo_token=repo_token,
             ),
             *update_steps,
             self.step_install_dependencies(),
@@ -668,8 +651,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def steps_core_setup(
         self,
         python_version: str | None = None,
-        *,
-        repo_token: bool = False,
     ) -> list[dict[str, Any]]:
         """Build the base checkout and environment setup steps.
 
@@ -679,9 +660,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Args:
             python_version: Python version string for uv.  Defaults to the
                 latest minor version supported by the project.
-            repo_token: Use ``REPO_TOKEN`` instead of the default token when
-                checking out the repository.  Required when subsequent steps
-                need to push changes back to the repository.
 
         Returns:
             Ordered list of step configuration dicts.
@@ -691,7 +669,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 PyprojectConfigFile.I.latest_possible_python_version(level="minor")
             )
         return [
-            self.step_checkout_repository(repo_token=repo_token),
+            self.step_checkout_repository(),
             self.step_setup_package_manager(python_version=python_version),
         ]
 
@@ -702,27 +680,21 @@ class WorkflowConfigFile(YMLDictConfigFile):
         self,
         *,
         step: dict[str, Any] | None = None,
-        repo_token: bool = False,
     ) -> dict[str, Any]:
         """Build a step that checks out the repository.
 
-        Uses ``actions/checkout@main``.  When ``repo_token`` is ``True``,
-        the checkout authenticates with ``REPO_TOKEN`` instead of the default
-        ``GITHUB_TOKEN``, which is required when subsequent steps need to push
-        commits or tags back to the repository.
+        Uses ``actions/checkout@main``, which authenticates with the automatic
+        ``GITHUB_TOKEN``.  Jobs that push commits or tags back to the repository
+        only need to request ``contents: write`` via their job ``permissions``.
 
         Args:
             step: Additional keys to merge into the step configuration.
-            repo_token: Authenticate with ``REPO_TOKEN`` to allow pushing from
-                within the workflow.
 
         Returns:
             Step using ``actions/checkout@main``.
         """
         if step is None:
             step = {}
-        if repo_token:
-            step.setdefault("with", {})["token"] = self.insert_repo_token()
         return self.step(
             step_func=self.step_checkout_repository,
             uses="actions/checkout@main",
@@ -927,12 +899,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that enables GitHub Pages using ``REPO_TOKEN``.
+            Step that enables GitHub Pages using ``GITHUB_TOKEN``.
         """
         return self.step(
             step_func=self.step_enable_pages,
             uses="actions/configure-pages@main",
-            with_={"token": self.insert_repo_token(), "enablement": "true"},
+            with_={"token": self.insert_github_token(), "enablement": "true"},
             step=step,
         )
 

@@ -19,8 +19,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     artifacts attached.
 
     Release process (in order):
-        1. Check out the repository using ``REPO_TOKEN`` and install the uv
-           package manager.
+        1. Check out the repository (authenticated with the automatic
+           ``GITHUB_TOKEN``) and install the uv package manager.
         2. Create a version tag (e.g. ``v1.2.3``) and push it to the remote.
         3. Export the version string to ``GITHUB_OUTPUT``.
         4. Download build artifacts from the triggering workflow run into
@@ -61,31 +61,13 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
         return triggers
 
-    def permissions(self) -> ConfigDict:
-        """Build the workflow permission configuration.
-
-        Grants ``contents: write`` to allow pushing tags and publishing
-        GitHub releases. Grants ``actions: read`` to
-        allow downloading artifacts from the triggering build workflow run.
-
-        Returns:
-            Permission map with ``contents`` set to ``"write"`` and
-            ``actions`` set to ``"read"``.
-        """
-        permissions = super().permissions()
-        permissions["contents"] = "write"
-        permissions["actions"] = "read"
-        return permissions
-
     def jobs(self) -> ConfigDict:
         """Build the complete jobs configuration for the workflow.
 
         Returns:
             Dict containing the single release job.
         """
-        jobs: ConfigDict = {}
-        jobs.update(self.job_distributions())
-        return jobs
+        return {**self.job_distributions()}
 
     def job_distributions(self) -> ConfigDict:
         """Build the release job configuration.
@@ -101,6 +83,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             job_func=self.job_distributions,
             if_condition=self.if_workflow_run_is_success(),
+            permissions={"contents": "write", "actions": "read"},
             steps=self.steps_distributions(),
         )
 
@@ -114,7 +97,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             publishing the GitHub release.
         """
         return [
-            *self.steps_core_setup(repo_token=True),
+            *self.steps_core_setup(),
             self.step_create_tag(),
             self.step_push_tag(),
             self.step_extract_version(),

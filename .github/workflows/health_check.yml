@@ -11,7 +11,6 @@ name: Health Check
     - main
   schedule:
   - cron: 0 1 * * *
-permissions: {}
 run-name: Health Check
 defaults:
   run:
