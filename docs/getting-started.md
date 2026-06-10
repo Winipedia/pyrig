@@ -85,8 +85,6 @@ You will need an account for [github.com](https://github.com)
 Fine-grained tokens
 2. Under Repository permissions, set:
    - Administration: Read and write (for `pyrig protect-repo`)
-   - Contents: Read and write (for releases and tag pushing)
-   - Pages: Read and write (for GitHub Pages)
 3. Generate token
 4. **Copy token immediately** (you won't see it again)
 5. Add token to your repository secrets as `REPO_TOKEN`

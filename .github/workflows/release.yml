@@ -6,9 +6,6 @@ name: Release
     - Build
     types:
     - completed
-permissions:
-  contents: write
-  actions: read
 run-name: Release
 defaults:
   run:
@@ -18,14 +15,15 @@ env:
   UV_NO_SYNC: 1
 jobs:
   distributions:
+    permissions:
+      contents: write
+      actions: read
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
     - name: Checkout Repository
       id: checkout-repository
       uses: actions/checkout@main
-      with:
-        token: ${{ secrets.REPO_TOKEN }}
     - name: Setup Package Manager
       id: setup-package-manager
       uses: astral-sh/setup-uv@main

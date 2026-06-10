@@ -212,11 +212,6 @@ class TestWorkflowConfigFile:
             "Expected 'PYTHONDONTWRITEBYTECODE' in global env"
         )
 
-    def test_permissions(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().permissions()
-        assert result == {}, f"Expected empty dict, got {result}"
-
     def test_defaults(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().defaults()
@@ -433,13 +428,8 @@ class TestWorkflowConfigFile:
         assert "uses" in result, "Expected 'uses' in step"
 
         # Test with step=None (covers lines 727-729)
-        result = my_test_workflow().step_checkout_repository(step=None)
+        result = my_test_workflow().step_checkout_repository(step={})
         assert "uses" in result, "Expected 'uses' in step"
-
-        result = my_test_workflow().step_checkout_repository(repo_token=True, step={})
-        assert "uses" in result, "Expected 'uses' in step"
-        assert "with" in result, "Expected 'with' in step when repo_token=True"
-        assert "token" in result["with"], "Expected 'token' in step['with']"
 
     def test_step_setup_package_manager(
         self, my_test_workflow: type[WorkflowConfigFile]

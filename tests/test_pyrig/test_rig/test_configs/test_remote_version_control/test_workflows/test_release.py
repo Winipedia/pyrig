@@ -34,16 +34,6 @@ class TestReleaseWorkflowConfigFile:
         assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
         assert "pull_request" not in result
 
-    def test_permissions(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_release_workflow().permissions()
-        assert "contents" in result, "Expected 'contents' in permissions"
-        assert result["contents"] == "write", "Expected 'contents' to be 'write'"
-        assert "actions" in result, "Expected 'actions' in permissions"
-        assert result["actions"] == "read", "Expected 'actions' to be 'read'"
-
     def test_jobs(
         self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
     ) -> None:

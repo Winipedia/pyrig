@@ -8,7 +8,6 @@ name: Build
     - completed
     branches:
     - main
-permissions: {}
 run-name: Build
 defaults:
   run:
