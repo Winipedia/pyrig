@@ -39,7 +39,7 @@ jobs:
       id: enable-pages
       uses: actions/configure-pages@main
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.REPO_TOKEN }}
         enablement: 'true'
     - name: Upload Documentation
       id: upload-documentation
