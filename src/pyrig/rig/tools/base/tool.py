@@ -191,7 +191,7 @@ class Tool(RigDependencySubclass):
         """Return a sorted list of version control ignore paths for all tools.
 
         Iterates every concrete ``Tool`` subclass and collects its
-        ``version_control_ignore_paths`` to produce a unified, sorted list
+        ``version_control_ignore_paths`` to produce a unified, sorted list.
         """
         return sorted(
             path
