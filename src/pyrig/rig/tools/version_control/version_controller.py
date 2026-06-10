@@ -197,7 +197,7 @@ class VersionController(Tool):
 
         Args:
             *args: Additional arguments appended to the command.
-            tag: The tag ref to push (e.g. ``v1.2.3``).
+            tag: The tag ref to push (e.g. ``1.2.3``).
 
         Returns:
             Args for ``git push origin <tag> [args]``.
@@ -235,7 +235,7 @@ class VersionController(Tool):
 
         Args:
             *args: Additional arguments appended to the command.
-            tag: The tag name to create (e.g. ``v1.2.3``).
+            tag: The tag name to create (e.g. ``1.2.3``).
 
         Returns:
             Args for ``git tag <tag> [args]``.

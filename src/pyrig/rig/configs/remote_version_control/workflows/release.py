@@ -21,7 +21,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     Release process (in order):
         1. Check out the repository (authenticated with the automatic
            ``GITHUB_TOKEN``) and install the uv package manager.
-        2. Create a version tag (e.g. ``v1.2.3``) and push it to the remote.
+        2. Create a version tag (e.g. ``1.2.3``) and push it to the remote.
         3. Export the version string to ``GITHUB_OUTPUT``.
         4. Download build artifacts from the triggering workflow run into
            ``dist/``.
