@@ -95,8 +95,7 @@ class BuildWorkflowConfigFile(WorkflowConfigFile):
         """Return the ordered steps for the artifact build job.
 
         Steps (in order):
-            1. Core matrix setup — checkout, git config, uv install,
-               dependency install.
+            1. Core matrix setup — checkout, uv install, dependency install.
             2. Build artifacts (runs ``pyrig build``).
             3. Upload the ``dist/`` directory as a GitHub Actions artifact.
 

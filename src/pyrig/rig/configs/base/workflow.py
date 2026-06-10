@@ -673,8 +673,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> list[dict[str, Any]]:
         """Build the base checkout and environment setup steps.
 
-        Checks out the repository, configures git credentials, and installs
-        the package manager (uv) with the specified Python version.
+        Checks out the repository and installs the package manager (uv) with
+        the specified Python version.
 
         Args:
             python_version: Python version string for uv.  Defaults to the
