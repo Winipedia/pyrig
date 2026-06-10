@@ -993,10 +993,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> dict[str, Any]:
         """Build a step that writes the current version to ``GITHUB_OUTPUT``.
 
-        Evaluates :meth:`insert_version` (``v$(uv version --short)``) at
+        Evaluates :meth:`insert_v_version` (``v$(uv version --short)``) at
         runtime and appends ``version=v<x.y.z>`` to the ``$GITHUB_OUTPUT``
         file.  Downstream steps can reference the value via
-        :meth:`insert_version_from_extract_version_step`.
+        :meth:`insert_v_version_from_extract_version_step`.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -1006,7 +1006,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             step_func=self.step_extract_version,
-            run=f'echo "version={self.insert_version()}" >> $GITHUB_OUTPUT',
+            run=f'echo "version={self.insert_v_version()}" >> $GITHUB_OUTPUT',
             step=step,
         )
 
@@ -1028,7 +1028,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Step using ``ncipollo/release-action@main``.
         """
-        version = self.insert_version_from_extract_version_step()
+        version = self.insert_v_version_from_extract_version_step()
         return self.step(
             step_func=self.step_create_release,
             uses="ncipollo/release-action@main",
@@ -1049,7 +1049,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Build a step that creates a version tag.
 
         Creates a tag named ``v<version>`` (e.g. ``v1.2.3``).  The version
-        string is resolved at runtime via :meth:`insert_version`.
+        string is resolved at runtime via :meth:`insert_v_version`.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -1059,7 +1059,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             step_func=self.step_create_tag,
-            run=str(VersionController.I.tag_args(tag=self.insert_version())),
+            run=str(VersionController.I.tag_args(tag=self.insert_v_version())),
             step=step,
         )
 
@@ -1079,7 +1079,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.step(
             step_func=self.step_push_tag,
             run=str(
-                VersionController.I.push_origin_tag_args(tag=self.insert_version())
+                VersionController.I.push_origin_tag_args(tag=self.insert_v_version())
             ),
             step=step,
         )
@@ -1236,18 +1236,34 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_var(self.repo_token_var())
 
-    def insert_version(self) -> str:
-        """Build the shell expression that resolves to the project version.
+    def insert_v_version(self) -> str:
+        """Build the shell expression that resolves to the ``v``-prefixed version.
 
-        Evaluates ``uv version --short`` in a subshell and prepends ``v``,
-        so the result at workflow execution time is a string like ``v1.2.3``.
+        Prepends ``v`` to :meth:`insert_version`, so the result at workflow
+        execution time is a string like ``v1.2.3``. Use this for git tags and
+        GitHub release names, where the ``v`` prefix is the conventional
+        marker that the string is a version.
 
         Returns:
             Shell expression string, e.g. ``"v$(uv version --short)"``.
         """
-        return f"v$({PackageManager.I.version_short_args()})"
+        return f"v{self.insert_version()}"
 
-    def insert_version_from_extract_version_step(self) -> str:
+    def insert_version(self) -> str:
+        """Build the shell expression that resolves to the bare project version.
+
+        Evaluates ``uv version --short`` in a subshell, yielding the
+        PEP 440 version string without any prefix (e.g. ``1.2.3``) at workflow
+        execution time. Use this where a bare version is expected, such as
+        container image tags; for git tags and release names use the
+        ``v``-prefixed :meth:`insert_v_version`.
+
+        Returns:
+            Shell expression string, e.g. ``"$(uv version --short)"``.
+        """
+        return f"$({PackageManager.I.version_short_args()})"
+
+    def insert_v_version_from_extract_version_step(self) -> str:
         """Get the expression that reads the version from the extract step output.
 
         References the ``version`` output produced by
