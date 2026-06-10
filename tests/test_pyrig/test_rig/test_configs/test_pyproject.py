@@ -84,10 +84,13 @@ class TestPyprojectConfigFile:
         """Test method."""
         # pyproject get configs internally uses load which makes it a special case
         # where the file must exist before calling configs
-        configs = PyprojectConfigFile.I.configs()
+        configs = PyprojectConfigFile().configs()
         assert "project" in configs, "Expected 'project' key in configs"
         assert "build-system" in configs, "Expected 'build-system' key in configs"
         assert "tool" in configs, "Expected 'tool' key in configs"
+
+        assert "classifiers" not in configs["project"]
+        assert "keywords" not in configs["project"]
 
     def test_merge_additional_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
