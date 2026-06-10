@@ -35,8 +35,8 @@ jobs:
     - name: Build Documentation
       id: build-documentation
       run: uv run mkdocs build
-    - name: Enable Pages
-      id: enable-pages
+    - name: Configure Pages
+      id: configure-pages
       uses: actions/configure-pages@main
       with:
         token: ${{ secrets.REPO_TOKEN }}

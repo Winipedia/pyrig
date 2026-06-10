@@ -97,11 +97,11 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_update_dependencies()
         assert "run" in result, f"Expected 'run' in step, got {result}"
 
-    def test_step_enable_pages(
+    def test_step_configure_pages(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_workflow().step_enable_pages()
+        result = my_test_workflow().step_configure_pages()
         assert "uses" in result, f"Expected 'uses' in step, got {result}"
 
     def test_step_upload_documentation(
