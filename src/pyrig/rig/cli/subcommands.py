@@ -49,7 +49,7 @@ def mkroot() -> None:
     updated only when their content is not correct. User customisations are
     preserved wherever possible.
 
-    Managed files are all concrete implemented as subclasses of `ConfigFile`
+    Managed files are all the concrete subclasses of `ConfigFile`
     across all installed projects that depend on pyrig.
 
     Idempotent: safe to run multiple times. Re-run after adding a new pyrig
