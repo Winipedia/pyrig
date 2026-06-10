@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.docs.docs_builder import DocsBuilderConfigFile
+from pyrig.rig.configs.docs.builder import DocsBuilderConfigFile
 
 
 class TestDocsBuilderConfigFile:

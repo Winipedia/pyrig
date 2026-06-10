@@ -6,7 +6,7 @@ from pathlib import Path
 from pytest_mock import MockerFixture
 
 import pyrig
-from pyrig.rig.configs.python.package_init import PackageInitConfigFile
+from pyrig.rig.configs.package_init import PackageInitConfigFile
 
 
 class TestPackageInitConfigFile:

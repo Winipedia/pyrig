@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.markdown.security import SecurityConfigFile
+from pyrig.rig.configs.security import SecurityConfigFile
 
 
 class TestSecurityConfigFile:

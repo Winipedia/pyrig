@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.testing.project_tester import ProjectTesterConfigFile
+from pyrig.rig.configs.project_tester import ProjectTesterConfigFile
 from pyrig.rig.tests import conftest
 
 

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
+from pyrig.rig.configs.readme import ReadmeConfigFile
 
 
 class TestReadmeConfigFile:

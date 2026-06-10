@@ -9,8 +9,8 @@ from pathlib import Path
 
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import YMLDictConfigFile
-from pyrig.rig.configs.markdown.docs.api import ApiConfigFile
-from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
+from pyrig.rig.configs.docs.api import APIDocsConfigFile
+from pyrig.rig.configs.docs.index import IndexConfigFile
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
@@ -65,7 +65,7 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
                     .as_posix()
                 },
                 {
-                    "API": ApiConfigFile.I.path()
+                    "API": APIDocsConfigFile.I.path()
                     .relative_to(DocsBuilder.I.docs_dir())
                     .as_posix()
                 },

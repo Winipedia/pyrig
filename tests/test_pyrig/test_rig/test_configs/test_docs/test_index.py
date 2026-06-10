@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
+from pyrig.rig.configs.docs.index import IndexConfigFile
 
 
 class TestIndexConfigFile:

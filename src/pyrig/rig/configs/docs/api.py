@@ -7,7 +7,7 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
 
 
-class ApiConfigFile(MarkdownConfigFile):
+class APIDocsConfigFile(MarkdownConfigFile):
     """Manages the ``docs/api.md`` API reference page.
 
     Generates a Markdown file that uses the mkdocstrings ``:::`` directive to

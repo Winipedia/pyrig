@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
+from pyrig.rig.configs.dot_scratch import DotScratchConfigFile
 
 
 class TestDotScratchConfigFile:

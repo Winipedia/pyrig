@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from pyrig.rig.cli.commands.scratch import run_scratch_file
-from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
+from pyrig.rig.configs.dot_scratch import DotScratchConfigFile
 
 
 def test_run_scratch_file(tmp_path: Path) -> None:

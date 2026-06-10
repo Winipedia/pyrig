@@ -96,7 +96,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         # local import as ReadmeConfigFile inherits from BadgesConfigFile
         # which needs pyproject info for badges, and pyproject needs the
         # readme path for metadata. This avoids circular import issues.
-        from pyrig.rig.configs.markdown.readme import ReadmeConfigFile  # noqa: PLC0415
+        from pyrig.rig.configs.readme import ReadmeConfigFile  # noqa: PLC0415
 
         repo_owner = VersionController.I.repo_owner(check_repo_url=False)
         rig_tests_dir_name = leaf_module_name(tests)
