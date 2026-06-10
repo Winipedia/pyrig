@@ -26,10 +26,6 @@ jobs:
     - name: Checkout Repository
       id: checkout-repository
       uses: actions/checkout@main
-    - name: Setup Version Control
-      id: setup-version-control
-      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        && git config --global user.name "github-actions[bot]"
     - name: Setup Package Manager
       id: setup-package-manager
       uses: astral-sh/setup-uv@main
@@ -69,10 +65,6 @@ jobs:
     - name: Checkout Repository
       id: checkout-repository
       uses: actions/checkout@main
-    - name: Setup Version Control
-      id: setup-version-control
-      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        && git config --global user.name "github-actions[bot]"
     - name: Setup Package Manager
       id: setup-package-manager
       uses: astral-sh/setup-uv@main

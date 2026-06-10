@@ -441,13 +441,6 @@ class TestWorkflowConfigFile:
         assert "with" in result, "Expected 'with' in step when repo_token=True"
         assert "token" in result["with"], "Expected 'token' in step['with']"
 
-    def test_step_setup_version_control(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_setup_version_control()
-        assert "run" in result
-
     def test_step_setup_package_manager(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
