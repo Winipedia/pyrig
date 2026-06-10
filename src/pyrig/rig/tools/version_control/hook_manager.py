@@ -60,7 +60,7 @@ class VersionControlHookManager(Tool):
             *args: Additional arguments forwarded to ``prek install``.
 
         Returns:
-            Args for 'prek install [args]'.
+            Args for ``prek install [args]``.
         """
         return self.args("install", *args)
 
@@ -71,7 +71,7 @@ class VersionControlHookManager(Tool):
             *args: Additional arguments forwarded to ``prek run``.
 
         Returns:
-            Args for 'prek run --all-files --hook-stage pre-commit [args]'.
+            Args for ``prek run --all-files --hook-stage pre-commit [args]``.
         """
         return self.run_all_files_stage_args(*args, stage="pre-commit")
 
@@ -83,7 +83,7 @@ class VersionControlHookManager(Tool):
             stage: The hook stage to run (e.g., "pre-commit").
 
         Returns:
-            Args for 'prek run --all-files --hook-stage [stage] [args]'.
+            Args for ``prek run --all-files --hook-stage [stage] [args]``.
         """
         return self.run_all_files_args("--hook-stage", stage, *args)
 
@@ -98,7 +98,7 @@ class VersionControlHookManager(Tool):
             *args: Additional arguments forwarded to ``prek run``.
 
         Returns:
-            Args for 'prek run --all-files [args]'.
+            Args for ``prek run --all-files [args]``.
         """
         return self.run_args("--all-files", *args)
 
@@ -112,6 +112,6 @@ class VersionControlHookManager(Tool):
             *args: Additional arguments forwarded to ``prek run``.
 
         Returns:
-            Args for 'prek run [args]'.
+            Args for ``prek run [args]``.
         """
         return self.args("run", *args)
