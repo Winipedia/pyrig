@@ -895,16 +895,23 @@ class WorkflowConfigFile(YMLDictConfigFile):
         idempotent -- running it on a repository where Pages is already enabled
         has no effect.
 
+        Authenticates with ``REPO_TOKEN`` rather than the automatic
+        ``GITHUB_TOKEN``: enabling Pages calls ``POST /repos/{owner}/{repo}/pages``.
+        A fine-grained PAT reaches that endpoint with ``pages: write`` alone, but
+        for an installation token like ``GITHUB_TOKEN`` the same call also requires
+        ``administration: write`` -- a scope the automatic token can never hold --
+        so it would fail with ``Resource not accessible by integration``.
+
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that enables GitHub Pages using ``GITHUB_TOKEN``.
+            Step that enables GitHub Pages using ``REPO_TOKEN``.
         """
         return self.step(
             step_func=self.step_enable_pages,
             uses="actions/configure-pages@main",
-            with_={"token": self.insert_github_token(), "enablement": "true"},
+            with_={"token": self.insert_repo_token(), "enablement": "true"},
             step=step,
         )
 
