@@ -5,16 +5,16 @@ in projects or tooling that prefer ``.yml`` over ``.yaml``.
 """
 
 from pyrig.rig.configs.base.config_file import ConfigData, ConfigDict
-from pyrig.rig.configs.base.yaml import YamlConfigFile
+from pyrig.rig.configs.base.yaml import YAMLConfigFile
 
 
-class YmlConfigFile[ConfigT: ConfigData](YamlConfigFile[ConfigT]):
+class YMLConfigFile[ConfigT: ConfigData](YAMLConfigFile[ConfigT]):
     """Base class for ``.yml`` configuration files.
 
     Overrides the file extension to ``"yml"``, inheriting all YAML load and dump
-    behavior from ``YamlConfigFile``. Use this class when the configuration
+    behavior from ``YAMLConfigFile``. Use this class when the configuration
     structure may be a dict or a list. For dict-only configurations, prefer
-    ``DictYmlConfigFile``.
+    ``YMLDictConfigFile``.
 
     Subclasses must implement:
         - ``parent_path``: The directory that contains the ``.yml`` file.
@@ -27,11 +27,11 @@ class YmlConfigFile[ConfigT: ConfigData](YamlConfigFile[ConfigT]):
         return "yml"
 
 
-class DictYmlConfigFile(YmlConfigFile[ConfigDict]):
+class YMLDictConfigFile(YMLConfigFile[ConfigDict]):
     """Base class for ``.yml`` configuration files with a dict structure.
 
     Locks the generic type parameter to ``ConfigDict``, providing dict-specific
-    type safety while inheriting all YAML functionality from ``YmlConfigFile``.
+    type safety while inheriting all YAML functionality from ``YMLConfigFile``.
     This is the standard base class for all dict-based ``.yml`` configurations
     in this project.
 
@@ -42,9 +42,9 @@ class DictYmlConfigFile(YmlConfigFile[ConfigDict]):
 
     Example:
         >>> from pathlib import Path
-        >>> from pyrig.rig.configs.base.yml import DictYmlConfigFile
+        >>> from pyrig.rig.configs.base.yml import YMLDictConfigFile
         >>>
-        >>> class DocsBuilderConfigFile(DictYmlConfigFile):
+        >>> class DocsBuilderConfigFile(YMLDictConfigFile):
         ...
         ...     def parent_path(self) -> Path:
         ...         return Path()

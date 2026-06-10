@@ -6,14 +6,14 @@ placing it at the project root with a fixed filename.
 
 from pathlib import Path
 
-from pyrig.rig.configs.base.badges_md import BadgesMarkdownConfigFile
+from pyrig.rig.configs.base.badges import BadgesConfigFile
 
 
-class ReadmeConfigFile(BadgesMarkdownConfigFile):
+class ReadmeConfigFile(BadgesConfigFile):
     """Concrete configuration manager for the project's README.md.
 
     Inherits badge generation, description management, and merge logic from
-    ``BadgesMarkdownConfigFile``. Places README.md at the project root and fixes
+    ``BadgesConfigFile``. Places README.md at the project root and fixes
     the filename stem to ``"README"``.
     """
 

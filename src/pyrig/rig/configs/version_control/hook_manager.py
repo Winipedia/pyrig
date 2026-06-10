@@ -12,7 +12,7 @@ from pyrig.core.subprocesses import (
     Args,
 )
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.toml import TomlConfigFile
+from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
 from pyrig.rig.tools.linting.python import PythonLinter
@@ -24,7 +24,7 @@ from pyrig.rig.tools.version_control.hook_manager import (
 )
 
 
-class VersionControlHookManagerConfigFile(TomlConfigFile):
+class VersionControlHookManagerConfigFile(TOMLConfigFile):
     """Manages ``prek.toml`` for version control hook configuration.
 
     Generates ``prek.toml`` at the project root with a single ``local``

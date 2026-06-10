@@ -13,7 +13,7 @@ from pyrig.core.strings import (
 from pyrig.rig.builders.base.builder import BuilderConfigFile
 from pyrig.rig.cli.subcommands import build, protect_repo
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.yml import DictYmlConfigFile
+from pyrig.rig.configs.base.yml import YMLDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.dependency_auditor import DependencyAuditor
 from pyrig.rig.tools.docs_builder import DocsBuilder
@@ -30,7 +30,7 @@ from pyrig.rig.tools.version_control.remote import (
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
-class WorkflowConfigFile(DictYmlConfigFile):
+class WorkflowConfigFile(YMLDictConfigFile):
     """Abstract base class for generating GitHub Actions workflow YAML files.
 
     Subclasses define specific workflows by implementing :meth:`jobs` and

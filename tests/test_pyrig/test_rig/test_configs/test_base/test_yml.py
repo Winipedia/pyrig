@@ -1,18 +1,18 @@
 """module."""
 
-from pyrig.rig.configs.base.yml import YmlConfigFile
+from pyrig.rig.configs.base.yml import YMLConfigFile
 from pyrig.rig.configs.docs.docs_builder import DocsBuilderConfigFile
 
 
-class TestYmlConfigFile:
+class TestYMLConfigFile:
     """Test class."""
 
     def test_extension(self) -> None:
         """Test method."""
-        assert issubclass(DocsBuilderConfigFile, YmlConfigFile)
+        assert issubclass(DocsBuilderConfigFile, YMLConfigFile)
         extension = DocsBuilderConfigFile.I.extension()
         assert extension == "yml"
 
 
-class TestDictYmlConfigFile:
+class TestYMLDictConfigFile:
     """Test class."""

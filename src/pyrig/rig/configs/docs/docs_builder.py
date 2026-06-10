@@ -8,7 +8,7 @@ Mermaid diagram support, and Google-style API documentation via mkdocstrings.
 from pathlib import Path
 
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.base.yml import DictYmlConfigFile
+from pyrig.rig.configs.base.yml import YMLDictConfigFile
 from pyrig.rig.configs.markdown.docs.api import ApiConfigFile
 from pyrig.rig.configs.markdown.docs.index import IndexConfigFile
 from pyrig.rig.tools.docs_builder import DocsBuilder
@@ -16,7 +16,7 @@ from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
 
 
-class DocsBuilderConfigFile(DictYmlConfigFile):
+class DocsBuilderConfigFile(YMLDictConfigFile):
     """Configuration manager for the project's ``mkdocs.yml`` file.
 
     Generates ``mkdocs.yml`` with the Material theme, a dark/light mode

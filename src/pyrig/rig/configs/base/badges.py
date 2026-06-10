@@ -24,7 +24,7 @@ from pyrig.rig.tools.version_control.remote import (
 )
 
 
-class BadgesMarkdownConfigFile(MarkdownConfigFile):
+class BadgesConfigFile(MarkdownConfigFile):
     """Base class for Markdown files with auto-generated project badges.
 
     Generates a Markdown header section consisting of the project name, grouped

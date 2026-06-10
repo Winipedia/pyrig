@@ -6,18 +6,18 @@ from typing import Any
 
 import pytest
 
-from pyrig.rig.configs.base.yaml import YamlConfigFile
+from pyrig.rig.configs.base.yaml import YAMLConfigFile
 
 
 @pytest.fixture
 def my_test_yaml_config_file(
     config_file_factory: Callable[
-        [type[YamlConfigFile[dict[str, Any]]]], type[YamlConfigFile[dict[str, Any]]]
+        [type[YAMLConfigFile[dict[str, Any]]]], type[YAMLConfigFile[dict[str, Any]]]
     ],
-) -> type[YamlConfigFile[dict[str, Any]]]:
+) -> type[YAMLConfigFile[dict[str, Any]]]:
     """Create a test yaml config file class with tmp_path."""
 
-    class MyTestYamlConfigFile(config_file_factory(YamlConfigFile)):  # ty: ignore[unsupported-base]
+    class MyTestYAMLConfigFile(config_file_factory(YAMLConfigFile)):  # ty: ignore[unsupported-base]
         """Test yaml config file with tmp_path override."""
 
         def parent_path(self) -> Path:
@@ -32,14 +32,14 @@ def my_test_yaml_config_file(
             """Get the config."""
             return {"key": "value"}
 
-    return MyTestYamlConfigFile
+    return MyTestYAMLConfigFile
 
 
-class TestYamlConfigFile:
+class TestYAMLConfigFile:
     """Test class."""
 
     def test__load(
-        self, my_test_yaml_config_file: type[YamlConfigFile[dict[str, Any]]]
+        self, my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
         my_test_yaml_config_file().validate()
@@ -48,7 +48,7 @@ class TestYamlConfigFile:
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__dump(
-        self, my_test_yaml_config_file: type[YamlConfigFile[dict[str, Any]]]
+        self, my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
         my_test_yaml_config_file().dump({"key": "value"})
@@ -57,7 +57,7 @@ class TestYamlConfigFile:
         )
 
     def test_extension(
-        self, my_test_yaml_config_file: type[YamlConfigFile[dict[str, Any]]]
+        self, my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]]
     ) -> None:
         """Test method."""
         assert my_test_yaml_config_file().extension() == "yaml", "Expected yaml"
