@@ -2,22 +2,22 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.markdown.docs.api import ApiConfigFile
+from pyrig.rig.configs.docs.api import APIDocsConfigFile
 
 
-class TestApiConfigFile:
+class TestAPIDocsConfigFile:
     """Test class."""
 
     def test_stem(self) -> None:
         """Test method."""
-        assert ApiConfigFile.I.stem() == "api"
+        assert APIDocsConfigFile.I.stem() == "api"
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert ApiConfigFile.I.parent_path() == Path("docs")
+        assert APIDocsConfigFile.I.parent_path() == Path("docs")
 
     def test_lines(self) -> None:
         """Test method."""
-        lines = ApiConfigFile.I.lines()
+        lines = APIDocsConfigFile.I.lines()
         content_str = "\n".join(lines)
         assert ":::" in content_str

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.markdown.code_of_conduct import CodeOfConductConfigFile
+from pyrig.rig.configs.code_of_conduct import CodeOfConductConfigFile
 
 
 class TestCodeOfConductConfigFile:

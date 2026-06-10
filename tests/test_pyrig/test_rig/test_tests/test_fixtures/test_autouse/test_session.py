@@ -7,7 +7,7 @@ from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.inspection import unwrapped_obj
 from pyrig.core.requests import internet_is_available
-from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
+from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.tests import fixtures
 from pyrig.rig.tests.fixtures.autouse import session
 from pyrig.rig.tests.fixtures.autouse.session import (

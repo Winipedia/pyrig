@@ -4,8 +4,8 @@ from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.base.python import PythonConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.configs.python.package_init import PackageInitConfigFile
-from pyrig.rig.configs.testing.project_tester import ProjectTesterConfigFile
+from pyrig.rig.configs.package_init import PackageInitConfigFile
+from pyrig.rig.configs.project_tester import ProjectTesterConfigFile
 
 
 class TestPythonConfigFile:

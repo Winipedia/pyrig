@@ -1,7 +1,7 @@
 """module."""
 
 from pyrig.rig.configs.base.markdown import MarkdownConfigFile
-from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
+from pyrig.rig.configs.readme import ReadmeConfigFile
 
 
 class TestMarkdownConfigFile:

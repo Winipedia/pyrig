@@ -2,7 +2,7 @@
 
 from runpy import run_path
 
-from pyrig.rig.configs.python.dot_scratch import DotScratchConfigFile
+from pyrig.rig.configs.dot_scratch import DotScratchConfigFile
 
 
 def run_scratch_file() -> None:

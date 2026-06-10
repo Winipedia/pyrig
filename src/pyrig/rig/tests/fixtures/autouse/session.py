@@ -24,8 +24,8 @@ from pyrig.core.strings import (
 from pyrig.rig.cli.subcommands import mkinits, mkroot, mktests
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
-from pyrig.rig.configs.markdown.readme import ReadmeConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.package_manager import PackageManager
