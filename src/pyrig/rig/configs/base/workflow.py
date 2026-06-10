@@ -1245,7 +1245,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Shell expression string, e.g. ``"v$(uv version --short)"``.
         """
-        return f"v$({PackageManager.I.version_short_args()!s})"
+        return f"v$({PackageManager.I.version_short_args()})"
 
     def insert_version_from_extract_version_step(self) -> str:
         """Get the expression that reads the version from the extract step output.
