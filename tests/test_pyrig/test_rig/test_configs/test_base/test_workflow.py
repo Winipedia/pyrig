@@ -520,12 +520,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().insert_repo_token()
         assert result == "${{ secrets.REPO_TOKEN }}"
 
-    def test_insert_v_version(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_v_version()
-        assert "uv version" in result, "Expected 'uv version' in result"
-        assert result.startswith("v"), "Expected 'v' prefix in result"
-
     def test_insert_version(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().insert_version()
@@ -541,25 +535,16 @@ class TestWorkflowConfigFile:
             f"Expected '${{{{ secrets.GITHUB_TOKEN }}}}', got {result}"
         )
 
-    def test_insert_repository_name(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_repository_name()
-        assert "github.event.repository.name" in result, (
-            "Expected 'github.event.repository.name' in result"
-        )
-
     def test_insert_matrix_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().insert_matrix_os()
         assert "matrix.os" in result, "Expected 'matrix.os' in result"
 
-    def test_insert_v_version_from_extract_version_step(
+    def test_insert_version_from_extract_version_step(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_workflow().insert_v_version_from_extract_version_step()
+        result = my_test_workflow().insert_version_from_extract_version_step()
         assert "steps.extract-version.outputs.version" in result
 
     def test_insert_changelog(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
