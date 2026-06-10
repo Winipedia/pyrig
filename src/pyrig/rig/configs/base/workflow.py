@@ -993,10 +993,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> dict[str, Any]:
         """Build a step that writes the current version to ``GITHUB_OUTPUT``.
 
-        Evaluates :meth:`insert_v_version` (``v$(uv version --short)``) at
-        runtime and appends ``version=v<x.y.z>`` to the ``$GITHUB_OUTPUT``
+        Evaluates :meth:`insert_version` (``$(uv version --short)``) at
+        runtime and appends ``version=<x.y.z>`` to the ``$GITHUB_OUTPUT``
         file.  Downstream steps can reference the value via
-        :meth:`insert_v_version_from_extract_version_step`.
+        :meth:`insert_version_from_extract_version_step`.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -1006,7 +1006,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             step_func=self.step_extract_version,
-            run=f'echo "version={self.insert_v_version()}" >> $GITHUB_OUTPUT',
+            run=f'echo "version={self.insert_version()}" >> $GITHUB_OUTPUT',
             step=step,
         )
 
@@ -1028,13 +1028,13 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Step using ``ncipollo/release-action@main``.
         """
-        version = self.insert_v_version_from_extract_version_step()
+        version = self.insert_version_from_extract_version_step()
         return self.step(
             step_func=self.step_create_release,
             uses="ncipollo/release-action@main",
             with_={
                 "tag": version,
-                "name": f"{self.insert_repository_name()} {version}",
+                "name": version,
                 "body": self.insert_changelog(),
                 "artifacts": f"{BuilderConfigFile.dist_dir_path().as_posix()}/*",
             },
@@ -1048,8 +1048,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> dict[str, Any]:
         """Build a step that creates a version tag.
 
-        Creates a tag named ``v<version>`` (e.g. ``v1.2.3``).  The version
-        string is resolved at runtime via :meth:`insert_v_version`.
+        Creates a tag named ``<version>`` (e.g. ``1.2.3``).  The version
+        string is resolved at runtime via :meth:`insert_version`.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -1059,7 +1059,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.step(
             step_func=self.step_create_tag,
-            run=str(VersionController.I.tag_args(tag=self.insert_v_version())),
+            run=str(VersionController.I.tag_args(tag=self.insert_version())),
             step=step,
         )
 
@@ -1079,7 +1079,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.step(
             step_func=self.step_push_tag,
             run=str(
-                VersionController.I.push_origin_tag_args(tag=self.insert_v_version())
+                VersionController.I.push_origin_tag_args(tag=self.insert_version())
             ),
             step=step,
         )
@@ -1236,34 +1236,21 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_var(self.repo_token_var())
 
-    def insert_v_version(self) -> str:
-        """Build the shell expression that resolves to the ``v``-prefixed version.
-
-        Prepends ``v`` to :meth:`insert_version`, so the result at workflow
-        execution time is a string like ``v1.2.3``. Use this for git tags and
-        GitHub release names, where the ``v`` prefix is the conventional
-        marker that the string is a version.
-
-        Returns:
-            Shell expression string, e.g. ``"v$(uv version --short)"``.
-        """
-        return f"v{self.insert_version()}"
-
     def insert_version(self) -> str:
         """Build the shell expression that resolves to the bare project version.
 
         Evaluates ``uv version --short`` in a subshell, yielding the
         PEP 440 version string without any prefix (e.g. ``1.2.3``) at workflow
-        execution time. Use this where a bare version is expected, such as
-        container image tags; for git tags and release names use the
-        ``v``-prefixed :meth:`insert_v_version`.
+        execution time. The bare version is used directly for git tags and
+        GitHub release names, matching the convention of the project's
+        toolchain (uv, ruff) where tags carry no ``v`` prefix.
 
         Returns:
             Shell expression string, e.g. ``"$(uv version --short)"``.
         """
         return f"$({PackageManager.I.version_short_args()})"
 
-    def insert_v_version_from_extract_version_step(self) -> str:
+    def insert_version_from_extract_version_step(self) -> str:
         """Get the expression that reads the version from the extract step output.
 
         References the ``version`` output produced by
@@ -1301,15 +1288,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             secret.
         """
         return self.insert_var(self.github_token_var())
-
-    def insert_repository_name(self) -> str:
-        """Get the expression that resolves to the repository name.
-
-        Returns:
-            GitHub Actions expression for
-            ``github.event.repository.name``.
-        """
-        return self.insert_var("github.event.repository.name")
 
     def insert_workflow_run_id(self) -> str:
         """Get the expression that resolves to the triggering workflow run ID.

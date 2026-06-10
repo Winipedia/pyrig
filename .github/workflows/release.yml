@@ -31,13 +31,13 @@ jobs:
         python-version: '3.14'
     - name: Create Tag
       id: create-tag
-      run: git tag v$(uv version --short)
+      run: git tag $(uv version --short)
     - name: Push Tag
       id: push-tag
-      run: git push origin v$(uv version --short)
+      run: git push origin $(uv version --short)
     - name: Extract Version
       id: extract-version
-      run: echo "version=v$(uv version --short)" >> $GITHUB_OUTPUT
+      run: echo "version=$(uv version --short)" >> $GITHUB_OUTPUT
     - name: Download Artifacts From Workflow Run
       id: download-artifacts-from-workflow-run
       uses: actions/download-artifact@main
@@ -56,7 +56,6 @@ jobs:
       uses: ncipollo/release-action@main
       with:
         tag: ${{ steps.extract-version.outputs.version }}
-        name: ${{ github.event.repository.name }} ${{ steps.extract-version.outputs.version
-          }}
+        name: ${{ steps.extract-version.outputs.version }}
         body: ${{ steps.build-changelog.outputs.changelog }}
         artifacts: dist/*
