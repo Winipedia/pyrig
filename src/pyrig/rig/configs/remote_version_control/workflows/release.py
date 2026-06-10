@@ -19,15 +19,14 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     artifacts attached.
 
     Release process (in order):
-        1. Check out the repository using ``REPO_TOKEN`` and configure git
-           credentials.
-        2. Install dependencies.
-        3. Create a version tag (e.g. ``v1.2.3``) and push it to the remote.
-        4. Export the version string to ``GITHUB_OUTPUT``.
-        5. Download build artifacts from the triggering workflow run into
+        1. Check out the repository using ``REPO_TOKEN`` and install the uv
+           package manager.
+        2. Create a version tag (e.g. ``v1.2.3``) and push it to the remote.
+        3. Export the version string to ``GITHUB_OUTPUT``.
+        4. Download build artifacts from the triggering workflow run into
            ``dist/``.
-        6. Generate a changelog from commits since the last tag.
-        7. Publish the GitHub release with artifacts and the changelog body.
+        5. Generate a changelog from commits since the last tag.
+        6. Publish the GitHub release with artifacts and the changelog body.
 
     Permissions required:
         - ``contents: write`` — push tags and create releases.
@@ -109,10 +108,10 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """Build the ordered list of steps for the release job.
 
         Returns:
-            Steps that perform the full release sequence: environment setup
-            and dependency installation, creating and pushing the version
-            tag, exporting the version, downloading build artifacts,
-            generating a changelog, and publishing the GitHub release.
+            Steps that perform the full release sequence: environment setup,
+            creating and pushing the version tag, exporting the version,
+            downloading build artifacts, generating a changelog, and
+            publishing the GitHub release.
         """
         return [
             *self.steps_core_setup(repo_token=True),
