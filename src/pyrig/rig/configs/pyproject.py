@@ -77,7 +77,7 @@ class PyprojectConfigFile(TomlConfigFile):
         written to pyproject.toml. The returned structure covers:
 
         - ``project``: PEP 621 metadata (name, version, description, authors,
-          license, classifiers, scripts, URLs).
+          license, scripts, URLs).
         - ``dependency-groups``: Development dependencies from pyproject.toml merged
           with additional entries contributed by all registered tools via
           ``Tool.subclasses_dev_dependencies``.
