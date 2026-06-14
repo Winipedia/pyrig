@@ -120,7 +120,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         res = args.run(env=clean_env)
         assert res.returncode == 0
         stdout = res.stdout
-        expected = f"{project_name} version 0.1.0"
+        expected = f"{project_name} 0.1.0"
         assert expected in stdout
 
         # assert pyproject.toml contains not pyrig specific overrides

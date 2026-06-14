@@ -131,7 +131,26 @@ uv init
 uv add pyrig
 ```
 
-### 5. Run pyrig init
+### 5. Add Any Plugins You Want (optional)
+
+pyrig is extensible through plugins. A plugin is just a package that pyrig
+discovers automatically — adding it as a dependency is all it takes for its
+tools, config files, and workflow steps to be picked up by `pyrig init`.
+Add any of the plugins you want before running `pyrig init` so they are
+included in the initial scaffold:
+
+```bash
+# Publish your package to PyPI from CI/CD
+uv add pyrig-pypi
+
+# Upload test coverage reports to Codecov
+uv add pyrig-codecov
+
+# Build standalone executables of your project
+uv add pyrig-build
+```
+
+### 6. Run pyrig init
 
 This will create an initial commit of the scaffolded and initialized project.
 
@@ -140,7 +159,7 @@ This will create an initial commit of the scaffolded and initialized project.
 uv run pyrig init
 ```
 
-### 6. Push to GitHub
+### 7. Push to GitHub
 
 Make sure you have the necessary tokens and secrets set up before
 pushing so that the CI/CD pipeline can run successfully on push.
@@ -150,7 +169,7 @@ pushing so that the CI/CD pipeline can run successfully on push.
 git push -u origin main
 ```
 
-### 7. Verify Workflows
+### 8. Verify Workflows
 
 On GitHub.com:
 
@@ -160,7 +179,7 @@ followed by Build workflow, Release workflow, and Deploy workflow
 3. Verify all jobs run successfully
 (should just take a 2-3 minutes on an empty project)
 
-### 8. Start coding
+### 9. Start coding
 
 Start coding under the `src/my_project/` directory.
 
