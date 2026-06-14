@@ -206,6 +206,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if job is None:
             job = {}
         job_config: dict[str, Any] = {}
+        if if_condition is not None:
+            job_config["if"] = if_condition
         if needs is not None:
             job_config["needs"] = needs
         if strategy is not None:
@@ -213,8 +215,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if permissions is not None:
             job_config["permissions"] = permissions
         job_config["runs-on"] = runs_on
-        if if_condition is not None:
-            job_config["if"] = if_condition
         if steps is not None:
             job_config["steps"] = steps
         job_config.update(job)
