@@ -103,19 +103,11 @@ pyrig enables automatic sharing and registration of pytest fixtures.
 Run `pyrig mkfixture <name>` to generate a new fixture that is
 automatically registered and available across all your tests.
 
-### [Build Artifacts](https://Winipedia.github.io/pyrig/build)
-
-PyInstaller integration and extensible build system for generating executables,
-distributable packages, and more.
-Run `pyrig subcls` to create a custom builder for your specific build needs.
-Run `pyrig build` to execute the build process and generate artifacts.
-Run `pyrig resources` to create a resources package for your project.
-
 ### [Multi-Package Inheritance and Extensibility Architecture](https://Winipedia.github.io/pyrig/architecture)
 
 Override and customize any and all behaviour to suit your project's needs.
 pyrig's classes are designed for inheritance and composition, allowing you to
-create custom configurations, tools, builders, and more by subclassing and simply
+create custom configurations, tools, and more by subclassing and simply
 overriding methods. pyrig will automatically discover and use your custom classes
 without any additional configuration.
 Run `pyrig subcls` to generate a subclass for any pyrig class.
@@ -141,7 +133,6 @@ uv run pyrig mkinits                 # Create missing __init__.py files
 uv run pyrig mkfixture <name>        # Generate a new pytest fixture
 uv run pyrig mkcmd <name>            # Create a new CLI subcommand stub
 uv run pyrig subcls                  # generate and override subclasses
-uv run pyrig build                   # Build artifacts (PyInstaller, etc.)
 uv run pyrig resources               # Scaffold the resources package
 uv run pyrig protect-repo            # Configure repository protection
 uv run pyrig scratch                 # Execute the project's .scratch.py file

@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import Any
 
 from pyrig.rig.cli import subcommands
-from pyrig.rig.cli.commands.build_artifacts import build_artifacts
 from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.commands.make_fixture import make_fixture
 from pyrig.rig.cli.commands.make_inits import make_init_files
@@ -17,7 +16,6 @@ from pyrig.rig.cli.commands.protect_repo import protect_repository
 from pyrig.rig.cli.commands.remove_pycache import remove_pycache
 from pyrig.rig.cli.commands.scratch import run_scratch_file
 from pyrig.rig.cli.subcommands import (
-    build,
     init,
     mkcmd,
     mkfixture,
@@ -66,15 +64,6 @@ def test_init(
     """Test function."""
     command_works(init)
     command_calls_function(init, init_project)
-
-
-def test_build(
-    command_works: Callable[[Callable[..., Any]], None],
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
-) -> None:
-    """Test function."""
-    command_works(build)
-    command_calls_function(build, build_artifacts)
 
 
 def test_protect_repo(

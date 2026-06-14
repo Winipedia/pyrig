@@ -10,8 +10,7 @@ from pyrig.core.strings import (
     snake_to_kebab_case,
     split_on_uppercase,
 )
-from pyrig.rig.builders.base.builder import BuilderConfigFile
-from pyrig.rig.cli.subcommands import build, protect_repo
+from pyrig.rig.cli.subcommands import protect_repo
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.yml import YMLDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -837,29 +836,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             step=step,
         )
 
-    def step_build_artifacts(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that runs the pyrig build command.
-
-        Invokes ``pyrig build`` via uv, which delegates to all registered
-        concrete :class:`~pyrig.rig.builders.base.builder.BuilderConfigFile`
-        subclasses to produce their respective artifacts.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that runs ``uv run pyrig build``.
-        """
-        return self.step(
-            step_func=self.step_build_artifacts,
-            run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=build))),
-            step=step,
-        )
-
     def step_build_documentation(
         self,
         *,
@@ -1036,7 +1012,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
                 "tag": version,
                 "name": version,
                 "body": self.insert_changelog(),
-                "artifacts": f"{BuilderConfigFile.dist_dir_path().as_posix()}/*",
             },
             step=step,
         )
@@ -1108,68 +1083,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             env={
                 RemoteVersionController.I.access_token_key(): self.insert_repo_token()
             },
-            step=step,
-        )
-
-    def step_upload_artifacts(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that uploads build artifacts.
-
-        Uploads the entire ``dist/`` directory as a named GitHub Actions
-        artifact so it can be downloaded by downstream jobs or workflow runs.
-        The artifact name defaults to ``<project>-<runner.os>`` via
-        :meth:`insert_artifact_name`.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step using ``actions/upload-artifact@main``.
-        """
-        return self.step(
-            step_func=self.step_upload_artifacts,
-            uses="actions/upload-artifact@main",
-            with_={
-                "name": self.insert_artifact_name(),
-                "path": BuilderConfigFile.dist_dir_path().as_posix(),
-            },
-            step=step,
-        )
-
-    def step_download_artifacts_from_workflow_run(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a step that downloads artifacts from the triggering workflow run.
-
-        Uses ``github.event.workflow_run.id`` as the run ID so it always
-        fetches artifacts from the specific run that triggered the current
-        workflow, even when multiple runs exist.  All per-OS artifact
-        directories are merged into a single ``dist/`` directory
-        (``merge-multiple: true``).
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step using ``actions/download-artifact@main`` with the workflow
-            run ID and a GitHub token for cross-workflow artifact access.
-        """
-        with_: dict[str, Any] = {
-            "path": BuilderConfigFile.dist_dir_path().as_posix(),
-            "run-id": self.insert_workflow_run_id(),
-            "github-token": self.insert_github_token(),
-        }
-
-        with_["merge-multiple"] = "true"
-        return self.step(
-            step_func=self.step_download_artifacts_from_workflow_run,
-            uses="actions/download-artifact@main",
-            with_=with_,
             step=step,
         )
 
@@ -1289,28 +1202,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_var(self.github_token_var())
 
-    def insert_workflow_run_id(self) -> str:
-        """Get the expression that resolves to the triggering workflow run ID.
-
-        Resolves to the run ID of the workflow that triggered the current
-        workflow via a ``workflow_run`` event.  Used when downloading
-        artifacts from that specific run.
-
-        Returns:
-            GitHub Actions expression for
-            ``github.event.workflow_run.id``.
-        """
-        return self.insert_var("github.event.workflow_run.id")
-
-    def insert_os(self) -> str:
-        """Get the expression that resolves to the current runner OS name.
-
-        Returns:
-            GitHub Actions expression for ``runner.os`` (e.g. ``"Linux"``,
-            ``"Windows"``, ``"macOS"``).
-        """
-        return self.insert_var("runner.os")
-
     def insert_matrix_os(self) -> str:
         """Get the expression that resolves to the current matrix OS value.
 
@@ -1326,15 +1217,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             GitHub Actions expression for ``matrix.python-version``.
         """
         return self.insert_var("matrix.python-version")
-
-    def insert_artifact_name(self) -> str:
-        """Build the default artifact name for the current runner OS.
-
-        Returns:
-            Artifact name in the format ``"<project-name>-<runner.os>"``,
-            where ``<runner.os>`` is resolved at workflow execution time.
-        """
-        return f"{PackageManager.I.project_name()}-{self.insert_os()}"
 
     def insert_var(self, var: str) -> str:
         """Wrap an expression in GitHub Actions ``${{ ... }}`` syntax.

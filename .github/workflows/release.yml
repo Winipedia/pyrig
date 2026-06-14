@@ -3,9 +3,11 @@ name: Release
   workflow_dispatch: {}
   workflow_run:
     workflows:
-    - Build
+    - Health Check
     types:
     - completed
+    branches:
+    - main
 run-name: Release
 defaults:
   run:
@@ -15,11 +17,9 @@ env:
   UV_NO_SYNC: 1
 jobs:
   distributions:
-    permissions:
-      contents: write
-      actions: read
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event
+      != 'schedule' }}
     steps:
     - name: Checkout Repository
       id: checkout-repository
@@ -38,14 +38,6 @@ jobs:
     - name: Extract Version
       id: extract-version
       run: echo "version=$(uv version --short)" >> $GITHUB_OUTPUT
-    - name: Download Artifacts From Workflow Run
-      id: download-artifacts-from-workflow-run
-      uses: actions/download-artifact@main
-      with:
-        path: dist
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        merge-multiple: 'true'
     - name: Build Changelog
       id: build-changelog
       uses: mikepenz/release-changelog-builder-action@develop
@@ -58,4 +50,3 @@ jobs:
         tag: ${{ steps.extract-version.outputs.version }}
         name: ${{ steps.extract-version.outputs.version }}
         body: ${{ steps.build-changelog.outputs.changelog }}
-        artifacts: dist/*
