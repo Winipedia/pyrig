@@ -26,6 +26,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         3. Export the version string to ``GITHUB_OUTPUT``.
         4. Generate a changelog from commits since the last tag.
         5. Publish the GitHub release with the changelog body.
+
+    Permissions required:
+        - ``contents: write`` — push the version tag and create the release.
     """
 
     def stem(self) -> str:
@@ -75,6 +78,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         The cron guard prevents the daily scheduled health check run from
         creating a release every day.
 
+        Requests ``contents: write`` permission at the job level, which is
+        required to push the version tag and create the GitHub release.
+
         Returns:
             Job configuration dict keyed by the job name, containing the
             guard condition and the ordered release steps.
@@ -86,6 +92,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
                 self.if_workflow_run_is_not_cron_triggered(),
                 operator="&&",
             ),
+            permissions={"contents": "write"},
             steps=self.steps_distributions(),
         )
 

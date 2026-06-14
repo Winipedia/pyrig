@@ -15,11 +15,11 @@ env:
   UV_NO_SYNC: 1
 jobs:
   documentation:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       pages: write
       id-token: write
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
     - name: Checkout Repository
       id: checkout-repository
@@ -50,8 +50,8 @@ jobs:
       id: deploy-documentation
       uses: actions/deploy-pages@main
   package:
-    runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
       id: checkout-repository
