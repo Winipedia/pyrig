@@ -41,18 +41,18 @@ class TestReleaseWorkflowConfigFile:
         result = my_test_release_workflow().jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
-    def test_job_distributions(
+    def test_job_publish(
         self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_release_workflow().job_distributions()
+        result = my_test_release_workflow().job_publish()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
         assert "steps" in result[job_name], "Expected 'steps' in job"
 
-    def test_steps_distributions(
+    def test_steps_publish(
         self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
     ) -> None:
         """Test method."""
-        result = my_test_release_workflow().steps_distributions()
+        result = my_test_release_workflow().steps_publish()
         assert len(result) > 0, "Expected steps to be non-empty"
