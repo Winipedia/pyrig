@@ -160,20 +160,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().make_id_from_func(job_test_function)
         assert result == "test-function"
 
-    def test_insert_os(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_os()
-        assert result == "${{ runner.os }}", (
-            f"Expected '${{{{ runner.os }}}}', got {result}"
-        )
-
-    def test_insert_workflow_run_id(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_workflow_run_id()
-        assert isinstance(result, str)
-
     def test__configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().configs()
@@ -471,27 +457,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_run_pre_commit_hooks()
         assert "run" in result
 
-    def test_step_upload_artifacts(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_upload_artifacts()
-        assert "uses" in result, "Expected 'uses' in step"
-
-    def test_step_build_artifacts(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_build_artifacts()
-        assert "run" in result
-
-    def test_step_download_artifacts_from_workflow_run(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_download_artifacts_from_workflow_run()
-        assert "uses" in result, "Expected 'uses' in step"
-
     def test_step_build_changelog(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -560,13 +525,6 @@ class TestWorkflowConfigFile:
         assert "matrix.python-version" in result, (
             "Expected 'matrix.python-version' in result"
         )
-
-    def test_insert_artifact_name(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_artifact_name()
-        assert len(result) > 0, "Expected artifact name to be non-empty"
 
     def test_if_workflow_run_is_success(
         self, my_test_workflow: type[WorkflowConfigFile]

@@ -9,10 +9,10 @@ import pytest
 from pytest_mock import MockerFixture
 
 from pyrig.rig import configs
-from pyrig.rig.builders.base.builder import BuilderConfigFile
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.dot_scratch import DotScratchConfigFile
+from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 
 
 @pytest.fixture
@@ -196,8 +196,8 @@ class TestConfigFile:
     def test_validate_all_subclasses(self) -> None:
         """Test method."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            _ = BuilderConfigFile.I
-        BuilderConfigFile.L.validate_all_subclasses()
+            _ = MirrorTestConfigFile.I
+        ConfigFile.validate_all_subclasses()
 
     def test_extension_separator(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]

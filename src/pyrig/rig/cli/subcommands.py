@@ -92,24 +92,6 @@ def mkinits() -> None:
     make_init_files()
 
 
-def build() -> None:
-    """Build all distributable artifacts defined in the builders package.
-
-    Discovers every concrete `BuilderConfigFile` subclass under the `builders`
-    package and runs each one through its full pipeline.
-
-    Builders are skipped when the expected artifact already exists in dist/.
-    Delete the existing dist/ artifacts if you want to rebuild them.
-
-    Extend pyrig by subclassing `BuilderConfigFile` (for custom builds) or
-    `ExecutableBuilder` (for standalone executables) and placing the subclass
-    inside your project's `builders` package.
-    """
-    from pyrig.rig.cli.commands.build_artifacts import build_artifacts  # noqa: PLC0415
-
-    build_artifacts()
-
-
 def protect_repo() -> None:
     """Apply GitHub repository settings and branch protection rulesets.
 

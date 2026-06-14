@@ -20,9 +20,8 @@ uv run pyrig init
 This will set up a complete python project with all of pyrig's best practices
 fully working from the start. The only thing the full setup guide will add to this
 is setting up your repository with GitHub and the CI/CD pipeline properly.
-We recommend following the full setup guide, especially if you want to build
-executable artifacts or anything that needs a remote repository and/or CI/CD
-to work,
+We recommend following the full setup guide, especially if you want anything
+that needs a remote repository and/or CI/CD to work,
 but if you just want to get going with a local project and add the repository
 and CI/CD setup later, this is the fastest way to get started.
 
@@ -175,7 +174,7 @@ On GitHub.com:
 
 1. Go to Actions tab
 2. Health Check workflow should run automatically,
-followed by Build workflow, Release workflow, and Deploy workflow
+followed by Release workflow and Deploy workflow
 3. Verify all jobs run successfully
 (should just take a 2-3 minutes on an empty project)
 

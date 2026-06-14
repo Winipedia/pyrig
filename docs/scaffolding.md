@@ -43,8 +43,7 @@ my-project/
 │   │   └── feature_request.yml             # Feature request issue form
 │   └── workflows/
 │       ├── health_check.yml                # CI: runs tests and more
-│       ├── build.yml                       # CI: triggered after health check passes
-│       ├── release.yml                     # CI: triggered after build passes
+│       ├── release.yml                     # CI: triggered after health check passes
 │       └── deploy.yml                      # CI: triggered after release passes
 │
 ├── docs/
@@ -95,15 +94,14 @@ my-project/
 | `ISSUE_TEMPLATE/feature_request.yml` | Structured feature request form |
 | `ISSUE_TEMPLATE/config.yml` | Configures the issue template chooser |
 | `workflows/health_check.yml` | Runs code quality checks and the full test suite on every PR, push to `main`, and on a nightly schedule |
-| `workflows/build.yml` | Builds distributable artifacts after a successful health check |
-| `workflows/release.yml` | Creates a GitHub release after a successful build |
+| `workflows/release.yml` | Creates a GitHub release after a successful health check |
 | `workflows/deploy.yml` | Deploys documentation and packages after a successful release |
 
-The four workflows form a chain that is a comprehensive CI/CD pipeline for
-testing, building, releasing and deploying the project:
+The three workflows form a chain that is a comprehensive CI/CD pipeline for
+testing, releasing and deploying the project:
 
 ```text
-Health Check ──► Build ──► Release ──► Deploy
+Health Check ──► Release ──► Deploy
 ```
 
 ### `src/my_project/`

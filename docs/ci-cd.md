@@ -1,6 +1,6 @@
 # CI/CD Pipeline
 
-pyrig generates and manages a complete four-stage GitHub Actions pipeline.
+pyrig generates and manages a complete three-stage GitHub Actions pipeline.
 The workflows are produced as `ConfigFile` subclasses, so they are kept correct
 automatically by `pyrig mkroot` and validated on every test run just like any other
 managed file.
@@ -9,7 +9,7 @@ managed file.
 
 ## Pipeline Overview
 
-The four workflows form a chain where each stage triggers the next on completion:
+The three workflows form a chain where each stage triggers the next on completion:
 
 ```text
 Pull Request / Push / Schedule / Manual
@@ -19,11 +19,6 @@ Pull Request / Push / Schedule / Manual
     │  Health Check   │  ← the only gate for merging PRs
     └────────┬────────┘
              │ completes on default branch (non-scheduled only)
-             ▼
-    ┌─────────────────┐
-    │     Build       │  ← produces distributable artifacts
-    └────────┬────────┘
-             │ completes
              ▼
     ┌─────────────────┐
     │    Release      │  ← tags and publishes a GitHub Release
@@ -40,9 +35,10 @@ fires when the previous stage finishes. Each downstream stage also guards its
 jobs with an `if` condition that checks the triggering run succeeded, so a
 failure anywhere in the chain stops propagation cleanly.
 
-The Build workflow is triggered when Health Check completes on the default branch,
-but excludes scheduled health check runs. This means builds only occur for actual
-code changes pushed to the default branch, not for routine nightly health checks.
+The Release workflow is triggered when Health Check completes on the default
+branch, but excludes scheduled health check runs. This means releases only occur
+for actual code changes pushed to the default branch, not for routine nightly
+health checks.
 
 ---
 
@@ -56,26 +52,17 @@ merging PRs, since it runs on every PR and blocks merging until it passes.
 
 ---
 
-## Stage 2 — Build
-
-**File:** `.github/workflows/build.yml`
-
-This workflow builds all artifacts on every operating system via a matrix strategy
-and then adds these artifacts to the workflow's artifact store,
-making them available for the next stage in the pipeline.
-
----
-
-## Stage 3 — Release
+## Stage 2 — Release
 
 **File:** `.github/workflows/release.yml`
 
-**Trigger:** `Build` workflow completes.
+**Trigger:** `Health Check` workflow completes on the default branch.
 
-The release job runs only when the triggering build succeeded.
+The release job runs only when the triggering health check succeeded and was not
+a scheduled (cron) run, so the nightly health check does not create a release
+every day.
 It tags the current commit with the version and pushes the tag to the repository.
-Then it creates a GitHub Release with the new tag and attaches the build
-artifacts from the previous stage.
+Then it creates a GitHub Release with the new tag and generates a changelog.
 Important: The release workflow creates a new tag, which will fail if that tag
 already exists. This means you must ensure the version is updated in `pyproject.toml`
 before pushing to the default branch, otherwise the release workflow will
@@ -86,7 +73,7 @@ locally and pushing the resulting commit to the default branch.
 
 ---
 
-## Stage 4 — Deploy
+## Stage 3 — Deploy
 
 **File:** `.github/workflows/deploy.yml`
 
@@ -114,10 +101,10 @@ to prevent it from being updated by the pipeline.
 
 ## Customising the Pipeline
 
-All four workflow files are managed `ConfigFile` instances, so they can be
+All three workflow files are managed `ConfigFile` instances, so they can be
 extended or overridden in the same way as any other managed file in pyrig.
 Subclass the relevant workflow class
-(`HealthCheckWorkflowConfigFile`, `BuildWorkflowConfigFile`,
+(`HealthCheckWorkflowConfigFile`,
 `ReleaseWorkflowConfigFile`, `DeployWorkflowConfigFile`) in your project's
 `rig/configs/` tree and override the methods that need changing — jobs,
 triggers, steps, permissions, or environment variables. The `WorkflowConfigFile`

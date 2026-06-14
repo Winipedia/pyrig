@@ -11,7 +11,6 @@ src/pyrig/
 └── rig/                # pyrig domain logic
     ├── cli/            # Entry point + subcommand registration
     ├── configs/        # Declarative config file generators
-    ├── builders/       # Artifact builders (executables, archives)
     ├── tools/          # CLI tool wrappers (git, uv, pytest, ruff …)
     ├── tests/          # Mirror test framework + pytest fixtures
     ├── resources/      # Static resource files bundled with the package
@@ -35,7 +34,7 @@ When `ConfigFile.subclasses()` (or `Tool.subclasses()`, etc.) is called, it:
 (discarding intermediate parent classes).
 
 This means any installed package that depends on `pyrig` automatically contributes
-its `ConfigFile`, `Tool`, and `BuilderConfigFile` subclasses — no entry-point
+its `ConfigFile` and `Tool` subclasses — no entry-point
 declaration or explicit registration needed.
 
 ```text
@@ -46,7 +45,7 @@ pyrig
 
 The `RigDependencySubclass` intermediate base pre-configures the required hook
 (`dependency_package → pyrig.rig`) so that concrete
-subsystem classes (`Tool`, `ConfigFile`, `BuilderConfigFile`) inherit discovery
+subsystem classes (`Tool`, `ConfigFile`) inherit discovery
 for free. The root dependency is inferred automatically from the root package of
 `dependency_package()`, so no separate `base_dependency` hook is needed.
 Further BaseSubclasses like `Tool` and `ConfigFile` override
@@ -112,9 +111,8 @@ ConfigFile
  ├── JSONConfigFile
  │    └── JSONListConfigFile   → branch-protection.json
  └── ListConfigFile
-      ├── StringConfigFile
-      │    └── MarkdownConfigFile  → README.md, CONTRIBUTING.md …
-      └── BuilderConfigFile        → artifact builders (repurposes the interface)
+      └── StringConfigFile
+           └── MarkdownConfigFile  → README.md, CONTRIBUTING.md …
 ```
 
 ---
@@ -183,10 +181,10 @@ and they will be available in every pyrig-based project that depends on it
 
 ## CI/CD Pipeline
 
-The four generated GitHub Actions workflows are chained via `workflow_run` triggers:
+The three generated GitHub Actions workflows are chained via `workflow_run` triggers:
 
 ```text
-Health Check ──► Build ──► Release ──► Deploy
+Health Check ──► Release ──► Deploy
 ```
 
 Each workflow is a `WorkflowConfigFile` subclass (`YMLDictConfigFile`) that

@@ -4,33 +4,28 @@ from typing import Any
 
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.configs.remote_version_control.workflows.build import (
-    BuildWorkflowConfigFile,
+from pyrig.rig.configs.remote_version_control.workflows.health_check import (
+    HealthCheckWorkflowConfigFile,
 )
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     """Generates the ``release.yml`` GitHub Actions workflow.
 
-    This workflow is triggered when the build workflow completes. The release
-    job only runs when the triggering run succeeded. It creates and pushes a
-    version tag, downloads build artifacts from the triggering run, generates
-    a changelog from commit history, and publishes a GitHub release with the
-    artifacts attached.
+    This workflow is triggered when the health check workflow completes on the
+    default branch. The release job only runs when the triggering run succeeded
+    and was not a scheduled (cron) run, so the daily health check run does not
+    create a release every day. It creates and pushes a version tag, generates
+    a changelog from commit history, and publishes a GitHub release.
 
     Release process (in order):
         1. Check out the repository (authenticated with the automatic
            ``GITHUB_TOKEN``) and install the uv package manager.
         2. Create a version tag (e.g. ``1.2.3``) and push it to the remote.
         3. Export the version string to ``GITHUB_OUTPUT``.
-        4. Download build artifacts from the triggering workflow run into
-           ``dist/``.
-        5. Generate a changelog from commits since the last tag.
-        6. Publish the GitHub release with artifacts and the changelog body.
-
-    Permissions required:
-        - ``contents: write`` — push tags and create releases.
-        - ``actions: read`` — download artifacts from the triggering run.
+        4. Generate a changelog from commits since the last tag.
+        5. Publish the GitHub release with the changelog body.
     """
 
     def stem(self) -> str:
@@ -46,8 +41,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
 
         Extends the default ``workflow_dispatch`` trigger (inherited from the
         base class) with a ``workflow_run`` trigger that fires when
-        :class:`~pyrig.rig.configs.remote_version_control.workflows.build.BuildWorkflowConfigFile`
-        completes.
+        :class:`~pyrig.rig.configs.remote_version_control.workflows.health_check.HealthCheckWorkflowConfigFile`
+        completes on the default branch.
 
         Returns:
             Trigger configuration containing both ``workflow_dispatch`` and
@@ -56,7 +51,8 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         triggers = super().workflow_triggers()
         triggers.update(
             self.on_workflow_run(
-                workflows=[BuildWorkflowConfigFile.I.workflow_name()],
+                workflows=[HealthCheckWorkflowConfigFile.I.workflow_name()],
+                branches=[VersionController.I.default_branch()],
             )
         )
         return triggers
@@ -72,18 +68,24 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     def job_distributions(self) -> ConfigDict:
         """Build the release job configuration.
 
-        The job is guarded by
-        :meth:`~WorkflowConfigFile.if_workflow_run_is_success`, so it only
-        runs when the triggering workflow run concluded successfully.
+        The job runs only when both of these conditions hold:
+            - The triggering health check workflow run completed successfully.
+            - The triggering run was not a scheduled (cron) run.
+
+        The cron guard prevents the daily scheduled health check run from
+        creating a release every day.
 
         Returns:
             Job configuration dict keyed by the job name, containing the
-            success condition and the ordered release steps.
+            guard condition and the ordered release steps.
         """
         return self.job(
             job_func=self.job_distributions,
-            if_condition=self.if_workflow_run_is_success(),
-            permissions={"contents": "write", "actions": "read"},
+            if_condition=self.combined_if(
+                self.if_workflow_run_is_success(),
+                self.if_workflow_run_is_not_cron_triggered(),
+                operator="&&",
+            ),
             steps=self.steps_distributions(),
         )
 
@@ -93,15 +95,13 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Steps that perform the full release sequence: environment setup,
             creating and pushing the version tag, exporting the version,
-            downloading build artifacts, generating a changelog, and
-            publishing the GitHub release.
+            generating a changelog, and publishing the GitHub release.
         """
         return [
             *self.steps_core_setup(),
             self.step_create_tag(),
             self.step_push_tag(),
             self.step_extract_version(),
-            self.step_download_artifacts_from_workflow_run(),
             self.step_build_changelog(),
             self.step_create_release(),
         ]

@@ -92,12 +92,6 @@ pyrig provides a system for automatically sharing and registering pytest fixture
 across all your tests.
 See the [Test Fixture System Documentation](fixtures.md) for more information.
 
-## Build System
-
-pyrig provides an extensible build system for generating any artifact you want,
-with PyInstaller integration for generating executables.
-Check out the [Build System Documentation](build.md) for more details.
-
 ## CI/CD Pipeline
 
 pyrig provides a complete end-to-end CI/CD pipeline with GitHub Actions and
