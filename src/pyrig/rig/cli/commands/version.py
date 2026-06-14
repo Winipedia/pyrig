@@ -20,4 +20,4 @@ def project_version() -> None:
     installs are sufficient) for this to work.
     """
     project_name = CLI.I.project_name()
-    typer.echo(f"{project_name} version {version(project_name)}")
+    typer.echo(f"{project_name} {version(project_name)}")

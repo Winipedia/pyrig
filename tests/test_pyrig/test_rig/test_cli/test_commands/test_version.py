@@ -26,5 +26,5 @@ def test_project_version(
 
     captured = capsys.readouterr()
     out, err = captured.out, captured.err
-    assert out.startswith("pyrig version ")
+    assert out.startswith("pyrig ")
     assert err == ""
