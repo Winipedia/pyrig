@@ -58,9 +58,9 @@ merging PRs, since it runs on every PR and blocks merging until it passes.
 
 **Trigger:** `Health Check` workflow completes on the default branch.
 
-The release job runs only when the triggering health check succeeded and was not
-a scheduled (cron) run, so the nightly health check does not create a release
-every day.
+The **`publish`** job runs only when the triggering health check succeeded and
+was not a scheduled (cron) run, so the regularly triggered health check does
+not create a release every day.
 It tags the current commit with the version and pushes the tag to the repository.
 Then it creates a GitHub Release with the new tag and generates a changelog.
 Important: The release workflow creates a new tag, which will fail if that tag

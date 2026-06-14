@@ -66,9 +66,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         Returns:
             Dict containing the single release job.
         """
-        return {**self.job_distributions()}
+        return {**self.job_publish()}
 
-    def job_distributions(self) -> ConfigDict:
+    def job_publish(self) -> ConfigDict:
         """Build the release job configuration.
 
         The job runs only when both of these conditions hold:
@@ -86,17 +86,17 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             guard condition and the ordered release steps.
         """
         return self.job(
-            job_func=self.job_distributions,
+            job_func=self.job_publish,
             if_condition=self.combined_if(
                 self.if_workflow_run_is_success(),
                 self.if_workflow_run_is_not_cron_triggered(),
                 operator="&&",
             ),
             permissions={"contents": "write"},
-            steps=self.steps_distributions(),
+            steps=self.steps_publish(),
         )
 
-    def steps_distributions(self) -> list[dict[str, Any]]:
+    def steps_publish(self) -> list[dict[str, Any]]:
         """Build the ordered list of steps for the release job.
 
         Returns:
