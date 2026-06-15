@@ -253,12 +253,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
         name = self.make_name_from_func(step_func)
         id_ = self.make_id_from_func(step_func)
         step_config: dict[str, Any] = {"name": name, "id": id_}
+        if if_condition is not None:
+            step_config["if"] = if_condition
         if run is not None:
             step_config["run"] = run
         if uses is not None:
             step_config["uses"] = uses
-        if if_condition is not None:
-            step_config["if"] = if_condition
         if with_ is not None:
             step_config["with"] = with_
         if env is not None:
