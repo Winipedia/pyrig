@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "12.17.0"
+version = "12.17.1"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -74,6 +74,7 @@ dev = [
     "pyrig-codecov>=1.1.0",
     "pyrig-dev>=0.1.19",
     "pyrig-pypi>=1.0.0",
+    "pyrig-resources>=1.0.0",
     "pytest-cov>=7.0.0",
     "pytest-mock>=3.15.1",
     "pytest>=9.0.2",

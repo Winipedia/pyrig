@@ -1088,7 +1088,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "12.17.0"
+version = "12.17.1"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
@@ -1107,6 +1107,7 @@ dev = [
     { name = "pyrig-codecov" },
     { name = "pyrig-dev" },
     { name = "pyrig-pypi" },
+    { name = "pyrig-resources" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
@@ -1131,6 +1132,7 @@ dev = [
     { name = "pyrig-codecov", specifier = ">=1.1.0" },
     { name = "pyrig-dev", specifier = ">=0.1.19" },
     { name = "pyrig-pypi", specifier = ">=1.0.0" },
+    { name = "pyrig-resources", specifier = ">=1.0.0" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-mock", specifier = ">=3.15.1" },
@@ -1179,6 +1181,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f1/2c/1704164d32d9b0ae83176d359322655cac5c3f8b06971ca2dfbe404bcf19/pyrig_pypi-1.5.4.tar.gz", hash = "sha256:89c7b3e1610d93232672d8922e7ad0ea2b80a1708bb3a44f2f585f4a335158c1", size = 6218, upload-time = "2026-06-15T20:49:56.798Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/22/09/2b127d9b6336b95dae7c6c07f70db25c014fee03a29313ce34f6ceb117e3/pyrig_pypi-1.5.4-py3-none-any.whl", hash = "sha256:a337e2ddd81b498d3a3cf135ec4ec39c6e40e509da9a4e61fd6d22f2e3b3163b", size = 10436, upload-time = "2026-06-15T20:49:55.922Z" },
+]
+
+[[package]]
+name = "pyrig-resources"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyrig" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/bc/25/9f9099440c1ed251a002e7bc7d8884e80e0174685aa3c206d2f758364ea6/pyrig_resources-1.0.0.tar.gz", hash = "sha256:7edb105d704288fc6d803889be092900e524a7723d6ae63753e10b495bd49b30", size = 4232, upload-time = "2026-06-15T22:50:40.522Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5b/7f/35c2fdde29b87f4e2ae077fee33202145ebf2c7744ff3f0f6708efc1df6f/pyrig_resources-1.0.0-py3-none-any.whl", hash = "sha256:39d25a71596a07cfe52cd3de87673ecafc1fde4635f2d568d997913a27c3d726", size = 6571, upload-time = "2026-06-15T22:50:41.602Z" },
 ]
 
 [[package]]
