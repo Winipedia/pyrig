@@ -1273,3 +1273,20 @@ class WorkflowConfigFile(YMLDictConfigFile):
             ``github.event.workflow_run.event != 'schedule'``.
         """
         return self.insert_var("github.event.workflow_run.event != 'schedule'")
+
+    def if_workflow_run_is_success_and_not_cron_triggered(self) -> str:
+        """Build a condition true for a successful, non-scheduled workflow run.
+
+        Combines :meth:`if_workflow_run_is_success` and
+        :meth:`if_workflow_run_is_not_cron_triggered` with ``&&`` so the guarded
+        job runs only when the triggering workflow run succeeded and was not a
+        scheduled (cron) run.
+
+        Returns:
+            Single GitHub Actions expression combining both conditions.
+        """
+        return self.combined_if(
+            self.if_workflow_run_is_success(),
+            self.if_workflow_run_is_not_cron_triggered(),
+            operator="&&",
+        )
