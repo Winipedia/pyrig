@@ -3,6 +3,7 @@
 import pyrig_codecov
 import pyrig_dev
 import pyrig_pypi
+import pyrig_resources
 import pytest
 
 import pyrig
@@ -103,6 +104,7 @@ class TestDiGraph:
             pyrig_codecov.__name__,
             pyrig_dev.__name__,
             pyrig_pypi.__name__,
+            pyrig_resources.__name__,
         ]
 
     def test_build(self) -> None:
