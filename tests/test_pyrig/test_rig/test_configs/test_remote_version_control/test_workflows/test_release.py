@@ -22,6 +22,21 @@ def my_test_release_workflow(
 class TestReleaseWorkflowConfigFile:
     """Test class."""
 
+    def test_job(self) -> None:
+        """Test method."""
+
+        def job_test() -> None:
+            pass
+
+        result = ReleaseWorkflowConfigFile.I.job(job_func=job_test, steps=[])
+        assert len(result) == 1, "Expected job to have one key"
+        job_config = next(iter(result.values()))
+        expected = (
+            "${{ github.event.workflow_run.conclusion == 'success' "
+            "&& github.event.workflow_run.event != 'schedule' }}"
+        )
+        assert job_config["if"] == expected
+
     def test_stem(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.stem() == "release"

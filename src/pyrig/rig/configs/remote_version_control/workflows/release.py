@@ -60,6 +60,29 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         )
         return triggers
 
+    def job(self, *args: Any, **kwargs: Any) -> ConfigDict:
+        """Build a job gated on a successful, non-scheduled triggering run.
+
+        Overrides :meth:`WorkflowConfigFile.job` to inject an ``if`` condition
+        (via :meth:`if_workflow_run_is_success_and_not_cron_triggered`) into
+        every job in this workflow, so jobs run only when the triggering
+        ``workflow_run`` succeeded and was not a scheduled (cron) run.
+
+        Args:
+            *args: Positional arguments forwarded to
+                :meth:`WorkflowConfigFile.job`.
+            **kwargs: Keyword arguments forwarded to
+                :meth:`WorkflowConfigFile.job`.
+
+        Returns:
+            Dict mapping the derived job ID to its configuration.
+        """
+        return super().job(
+            *args,
+            if_condition=self.if_workflow_run_is_success_and_not_cron_triggered(),
+            **kwargs,
+        )
+
     def jobs(self) -> ConfigDict:
         """Build the complete jobs configuration for the workflow.
 
@@ -87,11 +110,6 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.job(
             job_func=self.job_publish,
-            if_condition=self.combined_if(
-                self.if_workflow_run_is_success(),
-                self.if_workflow_run_is_not_cron_triggered(),
-                operator="&&",
-            ),
             permissions={"contents": "write"},
             steps=self.steps_publish(),
         )

@@ -57,6 +57,27 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         )
         return triggers
 
+    def job(self, *args: Any, **kwargs: Any) -> ConfigDict:
+        """Build a job gated on the triggering workflow run succeeding.
+
+        Overrides :meth:`WorkflowConfigFile.job` to inject an ``if`` condition
+        (via :meth:`if_workflow_run_is_success`) into every job in this
+        workflow, so jobs run only when the triggering ``workflow_run`` event
+        reports a successful conclusion.
+
+        Args:
+            *args: Positional arguments forwarded to
+                :meth:`WorkflowConfigFile.job`.
+            **kwargs: Keyword arguments forwarded to
+                :meth:`WorkflowConfigFile.job`.
+
+        Returns:
+            Dict mapping the derived job ID to its configuration.
+        """
+        return super().job(
+            *args, if_condition=self.if_workflow_run_is_success(), **kwargs
+        )
+
     def jobs(self) -> ConfigDict:
         """Build the top-level jobs configuration.
 
@@ -80,7 +101,6 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             job_func=self.job_documentation,
             permissions={"pages": "write", "id-token": "write"},
             steps=self.steps_documentation(),
-            if_condition=self.if_workflow_run_is_success(),
         )
 
     def steps_documentation(self) -> list[dict[str, Any]]:

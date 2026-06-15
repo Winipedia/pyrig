@@ -49,6 +49,17 @@ def my_test_workflow(
 class TestWorkflowConfigFile:
     """Test class."""
 
+    def test_if_workflow_run_is_success_and_not_cron_triggered(
+        self, my_test_workflow: type[WorkflowConfigFile]
+    ) -> None:
+        """Test method."""
+        result = my_test_workflow().if_workflow_run_is_success_and_not_cron_triggered()
+        expected = (
+            "${{ github.event.workflow_run.conclusion == 'success' "
+            "&& github.event.workflow_run.event != 'schedule' }}"
+        )
+        assert result == expected
+
     def test_step_create_tag(self) -> None:
         """Test method."""
         step = HealthCheckWorkflowConfigFile.I.step_create_tag()
