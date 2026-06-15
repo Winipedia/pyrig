@@ -7,7 +7,6 @@ from pyrig.rig.cli import subcommands
 from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.commands.make_fixture import make_fixture
 from pyrig.rig.cli.commands.make_inits import make_init_files
-from pyrig.rig.cli.commands.make_resources_package import make_resources_package
 from pyrig.rig.cli.commands.make_root import make_project_root
 from pyrig.rig.cli.commands.make_subclass import make_subclass
 from pyrig.rig.cli.commands.make_subcommand import make_subcommand
@@ -23,7 +22,6 @@ from pyrig.rig.cli.subcommands import (
     mkroot,
     mktests,
     protect_repo,
-    resources,
     rmpyc,
     scratch,
     subcls,
@@ -118,15 +116,6 @@ def test_mkfixture(
     """Test function."""
     command_works(mkfixture)
     command_calls_function(mkfixture, make_fixture)
-
-
-def test_resources(
-    command_works: Callable[[Callable[..., Any]], None],
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
-) -> None:
-    """Test function."""
-    command_works(resources)
-    command_calls_function(resources, make_resources_package)
 
 
 def test_module_docstring() -> None:

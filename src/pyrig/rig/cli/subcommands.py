@@ -133,24 +133,6 @@ def protect_repo() -> None:
     protect_repository()
 
 
-def resources() -> None:
-    """Scaffold the `resources` package for bundling static assets.
-
-    Creates a `src/<package_name>/rig/resources/__init__.py` file.
-    This is the conventional home for templates, data files, and
-    other non-code assets bundled with the project.
-    Resources are accessible at runtime via `resource_path()`.
-
-    This command is idempotent and safe to run multiple times.
-    If the file already exists, it is not modified.
-    """
-    from pyrig.rig.cli.commands.make_resources_package import (  # noqa: PLC0415
-        make_resources_package,
-    )
-
-    make_resources_package()
-
-
 def mkcmd(
     name: str = typer.Argument(help="Name of the command to create."),
     *,
