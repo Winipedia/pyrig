@@ -1,7 +1,6 @@
 """CLI command implementation for scaffolding the project resources package."""
 
-from pyrig.rig import resources
-from pyrig.rig.configs.base.init import InitConfigFile
+from pyrig.rig.utils.configs import resources_init_config_file
 
 
 def make_resources_package() -> None:
@@ -12,6 +11,4 @@ def make_resources_package() -> None:
     is created with the correct content; if it already exists with correct content,
     it is not modified.
     """
-    # create the file if not existent yet
-    config_file = InitConfigFile.generate_subclass(resources)()
-    config_file.validate()
+    resources_init_config_file().validate()
