@@ -146,7 +146,7 @@ uv add pyrig-pypi
 uv add pyrig-codecov
 
 # Build standalone executables of your project
-uv add pyrig-build
+uv add pyrig-executables
 ```
 
 ### 6. Run pyrig init
