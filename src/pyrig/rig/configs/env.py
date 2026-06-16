@@ -13,7 +13,7 @@ from dotenv import dotenv_values
 from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
 
 
-class DotEnvConfigFile(DictConfigFile):
+class EnvConfigFile(DictConfigFile):
     """Config file manager for .env.
 
     Ensures a .env file exists at the project root for storing local

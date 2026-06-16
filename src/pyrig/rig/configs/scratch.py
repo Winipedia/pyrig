@@ -5,7 +5,7 @@ from pathlib import Path
 from pyrig.rig.configs.base.python import PythonConfigFile
 
 
-class DotScratchConfigFile(PythonConfigFile):
+class ScratchConfigFile(PythonConfigFile):
     """Manages the .scratch.py file at the project root.
 
     .scratch.py is a local scratch file intended for ad-hoc experimentation.
