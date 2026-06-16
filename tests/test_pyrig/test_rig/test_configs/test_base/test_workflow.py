@@ -49,9 +49,6 @@ def my_test_workflow(
 class TestWorkflowConfigFile:
     """Test class."""
 
-    def test_insert_var(self) -> None:
-        """Test method."""
-
     def test_shell_insert_expression(self) -> None:
         """Test method."""
         assert (
