@@ -188,6 +188,12 @@ class CLI(RigDependencySubclass):
 
             $ uv run myproject deploy
 
+        Module-level ``typer.Typer`` instances are registered as command groups
+        named after their variable (e.g. an ``mk`` group exposing
+        ``pyrig mk <command>``). The group's sub-commands are defined in their
+        own module and imported only for the group object, so they are not
+        picked up as top-level commands here.
+
         Note:
             Only functions defined directly in the subcommands module are registered;
             imported functions are excluded. If the module cannot be imported,
@@ -201,8 +207,11 @@ class CLI(RigDependencySubclass):
         if subcommands_module is None:
             return
 
-        for cmd in module_functions(subcommands_module):
-            app.command()(cmd)
+        for func in module_functions(subcommands_module):
+            app.command()(func)
+
+        for name, group in self.module_typer_groups(subcommands_module).items():
+            app.add_typer(group, name=name)
 
     def register_shared_subcommands(self, app: typer.Typer) -> None:
         """Discover and register shared commands from the full dependency chain.
@@ -237,6 +246,26 @@ class CLI(RigDependencySubclass):
             sub_cmds = module_functions(shared_subcommands_module)
             for sub_cmd in sub_cmds:
                 app.command()(sub_cmd)
+
+    def module_typer_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
+        """Return the Typer command groups defined in a subcommands module.
+
+        Scans the module's namespace for ``typer.Typer`` instances and maps each
+        to the attribute name it is bound to. Each such instance is registered
+        as a command group (e.g. a ``mk`` group exposing ``pyrig mk <command>``),
+        and its sub-commands are excluded from the flat top-level command list.
+
+        Args:
+            module: The subcommands module to scan.
+
+        Returns:
+            Mapping of attribute name to the ``typer.Typer`` group bound to it.
+        """
+        return {
+            name: obj
+            for name, obj in vars(module).items()
+            if isinstance(obj, typer.Typer)
+        }
 
     def package_name(self) -> str:
         """Return the package name of the invoking project.

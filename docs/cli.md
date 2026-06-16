@@ -46,7 +46,7 @@ Additionally, it discovers functions from `shared_subcommands` modules across
 all packages in the dependency chain (pyrig and all packages that depend on it).
 This means that to add a new command, simply define a new function in one of
 those modules, and it will be automatically available as a CLI command the next
-time the CLI is run. Simply run `pyrig mkcmd <command-name>` to append a new
+time the CLI is run. Simply run `pyrig mk cmd <command-name>` to append a new
 command function skeleton to `my_project.rig.cli.subcommands` (creating the file
 if it does not exist).
 
@@ -71,6 +71,6 @@ uv run pyrig version
 # This will print smth like: pyrig version 12.3.4
 ```
 
-To add a shared command, simply run `pyrig mkcmd <command-name> --shared` and
+To add a shared command, simply run `pyrig mk cmd <command-name> --shared` and
 it will append the command skeleton to `shared_subcommands` (creating the
 file if it does not exist).

@@ -56,10 +56,10 @@ function in any `.py` file under `<package>/rig/tests/fixtures/`. No
 registration in a `conftest.py` is required. The fixture is available
 project-wide on the next test run.
 
-You can also generate a new fixture skeleton with the `mkfixture` command:
+You can also generate a new fixture skeleton with the `mk fixture` command:
 
 ```text
-uv run pyrig mkfixture my-fixture-name
+uv run pyrig mk fixture my-fixture-name
 ```
 
 This will create a new file `src/my_project/rig/tests/fixtures/fixtures.py` and
