@@ -121,7 +121,7 @@ Health Check ──► Release ──► Deploy
 ## Tool-Generated Artifacts
 
 These files and directories are created as side effects of the tools that
-pyrig configures, but they are not directly managed by pyrig's `mkroot` command.
+pyrig configures, but they are not directly managed by pyrig's `sync` command.
 They are gitignored and should not be manually edited, but they are not
 considered part of the "scaffolded" project structure since they are generated
 and updated automatically by their respective tools.:

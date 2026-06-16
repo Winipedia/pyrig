@@ -93,7 +93,7 @@ questions and get code explanations from the AI.
 
 The `pyrig.rig.configs` package is the **discovery root** for all config files.
 `ConfigFile.dependency_package()` returns this module, and `ConfigFile.validate_all_subclasses()`
-— called by `pyrig mkroot` — discovers every concrete subclass defined inside
+— called by `pyrig sync` — discovers every concrete subclass defined inside
 the package and in dependent packages, sorts by priority (higher first), and
 validates each one in order.
 
@@ -108,7 +108,7 @@ found in pyrig and its dependents. Simply search for the class name or the file
 path to find the class you want to subclass, and select it. This will generate
 a file with a subclass of the selected class where you can add or override any
 configuration you want. The new subclass will automatically be discovered and
-used by the system when `pyrig mkroot` is run.
+used by the system when `pyrig sync` is run.
 
 If you want to create a new config file from scratch, simply create a new
 subclass of `ConfigFile` or one of its base classes anywhere under the same

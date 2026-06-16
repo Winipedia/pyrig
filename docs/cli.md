@@ -14,7 +14,7 @@ When a project declares `pyrig` as a dependency it gets a working CLI entry poin
 automatically. The only thing required is registering a console-script in
 `pyproject.toml` that points to the same `main` function pyrig uses.
 This is also handled automatically by pyrig via its PyprojectConfigFile
-and `pyrig mkroot`:
+and `pyrig sync`:
 
 ```toml
 [project.scripts]

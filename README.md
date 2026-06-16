@@ -81,7 +81,7 @@ frameworks, git hooks, etc.)
 Every generated file is backed by a Python class that validates and merges
 automatically. Override any config by subclassing, or define entirely new
 config files — pyrig discovers and manages them for you.
-Run `pyrig mkroot` to create or update all config files at once.
+Run `pyrig sync` to create or update all config files at once.
 Run `pyrig subcls` to generate a subclass for overriding a specific file.
 
 ### [Automatic CLI](https://Winipedia.github.io/pyrig/cli)
@@ -93,7 +93,7 @@ Run `my-project version` to see it in action.
 
 ### [Mirror Test Generation & Maintenance](https://Winipedia.github.io/pyrig/mirror-tests)
 
-Generate test skeletons with `pyrig mktests`.
+Generate test skeletons with `pyrig sync`.
 This will generate test skeletons for all source modules
 and update them automatically as your project evolves.
 
@@ -127,9 +127,7 @@ its usage.
 
 ```bash
 uv run pyrig init                    # Full project initialization
-uv run pyrig mkroot                  # Create/update all concrete config files
-uv run pyrig mktests                 # Generate test skeletons
-uv run pyrig mkinits                 # Create missing __init__.py files
+uv run pyrig sync                    # Synchronize project
 uv run pyrig mkfixture <name>        # Generate a new pytest fixture
 uv run pyrig mkcmd <name>            # Create a new CLI subcommand stub
 uv run pyrig subcls                  # generate and override subclasses

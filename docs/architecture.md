@@ -189,7 +189,7 @@ Health Check ──► Release ──► Deploy
 
 Each workflow is a `WorkflowConfigFile` subclass (`YMLDictConfigFile`) that
 assembles the YAML structure from composable building-block methods.
-The generated YAML is checked into the repository and kept in sync by `pyrig mkroot`.
+The generated YAML is checked into the repository and kept in sync by `pyrig sync`.
 
 ## How to subclass and override
 
