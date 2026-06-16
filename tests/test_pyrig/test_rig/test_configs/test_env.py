@@ -7,33 +7,33 @@ from typing import Any
 
 import pytest
 
-from pyrig.rig.configs.dot_env import DotEnvConfigFile
+from pyrig.rig.configs.env import EnvConfigFile
 
 
 @pytest.fixture
 def my_test_dotenv_config_file(
-    config_file_factory: Callable[[type[DotEnvConfigFile]], type[DotEnvConfigFile]],
-) -> type[DotEnvConfigFile]:
+    config_file_factory: Callable[[type[EnvConfigFile]], type[EnvConfigFile]],
+) -> type[EnvConfigFile]:
     """Create a test dotenv config file class with tmp_path."""
 
-    class MyTestDotEnvConfigFile(config_file_factory(DotEnvConfigFile)):  # ty: ignore[unsupported-base]
+    class MyTestEnvConfigFile(config_file_factory(EnvConfigFile)):  # ty: ignore[unsupported-base]
         """Test dotenv config file with tmp_path override."""
 
-    return MyTestDotEnvConfigFile
+    return MyTestEnvConfigFile
 
 
-class TestDotEnvConfigFile:
+class TestEnvConfigFile:
     """Test class."""
 
     def test_extension_separator(self) -> None:
         """Test method."""
-        assert DotEnvConfigFile.I.extension_separator() == ""
+        assert EnvConfigFile.I.extension_separator() == ""
 
     def test_version_control_ignored(self) -> None:
         """Test method."""
-        assert DotEnvConfigFile.I.version_control_ignored() is True
+        assert EnvConfigFile.I.version_control_ignored() is True
 
-    def test__load(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
+    def test__load(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
         """Test method."""
         # Create the .env file with some content
         my_test_dotenv_config_file().path().parent.mkdir(parents=True, exist_ok=True)
@@ -47,7 +47,7 @@ class TestDotEnvConfigFile:
         assert loaded["KEY2"] == "value2", "Expected KEY2=value2"
         assert loaded["KEY3"] == "", "Expected KEY3 to be empty string"
 
-    def test__dump(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
+    def test__dump(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
         """Test method."""
         # dump should raise RuntimeError if config is not empty (truthy)
         with pytest.raises(
@@ -60,19 +60,17 @@ class TestDotEnvConfigFile:
         # This is the expected behavior based on the implementation
         my_test_dotenv_config_file().dump({})
 
-    def test_extension(
-        self, my_test_dotenv_config_file: type[DotEnvConfigFile]
-    ) -> None:
+    def test_extension(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
         """Test method."""
         assert my_test_dotenv_config_file().extension() == ""
 
-    def test_stem(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
+    def test_stem(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
         """Test method."""
         assert my_test_dotenv_config_file().stem() == ".env"
 
     def test_parent_path(
         self,
-        my_test_dotenv_config_file: type[DotEnvConfigFile],
+        my_test_dotenv_config_file: type[EnvConfigFile],
         tmp_path: Path,
     ) -> None:
         """Test method."""
@@ -82,7 +80,7 @@ class TestDotEnvConfigFile:
             actual = my_test_dotenv_config_file().parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test__configs(self, my_test_dotenv_config_file: type[DotEnvConfigFile]) -> None:
+    def test__configs(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
         """Test method."""
         # Should return empty dict
         expected: dict[str, Any] = {}

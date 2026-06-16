@@ -5,19 +5,19 @@ from pathlib import Path
 
 from pytest_mock import MockerFixture
 
-from pyrig.rig.configs.dot_scratch import DotScratchConfigFile
+from pyrig.rig.configs.scratch import ScratchConfigFile
 
 
-class TestDotScratchConfigFile:
+class TestScratchConfigFile:
     """Test class."""
 
     def test_create_file(self, mocker: MockerFixture) -> None:
         """Test method."""
         delete_main_spy = mocker.spy(
-            DotScratchConfigFile,
-            DotScratchConfigFile.I.delete_root_main.__name__,
+            ScratchConfigFile,
+            ScratchConfigFile.I.delete_root_main.__name__,
         )
-        DotScratchConfigFile.I.create_file()
+        ScratchConfigFile.I.create_file()
         delete_main_spy.assert_called_once()
 
     def test_delete_root_main(self, tmp_path: Path) -> None:
@@ -31,33 +31,33 @@ class TestDotScratchConfigFile:
             assert main_file.exists(), "main.py should exist before deletion"
 
             # Call the delete_root_main method
-            DotScratchConfigFile.I.delete_root_main()
+            ScratchConfigFile.I.delete_root_main()
 
             # Check that the file has been deleted
             assert not main_file.exists(), "main.py should be deleted"
 
     def test_version_control_ignored(self) -> None:
         """Test method."""
-        assert DotScratchConfigFile.I.version_control_ignored() is True
+        assert ScratchConfigFile.I.version_control_ignored() is True
 
     def test_is_correct(self) -> None:
         """Test method."""
-        DotScratchConfigFile.I.validate()
-        assert DotScratchConfigFile.I.is_correct()
+        ScratchConfigFile.I.validate()
+        assert ScratchConfigFile.I.is_correct()
 
     def test_stem(self) -> None:
         """Test method."""
-        assert DotScratchConfigFile.I.stem() == ".scratch"
+        assert ScratchConfigFile.I.stem() == ".scratch"
 
     def test_parent_path(
         self,
     ) -> None:
         """Test method."""
-        assert DotScratchConfigFile.I.parent_path() == Path()
+        assert ScratchConfigFile.I.parent_path() == Path()
 
     def test_lines(self) -> None:
         """Test method."""
-        lines = DotScratchConfigFile.I.lines()
+        lines = ScratchConfigFile.I.lines()
         assert isinstance(lines, list)
         for line in lines:
             assert isinstance(line, str)

@@ -10,8 +10,8 @@ from pytest_mock import MockerFixture
 
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile, Priority
-from pyrig.rig.configs.dot_env import DotEnvConfigFile
-from pyrig.rig.configs.dot_scratch import DotScratchConfigFile
+from pyrig.rig.configs.env import EnvConfigFile
+from pyrig.rig.configs.scratch import ScratchConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 
 
@@ -77,8 +77,8 @@ class TestConfigFile:
     def test_version_controlled_subclasses(self) -> None:
         """Test method."""
         not_expected = {
-            DotEnvConfigFile,
-            DotScratchConfigFile,
+            EnvConfigFile,
+            ScratchConfigFile,
         }
         actual = set(ConfigFile.version_controlled_subclasses())
         assert len(actual) > 0
@@ -112,8 +112,8 @@ class TestConfigFile:
     def test_version_control_ignored_subclasses(self) -> None:
         """Test method."""
         assert set(ConfigFile.version_control_ignored_subclasses()) == {
-            DotEnvConfigFile,
-            DotScratchConfigFile,
+            EnvConfigFile,
+            ScratchConfigFile,
         }
 
     def test_sort_key(

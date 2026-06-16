@@ -10,7 +10,7 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
-class DotPythonVersionConfigFile(StringConfigFile):
+class PythonVersionConfigFile(StringConfigFile):
     """Manages the .python-version file at the project root.
 
     Writes the minimum supported Python version derived from the

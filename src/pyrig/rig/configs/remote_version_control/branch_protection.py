@@ -10,7 +10,7 @@ from pathlib import Path
 
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.json import JSONListConfigFile
-from pyrig.rig.configs.dot_env import DotEnvConfigFile
+from pyrig.rig.configs.env import EnvConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.remote_version_control.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
@@ -211,9 +211,9 @@ class BranchProtectionConfigFile(JSONListConfigFile):
             logger.debug("Using repository token from environment variable")
             return token
 
-        dotenv = DotEnvConfigFile.I.load()
+        dotenv = EnvConfigFile.I.load()
         token = dotenv.get(RemoteVersionController.I.access_token_key())
-        dotenv_path = DotEnvConfigFile.I.path()
+        dotenv_path = EnvConfigFile.I.path()
         if token is not None:
             logger.debug("Using repository token from %s file", dotenv_path)
             return token

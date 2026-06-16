@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from pytest_mock import MockerFixture
 
-from pyrig.rig.configs.dot_env import DotEnvConfigFile
+from pyrig.rig.configs.env import EnvConfigFile
 from pyrig.rig.configs.remote_version_control.branch_protection import (
     BranchProtectionConfigFile,
 )
@@ -28,11 +28,11 @@ class TestBranchProtectionConfigFile:
         env_mock.assert_called_with("REPO_TOKEN")
 
         # mock getenv to return None and
-        # mock DotEnvConfigFile.load to return a dict with the fake token
+        # mock EnvConfigFile.load to return a dict with the fake token
         env_mock.return_value = None
         dotenv_mock = mocker.patch.object(
-            DotEnvConfigFile,
-            DotEnvConfigFile.load.__name__,
+            EnvConfigFile,
+            EnvConfigFile.load.__name__,
             return_value={"REPO_TOKEN": fake_token},
         )
         token = BranchProtectionConfigFile.I.repo_token()

@@ -2,33 +2,33 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.dot_python_version import DotPythonVersionConfigFile
+from pyrig.rig.configs.python_version import PythonVersionConfigFile
 
 
-class TestDotPythonVersionConfigFile:
+class TestPythonVersionConfigFile:
     """Test class."""
 
     def test_extension_separator(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.I.extension_separator() == ""
+        assert PythonVersionConfigFile.I.extension_separator() == ""
 
     def test_stem(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.I.stem() == ".python-version"
+        assert PythonVersionConfigFile.I.stem() == ".python-version"
 
     def test_extension(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.I.extension() == ""
+        assert PythonVersionConfigFile.I.extension() == ""
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.I.parent_path() == Path()
+        assert PythonVersionConfigFile.I.parent_path() == Path()
 
     def test_lines(self) -> None:
         """Test method."""
-        lines = DotPythonVersionConfigFile.I.lines()
+        lines = PythonVersionConfigFile.I.lines()
         assert lines == ["3.12", ""]
 
     def test_should_override_content(self) -> None:
         """Test method."""
-        assert DotPythonVersionConfigFile.I.should_override_content()
+        assert PythonVersionConfigFile.I.should_override_content()
