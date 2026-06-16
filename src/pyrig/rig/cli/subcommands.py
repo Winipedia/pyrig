@@ -1,10 +1,18 @@
 """Project-specific CLI commands.
 
 All functions in this module are automatically discovered and registered
-as CLI commands for this project.
+as CLI commands for this project. Module-level ``typer.Typer`` instances are
+registered as command groups named after their variable (e.g. the ``mk`` group,
+invoked as ``pyrig mk <command>``).
 """
 
-import typer
+# Bind the make module's Typer app to ``mk`` so the CLI discovery registers it
+# as the ``mk`` command group; importing the module also registers the group's
+# sub-commands. Import the module (not the app instance) so only ``mk`` is a
+# Typer in this namespace and the discovery registers exactly one group.
+from pyrig.rig.cli import make
+
+mk = make.app
 
 
 def init() -> None:
@@ -103,70 +111,6 @@ def protect_repo() -> None:
     from pyrig.rig.cli.commands.protect_repo import protect_repository  # noqa: PLC0415
 
     protect_repository()
-
-
-def mkcmd(
-    name: str = typer.Argument(help="Name of the command to create."),
-    *,
-    shared: bool = typer.Option(
-        default=False,
-        help="Whether the command should be shared in subsequent projects.",
-    ),
-) -> None:
-    """Create a new CLI subcommand stub for this project.
-
-    Appends a minimal function stub to `rig/cli/subcommands.py` or
-    `rig/cli/shared_subcommands.py` depending on the ``shared`` flag.
-    The target module is created automatically if it does not yet exist.
-    Kebab-case names are normalized to snake_case for the generated function name.
-
-    Args:
-        name: Name of the subcommand to create. Accepts kebab-case or snake_case.
-        shared: If `True`, the stub is added to `rig/cli/shared_subcommands.py` instead,
-            making it accessible to every pyrig-based project in the ecosystem.
-
-    Examples:
-        $ uv run pyrig mkcmd my-command
-        $ uv run pyrig mkcmd my-command --shared
-    """
-    from pyrig.rig.cli.commands.make_subcommand import make_subcommand  # noqa: PLC0415
-
-    make_subcommand(name, shared=shared)
-
-
-def subcls() -> None:
-    """Scaffold a subclass of any pyrig class interactively.
-
-    Launches a fuzzy-search prompt listing all `RigDependencySubclass` leaf subclasses
-    found in pyrig and its dependents — both concrete classes (shown with their string
-    representation) and abstract classes (shown by qualified name), sorted
-    alphabetically by import path.
-
-    After you select a class, pyrig creates the matching module file in your
-    project (or validates it if it already exists), copies the source module's
-    docstring into it, and appends a ready-to-edit subclass skeleton that
-    imports and extends the class you chose.
-    """
-    from pyrig.rig.cli.commands.make_subclass import make_subclass  # noqa: PLC0415
-
-    make_subclass()
-
-
-def mkfixture(
-    name: str = typer.Argument(help="Name of the fixture to create."),
-) -> None:
-    """Scaffold a new pytest fixture stub in the project's shared fixtures module.
-
-    Appends an `@pytest.fixture`-decorated function stub to the shared fixtures
-    module. The file is created if it does not already exist. If `import pytest`
-    is not already present in the module, it is inserted automatically.
-
-    The name is normalized from kebab-case to snake_case so it forms a valid
-    Python identifier (e.g. `my-new-fixture` becomes `my_new_fixture`).
-    """
-    from pyrig.rig.cli.commands.make_fixture import make_fixture  # noqa: PLC0415
-
-    make_fixture(name)
 
 
 def scratch() -> None:

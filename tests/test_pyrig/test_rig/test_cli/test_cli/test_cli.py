@@ -106,9 +106,19 @@ class TestCLI:
         app = CLI.I.base_app()
         CLI.I.register_subcommands(app)
         project_name_mock.assert_called_once()
-        # check that the expected commands are registered in the app
+        # flat commands are registered at the top level
         commands = {cmd.callback.__name__ for cmd in app.registered_commands}
-        assert {"sync", "mkcmd"}.issubset(commands)
+        assert {"sync"}.issubset(commands)
+        # grouped commands are not registered at the top level
+        assert {"subcls", "cmd", "fixture"}.isdisjoint(commands)
+        # the mk group is registered with its scaffold commands
+        groups = {group.name: group for group in app.registered_groups}
+        assert "mk" in groups
+        mk_commands = {
+            command.callback.__name__
+            for command in groups["mk"].typer_instance.registered_commands
+        }
+        assert {"subcls", "cmd", "fixture"}.issubset(mk_commands)
 
         # a fresh app whose subcommands module fails to import gets no commands
         app = CLI.I.base_app()
@@ -127,3 +137,9 @@ class TestCLI:
         # check that version is in the app commands
         commands = {cmd.callback.__name__ for cmd in app.registered_commands}
         assert {"version"}.issubset(commands)
+
+    def test_module_typer_groups(self) -> None:
+        """Test method."""
+        groups = CLI.I.module_typer_groups(subcommands_module)
+        assert "mk" in groups
+        assert isinstance(groups["mk"], typer.Typer)

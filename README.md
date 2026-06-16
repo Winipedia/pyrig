@@ -82,12 +82,12 @@ Every generated file is backed by a Python class that validates and merges
 automatically. Override any config by subclassing, or define entirely new
 config files — pyrig discovers and manages them for you.
 Run `pyrig sync` to create or update all config files at once.
-Run `pyrig subcls` to generate a subclass for overriding a specific file.
+Run `pyrig mk subcls` to generate a subclass for overriding a specific file.
 
 ### [Automatic CLI](https://Winipedia.github.io/pyrig/cli)
 
 `pyrig init` sets up a CLI for your project that works immediately.
-Generate and add new commands by running `pyrig mkcmd <name>`.
+Generate and add new commands by running `pyrig mk cmd <name>`.
 An automatic version command is included that shows the version of your project.
 Run `my-project version` to see it in action.
 
@@ -100,7 +100,7 @@ and update them automatically as your project evolves.
 ### [Test Fixtures](https://Winipedia.github.io/pyrig/fixtures)
 
 pyrig enables automatic sharing and registration of pytest fixtures.
-Run `pyrig mkfixture <name>` to generate a new fixture that is
+Run `pyrig mk fixture <name>` to generate a new fixture that is
 automatically registered and available across all your tests.
 
 ### [Multi-Package Inheritance and Extensibility Architecture](https://Winipedia.github.io/pyrig/architecture)
@@ -110,7 +110,7 @@ pyrig's classes are designed for inheritance and composition, allowing you to
 create custom configurations, tools, and more by subclassing and simply
 overriding methods. pyrig will automatically discover and use your custom classes
 without any additional configuration.
-Run `pyrig subcls` to generate a subclass for any pyrig class.
+Run `pyrig mk subcls` to generate a subclass for any pyrig class.
 
 ### [CI/CD & Repository Protection](https://Winipedia.github.io/pyrig/ci-cd)
 
@@ -128,9 +128,9 @@ its usage.
 ```bash
 uv run pyrig init                    # Full project initialization
 uv run pyrig sync                    # Synchronize project
-uv run pyrig mkfixture <name>        # Generate a new pytest fixture
-uv run pyrig mkcmd <name>            # Create a new CLI subcommand stub
-uv run pyrig subcls                  # generate and override subclasses
+uv run pyrig mk fixture <name>       # Generate a new pytest fixture
+uv run pyrig mk cmd <name>           # Create a new CLI subcommand stub
+uv run pyrig mk subcls               # Generate and override subclasses
 uv run pyrig protect-repo            # Configure repository protection
 uv run pyrig scratch                 # Execute the project's .scratch.py file
 uv run pyrig rmpyc                   # Remove __pycache__ directories

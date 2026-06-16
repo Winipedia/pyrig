@@ -211,7 +211,7 @@ Now this sounds all a bit complicated and can get difficult to understand, espec
 if you then need to look up what config files you need to override to change a
 specific part of the system.
 
-To make this process easier there is the `pyrig subcls` CLI command that opens
+To make this process easier there is the `pyrig mk subcls` CLI command that opens
 a fuzzy search interface in the terminal where you can search for any class
 that you want to override and after you select it will generate a skeleton of
 the subclass for you in the correct path with the correct imports and everything,
