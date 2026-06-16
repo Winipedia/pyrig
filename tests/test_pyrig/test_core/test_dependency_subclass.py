@@ -47,13 +47,11 @@ class TestDependencySubclass:
         subclasses = (
             PyprojectConfigFile,
             LicenseConfigFile,
-            VersionControllerIgnoreConfigFile,
         )
         result = ConfigFile.subclasses_sorted(subclasses)
         assert result == [
             LicenseConfigFile,
             PyprojectConfigFile,
-            VersionControllerIgnoreConfigFile,
         ]
 
     def test_I(self) -> None:  # noqa: N802

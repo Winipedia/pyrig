@@ -9,7 +9,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from pyrig.rig import configs
-from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.configs.base.config_file import ConfigFile, Priority
 from pyrig.rig.configs.dot_env import DotEnvConfigFile
 from pyrig.rig.configs.dot_scratch import DotScratchConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
@@ -340,10 +340,10 @@ class TestConfigFile:
 class TestPriority:
     """Test class."""
 
+    def test_increase(self) -> None:
+        """Test method."""
+        assert Priority.increase(Priority.DEFAULT) == Priority.DEFAULT + Priority.STEP
 
-class TestListConfigFile:
-    """Test class."""
-
-
-class TestDictConfigFile:
-    """Test class."""
+    def test_decrease(self) -> None:
+        """Test method."""
+        assert Priority.decrease(Priority.DEFAULT) == Priority.DEFAULT - Priority.STEP

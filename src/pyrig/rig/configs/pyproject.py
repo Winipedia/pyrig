@@ -54,13 +54,15 @@ class PyprojectConfigFile(TOMLConfigFile):
     """
 
     def priority(self) -> float:
-        """Return priority (20), ensuring pyproject.toml is validated early.
+        """Return a priority one step below the LICENSE file's for early validation.
 
-        A higher priority means earlier validation. Priority 20 causes this file to
-        be validated before most other config files, which may need to read project
-        metadata from it.
+        A higher priority means earlier validation. Positioning this file just
+        after ``LicenseConfigFile`` guarantees the LICENSE exists first (its text
+        is read to auto-detect the SPDX identifier), while still keeping
+        ``pyproject.toml`` ahead of the default-priority config files that read
+        project metadata from it.
         """
-        return Priority.MEDIUM
+        return Priority.decrease(LicenseConfigFile.I.priority())
 
     def parent_path(self) -> Path:
         """Return the project root directory."""

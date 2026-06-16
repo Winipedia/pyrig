@@ -9,7 +9,7 @@ from packaging.version import Version
 from pytest_mock import MockerFixture
 
 from pyrig.core.strings import dependency_requirement_as_package_name
-from pyrig.rig.configs.base.config_file import Priority
+from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
 )
@@ -38,7 +38,7 @@ class TestPyprojectConfigFile:
 
     def test_priority(self) -> None:
         """Test method."""
-        assert PyprojectConfigFile.I.priority() > Priority.LOW
+        assert PyprojectConfigFile.I.priority() < LicenseConfigFile.I.priority()
 
     def test_detect_project_license(self) -> None:
         """Test method."""

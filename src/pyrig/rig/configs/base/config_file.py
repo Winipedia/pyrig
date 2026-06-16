@@ -28,16 +28,46 @@ type ConfigData = ConfigDict | ConfigList
 
 
 class Priority:
-    """Numeric constants for controlling config file validation order.
+    """Helpers for controlling config file validation order.
 
-    Higher values cause a config file to be validated earlier.
-    Use these constants instead of raw integers for clarity.
+    A config file's ``priority()`` is a float; higher values are validated
+    earlier. ``DEFAULT`` is the baseline used by most files. Rather than
+    hard-coding absolute values, use :meth:`increase` / :meth:`decrease` to
+    position a config file one ``STEP`` before or after another file's priority.
     """
 
-    DEFAULT = 0
-    LOW = DEFAULT + 10
-    MEDIUM = LOW + 10
-    HIGH = MEDIUM + 10
+    STEP = 10
+    DEFAULT = STEP - STEP
+
+    @classmethod
+    def increase(cls, priority: float) -> float:
+        """Return a priority one ``STEP`` higher (validated earlier).
+
+        Use this to position a config file just before another one whose
+        priority it references, instead of hard-coding an absolute value.
+
+        Args:
+            priority: The base priority to raise.
+
+        Returns:
+            ``priority`` increased by one ``STEP``.
+        """
+        return priority + cls.STEP
+
+    @classmethod
+    def decrease(cls, priority: float) -> float:
+        """Return a priority one ``STEP`` lower (validated later).
+
+        Use this to position a config file just after another one whose
+        priority it references, instead of hard-coding an absolute value.
+
+        Args:
+            priority: The base priority to lower.
+
+        Returns:
+            ``priority`` decreased by one ``STEP``.
+        """
+        return priority - cls.STEP
 
 
 class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
