@@ -12,7 +12,20 @@ class DotScratchConfigFile(PythonConfigFile):
     It is automatically excluded from version control via .gitignore and is
     never committed to the repository. Validation only checks that the file
     exists; content is intentionally left free for the user to modify.
+
+    When the scratch file is first created, the root-level ``main.py`` that
+    ``uv init`` leaves behind is removed, since pyrig-managed projects do not
+    use it.
     """
+
+    def create_file(self) -> None:
+        """Generate ``.scratch.py`` and remove the root ``main.py``.
+
+        Delegates file creation to the parent implementation, then removes
+        ``main.py`` from the project root if it exists.
+        """
+        super().create_file()
+        self.delete_root_main()
 
     def is_correct(self) -> bool:
         """Return whether .scratch.py exists at the project root.
@@ -64,3 +77,14 @@ class DotScratchConfigFile(PythonConfigFile):
             list[str]: Initial content lines for the scratch file.
         """
         return ['"""This file is for scratch work and is ignored by git."""', ""]
+
+    def delete_root_main(self) -> None:
+        """Remove ``main.py`` from the project root if it exists.
+
+        ``uv init`` places a ``main.py`` in the project root as a starter
+        script. Pyrig-managed projects do not use it, so this cleanup step
+        removes it after the scratch file is generated.
+        """
+        root_main_path = Path("main.py")
+        if root_main_path.exists():
+            root_main_path.unlink()
