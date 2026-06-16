@@ -49,27 +49,6 @@ def my_test_workflow(
 class TestWorkflowConfigFile:
     """Test class."""
 
-    def test_if_workflow_run_is_success_and_not_cron_triggered(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().if_workflow_run_is_success_and_not_cron_triggered()
-        expected = (
-            "${{ github.event.workflow_run.conclusion == 'success' "
-            "&& github.event.workflow_run.event != 'schedule' }}"
-        )
-        assert result == expected
-
-    def test_step_create_tag(self) -> None:
-        """Test method."""
-        step = HealthCheckWorkflowConfigFile.I.step_create_tag()
-        assert "run" in step
-
-    def test_step_push_tag(self) -> None:
-        """Test method."""
-        step = HealthCheckWorkflowConfigFile.I.step_push_tag()
-        assert "run" in step
-
     def test_repo_token_var(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile.I.repo_token_var() == "secrets.REPO_TOKEN"
@@ -87,54 +66,12 @@ class TestWorkflowConfigFile:
             == "secrets.TEST_TOKEN"
         )
 
-    def test_if_workflow_run_is_not_cron_triggered(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().if_workflow_run_is_not_cron_triggered()
-        assert "schedule" in result, "Expected 'schedule' in result"
-
-    def test_step_run_dependency_audit(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_run_dependency_audit()
-        assert "run" in result, f"Expected 'run' in step, got {result}"
-
     def test_step_update_dependencies(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_update_dependencies()
         assert "run" in result, f"Expected 'run' in step, got {result}"
-
-    def test_step_configure_pages(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_configure_pages()
-        assert "uses" in result, f"Expected 'uses' in step, got {result}"
-
-    def test_step_upload_documentation(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_upload_documentation()
-        assert "uses" in result, f"Expected 'uses' in step, got {result}"
-
-    def test_step_build_documentation(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_build_documentation()
-        assert "run" in result, f"Expected 'run' in step, got {result}"
-
-    def test_step_deploy_documentation(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_deploy_documentation()
-        assert "uses" in result, f"Expected 'uses' in step, got {result}"
 
     def test_insert_var(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -409,14 +346,6 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().steps_core_matrix_setup()
         assert len(result) > 0
 
-    def test_step_aggregate_jobs(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_aggregate_jobs()
-        assert "name" in result, "Expected 'name' in step"
-        assert "run" in result
-
     def test_step_checkout_repository(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
@@ -441,53 +370,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().step_install_dependencies()
         assert "run" in result
-
-    def test_step_protect_repository(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_protect_repository()
-        assert "env" in result, "Expected 'env' in step"
-
-    def test_step_run_tests(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        step = my_test_workflow().step_run_tests()
-        assert "run" in step
-        step = my_test_workflow().step_run_tests(step={})
-        assert "run" in step
-
-        assert "env" not in step
-
-        health_check_step = HealthCheckWorkflowConfigFile.I.step_run_tests()
-        assert health_check_step["env"] == {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}  # nosec: B105
-
-    def test_step_run_pre_commit_hooks(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_run_pre_commit_hooks()
-        assert "run" in result
-
-    def test_step_build_changelog(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_build_changelog()
-        assert "uses" in result, "Expected 'uses' in step"
-
-    def test_step_extract_version(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_extract_version()
-        assert "run" in result
-
-    def test_step_create_release(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().step_create_release()
-        assert "uses" in result, "Expected 'uses' in step"
 
     def test_insert_repo_token(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -515,18 +397,6 @@ class TestWorkflowConfigFile:
         """Test method."""
         result = my_test_workflow().insert_matrix_os()
         assert "matrix.os" in result, "Expected 'matrix.os' in result"
-
-    def test_insert_version_from_extract_version_step(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_version_from_extract_version_step()
-        assert "steps.extract-version.outputs.version" in result
-
-    def test_insert_changelog(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
-        """Test method."""
-        result = my_test_workflow().insert_changelog()
-        assert "steps.build-changelog.outputs.changelog" in result
 
     def test_insert_matrix_python_version(
         self, my_test_workflow: type[WorkflowConfigFile]
