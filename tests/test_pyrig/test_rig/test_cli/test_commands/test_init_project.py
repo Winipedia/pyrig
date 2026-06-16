@@ -131,8 +131,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         package_dir = src_project_dir / "src" / "src_project"
         assert package_dir.exists()
 
-        # assert package dir is empty except for __init__.py
-        package_files = set(package_dir.glob("*"))
+        package_files = {p for p in package_dir.glob("*") if p.name != "__pycache__"}
         assert package_files == {
             package_dir / "__init__.py",
             package_dir / "py.typed",
