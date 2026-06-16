@@ -76,7 +76,7 @@ class TestHealthCheckWorkflowConfigFile:
         result = my_test_health_check_workflow().job_health_check()
         assert len(result) == 1, "Expected job to have one key"
         job_name = next(iter(result.keys()))
-        assert "steps" not in result[job_name]
+        assert "steps" in result[job_name]
         assert "needs" in result[job_name]
 
     def test_steps_matrix_health_checks(
