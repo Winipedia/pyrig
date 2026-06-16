@@ -139,7 +139,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """Build a step that creates a version tag.
 
         Creates a tag named ``<version>`` (e.g. ``1.2.3``).  The version
-        string is resolved at runtime via :meth:`insert_version`.
+        string is resolved at runtime via :meth:`shell_insert_version`.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -149,7 +149,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             step_func=self.step_create_tag,
-            run=str(VersionController.I.tag_args(tag=self.insert_version())),
+            run=str(VersionController.I.tag_args(tag=self.shell_insert_version())),
             step=step,
         )
 
@@ -169,7 +169,9 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             step_func=self.step_push_tag,
             run=str(
-                VersionController.I.push_origin_tag_args(tag=self.insert_version())
+                VersionController.I.push_origin_tag_args(
+                    tag=self.shell_insert_version()
+                )
             ),
             step=step,
         )
@@ -181,7 +183,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that writes the current version to ``GITHUB_OUTPUT``.
 
-        Evaluates :meth:`insert_version` (``$(uv version --short)``) at
+        Evaluates :meth:`shell_insert_version` (``$(uv version --short)``) at
         runtime and appends ``version=<x.y.z>`` to the ``$GITHUB_OUTPUT``
         file.  Downstream steps can reference the value via
         :meth:`insert_version_from_extract_version_step`.
@@ -194,7 +196,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return self.step(
             step_func=self.step_extract_version,
-            run=f'echo "version={self.insert_version()}" >> $GITHUB_OUTPUT',
+            run=f'echo "version={self.shell_insert_version()}" >> $GITHUB_OUTPUT',
             step=step,
         )
 
@@ -264,7 +266,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             ``steps.extract-version.outputs.version``.
         """
         # make dynamic with self.make_id_from_func(self.step_extract_version)
-        return self.insert_var(
+        return self.insert_expression(
             f"steps.{self.make_id_from_func(self.step_extract_version)}.outputs.version"
         )
 
@@ -278,7 +280,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             GitHub Actions expression for
             ``steps.build-changelog.outputs.changelog``.
         """
-        return self.insert_var(
+        return self.insert_expression(
             f"steps.{self.make_id_from_func(self.step_build_changelog)}.outputs.changelog"
         )
 
@@ -289,7 +291,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             GitHub Actions expression checking
             ``github.event.workflow_run.event != 'schedule'``.
         """
-        return self.insert_var("github.event.workflow_run.event != 'schedule'")
+        return self.insert_expression("github.event.workflow_run.event != 'schedule'")
 
     def if_workflow_run_is_success_and_not_cron_triggered(self) -> str:
         """Build a condition true for a successful, non-scheduled workflow run.
