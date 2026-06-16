@@ -11,7 +11,6 @@ from pyrig.core.strings import (
     make_linked_badge_markdown,
 )
 from pyrig.rig import resources
-from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.remote import (
@@ -28,23 +27,11 @@ class LicenseConfigFile(StringConfigFile):
     owner derived from git. The file is placed at the project root with no
     extension.
 
-    Uses ``Priority.HIGH`` so the LICENSE file is created before
-    ``PyprojectConfigFile``, which reads the license text to auto-detect the
-    SPDX identifier for ``pyproject.toml``.
+    The LICENSE file must be created before ``PyprojectConfigFile``, which reads
+    the license text to auto-detect the SPDX identifier for ``pyproject.toml``.
+    This file keeps the default priority; ``PyprojectConfigFile`` enforces the
+    ordering by setting its own priority one step below this file's.
     """
-
-    def priority(self) -> float:
-        """Return ``Priority.HIGH`` to ensure early creation.
-
-        The LICENSE file must exist before ``PyprojectConfigFile`` is
-        validated, because ``PyprojectConfigFile.detect_project_license``
-        reads the LICENSE content to determine the SPDX identifier written
-        into ``pyproject.toml``.
-
-        Returns:
-            ``Priority.HIGH``
-        """
-        return Priority.HIGH
 
     def stem(self) -> str:
         """Return ``'LICENSE'``."""

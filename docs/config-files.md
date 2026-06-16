@@ -40,8 +40,9 @@ the abstract members:
 Optional overrides tune behavior:
 
 - **`priority()`** — Controls validation order. Higher values are validated
-earlier. Uses `Priority` constants: `DEFAULT` (0), `LOW` (10), `MEDIUM` (20),
-`HIGH` (30) or just any float or int.
+earlier. Defaults to `Priority.DEFAULT` (0); use `Priority.increase()` /
+`Priority.decrease()` to position a file relative to another's priority, or
+return any float or int.
 - **`version_control_ignored()`** — Marks files that should not be tracked by
 git (defaults to `False`).
 

@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from pyrig.rig.configs.license import LicenseConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 
 
 class TestLicenseConfigFile:
@@ -25,11 +24,6 @@ class TestLicenseConfigFile:
             result
             == "[![License](https://img.shields.io/github/license/Winipedia/pyrig)](https://github.com/Winipedia/pyrig/blob/main/LICENSE)"
         )
-
-    def test_priority(self) -> None:
-        """Test method."""
-        # assert is bigger than PyprojectConfigFile
-        assert LicenseConfigFile.I.priority() > PyprojectConfigFile.I.priority()
 
     def test_is_correct(self) -> None:
         """Test method."""
