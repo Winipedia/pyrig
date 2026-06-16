@@ -902,6 +902,3 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.insert_expression(
             "github.event.workflow_run.conclusion == 'success'"
         )
-
-    def insert_var(self, var: str) -> str:  # noqa: D102
-        return self.insert_expression(var)
