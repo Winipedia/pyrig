@@ -114,7 +114,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             job_func=self.job_health_check,
             needs=[health_checks_job_id, matrix_health_checks_job_id],
-            steps=self.steps_aggregate_jobs(),
+            steps=None,  # self.steps_aggregate_jobs(),
         )
 
     def job_matrix_health_checks(self) -> ConfigDict:

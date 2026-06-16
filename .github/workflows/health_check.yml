@@ -93,7 +93,3 @@ jobs:
     - health-checks
     - matrix-health-checks
     runs-on: ubuntu-latest
-    steps:
-    - name: Aggregate Jobs
-      id: aggregate-jobs
-      run: echo 'Aggregating jobs into one job.'
