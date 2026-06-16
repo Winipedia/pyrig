@@ -36,12 +36,12 @@ to share some common fixtures for their test suites.
 The fixtures package is organised by purpose. Any `.py` file placed anywhere
 inside `<package>/rig/tests/fixtures/` (at any depth) is picked up automatically.
 
-pyrig itself ships two fixture modules:
-
-- **`fixtures.py`** — general-purpose shared fixtures used across the whole
-  ecosystem.
-- **`autouse/session.py`** — session-scoped autouse fixtures that enforce
-  project health on every test run.
+pyrig ships a set of general-purpose fixtures of its own, organised by topic
+into modules within this package. It also ships session-scoped autouse fixtures
+in `autouse/session.py` that run on every test session to enforce project
+health — verifying that every source module is mirror-tested, that all
+version-controlled config files are correct, that there are no namespace
+packages, and that no dev dependencies leak into source code.
 
 Downstream projects follow the same structure. A project can add fixtures
 either at the top level of its fixtures package or in subdirectories
