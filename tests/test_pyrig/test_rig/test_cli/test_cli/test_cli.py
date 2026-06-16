@@ -106,9 +106,9 @@ class TestCLI:
         app = CLI.I.base_app()
         CLI.I.register_subcommands(app)
         project_name_mock.assert_called_once()
-        # check that mkroot is in the app commands
+        # check that the expected commands are registered in the app
         commands = {cmd.callback.__name__ for cmd in app.registered_commands}
-        assert {"mkroot", "mkcmd", "mktests"}.issubset(commands)
+        assert {"sync", "mkcmd"}.issubset(commands)
 
         # a fresh app whose subcommands module fails to import gets no commands
         app = CLI.I.base_app()

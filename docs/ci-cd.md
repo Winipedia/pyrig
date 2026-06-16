@@ -2,7 +2,7 @@
 
 pyrig generates and manages a complete three-stage GitHub Actions pipeline.
 The workflows are produced as `ConfigFile` subclasses, so they are kept correct
-automatically by `pyrig mkroot` and validated on every test run just like any other
+automatically by `pyrig sync` and validated on every test run just like any other
 managed file.
 
 ---
@@ -112,4 +112,4 @@ base class provides composable helpers for all common patterns (matrix
 strategies, step builders, trigger constructors) so custom workflows stay
 concise and consistent with the generated ones.
 
-Run `pyrig mkroot` after any change to regenerate the workflow files.
+Run `pyrig sync` after any change to regenerate the workflow files.

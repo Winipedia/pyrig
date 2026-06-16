@@ -183,5 +183,5 @@ followed by Release workflow and Deploy workflow
 Start coding under the `src/my_project/` directory.
 
 Add commands to your CLI with `pyrig mkcmd` and start building your project!
-Generate test skeletons with `pyrig mktests` and watch your CI/CD pipeline
+Generate test skeletons with `pyrig sync` and watch your CI/CD pipeline
 run on every push.

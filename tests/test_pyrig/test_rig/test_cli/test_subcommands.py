@@ -6,53 +6,31 @@ from typing import Any
 from pyrig.rig.cli import subcommands
 from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.commands.make_fixture import make_fixture
-from pyrig.rig.cli.commands.make_inits import make_init_files
-from pyrig.rig.cli.commands.make_root import make_project_root
 from pyrig.rig.cli.commands.make_subclass import make_subclass
 from pyrig.rig.cli.commands.make_subcommand import make_subcommand
-from pyrig.rig.cli.commands.make_tests import make_tests
 from pyrig.rig.cli.commands.protect_repo import protect_repository
 from pyrig.rig.cli.commands.remove_pycache import remove_pycache
 from pyrig.rig.cli.commands.scratch import run_scratch_file
+from pyrig.rig.cli.commands.synchronize import synchronize_project
 from pyrig.rig.cli.subcommands import (
     init,
     mkcmd,
     mkfixture,
-    mkinits,
-    mkroot,
-    mktests,
     protect_repo,
     rmpyc,
     scratch,
     subcls,
+    sync,
 )
 
 
-def test_mkroot(
+def test_sync(
     command_works: Callable[[Callable[..., Any]], None],
     command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
 ) -> None:
     """Test function."""
-    command_works(mkroot)
-    command_calls_function(mkroot, make_project_root)
-
-
-def test_mktests(
-    command_works: Callable[[Callable[..., Any]], None],
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
-) -> None:
-    """Test function."""
-    command_works(mktests)
-    command_calls_function(mktests, make_tests)
-
-
-def test_mkinits(
-    command_works: Callable[[Callable[..., Any]], None],
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
-) -> None:
-    """Test function."""
-    command_works(mkinits)
-    command_calls_function(mkinits, make_init_files)
+    command_works(sync)
+    command_calls_function(sync, synchronize_project)
 
 
 def test_init(

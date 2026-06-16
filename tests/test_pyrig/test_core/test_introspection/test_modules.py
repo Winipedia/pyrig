@@ -157,8 +157,7 @@ def test_leaf_module_name() -> None:
 def test_callable_obj_import_path() -> None:
     """Test function."""
     assert (
-        callable_obj_import_path(subcommands.mkroot)
-        == "pyrig.rig.cli.subcommands.mkroot"
+        callable_obj_import_path(subcommands.sync) == "pyrig.rig.cli.subcommands.sync"
     )
 
 

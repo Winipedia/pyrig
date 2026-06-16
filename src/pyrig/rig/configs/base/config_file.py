@@ -15,7 +15,7 @@ from pyrig.core.iterate import (
     nested_structure_is_subset,
 )
 from pyrig.rig import configs
-from pyrig.rig.cli.subcommands import mkroot
+from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
@@ -194,7 +194,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         Discovers all concrete subclasses across all installed dependents
         and delegates to ``validate_subclasses()`` to validate them in
         priority order. This is the main entry point called by the
-        ``mkroot`` CLI command.
+        ``sync`` CLI command.
         """
         cls.validate_subclasses(cls.concrete_subclasses())
 
@@ -330,7 +330,7 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
         if not self.is_correct():
             msg = f"""Failed to validate {self} after merging and dumping configs.
 Please check the file for issues and fix manually if needed.
-You can delete the file and use {Pyrigger.I.cmd_args(cmd=mkroot)} to recreate it."""
+You can delete the file and use {Pyrigger.I.cmd_args(cmd=sync)} to recreate it."""
             raise RuntimeError(msg)
 
     def create_file(self) -> None:

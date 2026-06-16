@@ -21,7 +21,7 @@ from pyrig.core.requests import internet_is_available
 from pyrig.core.strings import (
     make_summary_error_msg,
 )
-from pyrig.rig.cli.subcommands import mkinits, mkroot, mktests
+from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -58,7 +58,7 @@ def all_config_files_correct() -> None:
 
     msg = f"""Found incorrect {ConfigFile.__name__}s.
 Please run the following command to fix any incorrect config files:
-    '{Pyrigger.I.cmd_args(cmd=mkroot)}'
+    '{Pyrigger.I.cmd_args(cmd=sync)}'
 
 {make_summary_error_msg(cf().path() for cf in incorrect_config_files)}
 """
@@ -86,7 +86,7 @@ def no_namespace_packages() -> None:
 Namespace packages are packages that do not have an __init__.py file.
 All packages should have an __init__.py file to ensure predictable package discovery.
 Please run the following command to create __init__.py files for any namespace packages:
-    '{Pyrigger.I.cmd_args(cmd=mkinits)}'
+    '{Pyrigger.I.cmd_args(cmd=sync)}'
 
 {make_summary_error_msg(package_name_as_root_path(package_name) / "__init__.py" for package_name in namespace_packages)}
 """  # noqa: E501
@@ -116,7 +116,7 @@ def all_modules_tested() -> None:
 It is enforced that all source code has a corresponding mirrored test.
 
 Please run the following command to generate test skeletons for any missing tests:
-    '{Pyrigger.I.cmd_args(cmd=mktests)}'
+    '{Pyrigger.I.cmd_args(cmd=sync)}'
 
 {make_summary_error_msg(sc().path() for sc in incorrect_subclasses)}
 """

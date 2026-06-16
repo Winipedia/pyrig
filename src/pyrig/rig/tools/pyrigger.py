@@ -18,7 +18,7 @@ from pyrig.core.strings import (
     snake_to_kebab_case,
 )
 from pyrig.core.subprocesses import Args
-from pyrig.rig.cli.subcommands import mkroot, mktests
+from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.hook_manager import (
@@ -147,9 +147,8 @@ class Pyrigger(Tool):
                 *Tool.subclasses_dev_dependencies()
             ),
             "Installing dependencies": PackageManager.I.install_dependencies_args(),
-            "Creating project root": self.cmd_args(cmd=mkroot),
+            "Syncing project": self.cmd_args(cmd=sync),
             "Installing project": PackageManager.I.install_dependencies_args(),
-            "Creating tests": self.cmd_args(cmd=mktests),
             "Installing version control hooks": (
                 VersionControlHookManager.I.install_args()
             ),

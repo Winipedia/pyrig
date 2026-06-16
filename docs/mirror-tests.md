@@ -72,7 +72,7 @@ Unlike most `ConfigFile` subclasses, which are written by hand for a specific fi
 Instead, `MirrorTestConfigFile` dynamically generates one subclass per source module
 at runtime.
 
-When `mktests` asks for all concrete subclasses during validation, the system:
+When `sync` asks for all concrete subclasses during validation, the system:
 
 1. Enumerates every module in the project's source package via `discover_modules`.
 2. Generates dynamically a subclass for each one using `type()`, wiring
@@ -91,12 +91,12 @@ of the source package. No registration, no manifest, no manual bookkeeping.
 The mirror test system is itself overridable via the standard `RigDependencySubclass`
 mechanism. A downstream project can subclass `MirrorTestConfigFile` to change
 naming conventions, adjust what counts as "tested", or customise the skeleton
-format. The `mktests` command and the `all_modules_tested` fixture both use
+format. The `sync` command and the `all_modules_tested` fixture both use
 `MirrorTestConfigFile.L` — the leaf subclass — so a downstream override is picked
 up automatically everywhere the system is used.
 
-The `mktests` command is the recommended way to trigger generation:
+The `sync` command is the recommended way to trigger generation:
 
 ```text
-uv run pyrig mktests
+uv run pyrig sync
 ```

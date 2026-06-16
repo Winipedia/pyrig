@@ -19,12 +19,11 @@ def init() -> None:
         1.  git init            (initialize version control)
         2.  uv add --group dev  (adds all tool dev dependencies)
         3.  uv sync             (install all dependencies)
-        4.  pyrig mkroot        (generate all config files and project structure)
+        4.  pyrig sync          (generate config files, inits, and test skeletons)
         5.  uv sync             (re-install to apply updated pyproject.toml)
-        6.  pyrig mktests       (generate test skeletons)
-        7.  prek install        (install pre-commit hooks)
-        8.  git add .           (stage all files for commit)
-        9.  git commit          (initial commit)
+        6.  prek install        (install pre-commit hooks)
+        7.  git add .           (stage all files for commit)
+        8.  git commit          (initial commit)
 
     Each step runs sequentially and is tracked with a progress bar.
     The process stops immediately if any step fails.
@@ -40,56 +39,29 @@ def init() -> None:
     init_project()
 
 
-def mkroot() -> None:
-    """Create or update all managed project configuration files.
+def sync() -> None:
+    """Reconcile all pyrig-managed project structure into its correct state.
 
-    Discovers every concrete `ConfigFile` subclass registered in the project
-    and its installed pyrig dependencies, then validates each one in priority order.
-    Missing files are created (including parent directories); existing files are
-    updated only when their content is not correct. User customisations are
-    preserved wherever possible.
+    Runs the three idempotent structural fixups in order, bringing the project
+    into the exact state pyrig's autouse conformance checks require:
 
-    Managed files are all the concrete subclasses of `ConfigFile`
-    across all installed projects that depend on pyrig.
+        1. Create any missing `__init__.py` files, so every directory is a
+           proper package (satisfies the `no_namespace_packages` check).
+        2. Create or update every managed `ConfigFile` — discovered across the
+           project and its installed pyrig dependencies and validated in
+           priority order (satisfies the `all_config_files_correct` check).
+        3. Generate mirror test skeletons for all source modules, adding
+           `NotImplementedError` stubs for any untested function, class, or
+           method (satisfies the `all_modules_tested` check).
 
-    Idempotent: safe to run multiple times. Re-run after adding a new pyrig
-    dependency to pick up the config files it contributes.
+    Every step preserves existing user content and only adds what is missing or
+    corrects what is wrong, so this command is idempotent and safe to run
+    repeatedly. Run it after adding source code, pulling changes, or adding a
+    new pyrig dependency to bring the project back into a fully conformant state.
     """
-    from pyrig.rig.cli.commands.make_root import make_project_root  # noqa: PLC0415
+    from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
 
-    make_project_root()
-
-
-def mktests() -> None:
-    """Generate mirror test skeletons for all source modules.
-
-    Scans the project's source package and writes test files that mirror the
-    source structure. For each class, function, and method that does not
-    already have a test, the generator adds the appropriate test skeleton:
-    test classes for classes, and `NotImplementedError` stubs for functions
-    and methods.
-
-    Existing test implementations are never overwritten — only new stubs are
-    added. This command is idempotent and safe to run multiple times.
-    Run it after refactors, moving files around, or adding new source code to
-    ensure all new code has corresponding tests.
-    """
-    from pyrig.rig.cli.commands.make_tests import make_tests  # noqa: PLC0415
-
-    make_tests()
-
-
-def mkinits() -> None:
-    """Create `__init__.py` files for all namespace packages in the project.
-
-    Scans the src and tests package roots for any directories that do not yet contain an
-    `__init__.py` file, then creates one with minimal content.
-    Existing `__init__.py` files are left untouched; only missing ones are created.
-    This command is idempotent and safe to run multiple times.
-    """
-    from pyrig.rig.cli.commands.make_inits import make_init_files  # noqa: PLC0415
-
-    make_init_files()
+    synchronize_project()
 
 
 def protect_repo() -> None:
