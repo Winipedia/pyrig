@@ -49,6 +49,16 @@ def my_test_workflow(
 class TestWorkflowConfigFile:
     """Test class."""
 
+    def test_insert_var(self) -> None:
+        """Test method."""
+
+    def test_shell_insert_expression(self) -> None:
+        """Test method."""
+        assert (
+            HealthCheckWorkflowConfigFile.I.shell_insert_expression("something")
+            == "$(something)"
+        )
+
     def test_repo_token_var(self) -> None:
         """Test method."""
         assert HealthCheckWorkflowConfigFile.I.repo_token_var() == "secrets.REPO_TOKEN"
@@ -73,10 +83,12 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().step_update_dependencies()
         assert "run" in result, f"Expected 'run' in step, got {result}"
 
-    def test_insert_var(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_insert_expression(
+        self, my_test_workflow: type[WorkflowConfigFile]
+    ) -> None:
         """Test method."""
         condition = "condition"
-        result = my_test_workflow().insert_var(condition)
+        result = my_test_workflow().insert_expression(condition)
         expected = "${{ condition }}"
         assert result == expected, f"Expected '{expected}', got {result}"
 
@@ -84,7 +96,7 @@ class TestWorkflowConfigFile:
         """Test method."""
         conditions = ["condition1", "condition2"]
         conditions = [
-            my_test_workflow().insert_var(condition) for condition in conditions
+            my_test_workflow().insert_expression(condition) for condition in conditions
         ]
         result = my_test_workflow().combined_if(*conditions, operator="&&")
         expected = "${{ condition1 && condition2 }}"
@@ -378,9 +390,11 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().insert_repo_token()
         assert result == "${{ secrets.REPO_TOKEN }}"
 
-    def test_insert_version(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
+    def test_shell_insert_version(
+        self, my_test_workflow: type[WorkflowConfigFile]
+    ) -> None:
         """Test method."""
-        result = my_test_workflow().insert_version()
+        result = my_test_workflow().shell_insert_version()
         assert "uv version" in result, "Expected 'uv version' in result"
         assert not result.startswith("v"), "Expected no 'v' prefix in result"
 

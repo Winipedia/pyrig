@@ -797,10 +797,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             GitHub Actions expression for the ``REPO_TOKEN`` secret.
         """
-        return self.insert_var(self.repo_token_var())
+        return self.insert_expression(self.repo_token_var())
 
-    def insert_version(self) -> str:
-        """Build the shell expression that resolves to the bare project version.
+    def shell_insert_version(self) -> str:
+        """Build a shell command substitution for the project version.
 
         Evaluates ``uv version --short`` in a subshell, yielding the
         PEP 440 version string without any prefix (e.g. ``1.2.3``) at workflow
@@ -809,9 +809,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
         toolchain (uv, ruff) where tags carry no ``v`` prefix.
 
         Returns:
-            Shell expression string, e.g. ``"$(uv version --short)"``.
+            Shell command substitution string, e.g. ``"$(uv version --short)"``.
+            This syntax only works in shell contexts, not in GitHub Actions
+            expressions.
         """
-        return f"$({PackageManager.I.version_short_args()})"
+        return self.shell_insert_expression(str(PackageManager.I.version_short_args()))
 
     def insert_github_token(self) -> str:
         """Get the ``${{ secrets.GITHUB_TOKEN }}`` expression.
@@ -820,7 +822,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             GitHub Actions expression for the automatic ``GITHUB_TOKEN``
             secret.
         """
-        return self.insert_var(self.github_token_var())
+        return self.insert_expression(self.github_token_var())
 
     def insert_matrix_os(self) -> str:
         """Get the expression that resolves to the current matrix OS value.
@@ -828,7 +830,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             GitHub Actions expression for ``matrix.os``.
         """
-        return self.insert_var("matrix.os")
+        return self.insert_expression("matrix.os")
 
     def insert_matrix_python_version(self) -> str:
         """Get the expression that resolves to the current matrix Python version.
@@ -836,12 +838,26 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             GitHub Actions expression for ``matrix.python-version``.
         """
-        return self.insert_var("matrix.python-version")
+        return self.insert_expression("matrix.python-version")
 
-    def insert_var(self, var: str) -> str:
+    def shell_insert_expression(self, var: str) -> str:
+        """Wrap an expression in shell command substitution ``$( ... )`` syntax.
+
+        This is the primitive used by all shell ``shell_insert_*`` methods.
+
+        Args:
+            var: The raw expression to wrap (e.g. ``"uv version --short"``).
+
+        Returns:
+            The expression surrounded by ``$( )`` delimiters, e.g.
+            ``"$(uv version --short)"``.
+        """
+        return f"$({var})"
+
+    def insert_expression(self, var: str) -> str:
         """Wrap an expression in GitHub Actions ``${{ ... }}`` syntax.
 
-        This is the primitive used by all ``insert_*`` methods.
+        This is the primitive used by all GitHub Actions ``insert_*`` methods.
 
         Args:
             var: The raw expression to wrap
@@ -874,7 +890,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             condition.strip().removeprefix("${{").removesuffix("}}").strip()
             for condition in conditions
         ]
-        return self.insert_var(f" {operator} ".join(bare_conditions))
+        return self.insert_expression(f" {operator} ".join(bare_conditions))
 
     def if_workflow_run_is_success(self) -> str:
         """Build a condition that is true when the triggering workflow run succeeded.
@@ -883,4 +899,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
             GitHub Actions expression checking
             ``github.event.workflow_run.conclusion == 'success'``.
         """
-        return self.insert_var("github.event.workflow_run.conclusion == 'success'")
+        return self.insert_expression(
+            "github.event.workflow_run.conclusion == 'success'"
+        )
+
+    def insert_var(self, var: str) -> str:  # noqa: D102
+        return self.insert_expression(var)
