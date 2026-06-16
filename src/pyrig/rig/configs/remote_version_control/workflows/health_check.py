@@ -2,8 +2,19 @@
 
 from typing import Any, Literal
 
+from pyrig.rig.cli.subcommands import protect_repo
 from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
+from pyrig.rig.tools.dependency_auditor import DependencyAuditor
+from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.version_control.hook_manager import (
+    VersionControlHookManager,
+)
+from pyrig.rig.tools.version_control.remote import (
+    RemoteVersionController,
+)
 
 
 class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
@@ -177,3 +188,119 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_run_dependency_audit(),
             self.step_protect_repository(),
         ]
+
+    def step_run_tests(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that runs the test suite with pytest.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that executes pytest with CI-appropriate flags.
+        """
+        if step is None:
+            step = {}
+        run = str(PackageManager.I.run_args(*ProjectTester.I.test_args()))
+        return self.step(
+            step_func=self.step_run_tests,
+            run=run,
+            step=step,
+        )
+
+    def step_run_pre_commit_hooks(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that runs all pre-commit hooks via prek.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs the pre-commit hooks.
+        """
+        return self.step(
+            step_func=self.step_run_pre_commit_hooks,
+            run=str(
+                PackageManager.I.run_args(
+                    *VersionControlHookManager.I.run_all_files_stage_pre_commit_args()
+                )
+            ),
+            step=step,
+        )
+
+    def step_run_dependency_audit(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that audits dependencies for known vulnerabilities.
+
+        Runs ``pip-audit`` via uv against the installed environment to detect
+        CVEs in direct and transitive dependencies.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs ``uv run pip-audit``.
+        """
+        return self.step(
+            step_func=self.step_run_dependency_audit,
+            run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
+            step=step,
+        )
+
+    def step_protect_repository(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that applies repository protection rules.
+
+        Runs ``pyrig protect-repo`` via uv with the ``REPO_TOKEN`` secret,
+        which configures GitHub branch protection and other repository settings
+        defined in ``branch-protection.json``.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs the protect-repo command with ``REPO_TOKEN``
+            injected as an environment variable.
+        """
+        return self.step(
+            step_func=self.step_protect_repository,
+            run=str(PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=protect_repo))),
+            env={
+                RemoteVersionController.I.access_token_key(): self.insert_repo_token()
+            },
+            step=step,
+        )
+
+    def step_aggregate_jobs(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a fan-in step used to aggregate matrix job results.
+
+        Downstream jobs declare a ``needs`` dependency on the job that contains
+        this step, ensuring all matrix runners have finished before continuing.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that echoes an aggregation message.
+        """
+        return self.step(
+            step_func=self.step_aggregate_jobs,
+            run="echo 'Aggregating jobs into one job.'",
+            step=step,
+        )

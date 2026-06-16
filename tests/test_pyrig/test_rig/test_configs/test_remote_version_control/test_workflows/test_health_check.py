@@ -92,3 +92,47 @@ class TestHealthCheckWorkflowConfigFile:
         """Test method."""
         result = my_test_health_check_workflow().steps_aggregate_jobs()
         assert len(result) > 0, "Expected steps to be non-empty"
+
+    def test_step_run_tests(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
+    ) -> None:
+        """Test method."""
+        step = my_test_health_check_workflow().step_run_tests()
+        assert "run" in step
+        step = my_test_health_check_workflow().step_run_tests(step={})
+        assert "run" in step
+
+        assert "env" not in step
+
+        health_check_step = HealthCheckWorkflowConfigFile.I.step_run_tests()
+        expected = {"REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"}  # nosec: B105
+        assert health_check_step["env"] == expected
+
+    def test_step_run_pre_commit_hooks(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
+    ) -> None:
+        """Test method."""
+        result = my_test_health_check_workflow().step_run_pre_commit_hooks()
+        assert "run" in result
+
+    def test_step_run_dependency_audit(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
+    ) -> None:
+        """Test method."""
+        result = my_test_health_check_workflow().step_run_dependency_audit()
+        assert "run" in result, f"Expected 'run' in step, got {result}"
+
+    def test_step_protect_repository(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
+    ) -> None:
+        """Test method."""
+        result = my_test_health_check_workflow().step_protect_repository()
+        assert "env" in result, "Expected 'env' in step"
+
+    def test_step_aggregate_jobs(
+        self, my_test_health_check_workflow: type[HealthCheckWorkflowConfigFile]
+    ) -> None:
+        """Test method."""
+        result = my_test_health_check_workflow().step_aggregate_jobs()
+        assert "name" in result, "Expected 'name' in step"
+        assert "run" in result

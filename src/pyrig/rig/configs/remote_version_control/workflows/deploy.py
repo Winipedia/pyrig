@@ -12,6 +12,8 @@ from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.configs.remote_version_control.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
+from pyrig.rig.tools.docs_builder import DocsBuilder
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 class DeployWorkflowConfigFile(WorkflowConfigFile):
@@ -120,3 +122,105 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             self.step_upload_documentation(),
             self.step_deploy_documentation(),
         ]
+
+    def step_build_documentation(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that generates the MkDocs documentation site.
+
+        Runs the docs builder command, which invokes ``mkdocs build`` and
+        writes the rendered HTML site to the ``site/`` directory.  The
+        ``site/`` directory is then consumed by the subsequent
+        :meth:`step_upload_documentation` step.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs the docs builder command.
+        """
+        return self.step(
+            step_func=self.step_build_documentation,
+            run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
+            step=step,
+        )
+
+    def step_configure_pages(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that enables GitHub Pages for the repository.
+
+        Calls ``actions/configure-pages`` with ``enablement: true``.  This is
+        idempotent -- running it on a repository where Pages is already enabled
+        has no effect.
+
+        Authenticates with ``REPO_TOKEN`` rather than the automatic
+        ``GITHUB_TOKEN``: enabling Pages calls ``POST /repos/{owner}/{repo}/pages``.
+        A fine-grained PAT reaches that endpoint with ``pages: write`` alone, but
+        for an installation token like ``GITHUB_TOKEN`` the same call also requires
+        ``administration: write`` -- a scope the automatic token can never hold --
+        so it would fail with ``Resource not accessible by integration``.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that enables GitHub Pages using ``REPO_TOKEN``.
+        """
+        return self.step(
+            step_func=self.step_configure_pages,
+            uses="actions/configure-pages@main",
+            with_={"token": self.insert_repo_token(), "enablement": "true"},
+            step=step,
+        )
+
+    def step_upload_documentation(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that uploads the documentation as a Pages artifact.
+
+        Uploads the ``site/`` directory produced by
+        :meth:`step_build_documentation` so that the Pages deployment step
+        can publish it.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step using ``actions/upload-pages-artifact@main``.
+        """
+        return self.step(
+            step_func=self.step_upload_documentation,
+            uses="actions/upload-pages-artifact@main",
+            with_={"path": "site"},
+            step=step,
+        )
+
+    def step_deploy_documentation(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
+
+        Must be preceded by :meth:`step_upload_documentation`.  The job that
+        contains this step must have ``pages: write`` and
+        ``id-token: write`` permissions.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step using ``actions/deploy-pages@main``.
+        """
+        return self.step(
+            step_func=self.step_deploy_documentation,
+            uses="actions/deploy-pages@main",
+            step=step,
+        )

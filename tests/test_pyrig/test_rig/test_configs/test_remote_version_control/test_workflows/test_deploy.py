@@ -46,3 +46,23 @@ class TestDeployWorkflowConfigFile:
         """Test method."""
         result = DeployWorkflowConfigFile.I.jobs()
         assert len(result) > 0
+
+    def test_step_build_documentation(self) -> None:
+        """Test method."""
+        result = DeployWorkflowConfigFile.I.step_build_documentation()
+        assert "run" in result, f"Expected 'run' in step, got {result}"
+
+    def test_step_configure_pages(self) -> None:
+        """Test method."""
+        result = DeployWorkflowConfigFile.I.step_configure_pages()
+        assert "uses" in result, f"Expected 'uses' in step, got {result}"
+
+    def test_step_upload_documentation(self) -> None:
+        """Test method."""
+        result = DeployWorkflowConfigFile.I.step_upload_documentation()
+        assert "uses" in result, f"Expected 'uses' in step, got {result}"
+
+    def test_step_deploy_documentation(self) -> None:
+        """Test method."""
+        result = DeployWorkflowConfigFile.I.step_deploy_documentation()
+        assert "uses" in result, f"Expected 'uses' in step, got {result}"
