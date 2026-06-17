@@ -6,14 +6,12 @@ import pytest
 from pytest_mock import MockerFixture
 
 from pyrig.core.introspection.inspection import unwrapped_obj
-from pyrig.core.requests import internet_is_available
 from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.tests import fixtures
 from pyrig.rig.tests.fixtures.autouse import session
 from pyrig.rig.tests.fixtures.autouse.session import (
     all_config_files_correct,
     all_modules_tested,
-    no_dev_deps_in_source_code,
     no_namespace_packages,
 )
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
@@ -75,21 +73,3 @@ def test_all_modules_tested(mocker: MockerFixture) -> None:
         unwrapped_func()
 
     incorrect_mock.assert_called_once()
-
-
-def test_no_dev_deps_in_source_code(
-    mocker: MockerFixture,
-    tmp_path_factory: pytest.TempPathFactory,
-    standard_output_error_template: str,
-) -> None:
-    """Test function."""
-    unwrapped_func = unwrapped_obj(no_dev_deps_in_source_code)
-    internet_available_mock = mocker.patch(
-        no_dev_deps_in_source_code.__module__ + "." + internet_is_available.__name__,
-        return_value=not internet_is_available(),
-    )
-    unwrapped_func(
-        tmp_path_factory=tmp_path_factory,
-        standard_output_error_template=standard_output_error_template,
-    )
-    internet_available_mock.assert_called_once()
