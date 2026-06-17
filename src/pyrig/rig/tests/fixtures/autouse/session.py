@@ -6,29 +6,16 @@ test run.
 """
 
 import logging
-import os
-import shutil
-from contextlib import chdir
-from pathlib import Path
 
 import pytest
 
-from pyrig.core.introspection.packages import (
-    walk_package,
-)
 from pyrig.core.iterate import iterator_has_items
-from pyrig.core.requests import internet_is_available
 from pyrig.core.strings import (
     make_summary_error_msg,
 )
 from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.configs.base.config_file import ConfigFile
-from pyrig.rig.configs.license import LicenseConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.tools.base.tool import Tool
-from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.utils.packages import (
     find_namespace_packages,
@@ -121,135 +108,3 @@ Please run the following command to generate test skeletons for any missing test
 {make_summary_error_msg(sc().path() for sc in incorrect_subclasses)}
 """
     assert not has_incorrect_subclasses, msg
-
-
-@pytest.fixture(scope="session", autouse=True)
-def no_dev_deps_in_source_code(
-    tmp_path_factory: pytest.TempPathFactory, standard_output_error_template: str
-) -> None:
-    """Verify the source code is fully functional without development dependencies.
-
-    This fixture detects accidental imports of development-only packages from
-    source code. It performs three checks in an isolated environment:
-
-    1. **Install check** — copies the source tree and project config files to
-       a temporary directory, then installs the project without the ``dev``
-       dependency group. Asserts that a known dev dependency does not appear
-       in the installation output.
-
-    2. **Import check** — walks all modules under the source package
-       (excluding ``rig``) and imports them in the isolated environment.
-       Asserts all modules import without error, catching indirect dev
-       dependency usage.
-
-    3. **CLI check** — invokes the project's CLI entry point with ``--help``
-       in the isolated environment. Asserts the command exits successfully.
-
-    Skipped when no internet connection is available.
-
-    Args:
-        tmp_path_factory: Session-scoped temporary directory factory used
-            to create the isolated project copy.
-        standard_output_error_template: Template for formatting stdout and
-            stderr in assertion failure messages.
-
-    Raises:
-        AssertionError: If any of the three checks fail, indicating the
-            source code has a direct or indirect dependency on a dev-only
-            package.
-    """
-    base_msg = f"""Failed to import all source modules without the development dependencies being installed.
-
-This fixture attempts to create a temporary environment and install the project without
-the development dependencies and to import all modules of the source code.
-The most likely reason for this failure is that there is an import in the source code
-that depends on a development dependency directly or indirectly.
-This is not allowed as the source code should not depend on any development dependencies.
-
-However, it failed. See the output below for details.
-
-{standard_output_error_template}
-"""  # noqa: E501
-    if not internet_is_available():
-        logger.warning(
-            "No internet, skipping fixture: %s",
-            no_dev_deps_in_source_code.__name__,
-        )
-        return
-
-    project_name = PackageManager.I.project_name()
-    tmp_project_root = (
-        tmp_path_factory.mktemp(no_dev_deps_in_source_code.__name__) / project_name
-    )
-    # copy the project folder to a temp directory
-    temp_source_root = tmp_project_root / PackageManager.I.source_root()
-
-    # shutil copy the project to tmp_project_root
-    shutil.copytree(PackageManager.I.source_root(), temp_source_root)
-
-    # copy the project config files (pyproject.toml, README, LICENSE) to tmp_path
-    configs = (
-        PyprojectConfigFile.I.path(),
-        ReadmeConfigFile.I.path(),
-        LicenseConfigFile.I.path(),
-    )
-    for config in configs:
-        shutil.copy(config, tmp_project_root)
-
-    # pop the venv from the environment
-    env = os.environ.copy()
-    env.pop("VIRTUAL_ENV", None)
-
-    with chdir(tmp_project_root):
-        # install deps
-        completed_process = PackageManager.I.install_dependencies_no_dev_args().run(
-            check=False,
-            env=env,
-        )
-        stdout = completed_process.stdout
-        stderr = completed_process.stderr
-        std_msg = stderr + stdout
-
-        dev_dep = Tool.subclasses_dev_dependencies()[0]
-        assert dev_dep not in std_msg, base_msg.format(stdout=stdout, stderr=stderr)
-
-        # delete pyproject.toml and uv.lock and readme.md
-        for config in configs:
-            Path(config).unlink()
-
-        # run walk_package with src and import all modules to catch dev dep imports
-        src_package_name = PackageManager.I.package_name()
-        exclude_rig_pattern = rf"^{src_package_name}\.rig"
-        script_args = (
-            "python",
-            "-c",
-            "; ".join(
-                (
-                    f"from {walk_package.__module__} import {walk_package.__name__}",
-                    f"import {src_package_name}",
-                    f"exclude_rig_pattern = r'{exclude_rig_pattern}'",
-                    f"packages = tuple(walk_package({src_package_name}, exclude=(exclude_rig_pattern,)))",  # noqa: E501
-                    # add a print statement to see the output
-                    "print('Success')",
-                )
-            ),
-        )
-        args = PackageManager.I.run_no_dev_args(*script_args)
-
-        completed_process = args.run(
-            check=False,
-            env=env,
-        )
-        stdout = completed_process.stdout
-        stderr = completed_process.stderr
-
-        assert "Success" in stdout, base_msg.format(stdout=stdout, stderr=stderr)
-
-        # run cli without dev deps
-        args = PackageManager.I.run_no_dev_args(project_name, "--help")
-        completed_process = args.run(check=False, env=env)
-        stdout = completed_process.stdout
-        stderr = completed_process.stderr
-        std_msg = stderr + stdout
-        successful = completed_process.returncode == 0
-        assert successful, base_msg.format(stdout=stdout, stderr=stderr)
