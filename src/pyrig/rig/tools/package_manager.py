@@ -188,20 +188,6 @@ class PackageManager(Tool):
         """
         return self.args("init", *args)
 
-    def run_no_dev_args(self, *args: str) -> Args:
-        """Construct ``Args`` for ``uv run`` with the dev dependency group excluded.
-
-        Useful for validating that the project works without dev tooling,
-        for example in a production-like smoke test.
-
-        Args:
-            *args: Command and arguments to run.
-
-        Returns:
-            Args for ``uv run --no-group dev <args...>``.
-        """
-        return self.run_args("--no-group", "dev", *args)
-
     def run_args(self, *args: str) -> Args:
         """Construct ``Args`` for ``uv run``.
 
@@ -234,20 +220,6 @@ class PackageManager(Tool):
             Args for ``uv add <args...>``.
         """
         return self.args("add", *args)
-
-    def install_dependencies_no_dev_args(self, *args: str) -> Args:
-        """Construct ``Args`` for syncing dependencies without the dev group.
-
-        Useful in containers or production environments where dev tooling
-        should not be installed.
-
-        Args:
-            *args: Additional arguments for the sync command.
-
-        Returns:
-            Args for ``uv sync --no-group dev <args...>``.
-        """
-        return self.install_dependencies_args("--no-group", "dev", *args)
 
     def install_dependencies_args(self, *args: str) -> Args:
         """Construct ``Args`` for ``uv sync``.
