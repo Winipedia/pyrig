@@ -15,7 +15,7 @@ app = typer.Typer(no_args_is_help=True, help="Scaffold new project artifacts.")
 def subcls() -> None:
     """Scaffold a subclass of any pyrig class interactively.
 
-    Launches a fuzzy-search prompt listing all `RigDependencySubclass` leaf subclasses
+    Launches a fuzzy-search prompt listing all `DependencySubclass` leaf subclasses
     found in pyrig and its dependents — both concrete classes (shown with their string
     representation) and abstract classes (shown by qualified name), sorted
     alphabetically by import path.

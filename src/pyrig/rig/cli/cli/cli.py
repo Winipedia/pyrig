@@ -1,6 +1,6 @@
 """Discoverable Typer application builder for pyrig and pyrig-based projects.
 
-Defines :class:`CLI`, a ``RigDependencySubclass`` that assembles the Typer
+Defines :class:`CLI`, a ``DependencySubclass`` that assembles the Typer
 application and registers project-specific and shared commands discovered across
 the package dependency chain. Dependent projects can subclass it to customize how
 their command-line application is built without modifying pyrig.
@@ -14,6 +14,7 @@ from types import ModuleType
 
 import typer
 
+from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.introspection.dependencies import (
     discover_equivalent_modules_across_dependents,
 )
@@ -24,10 +25,9 @@ from pyrig.core.introspection.modules import (
 )
 from pyrig.core.strings import kebab_to_snake_case
 from pyrig.rig.cli import cli, shared_subcommands, subcommands
-from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
-class CLI(RigDependencySubclass):
+class CLI(DependencySubclass):
     """Typer application builder with cross-package command discovery.
 
     Assembles the command-line application for pyrig and any pyrig-based project:
@@ -35,7 +35,7 @@ class CLI(RigDependencySubclass):
     project-specific subcommands and shared subcommands discovered across the
     dependency chain.
 
-    As a ``RigDependencySubclass``, a single leaf subclass is resolved at runtime
+    As a ``DependencySubclass``, a single leaf subclass is resolved at runtime
     (accessed via ``CLI.I``), so a dependent project may override any step of the
     build to customize its command-line application without modifying pyrig.
     """
@@ -207,10 +207,36 @@ class CLI(RigDependencySubclass):
         if subcommands_module is None:
             return
 
-        for func in module_functions(subcommands_module):
+        self.register_direct_subcommands(app=app, module=subcommands_module)
+        self.register_subcommand_groups(app=app, module=subcommands_module)
+
+    def register_direct_subcommands(self, app: typer.Typer, module: ModuleType) -> None:
+        """Register every function defined in a module as a top-level command.
+
+        Adds each function found directly in ``module`` to ``app`` as a flat
+        Typer command. Imported functions and module-level ``typer.Typer`` group
+        instances are excluded; the latter are registered separately by
+        ``register_subcommand_groups``.
+
+        Args:
+            app: The Typer app to register the commands onto.
+            module: The subcommands module to scan for command functions.
+        """
+        for func in module_functions(module):
             app.command()(func)
 
-        for name, group in self.module_typer_groups(subcommands_module).items():
+    def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
+        """Register every ``typer.Typer`` group defined in a module as a command group.
+
+        Looks up the module's ``typer.Typer`` instances via
+        ``module_subcommand_groups`` and attaches each to ``app`` under its
+        attribute name (e.g. an ``mk`` group exposing ``pyrig mk <command>``).
+
+        Args:
+            app: The Typer app to register the command groups onto.
+            module: The subcommands module to scan for group instances.
+        """
+        for name, group in self.module_subcommand_groups(module).items():
             app.add_typer(group, name=name)
 
     def register_shared_subcommands(self, app: typer.Typer) -> None:
@@ -247,7 +273,7 @@ class CLI(RigDependencySubclass):
             for sub_cmd in sub_cmds:
                 app.command()(sub_cmd)
 
-    def module_typer_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
+    def module_subcommand_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
         """Return the Typer command groups defined in a subcommands module.
 
         Scans the module's namespace for ``typer.Typer`` instances and maps each

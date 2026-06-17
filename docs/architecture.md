@@ -43,13 +43,16 @@ pyrig
       └── installed dependent B   ← B's rig/configs/** is searched automatically
 ```
 
-The `RigDependencySubclass` intermediate base pre-configures the required hook
-(`dependency_package → pyrig.rig`) so that concrete
-subsystem classes (`Tool`, `ConfigFile`) inherit discovery
-for free. The root dependency is inferred automatically from the root package of
-`dependency_package()`, so no separate `base_dependency` hook is needed.
-Further BaseSubclasses like `Tool` and `ConfigFile` override
-`dependency_package` to a more specific sub-package, so that only relevant
+`dependency_package()` is abstract: every subsystem base (`Tool`,
+`ConfigFile`, ...) must implement it to declare its own sub-package of
+`pyrig.rig`. `DependencySubclass` implements it to return `pyrig.rig`
+itself, so that discovery run directly from the base — as `pyrig mk subcls`
+does — spans the whole rig layer; subclasses can but should not not defer to that
+value via `super()`, they always should define their own sub-package.
+The root dependency is inferred automatically from the root package of
+`dependency_package()`, so no separate `base_dependency` hook is needed. `Tool`
+and `ConfigFile` implement
+`dependency_package` with a more specific sub-package, so that only relevant
 modules are imported and searched for further subclasses. This is just for discovery
 efficiency and speed — the system would work even if all subclasses were defined
 directly under `pyrig.rig`. However, it is recommended to follow the established
@@ -193,7 +196,7 @@ The generated YAML is checked into the repository and kept in sync by `pyrig syn
 
 ## How to subclass and override
 
-To subclass a `DependencySubclass` (or `RigDependencySubclass` specifically) like
+To subclass a `DependencySubclass` like
 `ConfigFile` or `Tool` it must be defined under the same package path as the
 base class from the package root, meaning a subclass defined in a module under
 `some_pyrig_project.rig.configs.some_module` must be defined under the same package

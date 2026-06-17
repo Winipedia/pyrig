@@ -10,6 +10,7 @@ from typing import Any, Self
 
 import typer
 
+from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.iterate import (
     merge_nested_structures,
     nested_structure_is_subset,
@@ -17,7 +18,6 @@ from pyrig.core.iterate import (
 from pyrig.rig import configs
 from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class Priority:
         return priority - cls.STEP
 
 
-class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
+class ConfigFile[ConfigT: ConfigData](DependencySubclass):
     """Abstract base class for declarative configuration file management.
 
     Implements an idempotent, declarative system for managing configuration
@@ -178,9 +178,9 @@ class ConfigFile[ConfigT: ConfigData](RigDependencySubclass):
     def dependency_package(cls) -> ModuleType:
         """Return the package that scopes subclass discovery for config files.
 
-        Overrides ``RigDependencySubclass.dependency_package()`` to narrow
-        the discovery namespace from ``pyrig.rig`` to ``pyrig.rig.configs``,
-        ensuring only config file implementations are found.
+        Implements the abstract ``DependencySubclass.dependency_package()`` with
+        the ``pyrig.rig.configs`` sub-package, so that only config file
+        implementations are found.
 
         Returns:
             The ``pyrig.rig.configs`` package module.

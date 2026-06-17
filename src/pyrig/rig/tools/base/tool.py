@@ -7,10 +7,10 @@ wrappers in pyrig and downstream packages must implement.
 from abc import abstractmethod
 from types import ModuleType
 
+from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
 from pyrig.rig import tools
-from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
 class Group:
@@ -28,7 +28,7 @@ class Group:
     TESTING = "testing"
 
 
-class Tool(RigDependencySubclass):
+class Tool(DependencySubclass):
     """Abstract base class for CLI tool wrappers.
 
     All tools in pyrig (linter, package manager, type checker, etc.) subclass
@@ -124,10 +124,9 @@ class Tool(RigDependencySubclass):
     def dependency_package(cls) -> ModuleType:
         """Return the ``pyrig.rig.tools`` package as the subclass discovery scope.
 
-        Overrides ``RigDependencySubclass.dependency_package`` to narrow discovery
-        from the entire ``pyrig.rig`` namespace down to ``pyrig.rig.tools``,
-        ensuring that only tool implementations are found when searching
-        dependent packages.
+        Implements the abstract ``DependencySubclass.dependency_package`` with
+        the ``pyrig.rig.tools`` sub-package, so that only tool implementations
+        are found when searching dependent packages.
 
         Returns:
             The ``pyrig.rig.tools`` module.
