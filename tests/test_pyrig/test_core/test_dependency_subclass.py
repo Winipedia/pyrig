@@ -4,6 +4,7 @@ import inspect
 
 import pytest
 
+from pyrig import rig
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -65,6 +66,7 @@ class TestDependencySubclass:
         result = ConfigFile.dependency_package()
         assert issubclass(ConfigFile, DependencySubclass)
         assert result == configs
+        assert DependencySubclass.dependency_package() is rig
 
     def test_sort_key(self) -> None:
         """Test method."""

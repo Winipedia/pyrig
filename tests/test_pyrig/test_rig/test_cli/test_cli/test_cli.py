@@ -16,6 +16,31 @@ from pyrig.rig.cli.cli.cli import CLI
 class TestCLI:
     """Test class."""
 
+    def test_register_direct_subcommands(self) -> None:
+        """Test method."""
+        # fetch the live module: other tests may re-import it into sys.modules,
+        # which would make the module-level reference stale for identity checks
+        module = import_module_with_default(subcommands_module.__name__)
+        app = CLI.I.base_app()
+        CLI.I.register_direct_subcommands(app=app, module=module)
+        commands = {cmd.callback.__name__ for cmd in app.registered_commands}
+        # functions defined directly in the module become top-level commands
+        assert {"sync"}.issubset(commands)
+        # grouped commands are not registered as flat commands
+        assert {"subcls", "cmd", "fixture"}.isdisjoint(commands)
+        # nor are the group objects themselves registered as groups
+        assert len(app.registered_groups) == 0
+
+    def test_register_subcommand_groups(self) -> None:
+        """Test method."""
+        module = import_module_with_default(subcommands_module.__name__)
+        app = CLI.I.base_app()
+        CLI.I.register_subcommand_groups(app=app, module=module)
+        groups = {group.name: group for group in app.registered_groups}
+        assert "mk" in groups
+        # only groups are registered, not flat commands
+        assert len(app.registered_commands) == 0
+
     def test_package_name(self) -> None:
         """Test method."""
         assert CLI.I.package_name() == kebab_to_snake_case(CLI.I.project_name())
@@ -138,8 +163,8 @@ class TestCLI:
         commands = {cmd.callback.__name__ for cmd in app.registered_commands}
         assert {"version"}.issubset(commands)
 
-    def test_module_typer_groups(self) -> None:
+    def test_module_subcommand_groups(self) -> None:
         """Test method."""
-        groups = CLI.I.module_typer_groups(subcommands_module)
+        groups = CLI.I.module_subcommand_groups(subcommands_module)
         assert "mk" in groups
         assert isinstance(groups["mk"], typer.Typer)

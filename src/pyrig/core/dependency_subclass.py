@@ -13,6 +13,7 @@ from functools import cache
 from types import ModuleType
 from typing import Any, Self, TypeVar
 
+from pyrig import rig
 from pyrig.core.introspection.classes import (
     classproperty,
     discard_abstract_classes,
@@ -39,8 +40,8 @@ class DependencySubclass(ABC):
     This class is the foundation of pyrig's plugin architecture. Any
     subsystem that needs to discover its implementations across installed
     dependent packages — tools, config files, builders — should inherit
-    from this class, either directly or through a shared intermediate such
-    as ``RigDependencySubclass``.
+    from this class, either directly or through a subsystem base such as
+    ``Tool`` or ``ConfigFile``.
     """
 
     def __str__(self) -> str:
@@ -65,11 +66,17 @@ class DependencySubclass(ABC):
         its ``configs`` package so that only config-related modules are
         searched across dependents.
 
-        Must be overridden by each concrete subclass.
+        Abstract: every subclass must implement it to declare its own
+        sub-package of ``pyrig.rig``. This base implementation returns
+        ``pyrig.rig`` so that discovery run directly from
+        ``DependencySubclass`` (e.g. ``DependencySubclass.subclasses()``)
+        spans the whole rig layer; subclasses can but should not defer to it via
+        ``super()``.
 
         Returns:
             Package module that contains the concrete subclass definitions.
         """
+        return rig
 
     @classmethod
     def sort_key(cls) -> Any:

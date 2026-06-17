@@ -29,11 +29,11 @@ automatically at runtime.
 
 ## The Typer App
 
-A `RigDependencySubclass` named `CLI` is defined in `pyrig.rig.cli.cli.cli`.
+A `DependencySubclass` named `CLI` is defined in `pyrig.rig.cli.cli.cli`.
 Its `app()` method builds a fully configured `typer.Typer` application that
 registers every function defined in `my_project.rig.cli.subcommands` as a command.
 Functions from `shared_subcommands` modules across all packages in the
-dependency chain are also registered. Because `CLI` is a `RigDependencySubclass`,
+dependency chain are also registered. Because `CLI` is a `DependencySubclass`,
 a dependent project can override any step of the build by subclassing it.
 
 ---

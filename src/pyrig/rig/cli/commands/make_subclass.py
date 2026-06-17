@@ -11,13 +11,12 @@ from pyrig.core.introspection.classes import (
 )
 from pyrig.core.introspection.modules import callable_obj_import_path
 from pyrig.rig.configs.base.copy_module_docstring import CopyModuleDocstringConfigFile
-from pyrig.rig.utils.dependency_subclass import RigDependencySubclass
 
 
 def make_subclass() -> None:
     """Interactively scaffold a subclass module for a selected pyrig class.
 
-    Prompts the user to pick a class from all discovered ``RigDependencySubclass``
+    Prompts the user to pick a class from all discovered ``DependencySubclass``
     subclasses, then creates (or validates) the corresponding module file in the
     current project. The file is populated with the source module's docstring and
     a ready-to-use subclass skeleton that imports and extends the chosen class.
@@ -45,7 +44,7 @@ class {class_name}(Base{class_name}):
 def choose_subclass() -> type[DependencySubclass]:
     """Present an interactive fuzzy prompt and return the chosen class.
 
-    Discovers all leaf ``RigDependencySubclass`` subclasses, formats them for display (
+    Discovers all leaf ``DependencySubclass`` subclasses, formats them for display (
         concrete classes use the string representation of an instance,
         abstract classes use their module and class name
     ), sorts them alphabetically by import path, and delegates selection to an
@@ -54,7 +53,7 @@ def choose_subclass() -> type[DependencySubclass]:
     Returns:
         The class chosen by the user.
     """
-    subclass_choices = set(RigDependencySubclass.subclasses())
+    subclass_choices = set(DependencySubclass.subclasses())
 
     concrete_subclass_choices = set(discard_abstract_classes(subclass_choices))
     abstract_subclass_choices = subclass_choices - concrete_subclass_choices
