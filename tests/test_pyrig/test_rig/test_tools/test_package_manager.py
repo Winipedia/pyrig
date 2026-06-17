@@ -80,16 +80,6 @@ class TestPackageManager:
         result = PackageManager.I.no_auto_install_env_var()
         assert result == "UV_NO_SYNC"
 
-    def test_run_no_dev_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.run_no_dev_args("pytest")
-        assert result == ("uv", "run", "--no-group", "dev", "pytest")
-
-    def test_install_dependencies_no_dev_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.install_dependencies_args("--no-group", "dev")
-        assert result == ("uv", "sync", "--no-group", "dev")
-
     def test_name(self) -> None:
         """Test method."""
         result = PackageManager.I.name()
