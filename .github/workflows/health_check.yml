@@ -78,8 +78,6 @@ jobs:
     - name: Run Tests
       id: run-tests
       run: uv run pytest
-      env:
-        REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
     - name: Upload Coverage Report
       id: upload-coverage-report
       uses: codecov/codecov-action@main
