@@ -100,7 +100,7 @@ def discover_equivalent_modules_across_dependents(
         dependency.__name__,
     )
 
-    for package in all_deps_depending_on_dep(dependency):
+    for package in deps_depending_on_dep(dependency):
         package_module_name = module.__name__.replace(
             dependency.__name__, package.__name__, 1
         )
@@ -110,7 +110,7 @@ def discover_equivalent_modules_across_dependents(
 
 
 @cache
-def all_deps_depending_on_dep(dependency: ModuleType) -> tuple[ModuleType, ...]:
+def deps_depending_on_dep(dependency: ModuleType) -> tuple[ModuleType, ...]:
     """Return all installed packages that depend on ``dependency``, as module objects.
 
     Uses the dependency graph to find every installed package that depends

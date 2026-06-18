@@ -25,6 +25,10 @@ def my_test_dotenv_config_file(
 class TestEnvConfigFile:
     """Test class."""
 
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert EnvConfigFile.I.is_correct()
+
     def test_extension_separator(self) -> None:
         """Test method."""
         assert EnvConfigFile.I.extension_separator() == ""
@@ -35,17 +39,8 @@ class TestEnvConfigFile:
 
     def test__load(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
         """Test method."""
-        # Create the .env file with some content
-        my_test_dotenv_config_file().path().parent.mkdir(parents=True, exist_ok=True)
-        my_test_dotenv_config_file().path().write_text(
-            "KEY1=value1\nKEY2=value2\nKEY3="
-        )
-
-        # Load and verify
-        loaded = my_test_dotenv_config_file().load()
-        assert loaded["KEY1"] == "value1", "Expected KEY1=value1"
-        assert loaded["KEY2"] == "value2", "Expected KEY2=value2"
-        assert loaded["KEY3"] == "", "Expected KEY3 to be empty string"
+        with pytest.raises(RuntimeError):
+            my_test_dotenv_config_file().load()
 
     def test__dump(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:
         """Test method."""
@@ -54,10 +49,8 @@ class TestEnvConfigFile:
             PermissionError,
             match=r"Dumping to .* is forbidden.",
         ):
-            my_test_dotenv_config_file().dump({"key": "value"})
+            my_test_dotenv_config_file().dump({"key": "val"})
 
-        # dump with empty dict should NOT raise RuntimeError (empty dict is falsy)
-        # This is the expected behavior based on the implementation
         my_test_dotenv_config_file().dump({})
 
     def test_extension(self, my_test_dotenv_config_file: type[EnvConfigFile]) -> None:

@@ -65,6 +65,17 @@ stages = [
 ]
 
 [[repos.hooks]]
+id = "check-dependencies"
+name = "check-dependencies"
+entry = "deptry"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-commit",
+]
+
+[[repos.hooks]]
 id = "update-package-manager"
 name = "update-package-manager"
 entry = "uv self update"

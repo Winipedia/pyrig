@@ -20,6 +20,7 @@ from pyrig.core.introspection.packages import (
     import_package_with_dir_fallback,
     is_src_package,
     make_init_file,
+    make_init_files,
     make_package_dir,
     register_package_modules,
     walk_package,
@@ -32,10 +33,11 @@ from pyrig.rig.tools.base.tool import Tool
 def test_make_init_file(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        make_init_file(Path.cwd(), content="")
-        assert (Path.cwd() / "__init__.py").exists(), (
-            "Expected __init__.py file to be created"
-        )
+        path = Path.cwd() / "__init__.py"
+        assert not path.exists()
+        make_init_file(Path.cwd(), content="Hello")
+        assert path.exists()
+        assert path.read_text() == "Hello"
 
 
 def test_make_package_dir(tmp_path: Path) -> None:
@@ -185,3 +187,20 @@ def test_register_package_modules(mocker: MockerFixture) -> None:
     register_package_modules(package)
     # should only call walk_package once due to caching
     mock_walk_package.assert_called_once_with(package)
+
+
+def test_make_init_files(tmp_path: Path) -> None:
+    """Test function."""
+    with chdir(tmp_path):
+        assert not Path("__init__.py").exists()
+        folder = Path("folder")
+        folder2 = Path("folder2")
+        folder_init = folder / "__init__.py"
+        assert not folder_init.exists()
+        folder.mkdir()
+        folder2.mkdir()
+        make_init_files((Path(),), content="")
+        assert Path("__init__.py").exists()
+        make_init_files((folder, folder2), content="")
+        assert folder_init.exists()
+        assert (folder2 / "__init__.py").exists()

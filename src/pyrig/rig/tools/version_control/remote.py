@@ -62,7 +62,7 @@ class RemoteVersionController(Tool):
         Returns:
             Tuple containing 'pygithub'.
         """
-        return ("pygithub",)
+        return ()
 
     def cicd_badge(self, workflow_name: str, label: str) -> str:
         """Construct a clickable Markdown badge for a GitHub Actions workflow status.

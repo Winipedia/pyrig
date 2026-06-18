@@ -9,7 +9,7 @@ from pathlib import Path
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.tools.testers.project import ProjectTester
 
 
 class SecurityChecker(Tool):

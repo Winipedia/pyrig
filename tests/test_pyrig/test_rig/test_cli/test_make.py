@@ -3,17 +3,9 @@
 from collections.abc import Callable
 from typing import Any
 
-from pyrig.rig.cli.commands.make_fixture import make_fixture
-from pyrig.rig.cli.commands.make_subclass import make_subclass
-from pyrig.rig.cli.commands.make_subcommand import make_subcommand
-from pyrig.rig.cli.make import cmd, fixture, subcls
-
-
-def test_subcls(
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
-) -> None:
-    """Test function."""
-    command_calls_function(subcls, make_subclass)
+from pyrig.rig.cli.commands.make.fixture import make_fixture
+from pyrig.rig.cli.commands.make.subcommand import make_subcommand
+from pyrig.rig.cli.make import cmd, fixture
 
 
 def test_cmd(

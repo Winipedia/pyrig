@@ -28,13 +28,13 @@ from pyrig.core.introspection.modules import (
 )
 from pyrig.core.introspection.packages import discover_modules
 from pyrig.core.iterate import iterator_has_items
+from pyrig.core.root import module_name_as_root_path
 from pyrig.core.strings import make_name_from_obj
 from pyrig.rig import tests
 from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
-from pyrig.rig.utils.paths import module_name_as_root_path
+from pyrig.rig.tools.testers.project import ProjectTester
 
 logger = logging.getLogger(__name__)
 

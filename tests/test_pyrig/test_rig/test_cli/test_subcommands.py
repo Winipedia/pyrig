@@ -5,13 +5,11 @@ from typing import Any
 
 from pyrig.rig.cli import subcommands
 from pyrig.rig.cli.commands.init_project import init_project
-from pyrig.rig.cli.commands.protect_repo import protect_repository
 from pyrig.rig.cli.commands.remove_pycache import remove_pycache
 from pyrig.rig.cli.commands.scratch import run_scratch_file
 from pyrig.rig.cli.commands.synchronize import synchronize_project
 from pyrig.rig.cli.subcommands import (
     init,
-    protect_repo,
     rmpyc,
     scratch,
     sync,
@@ -34,15 +32,6 @@ def test_init(
     """Test function."""
     command_works(init)
     command_calls_function(init, init_project)
-
-
-def test_protect_repo(
-    command_works: Callable[[Callable[..., Any]], None],
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
-) -> None:
-    """Test function."""
-    command_works(protect_repo)
-    command_calls_function(protect_repo, protect_repository)
 
 
 def test_scratch(
@@ -71,7 +60,6 @@ def test_module_docstring() -> None:
 
 All functions in this module are automatically discovered and registered
 as CLI commands for this project. Module-level ``typer.Typer`` instances are
-registered as command groups named after their variable (e.g. the ``mk`` group,
-invoked as ``pyrig mk <command>``).
+registered as command groups named after their variable.
 """
     )

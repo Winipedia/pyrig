@@ -2,8 +2,7 @@
 
 All functions in this module are automatically discovered and registered
 as CLI commands for this project. Module-level ``typer.Typer`` instances are
-registered as command groups named after their variable (e.g. the ``mk`` group,
-invoked as ``pyrig mk <command>``).
+registered as command groups named after their variable.
 """
 
 # Bind the make module's Typer app to ``mk`` so the CLI discovery registers it
@@ -70,47 +69,6 @@ def sync() -> None:
     from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
 
     synchronize_project()
-
-
-def protect_repo() -> None:
-    """Apply GitHub repository settings and branch protection rulesets.
-
-    Configures your GitHub repository with pyrig's opinionated security
-    defaults, then creates or updates branch protection rulesets on the
-    default branch.
-
-    Repository settings applied:
-        - Description synced from pyproject.toml
-        - Default branch set to main
-        - Branches deleted automatically after merge
-        - Merge commits disabled (squash and rebase merges only)
-        - Branch updates allowed
-
-    Branch protection rules applied (read from branch-protection.json):
-        - Pull request reviews required, including code owner approval
-        - Status checks required (health check workflow must pass)
-        - Linear commit history enforced
-        - Signed commits required
-        - Force pushes and branch deletions disabled
-
-    Idempotent: safe to run multiple times; existing rulesets are updated
-    in place.
-
-    Requires REPO_TOKEN with repo scope — set as an environment variable
-    or in your .env file (never commit your token).
-
-    Examples:
-        $ REPO_TOKEN=ghp_... uv run pyrig protect-repo
-        $ uv run pyrig protect-repo  # with REPO_TOKEN already in .env
-
-    Note:
-        Despite being able to run this locally, the command is mainly intended
-        for use in CI/CD workflows, where it can be used to automatically apply
-        repository settings and branch protection rules.
-    """
-    from pyrig.rig.cli.commands.protect_repo import protect_repository  # noqa: PLC0415
-
-    protect_repository()
 
 
 def scratch() -> None:

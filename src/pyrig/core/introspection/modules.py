@@ -233,7 +233,7 @@ def module_name_replacing_start_module(
         The module name with the root package replaced.
 
     Example:
-        >>> # module.__name__ == "pyrig.rig.configs.base"
+        >>> # module.__name__ == "pyrig_dev.rig.configs.base"
         >>> module_name_replacing_start_module(module, "my_project")
         'my_project.rig.configs.base'
     """
@@ -286,7 +286,7 @@ def iter_modules(
         package: Package to iterate. Must have a ``__path__`` attribute
             (i.e., must be a package, not a plain module).
         exclude: tuple of strings or compiled regex patterns matched against fully
-            qualified child names (e.g., ``"pyrig.rig.configs.base"``).
+            qualified child names (e.g., ``"pyrig_dev.rig.configs.base"``).
             Matching children are skipped.
 
     Returns:

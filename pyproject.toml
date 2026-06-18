@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "13.1.1"
+version = "14.14.0"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -64,19 +64,19 @@ pyrig = "pyrig.rig.cli.main:main"
 [dependency-groups]
 dev = [
     "bandit>=1.9.3",
+    "deptry>=0.25.1",
     "mkdocs-material>=9.7.1",
     "mkdocs-mermaid2-plugin>=1.2.3",
     "mkdocs>=1.6.1",
     "mkdocstrings[python]>=1.0.3",
     "pip-audit>=2.10.0",
     "prek>=0.3.2",
-    "pygithub>=2.8.1",
     "pyrig-codecov>=1.1.0",
     "pyrig-dev>=0.1.19",
+    "pyrig-overrides>=1.0.0",
     "pyrig-pypi>=1.0.0",
     "pyrig-resources>=1.0.0",
     "pytest-cov>=7.0.0",
-    "pytest-mock>=3.15.1",
     "pytest>=9.0.2",
     "ruff>=0.15.0",
     "rumdl>=0.1.17",
@@ -122,4 +122,12 @@ addopts = "--cov=pyrig --cov-branch --cov-report=term-missing --cov-fail-under=1
 skips = [
     "*/tests/*.py",
     "*/test_*/*.py",
+]
+
+[tool.deptry]
+root = "src"
+
+[tool.deptry.per_rule_ignores]
+DEP002 = [
+    "pyrig",
 ]

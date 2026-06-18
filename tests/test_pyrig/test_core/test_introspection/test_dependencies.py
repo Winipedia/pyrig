@@ -7,7 +7,7 @@ import pyrig
 from pyrig import core, rig
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.introspection.dependencies import (
-    all_deps_depending_on_dep,
+    deps_depending_on_dep,
     discover_equivalent_modules_across_dependents,
     discover_subclasses_across_dependencies,
 )
@@ -21,10 +21,10 @@ def test_discover_equivalent_modules_across_dependents(mocker: MockerFixture) ->
     modules = discover_equivalent_modules_across_dependents(core)
     assert core not in modules
 
-    # mock all_deps_depending_on_dep to return a fake dependent package
+    # mock deps_depending_on_dep to return a fake dependent package
     # the following is mostly to get 100% test coverage
     mock_all_deps = mocker.patch(
-        all_deps_depending_on_dep.__module__ + "." + all_deps_depending_on_dep.__name__,
+        deps_depending_on_dep.__module__ + "." + deps_depending_on_dep.__name__,
         return_value=[pyrig],
     )
     modules = tuple(discover_equivalent_modules_across_dependents(core))
@@ -43,7 +43,7 @@ def test_discover_subclasses_across_dependencies() -> None:
     assert Tool in subclasses
 
 
-def test_all_deps_depending_on_dep() -> None:
+def test_deps_depending_on_dep() -> None:
     """Test function."""
-    packages = [*all_deps_depending_on_dep(pyrig), pyrig]
+    packages = [*deps_depending_on_dep(pyrig), pyrig]
     assert pyrig in packages, f"Expected pyrig in packages, got {packages}"

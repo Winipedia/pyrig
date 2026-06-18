@@ -5,7 +5,7 @@ import shutil
 import typer
 
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.tools.testers.project import ProjectTester
 
 
 def remove_pycache() -> None:

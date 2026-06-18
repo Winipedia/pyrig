@@ -3,13 +3,13 @@
 import inspect
 
 import pytest
+from pyrig_dev.rig.configs.pyproject import PyprojectConfigFile
 
 from pyrig import rig
 from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.rig import configs
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.version_control.ignore import (
     VersionControllerIgnoreConfigFile,
 )

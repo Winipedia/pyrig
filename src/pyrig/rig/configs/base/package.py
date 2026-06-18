@@ -33,7 +33,7 @@ from pyrig.core.introspection.packages import make_package_dir
 from pyrig.rig.configs.base.python import PythonConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
-from pyrig.rig.tools.project_tester import ProjectTester
+from pyrig.rig.tools.testers.project import ProjectTester
 
 
 class PythonPackageConfigFile(PythonConfigFile):

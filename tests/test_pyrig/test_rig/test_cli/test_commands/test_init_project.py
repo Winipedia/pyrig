@@ -8,15 +8,15 @@ from pathlib import Path
 
 import pytest
 import tomlkit
+from pyrig_dev.rig.configs.pyproject import PyprojectConfigFile
 from pytest_mock import MockerFixture
 
 from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.cli.subcommands import init
-from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.project_tester import ProjectTester
 from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.testers.project import ProjectTester
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
