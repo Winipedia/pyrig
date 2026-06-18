@@ -11,9 +11,9 @@ from pyrig.core.introspection.modules import (
     reimport_module,
 )
 from pyrig.core.introspection.packages import import_package_with_dir_fallback
+from pyrig.core.root import root_path_as_module_name
 from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.string_ import StringConfigFile
-from pyrig.rig.utils.paths import root_path_as_module_name
 
 
 class PythonConfigFile(StringConfigFile):

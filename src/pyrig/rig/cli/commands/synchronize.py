@@ -5,9 +5,9 @@ autouse conformance checks require, by running the three idempotent structural
 fixups in their correct order.
 """
 
+from pyrig.core.root import make_all_init_files
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.utils.packages import make_init_files
 
 
 def synchronize_project() -> None:
@@ -29,6 +29,6 @@ def synchronize_project() -> None:
     step preserves existing user content and only adds what is missing or
     corrects what is wrong, so this function is idempotent and safe to re-run.
     """
-    make_init_files()
+    make_all_init_files()
     ConfigFile.validate_all_subclasses()
     MirrorTestConfigFile.L.validate_all_subclasses()

@@ -15,10 +15,10 @@ from pyrig.core.introspection.modules import (
     module_content,
     module_name_replacing_start_module,
 )
+from pyrig.core.root import module_name_as_root_path
 from pyrig.core.strings import make_name_from_obj
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.utils.paths import module_name_as_root_path
 
 
 class CopyModuleConfigFile(PythonPackageConfigFile):

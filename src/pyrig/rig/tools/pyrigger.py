@@ -6,12 +6,7 @@ Provides a type-safe wrapper for pyrig commands and information.
 from collections.abc import Callable
 from typing import Any
 
-from rich.progress import (
-    BarColumn,
-    MofNCompleteColumn,
-    Progress,
-    TextColumn,
-)
+import typer
 
 import pyrig
 from pyrig.core.strings import (
@@ -82,7 +77,7 @@ class Pyrigger(Tool):
             ``("pyrig-dev",)``
         """
         # only pyrig-dev not pyrig because pyrig is already installed as dependency
-        return ("pyrig-dev",)
+        return (self.dev_dep(),)
 
     def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments from a callable.
@@ -102,6 +97,19 @@ class Pyrigger(Tool):
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return self.args(cmd_name, *args)
 
+    def dev_dep_cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
+        """Make command args with pyrig-dev."""
+        cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
+        return self.dev_dep_args(cmd_name, *args)
+
+    def dev_dep_args(self, *args: str) -> Args:
+        """Make args with pyrig-dev."""
+        return Args((self.dev_dep(), *args))
+
+    def dev_dep(self) -> str:
+        """Get the pyrig-dev dev dependency."""
+        return "pyrig-dev"
+
     def init_project(self) -> None:
         """Run the full project initialization sequence.
 
@@ -119,19 +127,15 @@ class Pyrigger(Tool):
             part of routine development.
         """
         steps = self.setup_steps()
-        with Progress(
-            TextColumn("[bold]{task.description}"),
-            BarColumn(),
-            MofNCompleteColumn(),
+        with typer.progressbar(
+            steps,
+            label="Initializing project",
+            length=len(steps),
         ) as progress:
-            task = progress.add_task("Initializing project", total=len(steps))
-            for step_name, step_args in steps.items():
-                progress.update(task, description=step_name)
+            for step_args in progress:
                 PackageManager.I.run_args(*step_args).run()
-                progress.advance(task)
-            progress.update(task, description="[green]Initialization complete!")
 
-    def setup_steps(self) -> dict[str, Args]:
+    def setup_steps(self) -> list[Args]:
         """Return the ordered setup steps for project initialization.
 
         Each step is represented as a key-value pair where the key is a
@@ -141,19 +145,17 @@ class Pyrigger(Tool):
         Returns:
             Ordered dict of setup steps with descriptions and command arguments.
         """
-        return {
-            "Initializing version control": VersionController.I.init_args(),
-            "Adding dev dependencies": PackageManager.I.add_dev_dependencies_args(
+        return [
+            VersionController.I.init_args(),
+            PackageManager.I.add_dev_dependencies_args(
                 *Tool.subclasses_dev_dependencies()
             ),
-            "Installing dependencies": PackageManager.I.install_dependencies_args(),
-            "Syncing project": self.cmd_args(cmd=sync),
-            "Installing project": PackageManager.I.install_dependencies_args(),
-            "Installing version control hooks": (
-                VersionControlHookManager.I.install_args()
-            ),
-            "Adding files to version control": VersionController.I.add_all_args(),
-            "Committing initial changes": VersionController.I.commit_with_message_args(
+            PackageManager.I.install_dependencies_args(),
+            self.cmd_args(cmd=sync),
+            PackageManager.I.install_dependencies_args(),
+            VersionControlHookManager.I.install_args(),
+            VersionController.I.add_all_args(),
+            VersionController.I.commit_with_message_args(
                 msg=f"{self.name()}: Initial commit"
             ),
-        }
+        ]

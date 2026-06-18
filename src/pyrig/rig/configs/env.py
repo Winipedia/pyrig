@@ -8,8 +8,6 @@ never committed to version control.
 
 from pathlib import Path
 
-from dotenv import dotenv_values
-
 from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
 
 
@@ -35,7 +33,8 @@ class EnvConfigFile(DictConfigFile):
             Mapping of variable names to their string values, or None for
             keys that are present without an assignment.
         """
-        return dotenv_values(self.path())
+        msg = f"{self} should never be loaded."
+        raise RuntimeError(msg)
 
     def _dump(self, configs: ConfigDict) -> None:
         """Block all non-empty writes to the .env file.
@@ -51,11 +50,12 @@ class EnvConfigFile(DictConfigFile):
         Raises:
             PermissionError: When configs is non-empty.
         """
-        if configs:
-            msg = f"""Dumping to {self} is forbidden.
+        if not configs:
+            return
+        msg = f"""Dumping to {self} is forbidden.
 For security reasons this file is managed manually by the user.
 Please edit it directly."""
-            raise PermissionError(msg)
+        raise PermissionError(msg)
 
     def _configs(self) -> ConfigDict:
         """Return an empty dict; pyrig manages no .env content.
@@ -113,3 +113,7 @@ Please edit it directly."""
             ``""``
         """
         return ""
+
+    def is_correct(self) -> bool:
+        """File is correct if it exists."""
+        return self.path().exists()

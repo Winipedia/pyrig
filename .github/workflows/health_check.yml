@@ -44,7 +44,7 @@ jobs:
       run: uv run pip-audit
     - name: Protect Repository
       id: protect-repository
-      run: uv run pyrig protect-repo
+      run: uv run pyrig-dev protect-repo
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   matrix-health-checks:

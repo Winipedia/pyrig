@@ -2,7 +2,7 @@
 
 import logging
 import re
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from functools import cache
 from pathlib import Path
 from types import ModuleType
@@ -46,6 +46,22 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
         if p in until:
             break
         make_init_file(p, content=content)
+
+
+def make_init_files(paths: Iterable[Path], content: str) -> None:
+    """Create `__init__.py` files for the given namespace packages.
+
+    Resolves each dotted package name to its filesystem path and writes a
+    minimal `__init__.py` containing a standard package initialization
+    docstring. Skips any package that already has an `__init__.py`.
+
+    Args:
+        paths: Dotted package names of namespace packages to
+            initialize (e.g. ``"myproject.subpackage"``).
+        content: content for the init files.
+    """
+    for p in paths:
+        make_init_file(p, content)
 
 
 def make_init_file(path: Path, content: str) -> None:

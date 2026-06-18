@@ -2,6 +2,7 @@
 
 import pyrig_codecov
 import pyrig_dev
+import pyrig_overrides
 import pyrig_pypi
 import pyrig_resources
 import pytest
@@ -101,9 +102,10 @@ class TestDiGraph:
         deps = graph.sorted_ancestors("typer")
         assert deps == [
             pyrig.__name__,
-            pyrig_codecov.__name__,
             pyrig_dev.__name__,
+            pyrig_codecov.__name__,
             pyrig_pypi.__name__,
+            pyrig_overrides.__name__,
             pyrig_resources.__name__,
         ]
 

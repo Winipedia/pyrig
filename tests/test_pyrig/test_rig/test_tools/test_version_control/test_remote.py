@@ -45,7 +45,7 @@ class TestRemoteVersionController:
     def test_dev_dependencies(self) -> None:
         """Test method."""
         result = RemoteVersionController.I.dev_dependencies()
-        assert result == ("pygithub",)
+        assert result == ()
 
     def test_name(self) -> None:
         """Test method."""

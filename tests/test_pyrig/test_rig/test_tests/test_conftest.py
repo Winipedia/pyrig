@@ -4,6 +4,7 @@ tests.test_pyrig.test_testing.test_tests.test_conftest
 """
 
 from pyrig.rig.tests import conftest
+from pyrig.rig.tests.fixtures import fixtures
 
 
 def test_module_docstring() -> None:
@@ -25,3 +26,9 @@ pyrig and all pyrig dependent packages, collecting all Python modules except
 ``__init__.py`` modules and registers them as plugins.
 """  # noqa: E501
     )
+
+
+def test_pytest_plugins() -> None:
+    """Test function."""
+    plugins = conftest.pytest_plugins
+    assert fixtures.__name__ in plugins

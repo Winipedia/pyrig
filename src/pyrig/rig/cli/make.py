@@ -12,28 +12,6 @@ app = typer.Typer(no_args_is_help=True, help="Scaffold new project artifacts.")
 
 
 @app.command()
-def subcls() -> None:
-    """Scaffold a subclass of any pyrig class interactively.
-
-    Launches a fuzzy-search prompt listing all `DependencySubclass` leaf subclasses
-    found in pyrig and its dependents — both concrete classes (shown with their string
-    representation) and abstract classes (shown by qualified name), sorted
-    alphabetically by import path.
-
-    After you select a class, pyrig creates the matching module file in your
-    project (or validates it if it already exists), copies the source module's
-    docstring into it, and appends a ready-to-edit subclass skeleton that
-    imports and extends the class you chose.
-
-    Example:
-        $ uv run pyrig mk subcls
-    """
-    from pyrig.rig.cli.commands.make_subclass import make_subclass  # noqa: PLC0415
-
-    make_subclass()
-
-
-@app.command()
 def cmd(
     name: str = typer.Argument(help="Name of the command to create."),
     *,
@@ -58,7 +36,9 @@ def cmd(
         $ uv run pyrig mk cmd my-command
         $ uv run pyrig mk cmd my-command --shared
     """
-    from pyrig.rig.cli.commands.make_subcommand import make_subcommand  # noqa: PLC0415
+    from pyrig.rig.cli.commands.make.subcommand import (  # noqa: PLC0415
+        make_subcommand,
+    )
 
     make_subcommand(name, shared=shared)
 
@@ -79,6 +59,6 @@ def fixture(
     Example:
         $ uv run pyrig mk fixture my-fixture
     """
-    from pyrig.rig.cli.commands.make_fixture import make_fixture  # noqa: PLC0415
+    from pyrig.rig.cli.commands.make.fixture import make_fixture  # noqa: PLC0415
 
     make_fixture(name)
