@@ -12,17 +12,17 @@ from types import ModuleType
 from pyrig.core.strings import read_text_utf8
 
 
-def resource_content(resource_name: str, package: ModuleType) -> str:
+def resource_content(name: str, package: ModuleType) -> str:
     """Read the contents of a resource file as a UTF-8 string.
 
     Args:
-        resource_name: Filename of the resource (e.g., ``"config.json"``).
+        name: Filename of the resource (e.g., ``"config.json"``).
         package: Package module containing the resource.
 
     Returns:
         File contents decoded as a UTF-8 string.
     """
-    path = resource_path(resource_name, package)
+    path = resource_path(name, package)
     return read_text_utf8(path)
 
 
