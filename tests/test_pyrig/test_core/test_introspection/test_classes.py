@@ -182,7 +182,7 @@ def test_module_classes() -> None:
         f"Expected classes {expected_classes_names}, got {classes_names}"
     )
 
-    # classproperty is special and implemets fget which unwrapped obj unwraps to a
+    # classproperty is special and implements fget which unwrapped obj unwraps to a
     # C member object that doesnt work with def_line, as this a super special case
     # we will ignore it for simplicity, we are checking this to make sure our behaviour
     # is consistent in our inspection functionality

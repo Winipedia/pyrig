@@ -138,7 +138,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return self.split_lines(self.test_module_content_with_skeletons())
 
     def should_override_content(self) -> bool:
-        """Return ``True`` to indicate that file content should be overriden on dumping.
+        """Return ``True`` so that file content gets overridden on dumping.
 
         Returns:
             Always ``True``.
