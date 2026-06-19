@@ -105,6 +105,9 @@ def test_namespace_package_paths(
 
         namespace_package = package_root_path / "namespace_package"
         namespace_package.mkdir()
+        pycache = namespace_package / "__pycache__"
+        pycache.mkdir()
+        assert pycache.is_dir()
         assert list(namespace_package_paths()) == [
             namespace_package.relative_to(Path.cwd())
         ]
