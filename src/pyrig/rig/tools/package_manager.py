@@ -221,6 +221,20 @@ class PackageManager(Tool):
         """
         return self.args("add", *args)
 
+    def install_dependencies_no_dev_args(self, *args: str) -> Args:
+        """Construct ``Args`` for ``uv sync --no-group dev``.
+
+        Synchronises the virtual environment against the lock file,
+        installing or removing packages as needed without dev deps.
+
+        Args:
+            *args: Additional arguments for the sync command.
+
+        Returns:
+            Args for ``uv sync --no-group dev <args...>``.
+        """
+        return self.install_dependencies_args("--no-group", "dev", *args)
+
     def install_dependencies_args(self, *args: str) -> Args:
         """Construct ``Args`` for ``uv sync``.
 

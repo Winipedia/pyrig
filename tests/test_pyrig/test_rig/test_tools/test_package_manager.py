@@ -10,6 +10,16 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_install_dependencies_no_dev_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.install_dependencies_no_dev_args("hello") == (
+            "uv",
+            "sync",
+            "--no-group",
+            "dev",
+            "hello",
+        )
+
     def test_image_url(self) -> None:
         """Test method."""
         assert (
