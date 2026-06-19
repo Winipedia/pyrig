@@ -89,7 +89,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         to avoid duplication.
         This will always include at least the line ``# Pyrigger stuff`` as a header for
         the pyrig-specific entries.
-        Some enries here are already covered by the standard Python gitignore, but are
+        Some entries here are already covered by the standard Python gitignore, but are
         included here to be sure as they are almost garantueed to occur in a
         pyrig project.
         """

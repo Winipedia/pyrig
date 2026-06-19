@@ -52,6 +52,8 @@ def namespace_package_paths() -> Iterator[Path]:
     ):
         if not p.is_dir():
             continue
+        if p.name == "__pycache__":
+            continue
         init = p / "__init__.py"
         if init.exists():
             continue
