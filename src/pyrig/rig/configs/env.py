@@ -7,8 +7,9 @@ never committed to version control.
 """
 
 from pathlib import Path
+from typing import Any
 
-from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
+from pyrig.rig.configs.base.config_file import DictConfigFile
 
 
 class EnvConfigFile(DictConfigFile):
@@ -36,7 +37,7 @@ class EnvConfigFile(DictConfigFile):
         msg = f"{self} should never be loaded."
         raise RuntimeError(msg)
 
-    def _dump(self, configs: ConfigDict) -> None:
+    def _dump(self, configs: dict[str, Any]) -> None:
         """Block all non-empty writes to the .env file.
 
         Pyrig never overwrites .env content because the file holds user
@@ -57,7 +58,7 @@ For security reasons this file is managed manually by the user.
 Please edit it directly."""
         raise PermissionError(msg)
 
-    def _configs(self) -> ConfigDict:
+    def _configs(self) -> dict[str, Any]:
         """Return an empty dict; pyrig manages no .env content.
 
         Returns:

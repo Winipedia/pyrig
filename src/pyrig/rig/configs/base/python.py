@@ -5,6 +5,7 @@ setting a fixed ``"py"`` extension on top of the string-based config system.
 """
 
 from types import ModuleType
+from typing import Any
 
 from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
@@ -12,7 +13,6 @@ from pyrig.core.introspection.modules import (
 )
 from pyrig.core.introspection.packages import import_package_with_dir_fallback
 from pyrig.core.root import root_path_as_module_name
-from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
@@ -53,7 +53,7 @@ class PythonConfigFile(StringConfigFile):
         """
         return "py"
 
-    def _dump(self, configs: ConfigList) -> None:
+    def _dump(self, configs: list[Any]) -> None:
         """Reimports the module after a dump to reflect possible changes."""
         super()._dump(configs)
         reimport_module(self.module(), is_package=self.is_init_file())

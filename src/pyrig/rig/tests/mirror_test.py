@@ -31,7 +31,6 @@ from pyrig.core.iterate import iterator_has_items
 from pyrig.core.root import module_name_as_root_path
 from pyrig.core.strings import make_name_from_obj
 from pyrig.rig import tests
-from pyrig.rig.configs.base.config_file import ConfigList
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.testers.project import ProjectTester
@@ -126,7 +125,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return self.test_path().parent
 
-    def lines(self) -> ConfigList:
+    def lines(self) -> list[Any]:
         """Return the complete test module content as a list of lines.
 
         Delegates to ``test_module_content_with_skeletons()`` to produce the full
@@ -165,7 +164,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             or any(self.untested_class_and_method_names())
         )
 
-    def merge_configs(self) -> ConfigList:
+    def merge_configs(self) -> list[Any]:
         """Return the full test module content without additional merging.
 
         The content returned by ``configs()`` (via ``lines()``) already integrates

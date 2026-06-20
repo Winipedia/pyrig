@@ -25,7 +25,7 @@ preserved as long as they do not conflict with the required structure.
 
 All managed files inherit from `ConfigFile`, which is parameterized over
 either a `dict` or a `list` as the configuration data type
-(`ConfigDict` or `ConfigList`). Subclasses declare the file by implementing
+(`dict[str, Any]` or `list[Any]`). Subclasses declare the file by implementing
 the abstract members:
 
 | Member | Purpose |

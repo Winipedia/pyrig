@@ -28,9 +28,10 @@ Example:
 
 from abc import abstractmethod
 from collections.abc import Iterable
+from typing import Any
 
 from pyrig.core.strings import read_text_utf8, write_text_utf8
-from pyrig.rig.configs.base.config_file import ConfigList, ListConfigFile
+from pyrig.rig.configs.base.config_file import ListConfigFile
 
 
 class StringConfigFile(ListConfigFile):
@@ -93,7 +94,7 @@ class StringConfigFile(ListConfigFile):
         """
         write_text_utf8(self.path(), self.join_lines(configs))
 
-    def merge_configs(self) -> ConfigList:
+    def merge_configs(self) -> list[Any]:
         """Merge required lines with existing file content.
 
         Places the required lines first, followed by the current file content.

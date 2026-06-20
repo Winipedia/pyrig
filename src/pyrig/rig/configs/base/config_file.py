@@ -22,11 +22,6 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 logger = logging.getLogger(__name__)
 
 
-type ConfigDict = dict[str, Any]
-type ConfigList = list[Any]
-type ConfigData = ConfigDict | ConfigList
-
-
 class Priority:
     """Helpers for controlling config file validation order.
 
@@ -70,7 +65,7 @@ class Priority:
         return priority - cls.STEP
 
 
-class ConfigFile[ConfigT: ConfigData](DependencySubclass):
+class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     """Abstract base class for declarative configuration file management.
 
     Implements an idempotent, declarative system for managing configuration
@@ -80,8 +75,8 @@ class ConfigFile[ConfigT: ConfigData](DependencySubclass):
     user has added.
 
     Type Parameters:
-        ConfigT: The configuration data type, either ``ConfigDict`` or
-            ``ConfigList``.
+        ConfigT: The configuration data type, either ``dict[str, Any]`` or
+            ``list[Any]``.
 
     Subclass Requirements:
         Concrete subclasses must implement the following abstract methods:
@@ -447,17 +442,17 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=sync)} to recreate it."
         return False
 
 
-class ListConfigFile(ConfigFile[ConfigList]):
+class ListConfigFile(ConfigFile[list[str]]):
     """Abstract base for config files whose content is a list.
 
-    Binds the ``ConfigT`` type parameter to ``ConfigList``, giving subclasses
+    Binds the ``ConfigT`` type parameter to ``list[Any]``, giving subclasses
     properly typed ``load()``, ``dump()``, and ``configs()`` methods.
     """
 
 
-class DictConfigFile(ConfigFile[ConfigDict]):
+class DictConfigFile(ConfigFile[dict[str, Any]]):
     """Abstract base for config files whose content is a dict.
 
-    Binds the ``ConfigT`` type parameter to ``ConfigDict``, giving subclasses
+    Binds the ``ConfigT`` type parameter to ``dict[str, Any]``, giving subclasses
     properly typed ``load()``, ``dump()``, and ``configs()`` methods.
     """
