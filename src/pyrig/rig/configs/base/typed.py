@@ -1,6 +1,8 @@
 """Base class for PEP 561 ``py.typed`` marker file management."""
 
-from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
+from typing import Any
+
+from pyrig.rig.configs.base.config_file import DictConfigFile
 
 
 class TypedConfigFile(DictConfigFile):
@@ -28,7 +30,7 @@ class TypedConfigFile(DictConfigFile):
         """
         return "typed"
 
-    def _configs(self) -> ConfigDict:
+    def _configs(self) -> dict[str, Any]:
         """Return an empty dict as the expected configuration.
 
         A ``py.typed`` marker file has no configuration; its existence is
@@ -36,11 +38,11 @@ class TypedConfigFile(DictConfigFile):
         """
         return {}
 
-    def _load(self) -> ConfigDict:
+    def _load(self) -> dict[str, Any]:
         """Return an empty dict, reflecting that the file has no content."""
         return {}
 
-    def _dump(self, configs: ConfigDict) -> None:
+    def _dump(self, configs: dict[str, Any]) -> None:
         """Enforce the empty-file contract.
 
         A no-op when ``configs`` is empty (the normal case). Raises
