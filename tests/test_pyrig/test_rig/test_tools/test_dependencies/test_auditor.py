@@ -23,7 +23,7 @@ class TestDependencyAuditor:
         """Test method."""
         result = DependencyAuditor.I.group()
         assert isinstance(result, str)
-        assert result == "security"
+        assert result == "code-quality"
 
     def test_name(self) -> None:
         """Test method."""

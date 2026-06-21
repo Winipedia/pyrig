@@ -18,7 +18,7 @@ class TestDocsBuilder:
 
     def test_link_url(self) -> None:
         """Test method."""
-        assert DocsBuilder.I.link_url() == "https://www.mkdocs.org"
+        assert DocsBuilder.I.link_url() == "https://Winipedia.github.io/pyrig"
 
     def test_version_control_ignore_paths(self) -> None:
         """Test method."""
@@ -31,18 +31,11 @@ class TestDocsBuilder:
         assert result.startswith("https://")
         assert "github.io" in result
 
-    def test_documentation_badge(self) -> None:
-        """Test method."""
-        result = DocsBuilder.I.documentation_badge()
-        assert isinstance(result, str)
-        assert "[![" in result
-        assert "Documentation" in result
-
     def test_group(self) -> None:
         """Test method."""
         result = DocsBuilder.I.group()
         assert isinstance(result, str)
-        assert result == "documentation"
+        assert result == "project-info"
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

@@ -5,7 +5,6 @@ Wraps DocsBuilder commands and information.
 
 from pathlib import Path
 
-from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
@@ -33,7 +32,7 @@ class DocsBuilder(Tool):
         Returns:
             ``Group.DOCUMENTATION`` for grouping in generated badge lists.
         """
-        return Group.DOCUMENTATION
+        return Group.PROJECT_INFO
 
     def image_url(self) -> str:
         """Return the badge image URL for MkDocs.
@@ -49,7 +48,7 @@ class DocsBuilder(Tool):
         Returns:
             The URL of the MkDocs project page as a string.
         """
-        return "https://www.mkdocs.org"
+        return self.documentation_url()
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return paths to ignore in version control."""
@@ -92,22 +91,6 @@ class DocsBuilder(Tool):
             Args representing ``['mkdocs', 'build', *args]``.
         """
         return self.args("build", *args)
-
-    def documentation_badge(self) -> str:
-        """Construct a GitHub Pages documentation badge in Markdown.
-
-        Generates a shields.io badge labelled "Docs - GitHub Pages" that
-        links to the project's GitHub Pages URL derived from the git remote.
-
-        Returns:
-            Markdown string in the form
-            ``[![Documentation](badge_url)](documentation_url)``.
-        """
-        return make_linked_badge_markdown(
-            image_url="https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white",
-            link_url=self.documentation_url(),
-            alt_text="Documentation",
-        )
 
     def documentation_url(self) -> str:
         """Construct the expected GitHub Pages URL for this project.
