@@ -35,7 +35,7 @@ class SecurityChecker(Tool):
         Returns:
             ``Group.SECURITY``
         """
-        return Group.SECURITY
+        return Group.CODE_QUALITY
 
     def image_url(self) -> str:
         """Return the badge image URL for this tool.

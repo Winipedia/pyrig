@@ -26,7 +26,7 @@ class DependencyAuditor(Tool):
 
     def group(self) -> str:
         """Return the tool group used for badge organisation."""
-        return Group.SECURITY
+        return Group.CODE_QUALITY
 
     def image_url(self) -> str:
         """Return the badge image URL for pip-audit.

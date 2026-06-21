@@ -21,9 +21,7 @@ class Group:
 
     CI_CD = "ci/cd"
     CODE_QUALITY = "code-quality"
-    DOCUMENTATION = "documentation"
     PROJECT_INFO = "project-info"
-    SECURITY = "security"
     TOOLING = "tooling"
     TESTING = "testing"
 
@@ -157,12 +155,10 @@ class Tool(DependencySubclass):
     def groups(cls) -> tuple[str, ...]:
         """Get the ordering of the tool groups."""
         return (
-            Group.SECURITY,
             Group.CI_CD,
-            Group.CODE_QUALITY,
             Group.TESTING,
+            Group.CODE_QUALITY,
             Group.TOOLING,
-            Group.DOCUMENTATION,
             Group.PROJECT_INFO,
         )
 
