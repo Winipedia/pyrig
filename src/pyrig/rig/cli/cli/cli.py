@@ -210,35 +210,6 @@ class CLI(DependencySubclass):
         self.register_direct_subcommands(app=app, module=subcommands_module)
         self.register_subcommand_groups(app=app, module=subcommands_module)
 
-    def register_direct_subcommands(self, app: typer.Typer, module: ModuleType) -> None:
-        """Register every function defined in a module as a top-level command.
-
-        Adds each function found directly in ``module`` to ``app`` as a flat
-        Typer command. Imported functions and module-level ``typer.Typer`` group
-        instances are excluded; the latter are registered separately by
-        ``register_subcommand_groups``.
-
-        Args:
-            app: The Typer app to register the commands onto.
-            module: The subcommands module to scan for command functions.
-        """
-        for func in module_functions(module):
-            app.command()(func)
-
-    def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
-        """Register every ``typer.Typer`` group defined in a module as a command group.
-
-        Looks up the module's ``typer.Typer`` instances via
-        ``module_subcommand_groups`` and attaches each to ``app`` under its
-        attribute name (e.g. an ``mk`` group exposing ``pyrig mk <command>``).
-
-        Args:
-            app: The Typer app to register the command groups onto.
-            module: The subcommands module to scan for group instances.
-        """
-        for name, group in self.module_subcommand_groups(module).items():
-            app.add_typer(group, name=name)
-
     def register_shared_subcommands(self, app: typer.Typer) -> None:
         """Discover and register shared commands from the full dependency chain.
 
@@ -269,9 +240,37 @@ class CLI(DependencySubclass):
                 shared_subcommands,
             ),
         ):
-            sub_cmds = module_functions(shared_subcommands_module)
-            for sub_cmd in sub_cmds:
-                app.command()(sub_cmd)
+            self.register_direct_subcommands(app=app, module=shared_subcommands_module)
+            self.register_subcommand_groups(app=app, module=shared_subcommands_module)
+
+    def register_direct_subcommands(self, app: typer.Typer, module: ModuleType) -> None:
+        """Register every function defined in a module as a top-level command.
+
+        Adds each function found directly in ``module`` to ``app`` as a flat
+        Typer command. Imported functions and module-level ``typer.Typer`` group
+        instances are excluded; the latter are registered separately by
+        ``register_subcommand_groups``.
+
+        Args:
+            app: The Typer app to register the commands onto.
+            module: The subcommands module to scan for command functions.
+        """
+        for func in module_functions(module):
+            app.command()(func)
+
+    def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
+        """Register every ``typer.Typer`` group defined in a module as a command group.
+
+        Looks up the module's ``typer.Typer`` instances via
+        ``module_subcommand_groups`` and attaches each to ``app`` under its
+        attribute name (e.g. an ``mk`` group exposing ``pyrig mk <command>``).
+
+        Args:
+            app: The Typer app to register the command groups onto.
+            module: The subcommands module to scan for group instances.
+        """
+        for name, group in self.module_subcommand_groups(module).items():
+            app.add_typer(group, name=name)
 
     def module_subcommand_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
         """Return the Typer command groups defined in a subcommands module.
