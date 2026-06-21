@@ -4,7 +4,6 @@ tests.test_pyrig.test_modules.test_module
 """
 
 import os
-import re
 import sys
 from collections.abc import Callable
 from contextlib import chdir
@@ -178,10 +177,6 @@ def test_iter_modules(tmp_path: Path) -> None:
         assert modules_names == [package.__name__ + ".test_module"], (
             f"Expected [package.test_module], got {modules}"
         )
-
-        exclude_pattern = re.compile(r"^test_package\.test_module$")
-        modules = iter_modules(package, exclude=(exclude_pattern,))
-        assert list(modules) == [], f"Expected no modules, got {modules}"
 
 
 def test_root_module() -> None:

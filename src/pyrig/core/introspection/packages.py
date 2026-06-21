@@ -1,7 +1,6 @@
 """Utilities for creating, importing, and traversing Python packages."""
 
 import logging
-import re
 from collections.abc import Iterable, Iterator
 from functools import cache
 from pathlib import Path
@@ -223,10 +222,7 @@ def register_package_modules(package: ModuleType) -> None:
     _ = tuple(walk_package(package))
 
 
-def walk_package(
-    package: ModuleType,
-    exclude: tuple[str | re.Pattern[str], ...] = (),
-) -> Iterator[tuple[ModuleType, bool]]:
+def walk_package(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
     """Recursively walk and import all modules in a package hierarchy.
 
     Performs a depth-first traversal of ``package`` and its sub-packages.
@@ -246,9 +242,9 @@ def walk_package(
         ``(module, is_package)`` tuples for each visited module, where
         ``is_package`` is ``True`` when the module is itself a sub-package.
     """
-    for module, is_package in iter_modules(package, exclude=exclude):
+    for module, is_package in iter_modules(package):
         if is_package:
             yield module, True
-            yield from walk_package(module, exclude=exclude)
+            yield from walk_package(module)
         else:
             yield module, False

@@ -1,6 +1,7 @@
 """Test module."""
 
 import typer
+from pyrig_dev.rig.configs.pyproject import PyprojectConfigFile
 from pytest_mock import MockerFixture
 
 import pyrig
@@ -12,6 +13,7 @@ from pyrig.core.introspection.dependencies import (
     discover_subclasses_across_dependencies,
 )
 from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 
 
@@ -38,9 +40,11 @@ def test_discover_equivalent_modules_across_dependents(mocker: MockerFixture) ->
 
 def test_discover_subclasses_across_dependencies() -> None:
     """Test func."""
-    subclasses = tuple(discover_subclasses_across_dependencies(DependencySubclass, rig))
+    subclasses = set(discover_subclasses_across_dependencies(DependencySubclass, rig))
     assert ConfigFile in subclasses
     assert Tool in subclasses
+    assert PyprojectConfigFile in subclasses
+    assert MirrorTestConfigFile in subclasses
 
 
 def test_deps_depending_on_dep() -> None:
