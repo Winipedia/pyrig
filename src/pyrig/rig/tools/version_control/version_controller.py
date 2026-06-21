@@ -77,18 +77,6 @@ class VersionController(Tool):
         """
         return "main"
 
-    def default_ruleset_name(self) -> str:
-        """Return the default branch-protection ruleset name.
-
-        The name follows the convention ``<branch>-protection``, derived from
-        ``default_branch()``.  For example, if the default branch is ``main``
-        the ruleset name is ``main-protection``.
-
-        Returns:
-            The default branch-protection ruleset name string.
-        """
-        return f"{self.default_branch()}-protection"
-
     # -------------------------------------------------------------------------
     # Repository initialisation
     # -------------------------------------------------------------------------

@@ -106,11 +106,6 @@ class TestVersionController:
         result = VersionController.I.default_branch()
         assert result == "main"
 
-    def test_default_ruleset_name(self) -> None:
-        """Test method."""
-        result = VersionController.I.default_ruleset_name()
-        assert result == "main-protection"
-
     def test_diff_quiet_args(self) -> None:
         """Test method."""
         result = VersionController.I.diff_quiet_args()
