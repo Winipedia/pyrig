@@ -135,7 +135,7 @@ class TestCLI:
         commands = {cmd.callback.__name__ for cmd in app.registered_commands}
         assert {"sync"}.issubset(commands)
         # grouped commands are not registered at the top level
-        assert {"cmd", "fixture"}.isdisjoint(commands)
+        assert {"cmd", "subcls"}.isdisjoint(commands)
         # the mk group is registered with its scaffold commands
         groups = {group.name: group for group in app.registered_groups}
         assert "mk" in groups
@@ -143,7 +143,7 @@ class TestCLI:
             command.callback.__name__
             for command in groups["mk"].typer_instance.registered_commands
         }
-        assert {"cmd", "fixture"}.issubset(mk_commands)
+        assert {"cmd", "subcls"}.issubset(mk_commands)
 
         # a fresh app whose subcommands module fails to import gets no commands
         app = CLI.I.base_app()
