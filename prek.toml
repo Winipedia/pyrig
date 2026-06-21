@@ -87,6 +87,17 @@ stages = [
 ]
 
 [[repos.hooks]]
+id = "synchronize-project"
+name = "synchronize-project"
+entry = "pyrig sync"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-commit",
+]
+
+[[repos.hooks]]
 id = "update-package-manager"
 name = "update-package-manager"
 entry = "uv self update"
