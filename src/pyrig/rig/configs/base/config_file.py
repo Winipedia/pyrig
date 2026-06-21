@@ -183,18 +183,24 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return configs
 
     @classmethod
-    def validate_all_subclasses(cls) -> None:
+    def validate_all_subclasses(cls) -> tuple[type[Self], ...]:
         """Discover and validate every concrete ``ConfigFile`` subclass.
 
         Discovers all concrete subclasses across all installed dependents
         and delegates to ``validate_subclasses()`` to validate them in
         priority order. This is the main entry point called by the
         ``sync`` CLI command.
+
+        Returns:
+            Tuple of subclasses that were created or updated.
+            Empty if all were already correct.
         """
-        cls.validate_subclasses(cls.concrete_subclasses())
+        return cls.validate_subclasses(cls.concrete_subclasses())
 
     @classmethod
-    def validate_subclasses(cls, subclasses: Iterable[type[Self]]) -> None:
+    def validate_subclasses(
+        cls, subclasses: Iterable[type[Self]]
+    ) -> tuple[type[Self], ...]:
         """Validate a specific collection of ``ConfigFile`` subclasses.
 
         Sorts the given subclasses by priority (higher priority first) and
@@ -202,9 +208,14 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
         Args:
             subclasses: ``ConfigFile`` subclasses to validate.
+
+        Returns:
+            Tuple of subclasses that were created or updated.
+            Empty if all were already correct.
         """
-        for cf in cls.subclasses_sorted(subclasses):
-            cf().validate()
+        return tuple(
+            cf for cf in cls.subclasses_sorted(subclasses) if not cf().validate()
+        )
 
     @classmethod
     def version_control_ignored_subclasses(cls) -> Iterator[type[Self]]:
@@ -291,7 +302,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         logger.debug("Loading %s", instance)
         return instance._load()
 
-    def validate(self) -> None:
+    def validate(self) -> bool:
         """Validate the config file, creating or updating it as needed.
 
         Performs the following steps in order:
@@ -307,6 +318,10 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
         This method is idempotent and safe to call repeatedly.
 
+        Returns:
+            ``True`` if the file was already correct and required no changes;
+            ``False`` if it was created or updated.
+
         Raises:
             RuntimeError: If the file cannot be corrected after merging.
         """
@@ -315,9 +330,10 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         if not path.exists():
             self.create_file()
             self.dump(self.configs())
+            return False
 
         if self.is_correct():
-            return
+            return True
 
         config = self.merge_configs()
         self.dump(config)
@@ -327,6 +343,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 Please check the file for issues and fix manually if needed.
 You can delete the file and use {Pyrigger.I.cmd_args(cmd=sync)} to recreate it."""
             raise RuntimeError(msg)
+        return False
 
     def create_file(self) -> None:
         """Create the config file and any missing parent directories.

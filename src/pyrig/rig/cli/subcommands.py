@@ -9,6 +9,8 @@ registered as command groups named after their variable.
 # as the ``mk`` command group; importing the module also registers the group's
 # sub-commands. Import the module (not the app instance) so only ``mk`` is a
 # Typer in this namespace and the discovery registers exactly one group.
+import typer
+
 from pyrig.rig.cli import make
 
 mk = make.app
@@ -65,10 +67,15 @@ def sync() -> None:
     corrects what is wrong, so this command is idempotent and safe to run
     repeatedly. Run it after adding source code, pulling changes, or adding a
     new pyrig dependency to bring the project back into a fully conformant state.
+
+    Exits with code 1 if any file was created or updated, 0 if everything was
+    already in sync. This makes it suitable as a git hook: auto-fixes are
+    applied, the hook fails, the developer stages the changes and recommits.
     """
     from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
 
-    synchronize_project()
+    if not synchronize_project():
+        raise typer.Exit(code=1)
 
 
 def scratch() -> None:
