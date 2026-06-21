@@ -11,7 +11,7 @@
     },
     "rulesets": [
         {
-            "name": "main-protection",
+            "name": "main",
             "target": "branch",
             "enforcement": "active",
             "conditions": {
