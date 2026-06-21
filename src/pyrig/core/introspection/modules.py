@@ -7,7 +7,6 @@ loading user project modules not yet on ``sys.path``.
 """
 
 import logging
-import re
 import sys
 from collections.abc import Callable, Iterable, Iterator
 from importlib import import_module
@@ -265,10 +264,7 @@ def import_modules(module_names: Iterable[str]) -> Iterator[ModuleType]:
     return (import_module(name) for name in module_names)
 
 
-def iter_modules(
-    package: ModuleType,
-    exclude: tuple[str | re.Pattern[str], ...] = (),
-) -> Iterator[tuple[ModuleType, bool]]:
+def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
     """Iterate over and import all direct children of a package.
 
     Uses ``pkgutil.iter_modules`` to discover the direct children of ``package``
@@ -297,7 +293,5 @@ def iter_modules(
     for _finder, name, is_package in pkgutil_iter_modules(
         package.__path__, prefix=package.__name__ + "."
     ):
-        if any(re.search(pattern, name) for pattern in exclude):
-            continue
         mod = import_module(name)
         yield mod, is_package

@@ -3,8 +3,9 @@
 tests.test_pyrig.test_testing.test_tests.test_conftest
 """
 
+from pyrig_fixtures.rig.tests.fixtures import fixtures
+
 from pyrig.rig.tests import conftest
-from pyrig.rig.tests.fixtures import fixtures
 
 
 def test_module_docstring() -> None:

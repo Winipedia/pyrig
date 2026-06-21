@@ -9,6 +9,10 @@ from pyrig.rig.tools.testers.project import ProjectTester
 class TestProjectTester:
     """Test class."""
 
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        assert ProjectTester.I.dev_dependencies() == ("pytest", "pyrig-fixtures")
+
     def test_image_url(self) -> None:
         """Test method."""
         assert (

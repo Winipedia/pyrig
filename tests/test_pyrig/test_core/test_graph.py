@@ -2,6 +2,7 @@
 
 import pyrig_codecov
 import pyrig_dev
+import pyrig_fixtures
 import pyrig_overrides
 import pyrig_pypi
 import pyrig_resources
@@ -104,6 +105,7 @@ class TestDiGraph:
             pyrig.__name__,
             pyrig_dev.__name__,
             pyrig_codecov.__name__,
+            pyrig_fixtures.__name__,
             pyrig_pypi.__name__,
             pyrig_overrides.__name__,
             pyrig_resources.__name__,
