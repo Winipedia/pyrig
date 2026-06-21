@@ -47,7 +47,7 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
         make_init_file(p, content=content)
 
 
-def make_init_files(paths: Iterable[Path], content: str) -> None:
+def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:
     """Create `__init__.py` files for the given namespace packages.
 
     Resolves each dotted package name to its filesystem path and writes a
@@ -58,12 +58,15 @@ def make_init_files(paths: Iterable[Path], content: str) -> None:
         paths: Dotted package names of namespace packages to
             initialize (e.g. ``"myproject.subpackage"``).
         content: content for the init files.
+
+    Returns:
+        List of paths where ``__init__.py`` files were created.
+        Empty if all already existed.
     """
-    for p in paths:
-        make_init_file(p, content)
+    return tuple(path for path in paths if make_init_file(path, content))
 
 
-def make_init_file(path: Path, content: str) -> None:
+def make_init_file(path: Path, content: str) -> bool:
     """Create an ``__init__.py`` file in the specified directory.
 
     Prints the created path to stdout. No-op if ``__init__.py`` already
@@ -76,11 +79,12 @@ def make_init_file(path: Path, content: str) -> None:
     path = path / "__init__.py"
 
     if path.exists():
-        return
+        return False
 
     typer.echo(f"Creating: {path}")
 
     write_text_utf8(path, content)
+    return True
 
 
 def is_src_package(package: ModuleType) -> bool:

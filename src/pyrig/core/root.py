@@ -18,10 +18,16 @@ from pyrig.rig.tools.testers.project import ProjectTester
 logger = logging.getLogger(__name__)
 
 
-def make_all_init_files() -> None:
-    """Create all missing __init__.py files in the project."""
-    make_init_files(
-        namespace_package_paths(), content=ProgrammingLanguage.I.standard_init_content()
+def make_all_init_files() -> tuple[Path, ...]:
+    """Create all missing __init__.py files in the project.
+
+    Returns:
+        Tuple of paths where ``__init__.py`` files were created.
+        Empty if all already existed.
+    """
+    return make_init_files(
+        namespace_package_paths(),
+        content=ProgrammingLanguage.I.standard_init_content(),
     )
 
 

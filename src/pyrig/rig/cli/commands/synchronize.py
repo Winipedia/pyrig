@@ -10,7 +10,7 @@ from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 
 
-def synchronize_project() -> None:
+def synchronize_project() -> bool:
     """Run the three structural fixups in order to reconcile the project.
 
     Executes, in order:
@@ -28,7 +28,14 @@ def synchronize_project() -> None:
     discovery the later steps rely on, then config files, then tests. Every
     step preserves existing user content and only adds what is missing or
     corrects what is wrong, so this function is idempotent and safe to re-run.
+
+    Returns:
+        ``True`` if the project was already fully in sync; ``False`` if any
+        file was created or updated. A ``False`` result causes the ``sync``
+        CLI command to exit with code 1, making it usable as a git hook.
     """
-    make_all_init_files()
-    ConfigFile.validate_all_subclasses()
-    MirrorTestConfigFile.L.validate_all_subclasses()
+    return not (
+        make_all_init_files()
+        or ConfigFile.validate_all_subclasses()
+        or MirrorTestConfigFile.L.validate_all_subclasses()
+    )
