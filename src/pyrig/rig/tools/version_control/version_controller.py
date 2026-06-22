@@ -453,7 +453,7 @@ class VersionController(Tool):
         url = self.remote_url(check=check_repo_url)
         if not url:
             # we default to git username and repo name from cwd
-            owner = self.username()
+            owner = self.user_name()
             logger.warning(
                 "No remote url found, using git username: '%s' as repo owner",
                 owner,
@@ -520,7 +520,7 @@ class VersionController(Tool):
         stdout = args.run_cached(check=check).stdout
         return stdout.strip()
 
-    def username(self) -> str:
+    def user_name(self) -> str:
         """Return the git ``user.name`` from the active configuration.
 
         Used as the owner fallback inside ``_repo_owner`` when no

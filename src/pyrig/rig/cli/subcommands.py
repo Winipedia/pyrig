@@ -9,8 +9,6 @@ registered as command groups named after their variable.
 # as the ``mk`` command group; importing the module also registers the group's
 # sub-commands. Import the module (not the app instance) so only ``mk`` is a
 # Typer in this namespace and the discovery registers exactly one group.
-import typer
-
 from pyrig.rig.cli import make
 
 mk = make.app
@@ -74,8 +72,7 @@ def sync() -> None:
     """
     from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
 
-    if not synchronize_project():
-        raise typer.Exit(code=1)
+    synchronize_project()
 
 
 def scratch() -> None:

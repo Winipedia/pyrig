@@ -13,6 +13,7 @@ from pyrig.core.strings import (
     snake_to_kebab_case,
 )
 from pyrig.core.subprocesses import Args
+from pyrig.rig.cli import subcommands
 from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
@@ -97,6 +98,37 @@ class Pyrigger(Tool):
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return self.args(cmd_name, *args)
 
+    def group_cmd_args(
+        self, *args: str, group: typer.Typer, cmd: Callable[..., Any]
+    ) -> Args:
+        """Construct pyrig command arguments for a subcommand within a command group.
+
+        Resolves the group name by searching the subcommands module for the given
+        ``typer.Typer`` instance by identity (the same strategy used by the CLI
+        builder), then derives the command name from the callable's ``__name__``
+        in kebab-case.
+
+        Args:
+            *args: Additional arguments appended after the command name.
+            group: The ``typer.Typer`` group app (e.g. ``make.app``).
+            cmd: Callable whose ``__name__`` is used as the subcommand name.
+
+        Returns:
+            Args for ``'pyrig <group_name> <cmd_name> [args...]'``.
+
+        Raises:
+            ValueError: If ``group`` is not registered in the subcommands module.
+        """
+        group_name = next(
+            (
+                snake_to_kebab_case(name)
+                for name, obj in vars(subcommands).items()
+                if obj is group
+            ),
+        )
+        cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
+        return self.args(group_name, cmd_name, *args)
+
     def dev_dep_cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
         """Make command args with pyrig-dev."""
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
@@ -132,30 +164,39 @@ class Pyrigger(Tool):
             label="Initializing project",
             length=len(steps),
         ) as progress:
-            for step_args in progress:
-                PackageManager.I.run_args(*step_args).run()
+            for step_args, run_kwargs in progress:
+                PackageManager.I.run_args(*step_args).run(**run_kwargs)
 
-    def setup_steps(self) -> list[Args]:
+    def setup_steps(self) -> list[tuple[Args, dict[str, Any]]]:
         """Return the ordered setup steps for project initialization.
 
-        Each step is represented as a key-value pair where the key is a
-        human-readable description of the step, and the value is an
-        ``Args`` object containing the command arguments to execute that step.
+        Each step is a ``(Args, RunKwargs)`` pair. ``Args`` holds the command
+        to run; ``RunKwargs`` is passed directly to ``Args.run()`` and is empty
+        for most steps. The sync step uses ``{"check": False}`` because it
+        exits with code 1 whenever it creates or updates files — expected on a
+        fresh project. The final git commit triggers the pre-commit hook, which
+        re-runs sync and acts as the convergence gate.
 
         Returns:
-            Ordered dict of setup steps with descriptions and command arguments.
+            Ordered list of ``(Args, RunKwargs)`` steps.
         """
         return [
-            VersionController.I.init_args(),
-            PackageManager.I.add_dev_dependencies_args(
-                *Tool.subclasses_dev_dependencies()
+            (VersionController.I.init_args(), {}),
+            (
+                PackageManager.I.add_dev_dependencies_args(
+                    *Tool.subclasses_dev_dependencies()
+                ),
+                {},
             ),
-            PackageManager.I.install_dependencies_args(),
-            self.cmd_args(cmd=sync),
-            PackageManager.I.install_dependencies_args(),
-            VersionControlHookManager.I.install_args(),
-            VersionController.I.add_all_args(),
-            VersionController.I.commit_with_message_args(
-                msg=f"{self.name()}: Initial commit"
+            (PackageManager.I.install_dependencies_args(), {}),
+            (self.cmd_args(cmd=sync), {"check": False}),
+            (PackageManager.I.install_dependencies_args(), {}),
+            (VersionControlHookManager.I.install_args(), {}),
+            (VersionController.I.add_all_args(), {}),
+            (
+                VersionController.I.commit_with_message_args(
+                    msg=f"{self.name()}: Initial commit"
+                ),
+                {},
             ),
         ]

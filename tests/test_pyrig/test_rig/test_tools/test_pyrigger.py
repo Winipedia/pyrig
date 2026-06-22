@@ -3,12 +3,19 @@
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args
+from pyrig.rig.cli import make
+from pyrig.rig.cli.make import local
 from pyrig.rig.tools import pyrigger
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
 class TestPyrigger:
     """Test class."""
+
+    def test_group_cmd_args(self) -> None:
+        """Test method."""
+        result = Pyrigger.I.group_cmd_args(group=make.app, cmd=local)
+        assert result == Args(("pyrig", "mk", "local"))
 
     def test_dev_dep_cmd_args(self) -> None:
         """Test method."""
@@ -42,11 +49,14 @@ class TestPyrigger:
         assert Pyrigger.I.link_url() == "https://github.com/Winipedia/pyrig"
 
     def test_setup_steps(self) -> None:
-        """Test that setup_steps returns a non-empty list of callables."""
+        """Test that setup_steps returns a non-empty list of (Args, dict) pairs."""
         steps = Pyrigger.I.setup_steps()
         assert isinstance(steps, list)
         assert len(steps) > 0
-        assert all(isinstance(step, Args) for step in steps)
+        assert all(
+            isinstance(step_args, Args) and isinstance(step_kwargs, dict)
+            for step_args, step_kwargs in steps
+        )
 
     def test_init_project(self, mocker: MockerFixture) -> None:
         """Test function."""

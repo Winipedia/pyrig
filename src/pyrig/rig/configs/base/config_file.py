@@ -230,18 +230,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         )
 
     @classmethod
-    def version_controlled_subclasses(cls) -> Iterator[type[Self]]:
-        """Yield config file classes whose files are tracked by version control.
-
-        Yields:
-            ``ConfigFile`` subclasses for which ``version_control_ignored()``
-            returns ``False``.
-        """
-        return (
-            cf for cf in cls.concrete_subclasses() if not cf().version_control_ignored()
-        )
-
-    @classmethod
     def discard_correct_subclasses(
         cls, subclasses: Iterable[type[Self]]
     ) -> Iterator[type[Self]]:
