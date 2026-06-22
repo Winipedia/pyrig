@@ -41,3 +41,23 @@ def cmd(
     )
 
     make_subcommand(name, shared=shared)
+
+
+@app.command()
+def local() -> None:
+    """Create all version-control-ignored config files for local development.
+
+    Discovers every ``ConfigFile`` subclass whose ``version_control_ignored()``
+    returns ``True`` and creates the file on disk if it does not already exist.
+    Parent directories are created automatically.
+
+    Useful as a CI/CD setup step: gitignored files (such as ``.env`` or
+    ``.scratch.py``) are never committed, so they must be created in the CI
+    environment before running hooks or checks that expect them to be present.
+
+    Examples:
+        $ uv run pyrig mk local
+    """
+    from pyrig.rig.cli.commands.make.local import make_local_files  # noqa: PLC0415
+
+    make_local_files()

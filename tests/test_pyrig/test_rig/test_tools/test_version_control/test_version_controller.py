@@ -43,7 +43,7 @@ class TestVersionController:
         )
         username_mock = mocker.patch.object(
             VersionController,
-            VersionController.username.__name__,
+            VersionController.user_name.__name__,
             return_value="Test User",
         )
         result = VersionController()._repo_owner(  # noqa: SLF001
@@ -220,14 +220,14 @@ class TestVersionController:
         result = VersionController.I.remote_url()
         assert isinstance(result, str)
 
-    def test_username(self, mocker: MockerFixture) -> None:
+    def test_user_name(self, mocker: MockerFixture) -> None:
         """Test method."""
         run_mock = mocker.patch.object(
             Args,
             Args.run_cached.__name__,
             return_value=mocker.Mock(stdout="Some User\n"),
         )
-        result = VersionController.I.username()
+        result = VersionController.I.user_name()
         run_mock.assert_called_once()
         assert result == "Some User"
 

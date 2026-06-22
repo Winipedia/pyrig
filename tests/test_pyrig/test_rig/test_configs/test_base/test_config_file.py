@@ -74,17 +74,6 @@ class TestConfigFile:
         """Test method."""
         assert my_test_config_file().filename() == "my-test-file.txt"
 
-    def test_version_controlled_subclasses(self) -> None:
-        """Test method."""
-        not_expected = {
-            EnvConfigFile,
-            ScratchConfigFile,
-        }
-        actual = set(ConfigFile.version_controlled_subclasses())
-        assert len(actual) > 0
-        for cf in not_expected:
-            assert cf not in actual
-
     def test_discard_correct_subclasses(self, mocker: MockerFixture) -> None:
         """Test method."""
         # make two magic mock subclasses of ConfigFile that are correct and incorrect

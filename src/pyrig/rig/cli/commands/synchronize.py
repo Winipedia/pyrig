@@ -5,12 +5,14 @@ autouse conformance checks require, by running the three idempotent structural
 fixups in their correct order.
 """
 
+import typer
+
 from pyrig.core.root import make_all_init_files
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 
 
-def synchronize_project() -> bool:
+def synchronize_project() -> None:
     """Run the three structural fixups in order to reconcile the project.
 
     Executes, in order:
@@ -29,13 +31,18 @@ def synchronize_project() -> bool:
     step preserves existing user content and only adds what is missing or
     corrects what is wrong, so this function is idempotent and safe to re-run.
 
-    Returns:
-        ``True`` if the project was already fully in sync; ``False`` if any
-        file was created or updated. A ``False`` result causes the ``sync``
-        CLI command to exit with code 1, making it usable as a git hook.
+    Raises:
+        typer.Exit: With code 1 if any file was created or updated, making
+            this function usable as a git hook backend.
+
+    Note:
+        All three calls are assigned to variables before the boolean
+        combination so that every fixup always runs. Using ``or`` or ``and``
+        directly on the call expressions would short-circuit and skip the
+        remaining fixups the moment one returns a non-empty (or empty) tuple.
     """
-    return not (
-        make_all_init_files()
-        or ConfigFile.validate_all_subclasses()
-        or MirrorTestConfigFile.L.validate_all_subclasses()
-    )
+    created_inits = make_all_init_files()
+    changed_configs = ConfigFile.validate_all_subclasses()
+    changed_tests = MirrorTestConfigFile.L.validate_all_subclasses()
+    if created_inits or changed_configs or changed_tests:
+        raise typer.Exit(code=1)
