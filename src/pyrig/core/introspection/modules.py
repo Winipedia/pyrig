@@ -281,9 +281,6 @@ def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
     Args:
         package: Package to iterate. Must have a ``__path__`` attribute
             (i.e., must be a package, not a plain module).
-        exclude: tuple of strings or compiled regex patterns matched against fully
-            qualified child names (e.g., ``"pyrig_dev.rig.configs.base"``).
-            Matching children are skipped.
 
     Returns:
         Iterator of ``(module, is_package)`` pairs where ``module`` is the

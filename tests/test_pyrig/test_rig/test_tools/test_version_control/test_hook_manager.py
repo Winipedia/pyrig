@@ -1,6 +1,5 @@
 """module."""
 
-from pyrig.rig.tools.version_control import hook_manager
 from pyrig.rig.tools.version_control.hook_manager import (
     VersionControlHookManager,
 )
@@ -67,14 +66,3 @@ class TestVersionControlHookManager:
         """Test method."""
         result = VersionControlHookManager.I.run_all_files_args()
         assert result == ("prek", "run", "--all-files")
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        hook_manager.__doc__
-        == """Tool wrapper for the version control hook manager.
-
-Wraps version control hook manager commands and information.
-"""
-    )

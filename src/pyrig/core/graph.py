@@ -138,19 +138,6 @@ class DiGraph(ABC):
         """
         return self._nodes
 
-    def has_edge(self, source: str, target: str) -> bool:
-        """Check whether a directed edge exists from source to target.
-
-        Args:
-            source: The origin node.
-            target: The destination node.
-
-        Returns:
-            ``True`` if the edge exists, ``False`` if either node is absent
-            or no edge connects them.
-        """
-        return target in self._edges.get(source, set())
-
     def sorted_ancestors(self, target: str) -> list[str]:
         """Return all ancestors of the target node sorted in topological order.
 

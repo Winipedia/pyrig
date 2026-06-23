@@ -96,21 +96,6 @@ class VersionController(Tool):
     # Staging
     # -------------------------------------------------------------------------
 
-    def add_pyproject_toml_and_lock_file_args(self, *args: str) -> Args:
-        """Build arguments to stage ``pyproject.toml`` and ``uv.lock`` together.
-
-        Used in CI workflow steps that bump the project version or sync
-        dependencies so that both the manifest and the lock file are always
-        committed as a pair.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for ``git add pyproject.toml uv.lock [args]``.
-        """
-        return self.add_pyproject_toml_args("uv.lock", *args)
-
     def add_all_args(self, *args: str) -> Args:
         """Build arguments to stage all modified and untracked files.
 
@@ -123,17 +108,6 @@ class VersionController(Tool):
             Args for ``git add . [args]``.
         """
         return self.add_args(".", *args)
-
-    def add_pyproject_toml_args(self, *args: str) -> Args:
-        """Build arguments to stage ``pyproject.toml``.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for ``git add pyproject.toml [args]``.
-        """
-        return self.add_args("pyproject.toml", *args)
 
     def add_args(self, *args: str) -> Args:
         """Build base arguments for ``git add``.
@@ -150,7 +124,7 @@ class VersionController(Tool):
     # Committing
     # -------------------------------------------------------------------------
 
-    def commit_with_message_args(self, *args: str, msg: str) -> Args:
+    def commit_with_msg_args(self, *args: str, msg: str) -> Args:
         """Build arguments for ``git commit -m <msg>``.
 
         Args:
@@ -234,44 +208,6 @@ class VersionController(Tool):
     # Configuration - write/set
     # -------------------------------------------------------------------------
 
-    def config_local_user_email_args(self, *args: str, email: str) -> Args:
-        """Build arguments to set the local repository user email.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            email: The email address to configure.
-
-        Returns:
-            Args for ``git config --local user.email <email> [args]``.
-        """
-        return self.config_local_args("user.email", email, *args)
-
-    def config_local_user_name_args(self, *args: str, name: str) -> Args:
-        """Build arguments to set the local repository user name.
-
-        Args:
-            *args: Additional arguments appended to the command.
-            name: The user name to configure.
-
-        Returns:
-            Args for ``git config --local user.name <name> [args]``.
-        """
-        return self.config_local_args("user.name", name, *args)
-
-    def config_local_args(self, *args: str) -> Args:
-        """Build arguments for ``git config --local``.
-
-        Local scope means changes apply only to the current repository and do
-        not affect the user's global git configuration.
-
-        Args:
-            *args: Configuration key/value pairs or additional flags.
-
-        Returns:
-            Args for ``git config --local [args]``.
-        """
-        return self.config_args("--local", *args)
-
     # -------------------------------------------------------------------------
     # Configuration - read/get
     # -------------------------------------------------------------------------
@@ -339,62 +275,6 @@ class VersionController(Tool):
         return self.args("config", *args)
 
     # -------------------------------------------------------------------------
-    # Diff
-    # -------------------------------------------------------------------------
-
-    def has_unstaged_diff(self) -> bool:
-        """Check whether the working tree contains any unstaged changes.
-
-        Runs ``git diff --quiet``, which exits with code ``0`` when the working
-        tree is clean and with a non-zero code when unstaged differences
-        exist.  The exit code is used rather than parsing output, making this
-        check fast and reliable.
-
-        Returns:
-            ``True`` if there are unstaged changes, ``False`` if the working
-            tree is clean.
-        """
-        args = self.diff_quiet_args()
-        completed_process = args.run(check=False)
-        return completed_process.returncode != 0
-
-    def diff(self) -> str:
-        """Return the current unstaged diff as a string.
-
-        Returns:
-            The raw output of ``git diff``, or an empty string when the
-            working tree is clean.
-        """
-        args = self.diff_args()
-        completed_process = args.run(check=False)
-        return completed_process.stdout
-
-    def diff_quiet_args(self, *args: str) -> Args:
-        """Build arguments for ``git diff --quiet``.
-
-        The ``--quiet`` flag suppresses all output and signals the presence of
-        differences through the process exit code only.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for ``git diff --quiet [args]``.
-        """
-        return self.diff_args("--quiet", *args)
-
-    def diff_args(self, *args: str) -> Args:
-        """Build base arguments for ``git diff``.
-
-        Args:
-            *args: Additional arguments appended to the command.
-
-        Returns:
-            Args for ``git diff [args]``.
-        """
-        return self.args("diff", *args)
-
-    # -------------------------------------------------------------------------
     # Repository metadata
     # -------------------------------------------------------------------------
 
@@ -428,12 +308,11 @@ class VersionController(Tool):
         """Parse the repository owner from the git remote URL.
 
         Supports both HTTPS (``https://github.com/owner/repo.git``) and SSH
-        (``git@github.com:owner/repo.git``) remote formats by stripping the
-        ``.git`` suffix and known URL prefixes, then taking the first path
-        segment as the owner.
+        (``git@github.com:owner/repo.git``) remote formats by stripping known
+        URL prefixes, then taking the first path segment as the owner.
 
-        When no remote is configured, falls back to the git ``user.name`` as
-        the owner.
+        When no remote is configured and ``check_repo_url=False``, falls back
+        to the git ``user.name`` as the owner.
 
         If the fallback to git username is used, the spaces in the username are removed
         to ensure URL safety and a warning is logged. This is inspired by the fact that

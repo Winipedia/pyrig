@@ -67,7 +67,7 @@ any part of the system by simply defining a new subclass in the right place. :
 
 ```python
 PackageManager.I.install_dependencies_args().run()
-MirrorTestConfigFile.L.validate_all_subclasses()
+MirrorTestConfigFile.L.validate_concrete_subclasses()
 ```
 
 ---

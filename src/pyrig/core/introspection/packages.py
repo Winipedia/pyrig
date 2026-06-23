@@ -10,7 +10,6 @@ import typer
 
 from pyrig.core.introspection.classes import discover_all_subclasses
 from pyrig.core.introspection.modules import (
-    import_module_from_file,
     import_module_with_file_fallback,
     iter_modules,
 )
@@ -24,9 +23,10 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
 
     Creates the target directory (and all missing parents), then places
     ``__init__.py`` files in the target directory and each ancestor up the
-    tree. Traversal stops at the first ancestor that appears in ``until`` or
-    matches the current working directory. This ensures the full path is
-    importable as a Python package hierarchy.
+    tree. Traversal stops at the first directory (starting from the target
+    itself, then its ancestors) that appears in ``until`` or matches the
+    current working directory. This ensures the full path is importable as a
+    Python package hierarchy.
 
     Args:
         path: Directory path to create.
@@ -48,19 +48,17 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
 
 
 def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:
-    """Create `__init__.py` files for the given namespace packages.
+    """Create ``__init__.py`` files in the given directories.
 
-    Resolves each dotted package name to its filesystem path and writes a
-    minimal `__init__.py` containing a standard package initialization
-    docstring. Skips any package that already has an `__init__.py`.
+    Writes a ``__init__.py`` with the given content into each directory.
+    Skips any directory that already has an ``__init__.py``.
 
     Args:
-        paths: Dotted package names of namespace packages to
-            initialize (e.g. ``"myproject.subpackage"``).
+        paths: Paths of directories to initialize as packages.
         content: content for the init files.
 
     Returns:
-        List of paths where ``__init__.py`` files were created.
+        Tuple of paths where ``__init__.py`` files were created.
         Empty if all already existed.
     """
     return tuple(path for path in paths if make_init_file(path, content))
@@ -69,12 +67,15 @@ def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:
 def make_init_file(path: Path, content: str) -> bool:
     """Create an ``__init__.py`` file in the specified directory.
 
-    Prints the created path to stdout. No-op if ``__init__.py`` already
+    Prints ``Creating: <path>/__init__.py`` to stdout. No-op if ``__init__.py`` already
     exists in the directory.
 
     Args:
         path: Directory path where ``__init__.py`` should be created.
         content: Content to write into the ``__init__.py`` file.
+
+    Returns:
+        True if the file was created, False if it already existed.
     """
     path = path / "__init__.py"
 
@@ -111,7 +112,7 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
 
     1. Attempts a standard import via ``importlib.import_module``.
     2. If standard import fails, it falls back to importing directly from
-       the directory at ``path`` via ``import_module_from_file``.
+       the directory at ``path`` via ``import_module_with_file_fallback``.
 
     The fallback handles packages not yet registered in ``sys.modules``,
     such as dynamically created packages or packages in non-standard locations.
@@ -130,31 +131,6 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
         ImportError: If the module spec cannot be created from the path.
     """
     return import_module_with_file_fallback(path=path, name=name, is_package=True)
-
-
-def import_package_from_dir(path: Path, name: str) -> ModuleType:
-    """Import a package directly from a directory, always reading from disk.
-
-    Unlike a standard import, this function does not check ``sys.modules``
-    first — it always loads from the ``__init__.py`` on disk. The module is
-    pre-registered in ``sys.modules`` before execution and removed on failure,
-    so failed loads do not leave invalid cache entries. Prefer
-    ``import_package_with_dir_fallback`` when a standard import should be
-    attempted first.
-
-    Args:
-        path: Directory containing the package (must have ``__init__.py``).
-        name: Dotted module name for the package (e.g., ``"myproject.utils"``).
-
-    Returns:
-        Imported package module.
-
-    Raises:
-        FileNotFoundError: If the package directory or its ``__init__.py``
-            does not exist.
-        ImportError: If the module spec cannot be created from the path.
-    """
-    return import_module_from_file(path=path, name=name, is_package=True)
 
 
 def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
@@ -236,11 +212,6 @@ def walk_package(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
 
     Args:
         package: Root package to start traversal from.
-        exclude: tuple of strings or compiled regex patterns matched against
-            fully qualified names of modules at every level of the hierarchy.
-            Any child whose name matches a pattern is skipped entirely, along with
-            all of its descendants, because excluded sub-packages are never recursed
-            into. Patterns are propagated to deeper levels of the hierarchy.
 
     Yields:
         ``(module, is_package)`` tuples for each visited module, where

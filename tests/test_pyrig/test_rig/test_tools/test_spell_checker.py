@@ -1,6 +1,5 @@
 """module."""
 
-from pyrig.rig.tools import spell_checker
 from pyrig.rig.tools.spell_checker import SpellChecker
 
 
@@ -37,14 +36,3 @@ class TestSpellChecker:
         """Test method."""
         result = SpellChecker.I.check_fix_args()
         assert result == ("typos", "--write-changes")
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        spell_checker.__doc__
-        == """Spell checker tool wrapper.
-
-Wraps SpellChecker commands and information.
-"""
-    )

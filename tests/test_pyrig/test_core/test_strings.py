@@ -13,7 +13,6 @@ from pyrig.core.strings import (
     kebab_to_snake_case,
     make_linked_badge_markdown,
     make_name_from_obj,
-    make_summary_error_msg,
     open_path_with_utf8,
     read_text_utf8,
     snake_to_kebab_case,
@@ -94,29 +93,6 @@ def test_make_name_from_obj() -> None:
     result = make_name_from_obj(mock_src_package, capitalize=False)
     expected = "some-package"
     assert result == expected, f"Expected '{expected}', got '{result}'"
-
-
-def test_make_summary_error_msg() -> None:
-    """Test func."""
-    # Test with empty list
-    empty_msg = make_summary_error_msg([])
-    assert isinstance(empty_msg, str)
-
-    # Test with one item
-    one_item_msg = make_summary_error_msg([Path("error_file.py")])
-    assert isinstance(one_item_msg, str)
-
-    # Test with multiple items
-    items = [
-        Path("path/to/error_file1.py"),
-        Path("path/to/error_file2.py"),
-        Path("path/to/error_file3.py"),
-    ]
-    multi_item_msg = make_summary_error_msg(items)
-    assert isinstance(multi_item_msg, str)
-
-    for item in items:
-        assert str(item) in multi_item_msg
 
 
 def test_make_linked_badge_markdown() -> None:

@@ -1,6 +1,5 @@
 """module."""
 
-from pyrig.rig.tools.testers import coverage
 from pyrig.rig.tools.testers.coverage import CoverageTester
 
 
@@ -57,14 +56,3 @@ class TestCoverageTester:
         result = CoverageTester.I.group()
         assert isinstance(result, str)
         assert result == "testing"
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        coverage.__doc__
-        == """Coverage testing wrapper for the code coverage tool.
-
-Wraps CoverageTester commands and information.
-"""
-    )

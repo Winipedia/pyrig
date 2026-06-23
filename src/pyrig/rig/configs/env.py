@@ -25,14 +25,13 @@ class EnvConfigFile(DictConfigFile):
     """
 
     def _load(self) -> dict[str, str | None]:
-        """Load all key-value pairs from the .env file.
+        """Raise ``RuntimeError`` unconditionally.
 
-        Parses the file according to dotenv format rules. Keys assigned
-        an empty value (e.g. ``KEY=``) are returned as empty strings.
+        Loading the ``.env`` file is never permitted; all content is managed
+        by the user directly and must not be read programmatically.
 
-        Returns:
-            Mapping of variable names to their string values, or None for
-            keys that are present without an assignment.
+        Raises:
+            RuntimeError: Always.
         """
         msg = f"{self} should never be loaded."
         raise RuntimeError(msg)

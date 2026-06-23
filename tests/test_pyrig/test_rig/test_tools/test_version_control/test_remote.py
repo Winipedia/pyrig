@@ -1,6 +1,5 @@
 """module."""
 
-from pyrig.rig.tools.version_control import remote
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
 )
@@ -88,14 +87,3 @@ class TestRemoteVersionController:
             result
             == "https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig/health_check.yml?label=CI&logo=github"
         )
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        remote.__doc__
-        == """Remote version controller wrapper.
-
-Wraps RemoteVersionController commands and information.
-"""
-    )

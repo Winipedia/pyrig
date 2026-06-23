@@ -19,7 +19,7 @@ def test_synchronize_project(mocker: MockerFixture) -> None:
         synchronize, make_all_init_files.__name__, return_value=()
     )
     config_file_mock = mocker.patch.object(
-        ConfigFile, ConfigFile.validate_all_subclasses.__name__, return_value=()
+        ConfigFile, ConfigFile.validate_concrete_subclasses.__name__, return_value=()
     )
 
     synchronize_project()
@@ -27,8 +27,8 @@ def test_synchronize_project(mocker: MockerFixture) -> None:
     make_init_files_mock.assert_called_once()
     assert config_file_mock.call_count == len(
         (
-            ConfigFile.validate_all_subclasses,
-            MirrorTestConfigFile.validate_all_subclasses,
+            ConfigFile.validate_concrete_subclasses,
+            MirrorTestConfigFile.validate_concrete_subclasses,
         )
     )
 

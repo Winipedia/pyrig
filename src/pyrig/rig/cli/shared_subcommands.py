@@ -18,10 +18,10 @@ def version() -> None:
 
     Examples:
         $ uv run pyrig version
-        pyrig version 1.2.3
+        pyrig 1.2.3
 
         $ uv run myproject version
-        myproject version 0.4.1
+        myproject 0.4.1
     """
     from pyrig.rig.cli.commands.version import project_version  # noqa: PLC0415
 

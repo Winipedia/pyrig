@@ -1,6 +1,5 @@
 """module."""
 
-from pyrig.rig.tools import programming_language
 from pyrig.rig.tools.base.tool import Group
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
@@ -42,14 +41,3 @@ class TestProgrammingLanguage:
     def test_group(self) -> None:
         """Test method."""
         assert ProgrammingLanguage().group() == Group.PROJECT_INFO
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        programming_language.__doc__
-        == """Programming language tool wrapper.
-
-Wraps ProgrammingLanguage commands and information.
-"""
-    )

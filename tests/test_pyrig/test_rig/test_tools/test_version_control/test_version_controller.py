@@ -3,7 +3,6 @@
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools.version_control import version_controller
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
@@ -25,9 +24,9 @@ class TestVersionController:
         """Test method."""
         assert VersionController.I.owner_from_remote_url() == "Winipedia"
 
-    def test_commit_with_message_args(self) -> None:
+    def test_commit_with_msg_args(self) -> None:
         """Test method."""
-        result = VersionController.I.commit_with_message_args(msg="Initial commit")
+        result = VersionController.I.commit_with_msg_args(msg="Initial commit")
         assert result == ("git", "commit", "-m", "Initial commit")
 
     def test__repo_owner(self, mocker: MockerFixture) -> None:
@@ -106,11 +105,6 @@ class TestVersionController:
         result = VersionController.I.default_branch()
         assert result == "main"
 
-    def test_diff_quiet_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.diff_quiet_args()
-        assert result == ("git", "diff", "--quiet")
-
     def test_config_get_args(self) -> None:
         """Test method."""
         result = VersionController.I.config_get_args()
@@ -125,11 +119,6 @@ class TestVersionController:
         """Test method."""
         result = VersionController.I.config_get_user_name_args()
         assert result == ("git", "config", "--get", "user.name")
-
-    def test_diff_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.diff_args()
-        assert result == ("git", "diff")
 
     def test_push_origin_args(self) -> None:
         """Test method."""
@@ -168,16 +157,6 @@ class TestVersionController:
         result = VersionController.I.add_all_args()
         assert result == ("git", "add", ".")
 
-    def test_add_pyproject_toml_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.add_pyproject_toml_args()
-        assert result == ("git", "add", "pyproject.toml")
-
-    def test_add_pyproject_toml_and_lock_file_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.add_pyproject_toml_and_lock_file_args()
-        assert result == ("git", "add", "pyproject.toml", "uv.lock")
-
     def test_commit_args(self) -> None:
         """Test method."""
         result = VersionController.I.commit_args("-m", "Initial commit")
@@ -192,23 +171,6 @@ class TestVersionController:
         """Test method."""
         result = VersionController.I.config_args("user.email", "test@example.com")
         assert result == ("git", "config", "user.email", "test@example.com")
-
-    def test_config_local_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_local_args("user.email", "test@example.com")
-        assert result == ("git", "config", "--local", "user.email", "test@example.com")
-
-    def test_config_local_user_email_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_local_user_email_args(
-            email="test@example.com"
-        )
-        assert result == ("git", "config", "--local", "user.email", "test@example.com")
-
-    def test_config_local_user_name_args(self) -> None:
-        """Test method."""
-        result = VersionController.I.config_local_user_name_args(name="Test User")
-        assert result == ("git", "config", "--local", "user.name", "Test User")
 
     def test_repo_owner(self) -> None:
         """Test method."""
@@ -230,24 +192,3 @@ class TestVersionController:
         result = VersionController.I.user_name()
         run_mock.assert_called_once()
         assert result == "Some User"
-
-    def test_diff(self) -> None:
-        """Test method."""
-        result = VersionController.I.diff()
-        assert isinstance(result, str)
-
-    def test_has_unstaged_diff(self) -> None:
-        """Test method."""
-        result = VersionController.I.has_unstaged_diff()
-        assert isinstance(result, bool)
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        version_controller.__doc__
-        == """Version controller wrapper.
-
-Wraps VersionController commands and information.
-"""
-    )

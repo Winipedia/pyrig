@@ -74,17 +74,6 @@ class TestConfigFile:
         """Test method."""
         assert my_test_config_file().filename() == "my-test-file.txt"
 
-    def test_discard_correct_subclasses(self, mocker: MockerFixture) -> None:
-        """Test method."""
-        # make two magic mock subclasses of ConfigFile that are correct and incorrect
-        cf1 = mocker.MagicMock()
-        cf1.return_value.is_correct.return_value = True
-
-        cf2 = mocker.MagicMock()
-        cf2.return_value.is_correct.return_value = False
-
-        assert tuple(ConfigFile.discard_correct_subclasses((cf1, cf2))) == (cf2,)
-
     def test___str__(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
     ) -> None:
@@ -182,11 +171,11 @@ class TestConfigFile:
         my_test_config_file.validate_subclasses([my_test_config_file])
         mock.assert_called_once()
 
-    def test_validate_all_subclasses(self) -> None:
+    def test_validate_concrete_subclasses(self) -> None:
         """Test method."""
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
             _ = MirrorTestConfigFile.I
-        ConfigFile.validate_all_subclasses()
+        ConfigFile.validate_concrete_subclasses()
 
     def test_extension_separator(
         self, my_test_config_file: type[ConfigFile[dict[str, Any]]]

@@ -206,12 +206,11 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
     def test_module_content_with_skeletons(self) -> str:
         """Build the complete test module content with skeletons for untested code.
 
-        Combines the existing file content with newly generated skeletons in four steps:
+        Combines the existing file content with newly generated skeletons as follows:
 
         1. Read the existing test module content from disk.
-        2. Prepend a default module docstring if the module has none.
-        3. Append function skeletons for every untested source function.
-        4. Insert class and method skeletons for every untested source class.
+        2. Append function skeletons for every untested source function.
+        3. Insert class and method skeletons for every untested source class.
 
         Returns:
             Full test module source ready to write to disk, preserving all existing
@@ -531,6 +530,7 @@ class {test_class_name}:
         )
 
         def mirror_module(_self: Self) -> ModuleType:
+            """Return the source module captured at subclass creation time."""
             return module
 
         subclass = type(

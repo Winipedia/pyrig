@@ -7,7 +7,7 @@ and formatted output helpers.
 """
 
 import re
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -218,30 +218,6 @@ def make_name_from_obj(
     if capitalize:
         parts = (part.capitalize() for part in parts)
     return join_on.join(parts)
-
-
-def make_summary_error_msg(
-    paths: Iterable[Path],
-) -> str:
-    """Create a formatted multi-line error message listing file locations.
-
-    Produces a human-readable summary intended for use in assertion error
-    messages when multiple validation failures are detected across the codebase.
-
-    Args:
-        paths: File paths where errors were found.
-
-    Returns:
-        A string containing ``"Found errors at:"`` followed by each path
-        on its own line, prefixed with ``"- "``.
-    """
-    msg = """
-Found errors at:
-"""
-    for error_location in paths:
-        msg += f"""
-- {error_location}"""
-    return msg
 
 
 def make_linked_badge_markdown(

@@ -3,7 +3,6 @@
 from collections.abc import Callable
 from typing import Any
 
-from pyrig.rig.cli import subcommands
 from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.commands.remove_pycache import remove_pycache
 from pyrig.rig.cli.commands.scratch import run_scratch_file
@@ -50,16 +49,3 @@ def test_rmpyc(
     """Test function."""
     command_works(rmpyc)
     command_calls_function(rmpyc, remove_pycache)
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        subcommands.__doc__
-        == """Project-specific CLI commands.
-
-All functions in this module are automatically discovered and registered
-as CLI commands for this project. Module-level ``typer.Typer`` instances are
-registered as command groups named after their variable.
-"""
-    )

@@ -85,9 +85,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         """Additional lines to be ignored.
 
         Builds a list of pyrig-specific patterns to be added to the gitignore.
-        They are only added if not already present in the standard baseline
-        to avoid duplication.
-        This will always include at least the line ``# Pyrigger stuff`` as a header for
+        This will always include at least the line ``# pyrig stuff`` as a header for
         the pyrig-specific entries.
         Some entries here are already covered by the standard Python gitignore, but are
         included here to be sure as they are almost garantueed to occur in a

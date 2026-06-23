@@ -1,6 +1,5 @@
 """Test module."""
 
-import sys
 from contextlib import chdir
 from pathlib import Path
 from types import ModuleType
@@ -16,7 +15,6 @@ from pyrig.core.introspection import packages
 from pyrig.core.introspection.packages import (
     discover_all_subclasses_across_package,
     discover_modules,
-    import_package_from_dir,
     import_package_with_dir_fallback,
     is_src_package,
     make_init_file,
@@ -83,9 +81,7 @@ def test_is_src_package() -> None:
     assert not is_src_package(typer)
 
 
-def test_import_package_with_dir_fallback(
-    tmp_path: Path, mocker: MockerFixture
-) -> None:
+def test_import_package_with_dir_fallback(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
         non_existing_dir = tmp_path / "non_existing"
@@ -104,42 +100,9 @@ def test_import_package_with_dir_fallback(
         package = import_package_with_dir_fallback(existing_dir, name=dir_name)
         assert package.__name__ == dir_name
 
-        import_package_from_dir_mock = mocker.patch(
-            import_package_from_dir.__module__ + "." + import_package_from_dir.__name__,
-            return_value=None,
-        )
-        # test that if the package is already imported it doesn't call the fallback
+        # test that if the package is already imported it doesn't reload from disk
         package = import_package_with_dir_fallback(existing_dir, name=dir_name)
         assert package.__name__ == dir_name
-        import_package_from_dir_mock.assert_not_called()
-
-
-def test_import_package_from_dir(tmp_path: Path) -> None:
-    """Test function."""
-    with chdir(tmp_path):
-        non_existing_dir = tmp_path / "non_existing"
-        assert not non_existing_dir.exists()
-        with pytest.raises(FileNotFoundError):
-            import_package_from_dir(non_existing_dir, name="non_existing")
-
-        dir_name = test_import_package_from_dir.__name__
-        package_dir = tmp_path / dir_name
-        package_dir.mkdir()
-        init_file = package_dir / "__init__.py"
-        init_file.write_text('"""Test package."""\n')
-        package = import_package_from_dir(package_dir, name=dir_name)
-        assert package.__name__ == dir_name
-
-        subdir = package_dir / "subdir"
-        subdir.mkdir()
-        init_file = subdir / "__init__.py"
-        init_file.write_text('"""Test package."""\n')
-        package = import_package_from_dir(subdir, name=f"{dir_name}.subdir")
-        assert package.__name__ == f"{dir_name}.subdir"
-
-        # check all are now registered in sys.modules
-        assert dir_name in sys.modules
-        assert f"{dir_name}.subdir" in sys.modules
 
 
 def test_walk_package() -> None:
