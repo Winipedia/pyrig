@@ -5,7 +5,7 @@ This package is the discovery root for all ``ConfigFile`` subclasses.
 defined here — and in dependent packages that extend pyrig — are discovered
 and validated.
 
-Running ``pyrig sync`` calls ``ConfigFile.validate_all_subclasses()``, which
+Running ``pyrig sync`` calls ``ConfigFile.validate_concrete_subclasses()``, which
 finds every concrete ``ConfigFile`` subclass in this package and in dependent
 packages, and validates each one in priority order: creating missing files and
 updating out-of-date ones while leaving correct files untouched.

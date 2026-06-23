@@ -78,7 +78,7 @@ class Pyrigger(Tool):
             ``("pyrig-dev",)``
         """
         # only pyrig-dev not pyrig because pyrig is already installed as dependency
-        return (self.dev_dep(),)
+        return ("pyrig-dev",)
 
     def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments from a callable.
@@ -117,7 +117,7 @@ class Pyrigger(Tool):
             Args for ``'pyrig <group_name> <cmd_name> [args...]'``.
 
         Raises:
-            ValueError: If ``group`` is not registered in the subcommands module.
+            StopIteration: If ``group`` is not registered in the subcommands module.
         """
         group_name = next(
             (
@@ -129,19 +129,6 @@ class Pyrigger(Tool):
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return self.args(group_name, cmd_name, *args)
 
-    def dev_dep_cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
-        """Make command args with pyrig-dev."""
-        cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
-        return self.dev_dep_args(cmd_name, *args)
-
-    def dev_dep_args(self, *args: str) -> Args:
-        """Make args with pyrig-dev."""
-        return Args((self.dev_dep(), *args))
-
-    def dev_dep(self) -> str:
-        """Get the pyrig-dev dev dependency."""
-        return "pyrig-dev"
-
     def init_project(self) -> None:
         """Run the full project initialization sequence.
 
@@ -149,8 +136,7 @@ class Pyrigger(Tool):
         in order. Each step's ``Args`` object is wrapped with
         ``PackageManager.I.run_args`` (i.e., ``uv run <args>``)
         to ensure commands run inside the project's virtual environment.
-        The progress bar description is updated to the step's description
-        (the dict key) before each step runs, and advances after it completes.
+        The progress bar advances after each step completes.
         The process stops immediately if any step exits with a non-zero
         return code.
 
@@ -194,7 +180,7 @@ class Pyrigger(Tool):
             (VersionControlHookManager.I.install_args(), {}),
             (VersionController.I.add_all_args(), {}),
             (
-                VersionController.I.commit_with_message_args(
+                VersionController.I.commit_with_msg_args(
                     msg=f"{self.name()}: Initial commit"
                 ),
                 {},

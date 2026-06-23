@@ -1,7 +1,7 @@
 """The ``mk`` command group for scaffolding new project artifacts.
 
-Defines the group's Typer ``app`` and its sub-commands (``pyrig mk subcls``,
-``pyrig mk cmd``, ``pyrig mk fixture``). ``subcommands`` binds this ``app`` to
+Defines the group's Typer ``app`` and its sub-commands (``pyrig mk cmd``,
+``pyrig mk local``). ``subcommands`` binds this ``app`` to
 the name ``mk`` so the CLI discovery registers it as the ``mk`` command group;
 importing this module also registers the sub-commands defined below.
 """

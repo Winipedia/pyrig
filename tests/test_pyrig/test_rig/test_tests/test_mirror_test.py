@@ -452,14 +452,3 @@ class TestMirrorClass:
         """Test method."""
         subclass = MirrorTestConfigFile.L.generate_subclass(mirror_test)
         assert subclass().mirror_module() == mirror_test
-
-
-def test_module_docstring() -> None:
-    """Test method."""
-    assert (
-        mirror_test.__doc__
-        == """Mirror test configuration management for automatic test skeleton generation.
-
-Ensures every source module, class, function and method has a test counterpart.
-"""  # noqa: E501
-    )

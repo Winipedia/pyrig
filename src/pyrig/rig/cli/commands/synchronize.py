@@ -17,12 +17,12 @@ def synchronize_project() -> None:
 
     Executes, in order:
 
-        1. ``make_init_files()`` — create any missing ``__init__.py`` files
+        1. ``make_all_init_files()`` — create any missing ``__init__.py`` files
            (satisfies the ``no_namespace_packages`` check).
-        2. ``ConfigFile.validate_all_subclasses()`` — create or update every
+        2. ``ConfigFile.validate_concrete_subclasses()`` — create or update every
            managed ``ConfigFile`` (satisfies the ``all_config_files_correct``
            check).
-        3. ``MirrorTestConfigFile.L.validate_all_subclasses()`` — generate
+        3. ``MirrorTestConfigFile.L.validate_concrete_subclasses()`` — generate
            mirror test skeletons for all source modules (satisfies the
            ``all_modules_tested`` check).
 
@@ -42,7 +42,7 @@ def synchronize_project() -> None:
         remaining fixups the moment one returns a non-empty (or empty) tuple.
     """
     created_inits = make_all_init_files()
-    changed_configs = ConfigFile.validate_all_subclasses()
-    changed_tests = MirrorTestConfigFile.L.validate_all_subclasses()
+    changed_configs = ConfigFile.validate_concrete_subclasses()
+    changed_tests = MirrorTestConfigFile.L.validate_concrete_subclasses()
     if created_inits or changed_configs or changed_tests:
         raise typer.Exit(code=1)

@@ -183,7 +183,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return configs
 
     @classmethod
-    def validate_all_subclasses(cls) -> tuple[type[Self], ...]:
+    def validate_concrete_subclasses(cls) -> tuple[type[Self], ...]:
         """Discover and validate every concrete ``ConfigFile`` subclass.
 
         Discovers all concrete subclasses across all installed dependents
@@ -228,24 +228,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         return (
             cf for cf in cls.concrete_subclasses() if cf().version_control_ignored()
         )
-
-    @classmethod
-    def discard_correct_subclasses(
-        cls, subclasses: Iterable[type[Self]]
-    ) -> Iterator[type[Self]]:
-        """Yield only the incorrect config file classes from a collection.
-
-        Used to filter out correct config files when validating a specific
-        collection of subclasses.
-
-        Args:
-            subclasses: Collection of ``ConfigFile`` subclasses to filter.
-
-        Yields:
-            Only the subclasses from the input collection for which ``is_correct()``
-            returns ``False``.
-        """
-        return (cf for cf in subclasses if not cf().is_correct())
 
     @classmethod
     def sort_key(cls) -> float:
@@ -450,7 +432,7 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=sync)} to recreate it."
 class ListConfigFile(ConfigFile[list[str]]):
     """Abstract base for config files whose content is a list.
 
-    Binds the ``ConfigT`` type parameter to ``list[Any]``, giving subclasses
+    Binds the ``ConfigT`` type parameter to ``list[str]``, giving subclasses
     properly typed ``load()``, ``dump()``, and ``configs()`` methods.
     """
 

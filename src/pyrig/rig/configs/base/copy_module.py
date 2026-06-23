@@ -73,6 +73,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         )
 
         def copy_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
+            """Return the source module captured at subclass creation time."""
             return module
 
         subclass = type(

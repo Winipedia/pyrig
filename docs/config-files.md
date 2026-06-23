@@ -92,7 +92,7 @@ questions and get code explanations from the AI.
 ## Subclass Discovery, Validation & Customization
 
 The `pyrig.rig.configs` package is the **discovery root** for all config files.
-`ConfigFile.dependency_package()` returns this module, and `ConfigFile.validate_all_subclasses()`
+`ConfigFile.dependency_package()` returns this module, and `ConfigFile.validate_concrete_subclasses()`
 — called by `pyrig sync` — discovers every concrete subclass defined inside
 the package and in dependent packages, sorts by priority (higher first), and
 validates each one in order.

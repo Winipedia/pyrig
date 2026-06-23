@@ -30,7 +30,7 @@ from pyrig.core.introspection.modules import (
     reimport_module,
     root_module,
 )
-from pyrig.core.introspection.packages import import_package_from_dir
+from pyrig.core.introspection.packages import import_package_with_dir_fallback
 from pyrig.rig.cli import subcommands
 
 
@@ -164,13 +164,15 @@ def test_iter_modules(tmp_path: Path) -> None:
     """Test function."""
     # Create a temporary package with known content
     with chdir(tmp_path):
-        package_dir = tmp_path / "test_package"
+        package_dir = tmp_path / test_iter_modules.__name__
         package_dir.mkdir()
         init_file = package_dir / "__init__.py"
         init_file.write_text('"""Test package."""\n')
         module_file = package_dir / "test_module.py"
         module_file.write_text('"""Test module."""\n')
-        package = import_package_from_dir(package_dir, name="test_package")
+        package = import_package_with_dir_fallback(
+            package_dir, name=test_iter_modules.__name__
+        )
 
         modules = iter_modules(package)
         modules_names = [m.__name__ for m, _ in modules]

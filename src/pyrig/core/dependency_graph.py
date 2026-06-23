@@ -37,6 +37,8 @@ class DependencyGraph(DiGraph):
 
         Args:
             root: Name of the root package to build the graph around.
+                Can be some-package or some_package, so either the installed name
+                or the import name.
         """
         super().__init__(
             root=dependency_requirement_as_package_name(root) if root else None

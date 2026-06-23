@@ -5,7 +5,6 @@ from pytest_mock import MockerFixture
 from pyrig.core.subprocesses import Args
 from pyrig.rig.cli import make
 from pyrig.rig.cli.make import local
-from pyrig.rig.tools import pyrigger
 from pyrig.rig.tools.pyrigger import Pyrigger
 
 
@@ -16,26 +15,6 @@ class TestPyrigger:
         """Test method."""
         result = Pyrigger.I.group_cmd_args(group=make.app, cmd=local)
         assert result == Args(("pyrig", "mk", "local"))
-
-    def test_dev_dep_cmd_args(self) -> None:
-        """Test method."""
-
-        def some_cmd() -> None:
-            """Does nothing."""
-
-        assert Pyrigger.I.dev_dep_cmd_args(cmd=some_cmd) == Args(
-            ("pyrig-dev", "some-cmd")
-        )
-
-    def test_dev_dep_args(self) -> None:
-        """Test method."""
-        assert Pyrigger.I.dev_dep_args("some", "args") == Args(
-            ("pyrig-dev", "some", "args")
-        )
-
-    def test_dev_dep(self) -> None:
-        """Test method."""
-        assert Pyrigger.I.dev_dep() == "pyrig-dev"
 
     def test_image_url(self) -> None:
         """Test method."""
@@ -91,14 +70,3 @@ class TestPyrigger:
 
         result = Pyrigger.I.cmd_args("--help", cmd=my_command)
         assert result == ("pyrig", "my-command", "--help")
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        pyrigger.__doc__
-        == """Wrapper around pyrig.
-
-Provides a type-safe wrapper for pyrig commands and information.
-"""
-    )

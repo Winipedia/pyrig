@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.tools import package_manager
 from pyrig.rig.tools.package_manager import PackageManager
 
 
@@ -95,20 +94,10 @@ class TestPackageManager:
         result = PackageManager.I.name()
         assert result == "uv"
 
-    def test_init_project_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.init_project_args("--name", "myproject")
-        assert result == ("uv", "init", "--name", "myproject")
-
     def test_run_args(self) -> None:
         """Test method."""
         result = PackageManager.I.run_args("pytest")
         assert result == ("uv", "run", "pytest")
-
-    def test_add_dependencies_args(self) -> None:
-        """Test method."""
-        result = PackageManager.I.add_dependencies_args("pytest", "ruff")
-        assert result == ("uv", "add", "pytest", "ruff")
 
     def test_add_dev_dependencies_args(self) -> None:
         """Test method."""
@@ -144,14 +133,3 @@ class TestPackageManager:
         """Test method."""
         result = PackageManager.I.build_args()
         assert result == ("uv", "build")
-
-
-def test_module_docstring() -> None:
-    """Test module docstring."""
-    assert (
-        package_manager.__doc__
-        == """Package manager wrapper.
-
-Wraps PackageManager commands and information.
-"""
-    )

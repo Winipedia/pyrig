@@ -33,7 +33,7 @@ class SecurityChecker(Tool):
         """Get the badge group this tool belongs to.
 
         Returns:
-            ``Group.SECURITY``
+            ``Group.CODE_QUALITY``
         """
         return Group.CODE_QUALITY
 
@@ -64,7 +64,7 @@ class SecurityChecker(Tool):
             *args: Additional Bandit arguments appended after the target paths.
 
         Returns:
-            Args for ``bandit -c pyproject.toml -r <package_root> <tests_root>``.
+            Args for ``bandit -c pyproject.toml -r <package_root> <tests_root> [args]``.
         """
         return self.run_args(
             "-c",

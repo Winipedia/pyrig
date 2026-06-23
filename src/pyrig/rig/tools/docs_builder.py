@@ -30,7 +30,7 @@ class DocsBuilder(Tool):
         """Get the badge group for this tool.
 
         Returns:
-            ``Group.DOCUMENTATION`` for grouping in generated badge lists.
+            ``Group.PROJECT_INFO`` for grouping in generated badge lists.
         """
         return Group.PROJECT_INFO
 
@@ -46,7 +46,8 @@ class DocsBuilder(Tool):
         """Return the link URL for MkDocs.
 
         Returns:
-            The URL of the MkDocs project page as a string.
+            The documentation URL for this project, as produced by
+            ``documentation_url()``.
         """
         return self.documentation_url()
 

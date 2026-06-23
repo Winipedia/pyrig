@@ -8,7 +8,6 @@ from pathlib import Path
 from pyrig.core.introspection.packages import make_init_files
 from pyrig.core.introspection.paths import (
     module_name_as_path,
-    package_name_as_path,
     path_as_module_name,
 )
 from pyrig.rig.tools.package_manager import PackageManager
@@ -34,16 +33,16 @@ def make_all_init_files() -> tuple[Path, ...]:
 def namespace_package_paths() -> Iterator[Path]:
     """Yield packages that exist only as implicit namespace packages.
 
-    Compares full namespace-package discovery (including directories without
-    ``__init__.py``) against regular package discovery, then yields every name
-    present in the namespace set but absent from the regular set.
+    Walks the source and tests package roots recursively, yielding every
+    directory that lacks an ``__init__.py`` file. Directories named
+    ``__pycache__`` are skipped.
 
     Implicit namespace packages are directories that Python treats as packages
     without requiring an ``__init__.py`` file.
 
     Returns:
-        Iterator of dot-separated package name strings for each discovered
-        namespace-only package. Yields nothing if no namespace packages exist.
+        Iterator of ``Path`` objects for each directory that has no
+        ``__init__.py``. Yields nothing if no namespace packages exist.
     """
     logger.debug("Discovering namespace packages")
 
@@ -110,27 +109,6 @@ def module_name_as_root_path(module_name: str) -> Path:
         ``Path("tests/test_sub/test_module.py")`` for a test module).
     """
     return determine_root(module_name) / module_name_as_path(module_name)
-
-
-def package_name_as_root_path(package_name: str) -> Path:
-    """Resolve a package name to its filesystem path relative to the project root.
-
-    Selects the appropriate root directory based on the package:
-
-    - Packages starting with the tests package name (e.g., ``"tests"``) are rooted
-      at the tests source root, which is an empty path (the project root itself).
-    - All other packages are rooted at the source root (e.g., ``src/``).
-
-    Args:
-        package_name: Dotted Python package name
-            (e.g., ``"mypackage.sub"`` or ``"tests.test_sub"``).
-
-    Returns:
-        Path to the package directory relative to the project root
-        (e.g., ``Path("src/mypackage/sub")`` for a source package, or
-        ``Path("tests/test_sub")`` for a test package).
-    """
-    return determine_root(package_name) / package_name_as_path(package_name)
 
 
 def determine_root(module_name: str) -> Path:

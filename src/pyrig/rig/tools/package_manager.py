@@ -177,17 +177,6 @@ class PackageManager(Tool):
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return Args((self.project_name(), cmd_name, *args))
 
-    def init_project_args(self, *args: str) -> Args:
-        """Construct ``Args`` for ``uv init``.
-
-        Args:
-            *args: Additional arguments for the init command.
-
-        Returns:
-            Args for ``uv init <args...>``.
-        """
-        return self.args("init", *args)
-
     def run_args(self, *args: str) -> Args:
         """Construct ``Args`` for ``uv run``.
 
@@ -209,17 +198,6 @@ class PackageManager(Tool):
             Args for ``uv add --group dev <args...>``.
         """
         return self.args("add", "--group", "dev", *args)
-
-    def add_dependencies_args(self, *args: str) -> Args:
-        """Construct ``Args`` for adding production dependencies.
-
-        Args:
-            *args: Package names or additional ``uv add`` flags.
-
-        Returns:
-            Args for ``uv add <args...>``.
-        """
-        return self.args("add", *args)
 
     def install_dependencies_no_dev_args(self, *args: str) -> Args:
         """Construct ``Args`` for ``uv sync --no-group dev``.

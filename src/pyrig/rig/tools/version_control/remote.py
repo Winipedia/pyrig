@@ -60,7 +60,7 @@ class RemoteVersionController(Tool):
         """Get tool development dependencies.
 
         Returns:
-            Tuple containing 'pygithub'.
+            An empty tuple.
         """
         return ()
 

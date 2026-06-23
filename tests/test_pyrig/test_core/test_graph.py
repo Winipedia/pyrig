@@ -57,11 +57,11 @@ class TestDiGraph:
         assert graph.nodes() == {"root", "a", "b"}
 
         # Edges between kept nodes should be preserved
-        assert graph.has_edge("a", "root")
-        assert graph.has_edge("b", "root")
+        assert "root" in graph["a"]
+        assert "root" in graph["b"]
 
         # Edges to pruned nodes should be gone
-        assert not graph.has_edge("root", "x")
+        assert "x" not in graph["root"]
 
         # Pruned nodes are not in the graph
         assert "x" not in graph
@@ -92,9 +92,9 @@ class TestDiGraph:
         graph.prune("a")
 
         assert graph.nodes() == {"a", "b", "c", "d"}
-        assert graph.has_edge("b", "a")
-        assert graph.has_edge("c", "b")
-        assert graph.has_edge("d", "c")
+        assert "a" in graph["b"]
+        assert "b" in graph["c"]
+        assert "c" in graph["d"]
         assert "unrelated" not in graph
 
     def test_sorted_ancestors(self) -> None:
@@ -146,8 +146,8 @@ class TestDiGraph:
         assert "b" in graph
 
         # Edge should exist
-        assert graph.has_edge("a", "b")
-        assert not graph.has_edge("b", "a")  # directed graph
+        assert "b" in graph["a"]
+        assert "a" not in graph["b"]  # directed graph
 
     def test___contains__(self) -> None:
         """Test node membership check."""
@@ -177,16 +177,6 @@ class TestDiGraph:
         graph.add_edge("c", "d")
 
         assert graph.nodes() == {"a", "b", "c", "d"}
-
-    def test_has_edge(self) -> None:
-        """Test checking if edge exists."""
-        graph = MyTestDiGraph()
-        graph.add_edge("a", "b")
-
-        assert graph.has_edge("a", "b")
-        assert not graph.has_edge("b", "a")
-        assert not graph.has_edge("a", "c")
-        assert not graph.has_edge("x", "y")
 
     def test_ancestors(self) -> None:
         """Test finding all ancestors of a node."""
