@@ -1,15 +1,11 @@
-"""Conversions between Python module names, filesystem paths, and module objects.
-
-Provides utilities for translating dotted module names to filesystem paths,
-and for resolving the source file or directory of an imported module object.
-"""
+"""Conversions between dotted Python names, filesystem paths, and module objects."""
 
 from pathlib import Path
 from types import ModuleType
 
 
 def package_dir_path(package: ModuleType) -> Path:
-    """Get the directory of an imported package.
+    """Return the directory of an imported package.
 
     Args:
         package: An imported Python package (a module with an `__init__.py`).
@@ -26,7 +22,7 @@ def package_dir_path(package: ModuleType) -> Path:
 
 
 def module_file_path(module: ModuleType) -> Path:
-    """Get the source file path of an imported module.
+    """Return the source file path of an imported module.
 
     Args:
         module: An imported Python module.

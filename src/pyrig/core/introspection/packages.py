@@ -23,9 +23,9 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
 
     Creates the target directory (and all missing parents), then places
     `__init__.py` files in the target directory and each ancestor up the
-    tree. Traversal stops at the first directory (starting from the target
-    itself, then its ancestors) that appears in `until` or matches the
-    current working directory. This ensures the full path is importable as a
+    tree, skipping any directory that already has one. Traversal stops at
+    the first directory (starting from the target itself, then its ancestors)
+    that appears in `until`. This ensures the full path is importable as a
     Python package hierarchy.
 
     Args:
@@ -33,11 +33,8 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
         until: Tuple of directory paths at which to stop adding
             `__init__.py` files. Directories in this tuple do not receive an
             `__init__.py`. The current working directory and the empty path
-            are always implicitly included.
+            are always implicitly included as stop points.
         content: Content to write into each `__init__.py` file.
-
-    Note:
-        Directories that already contain an `__init__.py` are skipped.
     """
     path.mkdir(parents=True, exist_ok=True)
     until = (*until, Path(), Path.cwd())
@@ -107,11 +104,10 @@ def is_src_package(package: ModuleType) -> bool:
 def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
     """Import a package by name, falling back to a direct directory import if needed.
 
-    Delegates to [import_module_with_file_fallback][] with `is_package=True`:
-    a standard import via `importlib.import_module` is attempted first, and on
-    failure the package is imported directly from the directory at `path`. The
-    fallback handles packages not yet registered in `sys.modules`, such as
-    dynamically created packages or packages in non-standard locations.
+    Attempts a standard import of `name` first. If that fails for any reason,
+    imports the package directly from the directory at `path`. The fallback
+    handles packages not yet on `sys.path`, such as dynamically created
+    packages or packages in non-standard locations.
 
     Args:
         path: Path to the package directory. Resolved to an absolute path
@@ -122,9 +118,10 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
         Imported package module.
 
     Raises:
-        FileNotFoundError: If the fallback import fails because the directory
+        FileNotFoundError: If the fallback import is needed and the directory
             or its `__init__.py` does not exist.
-        ImportError: If the module spec cannot be created from the path.
+        ImportError: If the fallback import is needed and the module spec
+            cannot be created from the path.
     """
     return import_module_with_file_fallback(path=path, name=name, is_package=True)
 
@@ -132,9 +129,9 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
 def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
     """Recursively discover all modules (non-packages) in a package.
 
-    Walks the entire package hierarchy via [walk_package][] and yields only
-    the leaf modules, excluding intermediate sub-packages. Each module is
-    imported as a side effect of the walk.
+    Walks the entire package hierarchy and yields only the leaf modules,
+    excluding intermediate sub-packages. Each module is imported as a
+    side effect of iteration.
 
     Args:
         package: Root package to discover modules from.
@@ -200,16 +197,15 @@ def register_package_modules(package: ModuleType) -> None:
 def walk_package(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
     """Recursively walk and import all modules in a package hierarchy.
 
-    Performs a depth-first traversal of `package` and its sub-packages. Each
-    visited module is imported as a side effect, ensuring that subclass
-    registrations (via `__subclasses__()`) are complete before any discovery
-    queries run. The root `package` itself is not yielded.
+    Performs a depth-first traversal of `package` and its sub-packages,
+    importing each visited module as a side effect. The root `package`
+    itself is not yielded.
 
     Args:
         package: Root package to start traversal from.
 
     Yields:
-        `(module, is_package)` tuples for each visited module, where
+        `(module, is_package)` pairs for each visited module, where
         `is_package` is `True` when the module is itself a sub-package.
     """
     for module, is_package in iter_modules(package):

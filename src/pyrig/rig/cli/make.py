@@ -1,10 +1,4 @@
-"""The `mk` command group for scaffolding new project artifacts.
-
-Defines the group's Typer `app` and its sub-commands (`pyrig mk cmd`,
-`pyrig mk local`). The `subcommands` module binds this `app` to the name
-`mk`, so CLI discovery registers it as the `mk` command group; importing
-that module also imports this one, registering the sub-commands below.
-"""
+"""CLI command group for scaffolding new project artifacts."""
 
 import typer
 
@@ -20,17 +14,17 @@ def cmd(
         help="Whether the command should be shared in subsequent projects.",
     ),
 ) -> None:
-    """Create a new CLI subcommand stub for this project.
+    """Scaffold a new CLI subcommand stub.
 
-    Appends a minimal function stub to the project's `subcommands` module, or
-    its `shared_subcommands` module when `shared` is `True`. The target module
-    is created automatically if it does not yet exist. Kebab-case names are
-    normalized to snake_case for the generated function name.
+    Appends a minimal no-op function stub named after `name` to the project's
+    subcommand module, or the shared subcommand module when `shared` is `True`.
+    The target module is created if it does not already exist. Kebab-case names
+    are normalized to snake_case for the generated function name.
 
     Args:
         name: Name of the subcommand to create. Accepts kebab-case or snake_case.
-        shared: If `True`, the stub is added to the shared subcommands module
-            instead, making it accessible to every dependent project.
+        shared: When `True`, the stub is added to the shared subcommand module,
+            making it available to every dependent project rather than only this one.
 
     Examples:
         ```
@@ -47,15 +41,12 @@ def cmd(
 
 @app.command()
 def local() -> None:
-    """Create all version-control-ignored config files for local development.
+    """Create all version-control-ignored config files.
 
-    Discovers every concrete `ConfigFile` subclass whose
-    `version_control_ignored()` returns `True` and creates the file on disk if
-    it does not already exist. Parent directories are created automatically.
-
-    Useful as a CI/CD setup step: gitignored files (such as `.env` or
-    `.scratch.py`) are never committed, so they must be created in the CI
-    environment before running hooks or checks that expect them to be present.
+    Discovers every concrete config file subclass marked as version-control-ignored
+    and validates each one: the file (and any missing parent directories) is
+    created if absent, or updated to include any missing required configuration
+    if already present.
 
     Examples:
         ```

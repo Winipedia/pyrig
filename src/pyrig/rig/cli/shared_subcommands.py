@@ -1,20 +1,17 @@
-"""Shared CLI commands available across all dependent projects.
+"""CLI commands shared across all pyrig-based projects.
 
-Every function defined here is automatically discovered and registered
-as a CLI command in all installed pyrig based projects.
+Commands defined here are available in every project that depends on pyrig,
+adapting their behavior to the invoking project at runtime.
 """
 
 
 def version() -> None:
     """Print the installed version of the invoking project.
 
-    Reads the version from installed package metadata and prints it to the
-    console. The project name is derived from `sys.argv[0]`, so this command
-    always reports the version of whichever project's CLI entry point was
-    used to invoke it — not pyrig's own version.
-
-    The project must be installed (an editable install is sufficient) for
-    the metadata lookup to succeed.
+    Reports the version of whichever project's CLI entry point was used to
+    invoke this command, not pyrig's own version. The project must be
+    installed (an editable install is sufficient) for the metadata lookup
+    to succeed.
 
     Example:
         ```

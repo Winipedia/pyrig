@@ -10,12 +10,10 @@ from pyrig.rig.configs.base.copy_module_docstring import (
 def make_subcommand(name: str, *, shared: bool) -> None:
     """Append a new subcommand stub to the project or shared subcommands module.
 
-    The target file is created if it does not exist yet, initialized with only
-    the module docstring copied from the corresponding template module. The
-    command name is normalized from kebab-case to snake_case before writing.
-
-    The appended stub is a no-op function whose body is a placeholder docstring,
-    named after the normalized command name.
+    The target module file is created if it does not already exist. The command
+    name is normalized from kebab-case to snake_case before writing. The appended
+    stub is a no-op function with a placeholder docstring, named after the
+    normalized command name.
 
     Args:
         name: Name of the subcommand to create. Accepts kebab-case or snake_case.

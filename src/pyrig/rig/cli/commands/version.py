@@ -8,16 +8,11 @@ from pyrig.rig.cli.cli.cli import CLI
 
 
 def project_version() -> None:
-    """Display the invoking project's version.
+    """Print the installed version of the invoking project.
 
-    Print the version of the project whose CLI entry point was used to call
-    this command, not pyrig's own version. The project name is derived from
-    `sys.argv[0]`, so this command adapts automatically to whichever
-    pyrig-based project invokes it.
-
-    The version is read from installed package metadata via
-    `importlib.metadata.version`. The project must be installed (editable
-    installs are sufficient) for this to work.
+    Prints the version of whichever project's CLI entry point was used to
+    invoke this command, not pyrig's own version. The project must be installed
+    (an editable install is sufficient) for the metadata lookup to succeed.
     """
     project_name = CLI.I.project_name()
     typer.echo(f"{project_name} {version(project_name)}")

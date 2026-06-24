@@ -1,4 +1,4 @@
-"""Utilities for resolving dotted Python names to project-rooted filesystem paths."""
+"""Utilities regarding the root standards of pyrig."""
 
 import logging
 from collections.abc import Iterator
@@ -33,15 +33,13 @@ def make_all_init_files() -> tuple[Path, ...]:
 def namespace_package_paths() -> Iterator[Path]:
     """Yield project directories that lack an `__init__.py` file.
 
-    Walks the source and tests package roots recursively (and the roots
-    themselves), yielding every directory that has no `__init__.py`.
+    Covers the source package root and tests package root, including each
+    root itself and all subdirectories found by recursive traversal.
     Directories named `__pycache__` are skipped.
 
-    Implicit namespace packages are directories that Python treats as packages
-    without requiring an `__init__.py` file.
-
     Yields:
-        Each directory that has no `__init__.py`.
+        Each directory under the source or tests package root that has no
+        `__init__.py`.
     """
     logger.debug("Discovering namespace packages")
 
@@ -93,9 +91,9 @@ def module_name_as_root_path(module_name: str) -> Path:
 
     Selects the appropriate root directory based on the module's package:
 
-    - Modules starting with the tests package name (e.g., `"tests"`) are rooted
-      at the tests source root, which is an empty path (the project root itself).
-    - All other modules are rooted at the source root (e.g., `src/`).
+    - Modules starting with the tests package name (e.g., `"tests"`) resolve
+      relative to the project root itself.
+    - All other modules resolve relative to the source root (e.g., `src/`).
 
     Args:
         module_name: Dotted Python module name (e.g., `"mypackage.sub.module"`
@@ -110,10 +108,7 @@ def module_name_as_root_path(module_name: str) -> Path:
 
 
 def determine_root(module_name: str) -> Path:
-    """Return the source root for a module.
-
-    The tests root for test modules, else the source root.
-    """
+    """Return the tests source root for test modules and otherwise the source root."""
     return (
         ProjectTester.I.tests_source_root()
         if module_name.startswith(ProjectTester.I.tests_package_name())

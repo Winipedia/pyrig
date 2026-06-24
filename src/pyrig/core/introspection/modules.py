@@ -1,9 +1,9 @@
 """Utilities for dynamically importing, introspecting, and traversing Python modules.
 
-Covers importing by name or file path (with fallback strategies), reading module
+Covers importing by name or file path with fallback strategies, reading module
 source, resolving callable import paths, and iterating direct package children.
-Used throughout pyrig where standard import mechanisms are insufficient, such as
-loading user project modules not yet on `sys.path`.
+Includes support for modules not discoverable via standard import mechanisms,
+such as those absent from `sys.path` or not installed as distributions.
 """
 
 import logging
@@ -82,7 +82,7 @@ def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleTy
     """Re-import a module, bypassing the import cache.
 
     Evicts the module from `sys.modules` and re-imports it via
-    [import_module_with_file_fallback][]. Use this to pick up on-disk changes
+    `import_module_with_file_fallback`. Use this to pick up on-disk changes
     to a module's source without restarting the interpreter.
 
     Args:
@@ -108,7 +108,7 @@ def import_module_with_file_fallback(
     """Import a module by name, falling back to direct file import on failure.
 
     First attempts a standard import of `name`; if that raises any exception,
-    falls back to [import_module_from_file][], loading directly from `path`.
+    falls back to `import_module_from_file`, loading directly from `path`.
     The fallback handles modules that are not on `sys.path` or not installed.
 
     Args:
@@ -254,13 +254,12 @@ def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
     """Import and yield each direct child of a package, in discovery order.
 
     Only the immediate children are visited; nested sub-packages are not
-    recursed into. For full recursive traversal use [walk_package][] from
-    `pyrig.core.introspection.packages`.
+    recursed into.
 
     Note:
-        Importing each child is a deliberate side effect — it lets pyrig's
-        class discovery mechanisms register subclasses defined in those modules
-        (e.g., `ConfigFile` implementations).
+        Importing each child is a deliberate side effect — it causes subclasses
+        defined in those modules to register with the interpreter, enabling
+        class-discovery mechanisms that rely on `__subclasses__()`.
 
     Args:
         package: Package to iterate. Must have a `__path__` attribute

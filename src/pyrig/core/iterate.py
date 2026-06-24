@@ -29,7 +29,7 @@ def iterator_has_items[T](
         input yielded at least one item, and `iterator` yields all of the
         original items including the first.
 
-    Example:
+    Examples:
         >>> gen = (x for x in [1, 2, 3])
         >>> has_items, gen = iterator_has_items(gen)
         >>> has_items
