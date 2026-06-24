@@ -411,9 +411,7 @@ class VersionController(Tool):
         Raises:
             subprocess.CalledProcessError: If ``user.name`` is not configured.
         """
-        args = self.config_get_user_name_args()
-        stdout = args.run_cached().stdout
-        return stdout.strip()
+        return self.config_get_user_name_args().run_cached().stdout.strip()
 
     def email(self) -> str:
         """Return the git ``user.email`` from the active configuration.
