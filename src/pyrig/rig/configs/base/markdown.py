@@ -1,6 +1,6 @@
-r"""Markdown configuration file management.
+"""Markdown configuration file management.
 
-Provides a base class for creating and managing Markdown (``.md``) configuration
+Provides a base class for creating and managing Markdown (`.md`) configuration
 files with validated content.
 """
 
@@ -8,16 +8,17 @@ from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
 class MarkdownConfigFile(StringConfigFile):
-    """Base class for Markdown (``.md``) configuration files.
+    """Base class for Markdown (`.md`) configuration files.
 
-    Extends ``StringConfigFile`` with the ``"md"`` file extension. Subclasses define
-    their directory path and required content; the parent class handles reading,
-    writing, and content-based validation.
+    Extends [StringConfigFile][pyrig.rig.configs.base.string_.StringConfigFile]
+    with the `"md"` file extension. Subclasses define their directory path and
+    required content; the parent class handles reading, writing, and
+    content-based validation.
 
     Subclasses must implement:
-        - ``parent_path``: Directory containing the ``.md`` file.
-        - ``stem``: Filename without its extension.
-        - ``lines``: Required Markdown content as a list of lines.
+        - `parent_path`: Directory containing the `.md` file.
+        - `stem`: Filename without its extension.
+        - `lines`: Required Markdown content as a list of lines.
 
     Example:
         >>> from pathlib import Path
@@ -38,5 +39,5 @@ class MarkdownConfigFile(StringConfigFile):
     """
 
     def extension(self) -> str:
-        """Return the file extension ``"md"``."""
+        """Return the file extension `"md"`."""
         return "md"

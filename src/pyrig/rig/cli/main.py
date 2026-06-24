@@ -12,6 +12,6 @@ def main() -> None:
 
     Registers all project-specific and shared commands, then invokes the Typer
     app to parse arguments and dispatch the requested command. Called automatically
-    by the console script entry point defined in ``pyproject.toml``.
+    by the console script entry point defined in `pyproject.toml`.
     """
     CLI.I.run()

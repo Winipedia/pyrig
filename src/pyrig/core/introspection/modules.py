@@ -3,7 +3,7 @@
 Covers importing by name or file path (with fallback strategies), reading module
 source, resolving callable import paths, and iterating direct package children.
 Used throughout pyrig where standard import mechanisms are insufficient, such as
-loading user project modules not yet on ``sys.path``.
+loading user project modules not yet on `sys.path`.
 """
 
 import logging
@@ -24,42 +24,37 @@ logger = logging.getLogger(__name__)
 
 
 def leaf_module_name(module: ModuleType) -> str:
-    """Get the leaf name of a module (the last part of its dotted name).
-
-    Args:
-        module: Module to get the leaf name from.
-
-    Returns:
-        The leaf name of the module.
-    """
+    """Return the last segment of a module's dotted name."""
     return module.__name__.split(".")[-1]
 
 
 def root_module(module: ModuleType) -> ModuleType:
-    """Get the root module of the given module.
+    """Import and return the top-level package of the given module.
 
-    For a module with a dotted name like ``"package.subpackage.module"``, this
-    function returns the module corresponding to ``"package"``. For top-level
-    modules with no dots in their name, the module itself is returned.
+    For a module named `"package.subpackage.module"`, the module corresponding
+    to `"package"` is returned. For a top-level module with no dots in its name,
+    the module for that same name is returned.
 
     Args:
-        module: Module to get the root from.
+        module: Module to resolve the root package for.
 
     Returns:
-        The root module corresponding to the first segment of the module's name.
+        The module corresponding to the first segment of the dotted name.
     """
     return import_module(module.__name__.split(".")[0])
 
 
 def callable_obj_import_path(obj: Callable[..., Any]) -> str:
-    """Get the fully qualified import path for a callable object.
+    """Return the fully qualified import path of a callable.
+
+    Built by joining the object's module with its qualified name, so the result
+    includes any enclosing class (e.g., `"package.module.ClassName.method"`).
 
     Args:
-        obj: Callable object (function, method, class, etc.) to get the import path for.
+        obj: Callable (function, method, or class) to resolve.
 
     Returns:
-        The fully qualified import path for the object
-        (e.g., "package.module.ClassName.method").
+        The dotted path identifying where the callable is defined.
     """
     return f"{obj.__module__}.{obj.__qualname__}"  # ty:ignore[unresolved-attribute]
 
@@ -68,16 +63,15 @@ def module_content(module: ModuleType) -> str:
     """Read the source code of a module as a string.
 
     Args:
-        module: Module to read. Must have a ``__file__`` attribute pointing
-            to a readable ``.py`` file.
+        module: Module to read. Must have a `__file__` attribute pointing
+            to a readable `.py` file.
 
     Returns:
-        Complete source code of the module as a UTF-8 encoded string.
+        Complete source of the module, decoded as UTF-8.
 
     Raises:
-        AttributeError: If the module has no ``__file__`` attribute or if
-            ``__file__`` is ``None`` (e.g., built-in modules or namespace
-            packages).
+        AttributeError: If the module's `__file__` is `None`
+            (e.g., built-in modules or namespace packages).
         FileNotFoundError: If the source file does not exist.
     """
     path = module_file_path(module)
@@ -87,17 +81,15 @@ def module_content(module: ModuleType) -> str:
 def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleType:
     """Re-import a module, bypassing the import cache.
 
-    Evicts the module from ``sys.modules`` and re-imports it via
-    ``import_module_with_file_fallback``. Use this to pick up on-disk changes
+    Evicts the module from `sys.modules` and re-imports it via
+    [import_module_with_file_fallback][]. Use this to pick up on-disk changes
     to a module's source without restarting the interpreter.
 
     Args:
         module: Module to re-import.
-        is_package: Whether the module being re-imported is a package. If ``True``,
-            the spec is created with ``is_package=True`` to ensure correct
-            handling of package semantics (e.g., relative imports). Default is
-            ``False`` for regular modules. Set to ``True`` when re-importing a
-            package from its ``__init__.py`` file.
+        is_package: Set to `True` when re-importing a package from its
+            `__init__.py` so the spec is built with package semantics
+            (e.g., relative imports). Defaults to `False` for regular modules.
 
     Returns:
         A freshly imported module object, distinct from the original.
@@ -113,29 +105,27 @@ def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleTy
 def import_module_with_file_fallback(
     path: Path, name: str, *, is_package: bool = False
 ) -> ModuleType:
-    """Import a module, trying standard import first then direct file import.
+    """Import a module by name, falling back to direct file import on failure.
 
-    First attempts to import the module using Python's standard import mechanism
-    (via ``importlib.import_module``). If that fails, falls back to importing
-    directly from the file path using ``importlib`` (via ``SourceFileLoader``
-    and ``spec_from_loader``). This fallback is useful for modules that aren't
-    on ``sys.path`` or haven't been installed.
+    First attempts a standard import of `name`; if that raises any exception,
+    falls back to [import_module_from_file][], loading directly from `path`.
+    The fallback handles modules that are not on `sys.path` or not installed.
 
     Args:
-        path: Path to the module file (absolute or relative).
-        name: The name to use for the imported module.
-        is_package: Whether the module being imported is a package. If ``True``,
-            the spec is created with ``is_package=True`` to ensure correct
-            handling of package semantics (e.g., relative imports). Default is
-            ``False`` for regular modules. Set to ``True`` when importing a package
-            from its ``__init__.py`` file.
+        path: Path to the module file, used only by the file-import fallback.
+        name: Name under which to register the imported module.
+        is_package: Set to `True` when importing a package from its
+            `__init__.py` so the spec is built with package semantics
+            (e.g., relative imports). Defaults to `False` for regular modules.
 
     Returns:
         The imported module.
 
     Raises:
-        FileNotFoundError: If the file does not exist and standard import fails.
-        ImportError: If the module spec cannot be created.
+        FileNotFoundError: If the standard import fails and the file does not
+            exist.
+        ImportError: If the standard import fails and the module spec cannot be
+            created.
     """
     module = import_module_with_default(name)
     if isinstance(module, ModuleType):
@@ -146,22 +136,20 @@ def import_module_with_file_fallback(
 def import_module_from_file(
     path: Path, name: str, *, is_package: bool = False
 ) -> ModuleType:
-    """Import a module directly from a ``.py`` file using ``importlib`` machinery.
+    """Import a module directly from a `.py` file, bypassing `sys.path`.
 
-    Resolves the path to absolute, creates a ``SourceFileLoader`` and builds a
-    module spec via ``spec_from_loader``, then executes the module using the loader.
-    The module is pre-registered in ``sys.modules`` before execution (required so that
-    packages with internal imports can find themselves), and removed on failure,
-    so failed loads do not leave invalid cache entries.
+    The module is registered in `sys.modules` under `name` before execution so
+    that packages with internal imports can find themselves, and is removed
+    again if execution fails, leaving no invalid cache entry behind.
 
     Args:
-        path: Path to the ``.py`` file (will be resolved to absolute path).
-        name: The name to use for the imported module.
-        is_package: Whether the module being imported is a package. If ``True``,
-            the spec is created with ``is_package=True`` to ensure correct
-            handling of package semantics (e.g., relative imports). Default is
-            ``False`` for regular modules. Set to ``True`` when importing a package
-            from its ``__init__.py`` file.
+        path: Path to the source file; resolved to an absolute path. When
+            `is_package` is `True` and the path is not already an `__init__.py`,
+            `__init__.py` is appended to it.
+        name: Name under which to register the imported module.
+        is_package: Set to `True` when importing a package from its
+            `__init__.py` so the spec is built with package semantics
+            (e.g., relative imports). Defaults to `False` for regular modules.
 
     Returns:
         The imported and executed module.
@@ -194,15 +182,15 @@ def import_module_with_default(
 ) -> ModuleType | Any:
     """Import a module by name, returning a default value if import fails.
 
-    Logs a debug message including the caught exception when falling back to
-    the default. Catches all exceptions, not just ``ImportError``.
+    Catches every exception, not just `ImportError`, and logs a debug message
+    including the caught exception before falling back to the default.
 
     Args:
-        module_name: Dotted module name (e.g., ``"package.subpackage.module"``).
-        default: Value to return if the module cannot be imported.
+        module_name: Dotted module name (e.g., `"package.subpackage.module"`).
+        default: Value to return if the import raises. Defaults to `None`.
 
     Returns:
-        The imported module, or ``default`` if any exception is raised.
+        The imported module, or `default` if any exception is raised.
     """
     try:
         return import_module(module_name)
@@ -219,21 +207,24 @@ def import_module_with_default(
 def module_name_replacing_start_module(
     module: ModuleType, new_start_module_name: str
 ) -> str:
-    """Replace the root package name in a module's fully qualified name.
+    """Replace the root package segment in a module's fully qualified name.
 
-    Useful for mapping modules between parallel package hierarchies (e.g.,
-    mapping source modules to their test module equivalents).
+    Only the first segment is replaced; later segments are left untouched even
+    if they happen to share the old root's name. Useful for mapping modules
+    between parallel package hierarchies (e.g., source modules to their test
+    equivalents).
 
     Args:
         module: Module whose name to transform.
-        new_start_module_name: New root package name to substitute.
+        new_start_module_name: Root package name to substitute in.
 
     Returns:
-        The module name with the root package replaced.
+        The module name with its first dotted segment replaced.
 
     Example:
-        >>> # module.__name__ == "pyrig_dev.rig.configs.base"
-        >>> module_name_replacing_start_module(module, "my_project")
+        >>> from types import ModuleType
+        >>> mod = ModuleType("pyrig_dev.rig.configs.base")
+        >>> module_name_replacing_start_module(mod, "my_project")
         'my_project.rig.configs.base'
     """
     module_current_start = module.__name__.split(".")[0]
@@ -241,51 +232,43 @@ def module_name_replacing_start_module(
 
 
 def module_has_docstring(module: ModuleType) -> bool:
-    """Check if a module has a docstring.
-
-    Args:
-        module: Module to check.
-
-    Returns:
-        True if module has a docstring, False otherwise.
-    """
+    """Return whether the module defines a docstring (`__doc__` is not `None`)."""
     return module.__doc__ is not None
 
 
 def import_modules(module_names: Iterable[str]) -> Iterator[ModuleType]:
-    """Import multiple modules by name.
+    """Import multiple modules by name, lazily.
+
+    Modules are imported on demand as the result is iterated, not eagerly.
 
     Args:
-        module_names: Iterable of dotted module names to import.
+        module_names: Dotted module names to import.
 
-    Returns:
-        Iterator of imported module objects corresponding to the input names.
+    Yields:
+        Each imported module, in the order the names are iterated.
     """
     return (import_module(name) for name in module_names)
 
 
 def iter_modules(package: ModuleType) -> Iterator[tuple[ModuleType, bool]]:
-    """Iterate over and import all direct children of a package.
+    """Import and yield each direct child of a package, in discovery order.
 
-    Uses ``pkgutil.iter_modules`` to discover the direct children of ``package``
-    and imports each one in discovery order.
+    Only the immediate children are visited; nested sub-packages are not
+    recursed into. For full recursive traversal use [walk_package][] from
+    `pyrig.core.introspection.packages`.
 
     Note:
-        Importing is a deliberate side effect — it lets pyrig's class discovery
-        mechanisms register subclasses defined in those modules
-        (e.g., ``ConfigFile`` implementations).
-
-        Only the direct children are visited. For full recursive traversal use
-        ``walk_package`` from ``pyrig.core.introspection.packages``.
+        Importing each child is a deliberate side effect — it lets pyrig's
+        class discovery mechanisms register subclasses defined in those modules
+        (e.g., `ConfigFile` implementations).
 
     Args:
-        package: Package to iterate. Must have a ``__path__`` attribute
+        package: Package to iterate. Must have a `__path__` attribute
             (i.e., must be a package, not a plain module).
 
-    Returns:
-        Iterator of ``(module, is_package)`` pairs where ``module`` is the
-        imported child and ``is_package`` is ``True`` when the child is itself
-        a sub-package.
+    Yields:
+        `(module, is_package)` pairs where `module` is the imported child and
+        `is_package` is `True` when the child is itself a sub-package.
     """
     for _finder, name, is_package in pkgutil_iter_modules(
         package.__path__, prefix=package.__name__ + "."

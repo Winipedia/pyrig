@@ -20,11 +20,10 @@ def cls_methods(
 
     Covers instance methods, static methods, class methods, and properties
     from the class itself and all ancestor classes. Results are yielded in
-    alphabetical order by method name, as determined by
-    ``inspect.getmembers_static``.
+    alphabetical order by method name.
 
-    To restrict results to methods defined directly on ``cls``, pass the
-    output to ``discard_parent_methods``.
+    To restrict results to methods defined directly on `cls`, pass the
+    output to [discard_parent_methods][].
 
     Args:
         cls: Class to extract methods from.
@@ -41,18 +40,15 @@ def discard_parent_methods(
 ) -> Iterator[Callable[..., Any]]:
     """Filter methods to keep only those defined directly on a class.
 
-    A method passes the filter only when both of the following hold:
-
-    - Its defining module matches the module where ``cls`` is defined.
-    - Its unwrapped name is present in ``cls.__dict__``, confirming it was
-      declared on ``cls`` itself rather than inherited from a parent class.
+    A method is kept only when it is defined in the same module as `cls`
+    and declared directly on `cls`, not inherited from a parent.
 
     Args:
         cls: The class whose own methods should be kept.
         methods: Iterable of method objects to filter.
 
     Yields:
-        Methods that are defined directly on ``cls``.
+        Methods that are defined directly on `cls`.
     """
     return (
         method
@@ -65,17 +61,14 @@ def discard_parent_methods(
 def module_classes(module: ModuleType) -> Iterator[type]:
     """Extract all classes defined directly in a module, excluding imported ones.
 
-    A sentinel ``ModuleType`` instance named after this function is used as the
-    fallback when ``obj_module`` cannot resolve a class's origin (for example,
-    classes backed by C or Rust extensions such as ``cryptography``'s ``AESGCM``).
-    Because no real module shares that sentinel name, those classes are safely
-    excluded rather than raising an error.
+    Classes backed by C or Rust extensions (such as `cryptography`'s
+    `AESGCM`) whose module origin cannot be resolved are silently excluded.
 
     Args:
         module: Module to inspect.
 
     Yields:
-        Class types defined directly in ``module``.
+        Class types defined directly in `module`.
     """
     # necessary for bindings packages like AESGCM from cryptography._rust backend
     default = ModuleType(module_classes.__name__)  # to not match any real module
@@ -89,15 +82,14 @@ def module_classes(module: ModuleType) -> Iterator[type]:
 def discover_all_subclasses[T](cls: type[T]) -> set[type[T]]:
     """Recursively discover all subclasses of a class already loaded in memory.
 
-    Traverses the live subclass registry via ``__subclasses__()`` without
-    triggering any imports. Only subclasses whose modules are already loaded
-    will appear in the result.
+    Discovers subclasses without triggering any imports. Only subclasses
+    whose modules are already loaded will appear in the result.
 
     Args:
         cls: Base class to find subclasses of.
 
     Returns:
-        Set of all discovered subclass types, excluding ``cls`` itself.
+        Set of all discovered subclass types, excluding `cls` itself.
     """
     subclasses = set(cls.__subclasses__())
     for subclass in cls.__subclasses__():
@@ -115,8 +107,7 @@ def discard_parent_classes[T](
     in the collection — and is useful when derived classes should take precedence
     over their base classes.
 
-    The input iterable is converted to a set internally; the original object is
-    not modified.
+    The original iterable is not modified.
 
     Args:
         classes: Iterable of class types to filter.
@@ -137,8 +128,8 @@ def discard_parent_classes[T](
 def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]:
     """Filter out abstract classes from a collection.
 
-    Uses ``inspect.isabstract`` to detect classes that have one or more
-    unimplemented abstract methods and therefore cannot be instantiated directly.
+    A class is considered abstract when it has one or more unimplemented
+    abstract methods and therefore cannot be instantiated directly.
 
     Args:
         classes: Iterable of class types to filter.
@@ -152,11 +143,11 @@ def discard_abstract_classes[T](classes: Iterable[type[T]]) -> Iterator[type[T]]
 class classproperty[T]:  # noqa: N801
     """Descriptor that exposes a property computed from the class, not an instance.
 
-    Unlike ``@property``, which requires an instance, ``@classproperty`` can be
-    accessed directly on the class. Because ``__get__`` always receives the owner
-    class as ``owner``, it also works correctly when accessed from an instance.
+    Unlike `@property`, which requires an instance, `@classproperty` can be
+    accessed directly on the class and also works correctly when accessed from
+    an instance.
 
-    Combine with ``@functools.cache`` on the underlying method to cache the
+    Combine with `@functools.cache` on the underlying method to cache the
     computed value per class.
 
     Example:
@@ -167,23 +158,23 @@ class classproperty[T]:  # noqa: N801
         ...
         >>> MyClass.cls_name
         'myclass'
-
-    Args:
-        fget: The callable to invoke with the owner class when the property is accessed.
     """
 
     __slots__ = ("fget",)
 
     def __init__(self, fget: Callable[..., T]) -> None:
-        """Store the getter callable."""
+        """Wrap `fget` as a class-level property descriptor."""
         self.fget = fget
 
     def __get__(self, obj: object, owner: type) -> T:
         """Invoke the getter with the owner class and return the result.
 
         Args:
-            obj: The instance the attribute was accessed from, or ``None``
+            obj: The instance the attribute was accessed from, or `None`
                 when accessed directly on the class. Not used.
             owner: The class through which the attribute is accessed.
+
+        Returns:
+            The value returned by `fget` when called with `owner`.
         """
         return self.fget(owner)

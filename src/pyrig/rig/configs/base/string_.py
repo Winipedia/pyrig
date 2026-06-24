@@ -50,44 +50,35 @@ class StringConfigFile(ListConfigFile):
 
     @abstractmethod
     def lines(self) -> list[str]:
-        r"""Return the required content that must be present in the file.
+        """Return the required content that must be present in the file.
 
         Returns:
-            List of lines checked via substring matching during validation.
+            Lines checked via substring matching during validation.
         """
 
     def should_override_content(self) -> bool:
         """Return whether existing file content should be replaced entirely.
 
-        Controls the merging strategy in `merge_configs`. When ``False``
-        (the default), existing content is appended after the required lines,
-        preserving any user additions. When ``True``, only the required lines
-        are written and all existing content is discarded.
+        Controls the merge strategy in `merge_configs`. When `False`
+        (the default), existing content is kept and appended after the
+        required lines. When `True`, only the required lines are written and
+        all existing content is discarded.
 
         Returns:
-            ``False`` by default; override to return ``True`` when full
-            replacement is desired.
+            `False` by default; override to return `True` for full replacement.
         """
         return False
 
     def _configs(self) -> list[str]:
-        r"""Return the required content as a list of lines.
-
-        Returns:
-            Lines from `lines()`.
-        """
+        """Return the required content as the list of lines from `lines()`."""
         return self.lines()
 
     def _load(self) -> list[str]:
-        r"""Load file content as UTF-8 text and split into lines.
-
-        Returns:
-            Lines read from the file.
-        """
+        """Read the file as UTF-8 text and split it into lines."""
         return self.split_lines(read_text_utf8(self.path()))
 
     def _dump(self, configs: list[str]) -> None:
-        r"""Write a list of lines to the file as UTF-8 text.
+        """Join the lines and write them to the file as UTF-8 text.
 
         Args:
             configs: Lines to write to the file.
@@ -98,11 +89,11 @@ class StringConfigFile(ListConfigFile):
         """Merge required lines with existing file content.
 
         Places the required lines first, followed by the current file content.
-        If `should_override_content()` returns ``True``, the existing content
-        is discarded and only the required lines are kept.
+        If `should_override_content()` returns `True`, the existing content
+        is discarded and only the required lines are returned.
 
         Returns:
-            Merged list of lines with required content first.
+            Merged lines with required content first.
         """
         expected_lines = self.configs()
         if self.should_override_content():

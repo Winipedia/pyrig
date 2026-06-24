@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 
 def make_all_init_files() -> tuple[Path, ...]:
-    """Create all missing __init__.py files in the project.
+    """Create all missing `__init__.py` files in the project.
 
     Returns:
-        Tuple of paths where ``__init__.py`` files were created.
-        Empty if all already existed.
+        Paths where `__init__.py` files were created. Empty if all
+        already existed.
     """
     return make_init_files(
         namespace_package_paths(),
@@ -31,18 +31,17 @@ def make_all_init_files() -> tuple[Path, ...]:
 
 
 def namespace_package_paths() -> Iterator[Path]:
-    """Yield packages that exist only as implicit namespace packages.
+    """Yield project directories that lack an `__init__.py` file.
 
-    Walks the source and tests package roots recursively, yielding every
-    directory that lacks an ``__init__.py`` file. Directories named
-    ``__pycache__`` are skipped.
+    Walks the source and tests package roots recursively (and the roots
+    themselves), yielding every directory that has no `__init__.py`.
+    Directories named `__pycache__` are skipped.
 
     Implicit namespace packages are directories that Python treats as packages
-    without requiring an ``__init__.py`` file.
+    without requiring an `__init__.py` file.
 
-    Returns:
-        Iterator of ``Path`` objects for each directory that has no
-        ``__init__.py``. Yields nothing if no namespace packages exist.
+    Yields:
+        Each directory that has no `__init__.py`.
     """
     logger.debug("Discovering namespace packages")
 
@@ -68,17 +67,16 @@ def namespace_package_paths() -> Iterator[Path]:
 def root_path_as_module_name(path: Path) -> str:
     """Convert a filesystem path relative to the project root to a dotted module name.
 
-    Selects the appropriate root directory based on the path.
-    Paths starting with any source roots (e.g., ``src/``) are stripped
-    from their root before constructing the resulting module name.
+    Strips the matching root directory from the path before building the
+    module name. Paths under the source root (e.g., `src/`) have that prefix
+    removed; all other paths are interpreted relative to the project root.
 
     Args:
         path: Filesystem path relative to the project root.
 
     Returns:
-        Dotted Python module name (
-            e.g., ``"mypackage.sub.module"`` or ``"tests.test_sub.test_module"``
-        ).
+        Dotted Python module name (e.g., `"mypackage.sub.module"` or
+        `"tests.test_sub.test_module"`).
     """
     if path.is_relative_to(PackageManager.I.source_root()):
         root = PackageManager.I.source_root()
@@ -95,24 +93,27 @@ def module_name_as_root_path(module_name: str) -> Path:
 
     Selects the appropriate root directory based on the module's package:
 
-    - Modules starting with the tests package name (e.g., ``"tests"``) are rooted
+    - Modules starting with the tests package name (e.g., `"tests"`) are rooted
       at the tests source root, which is an empty path (the project root itself).
-    - All other modules are rooted at the source root (e.g., ``src/``).
+    - All other modules are rooted at the source root (e.g., `src/`).
 
     Args:
-        module_name: Dotted Python module name
-            (e.g., ``"mypackage.sub.module"`` or ``"tests.test_sub.test_module"``).
+        module_name: Dotted Python module name (e.g., `"mypackage.sub.module"`
+            or `"tests.test_sub.test_module"`).
 
     Returns:
-        Path to the module's ``.py`` file relative to the project root
-        (e.g., ``Path("src/mypackage/sub/module.py")`` for a source module, or
-        ``Path("tests/test_sub/test_module.py")`` for a test module).
+        Path to the module's `.py` file relative to the project root
+        (e.g., `Path("src/mypackage/sub/module.py")` for a source module, or
+        `Path("tests/test_sub/test_module.py")` for a test module).
     """
     return determine_root(module_name) / module_name_as_path(module_name)
 
 
 def determine_root(module_name: str) -> Path:
-    """Determines the root path of the given name."""
+    """Return the source root for a module.
+
+    The tests root for test modules, else the source root.
+    """
     return (
         ProjectTester.I.tests_source_root()
         if module_name.startswith(ProjectTester.I.tests_package_name())

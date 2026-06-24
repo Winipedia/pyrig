@@ -12,14 +12,14 @@ def package_dir_path(package: ModuleType) -> Path:
     """Get the directory of an imported package.
 
     Args:
-        package: An imported Python package (a module with an ``__init__.py``).
+        package: An imported Python package (a module with an `__init__.py`).
 
     Returns:
         Path to the package directory (the parent of the package's
-        ``__init__.py`` file).
+        `__init__.py` file).
 
     Raises:
-        AttributeError: If the package's ``__file__`` attribute is ``None``
+        AttributeError: If the package's `__file__` attribute is `None`
             (e.g., built-in modules or namespace packages).
     """
     return module_file_path(package).parent
@@ -35,7 +35,7 @@ def module_file_path(module: ModuleType) -> Path:
         Path to the module's source file.
 
     Raises:
-        AttributeError: If the module's ``__file__`` attribute is ``None``
+        AttributeError: If the module's `__file__` attribute is `None`
             (e.g., built-in modules or namespace packages).
     """
     file = module.__file__
@@ -46,14 +46,14 @@ def module_file_path(module: ModuleType) -> Path:
 
 
 def module_name_as_path(name: str) -> Path:
-    """Convert a dotted module name to a relative ``.py`` file path.
+    """Convert a dotted module name to a relative `.py` file path.
 
     Args:
-        name: Dotted Python module name (e.g., ``"package.subpackage.module"``).
+        name: Dotted Python module name (e.g., `"package.subpackage.module"`).
 
     Returns:
         Relative path to the module's source file
-        (e.g., ``Path("package/subpackage/module.py")``).
+        (e.g., `Path("package/subpackage/module.py")`).
     """
     return package_name_as_path(name).with_suffix(".py")
 
@@ -62,11 +62,11 @@ def package_name_as_path(name: str) -> Path:
     """Convert a dotted package name to a relative directory path.
 
     Args:
-        name: Dotted Python package name (e.g., ``"package.subpackage"``).
+        name: Dotted Python package name (e.g., `"package.subpackage"`).
 
     Returns:
         Relative path to the package directory
-        (e.g., ``Path("package/subpackage")``).
+        (e.g., `Path("package/subpackage")`).
     """
     return Path(*name.split("."))
 
@@ -74,15 +74,14 @@ def package_name_as_path(name: str) -> Path:
 def path_as_module_name(path: Path) -> str:
     """Convert a relative file path to a dotted module name.
 
-    Strips the file extension if present, then joins the path parts with
-    dots. Paths without an extension are handled the same as those with
-    ``.py``.
+    The file extension is dropped, so a path with a `.py` suffix and the
+    same path without it produce the same module name.
 
     Args:
-        path: Relative file path (e.g., ``Path("package/subpackage/module.py")``
-            or ``Path("package/subpackage/module")``).
+        path: Relative file path (e.g., `Path("package/subpackage/module.py")`
+            or `Path("package/subpackage/module")`).
 
     Returns:
-        Dotted Python module name (e.g., ``"package.subpackage.module"``).
+        Dotted Python module name (e.g., `"package.subpackage.module"`).
     """
     return ".".join(path.with_suffix("").parts)

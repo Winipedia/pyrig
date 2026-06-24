@@ -1,16 +1,7 @@
-"""Config base class for generating ``__init__.py`` files with copied module docstrings.
+"""Config base class for generating `__init__.py` files with copied module docstrings.
 
-Example:
-    >>> from types import ModuleType
-    >>> from pyrig.rig.configs.base.init import InitConfigFile
-    >>> import pyrig.rig.configs
-    >>>
-    >>> class ConfigsPackageInit(InitConfigFile):
-    ...
-    ...     def copy_module(self) -> ModuleType:
-    ...         return pyrig.rig.configs
-    >>>
-    >>> ConfigsPackageInit()  # Creates src/<project>/rig/configs/__init__.py
+Provides `InitConfigFile`, which writes a package's `__init__.py` containing
+the docstring copied from a source module declared by the subclass.
 """
 
 from pathlib import Path

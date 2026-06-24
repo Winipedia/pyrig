@@ -25,10 +25,14 @@ logger = logging.getLogger(__name__)
 class Priority:
     """Helpers for controlling config file validation order.
 
-    A config file's ``priority()`` is a float; higher values are validated
-    earlier. ``DEFAULT`` is the baseline used by most files. Rather than
-    hard-coding absolute values, use :meth:`increase` / :meth:`decrease` to
-    position a config file one ``STEP`` before or after another file's priority.
+    A config file's `priority()` is a float; higher values are validated
+    earlier. `DEFAULT` is the baseline used by most files. Rather than
+    hard-coding absolute values, use [increase][] / [decrease][] to
+    position a config file one `STEP` before or after another file's priority.
+
+    Attributes:
+        STEP: Spacing between adjacent priority levels.
+        DEFAULT: Baseline priority used by most config files.
     """
 
     STEP = 10
@@ -36,7 +40,7 @@ class Priority:
 
     @classmethod
     def increase(cls, priority: float) -> float:
-        """Return a priority one ``STEP`` higher (validated earlier).
+        """Return a priority one `STEP` higher (validated earlier).
 
         Use this to position a config file just before another one whose
         priority it references, instead of hard-coding an absolute value.
@@ -45,13 +49,13 @@ class Priority:
             priority: The base priority to raise.
 
         Returns:
-            ``priority`` increased by one ``STEP``.
+            `priority` increased by one `STEP`.
         """
         return priority + cls.STEP
 
     @classmethod
     def decrease(cls, priority: float) -> float:
-        """Return a priority one ``STEP`` lower (validated later).
+        """Return a priority one `STEP` lower (validated later).
 
         Use this to position a config file just after another one whose
         priority it references, instead of hard-coding an absolute value.
@@ -60,7 +64,7 @@ class Priority:
             priority: The base priority to lower.
 
         Returns:
-            ``priority`` decreased by one ``STEP``.
+            `priority` decreased by one `STEP`.
         """
         return priority - cls.STEP
 
@@ -70,37 +74,34 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
     Implements an idempotent, declarative system for managing configuration
     files across a project. Subclasses declare the required structure via
-    ``_configs()`` and the system ensures that structure is present on disk,
+    `_configs()` and the system ensures that structure is present on disk,
     merging missing or mismatched values while preserving any extra keys the
     user has added.
 
-    Type Parameters:
-        ConfigT: The configuration data type, either ``dict[str, Any]`` or
-            ``list[Any]``.
+    The type parameter `ConfigT` is the configuration data type, either
+    `dict[str, Any]` or `list[Any]`.
 
-    Subclass Requirements:
-        Concrete subclasses must implement the following abstract methods:
+    Concrete subclasses must implement these abstract methods:
 
-        - ``parent_path()``: Directory where the file lives.
-        - ``stem()``: Filename without the extension.
-        - ``extension()``: File extension without the leading dot.
-        - ``_configs()``: Minimum required configuration structure.
-        - ``_load()``: Parse the file from disk.
-        - ``_dump(configs)``: Write configuration to disk.
+    - `parent_path()`: Directory where the file lives.
+    - `stem()`: Filename without the extension.
+    - `extension()`: File extension without the leading dot.
+    - `_configs()`: Minimum required configuration structure.
+    - `_load()`: Parse the file from disk.
+    - `_dump(configs)`: Write configuration to disk.
 
-        The following methods may optionally be overridden:
+    These methods may optionally be overridden:
 
-        - ``priority()``: Validation order (default 0, higher = earlier).
-        - ``version_control_ignored()``: Whether the file is git-ignored
-          (default ``False``).
+    - `priority()`: Validation order (default `Priority.DEFAULT`, higher =
+      earlier).
+    - `version_control_ignored()`: Whether the file is git-ignored
+      (default `False`).
 
-    Public API:
-        The following methods are already implemented with caching.
-        Do not override them:
+    These methods are already implemented with caching; do not override them:
 
-        - ``configs()``: Cached result of ``_configs()``.
-        - ``load()``: Cached result of ``_load()``.
-        - ``dump(configs)``: Cache-invalidating wrapper around ``_dump(configs)``.
+    - `configs()`: Cached result of `_configs()`.
+    - `load()`: Cached result of `_load()`.
+    - `dump(configs)`: Cache-invalidating wrapper around `_dump(configs)`.
     """
 
     def __str__(self) -> str:

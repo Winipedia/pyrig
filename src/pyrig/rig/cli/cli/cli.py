@@ -1,9 +1,11 @@
 """Discoverable Typer application builder for pyrig and pyrig-based projects.
 
-Defines :class:`CLI`, a ``DependencySubclass`` that assembles the Typer
-application and registers project-specific and shared commands discovered across
-the package dependency chain. Dependent projects can subclass it to customize how
-their command-line application is built without modifying pyrig.
+Defines [CLI][pyrig.rig.cli.cli.cli.CLI], a
+[DependencySubclass][pyrig.core.dependency_subclass.DependencySubclass] that
+assembles the Typer application and registers project-specific and shared
+commands discovered across the package dependency chain. Dependent projects can
+subclass it to customize how their command-line application is built without
+modifying pyrig.
 """
 
 import logging
@@ -35,30 +37,31 @@ class CLI(DependencySubclass):
     project-specific subcommands and shared subcommands discovered across the
     dependency chain.
 
-    As a ``DependencySubclass``, a single leaf subclass is resolved at runtime
-    (accessed via ``CLI.I``), so a dependent project may override any step of the
-    build to customize its command-line application without modifying pyrig.
+    As a [DependencySubclass][pyrig.core.dependency_subclass.DependencySubclass],
+    a single leaf subclass is resolved at runtime (accessed via `CLI.I`), so a
+    dependent project may override any step of the build to customize its
+    command-line application without modifying pyrig.
     """
 
     @classmethod
     def dependency_package(cls) -> ModuleType:
-        """Return the package where ``CLI`` subclasses are defined.
+        """Return the package where `CLI` subclasses are defined.
 
-        Scopes cross-package subclass discovery to the ``pyrig.rig.cli.cli``
+        Scopes cross-package subclass discovery to the `pyrig.rig.cli.cli`
         package so that only CLI implementations are found across dependent
         packages.
 
         Returns:
-            The ``pyrig.rig.cli.cli`` package.
+            The `pyrig.rig.cli.cli` package.
         """
         return cli
 
     def run(self) -> None:
         """Build the Typer application and invoke it.
 
-        Constructs a fully configured app via ``app()`` and calls it, which parses
-        ``sys.argv`` and dispatches the requested command. This is the behavior
-        invoked by the console-script entry point through ``main()``.
+        Constructs a fully configured app via [app][] and calls it, which parses
+        `sys.argv` and dispatches the requested command. This is the behavior
+        invoked by the console-script entry point through `main()`.
         """
         self.app()()
 
@@ -104,8 +107,8 @@ class CLI(DependencySubclass):
     def register_callback(self, app: typer.Typer) -> None:
         """Attach the verbosity callback to the given app.
 
-        Registers ``callback`` as the app's Typer callback so that the
-        ``--verbose`` and ``--quiet`` options are parsed before any command runs.
+        Registers [callback][] as the app's Typer callback so that the
+        `--verbose` and `--quiet` options are parsed before any command runs.
 
         Args:
             app: The Typer app to attach the callback to.
@@ -173,31 +176,24 @@ class CLI(DependencySubclass):
     def register_subcommands(self, app: typer.Typer) -> None:
         """Discover and register project-specific commands from the calling package.
 
-        Derives the calling package from ``sys.argv[0]``, constructs the module
-        name ``<package>.rig.cli.subcommands``, and registers every function
-        defined in that module as a Typer command.
+        Derives the calling package from `sys.argv[0]`, constructs the module
+        name `<package>.rig.cli.subcommands`, and registers every function
+        defined in that module as a Typer command. Module-level `typer.Typer`
+        instances in that module are registered as command groups named after
+        their variable (e.g. an `mk` group exposing `pyrig mk <command>`); their
+        sub-commands are defined in their own module and imported only for the
+        group object, so they are not picked up as top-level commands.
 
         This allows any pyrig-based project to define its own CLI commands simply
-        by adding functions to ``<package>.rig.cli.subcommands``.
+        by adding functions to `<package>.rig.cli.subcommands`.
 
-        Example:
-            # myproject/rig/cli/subcommands.py
-            def deploy() -> None:
-                '''Deploy the application.'''
-                ...
-
-            $ uv run myproject deploy
-
-        Module-level ``typer.Typer`` instances are registered as command groups
-        named after their variable (e.g. an ``mk`` group exposing
-        ``pyrig mk <command>``). The group's sub-commands are defined in their
-        own module and imported only for the group object, so they are not
-        picked up as top-level commands here.
+        Args:
+            app: The Typer app to register the commands onto.
 
         Note:
-            Only functions defined directly in the subcommands module are registered;
-            imported functions are excluded. If the module cannot be imported,
-            registration is silently skipped.
+            Only functions defined directly in the subcommands module are
+            registered; imported functions are excluded. If the module cannot be
+            imported, registration is silently skipped.
         """
         subcommands_module_name = module_name_replacing_start_module(
             subcommands, new_start_module_name=self.package_name()
@@ -214,20 +210,16 @@ class CLI(DependencySubclass):
         """Discover and register shared commands from the full dependency chain.
 
         Searches pyrig itself and every package that depends on pyrig for a
-        ``<package>.rig.cli.shared_subcommands`` module and registers all functions
-        found there as Typer commands. These commands are available in every
-        pyrig-based project and can adapt their behavior to the calling project
-        at runtime.
+        `<package>.rig.cli.shared_subcommands` module and registers both its
+        top-level command functions and its `typer.Typer` command groups. These
+        commands are available in every pyrig-based project and can adapt their
+        behavior to the calling project at runtime.
 
-        For example, a ``version`` command defined once in pyrig automatically
+        For example, a `version` command defined once in pyrig automatically
         reports the version of whichever project invokes it.
 
-        Example:
-            $ uv run pyrig version
-            pyrig version 3.1.5
-
-            $ uv run myproject version
-            myproject version 1.2.3
+        Args:
+            app: The Typer app to register the commands onto.
 
         Note:
             Commands are registered in dependency order (pyrig first, then all
@@ -246,10 +238,10 @@ class CLI(DependencySubclass):
     def register_direct_subcommands(self, app: typer.Typer, module: ModuleType) -> None:
         """Register every function defined in a module as a top-level command.
 
-        Adds each function found directly in ``module`` to ``app`` as a flat
-        Typer command. Imported functions and module-level ``typer.Typer`` group
+        Adds each function found directly in `module` to `app` as a flat Typer
+        command. Imported functions and module-level `typer.Typer` group
         instances are excluded; the latter are registered separately by
-        ``register_subcommand_groups``.
+        [register_subcommand_groups][].
 
         Args:
             app: The Typer app to register the commands onto.
@@ -259,11 +251,11 @@ class CLI(DependencySubclass):
             app.command()(func)
 
     def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
-        """Register every ``typer.Typer`` group defined in a module as a command group.
+        """Register every `typer.Typer` group defined in a module as a command group.
 
-        Looks up the module's ``typer.Typer`` instances via
-        ``module_subcommand_groups`` and attaches each to ``app`` under its
-        attribute name (e.g. an ``mk`` group exposing ``pyrig mk <command>``).
+        Looks up the module's `typer.Typer` instances via
+        [module_subcommand_groups][] and attaches each to `app` under its
+        attribute name (e.g. an `mk` group exposing `pyrig mk <command>`).
 
         Args:
             app: The Typer app to register the command groups onto.
@@ -275,16 +267,15 @@ class CLI(DependencySubclass):
     def module_subcommand_groups(self, module: ModuleType) -> dict[str, typer.Typer]:
         """Return the Typer command groups defined in a subcommands module.
 
-        Scans the module's namespace for ``typer.Typer`` instances and maps each
-        to the attribute name it is bound to. Each such instance is registered
-        as a command group (e.g. a ``mk`` group exposing ``pyrig mk <command>``),
-        and its sub-commands are excluded from the flat top-level command list.
+        Scans the module's namespace for `typer.Typer` instances and maps each
+        to the attribute name it is bound to. Imported instances are included
+        as long as they are bound to a module-level name.
 
         Args:
             module: The subcommands module to scan.
 
         Returns:
-            Mapping of attribute name to the ``typer.Typer`` group bound to it.
+            Mapping of attribute name to the `typer.Typer` group bound to it.
         """
         return {
             name: obj

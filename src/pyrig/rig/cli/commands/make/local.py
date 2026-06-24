@@ -4,11 +4,11 @@ from pyrig.rig.configs.base.config_file import ConfigFile
 
 
 def make_local_files() -> None:
-    """Create all version-control-ignored config files.
+    """Create or update every version-control-ignored config file.
 
-    Discovers every concrete ``ConfigFile`` subclass whose
-    ``version_control_ignored()`` returns ``True`` and calls ``validate()``
-    on each one, creating the file (and any missing parent directories) if it
-    does not already exist.
+    Discovers each concrete [ConfigFile][] subclass whose
+    `version_control_ignored()` returns `True` and validates it, creating the
+    file (and any missing parent directories) when absent or merging in any
+    missing required configuration when it already exists.
     """
     ConfigFile.validate_subclasses(ConfigFile.version_control_ignored_subclasses())
