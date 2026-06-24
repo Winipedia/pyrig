@@ -134,6 +134,7 @@ class TestPyprojectConfigFile:
         """Test method."""
         # make sure repo owner is cached before entering non git folder tmp
         assert VersionController.I.repo_owner()
+        assert VersionController.I.repo_owner()
         my_test_pyproject_config_file().validate()
         config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
@@ -173,6 +174,7 @@ class TestPyprojectConfigFile:
         """Test method."""
         # make sure repo owner is cached before entering non git folder tmp
         assert VersionController.I.repo_owner()
+        assert VersionController.I.repo_owner()
         my_test_pyproject_config_file().validate()
         config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
@@ -207,6 +209,7 @@ class TestPyprojectConfigFile:
     ) -> None:
         """Test method."""
         # make sure repo owner is cached before entering non git folder tmp
+        assert VersionController.I.repo_owner()
         assert VersionController.I.repo_owner()
         my_test_pyproject_config_file().validate()
         config = my_test_pyproject_config_file().load()

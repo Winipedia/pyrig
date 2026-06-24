@@ -87,7 +87,7 @@ class LicenseConfigFile(StringConfigFile):
         """
         mit_license = self.mit_license()
         year = datetime.now(tz=UTC).year
-        owner = VersionController.I.repo_owner(check_repo_url=False)
+        owner = VersionController.I.repo_owner()
         mit_license = mit_license.replace("[year]", str(year))
         return mit_license.replace("[fullname]", owner)
 
@@ -131,9 +131,7 @@ class LicenseConfigFile(StringConfigFile):
             ``https://img.shields.io/github/license/<owner>/<repo>``.
         """
         owner, repo = (
-            VersionController.I.repo_owner(
-                check_repo_url=False,
-            ),
+            VersionController.I.repo_owner(),
             PackageManager.I.project_name(),
         )
         return f"https://img.shields.io/github/license/{owner}/{repo}"

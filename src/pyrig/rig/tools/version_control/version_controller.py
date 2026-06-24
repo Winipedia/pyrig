@@ -280,7 +280,7 @@ class VersionController(Tool):
 
     @classmethod
     @cache
-    def repo_owner(cls, *, check_repo_url: bool = True) -> str:
+    def repo_owner(cls) -> str:
         """Return the cached repository owner.
 
         This is the primary public entry point for obtaining the repository
@@ -288,30 +288,19 @@ class VersionController(Tool):
         and caches the result at the class level so that repeated calls within
         the same process incur no subprocess overhead.
 
-        Args:
-            check_repo_url: When ``True``, raises an error if no remote origin
-                is configured.  Set to ``False`` to fall back gracefully to the
-                git user name.
-
         Returns:
             The repository owner as a string.
         """
-        return cls()._repo_owner(  # noqa: SLF001
-            check_repo_url=check_repo_url
-        )
+        return cls()._repo_owner()  # noqa: SLF001
 
-    def _repo_owner(
-        self,
-        *,
-        check_repo_url: bool = True,
-    ) -> str:
+    def _repo_owner(self) -> str:
         """Parse the repository owner from the git remote URL.
 
         Supports both HTTPS (``https://github.com/owner/repo.git``) and SSH
         (``git@github.com:owner/repo.git``) remote formats by stripping known
         URL prefixes, then taking the first path segment as the owner.
 
-        When no remote is configured and ``check_repo_url=False``, falls back
+        When no remote is configured and ````, falls back
         to the git ``user.name`` as the owner.
 
         If the fallback to git username is used, the spaces in the username are removed
@@ -322,14 +311,11 @@ class VersionController(Tool):
         When extracting the owner from the remote URL, the username is guaranteed to be
         correct, so no correction is applied to it.
 
-        Args:
-            check_repo_url: When ``True``, raises an error if no remote origin
-                is configured.
 
         Returns:
             The repository owner as a string.
         """
-        url = self.remote_url(check=check_repo_url)
+        url = self.remote_url(check=False)
         if not url:
             # we default to git username and repo name from cwd
             owner = self.user_name()

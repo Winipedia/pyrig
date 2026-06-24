@@ -52,6 +52,9 @@ class TestArgs:
         )
         assert result1.stderr == "", f"Expected stderr '', got {result1.stderr}"
 
+        result3 = args.run_cached(cwd=Path())
+        assert result3.returncode == 0
+
     def test___str__(self) -> None:
         """Test method."""
         args = Args(("uv", "run", "pytest"))
