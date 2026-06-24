@@ -13,7 +13,6 @@ from pyrig.core.strings import (
     snake_to_kebab_case,
 )
 from pyrig.core.subprocesses import Args
-from pyrig.rig.cli import subcommands
 from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
@@ -66,20 +65,6 @@ class Pyrigger(Tool):
         """
         return f"https://github.com/Winipedia/{self.name()}"
 
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Get the development package dependencies for pyrig.
-
-        Returns ``("pyrig-dev",)`` rather than ``("pyrig",)`` because
-        ``pyrig`` is already declared as a runtime dependency of generated
-        projects. The ``pyrig-dev`` package provides additional tooling
-        needed only during development.
-
-        Returns:
-            ``("pyrig-dev",)``
-        """
-        # only pyrig-dev not pyrig because pyrig is already installed as dependency
-        return ("pyrig-dev",)
-
     def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments from a callable.
 
@@ -98,9 +83,7 @@ class Pyrigger(Tool):
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return self.args(cmd_name, *args)
 
-    def group_cmd_args(
-        self, *args: str, group: typer.Typer, cmd: Callable[..., Any]
-    ) -> Args:
+    def group_cmd_args(self, *args: str, group: str, cmd: Callable[..., Any]) -> Args:
         """Construct pyrig command arguments for a subcommand within a command group.
 
         Resolves the group name by searching the subcommands module for the given
@@ -119,13 +102,7 @@ class Pyrigger(Tool):
         Raises:
             StopIteration: If ``group`` is not registered in the subcommands module.
         """
-        group_name = next(
-            (
-                snake_to_kebab_case(name)
-                for name, obj in vars(subcommands).items()
-                if obj is group
-            ),
-        )
+        group_name = snake_to_kebab_case(group)
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return self.args(group_name, cmd_name, *args)
 

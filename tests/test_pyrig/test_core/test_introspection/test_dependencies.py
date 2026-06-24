@@ -1,7 +1,6 @@
 """Test module."""
 
 import typer
-from pyrig_dev.rig.configs.pyproject import PyprojectConfigFile
 from pytest_mock import MockerFixture
 
 import pyrig
@@ -13,6 +12,7 @@ from pyrig.core.introspection.dependencies import (
     discover_subclasses_across_dependencies,
 )
 from pyrig.rig.configs.base.config_file import ConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 from pyrig.rig.tools.base.tool import Tool
 

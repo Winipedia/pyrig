@@ -1,0 +1,255 @@
+"""module."""
+
+import pytest
+from packaging.version import Version
+
+from pyrig.core.version import VersionConstraint, adjust_version_to_level
+
+
+def test_adjust_version_to_level() -> None:
+    """Test method."""
+    version = Version("3.8.1")
+    new_version = adjust_version_to_level(version, "major")
+    expected = Version("3")
+    assert new_version == expected
+
+    assert str(new_version) == "3"
+
+    new_version = adjust_version_to_level(version, "minor")
+    expected = Version("3.8")
+    assert new_version == expected
+
+    assert str(new_version) == "3.8"
+
+    new_version = adjust_version_to_level(version, "micro")
+    expected = Version("3.8.1")
+    assert new_version == expected
+
+
+class TestVersionConstraint:
+    """Test class."""
+
+    def test___init__(self) -> None:
+        """Test method."""
+        constraint = ">=3.8, <3.12"
+        version_constraint = VersionConstraint(constraint)
+        assert version_constraint.constraint == constraint, (
+            f"Expected {constraint}, got {version_constraint.constraint}"
+        )
+
+    def test_find_lower_inclusive(self) -> None:
+        """Test method."""
+        constraint = ">=3.8, <3.12"
+        version_constraint = VersionConstraint(constraint)
+        lower = version_constraint.find_lower_inclusive()
+        expected = "3.8"
+        assert str(lower) == expected, f"Expected {expected}, got {lower}"
+
+        constraint = ">3.8, <3.12"
+        version_constraint = VersionConstraint(constraint)
+        lower = version_constraint.find_lower_inclusive()
+        expected = "3.8.1"
+        assert str(lower) == expected, f"Expected {expected}, got {lower}"
+
+        constraint = "<3.12"
+        version_constraint = VersionConstraint(constraint)
+        lower = version_constraint.find_lower_inclusive()
+        assert lower is None, f"Expected None, got {lower}"
+        lower = version_constraint.find_lower_inclusive("3.8")
+        expected = "3.8"
+        assert str(lower) == expected, f"Expected {expected}, got {lower}"
+
+    def test_find_upper_exclusive(self) -> None:
+        """Test method."""
+        constraint = ">=3.8, <3.12"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.find_upper_exclusive()
+        expected = "3.12"
+        assert str(upper) == expected
+        constraint = ">=3.8, <=3.12"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.find_upper_exclusive()
+        expected = "3.12.1"
+        assert str(upper) == expected
+
+        constraint = ">=3.8"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.find_upper_exclusive()
+        assert upper is None, f"Expected None, got {upper}"
+        upper = version_constraint.find_upper_exclusive("3.12")
+        expected = "3.12"
+        assert str(upper) == expected
+
+    def test_upper_inclusive(self) -> None:
+        """Test method."""
+        constraint = ">=3.8, <3.12"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.upper_inclusive()
+        expected = "3.11"
+        assert str(upper) == expected
+        constraint = ">=3.8, <=3.12"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.upper_inclusive()
+        expected = "3.12.0"
+        assert str(upper) == expected
+        constraint = ">=3.8, <3.12.1"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.upper_inclusive()
+        expected = "3.12.0"
+        assert str(upper) == expected
+
+        constraint = ">=3.8"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.upper_inclusive()
+        assert upper is None, f"Expected None, got {upper}"
+
+        constraint = ">=2.8, <3.12.0"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.upper_inclusive()
+        expected = "3.11"
+        assert str(upper) == expected
+
+        constraint = ">=2.8, <3.0.0"
+        version_constraint = VersionConstraint(constraint)
+        upper = version_constraint.upper_inclusive()
+        expected = "2"
+        assert str(upper) == expected
+
+    def test_version_range(self) -> None:
+        """Test method."""
+        constraint = ">=3, <3.12"
+        version_constraint = VersionConstraint(constraint)
+        versions = version_constraint.version_range(level="major")
+        expected = (Version("3"),)
+        assert versions == expected
+        versions = version_constraint.version_range(level="minor")
+        expected = tuple(
+            Version(x)
+            for x in [
+                "3.0",
+                "3.1",
+                "3.2",
+                "3.3",
+                "3.4",
+                "3.5",
+                "3.6",
+                "3.7",
+                "3.8",
+                "3.9",
+                "3.10",
+                "3.11",
+            ]
+        )
+        assert versions == expected
+        constraint = ">=3.8.2, <3.9.6"
+        version_constraint = VersionConstraint(constraint)
+        versions = version_constraint.version_range(level="micro")
+        expected = tuple(
+            Version(x)
+            for x in [
+                "3.8.2",
+                "3.8.3",
+                "3.8.4",
+                "3.8.5",
+                "3.9.2",
+                "3.9.3",
+                "3.9.4",
+                "3.9.5",
+            ]
+        )
+        assert versions == expected
+
+        constraint = ">=3.12"
+        version_constraint = VersionConstraint(constraint)
+        versions = version_constraint.version_range(
+            level="minor", upper_default="3.14.0"
+        )
+        expected = tuple(Version(x) for x in ["3.12", "3.13", "3.14"])
+        assert versions == expected
+
+        # what if the micro or minor is smaller in lower than upper
+        # but the minor or major is larger
+        constraint = ">=3.12, <4.1"
+        version_constraint = VersionConstraint(constraint)
+        versions = version_constraint.version_range(level="minor")
+        expected = tuple(
+            Version(x)
+            for x in [
+                "3.12",
+                "3.13",
+                "3.14",
+                "3.15",
+                "3.16",
+                "3.17",
+                "3.18",
+                "3.19",
+                "3.20",
+                "3.21",
+                "3.22",
+                "3.23",
+                "3.24",
+                "4.0",
+            ]
+        )
+        assert versions == expected
+
+        constraint = ">=3.11.7, <3.12.2"
+        version_constraint = VersionConstraint(constraint)
+        versions = version_constraint.version_range(level="micro")
+        expected = tuple(
+            Version(x)
+            for x in [
+                "3.11.7",
+                "3.11.8",
+                "3.11.9",
+                "3.11.10",
+                "3.11.11",
+                "3.11.12",
+                "3.11.13",
+                "3.12.0",
+                "3.12.1",
+            ]
+        )
+        assert versions == expected
+
+        # make so that find_lower_inclusive and upper_inclusive return both None
+        # should raise RuntimeError
+        constraint = "<3.12"
+        version_constraint = VersionConstraint(constraint)
+        with pytest.raises(RuntimeError):
+            version_constraint.version_range(level="minor")
+
+        constraint = ">=2.1, <5.3"
+        version_constraint = VersionConstraint(constraint)
+        versions = version_constraint.version_range(level="major")
+        expected = tuple(Version(x) for x in ["3", "4", "5"])
+        assert versions == expected
+
+        versions = version_constraint.version_range(level="minor")
+        expected = tuple(
+            Version(x)
+            for x in [
+                "2.1",
+                "2.2",
+                "3.1",
+                "3.2",
+                "4.1",
+                "4.2",
+                "5.1",
+                "5.2",
+            ]
+        )
+        assert versions == expected
+
+        constraint = ">=2.4.1, <3.4.1"
+        version_constraint = VersionConstraint(constraint)
+        versions = version_constraint.version_range(level="micro")
+        expected = tuple(
+            Version(x)
+            for x in [
+                "2.4.1",
+                "2.4.2",
+                "3.4.0",
+            ]
+        )
+        assert versions == expected

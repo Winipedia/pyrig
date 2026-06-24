@@ -17,7 +17,7 @@ from pyrig.core.introspection.modules import (
     import_module_with_default,
     module_name_replacing_start_module,
 )
-from pyrig.core.strings import kebab_to_snake_case
+from pyrig.core.strings import kebab_to_snake_case, snake_to_kebab_case
 from pyrig.rig.cli import cli, shared_subcommands, subcommands
 
 
@@ -264,7 +264,7 @@ class CLI(DependencySubclass):
             Mapping of attribute name to the `typer.Typer` group bound to it.
         """
         return {
-            name: obj
+            snake_to_kebab_case(name): obj
             for name, obj in vars(module).items()
             if isinstance(obj, typer.Typer)
         }

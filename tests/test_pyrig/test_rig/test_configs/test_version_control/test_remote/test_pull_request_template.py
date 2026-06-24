@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pyrig.rig.configs.remote_version_control.pull_request_template import (
+from pyrig.rig.configs.version_control.remote.pull_request_template import (
     PullRequestTemplateConfigFile,
 )
 

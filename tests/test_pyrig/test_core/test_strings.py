@@ -10,6 +10,7 @@ from pyrig.core.strings import (
     dependency_requirement_as_package_name,
     dependency_requirement_split_pattern,
     file_has_content,
+    fstring_var_name,
     kebab_to_snake_case,
     make_linked_badge_markdown,
     make_name_from_obj,
@@ -213,3 +214,9 @@ def test_dependency_requirement_as_package_name() -> None:
     req = "another_package"
     name = dependency_requirement_as_package_name(req)
     assert name == "another_package"
+
+
+def test_fstring_var_name() -> None:
+    """Test function."""
+    var = "value"
+    assert fstring_var_name(f"{var=}") == "var"

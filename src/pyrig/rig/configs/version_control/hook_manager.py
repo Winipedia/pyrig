@@ -1,0 +1,188 @@
+"""Configuration management for version control hooks.
+
+Manages ``prek.toml`` with a local hook repository containing system-installed
+tools that run on various git stages to enforce code quality across formatting,
+linting, type checking, security, and Markdown style.
+"""
+
+from pathlib import Path
+from typing import Any
+
+from pyrig.core.subprocesses import (
+    Args,
+)
+from pyrig.rig.cli.subcommands import sync
+from pyrig.rig.configs.base.toml import TOMLConfigFile
+from pyrig.rig.tools.dependencies.auditor import DependencyAuditor
+from pyrig.rig.tools.dependencies.checker import DependencyChecker
+from pyrig.rig.tools.linting.markdown import MarkdownLinter
+from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.security_checker import SecurityChecker
+from pyrig.rig.tools.spell_checker import SpellChecker
+from pyrig.rig.tools.type_checker import TypeChecker
+from pyrig.rig.tools.version_control.hook_manager import (
+    VersionControlHookManager,
+)
+
+
+class VersionControlHookManagerConfigFile(TOMLConfigFile):
+    """Manages ``prek.toml`` for version control hook configuration.
+
+    Generates ``prek.toml`` at the project root with a single ``local``
+    repository entry containing hooks that cover the full code-quality
+    pipeline.  All hooks use ``language: system``, meaning the tools must be
+    installed on the host.
+
+    Note:
+        Run ``prek install`` once after generating the config to register the
+        hooks with git.
+    """
+
+    def parent_path(self) -> Path:
+        """Return the project root directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return the config filename stem, producing ``prek.toml``."""
+        return VersionControlHookManager.I.name()
+
+    def _configs(self) -> dict[str, Any]:
+        """Build the complete ``prek.toml`` configuration.
+
+        Constructs a single ``local`` repository entry containing hooks
+        that enforce the full code-quality pipeline on the project via hooks.
+
+        Returns:
+            Top-level prek.toml structure containing the prek configuration.
+        """
+        return {
+            "default_install_hook_types": self.hook_types(),
+            "repos": [
+                {
+                    "repo": "local",
+                    "hooks": self.hooks(),
+                },
+            ],
+        }
+
+    def hook_types(self) -> list[str]:
+        """Get all hook types."""
+        return sorted({stage for hook in self.hooks() for stage in hook["stages"]})
+
+    def hooks(self) -> list[dict[str, Any]]:
+        """Get all hooks."""
+        return [
+            self.hook(
+                "format-code",
+                PythonLinter.I.format_args(),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "lint-code",
+                PythonLinter.I.check_fix_args(),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "lint-markdown",
+                MarkdownLinter.I.check_fix_args(),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "check-spelling",
+                SpellChecker.I.check_fix_args(),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "check-types",
+                TypeChecker.I.check_args(),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "check-security",
+                SecurityChecker.I.run_with_config_args(),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "check-dependencies",
+                DependencyChecker.I.check_args(),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "synchronize-project",
+                Pyrigger.I.cmd_args(cmd=sync),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "update-package-manager",
+                PackageManager.I.update_self_args(),
+                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
+            ),
+            self.hook(
+                "update-dependencies",
+                PackageManager.I.update_dependencies_args(),
+                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
+            ),
+            self.hook(
+                "install-dependencies",
+                PackageManager.I.install_dependencies_args(),
+                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
+            ),
+            self.hook(
+                "audit-dependencies",
+                DependencyAuditor.I.audit_args(),
+                stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
+            ),
+        ]
+
+    def hook(  # noqa: PLR0913
+        self,
+        name: str,
+        args: Args,
+        *,
+        language: str = "system",
+        pass_filenames: bool = False,
+        always_run: bool = True,
+        stages: list[str],
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Build a single prek hook configuration entry.
+
+        Creates a hook dict for inclusion in the ``hooks`` list of a
+        ``repos`` entry in ``prek.toml``.  The hook ``id`` and ``name``
+        fields are both set to ``name``; the ``entry`` field is the
+        space-separated string representation of ``args``.
+
+        Args:
+            name: Hook identifier used for both ``id`` and ``name`` fields.
+            args: Command and arguments for the hook ``entry`` field.
+                Converted to a space-separated string via ``str()``.
+            language: Execution environment for the hook.  ``"system"`` means
+                the tool must already be installed on the host rather than
+                fetched remotely by prek.  Defaults to ``"system"``.
+            pass_filenames: When ``True``, prek appends staged filenames to the
+                hook command at runtime.  Defaults to ``False``.
+            always_run: When ``True``, the hook runs on every commit regardless
+                of whether any files match the optional ``files`` filter.
+                Defaults to ``True``.
+            stages: List of stages in which the hook should run, or ``None``
+                to use the default stages.  Defaults to ``["pre-commit"]``
+                when ``None`` is provided.
+            **kwargs: Additional prek hook fields passed through verbatim
+                (e.g. ``files``, ``exclude``).
+
+        Returns:
+            Hook configuration dict ready for inclusion in the ``hooks`` list.
+        """
+        hook: dict[str, Any] = {
+            "id": name,
+            "name": name,
+            "entry": str(args),
+            "language": language,
+            "always_run": always_run,
+            "pass_filenames": pass_filenames,
+            "stages": stages,
+            **kwargs,
+        }
+        return hook

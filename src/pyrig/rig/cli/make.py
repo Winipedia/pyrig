@@ -40,6 +40,28 @@ def cmd(
 
 
 @app.command()
+def subcls() -> None:
+    """Scaffold a subclass of any pyrig class interactively.
+
+    Launches a fuzzy-search prompt listing all ``DependencySubclass`` leaf
+    subclasses found in pyrig and its dependents — both concrete classes
+    (shown with their string representation) and abstract classes (shown by
+    qualified name), sorted alphabetically by import path.
+
+    After you select a class, pyrig creates the matching module file in your
+    project (or validates it if it already exists), copies the source
+    module's docstring into it, and appends a ready-to-edit subclass
+    skeleton that imports and extends the class you chose.
+
+    Example:
+        $ uv run pyrig mk subcls
+    """
+    from pyrig.rig.cli.commands.make.subclass import make_subclass  # noqa: PLC0415
+
+    make_subclass()
+
+
+@app.command()
 def local() -> None:
     """Create all version-control-ignored config files.
 

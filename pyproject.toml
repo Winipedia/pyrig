@@ -1,11 +1,16 @@
 [project]
 name = "pyrig"
-version = "15.19.0"
+version = "15.22.0"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "typer>=0.21.1",
+    "inquirerpy>=0.3.4",
+    "packaging>=26.2",
+    "pyyaml>=6.0.3",
+    "spdx-matcher>=0.1.4",
+    "tomlkit>=0.14.0",
+    "typer>=0.26.7",
 ]
 license = "MIT"
 license-files = [
@@ -71,8 +76,8 @@ dev = [
     "mkdocstrings[python]>=1.0.3",
     "pip-audit>=2.10.0",
     "prek>=0.3.2",
+    "pyrig>=15.0.0",
     "pyrig-codecov>=1.1.0",
-    "pyrig-dev>=0.1.19",
     "pyrig-fixtures>=0.2.0",
     "pyrig-overrides>=1.0.0",
     "pyrig-pypi>=1.0.0",
