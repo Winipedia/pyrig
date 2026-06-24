@@ -81,12 +81,8 @@ class TestPyprojectConfigFile:
             actual = my_test_pyproject_config_file().parent_path()
             assert actual == expected, f"Expected {expected}, got {actual}"
 
-    def test__configs(self, mocker: MockerFixture) -> None:
+    def test__configs(self) -> None:
         """Test method."""
-        PyprojectConfigFile.configs.cache_clear()
-        mock_repo_owner = mocker.patch.object(
-            VersionController, "repo_owner", return_value="FakeUser1"
-        )
         # pyproject get configs internally uses load which makes it a special case
         # where the file must exist before calling configs
         configs = PyprojectConfigFile().configs()
@@ -94,11 +90,10 @@ class TestPyprojectConfigFile:
         assert "build-system" in configs
         assert "tool" in configs
 
-        assert configs["project"]["authors"][0]["name"] == "FakeUser1"
+        assert configs["project"]["authors"][0]["name"] == "Winipedia"
 
         assert "classifiers" not in configs["project"]
         assert "keywords" not in configs["project"]
-        mock_repo_owner.assert_called()
 
     def test_merge_additional_dependencies(
         self, my_test_pyproject_config_file: type[PyprojectConfigFile]
@@ -134,14 +129,11 @@ class TestPyprojectConfigFile:
         assert isinstance(dev_deps, list)
 
     def test_latest_possible_python_version(
-        self,
-        my_test_pyproject_config_file: type[PyprojectConfigFile],
-        mocker: MockerFixture,
+        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
     ) -> None:
         """Test method."""
-        mock_repo_owner = mocker.patch.object(
-            VersionController, "repo_owner", return_value="FakeUser2"
-        )
+        # make sure repo owner is cached before entering non git folder tmp
+        assert VersionController.I.repo_owner()
         my_test_pyproject_config_file().validate()
         config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
@@ -173,17 +165,14 @@ class TestPyprojectConfigFile:
         assert latest_version > Version("3.13"), (
             "Expected latest_possible_python_version to return 3.x"
         )
-        mock_repo_owner.assert_called()
 
     def test_supported_python_versions(
         self,
         my_test_pyproject_config_file: type[PyprojectConfigFile],
-        mocker: MockerFixture,
     ) -> None:
         """Test method."""
-        mock_repo_owner = mocker.patch.object(
-            VersionController, "repo_owner", return_value="FakeUser3"
-        )
+        # make sure repo owner is cached before entering non git folder tmp
+        assert VersionController.I.repo_owner()
         my_test_pyproject_config_file().validate()
         config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
@@ -210,7 +199,6 @@ class TestPyprojectConfigFile:
             "4.6",
         ]
         assert actual == expected, f"Expected {expected}, got {actual}"
-        mock_repo_owner.assert_called()
 
     def test_first_supported_python_version(
         self,
@@ -218,9 +206,8 @@ class TestPyprojectConfigFile:
         mocker: MockerFixture,
     ) -> None:
         """Test method."""
-        mock_repo_owner = mocker.patch.object(
-            VersionController, "repo_owner", return_value="FakeUser4"
-        )
+        # make sure repo owner is cached before entering non git folder tmp
+        assert VersionController.I.repo_owner()
         my_test_pyproject_config_file().validate()
         config = my_test_pyproject_config_file().load()
         config["project"]["requires-python"] = ">=3.8, <3.12"
@@ -250,7 +237,6 @@ class TestPyprojectConfigFile:
             my_test_pyproject_config_file().first_supported_python_version()
 
         requires_mock.assert_called_once()
-        mock_repo_owner.assert_called()
 
     def test_latest_python_version(self) -> None:
         """Test method."""
