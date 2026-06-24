@@ -32,7 +32,6 @@ class TestVersionController:
     def test__repo_owner(self, mocker: MockerFixture) -> None:
         """Test method."""
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False
         )
         assert result == "Winipedia"
 
@@ -46,7 +45,6 @@ class TestVersionController:
             return_value="Test User",
         )
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False
         )
         owner = result
         assert owner == "TestUser"
@@ -55,21 +53,18 @@ class TestVersionController:
 
         username_mock.return_value = "TestUser"
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False
         )
         assert result == "TestUser"
 
         # make it return a https remote url
         remote_mock.return_value = "https://github.com/OWNER/REPO.git"
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False
         )
         assert result == "OWNER"
 
         # make it return a ssh remote url
         remote_mock.return_value = "git@github.com:OWNER/REPO.git"
         result = VersionController()._repo_owner(  # noqa: SLF001
-            check_repo_url=False
         )
         assert result == "OWNER"
 

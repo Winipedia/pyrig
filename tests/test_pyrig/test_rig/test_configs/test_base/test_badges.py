@@ -21,6 +21,7 @@ class TestBadgesConfigFile:
 
         # make sure repo owner is cached before entering non git folder tmp
         assert VersionController.I.repo_owner()
+        assert VersionController.I.repo_owner()
 
         with chdir(tmp_project_root_path):
             LicenseConfigFile().validate()

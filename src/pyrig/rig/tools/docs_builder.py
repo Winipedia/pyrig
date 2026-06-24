@@ -105,9 +105,7 @@ class DocsBuilder(Tool):
             URL in the form ``https://{owner}.github.io/{repo}``.
         """
         owner, repo = (
-            VersionController.I.repo_owner(
-                check_repo_url=False,
-            ),
+            VersionController.I.repo_owner(),
             PackageManager.I.project_name(),
         )
         return f"https://{owner}.github.io/{repo}"
