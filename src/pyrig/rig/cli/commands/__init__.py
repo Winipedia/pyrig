@@ -1,9 +1,7 @@
-"""CLI command implementation functions.
+"""Backend implementations for every pyrig CLI command.
 
-Contains the core implementation logic for pyrig's CLI commands. Each module
-implements a single command and is intentionally separated from the CLI
-interface layer in [pyrig.rig.cli.subcommands][]. This separation allows each
-command to be tested and called programmatically without any CLI framework
-overhead, and allows the CLI layer to use local (lazy) imports, preventing
-import errors in environments where optional dev dependencies are not installed.
+Each module implements exactly one command as a plain callable, decoupled from
+the CLI registration layer. This separation keeps commands testable without any
+CLI framework and lets the registration layer use lazy imports, so optional
+dev-only dependencies do not need to be installed in every environment.
 """

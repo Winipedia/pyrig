@@ -1,10 +1,8 @@
-"""Development-time infrastructure for pyrig projects.
+"""Concrete development tooling layer for pyrig-based projects.
 
-Provides the CLI commands, configuration file definitions, external tool
-wrappers, static resources, and shared test infrastructure used to scaffold
-and maintain pyrig-based projects.
-
-Note:
-    This package is intended for development use only. It should not be imported
-    in production runtime code.
+Sits above the foundational core, implementing the project management
+concerns that downstream projects depend on during development: a
+discoverable CLI, managed configuration files, external tool wrappers,
+static resources, and shared test infrastructure. Not intended for
+import in production runtime code.
 """

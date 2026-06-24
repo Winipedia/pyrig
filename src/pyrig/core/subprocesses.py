@@ -1,8 +1,8 @@
-"""Subprocess execution with shell-injection guards and result caching.
+"""Safe subprocess execution with automatic failure logging and result caching.
 
-Provides a thin wrapper around the standard `subprocess` module that
-enforces `shell=False`, logs failures automatically, and exposes an immutable
-command container with a fluent execution interface.
+Enforces shell-injection guards by forbidding shell-interpolated execution,
+logs command failures before re-raising, and caches results for idempotent
+commands to avoid redundant process spawning.
 """
 
 import logging
@@ -16,12 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 class Args(tuple[str, ...]):
-    """Immutable command-line argument container with execution capabilities.
+    """Immutable sequence of command-line tokens that can execute itself.
 
-    A `tuple` subclass that represents a complete subprocess command.
-    Returned by every `Tool.*_args` method (e.g., `args` on a [Tool][] subclass)
-    to provide a consistent interface for building, inspecting, and running
-    subprocess commands.
+    A `tuple` subclass representing a complete subprocess command. Supports
+    direct execution with optional extra arguments, and a cached variant for
+    idempotent commands that may be invoked repeatedly within a session.
 
     Example:
         >>> args = Args(["uv", "sync"])
@@ -36,45 +35,45 @@ class Args(tuple[str, ...]):
         return " ".join(self)
 
     def run(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
-        """Execute the command via subprocess.
-
-        Appends any extra positional arguments to the command, then passes the
-        combined command to [run_subprocess][].
+        """Execute the command, appending any extra positional arguments first.
 
         Args:
-            *args: Additional arguments to append to the command.
-            **kwargs: Keyword arguments forwarded to [run_subprocess][]
+            *args: Additional arguments to append to the command before execution.
+            **kwargs: Keyword arguments forwarded to `run_subprocess`
                 (e.g., `check`, `capture_output`, `cwd`).
 
         Returns:
-            The completed process from the subprocess call.
+            The completed process result.
 
         Raises:
             subprocess.CalledProcessError: If `check=True` and the command
                 exits with a non-zero return code.
+            subprocess.TimeoutExpired: If a `timeout` is passed and the process
+                exceeds it.
         """
         return run_subprocess((*self, *args), **kwargs)
 
     def run_cached(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
-        """Execute the command via a cached subprocess call.
+        """Execute the command with result caching.
 
-        Identical to [run][Args.run], but uses [run_subprocess_cached][] so that
-        repeated calls with the same arguments return the cached result without
-        spawning a new process. Useful for idempotent read commands (e.g.,
-        `git config`) that are invoked many times during a session.
+        Repeated calls with identical arguments return the cached result without
+        spawning a new process. Useful for idempotent read commands invoked many
+        times during a session. All keyword argument values must be hashable.
 
         Args:
-            *args: Additional arguments to append to the command.
-            **kwargs: Keyword arguments forwarded to [run_subprocess_cached][]
+            *args: Additional arguments to append to the command before execution.
+            **kwargs: Keyword arguments forwarded to `run_subprocess_cached`
                 (e.g., `check`, `capture_output`, `cwd`). All values must
                 be hashable.
 
         Returns:
-            The completed process from the subprocess call.
+            The completed process result.
 
         Raises:
             subprocess.CalledProcessError: If `check=True` and the command
                 exits with a non-zero return code.
+            subprocess.TimeoutExpired: If a `timeout` is passed and the process
+                exceeds it.
         """
         return run_subprocess_cached((*self, *args), **kwargs)
 
@@ -85,28 +84,22 @@ def run_subprocess_cached(
 ) -> subprocess.CompletedProcess[Any]:
     """Execute a subprocess command and cache the result.
 
-    A `functools.cache`-backed wrapper around [run_subprocess][]. Because the
-    cache key is derived from the arguments, `args` must be a `tuple` (hashable)
-    rather than a list, and all `kwargs` values must also be hashable (e.g.,
-    `bool`, `int`, `str`, `None`).
-
-    Caching avoids redundant process spawning for idempotent commands such as
-    `git config --get remote.origin.url` that are called multiple times within
-    a single session. The cache persists for the lifetime of the process.
+    A `functools.cache`-backed wrapper around `run_subprocess`. Repeated calls
+    with identical arguments return the cached result without spawning a new
+    process. Because the cache key includes both `args` and all `kwargs`, every
+    value must be hashable.
 
     Args:
         args: Command and arguments as a tuple (e.g., `("git", "status")`).
-        **kwargs: Keyword arguments forwarded to [run_subprocess][].
+        **kwargs: Keyword arguments forwarded to `run_subprocess`.
             All values must be hashable.
 
     Returns:
-        The completed process with the command output. On repeated calls with
-        identical arguments the cached instance is returned without spawning a
-        new process.
+        The completed process result.
 
     Raises:
         subprocess.CalledProcessError: If the command exits with a non-zero
-            return code and `check=True` (the default).
+            return code and `check=True`.
         subprocess.TimeoutExpired: If the process exceeds the configured timeout.
     """
     return run_subprocess(args, **kwargs)
@@ -126,32 +119,25 @@ def run_subprocess(  # noqa: PLR0913
 ) -> subprocess.CompletedProcess[Any]:
     """Execute a subprocess command with automatic failure logging.
 
-    A thin wrapper around `subprocess.run` that:
-
-    * Forbids `shell=True` to prevent shell-injection vulnerabilities.
-    * Logs the command, exit code, stdout, and stderr at `ERROR` level
-      whenever `subprocess.CalledProcessError` is raised, then re-raises.
-    * Defaults `cwd` to the current directory when not provided.
-
-    This is the underlying execution primitive used by all [Tool][] wrappers.
+    Forbids `shell=True` to prevent shell-injection vulnerabilities. When
+    `subprocess.CalledProcessError` is raised, logs the command, exit code,
+    stdout, and stderr at `ERROR` level before re-raising. Defaults `cwd` to
+    the current directory when `None` is passed.
 
     Args:
         args: Command and arguments as a sequence (e.g., `["git", "status"]`).
         input_: Data sent to stdin.
         capture_output: Capture stdout and stderr.
-        timeout: Maximum seconds to wait before raising
-            `subprocess.TimeoutExpired`. `None` means no limit.
+        timeout: Maximum seconds to wait. `None` means no limit.
         check: Raise `subprocess.CalledProcessError` on non-zero exit.
         cwd: Working directory for the subprocess. Defaults to the current
-            directory.
-        shell: Must be `False`. Passing `True` raises `ValueError`
-            immediately, as shell execution is forbidden for security reasons.
-        text: Decode stdout and stderr as text strings.
+            directory when `None`.
+        shell: Must be `False`. Passing `True` raises `ValueError` immediately.
+        text: Decode stdout and stderr as strings.
         **kwargs: Additional keyword arguments forwarded to `subprocess.run`.
 
     Returns:
-        The completed process with `args`, `returncode`, `stdout`, and
-        `stderr`.
+        The completed process result.
 
     Raises:
         ValueError: If `shell=True` is passed.

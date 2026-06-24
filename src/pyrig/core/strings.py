@@ -1,10 +1,4 @@
-"""String manipulation utilities.
-
-Provides functions for common string transformations used throughout pyrig,
-including file I/O with consistent encoding, case conversions between naming
-conventions, regex patterns for parsing, human-readable name generation,
-and formatted output helpers.
-"""
+"""String manipulation and text encoding utilities."""
 
 import re
 from collections.abc import Callable, Iterator
@@ -16,29 +10,12 @@ UTF_8_ENCODING = "utf-8"
 
 
 def read_text_utf8(path: Path) -> str:
-    """Read the text content of a file using UTF-8 encoding.
-
-    Prefer this over calling `Path.read_text` directly to ensure consistent
-    UTF-8 encoding is used across the entire codebase.
-
-    Args:
-        path: Path to the file to read.
-
-    Returns:
-        File content as a string.
-    """
+    """Read the text content of a file using UTF-8 encoding."""
     return path.read_text(encoding=UTF_8_ENCODING)
 
 
 def write_text_utf8(path: Path, content: str) -> int:
     """Write text to a file using UTF-8 encoding.
-
-    Prefer this over calling `Path.write_text` directly to ensure consistent
-    UTF-8 encoding is used across the entire codebase.
-
-    Args:
-        path: Path to the file to write.
-        content: Text content to write.
 
     Returns:
         Number of characters written.
@@ -51,11 +28,11 @@ def open_path_with_utf8(path: Path, *args: Any, **kwargs: Any) -> Any:
 
     Args:
         path: Path to the file to open.
-        *args: Positional arguments to pass to `open`.
-        **kwargs: Keyword arguments to pass to `open`.
+        *args: Positional arguments forwarded to `Path.open`.
+        **kwargs: Keyword arguments forwarded to `Path.open`.
 
     Returns:
-        File object.
+        File object returned by `Path.open`.
     """
     return path.open(*args, encoding=UTF_8_ENCODING, **kwargs)
 
@@ -77,26 +54,12 @@ def file_has_content(path: Path) -> bool:
 
 
 def kebab_to_snake_case(value: str) -> str:
-    """Convert a kebab-case string to snake_case by replacing hyphens with underscores.
-
-    Args:
-        value: A kebab-case string (e.g., `"my-project"`).
-
-    Returns:
-        The snake_case equivalent (e.g., `"my_project"`).
-    """
+    """Convert kebab-case string to snake_case by replacing hyphens with underscores."""
     return value.replace("-", "_")
 
 
 def snake_to_kebab_case(value: str) -> str:
-    """Convert a snake_case string to kebab-case by replacing underscores with hyphens.
-
-    Args:
-        value: A snake_case string (e.g., `"my_project"`).
-
-    Returns:
-        The kebab-case equivalent (e.g., `"my-project"`).
-    """
+    """Convert snake_case string to kebab-case by replacing underscores with hyphens."""
     return value.replace("_", "-")
 
 
@@ -113,7 +76,7 @@ def split_on_uppercase(string: str) -> Iterator[str]:
         Non-empty substrings, in order. Each substring starts either at the
         beginning of the original string or just before an uppercase letter.
 
-    Example:
+    Examples:
         >>> list(split_on_uppercase("HelloWorld"))
         ['Hello', 'World']
         >>> list(split_on_uppercase("XMLParser"))
@@ -146,11 +109,11 @@ def dependency_requirement_split_pattern() -> re.Pattern[str]:
 
 
 def dependency_requirement_as_package_name(dep_req: str) -> str:
-    """Extract the package name from a dependency requirement string.
+    """Extract the bare package name from a dependency requirement string..
 
-    Uses the split pattern to separate the package name from any version specifiers
-    or other extraneous characters. The resulting package name is converted from
-    kebab-case to snake_case to match Python package naming conventions.
+    The name is normalized to snake_case.
+    Version specifiers, extras notation, and any other non-name characters are
+    stripped. Hyphens in the package name are normalized to underscores.
 
     Args:
         dep_req: A dependency requirement string (e.g., `"requests>=2.0,<3.0"` or
@@ -196,7 +159,7 @@ def make_name_from_obj(
         Formatted name string. For example, `"init_project"` becomes
         `"Init-Project"` with the default parameters.
 
-    Example:
+    Examples:
         >>> make_name_from_obj("init_project")
         'Init-Project'
         >>> make_name_from_obj("init_project", join_on=" ")

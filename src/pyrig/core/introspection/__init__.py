@@ -1,7 +1,6 @@
-"""Introspection utilities for Python modules, packages, and classes.
+"""Introspection primitives for class, module, and package discovery.
 
-Provides the core infrastructure for discovering subclasses, dynamically importing
-modules, extracting functions and methods, and traversing package hierarchies.
-Used throughout pyrig to power plugin-style discovery of config files, tools, and
-test fixtures across the installed package ecosystem.
+Provides the low-level building blocks that power pyrig's cross-package subclass
+discovery: walking package hierarchies, dynamically importing modules, filtering
+class collections, and locating equivalent module paths across dependent packages.
 """

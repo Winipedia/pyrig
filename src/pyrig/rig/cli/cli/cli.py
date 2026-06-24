@@ -1,12 +1,4 @@
-"""Discoverable Typer application builder for pyrig and pyrig-based projects.
-
-Defines [CLI][pyrig.rig.cli.cli.cli.CLI], a
-[DependencySubclass][pyrig.core.dependency_subclass.DependencySubclass] that
-assembles the Typer application and registers project-specific and shared
-commands discovered across the package dependency chain. Dependent projects can
-subclass it to customize how their command-line application is built without
-modifying pyrig.
-"""
+"""Typer app assembly with cross-package command discovery for pyrig-based projects."""
 
 import logging
 import sys
@@ -37,31 +29,26 @@ class CLI(DependencySubclass):
     project-specific subcommands and shared subcommands discovered across the
     dependency chain.
 
-    As a [DependencySubclass][pyrig.core.dependency_subclass.DependencySubclass],
-    a single leaf subclass is resolved at runtime (accessed via `CLI.I`), so a
-    dependent project may override any step of the build to customize its
-    command-line application without modifying pyrig.
+    A single leaf subclass is resolved at runtime (accessed via `CLI.I`), so a
+    dependent project may subclass `CLI` to override any step of the build without
+    modifying pyrig.
     """
 
     @classmethod
     def dependency_package(cls) -> ModuleType:
-        """Return the package where `CLI` subclasses are defined.
-
-        Scopes cross-package subclass discovery to the `pyrig.rig.cli.cli`
-        package so that only CLI implementations are found across dependent
-        packages.
+        """Return the `pyrig.rig.cli.cli` package.
 
         Returns:
-            The `pyrig.rig.cli.cli` package.
+            The `pyrig.rig.cli.cli` package module.
         """
         return cli
 
     def run(self) -> None:
         """Build the Typer application and invoke it.
 
-        Constructs a fully configured app via [app][] and calls it, which parses
-        `sys.argv` and dispatches the requested command. This is the behavior
-        invoked by the console-script entry point through `main()`.
+        Constructs a fully configured app and calls it, which parses `sys.argv`
+        and dispatches the requested command. This is the entry point invoked by
+        the console-script.
         """
         self.app()()
 
@@ -107,7 +94,7 @@ class CLI(DependencySubclass):
     def register_callback(self, app: typer.Typer) -> None:
         """Attach the verbosity callback to the given app.
 
-        Registers [callback][] as the app's Typer callback so that the
+        Registers `self.callback` as the app's Typer callback so that the
         `--verbose` and `--quiet` options are parsed before any command runs.
 
         Args:
@@ -239,9 +226,8 @@ class CLI(DependencySubclass):
         """Register every function defined in a module as a top-level command.
 
         Adds each function found directly in `module` to `app` as a flat Typer
-        command. Imported functions and module-level `typer.Typer` group
-        instances are excluded; the latter are registered separately by
-        [register_subcommand_groups][].
+        command. Imported functions are excluded; module-level `typer.Typer` group
+        instances are registered separately by `register_subcommand_groups`.
 
         Args:
             app: The Typer app to register the commands onto.
@@ -251,11 +237,11 @@ class CLI(DependencySubclass):
             app.command()(func)
 
     def register_subcommand_groups(self, app: typer.Typer, module: ModuleType) -> None:
-        """Register every `typer.Typer` group defined in a module as a command group.
+        """Register every `typer.Typer` instance in a module as a named command group.
 
-        Looks up the module's `typer.Typer` instances via
-        [module_subcommand_groups][] and attaches each to `app` under its
-        attribute name (e.g. an `mk` group exposing `pyrig mk <command>`).
+        Attaches each `typer.Typer` found in the module's namespace to `app`
+        under its attribute name (e.g. an `mk` variable becomes the `mk` command
+        group, exposing `pyrig mk <command>`).
 
         Args:
             app: The Typer app to register the command groups onto.
@@ -284,45 +270,40 @@ class CLI(DependencySubclass):
         }
 
     def package_name(self) -> str:
-        """Return the package name of the invoking project.
+        """Return the snake_case package name of the invoking project.
 
         Derives the package name from the project name (the basename of
-        ``sys.argv[0]``) by converting it from kebab-case to snake_case.
-
-        For example, if the project is invoked as ``uv run my-project``, the
-        package name would be ``my_project``.
+        `sys.argv[0]`) by converting it from kebab-case to snake_case.
+        For example, if the project is invoked as `uv run my-project`, the
+        package name is `my_project`.
 
         Returns:
-            The package name of the invoking project, derived from the project name.
+            Python-importable package name of the invoking project.
         """
         return self.project_name_as_package_name(self.project_name())
 
     def project_name_as_package_name(self, project_name: str) -> str:
-        """Return the package name derived from the project name.
+        """Return the Python-importable package name derived from the project name.
 
-        Converts the project name from kebab-case to snake_case, so a
-        project named ``my-project`` has the package name ``my_project``.
+        Converts `project_name` from kebab-case to snake_case, so a project
+        named `my-project` has the package name `my_project`.
+
+        Args:
+            project_name: Kebab-case project name to convert.
 
         Returns:
-            Python-importable package name derived from the project name.
+            Python-importable package name derived from `project_name`.
         """
         return kebab_to_snake_case(project_name)
 
     def project_name(self) -> str:
-        """Extract the invoking project name from the command-line entry point.
+        """Return the basename of `sys.argv[0]` as the invoking project name.
 
-        Reads ``sys.argv[0]`` and returns its basename. When a project is invoked
-        through a registered console-script entry point (e.g. ``uv run my-project``),
-        ``sys.argv[0]`` is the path to that entry point script, so its basename is
-        the project name as it was registered.
+        When a project is invoked through a registered console-script entry point
+        (e.g. `uv run my-project`), `sys.argv[0]` is the path to that script, so
+        its basename is the project name as it was registered.
 
         Returns:
-            The basename of ``sys.argv[0]``, which is the project name as registered
-            in the console-scripts entry point.
-
-        Example:
-            >>> # When invoked as: uv run my-project build
-            >>> self.project_name()
-            'my-project'
+            The basename of `sys.argv[0]`.
         """
         return Path(sys.argv[0]).name

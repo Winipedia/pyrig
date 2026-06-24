@@ -1,9 +1,4 @@
-"""Low-level utilities for inspecting Python objects through wrapper layers.
-
-Reads members, definition line, qualified name, and defining module of an
-object, unwrapping properties, staticmethods, classmethods, bound methods, and
-decorator chains first so the underlying function is what gets inspected.
-"""
+"""Utilities for inspecting Python objects."""
 
 import inspect
 from collections.abc import Callable, Iterable, Iterator
@@ -17,8 +12,8 @@ def obj_members(
     """Yield the members of an object as name-value pairs without invoking descriptors.
 
     Members are read statically, so properties with side effects are not
-    triggered. The CPython 3.14 implementation attributes `__annotate__` and
-    `__annotate_func__` are excluded from the result.
+    triggered. `__annotate__` and `__annotate_func__` are always excluded
+    from the result.
 
     Args:
         obj: Object to inspect (class, module, or any Python object).

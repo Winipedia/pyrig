@@ -1,9 +1,4 @@
-"""Generic directed graph with bidirectional edge traversal.
-
-Maintains forward and reverse adjacency mappings to support efficient traversal
-in both directions: from a node to its outgoing neighbors (dependencies) and
-from a node to its direct incoming neighbors (reverse edges).
-"""
+"""Abstract directed graph foundation with forward and reverse edge traversal."""
 
 import heapq
 from abc import ABC, abstractmethod
@@ -13,42 +8,32 @@ from typing import Any, Self
 
 
 class DiGraph(ABC):
-    """Abstract base class for a directed graph with bidirectional edge traversal.
+    """Abstract directed graph with forward and reverse adjacency tracking.
 
-    Maintains forward and reverse adjacency mappings, enabling outgoing
-    neighbor lookups via `[node]` and transitive ancestor queries via
-    [ancestors][pyrig.core.graph.DiGraph.ancestors].
-
-    Subclasses must implement [build][pyrig.core.graph.DiGraph.build] to
-    populate the graph at construction time. If a `root` node is provided, the
-    graph is automatically pruned after building to retain only that node and
-    all nodes that transitively point to it.
+    Subclasses implement `build` to populate nodes and edges. At construction,
+    `build` is called first; if a `root` node is given, the graph is then pruned
+    to retain only that node and every node that transitively points to it.
     """
 
     @classmethod
     @cache
     def cached(cls, *args: Any, **kwargs: Any) -> Self:
-        """Return a cached instance of the graph for the given arguments.
+        """Return a cached instance, constructing it only on the first call.
 
-        Repeated calls with the same arguments return the same instance,
-        avoiding redundant construction and building of the graph.
+        Repeated calls with identical arguments return the same instance
+        without rebuilding the graph.
 
         Args:
-            *args: Positional arguments to pass to the graph constructor.
-            **kwargs: Keyword arguments to pass to the graph constructor.
+            *args: Positional arguments forwarded to the constructor.
+            **kwargs: Keyword arguments forwarded to the constructor.
 
         Returns:
-            An instance of the graph, cached based on the provided arguments.
+            The cached graph instance for the given arguments.
         """
         return cls(*args, **kwargs)
 
     def __init__(self, root: str | None = None) -> None:
-        """Initialize and build the graph structure.
-
-        Args:
-            root: If provided, prune the graph after building to keep only
-                this node and nodes that depend on it (ancestors).
-        """
+        """Build the graph, then prune it to `root` if one is given."""
         self.root = root
         self._nodes: set[str] = set()
         self._edges: dict[str, set[str]] = {}  # node -> outgoing neighbors
@@ -61,10 +46,9 @@ class DiGraph(ABC):
     def build(self) -> None:
         """Populate the graph with nodes and edges.
 
-        Called automatically during `__init__` before any optional pruning.
-        Subclasses must implement this method to define the graph structure
-        using [add_node][pyrig.core.graph.DiGraph.add_node] and
-        [add_edge][pyrig.core.graph.DiGraph.add_edge].
+        Called automatically during construction before any optional pruning.
+        Implementations use `add_node` and `add_edge` to define the graph
+        structure.
         """
 
     def prune(self, root: str) -> None:
@@ -108,33 +92,22 @@ class DiGraph(ABC):
             self._reverse_edges[node] = set()
 
     def __contains__(self, node: str) -> bool:
-        """Check whether a node exists in the graph.
-
-        Args:
-            node: Node identifier to look up.
-
-        Returns:
-            `True` if the node is present, `False` otherwise.
-        """
+        """Check whether a node exists in the graph."""
         return node in self._nodes
 
     def __getitem__(self, node: str) -> set[str]:
-        """Get the outgoing neighbors of a node.
+        """Return the outgoing neighbors of a node, or an empty set if absent.
 
         Args:
             node: Node identifier.
 
         Returns:
-            Set of nodes that this node points to (empty set if node doesn't exist).
+            Set of nodes that `node` has a directed edge to.
         """
         return self._edges.get(node, set())
 
     def nodes(self) -> set[str]:
-        """Return all node identifiers in the graph.
-
-        Returns:
-            Set of every node currently in the graph.
-        """
+        """Return all node identifiers currently in the graph."""
         return self._nodes
 
     def sorted_ancestors(self, target: str) -> list[str]:

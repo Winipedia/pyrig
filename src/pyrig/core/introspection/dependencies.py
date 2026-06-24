@@ -1,9 +1,4 @@
-"""Cross-package module and subclass discovery for the pyrig ecosystem.
-
-Provides utilities to locate equivalent module paths and collect subclass
-implementations across all installed packages that depend on a common base
-dependency.
-"""
+"""Subclass and module discovery scoped across installed package dependents."""
 
 import logging
 from collections.abc import Iterator
@@ -26,29 +21,22 @@ def discover_subclasses_across_dependencies[T](
     cls: type[T],
     package: ModuleType,
 ) -> Iterator[type[T]]:
-    """Yield subclasses of `cls` across `package` and dependent packages.
+    """Yield subclasses of `cls` found in `package` and in every dependent of its root.
 
-    The primary entry point for pyrig's plugin-style subclass discovery. Starting
-    with `package` itself and then each installed package that depends on
-    `package`'s root package, locate the module that corresponds to `package`
-    within each dependent (via [discover_equivalent_modules_across_dependents][])
-    and collect every subclass of `cls` defined there.
-
-    This enables subsystems built on
-    [DependencySubclass][pyrig.core.dependency_subclass.DependencySubclass] to
-    automatically find all concrete implementations across the entire installed
-    ecosystem without requiring explicit registration.
+    Searches `package` itself first, then each installed package that depends on
+    `package`'s root package. In each dependent, the module path equivalent to
+    `package` is located (e.g., `pyrig.rig` becomes `<dep>.rig`), and every
+    subclass of `cls` defined there is collected.
 
     Args:
         cls: Base class whose subclasses should be discovered.
-        package: Template module whose dotted path is replicated across dependent
-            packages to locate the modules to search. The root of this module
-            (e.g., `pyrig` for `pyrig.rig.configs`) is used to find all
-            dependent packages. For example, passing `pyrig.rig` would search
-            `<pkg>.rig` in each dependent package.
+        package: Module whose dotted path is replicated in each dependent package
+            to locate the modules to search. The root of this module determines
+            which installed packages are searched. For example, passing
+            `pyrig.rig` would search `<dep>.rig` in each dependent of `pyrig`.
 
     Yields:
-        Subclass types of `cls` discovered across `package` and all dependent
+        Subclass types of `cls` found across `package` and all dependent
         packages, in dependency order (base package first, then dependents).
     """
     logger.debug(

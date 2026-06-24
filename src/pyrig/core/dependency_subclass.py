@@ -1,9 +1,4 @@
-"""Abstract base for cross-package subclass discovery.
-
-Provides `DependencySubclass`, an abstract base class that enables
-plugin-style extensibility across multiple installed packages without
-explicit registration.
-"""
+"""Abstract base for cross-package subclass discovery without explicit registration."""
 
 import json
 import logging
@@ -29,62 +24,47 @@ T = TypeVar("T", bound="DependencySubclass")
 
 
 class DependencySubclass(ABC):
-    """Abstract base for cross-package subclass discovery.
+    """Base class that enables the plugin-style extensibility across installed packages.
 
-    Concrete subclasses must implement [dependency_package][] to declare
-    the package where their implementations live. The dependency root is
-    inferred automatically from the root package of `dependency_package()`.
-    The optional [sort_key][] hook controls ordering in
-    [subclasses_sorted][].
+    Subclasses declare a sub-package scope via `dependency_package()`, and
+    the discovery machinery automatically finds all concrete implementations
+    defined in that sub-package across every installed package that depends
+    on the root package. No explicit registration is required.
 
-    This class is the foundation of pyrig's plugin architecture. Any
-    subsystem that needs to discover its implementations across installed
-    dependent packages — tools, config files, builders — should inherit
-    from this class, either directly or through a subsystem base such as
-    `Tool` or `ConfigFile`.
+    The `sort_key()` hook controls ordering when `subclasses_sorted()` is
+    used. The `L` classproperty provides a cached shortcut to the leaf
+    subclass type, and `I` provides a cached instance of it.
     """
 
     def __str__(self) -> str:
-        """Return the fully qualified class name of this instance.
-
-        Combines the module path with the class name to produce a string
-        such as `myapp.rig.configs.MyConfigFile`. Useful where an
-        unambiguous identifier is needed for display or logging.
-
-        Returns:
-            Dotted module path and class name joined with a period.
-        """
+        """Return the fully qualified class name of this instance."""
         return f"{self.__module__}.{self.__class__.__name__}"
 
     @classmethod
     @abstractmethod
     def dependency_package(cls) -> ModuleType:
-        """Return the package where this class's implementations are defined.
+        """Return the sub-package that scopes subclass discovery for this hierarchy.
 
-        Used by [subclasses][] to scope cross-package discovery to the
-        correct namespace. For example, a `ConfigFile` subclass returns
-        its `configs` package so that only config-related modules are
-        searched across dependents.
+        Every concrete subclass must override this to return the sub-package
+        where its own implementations are defined. The returned module's root
+        package determines which installed packages are searched.
 
-        Abstract: every subclass must implement it to declare its own
-        sub-package of `pyrig.rig`. This base implementation returns
-        `pyrig.rig` so that discovery run directly from
-        `DependencySubclass` (e.g. `DependencySubclass.subclasses()`)
-        spans the whole rig layer.
+        The base implementation returns `pyrig.rig`, making it callable via
+        `super()` as a fallback or when calling `subclasses()` directly on
+        `DependencySubclass` itself.
 
         Returns:
-            Package module that contains the concrete subclass definitions.
+            Package module whose path pattern is replicated across dependent
+            packages to locate the modules to search.
         """
         return rig
 
     @classmethod
     def sort_key(cls) -> Any:
-        """Return a stable sort key for this subclass.
+        """Return a stable sort key used by `subclasses_sorted()` to order subclasses.
 
-        Called by [subclasses_sorted][] for each subclass in the
-        collection. Override to sort by priority, numeric position, or any
-        other criterion. The default returns the class name, giving
-        alphabetical ordering.
+        Override to sort by priority, numeric position, or any other criterion.
+        The default returns the class name, giving alphabetical ordering.
 
         Returns:
             A value comparable by `sorted()`.
@@ -96,21 +76,24 @@ class DependencySubclass(ABC):
     def I(cls) -> Self:  # noqa: E743, N802, N805
         """Return a cached instance of the leaf subclass.
 
-        Convenience shortcut equivalent to `cls.L()`. The instance is
-        created once per class and reused on every subsequent access.
+        The instance is created once per class and reused on every subsequent
+        access. Equivalent to instantiating the result of `cls.L`.
 
         Returns:
-            Instance of the leaf subclass.
+            An instance of the leaf subclass.
+
+        Raises:
+            RuntimeError: If more than one leaf subclass is found.
         """
         return cls.L()
 
     @classproperty
     @cache  # noqa: B019  # false warning bc of custom classproperty decorator
     def L(cls) -> type[Self]:  # noqa: N802, N805
-        """Return the cached leaf subclass.
+        """Return the cached leaf subclass type.
 
-        Convenience shortcut for [leaf][] with caching applied so
-        that repeated accesses do not re-run the discovery.
+        Equivalent to `leaf()`, but the result is cached so repeated accesses
+        do not re-run discovery.
 
         Returns:
             The single leaf subclass type. May be abstract.
@@ -124,10 +107,10 @@ class DependencySubclass(ABC):
     def leaf(cls) -> type[Self]:
         """Return the single leaf subclass found across dependent packages.
 
-        Expects at most one result from [subclasses][]. If no subclasses
-        are found the class itself is returned. Raises `RuntimeError` if
-        multiple subclasses are found, because a "leaf" must be
-        unambiguous: exactly one active implementation is allowed.
+        Calls `subclasses()` and expects at most one result. If no subclasses
+        are found, the class itself is returned. Raises `RuntimeError` if
+        multiple subclasses are found, because a leaf must be unambiguous:
+        exactly one active implementation is allowed.
 
         Returns:
             The sole leaf subclass type. May be abstract.
@@ -155,8 +138,7 @@ Found subclasses:
     def concrete_subclasses(cls) -> Iterator[type[Self]]:
         """Yield all non-abstract subclasses discovered across dependent packages.
 
-        Delegates to [subclasses][] and filters out abstract classes. Use
-        this when only instantiable implementations are needed.
+        Equivalent to `subclasses()` with abstract classes removed.
 
         Yields:
             Non-abstract subclass types.
@@ -168,7 +150,7 @@ Found subclasses:
         """Yield all subclasses discovered across the package ecosystem.
 
         Searches every installed package that depends on the root package of
-        [dependency_package][]. Intermediate parent classes are discarded,
+        `dependency_package()`. Intermediate parent classes are discarded,
         leaving only the outermost leaf-level subclasses.
 
         Yields:
@@ -183,11 +165,10 @@ Found subclasses:
 
     @classmethod
     def subclasses_sorted(cls, subclasses: Iterable[type[Self]]) -> list[type[Self]]:
-        """Sort the given subclasses using each subclass's [sort_key][].
+        """Sort the given subclasses using each subclass's `sort_key()`.
 
-        Does not perform any discovery. Pass the output of [subclasses][]
-        or any other iterable of subclass types to produce a
-        deterministically ordered list.
+        Does not perform any discovery. Pass any iterable of subclass types
+        to produce a deterministically ordered list.
 
         Args:
             subclasses: Subclass types to sort.

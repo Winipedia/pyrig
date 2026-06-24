@@ -1,4 +1,4 @@
-"""Utilities for detecting and extracting callable objects from modules."""
+"""Utilities for function-like objects."""
 
 import inspect
 from collections.abc import Callable, Iterator
@@ -60,7 +60,7 @@ def is_func_or_method(obj: Any) -> bool:
     """Return `True` if an object is a plain function or a bound method.
 
     Does not detect `staticmethod`, `classmethod`, or `property` descriptors
-    when accessed through a class `__dict__`; use [is_funclike][] for those.
+    when accessed through a class `__dict__`; use `is_funclike` for those.
 
     Args:
         obj: Object to test.

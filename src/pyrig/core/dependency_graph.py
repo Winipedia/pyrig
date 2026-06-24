@@ -1,8 +1,4 @@
-"""Dependency graph of installed Python packages.
-
-Builds and queries a directed graph of installed package dependency
-relationships to support cross-package discovery in the pyrig ecosystem.
-"""
+"""Directed graph of installed Python package dependency relationships."""
 
 import importlib.metadata
 import logging
@@ -20,26 +16,22 @@ class DependencyGraph(DiGraph):
     """Directed graph of installed Python package dependencies.
 
     Nodes are package names; an edge A → B means "A depends on B".
-    The graph is built automatically at instantiation by scanning all
-    installed distributions via `importlib.metadata`.
+    The graph is built at instantiation by scanning all installed
+    distributions.
 
-    When a `root` package is given, the graph is pruned to contain only
-    that package and every package that depends on it (directly or
-    transitively). This is the primary usage in pyrig's multi-package
-    discovery system.
+    When a `root` package is given, the graph is pruned to retain only
+    that package and every package that depends on it directly or
+    transitively.
     """
 
     def __init__(self, root: str | None = None) -> None:
         """Initialize the dependency graph rooted at the given package.
 
-        Only `root` itself and packages that depend on it (directly or
-        transitively) are retained in the graph after pruning. When `root`
-        is `None`, no pruning is applied and the full dependency graph is kept.
+        Only `root` and packages that depend on it transitively are retained.
 
         Args:
-            root: Name of the root package to build the graph around. Accepts
-                either the installed name (`some-package`) or the import name
-                (`some_package`).
+            root: Name of the root package. Accepts either the installed name
+                (`some-package`) or the import name (`some_package`).
         """
         super().__init__(
             root=dependency_requirement_as_package_name(root) if root else None
@@ -60,16 +52,16 @@ class DependencyGraph(DiGraph):
     ) -> tuple[str, Iterator[str]]:
         """Extract the package name and dependencies from a distribution.
 
-        Both the package name and every dependency name are normalized to the
-        snake_case import name. The dependency iterator is lazy and yields
-        nothing when the distribution declares no dependencies.
+        Both the package name and every dependency name are normalized to
+        snake_case. The dependency iterator is exhausted once consumed; it
+        yields nothing when the distribution declares no dependencies.
 
         Args:
-            dist: Distribution object to extract metadata from.
+            dist: Distribution to extract metadata from.
 
         Returns:
-            A two-tuple of `(name, deps)` where `name` is the normalized package
-            name and `deps` is an iterator over the normalized names of each
+            A two-tuple `(name, deps)` where `name` is the normalized package
+            name and `deps` is an iterator over the normalized name of each
             declared dependency.
         """
         return dependency_requirement_as_package_name(dist.name), (

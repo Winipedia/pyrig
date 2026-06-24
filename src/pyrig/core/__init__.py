@@ -1,7 +1,7 @@
 """Foundational utilities that underpin the pyrig ecosystem.
 
 Provides generic, reusable building blocks consumed by pyrig's higher-level
-tool, config, and builder layers, including subprocess execution, string
-manipulation, data structure traversal, module introspection, resource access,
-and cross-package plugin discovery.
+layers, spanning subprocess execution, string manipulation, iterator and nested
+data structure utilities, directed graph infrastructure, module introspection,
+resource access, and cross-package plugin discovery.
 """

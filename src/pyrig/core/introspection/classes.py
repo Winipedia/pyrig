@@ -23,7 +23,7 @@ def cls_methods(
     alphabetical order by method name.
 
     To restrict results to methods defined directly on `cls`, pass the
-    output to [discard_parent_methods][].
+    output to `discard_parent_methods`.
 
     Args:
         cls: Class to extract methods from.
