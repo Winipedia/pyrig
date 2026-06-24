@@ -1,13 +1,13 @@
 """Project-specific CLI commands.
 
 All functions in this module are automatically discovered and registered
-as CLI commands for this project. Module-level ``typer.Typer`` instances are
+as CLI commands for this project. Module-level `typer.Typer` instances are
 registered as command groups named after their variable.
 """
 
-# Bind the make module's Typer app to ``mk`` so the CLI discovery registers it
-# as the ``mk`` command group; importing the module also registers the group's
-# sub-commands. Import the module (not the app instance) so only ``mk`` is a
+# Bind the make module's Typer app to `mk` so the CLI discovery registers it
+# as the `mk` command group; importing the module also registers the group's
+# sub-commands. Import the module (not the app instance) so only `mk` is a
 # Typer in this namespace and the discovery registers exactly one group.
 from pyrig.rig.cli import make
 
@@ -36,10 +36,12 @@ def init() -> None:
     The process stops immediately if any step fails.
 
     Example:
+        ```
         $ cd my-project
         $ uv init
         $ uv add pyrig
         $ uv run pyrig init
+        ```
     """
     from pyrig.rig.cli.commands.init_project import init_project  # noqa: PLC0415
 

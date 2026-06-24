@@ -15,19 +15,19 @@ logger = logging.getLogger(__name__)
 def iterator_has_items[T](
     iterable: Iterator[T],
 ) -> tuple[bool, Iterator[T]]:
-    """Peek at an iterable to check whether it yields any items.
+    """Peek at an iterator to check whether it yields any items.
 
-    Advances the iterable by one item to determine if it is non-empty, then
-    reconstructs a new iterable that prepends the consumed item so no data
-    is lost.
+    The original iterator is consumed and must not be used again; iterate the
+    returned iterator instead, which yields the full original sequence with no
+    items lost.
 
     Args:
-        iterable: The iterable to inspect.
+        iterable: The iterator to inspect. Consumed by this call.
 
     Returns:
-        A two-element tuple ``(has_items, iterable)`` where ``has_items`` is
-        ``True`` if the iterable yielded at least one item, and ``iterable`` is
-        a new iterable that will yield all original items including the first.
+        A `(has_items, iterator)` tuple where `has_items` is `True` if the
+        input yielded at least one item, and `iterator` yields all of the
+        original items including the first.
 
     Example:
         >>> gen = (x for x in [1, 2, 3])
@@ -56,19 +56,19 @@ def merge_nested_structures[T: dict[Any, Any] | list[Any]](
     subset: T,
     superset: T,
 ) -> T:
-    """Merge all values from subset into superset, filling in any gaps.
+    """Merge all values from `subset` into `superset`, filling in any gaps.
 
     Walks both structures recursively. For every key or index present in
-    ``subset`` that is missing or has a different value in ``superset``,
-    the superset is updated in-place. Keys or elements present only in
-    the superset are left untouched.
+    `subset` that is missing or has a different value in `superset`, the
+    superset is updated in-place. Keys or elements present only in the superset
+    are left untouched.
 
     Args:
         subset: The structure whose values are treated as required.
         superset: The structure to update. Modified in-place.
 
     Returns:
-        The updated ``superset``.
+        The updated `superset`.
     """
     nested_structure_is_subset(
         subset=subset,
@@ -90,60 +90,60 @@ def nested_structure_is_subset(  # noqa: C901
 
     Compares dicts, lists, and primitives according to subset semantics:
 
-    - **Dicts**: every key in ``subset`` must exist in ``superset`` with a
-      matching value. Extra keys in ``superset`` are ignored.
-    - **Lists**: every item in ``subset`` must appear somewhere in ``superset``
-      (order-independent). Matching is done recursively using this same function.
-    - **Primitives**: values must be exactly equal (``==``).
+    - Dicts: every key in `subset` must exist in `superset` with a matching
+      value. Extra keys in `superset` are ignored.
+    - Lists: every item in `subset` must appear somewhere in `superset`
+      (order-independent). Matching is done recursively using this same
+      function.
+    - Primitives: values must be exactly equal (`==`).
 
-    When a mismatch is found and a callback is provided, the callback is called
-    with the two structures being compared and the offending key or index. The
-    callback is expected to fix the superset in-place. After each correction the
-    entire structure is re-checked; if the correction resolves the mismatch,
-    ``True`` is returned.
+    When a mismatch is found and the corresponding callback is provided, the
+    callback is invoked with the two structures being compared and the
+    offending key or index, and is expected to fix the superset in-place. After
+    the correction the entire structure is re-checked, and the result reflects
+    whether the correction resolved the mismatch.
 
     Args:
         subset: The expected (required) structure.
         superset: The actual structure to check. May contain additional
-            elements not present in ``subset``.
-        on_dict_mismatch: Optional callback invoked when a dict key is
-            missing or has the wrong value. Receives
-            ``(subset_dict, superset_dict, key)`` and should update
-            ``superset_dict`` in-place.
-        on_list_mismatch: Optional callback invoked when a list item is
-            missing. Receives ``(subset_list, superset_list, index)`` and
-            should insert the missing item into ``superset_list`` in-place.
+            elements not present in `subset`.
+        on_dict_mismatch: Optional callback invoked when a dict key is missing
+            or has the wrong value. Receives `(subset_dict, superset_dict, key)`
+            and should update `superset_dict` in-place.
+        on_list_mismatch: Optional callback invoked when a list item is missing.
+            Receives `(subset_list, superset_list, index)` and should insert the
+            missing item into `superset_list` in-place.
 
     Returns:
-        ``True`` if ``subset`` is fully contained within ``superset`` (or if
-        callbacks corrected all mismatches). ``False`` if any mismatch remains
-        after callbacks run (or no callbacks were provided).
+        `True` if `subset` is fully contained within `superset`, or if the
+        callbacks corrected all mismatches. `False` if any mismatch remains
+        after the callbacks run, or no callback was provided for that mismatch.
 
-    Example:
-        Basic subset check::
+    Examples:
+        Basic subset check:
 
-            >>> nested_structure_is_subset({"a": 1}, {"a": 1, "b": 2})
-            True
-            >>> nested_structure_is_subset({"a": 1}, {"a": 2})
-            False
+        >>> nested_structure_is_subset({"a": 1}, {"a": 1, "b": 2})
+        True
+        >>> nested_structure_is_subset({"a": 1}, {"a": 2})
+        False
 
-        With auto-correction via callback::
+        With auto-correction via callback:
 
-            >>> actual = {"a": 1}
-            >>> template = {"a": 1, "b": 2}
-            >>> def add_missing(tmpl, act, key):
-            ...     act[key] = tmpl[key]
-            >>> nested_structure_is_subset(template, actual, add_missing)
-            True
-            >>> actual
-            {'a': 1, 'b': 2}
+        >>> actual = {"a": 1}
+        >>> template = {"a": 1, "b": 2}
+        >>> def add_missing(tmpl, act, key):
+        ...     act[key] = tmpl[key]
+        >>> nested_structure_is_subset(template, actual, add_missing)
+        True
+        >>> actual
+        {'a': 1, 'b': 2}
     """
     if isinstance(subset, dict) and isinstance(superset, dict):
         iterable: Iterable[tuple[Any, Any]] = subset.items()
         on_false_action: Callable[[Any, Any, Any], Any] | None = on_dict_mismatch
 
         def get_actual(key_or_index: Any) -> Any:
-            """Return the value for ``key_or_index`` from the superset dict."""
+            """Return the value for `key_or_index` from the superset dict."""
             return superset.get(key_or_index)
 
     elif isinstance(subset, list) and isinstance(superset, list):
@@ -153,9 +153,9 @@ def nested_structure_is_subset(  # noqa: C901
         def get_actual(key_or_index: Any) -> Any:
             """Find the matching element in the superset list (order-independent).
 
-            Scans superset for an element that contains ``subset[key_or_index]``
+            Scans superset for an element that contains `subset[key_or_index]`
             as a subset. Falls back to index-based lookup if no match is found,
-            or ``None`` if the index is out of bounds.
+            or `None` if the index is out of bounds.
             """
             subset_val = subset[key_or_index]
             for superset_val in superset:
@@ -201,16 +201,16 @@ def nested_structure_is_subset(  # noqa: C901
 def add_missing_dict_val(
     expected_dict: dict[Any, Any], actual_dict: dict[Any, Any], key: Any
 ) -> None:
-    """Add or overwrite a key in ``actual_dict`` with the value from ``expected_dict``.
+    """Add or overwrite a key in `actual_dict` with the value from `expected_dict`.
 
-    Used as the ``on_dict_mismatch`` callback in :func:`merge_nested_structures`.
-    The merge strategy depends on the value types:
+    Used as the `on_dict_mismatch` callback in [merge_nested_structures][]. The
+    merge strategy depends on the value types:
 
-    - **Both values are dicts**: ``actual_dict[key]`` is updated in-place with
-      all entries from ``expected_dict[key]``. Overlapping keys take the expected
-      value; keys present only in ``actual_dict[key]`` are kept.
-    - **Any other type**: ``actual_dict[key]`` is replaced entirely by
-      ``expected_dict[key]``.
+    - Both existing values are dicts: `actual_dict[key]` is updated in-place
+      with all entries from `expected_dict[key]`. Overlapping keys take the
+      expected value; keys present only in `actual_dict[key]` are kept.
+    - Any other case: `actual_dict[key]` is replaced entirely by
+      `expected_dict[key]`.
 
     Args:
         expected_dict: Dict containing the value to apply.
@@ -230,9 +230,9 @@ def add_missing_dict_val(
 def insert_missing_list_val(
     expected_list: list[Any], actual_list: list[Any], index: int
 ) -> None:
-    """Insert a missing item from ``expected_list`` into ``actual_list`` at ``index``.
+    """Insert a missing item from `expected_list` into `actual_list` at `index`.
 
-    Used as the ``on_list_mismatch`` callback in :func:`merge_nested_structures`.
+    Used as the `on_list_mismatch` callback in [merge_nested_structures][].
 
     Args:
         expected_list: List containing the item to insert.

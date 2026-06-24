@@ -15,13 +15,14 @@ from typing import Any, Self
 class DiGraph(ABC):
     """Abstract base class for a directed graph with bidirectional edge traversal.
 
-    Maintains forward and reverse adjacency mappings, enabling O(1) outgoing
-    neighbor lookups via ``__getitem__`` and efficient transitive ancestor
-    queries via ``ancestors``.
+    Maintains forward and reverse adjacency mappings, enabling outgoing
+    neighbor lookups via `[node]` and transitive ancestor queries via
+    [ancestors][pyrig.core.graph.DiGraph.ancestors].
 
-    Subclasses must implement ``build`` to populate the graph at construction
-    time. If a ``root`` node is provided, the graph is automatically pruned after
-    building to retain only that node and all nodes that transitively point to it.
+    Subclasses must implement [build][pyrig.core.graph.DiGraph.build] to
+    populate the graph at construction time. If a `root` node is provided, the
+    graph is automatically pruned after building to retain only that node and
+    all nodes that transitively point to it.
     """
 
     @classmethod
@@ -29,9 +30,8 @@ class DiGraph(ABC):
     def cached(cls, *args: Any, **kwargs: Any) -> Self:
         """Return a cached instance of the graph for the given arguments.
 
-        Caches instances of the graph based on the arguments passed to this
-        method. Subsequent calls with the same arguments will return the same
-        instance, avoiding redundant construction and building of the graph.
+        Repeated calls with the same arguments return the same instance,
+        avoiding redundant construction and building of the graph.
 
         Args:
             *args: Positional arguments to pass to the graph constructor.
@@ -61,18 +61,17 @@ class DiGraph(ABC):
     def build(self) -> None:
         """Populate the graph with nodes and edges.
 
-        Called automatically during ``__init__`` before any optional pruning.
+        Called automatically during `__init__` before any optional pruning.
         Subclasses must implement this method to define the graph structure
-        using ``add_node`` and ``add_edge``.
+        using [add_node][pyrig.core.graph.DiGraph.add_node] and
+        [add_edge][pyrig.core.graph.DiGraph.add_edge].
         """
 
     def prune(self, root: str) -> None:
-        """Remove all nodes that are neither root nor depend on root.
+        """Remove all nodes that are neither root nor an ancestor of root.
 
-        Keeps ``root`` and all its ancestors (nodes with a directed path to
-        ``root``). All other nodes and their associated edges are removed.
-        Rebuilds the internal data structures from the kept set in two passes,
-        which is more efficient than removing nodes one at a time.
+        Keeps `root` and all its ancestors (nodes with a directed path to
+        `root`). All other nodes and their associated edges are removed.
 
         Args:
             root: The root node to prune around.
@@ -115,7 +114,7 @@ class DiGraph(ABC):
             node: Node identifier to look up.
 
         Returns:
-            ``True`` if the node is present, ``False`` otherwise.
+            `True` if the node is present, `False` otherwise.
         """
         return node in self._nodes
 
@@ -161,9 +160,8 @@ class DiGraph(ABC):
     def ancestors(self, target: str) -> set[str]:
         """Find all nodes that have a directed path to the target node.
 
-        Performs a BFS over reverse edges to collect every node that can reach
-        the target directly or transitively. The target itself is excluded from
-        the result.
+        Collects every node that reaches the target directly or transitively.
+        The target itself is excluded from the result.
 
         Args:
             target: Node to find ancestors for.
@@ -189,11 +187,11 @@ class DiGraph(ABC):
     def topological_sort_subgraph(self, nodes: set[str]) -> list[str]:
         """Sort a subset of nodes in topological order.
 
-        Uses Kahn's algorithm with a min-heap to produce a deterministic result
-        when multiple nodes are ready to be emitted at the same step. An edge
-        A → B means "A depends on B", so B appears before A in the output.
+        An edge A → B means "A depends on B", so B appears before A in the
+        output. The ordering is deterministic: when multiple nodes are ready to
+        be emitted at the same step, they are emitted in ascending order.
 
-        Only edges whose both endpoints are in ``nodes`` are considered; edges
+        Only edges whose both endpoints are in `nodes` are considered; edges
         to or from nodes outside the subset are ignored.
 
         Args:

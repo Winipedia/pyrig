@@ -16,7 +16,7 @@ def resource_content(name: str, package: ModuleType) -> str:
     """Read the contents of a resource file as a UTF-8 string.
 
     Args:
-        name: Filename of the resource (e.g., ``"config.json"``).
+        name: Filename of the resource (e.g., `"config.json"`).
         package: Package module containing the resource.
 
     Returns:
@@ -29,23 +29,21 @@ def resource_content(name: str, package: ModuleType) -> str:
 def resource_path(name: str, package: ModuleType) -> Path:
     """Resolve the filesystem path of a resource file bundled with a package.
 
-    Uses ``importlib.resources`` to locate resource files in a way that works in
-    both development (file-based packages) and PyInstaller executable environments,
-    where resources may be extracted to a temporary directory before use.
+    Resolution works in both development (file-based packages) and PyInstaller
+    executable environments, where resources may be extracted to a temporary
+    directory before use.
 
     Args:
-        name: Filename of the resource (e.g., ``"config.json"``). May include a
+        name: Filename of the resource (e.g., `"config.json"`). May include a
             subdirectory path relative to the package root
-            (e.g., ``"templates/email.html"``).
+            (e.g., `"templates/email.html"`).
         package: Package module containing the resource.
 
     Returns:
         Absolute path to the resource file.
 
     Note:
-        The path is derived using ``importlib.resources.files`` and converted
-        directly to a ``Path`` object via ``str()``. The returned path is not
-        validated for existence. Accessing a missing resource will raise
-        ``FileNotFoundError``.
+        The returned path is not validated for existence. Accessing a missing
+        resource will raise `FileNotFoundError`.
     """
     return Path(str(files(package) / name))

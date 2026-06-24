@@ -25,9 +25,9 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     """Base class for copying a Python module's source content to a target project.
 
     Reads the source module's file and writes it to the equivalent path in the
-    target project, replacing the ``pyrig`` package prefix with the target
-    project's package name. For example, ``pyrig.rig.configs.base.string_``
-    becomes ``<project>.rig.configs.base.string_``.
+    target project, replacing the `pyrig` package prefix with the target
+    project's package name. For example, `pyrig.rig.configs.base.string_`
+    becomes `<project>.rig.configs.base.string_`.
 
     Keep module content generic where possible. Embedding pyrig-specific details
     (such as pyrig-branded docstrings) in a source module will reproduce those
@@ -41,21 +41,21 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     def generate_subclass(cls, module: ModuleType) -> type[Self]:
         """Dynamically create a named subclass bound to a specific source module.
 
-        Constructs a new subclass of this class with ``copy_module``
-        pre-implemented to return ``module``. The subclass name is derived from
+        Constructs a new subclass of this class with `copy_module`
+        pre-implemented to return `module`. The subclass name is derived from
         the module's leaf name converted to PascalCase, followed by this class's
-        own name. For example, a module with leaf name ``"string_"`` combined with
-        class ``CopyModuleConfigFile`` produces ``"StringCopyModuleConfigFile"``.
+        own name. For example, a module with leaf name `"string_"` combined with
+        class `CopyModuleConfigFile` produces `"StringCopyModuleConfigFile"`.
 
         Use this factory when creating a subclass programmatically is more
         convenient than writing a named class manually, for example when iterating
         over a collection of modules that all need to be copied.
 
         Args:
-            module: Source module to bind as the return value of ``copy_module``.
+            module: Source module to bind as the return value of `copy_module`.
 
         Returns:
-            A new subclass of this class with ``copy_module`` returning ``module``.
+            A new subclass of this class with `copy_module` returning `module`.
 
         Example:
             >>> import pyrig.rig.configs.base.string_
@@ -90,8 +90,8 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         with the target project's package name, then resolves the result to a
         filesystem path and returns its parent directory.
 
-        For example, source module ``pyrig.rig.configs.base.string_`` with a
-        project named ``myproject`` resolves to ``src/myproject/rig/configs/base``.
+        For example, source module `pyrig.rig.configs.base.string_` with a
+        project named `myproject` resolves to `src/myproject/rig/configs/base`.
 
         Returns:
             Target directory path for the copied module file.

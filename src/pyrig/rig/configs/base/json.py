@@ -1,8 +1,8 @@
 """JSON configuration file management.
 
 Base infrastructure for managing JSON configuration files within the
-declarative ``ConfigFile`` system. Files are read and written using Python's
-built-in ``json`` module.
+declarative `ConfigFile` system. Files are read and written using Python's
+built-in `json` module.
 """
 
 import json
@@ -17,28 +17,20 @@ from pyrig.rig.configs.base.config_file import (
 class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     """Base class for JSON configuration files.
 
-    Implements the ``_load``, ``_dump``, and ``extension`` abstract methods from
-    ``ConfigFile`` using Python's built-in ``json`` module. Files are written
-    with 4-space indentation and read using UTF-8 encoding. The top-level JSON
-    structure can be either a dict or a list, controlled by the ``ConfigT``
-    type parameter.
+    Implements the `_load`, `_dump`, and `extension` abstract methods from
+    `ConfigFile` using Python's built-in `json` module. Files are written with
+    4-space indentation and read as UTF-8. The top-level JSON structure is
+    either a dict or a list, fixed by the `ConfigT` type parameter.
 
-    Subclasses must still implement:
-
-    - ``parent_path()``: Directory that will contain the JSON file.
-    - ``stem()``: Filename without extension.
-    - ``_configs()``: Expected configuration content (dict or list).
+    Subclasses must still implement the remaining `ConfigFile` abstract
+    methods: `parent_path()`, `stem()`, and `_configs()`.
 
     Example:
-        >>> class MyConfigFile(JSONConfigFile):
-        ...
+        >>> class MyConfigFile(JSONConfigFile):  # doctest: +SKIP
         ...     def parent_path(self) -> Path:
         ...         return Path()
-        ...
         ...     def stem(self) -> str:
         ...         return "config"
-        ...
-        ...
         ...     def _configs(self) -> dict[str, str]:
         ...         return {"name": "my-package", "version": "1.0.0"}
     """
@@ -46,12 +38,10 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     def _load(self) -> ConfigT:
         """Read and parse the JSON file from disk.
 
-        Reads the file at ``self.path()`` as UTF-8 text and parses it with
-        ``json.loads``. This is the internal implementation called by the
-        public ``load()`` method, which adds caching.
+        Internal implementation called by the public `load()` cached wrapper.
 
         Returns:
-            Parsed JSON content as a dict or list, depending on ``ConfigT``.
+            Parsed JSON content as a dict or list, depending on `ConfigT`.
         """
         path = self.path()
         data: ConfigT = json.loads(read_text_utf8(path))
@@ -60,10 +50,8 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the JSON file with 4-space indentation.
 
-        Opens the file at ``self.path()`` for writing and serializes ``configs``
-        using ``json.dump`` with ``indent=4``. This is the internal
-        implementation called by the public ``dump()`` method, which
-        clears the load cache after delegating here.
+        Internal implementation called by the public `dump()`
+        cache-invalidating wrapper.
 
         Args:
             configs: Configuration dict or list to serialize and write.
@@ -75,16 +63,15 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         """Return the file extension for JSON files.
 
         Returns:
-            The string ``"json"``, without a leading dot.
+            The string `"json"`, without a leading dot.
         """
         return "json"
 
 
 class JSONDictConfigFile(JSONConfigFile[dict[str, Any]]):
-    """Concrete base for JSON configuration files whose top-level structure is a dict.
+    """Concrete base for JSON config files whose top-level structure is a dict.
 
-    Fixes the ``ConfigT`` type parameter to ``dict[str, Any]`` so that ``_load``
-    returns a ``dict`` and ``_dump`` / ``_configs`` are expected to accept and
-    return a ``dict`` respectively. Useful when the JSON file is structured as
-    an object at the root level (e.g. GitHub repository settings files).
+    Fixes the `ConfigT` type parameter to `dict[str, Any]`, so subclasses get
+    properly typed `load()`, `dump()`, and `_configs()` for JSON files
+    structured as an object at the root level.
     """

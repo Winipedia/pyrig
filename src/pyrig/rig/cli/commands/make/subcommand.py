@@ -14,15 +14,13 @@ def make_subcommand(name: str, *, shared: bool) -> None:
     the module docstring copied from the corresponding template module. The
     command name is normalized from kebab-case to snake_case before writing.
 
-    The appended stub has the following form::
-
-        def <name>() -> None:
-            \"\"\"This is a cli subcommand.\"\"\"
+    The appended stub is a no-op function whose body is a placeholder docstring,
+    named after the normalized command name.
 
     Args:
         name: Name of the subcommand to create. Accepts kebab-case or snake_case.
-        shared: If ``True``, targets the shared subcommands module accessible to
-            all dependent projects. If ``False``, targets the project-specific
+        shared: If `True`, targets the shared subcommands module accessible to
+            all dependent projects. If `False`, targets the project-specific
             subcommands module.
     """
     # create the file if not existent yet
