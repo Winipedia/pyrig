@@ -395,9 +395,9 @@ class VersionController(Tool):
             subprocess.CalledProcessError: When ``check=True`` and the git
                 command exits with a non-zero status.
         """
-        args = self.config_remote_origin_url_args()
-        stdout = args.run_cached(check=check).stdout
-        return stdout.strip()
+        return (
+            self.config_remote_origin_url_args().run_cached(check=check).stdout.strip()
+        )
 
     def user_name(self) -> str:
         """Return the git ``user.name`` from the active configuration.
