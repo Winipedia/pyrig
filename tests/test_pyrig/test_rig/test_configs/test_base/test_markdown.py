@@ -10,8 +10,6 @@ class TestMarkdownConfigFile:
     def test_extension(self) -> None:
         """Test method."""
         expected = "md"
-        assert issubclass(ReadmeConfigFile, MarkdownConfigFile), (
-            "ReadmeConfigFile should inherit from MarkdownConfigFile"
-        )
+        assert issubclass(ReadmeConfigFile, MarkdownConfigFile)
         actual = ReadmeConfigFile().extension()
-        assert actual == expected, f"Expected {expected}, got {actual}"
+        assert actual == expected

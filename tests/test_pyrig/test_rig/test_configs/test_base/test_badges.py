@@ -15,15 +15,12 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class TestBadgesConfigFile:
     """Test class."""
 
-    def test_merge_configs(
-        self, tmp_project_root_path: Path, mocker: MockerFixture
-    ) -> None:
+    def test_merge_configs(self, tmp_project_root_path: Path) -> None:
         """Test method."""
         assert issubclass(ReadmeConfigFile, BadgesConfigFile)
 
-        mock_repo_owner = mocker.patch.object(
-            VersionController, "repo_owner", return_value="FakeUser5"
-        )
+        # make sure repo owner is cached before entering non git folder tmp
+        assert VersionController.I.repo_owner()
 
         with chdir(tmp_project_root_path):
             LicenseConfigFile().validate()
@@ -66,15 +63,13 @@ class TestBadgesConfigFile:
             assert ReadmeConfigFile().is_correct()
             assert ReadmeConfigFile().read_content() == content
 
-        mock_repo_owner.assert_called()
+        # clear the cache so other tests have the correct readme configs again
+        ReadmeConfigFile.configs.cache_clear()
 
     def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""
-        mock_repo_owner = mocker.patch.object(
-            VersionController, "repo_owner", return_value="FakeUser6"
-        )
         # we take pyrigs actual content and change the some urls
-        content = ReadmeConfigFile().join_lines(ReadmeConfigFile().lines())
+        content = ReadmeConfigFile().read_content()
         # we replace the actual badge urls with some dummy ones
         false_https = "https-false://"
         correct_https = "https://"
@@ -93,8 +88,6 @@ class TestBadgesConfigFile:
         search_mock.assert_called()
         assert result == false_content
 
-        mock_repo_owner.assert_called()
-
     def test_replace_description(self) -> None:
         """Test that replace_description replaces a stale description."""
         expected_description = PyprojectConfigFile().project_description()
@@ -104,24 +97,14 @@ class TestBadgesConfigFile:
         assert f"> {expected_description}" in result
         assert old_description not in result
 
-    def test_lines(self, mocker: MockerFixture) -> None:
+    def test_lines(self) -> None:
         """Test method."""
-        mock_repo_owner = mocker.patch.object(
-            VersionController, "repo_owner", return_value="FakeUser7"
-        )
         lines = ReadmeConfigFile().lines()
         content_str = "\n".join(lines)
         assert isinstance(content_str, str)
-        mock_repo_owner.assert_called()
 
-    def test_badges(self, mocker: MockerFixture) -> None:
+    def test_badges(self) -> None:
         """Test method."""
-        assert issubclass(ReadmeConfigFile, BadgesConfigFile), (
-            "ReadmeConfigFile should inherit from BadgesConfigFile"
-        )
-        mock_repo_owner = mocker.patch.object(
-            VersionController, "repo_owner", return_value="FakeUser8"
-        )
+        assert issubclass(ReadmeConfigFile, BadgesConfigFile)
         badges = ReadmeConfigFile().badges()
         assert isinstance(badges, dict)
-        mock_repo_owner.assert_called()
