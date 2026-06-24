@@ -3,7 +3,6 @@
 from pytest_mock import MockerFixture
 
 from pyrig.core.subprocesses import Args
-from pyrig.rig.cli import make
 from pyrig.rig.cli.make import local
 from pyrig.rig.tools.pyrigger import Pyrigger
 
@@ -13,7 +12,7 @@ class TestPyrigger:
 
     def test_group_cmd_args(self) -> None:
         """Test method."""
-        result = Pyrigger.I.group_cmd_args(group=make.app, cmd=local)
+        result = Pyrigger.I.group_cmd_args(group="mk", cmd=local)
         assert result == Args(("pyrig", "mk", "local"))
 
     def test_image_url(self) -> None:
@@ -51,11 +50,6 @@ class TestPyrigger:
         result = Pyrigger.I.group()
         assert isinstance(result, str)
         assert result == "tooling"
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = Pyrigger.I.dev_dependencies()
-        assert result == ("pyrig-dev",)
 
     def test_name(self) -> None:
         """Test method."""

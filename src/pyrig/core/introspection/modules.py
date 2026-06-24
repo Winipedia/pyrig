@@ -223,7 +223,7 @@ def module_name_replacing_start_module(
 
     Example:
         >>> from types import ModuleType
-        >>> mod = ModuleType("pyrig_dev.rig.configs.base")
+        >>> mod = ModuleType("pyrig.rig.configs.base")
         >>> module_name_replacing_start_module(mod, "my_project")
         'my_project.rig.configs.base'
     """

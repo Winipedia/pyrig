@@ -199,3 +199,8 @@ def make_linked_badge_markdown(
         Markdown string in the form `[![alt_text](image_url)](link_url)`.
     """
     return f"[![{alt_text}]({image_url})]({link_url})"
+
+
+def fstring_var_name(fstring: str) -> str:
+    """Extract the variable name from the output of a debug f-string expression."""
+    return fstring.split("=", maxsplit=1)[0].strip()

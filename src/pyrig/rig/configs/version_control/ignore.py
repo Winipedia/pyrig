@@ -2,12 +2,13 @@
 
 from pathlib import Path
 
+import pyrig
 from pyrig.core.resources import resource_content
+from pyrig.core.strings import snake_to_kebab_case
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.tools.base.tool import Tool
-from pyrig.rig.tools.pyrigger import Pyrigger
 
 
 class VersionControllerIgnoreConfigFile(StringConfigFile):
@@ -96,7 +97,7 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             for cf in ConfigFile.version_control_ignored_subclasses()
         )
         return [
-            f"# {Pyrigger.I.name()} stuff",
+            f"# {snake_to_kebab_case(pyrig.__name__)} stuff",
             *Tool.subclasses_version_control_ignore_paths(),
             *config_file_paths,
         ]

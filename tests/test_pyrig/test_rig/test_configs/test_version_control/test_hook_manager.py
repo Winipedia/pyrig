@@ -1,0 +1,90 @@
+"""module."""
+
+from collections.abc import Callable
+from contextlib import chdir
+from pathlib import Path
+
+import pytest
+
+from pyrig.core.subprocesses import Args
+from pyrig.rig.configs.version_control.hook_manager import (
+    VersionControlHookManagerConfigFile,
+)
+
+
+@pytest.fixture
+def my_test_prek_config_file(
+    config_file_factory: Callable[
+        [type[VersionControlHookManagerConfigFile]],
+        type[VersionControlHookManagerConfigFile],
+    ],
+) -> type[VersionControlHookManagerConfigFile]:
+    """Create a test prek config file class with tmp_path."""
+
+    class MyTestVersionControlHookManagerConfigFile(
+        config_file_factory(VersionControlHookManagerConfigFile)  # ty: ignore[unsupported-base]
+    ):
+        """Test prek config file with tmp_path override."""
+
+    return MyTestVersionControlHookManagerConfigFile
+
+
+class TestVersionControlHookManagerConfigFile:
+    """Test class."""
+
+    def test_hook_types(self) -> None:
+        """Test method."""
+        assert VersionControlHookManagerConfigFile.I.hook_types() == [
+            "post-checkout",
+            "post-merge",
+            "post-rewrite",
+            "pre-commit",
+            "pre-push",
+        ]
+
+    def test_hooks(self) -> None:
+        """Test method."""
+        hooks = VersionControlHookManagerConfigFile.I.hooks()
+        assert isinstance(hooks, list)
+        for hook in hooks:
+            hook_id = hook["id"]
+            assert isinstance(hook_id, str)
+            assert hook_id
+
+    def test_stem(self) -> None:
+        """Test method."""
+        assert VersionControlHookManagerConfigFile.I.stem() == "prek"
+
+    def test_hook(self) -> None:
+        """Test method."""
+        hook = VersionControlHookManagerConfigFile.I.hook(
+            "test", Args(("test",)), stages=["some-stage"]
+        )
+        assert hook["id"] == "test"
+        assert hook["stages"] == ["some-stage"]
+
+    def test_parent_path(
+        self,
+        my_test_prek_config_file: type[VersionControlHookManagerConfigFile],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            parent_path = my_test_prek_config_file().parent_path()
+            assert parent_path == Path(), f"Expected Path(), got {parent_path}"
+
+    def test__configs(
+        self, my_test_prek_config_file: type[VersionControlHookManagerConfigFile]
+    ) -> None:
+        """Test method."""
+        configs = my_test_prek_config_file().configs()
+        assert "repos" in configs, "Expected 'repos' key in configs"
+        assert isinstance(configs["repos"], list), "Expected 'repos' to be a list"
+        assert len(configs["repos"]) > 0, "Expected at least one repo in configs"
+        repo = configs["repos"][0]
+        assert repo["repo"] == "local", (
+            f"Expected repo to be 'local', got {repo['repo']}"
+        )
+        assert "hooks" in repo, "Expected 'hooks' key in repo"
+        assert isinstance(repo["hooks"], list), "Expected 'hooks' to be a list"
+        assert len(repo["hooks"]) > 0, "Expected at least one hook in repo"

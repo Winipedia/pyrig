@@ -1,0 +1,25 @@
+"""module."""
+
+from pathlib import Path
+
+from pyrig.rig.configs.version_control.remote.issue_templates.config import (
+    ConfigConfigFile,
+)
+
+
+class TestConfigConfigFile:
+    """Test class."""
+
+    def test_stem(self) -> None:
+        """Test method."""
+        assert ConfigConfigFile.I.stem() == "config"
+
+    def test_parent_path(self) -> None:
+        """Test method."""
+        result = ConfigConfigFile.I.parent_path()
+        assert result == Path(".github/ISSUE_TEMPLATE")
+
+    def test__configs(self) -> None:
+        """Test method."""
+        result = ConfigConfigFile.I._configs()  # noqa: SLF001
+        assert isinstance(result, dict)
