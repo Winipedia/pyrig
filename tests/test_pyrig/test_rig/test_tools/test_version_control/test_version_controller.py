@@ -179,8 +179,7 @@ class TestVersionController:
 
     def test_remote_url(self) -> None:
         """Test method."""
-        result = VersionController.I.remote_url()
-        assert isinstance(result, str)
+        assert "github" in VersionController.I.remote_url()
 
     def test_user_name(self, mocker: MockerFixture) -> None:
         """Test method."""
