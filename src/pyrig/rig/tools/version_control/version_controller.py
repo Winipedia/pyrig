@@ -422,6 +422,4 @@ class VersionController(Tool):
         Raises:
             subprocess.CalledProcessError: If ``user.email`` is not configured.
         """
-        args = self.config_get_user_email_args()
-        stdout = args.run_cached().stdout
-        return stdout.strip()
+        return self.config_get_user_email_args().run_cached().stdout.strip()
