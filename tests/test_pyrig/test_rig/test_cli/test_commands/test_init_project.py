@@ -5,6 +5,7 @@ import re
 import shutil
 from contextlib import chdir
 from pathlib import Path
+from subprocess import CalledProcessError  # nosec: B404
 
 import pytest
 from pyrig_runtime.core.dependencies.graph import DependencyGraph
@@ -17,6 +18,7 @@ from pyrig.rig.cli.commands.init_project import init_project
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testers.project import ProjectTester
@@ -65,7 +67,14 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         # Create a clean environment dict without VIRTUAL_ENV to force
         # to create a new virtual environment instead of reusing the current one
         clean_env = os.environ.copy()
-        clean_env.pop("VIRTUAL_ENV", None)
+        venv = clean_env.pop("VIRTUAL_ENV", None)
+        if venv:
+            # Strip the outer venv's bin dir from PATH so commands like `pyrig`
+            # from the dev environment aren't found when testing that they're absent.
+            path_entries = clean_env.get("PATH", "").split(":")
+            clean_env["PATH"] = ":".join(
+                p for p in path_entries if not p.startswith(venv)
+            )
 
         # Initialize git repo in the test project directory
         VersionController.I.init_args().run()
@@ -77,18 +86,16 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         args = PackageManager.I.args("init", "--python", python_version)
         args.run(env=clean_env)
 
-        # Add pyrig wheel as a dev dependency
-        PackageManager.I.add_dev_dependencies_args(wheel_path).run(env=clean_env)
+        # Add pyrig wheel as a dev dependency and plugins
+        plugins = tuple(
+            snake_to_kebab_case(dep)
+            for dep in DependencyGraph(pyrig.__name__).sorted_ancestors(pyrig.__name__)
+        )
 
         # add plugins
-        PackageManager.I.add_dev_dependencies_args(
-            *(
-                snake_to_kebab_case(dep)
-                for dep in DependencyGraph(pyrig.__name__).sorted_ancestors(
-                    pyrig.__name__
-                )
-            )
-        ).run(env=clean_env)
+        PackageManager.I.add_dev_dependencies_args(wheel_path, *plugins).run(
+            env=clean_env
+        )
 
         # uv add converts absolute paths to relative paths, which breaks when
         # the project is copied to a different location (e.g., in the
@@ -148,3 +155,27 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
         for cf in ConfigFile.concrete_subclasses():
             assert cf().path().exists()
+
+        PackageManager.I.run_args(*Pyrigger.I.args("--help")).run(env=clean_env)
+
+        # rm all dev deps
+        PackageManager.I.args(
+            "remove",
+            "--dev",
+            *{*plugins, *Tool.subclasses_dev_dependencies()},
+        ).run(env=clean_env)
+        PackageManager.I.args("sync").run(env=clean_env)
+
+        pyproject_content = pyproject_toml.read_text("utf-8")
+        assert "pyrig-codecov" not in pyproject_content
+
+        with pytest.raises(CalledProcessError):
+            PackageManager.I.run_args(
+                "--no-dev",
+                "--no-sync",
+                *Pyrigger.I.args("--help"),
+            ).run(env=clean_env)
+
+        PackageManager.I.run_args(
+            "--no-dev", "--no-sync", project_name, version.__name__
+        ).run(env=clean_env)
