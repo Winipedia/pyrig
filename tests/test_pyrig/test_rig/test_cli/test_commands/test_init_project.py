@@ -71,9 +71,9 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         if venv:
             # Strip the outer venv's bin dir from PATH so commands like `pyrig`
             # from the dev environment aren't found when testing that they're absent.
-            path_entries = clean_env.get("PATH", "").split(":")
-            clean_env["PATH"] = ":".join(
-                p for p in path_entries if not p.startswith(venv)
+            path_entries = clean_env.get("PATH", "").split(os.pathsep)
+            clean_env["PATH"] = os.pathsep.join(
+                p for p in path_entries if not p.lower().startswith(venv.lower())
             )
 
         # Initialize git repo in the test project directory
