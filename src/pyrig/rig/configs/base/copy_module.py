@@ -10,10 +10,11 @@ from pathlib import Path
 from types import ModuleType
 from typing import Self, cast
 
+from pyrig_runtime.core.introspection.modules import replace_root_module_name
+
 from pyrig.core.introspection.modules import (
     leaf_module_name,
     module_content,
-    module_name_replacing_start_module,
 )
 from pyrig.core.root import module_name_as_root_path
 from pyrig.core.strings import make_name_from_obj
@@ -97,7 +98,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             Target directory path for the copied module file.
         """
         copy_module = self.copy_module()
-        new_module_name = module_name_replacing_start_module(
+        new_module_name = replace_root_module_name(
             copy_module, PackageManager.I.package_name()
         )
 

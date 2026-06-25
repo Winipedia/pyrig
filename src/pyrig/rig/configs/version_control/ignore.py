@@ -2,9 +2,10 @@
 
 from pathlib import Path
 
+from pyrig_runtime.core.strings import snake_to_kebab_case
+
 import pyrig
 from pyrig.core.resources import resource_content
-from pyrig.core.strings import snake_to_kebab_case
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile

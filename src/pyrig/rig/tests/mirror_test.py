@@ -12,16 +12,17 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any, Self, cast
 
+from pyrig_runtime.core.introspection.functions import module_functions
+from pyrig_runtime.core.introspection.inspection import unwrap_obj
+
 from pyrig.core.introspection.classes import (
     cls_methods,
     discard_parent_methods,
     module_classes,
 )
-from pyrig.core.introspection.functions import module_functions
 from pyrig.core.introspection.inspection import (
+    def_line_sorted,
     obj_qualname,
-    sorted_by_def_line,
-    unwrapped_obj,
 )
 from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
@@ -246,7 +247,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Iterator of expected test function names (e.g., ``"test_foo"``) for each
             source function that does not have a matching test function.
         """
-        funcs = sorted_by_def_line(module_functions(self.mirror_module()))
+        funcs = def_line_sorted(module_functions(self.mirror_module()))
         test_funcs = module_functions(self.module())
 
         supposed_test_func_names = (self.test_func_name(f) for f in funcs)
@@ -380,13 +381,13 @@ def {test_func_name}() -> None:
             ``missing_test_methods`` is itself an iterator of method name strings.
             Only classes with at least one untested method are included.
         """
-        classes = sorted_by_def_line(module_classes(self.mirror_module()))
+        classes = def_line_sorted(module_classes(self.mirror_module()))
         test_classes = module_classes(self.module())
 
         class_to_methods = (
             (
                 c,
-                sorted_by_def_line(discard_parent_methods(c, cls_methods(c))),
+                def_line_sorted(discard_parent_methods(c, cls_methods(c))),
             )
             for c in classes
         )
@@ -399,7 +400,7 @@ def {test_func_name}() -> None:
             for c, ms in class_to_methods
         )
         actual_test_class_to_test_methods_names = {
-            unwrapped_obj(tc).__name__: {unwrapped_obj(tm).__name__ for tm in tms}
+            unwrap_obj(tc).__name__: {unwrap_obj(tm).__name__ for tm in tms}
             for tc, tms in test_class_to_test_methods
         }
 
@@ -561,7 +562,7 @@ class {test_class_name}:
             unwrapped function's ``__name__``
             (e.g., ``"test_my_function"`` for ``my_function``).
         """
-        return self.test_func_prefix() + unwrapped_obj(func).__name__
+        return self.test_func_prefix() + unwrap_obj(func).__name__
 
     def test_cls_name(self, cls: type) -> str:
         """Return the expected test class name for a given source class.

@@ -9,8 +9,8 @@ from types import ModuleType
 from typing import Any, Self
 
 import typer
+from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 
-from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.iterate import (
     merge_nested_structures,
     nested_structure_is_subset,

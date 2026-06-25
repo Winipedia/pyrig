@@ -2,30 +2,21 @@
 
 from contextlib import chdir
 from pathlib import Path
-from types import ModuleType
 
 import pytest
-import typer
 from pytest_mock import MockerFixture
 
 import pyrig
 from pyrig.core import introspection
-from pyrig.core.dependency_subclass import DependencySubclass
 from pyrig.core.introspection import packages
 from pyrig.core.introspection.packages import (
-    discover_all_subclasses_across_package,
     discover_modules,
     import_package_with_dir_fallback,
-    is_src_package,
     make_init_file,
     make_init_files,
     make_package_dir,
-    register_package_modules,
-    walk_package,
 )
-from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tests import mirror_test
-from pyrig.rig.tools.base.tool import Tool
 
 
 def test_make_init_file(tmp_path: Path) -> None:
@@ -75,12 +66,6 @@ def test_make_package_dir_path_not_under_cwd(
     assert make_init_file_mock.call_count == expected_call_count
 
 
-def test_is_src_package() -> None:
-    """Test function."""
-    assert is_src_package(pyrig)
-    assert not is_src_package(typer)
-
-
 def test_import_package_with_dir_fallback(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
@@ -105,28 +90,6 @@ def test_import_package_with_dir_fallback(tmp_path: Path) -> None:
         assert package.__name__ == dir_name
 
 
-def test_walk_package() -> None:
-    """Test function."""
-    modules = list(walk_package(pyrig))
-
-    module_types = {m for m, _ in modules}
-
-    assert pyrig not in module_types
-    assert mirror_test in module_types
-    assert packages in module_types
-
-
-def test_discover_all_subclasses_across_package() -> None:
-    """Test function."""
-    subclasses = tuple(
-        discover_all_subclasses_across_package(cls=DependencySubclass, package=pyrig)
-    )
-    assert ConfigFile in subclasses
-    assert Tool in subclasses
-
-    assert all(issubclass(subcls, DependencySubclass) for subcls in subclasses)
-
-
 def test_discover_modules() -> None:
     """Test function."""
     modules = list(discover_modules(pyrig))
@@ -136,20 +99,6 @@ def test_discover_modules() -> None:
     assert packages in modules
     # is a package module, not a regular module, so should be excluded
     assert introspection not in modules
-
-
-def test_register_package_modules(mocker: MockerFixture) -> None:
-    """Test function."""
-    package = ModuleType(test_register_package_modules.__name__)
-    mock_walk_package = mocker.patch(
-        walk_package.__module__ + "." + walk_package.__name__,
-        return_value=iter([]),
-    )
-    register_package_modules(package)
-    mock_walk_package.assert_called_once_with(package)
-    register_package_modules(package)
-    # should only call walk_package once due to caching
-    mock_walk_package.assert_called_once_with(package)
 
 
 def test_make_init_files(tmp_path: Path) -> None:

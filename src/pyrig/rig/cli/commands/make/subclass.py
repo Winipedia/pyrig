@@ -4,11 +4,9 @@ from importlib import import_module
 from itertools import chain
 
 from InquirerPy import inquirer
+from pyrig_runtime.core.dependencies.subclass import DependencySubclass
+from pyrig_runtime.core.introspection.classes import discard_abstract_classes
 
-from pyrig.core.dependency_subclass import DependencySubclass
-from pyrig.core.introspection.classes import (
-    discard_abstract_classes,
-)
 from pyrig.core.introspection.modules import callable_obj_import_path
 from pyrig.rig.configs.base.copy_module_docstring import (
     CopyModuleDocstringConfigFile,

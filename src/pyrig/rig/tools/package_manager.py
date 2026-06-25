@@ -7,11 +7,9 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from pyrig.core.strings import (
-    snake_to_kebab_case,
-)
+from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
+
 from pyrig.core.subprocesses import Args
-from pyrig.rig.cli.cli.cli import CLI
 from pyrig.rig.tools.base.tool import Group, Tool
 
 
@@ -83,7 +81,7 @@ class PackageManager(Tool):
         Returns:
             Python-importable package name derived from the project name.
         """
-        return CLI.I.project_name_as_package_name(self.project_name())
+        return kebab_to_snake_case(self.project_name())
 
     def project_name(self) -> str:
         """Return the project name.

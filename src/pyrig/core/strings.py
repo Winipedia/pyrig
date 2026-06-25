@@ -53,16 +53,6 @@ def file_has_content(path: Path) -> bool:
     return path.stat().st_size > 0
 
 
-def kebab_to_snake_case(value: str) -> str:
-    """Convert kebab-case string to snake_case by replacing hyphens with underscores."""
-    return value.replace("-", "_")
-
-
-def snake_to_kebab_case(value: str) -> str:
-    """Convert snake_case string to kebab-case by replacing underscores with hyphens."""
-    return value.replace("_", "-")
-
-
 def split_on_uppercase(string: str) -> Iterator[str]:
     """Split a string at uppercase letter boundaries.
 
@@ -85,46 +75,6 @@ def split_on_uppercase(string: str) -> Iterator[str]:
         ['alllowercase']
     """
     return (s for s in re.split(r"(?=[A-Z])", string) if s)
-
-
-def dependency_requirement_split_pattern() -> re.Pattern[str]:
-    """Return a compiled regex pattern that matches non-package-name characters.
-
-    The pattern matches any character that is not alphanumeric, an underscore,
-    a hyphen, or a period. When used with `re.Pattern.split`, the first
-    element of the result is the bare package name, stripped of version
-    specifiers and any extras notation.
-
-    For example, calling `pattern.split("requests>=2.0,<3.0", maxsplit=1)`
-    yields `["requests", "=2.0,<3.0"]`, so `result[0]` is `"requests"`.
-    Calling `pattern.split("requests[security]>=2.0", maxsplit=1)`
-    yields `["requests", "security]>=2.0"]`, so extras are stripped from
-    `result[0]`.
-
-    Returns:
-        Compiled regex pattern matching characters outside a valid package name.
-    """
-    # re.compile is already internally cached by Python
-    return re.compile(r"[^a-zA-Z0-9_.-]")
-
-
-def dependency_requirement_as_package_name(dep_req: str) -> str:
-    """Extract the bare package name from a dependency requirement string..
-
-    The name is normalized to snake_case.
-    Version specifiers, extras notation, and any other non-name characters are
-    stripped. Hyphens in the package name are normalized to underscores.
-
-    Args:
-        dep_req: A dependency requirement string (e.g., `"requests>=2.0,<3.0"` or
-            `"my-package[extra]==1.0.0"`).
-
-    Returns:
-        The package name in snake_case (e.g., `"requests"` or `"my_package"`).
-    """
-    return kebab_to_snake_case(
-        dependency_requirement_split_pattern().split(dep_req, maxsplit=1)[0]
-    )
 
 
 def make_name_from_obj(

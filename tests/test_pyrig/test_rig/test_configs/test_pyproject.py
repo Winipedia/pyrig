@@ -4,11 +4,12 @@ from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
 
+import pyrig_runtime
 import pytest
 from packaging.version import Version
+from pyrig_runtime.core.strings import dependency_requirement_as_package_name
 from pytest_mock import MockerFixture
 
-from pyrig.core.strings import dependency_requirement_as_package_name
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
@@ -117,6 +118,7 @@ class TestPyprojectConfigFile:
         assert deps == [
             "inquirerpy",
             "packaging",
+            pyrig_runtime.__name__,
             "pyyaml",
             "spdx_matcher",
             "tomlkit",

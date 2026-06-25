@@ -7,7 +7,8 @@ wrappers in pyrig and downstream packages must implement.
 from abc import abstractmethod
 from types import ModuleType
 
-from pyrig.core.dependency_subclass import DependencySubclass
+from pyrig_runtime.core.dependencies.subclass import DependencySubclass
+
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
 from pyrig.rig import tools

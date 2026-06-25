@@ -3,27 +3,10 @@
 tests.test_pyrig.test_modules.test_inspection
 """
 
-import os
-from collections.abc import Callable
-from functools import wraps
-from types import ModuleType
-
-import pytest
-
-from pyrig.core.introspection.classes import classproperty
 from pyrig.core.introspection.inspection import (
     def_line,
-    obj_members,
-    obj_module,
     obj_qualname,
-    unwrapped_obj,
 )
-
-
-def test_obj_members() -> None:
-    """Test function."""
-    members = list(obj_members(test_obj_members))
-    assert len(members) > 0
 
 
 def test_def_line() -> None:
@@ -90,115 +73,7 @@ def test_obj_qualname() -> None:
     )
 
 
-def _dec_a[**P, R](func: Callable[P, R]) -> Callable[P, R]:
-    @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-def _dec_b[**P, R](func: Callable[P, R]) -> Callable[P, R]:
-    @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-def _dec_c[**P, R](func: Callable[P, R]) -> Callable[P, R]:
-    @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-@_dec_a
-@_dec_b
-@_dec_c
-def _deeply_decorated_func() -> str:
-    return "deep"
-
-
-class _TestDeeplyNestedClassMethod:
-    @classmethod
-    @_dec_a
-    @_dec_b
-    @_dec_c
-    def deeply_nested_class_method(cls) -> str:
-        return "deeply_nested"
-
-
-def test_unwrapped_obj() -> None:
-    """Test function."""
-    unwrapped_func = unwrapped_obj(_deeply_decorated_func)
-    assert unwrapped_func.__name__ == "_deeply_decorated_func", (
-        f"Expected '_deeply_decorated_func', got {unwrapped_func.__name__}"
-    )
-
-    unwrapped_method = unwrapped_obj(
-        _TestDeeplyNestedClassMethod.deeply_nested_class_method
-    )
-    assert unwrapped_method.__name__ == "deeply_nested_class_method", (
-        f"Expected 'deeply_nested_class_method', got {unwrapped_method.__name__}"
-    )
-
-
-def test_obj_module() -> None:
-    """Test function."""
-
-    # Test with a function
-    def test_function() -> None:
-        pass
-
-    module = obj_module(test_function)
-    assert module.__name__ == __name__, (
-        f"Expected module name {__name__}, got {module.__name__}"
-    )
-
-    # Test with a class method
-    class TestClass:
-        def test_method(self) -> None:
-            pass
-
-        @property
-        def test_property(self) -> str:
-            return "test"
-
-    method_module = obj_module(TestClass.test_method)
-    assert method_module.__name__ == __name__, (
-        f"Expected module name {__name__}, got {method_module.__name__}"
-    )
-
-    # Test with a property
-    prop_module = obj_module(TestClass.test_property)
-    assert prop_module.__name__ == __name__, (
-        f"Expected module name {__name__}, got {prop_module.__name__}"
-    )
-
-    # Test with built-in function
-    os_module = obj_module(os.path.join)
-    assert "posixpath" in os_module.__name__ or "ntpath" in os_module.__name__, (
-        f"Expected posixpath or ntpath module, got {os_module.__name__}"
-    )
-
-    # take an obj without a module and check if raises LookupError
-    with pytest.raises(LookupError):
-        obj_module("string without module")
-
-    with pytest.raises(LookupError):
-        # classproperty has fget in slots so it will unwrap to a
-        # C member object that has no module, so should raise LookupError
-        # we do not want this case handled to keep logic simpler
-        # it should be skipped in module_classes with the default
-        obj_module(classproperty)
-
-    module = obj_module(classproperty, default=ModuleType("default_module"))
-    assert module.__name__ == "default_module"
-
-
-def test_sorted_by_def_line() -> None:
+def test_def_line_sorted() -> None:
     """Test function."""
 
     def test_func_a() -> None:
@@ -214,15 +89,13 @@ def test_sorted_by_def_line() -> None:
         test_func_b,
         test_func_c,
         test_func_a,
-        test_obj_module,
         test_obj_qualname,
-        test_sorted_by_def_line,
+        test_def_line_sorted,
     ]
     sorted_funcs = sorted(funcs, key=def_line)
     assert sorted_funcs == [
         test_obj_qualname,
-        test_obj_module,
-        test_sorted_by_def_line,
+        test_def_line_sorted,
         test_func_a,
         test_func_b,
         test_func_c,

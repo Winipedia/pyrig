@@ -12,9 +12,10 @@ pyrig and all pyrig dependent packages, collecting all Python modules except
 from itertools import chain
 from pathlib import Path
 
-from pyrig.core.introspection.dependencies import (
+from pyrig_runtime.core.dependencies.discovery import (
     discover_equivalent_modules_across_dependents,
 )
+
 from pyrig.core.introspection.paths import package_dir_path, path_as_module_name
 from pyrig.rig.tests import fixtures
 
