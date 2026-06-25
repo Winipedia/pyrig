@@ -10,6 +10,10 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 class TestPyrigger:
     """Test class."""
 
+    def test_runtime_dependency(self) -> None:
+        """Test method."""
+        assert Pyrigger.I.runtime_dependency() == "pyrig-runtime"
+
     def test_group_cmd_args(self) -> None:
         """Test method."""
         result = Pyrigger.I.group_cmd_args(group="mk", cmd=local)

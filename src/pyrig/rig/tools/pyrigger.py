@@ -6,6 +6,7 @@ Provides a type-safe wrapper for pyrig commands and information.
 from collections.abc import Callable
 from typing import Any
 
+import pyrig_runtime
 import typer
 from pyrig_runtime.core.strings import snake_to_kebab_case
 
@@ -143,6 +144,7 @@ class Pyrigger(Tool):
         """
         return [
             (VersionController.I.init_args(), {}),
+            (PackageManager.I.add_args(self.runtime_dependency()), {}),
             (
                 PackageManager.I.add_dev_dependencies_args(
                     *Tool.subclasses_dev_dependencies()
@@ -161,3 +163,7 @@ class Pyrigger(Tool):
                 {},
             ),
         ]
+
+    def runtime_dependency(self) -> str:
+        """Returns pyrigs runtime dependency."""
+        return snake_to_kebab_case(pyrig_runtime.__name__)
