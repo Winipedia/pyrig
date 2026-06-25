@@ -4,7 +4,6 @@ Manages the generation of branch protection rulesets and
 repository-level security settings for use with the GitHub API.
 """
 
-import logging
 from pathlib import Path
 from typing import Any
 
@@ -15,8 +14,6 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
 )
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.version_controller import VersionController
-
-logger = logging.getLogger(__name__)
 
 
 class RepoSettingsConfigFile(JSONDictConfigFile):

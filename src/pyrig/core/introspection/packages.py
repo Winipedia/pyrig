@@ -1,6 +1,5 @@
 """Utilities for creating, importing, and traversing Python packages."""
 
-import logging
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 from types import ModuleType
@@ -12,8 +11,6 @@ from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
 )
 from pyrig.core.strings import write_text_utf8
-
-logger = logging.getLogger(__name__)
 
 
 def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:

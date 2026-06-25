@@ -6,7 +6,6 @@ Includes support for modules not discoverable via standard import mechanisms,
 such as those absent from `sys.path` or not installed as distributions.
 """
 
-import logging
 import sys
 from collections.abc import Callable
 from importlib.machinery import SourceFileLoader
@@ -19,8 +18,6 @@ from pyrig_runtime.core.introspection.modules import import_module_with_default
 
 from pyrig.core.introspection.paths import module_file_path, package_dir_path
 from pyrig.core.strings import read_text_utf8
-
-logger = logging.getLogger(__name__)
 
 
 def leaf_module_name(module: ModuleType) -> str:
