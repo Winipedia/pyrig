@@ -3,7 +3,8 @@
 from collections.abc import Callable
 from typing import Any
 
-from pyrig.core.strings import snake_to_kebab_case
+from pyrig_runtime.core.strings import snake_to_kebab_case
+
 from pyrig.core.subprocesses import run_subprocess
 from pyrig.rig.cli.commands.make.local import make_local_files
 from pyrig.rig.cli.commands.make.subclass import make_subclass

@@ -7,11 +7,9 @@ from collections.abc import Callable
 from typing import Any
 
 import typer
+from pyrig_runtime.core.strings import snake_to_kebab_case
 
 import pyrig
-from pyrig.core.strings import (
-    snake_to_kebab_case,
-)
 from pyrig.core.subprocesses import Args
 from pyrig.rig.cli.subcommands import sync
 from pyrig.rig.tools.base.tool import Group, Tool

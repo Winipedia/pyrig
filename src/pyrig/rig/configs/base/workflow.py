@@ -5,9 +5,10 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from pyrig_runtime.core.strings import snake_to_kebab_case
+
 from pyrig.core.strings import (
     make_name_from_obj,
-    snake_to_kebab_case,
     split_on_uppercase,
 )
 from pyrig.rig.configs.base.yml import YMLDictConfigFile

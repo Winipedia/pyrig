@@ -10,21 +10,21 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Literal
 
+import pyrig_runtime
 import spdx_matcher
 from packaging.version import Version
+from pyrig_runtime.core.strings import (
+    dependency_requirement_as_package_name,
+    snake_to_kebab_case,
+)
+from pyrig_runtime.rig.cli import main
 
-import pyrig
 from pyrig.core.introspection.modules import leaf_module_name
 from pyrig.core.resources import (
     resource_content,
 )
-from pyrig.core.strings import (
-    dependency_requirement_as_package_name,
-    snake_to_kebab_case,
-)
 from pyrig.core.version import VersionConstraint, adjust_version_to_level
 from pyrig.rig import resources, tests
-from pyrig.rig.cli import main
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
@@ -113,7 +113,10 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "description": self.project_description(),
                 "readme": ReadmeConfigFile.I.path().as_posix(),
                 "requires-python": self.requires_python(),
-                "dependencies": self.dependencies(),
+                "dependencies": self.merge_additional_dependencies(
+                    dependencies=self.dependencies(),
+                    additional=[snake_to_kebab_case(pyrig_runtime.__name__)],
+                ),
                 "authors": [
                     {"name": repo_owner},
                 ],
@@ -181,7 +184,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                 DependencyChecker.I.name(): {
                     "root": PackageManager.I.source_root().as_posix(),
                     "per_rule_ignores": {
-                        "DEP002": [snake_to_kebab_case(pyrig.__name__)]
+                        "DEP002": [snake_to_kebab_case(pyrig_runtime.__name__)]
                     },
                 },
             },

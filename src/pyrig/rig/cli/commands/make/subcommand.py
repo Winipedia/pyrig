@@ -1,7 +1,8 @@
 """Scaffolding logic for extending CLI subcommand modules with new stubs."""
 
-from pyrig.core.strings import kebab_to_snake_case
-from pyrig.rig.cli import shared_subcommands, subcommands
+from pyrig_runtime.core.strings import kebab_to_snake_case
+from pyrig_runtime.rig.cli import shared_subcommands, subcommands
+
 from pyrig.rig.configs.base.copy_module_docstring import (
     CopyModuleDocstringConfigFile,
 )

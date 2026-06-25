@@ -1,12 +1,13 @@
 [project]
 name = "pyrig"
-version = "15.23.0"
+version = "15.24.0"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "inquirerpy>=0.3.4",
     "packaging>=26.2",
+    "pyrig-runtime>=0.1.0",
     "pyyaml>=6.0.3",
     "spdx-matcher>=0.1.4",
     "tomlkit>=0.14.0",
@@ -64,7 +65,7 @@ Issues = "https://github.com/Winipedia/pyrig/issues"
 Changelog = "https://github.com/Winipedia/pyrig/releases"
 
 [project.scripts]
-pyrig = "pyrig.rig.cli.main:main"
+pyrig = "pyrig_runtime.rig.cli.main:main"
 
 [dependency-groups]
 dev = [
@@ -136,5 +137,5 @@ root = "src"
 
 [tool.deptry.per_rule_ignores]
 DEP002 = [
-    "pyrig",
+    "pyrig-runtime",
 ]

@@ -7,13 +7,13 @@ from contextlib import chdir
 from pathlib import Path
 
 import pytest
+from pyrig_runtime.core.dependencies.graph import DependencyGraph
+from pyrig_runtime.core.strings import snake_to_kebab_case
+from pyrig_runtime.rig.cli.shared_subcommands import version
 from pytest_mock import MockerFixture
 
 import pyrig
-from pyrig.core.dependency_graph import DependencyGraph
-from pyrig.core.strings import snake_to_kebab_case
 from pyrig.rig.cli.commands.init_project import init_project
-from pyrig.rig.cli.shared_subcommands import version
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
@@ -32,7 +32,7 @@ def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
     pyrigger_init_project_mock.assert_called_once()
 
 
-def test_init_project(tmp_path: Path) -> None:
+def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
     """Test function."""
     # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
@@ -77,8 +77,8 @@ def test_init_project(tmp_path: Path) -> None:
         args = PackageManager.I.args("init", "--python", python_version)
         args.run(env=clean_env)
 
-        # Add pyrig wheel as a dependency
-        PackageManager.I.args("add", wheel_path).run(env=clean_env)
+        # Add pyrig wheel as a dev dependency
+        PackageManager.I.add_dev_dependencies_args(wheel_path).run(env=clean_env)
 
         # add plugins
         PackageManager.I.add_dev_dependencies_args(
@@ -116,10 +116,15 @@ def test_init_project(tmp_path: Path) -> None:
         res = args.run(env=clean_env)
         assert res.returncode == 0
 
-        # run tests
-        args = PackageManager.I.run_args(*ProjectTester.I.test_args())
+        # run tests with no cov
+        args = PackageManager.I.run_args(*ProjectTester.I.test_args(), "--no-cov")
         res = args.run(env=clean_env, check=False)
         assert res.returncode == pytest.ExitCode.NO_TESTS_COLLECTED
+
+        # with cov
+        args = PackageManager.I.run_args(*ProjectTester.I.test_args())
+        res = args.run(env=clean_env, check=False)
+        assert res.returncode == pytest.ExitCode.TESTS_FAILED
 
         # assert the packages own cli is available
         args = PackageManager.I.run_args(project_name, "--help")
