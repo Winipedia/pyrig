@@ -34,6 +34,16 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
+    def test_additional_dependencies(self) -> None:
+        """Test method."""
+        assert PyprojectConfigFile.I.additional_dependencies() == ["pyrig-runtime"]
+
+    def test_additional_dev_dependencies(self) -> None:
+        """Test method."""
+        deps = PyprojectConfigFile.I.additional_dev_dependencies()
+        assert "pyrig" in deps
+        assert "ruff" in deps
+
     def test_stem(self) -> None:
         """Test method."""
         assert PyprojectConfigFile.I.stem() == "pyproject"

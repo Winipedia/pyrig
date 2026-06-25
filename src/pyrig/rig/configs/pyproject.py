@@ -10,12 +10,10 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Literal
 
-import pyrig_runtime
 import spdx_matcher
 from packaging.version import Version
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_package_name,
-    snake_to_kebab_case,
 )
 from pyrig_runtime.rig.cli import main
 
@@ -33,6 +31,7 @@ from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.testers.coverage import CoverageTester
 from pyrig.rig.tools.testers.project import ProjectTester
@@ -115,7 +114,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "requires-python": self.requires_python(),
                 "dependencies": self.merge_additional_dependencies(
                     dependencies=self.dependencies(),
-                    additional=[snake_to_kebab_case(pyrig_runtime.__name__)],
+                    additional=self.additional_dependencies(),
                 ),
                 "authors": [
                     {"name": repo_owner},
@@ -141,7 +140,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             "dependency-groups": {
                 "dev": self.merge_additional_dependencies(
                     dependencies=self.dev_dependencies(),
-                    additional=Tool.subclasses_dev_dependencies(),
+                    additional=self.additional_dev_dependencies(),
                 )
             },
             "build-system": {
@@ -183,12 +182,18 @@ class PyprojectConfigFile(TOMLConfigFile):
                 },
                 DependencyChecker.I.name(): {
                     "root": PackageManager.I.source_root().as_posix(),
-                    "per_rule_ignores": {
-                        "DEP002": [snake_to_kebab_case(pyrig_runtime.__name__)]
-                    },
+                    "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},
                 },
             },
         }
+
+    def additional_dependencies(self) -> list[str]:
+        """Get the deps added by pyrig."""
+        return [Pyrigger.I.runtime_dependency()]
+
+    def additional_dev_dependencies(self) -> list[str]:
+        """Get the dev deps added by pyrig."""
+        return Tool.subclasses_dev_dependencies()
 
     def detect_project_license(self) -> str:
         """Detect the SPDX license identifier from the project LICENSE file.

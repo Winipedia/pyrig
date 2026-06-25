@@ -9,6 +9,19 @@ from pyrig.rig.tools.package_manager import PackageManager
 class TestPackageManager:
     """Test class."""
 
+    def test_add_group_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.add_group_args("smth") == (
+            "uv",
+            "add",
+            "--group",
+            "smth",
+        )
+
+    def test_add_args(self) -> None:
+        """Test method."""
+        assert PackageManager.I.add_args("smth") == ("uv", "add", "smth")
+
     def test_install_dependencies_no_dev_args(self) -> None:
         """Test method."""
         assert PackageManager.I.install_dependencies_no_dev_args("hello") == (

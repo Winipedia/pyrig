@@ -195,7 +195,15 @@ class PackageManager(Tool):
         Returns:
             Args for ``uv add --group dev <args...>``.
         """
-        return self.args("add", "--group", "dev", *args)
+        return self.add_group_args("dev", *args)
+
+    def add_group_args(self, *args: str) -> Args:
+        """Construct ``Args`` for adding packages to a group."""
+        return self.add_args("--group", *args)
+
+    def add_args(self, *args: str) -> Args:
+        """Construct ``Args`` for adding packages."""
+        return self.args("add", *args)
 
     def install_dependencies_no_dev_args(self, *args: str) -> Args:
         """Construct ``Args`` for ``uv sync --no-group dev``.
