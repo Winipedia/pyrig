@@ -76,42 +76,42 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         return [
             self.hook(
                 "format-code",
-                PythonLinter.I.format_args(),
+                PackageManager.I.run_args(*PythonLinter.I.format_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
                 "lint-code",
-                PythonLinter.I.check_fix_args(),
+                PackageManager.I.run_args(*PythonLinter.I.check_fix_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
                 "lint-markdown",
-                MarkdownLinter.I.check_fix_args(),
+                PackageManager.I.run_args(*MarkdownLinter.I.check_fix_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
                 "check-spelling",
-                SpellChecker.I.check_fix_args(),
+                PackageManager.I.run_args(*SpellChecker.I.check_fix_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
                 "check-types",
-                TypeChecker.I.check_args(),
+                PackageManager.I.run_args(*TypeChecker.I.check_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
                 "check-security",
-                SecurityChecker.I.run_with_config_args(),
+                PackageManager.I.run_args(*SecurityChecker.I.run_with_config_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
                 "check-dependencies",
-                DependencyChecker.I.check_args(),
+                PackageManager.I.run_args(*DependencyChecker.I.check_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
                 "synchronize-project",
-                Pyrigger.I.cmd_args(cmd=sync),
+                PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=sync)),
                 stages=["pre-commit"],
             ),
             self.hook(
@@ -131,7 +131,7 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             ),
             self.hook(
                 "audit-dependencies",
-                DependencyAuditor.I.audit_args(),
+                PackageManager.I.run_args(*DependencyAuditor.I.audit_args()),
                 stages=["pre-push", "post-checkout", "post-merge", "post-rewrite"],
             ),
         ]
