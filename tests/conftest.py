@@ -9,4 +9,4 @@ pyrig and all pyrig dependent packages, collecting all Python modules except
 ``__init__.py`` modules and registers them as plugins.
 """
 
-pytest_plugins = ["pyrig.rig.tests.conftest"]
+pytest_plugins = ["pyrig_fixtures.rig.tests.conftest"]
