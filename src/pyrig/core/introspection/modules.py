@@ -1,10 +1,4 @@
-"""Utilities for dynamically importing, introspecting, and traversing Python modules.
-
-Covers importing by name or file path with fallback strategies, reading module
-source, resolving callable import paths, and iterating direct package children.
-Includes support for modules not discoverable via standard import mechanisms,
-such as those absent from `sys.path` or not installed as distributions.
-"""
+"""Utilities for python modules."""
 
 import sys
 from collections.abc import Callable

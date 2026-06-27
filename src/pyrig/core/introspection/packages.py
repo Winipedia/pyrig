@@ -1,4 +1,4 @@
-"""Utilities for creating, importing, and traversing Python packages."""
+"""Utilities for Python packages."""
 
 from collections.abc import Iterable, Iterator
 from pathlib import Path
@@ -18,17 +18,16 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
 
     Creates the target directory (and all missing parents), then places
     `__init__.py` files in the target directory and each ancestor up the
-    tree, skipping any directory that already has one. Traversal stops at
-    the first directory (starting from the target itself, then its ancestors)
-    that appears in `until`. This ensures the full path is importable as a
-    Python package hierarchy.
+    tree. Traversal stops at the first directory (starting from the target
+    itself, then its ancestors) that appears in `until`. Existing
+    `__init__.py` files are not overwritten.
 
     Args:
         path: Directory path to create.
-        until: Tuple of directory paths at which to stop adding
-            `__init__.py` files. Directories in this tuple do not receive an
-            `__init__.py`. The current working directory and the empty path
-            are always implicitly included as stop points.
+        until: Directories at which to stop adding `__init__.py` files.
+            Directories in this tuple do not receive an `__init__.py`. The
+            current working directory and the empty path are always
+            implicitly included as stop points.
         content: Content to write into each `__init__.py` file.
     """
     path.mkdir(parents=True, exist_ok=True)
