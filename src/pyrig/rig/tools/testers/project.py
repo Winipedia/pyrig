@@ -48,10 +48,6 @@ class ProjectTester(Tool):
         """
         return "https://pytest.org"
 
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Adds pyrig-fixtures to the pytest as a dev dependency."""
-        return (*super().dev_dependencies(), "pyrig-fixtures")
-
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return paths to ignore in version control."""
         return (".pytest_cache/",)
