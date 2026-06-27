@@ -10,7 +10,7 @@ class TestProjectTester:
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
-        assert ProjectTester.I.dev_dependencies() == ("pytest", "pyrig-fixtures")
+        assert ProjectTester.I.dev_dependencies() == ("pytest",)
 
     def test_image_url(self) -> None:
         """Test method."""
