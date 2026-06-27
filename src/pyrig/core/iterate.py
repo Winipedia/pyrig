@@ -1,8 +1,4 @@
-"""Utilities for working with generators and nested data structures.
-
-Provides helpers for safely inspecting and combining generators, as well as
-recursive subset comparison and in-place merging of nested dicts and lists.
-"""
+"""Utilities for working with generators and nested data structures."""
 
 import logging
 from collections.abc import Callable, Iterable, Iterator
