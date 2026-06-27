@@ -12,7 +12,7 @@ repo = "local"
 [[repos.hooks]]
 id = "format-code"
 name = "format-code"
-entry = "ruff format"
+entry = "uv run ruff format"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -23,7 +23,7 @@ stages = [
 [[repos.hooks]]
 id = "lint-code"
 name = "lint-code"
-entry = "ruff check --fix"
+entry = "uv run ruff check --fix"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -34,7 +34,7 @@ stages = [
 [[repos.hooks]]
 id = "lint-markdown"
 name = "lint-markdown"
-entry = "rumdl check --fix"
+entry = "uv run rumdl check --fix"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -45,7 +45,7 @@ stages = [
 [[repos.hooks]]
 id = "check-spelling"
 name = "check-spelling"
-entry = "typos --write-changes"
+entry = "uv run typos --write-changes"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -56,7 +56,7 @@ stages = [
 [[repos.hooks]]
 id = "check-types"
 name = "check-types"
-entry = "ty check"
+entry = "uv run ty check"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -67,7 +67,7 @@ stages = [
 [[repos.hooks]]
 id = "check-security"
 name = "check-security"
-entry = "bandit -c pyproject.toml -r src/pyrig tests"
+entry = "uv run bandit -c pyproject.toml -r src/pyrig tests"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -78,7 +78,7 @@ stages = [
 [[repos.hooks]]
 id = "check-dependencies"
 name = "check-dependencies"
-entry = "deptry"
+entry = "uv run deptry"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -89,7 +89,7 @@ stages = [
 [[repos.hooks]]
 id = "synchronize-project"
 name = "synchronize-project"
-entry = "pyrig sync"
+entry = "uv run pyrig sync"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -142,7 +142,7 @@ stages = [
 [[repos.hooks]]
 id = "audit-dependencies"
 name = "audit-dependencies"
-entry = "pip-audit"
+entry = "uv run pip-audit"
 language = "system"
 always_run = true
 pass_filenames = false
