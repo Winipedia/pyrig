@@ -22,8 +22,8 @@ def leaf_module_name(module: ModuleType) -> str:
 def callable_obj_import_path(obj: Callable[..., Any]) -> str:
     """Return the fully qualified import path of a callable.
 
-    Built by joining the object's module with its qualified name, so the result
-    includes any enclosing class (e.g., `"package.module.ClassName.method"`).
+    The result includes any enclosing class, so for a method the path takes
+    the form `"package.module.ClassName.method"`.
 
     Args:
         obj: Callable (function, method, or class) to resolve.
@@ -56,15 +56,14 @@ def module_content(module: ModuleType) -> str:
 def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleType:
     """Re-import a module, bypassing the import cache.
 
-    Evicts the module from `sys.modules` and re-imports it via
-    `import_module_with_file_fallback`. Use this to pick up on-disk changes
-    to a module's source without restarting the interpreter.
+    Evicts the module from `sys.modules` before re-importing it, so on-disk
+    changes to the module's source are picked up without restarting the
+    interpreter.
 
     Args:
         module: Module to re-import.
-        is_package: Set to `True` when re-importing a package from its
-            `__init__.py` so the spec is built with package semantics
-            (e.g., relative imports). Defaults to `False` for regular modules.
+        is_package: Set to `True` when the target is a package rather than a
+            plain module. Defaults to `False`.
 
     Returns:
         A freshly imported module object, distinct from the original.
@@ -82,16 +81,15 @@ def import_module_with_file_fallback(
 ) -> ModuleType:
     """Import a module by name, falling back to direct file import on failure.
 
-    First attempts a standard import of `name`; if that raises any exception,
-    falls back to `import_module_from_file`, loading directly from `path`.
-    The fallback handles modules that are not on `sys.path` or not installed.
+    Attempts a standard import of `name`; if that fails for any reason,
+    loads the module directly from `path`. This handles modules that are not
+    on `sys.path` or not installed.
 
     Args:
-        path: Path to the module file, used only by the file-import fallback.
+        path: Path to the module file, used only when the standard import fails.
         name: Name under which to register the imported module.
-        is_package: Set to `True` when importing a package from its
-            `__init__.py` so the spec is built with package semantics
-            (e.g., relative imports). Defaults to `False` for regular modules.
+        is_package: Set to `True` when the target is a package rather than a
+            plain module. Defaults to `False`.
 
     Returns:
         The imported module.
@@ -122,9 +120,9 @@ def import_module_from_file(
             `is_package` is `True` and the path is not already an `__init__.py`,
             `__init__.py` is appended to it.
         name: Name under which to register the imported module.
-        is_package: Set to `True` when importing a package from its
-            `__init__.py` so the spec is built with package semantics
-            (e.g., relative imports). Defaults to `False` for regular modules.
+        is_package: Set to `True` when the target is a package rather than a
+            plain module, enabling package semantics (e.g., relative imports).
+            Defaults to `False`.
 
     Returns:
         The imported and executed module.
@@ -153,5 +151,5 @@ def import_module_from_file(
 
 
 def module_has_docstring(module: ModuleType) -> bool:
-    """Return whether the module defines a docstring (`__doc__` is not `None`)."""
+    """Return whether the module defines a docstring."""
     return module.__doc__ is not None

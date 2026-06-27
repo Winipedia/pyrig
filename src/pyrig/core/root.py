@@ -38,8 +38,8 @@ def namespace_package_paths() -> Iterator[Path]:
     Directories named `__pycache__` are skipped.
 
     Yields:
-        Each directory under the source or tests package root that has no
-        `__init__.py`.
+        Each qualifying directory at or under the source or tests package
+        root that has no `__init__.py`.
     """
     logger.debug("Discovering namespace packages")
 
