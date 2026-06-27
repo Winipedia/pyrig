@@ -50,7 +50,7 @@ def obj_qualname(obj: Callable[..., Any] | type) -> str:
 
     Unwraps the object first, so the name of the original function is returned
     rather than the name of a wrapper or descriptor. For methods, the qualified
-    name includes the enclosing class, for example `"MyClass.my_method"`.
+    name includes the enclosing class, for example `MyClass.my_method`.
 
     Args:
         obj: Callable or type, optionally wrapped by a descriptor or decorator.

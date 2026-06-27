@@ -1,9 +1,4 @@
-"""Safe subprocess execution with automatic failure logging and result caching.
-
-Enforces shell-injection guards by forbidding shell-interpolated execution,
-logs command failures before re-raising, and caches results for idempotent
-commands to avoid redundant process spawning.
-"""
+"""Utilities for safe subprocess execution."""
 
 import logging
 import subprocess  # nosec: B404
@@ -18,10 +13,6 @@ logger = logging.getLogger(__name__)
 class Args(tuple[str, ...]):
     """Immutable sequence of command-line tokens that can execute itself.
 
-    A `tuple` subclass representing a complete subprocess command. Supports
-    direct execution with optional extra arguments, and a cached variant for
-    idempotent commands that may be invoked repeatedly within a session.
-
     Example:
         >>> args = Args(["uv", "sync"])
         >>> str(args)
@@ -35,12 +26,11 @@ class Args(tuple[str, ...]):
         return " ".join(self)
 
     def run(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
-        """Execute the command, appending any extra positional arguments first.
+        """Execute the command with any extra positional arguments appended.
 
         Args:
             *args: Additional arguments to append to the command before execution.
-            **kwargs: Keyword arguments forwarded to `run_subprocess`
-                (e.g., `check`, `capture_output`, `cwd`).
+            **kwargs: Keyword arguments forwarded to the subprocess runner.
 
         Returns:
             The completed process result.
@@ -57,14 +47,12 @@ class Args(tuple[str, ...]):
         """Execute the command with result caching.
 
         Repeated calls with identical arguments return the cached result without
-        spawning a new process. Useful for idempotent read commands invoked many
-        times during a session. All keyword argument values must be hashable.
+        spawning a new process.
 
         Args:
             *args: Additional arguments to append to the command before execution.
-            **kwargs: Keyword arguments forwarded to `run_subprocess_cached`
-                (e.g., `check`, `capture_output`, `cwd`). All values must
-                be hashable.
+            **kwargs: Keyword arguments forwarded to the subprocess runner.
+                All values must be hashable.
 
         Returns:
             The completed process result.
@@ -84,14 +72,12 @@ def run_subprocess_cached(
 ) -> subprocess.CompletedProcess[Any]:
     """Execute a subprocess command and cache the result.
 
-    A `functools.cache`-backed wrapper around `run_subprocess`. Repeated calls
-    with identical arguments return the cached result without spawning a new
-    process. Because the cache key includes both `args` and all `kwargs`, every
-    value must be hashable.
+    Repeated calls with identical arguments return the cached result without
+    spawning a new process. All values in `kwargs` must be hashable.
 
     Args:
         args: Command and arguments as a tuple (e.g., `("git", "status")`).
-        **kwargs: Keyword arguments forwarded to `run_subprocess`.
+        **kwargs: Keyword arguments forwarded to the subprocess runner.
             All values must be hashable.
 
     Returns:

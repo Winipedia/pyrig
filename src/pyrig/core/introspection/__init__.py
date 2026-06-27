@@ -1,1 +1,1 @@
-"""Low-level utilities for  Python objects."""
+"""Introspection utilities for Python objects."""

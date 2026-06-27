@@ -80,42 +80,38 @@ def make_init_file(path: Path, content: str) -> bool:
 
 
 def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
-    """Import a package by name, falling back to a direct directory import if needed.
+    """Import a package by name, using the directory at `path` as a fallback.
 
-    Attempts a standard import of `name` first. If that fails for any reason,
-    imports the package directly from the directory at `path`. The fallback
-    handles packages not yet on `sys.path`, such as dynamically created
-    packages or packages in non-standard locations.
+    Packages that cannot be resolved by name alone — such as those not yet
+    installed — can still be imported when `path` points to their directory.
 
     Args:
-        path: Path to the package directory. Resolved to an absolute path
-            before the fallback import is attempted.
+        path: Path to the package directory, used when the name-based import
+            fails.
         name: Dotted module name for the package (e.g., `"myproject.utils"`).
 
     Returns:
         Imported package module.
 
     Raises:
-        FileNotFoundError: If the fallback import is needed and the directory
-            or its `__init__.py` does not exist.
-        ImportError: If the fallback import is needed and the module spec
-            cannot be created from the path.
+        FileNotFoundError: If the package directory or its `__init__.py` does
+            not exist.
+        ImportError: If the module spec cannot be created from `path`.
     """
     return import_module_with_file_fallback(path=path, name=name, is_package=True)
 
 
 def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
-    """Recursively discover all modules (non-packages) in a package.
+    """Yield all non-package modules found anywhere in a package hierarchy.
 
-    Walks the entire package hierarchy and yields only the leaf modules,
-    excluding intermediate sub-packages. Each module is imported as a
-    side effect of iteration.
+    Sub-packages at any nesting depth are traversed but not themselves yielded.
+    Each module is imported as a side effect of iteration.
 
     Args:
-        package: Root package to discover modules from.
+        package: Root package to search.
 
     Yields:
-        Every module found anywhere within the package hierarchy, excluding
-        sub-packages themselves.
+        Every non-package module found anywhere within `package`, at any
+        nesting depth.
     """
     return (module for module, is_pkg in walk_package(package) if not is_pkg)

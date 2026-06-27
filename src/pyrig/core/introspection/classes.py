@@ -14,17 +14,18 @@ from pyrig.core.introspection.inspection import unwrap_obj
 def cls_methods(
     cls: type,
 ) -> Iterator[Callable[..., Any]]:
-    """Extract all methods from a class, including inherited ones.
+    """Extract all methods and properties from a class, including inherited ones.
 
     Covers instance methods, static methods, class methods, and properties
     from the class itself and all ancestor classes. Results are yielded in
-    alphabetical order by method name.
+    alphabetical order by name.
 
     Args:
         cls: Class to extract methods from.
 
     Yields:
-        Method objects in alphabetical name order.
+        Instance methods, static methods, class methods, and properties,
+        in alphabetical name order.
     """
     return (method for _name, method in obj_members(cls) if is_funclike(method))
 

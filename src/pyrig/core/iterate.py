@@ -1,4 +1,4 @@
-"""Utilities for working with generators and nested data structures."""
+"""Utilities for iterables and nested data structures."""
 
 import logging
 from collections.abc import Callable, Iterable, Iterator
@@ -54,7 +54,7 @@ def merge_nested_structures[T: dict[Any, Any] | list[Any]](
 ) -> T:
     """Merge all values from `subset` into `superset`, filling in any gaps.
 
-    Walks both structures recursively. For every key or index present in
+    Applies deeply to nested dicts and lists: for every key or index present in
     `subset` that is missing or has a different value in `superset`, the
     superset is updated in-place. Keys or elements present only in the superset
     are left untouched.
@@ -139,7 +139,6 @@ def nested_structure_is_subset(  # noqa: C901
         on_false_action: Callable[[Any, Any, Any], Any] | None = on_dict_mismatch
 
         def get_actual(key_or_index: Any) -> Any:
-            """Return the value for `key_or_index` from the superset dict."""
             return superset.get(key_or_index)
 
     elif isinstance(subset, list) and isinstance(superset, list):
@@ -147,11 +146,10 @@ def nested_structure_is_subset(  # noqa: C901
         on_false_action = on_list_mismatch
 
         def get_actual(key_or_index: Any) -> Any:
-            """Find the matching element in the superset list (order-independent).
+            """Return the superset element that matches `subset[key_or_index]`.
 
-            Scans superset for an element that contains `subset[key_or_index]`
-            as a subset. Falls back to index-based lookup if no match is found,
-            or `None` if the index is out of bounds.
+            Matching is order-independent. Falls back to position-based lookup
+            when no element matches, or `None` if the index is out of bounds.
             """
             subset_val = subset[key_or_index]
             for superset_val in superset:
@@ -199,8 +197,7 @@ def add_missing_dict_val(
 ) -> None:
     """Add or overwrite a key in `actual_dict` with the value from `expected_dict`.
 
-    Used as the `on_dict_mismatch` callback in [merge_nested_structures][]. The
-    merge strategy depends on the value types:
+    The strategy depends on the existing value types:
 
     - Both existing values are dicts: `actual_dict[key]` is updated in-place
       with all entries from `expected_dict[key]`. Overlapping keys take the
@@ -227,8 +224,6 @@ def insert_missing_list_val(
     expected_list: list[Any], actual_list: list[Any], index: int
 ) -> None:
     """Insert a missing item from `expected_list` into `actual_list` at `index`.
-
-    Used as the `on_list_mismatch` callback in [merge_nested_structures][].
 
     Args:
         expected_list: List containing the item to insert.

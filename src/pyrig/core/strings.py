@@ -117,7 +117,7 @@ def make_name_from_obj(
 
     Note:
         Does not split on uppercase letters. To derive a display name from a
-        PascalCase identifier, use [split_on_uppercase][] on the class name
+        PascalCase identifier, use `split_on_uppercase` on the class name
         first and join the parts into a snake_case string before passing it
         here.
     """
