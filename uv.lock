@@ -903,7 +903,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "15.40.0"
+version = "15.42.0"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
@@ -962,7 +962,7 @@ dev = [
     { name = "prek", specifier = ">=0.3.2" },
     { name = "pyrig", specifier = ">=15.0.0" },
     { name = "pyrig-codecov", specifier = ">=1.1.0" },
-    { name = "pyrig-fixtures", specifier = ">=0.2.0" },
+    { name = "pyrig-fixtures", specifier = ">=0.20.0" },
     { name = "pyrig-overrides", specifier = ">=1.0.0" },
     { name = "pyrig-pypi", specifier = ">=1.0.0" },
     { name = "pyrig-resources", specifier = ">=1.0.0" },
