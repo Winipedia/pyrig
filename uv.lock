@@ -903,14 +903,13 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "15.46.0"
+version = "15.47.0"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
     { name = "packaging" },
     { name = "pyrig-runtime" },
     { name = "pyyaml" },
-    { name = "requests" },
     { name = "spdx-matcher" },
     { name = "tomlkit" },
     { name = "typer" },
@@ -946,7 +945,6 @@ requires-dist = [
     { name = "packaging", specifier = ">=26.2" },
     { name = "pyrig-runtime", specifier = ">=0.1.0" },
     { name = "pyyaml", specifier = ">=6.0.3" },
-    { name = "requests", specifier = ">=2.34.2" },
     { name = "spdx-matcher", specifier = ">=0.1.4" },
     { name = "tomlkit", specifier = ">=0.14.0" },
     { name = "typer", specifier = ">=0.26.7" },

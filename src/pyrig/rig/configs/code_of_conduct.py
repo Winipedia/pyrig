@@ -4,12 +4,8 @@ Manages CODE_OF_CONDUCT.md using the Contributor Covenant, the most widely
 adopted code of conduct for open source projects.
 """
 
-from functools import cache
 from pathlib import Path
 
-from pyrig_runtime.core.wrappers import safe_call
-
-from pyrig.core.network import get_text
 from pyrig.core.resources import (
     resource_content,
 )
@@ -72,34 +68,8 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     def code_of_conduct_template(self) -> str:
         """Return the raw Contributor Covenant 2.1 template text.
 
-        Attempts to fetch the latest version from the remote source; falls back
-        to the bundled resource if the network is unavailable.
-
         Returns:
             Full covenant text with the ``[INSERT CONTACT METHOD]`` placeholder intact.
-        """
-        return safe_call(
-            self.remote_code_of_conduct_template,
-            default=self.local_code_of_conduct_template(),
-        )
-
-    @classmethod
-    @cache
-    def remote_code_of_conduct_template(cls) -> str:
-        """Fetch the Contributor Covenant 2.1 template from the remote source.
-
-        Returns:
-            Raw covenant text with the ``[INSERT CONTACT METHOD]`` placeholder intact.
-        """
-        return get_text(
-            "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md",
-        )
-
-    def local_code_of_conduct_template(self) -> str:
-        """Return the Contributor Covenant 2.1 template from the bundled resource.
-
-        Returns:
-            Raw covenant text with the ``[INSERT CONTACT METHOD]`` placeholder intact.
         """
         return resource_content("CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT", resources)
 

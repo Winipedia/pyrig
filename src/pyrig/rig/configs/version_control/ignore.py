@@ -1,11 +1,7 @@
 """Configuration management for .gitignore files."""
 
-from functools import cache
 from pathlib import Path
 
-from pyrig_runtime.core.wrappers import safe_call
-
-from pyrig.core.network import get_text
 from pyrig.core.resources import resource_content
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -107,32 +103,6 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
 
     def standard_ignore_text(self) -> str:
         """Return the standard Python gitignore template as a single string.
-
-        Attempts to fetch the latest version from the remote source; falls back
-        to the bundled resource if the network is unavailable.
-
-        Returns:
-            Full Python gitignore template text.
-        """
-        return safe_call(
-            self.remote_standard_ignore_text,
-            default=self.local_standard_ignore_text(),
-        )
-
-    @classmethod
-    @cache
-    def remote_standard_ignore_text(cls) -> str:
-        """Fetch the Python gitignore template from the canonical remote source.
-
-        Returns:
-            Full Python gitignore template text.
-        """
-        return get_text(
-            "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore",
-        )
-
-    def local_standard_ignore_text(self) -> str:
-        """Return the Python gitignore template from the bundled resource.
 
         Returns:
             Full Python gitignore template text.

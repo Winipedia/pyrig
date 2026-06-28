@@ -108,9 +108,8 @@ class BadgesConfigFile(MarkdownConfigFile):
             Updated content with the current description in place of the old one.
             If no ``---`` divider pattern is found, the content is returned unchanged.
         """
-        expected_description = PyprojectConfigFile.I.project_description()
         pattern = r"---\s*\n(.*?)\n---"
-        replacement = f"---\n\n> {expected_description}\n\n---"
+        replacement = f"---\n\n> {PyprojectConfigFile.I.project_description()}\n\n---"
         # only replace first occurrence, as description is expected at the top
         return re.sub(pattern, lambda _: replacement, content, count=1, flags=re.DOTALL)
 
