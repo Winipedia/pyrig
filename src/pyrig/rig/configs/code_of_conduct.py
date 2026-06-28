@@ -4,8 +4,12 @@ Manages CODE_OF_CONDUCT.md using the Contributor Covenant, the most widely
 adopted code of conduct for open source projects.
 """
 
+from functools import cache
 from pathlib import Path
 
+from pyrig_runtime.core.wrappers import safe_call
+
+from pyrig.core.network import get_text
 from pyrig.core.resources import (
     resource_content,
 )
@@ -34,7 +38,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
 
     def lines(self) -> list[str]:
         """Return the Contributor Covenant content with contact method as lines."""
-        return self.split_lines(self.contributor_covenant_with_contact_method())
+        return self.split_lines(self.code_of_conduct())
 
     def is_correct(self) -> bool:
         """Check if CODE_OF_CONDUCT.md has non-empty content.
@@ -51,7 +55,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         """
         return file_has_content(self.path())
 
-    def contributor_covenant_with_contact_method(self) -> str:
+    def code_of_conduct(self) -> str:
         """Return the Contributor Covenant with the contact method substituted.
 
         Replaces the ``[INSERT CONTACT METHOD]`` placeholder in the covenant
@@ -60,16 +64,42 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         Returns:
             str: Contributor Covenant 2.1 text with the contact method in place.
         """
-        contact_method = self.contact_method()
-        return self.contributor_covenant().replace(
-            "[INSERT CONTACT METHOD]", contact_method
+        return self.code_of_conduct_template().replace(
+            "[INSERT CONTACT METHOD]",
+            self.contact_method(),
         )
 
-    def contributor_covenant(self) -> str:
-        """Return the raw Contributor Covenant 2.1 text from the bundled resource.
+    def code_of_conduct_template(self) -> str:
+        """Return the raw Contributor Covenant 2.1 template text.
+
+        Attempts to fetch the latest version from the remote source; falls back
+        to the bundled resource if the network is unavailable.
 
         Returns:
-            str: Full covenant text, unmodified.
+            Full covenant text with the ``[INSERT CONTACT METHOD]`` placeholder intact.
+        """
+        return safe_call(
+            self.remote_code_of_conduct_template,
+            default=self.local_code_of_conduct_template(),
+        )
+
+    @classmethod
+    @cache
+    def remote_code_of_conduct_template(cls) -> str:
+        """Fetch the Contributor Covenant 2.1 template from the remote source.
+
+        Returns:
+            Raw covenant text with the ``[INSERT CONTACT METHOD]`` placeholder intact.
+        """
+        return get_text(
+            "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md",
+        )
+
+    def local_code_of_conduct_template(self) -> str:
+        """Return the Contributor Covenant 2.1 template from the bundled resource.
+
+        Returns:
+            Raw covenant text with the ``[INSERT CONTACT METHOD]`` placeholder intact.
         """
         return resource_content("CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT", resources)
 

@@ -29,6 +29,28 @@ def my_test_gitignore_config_file(
 class TestVersionControllerIgnoreConfigFile:
     """Test class."""
 
+    def test_standard_ignore_text(self) -> None:
+        """Test method."""
+        result = VersionControllerIgnoreConfigFile.I.standard_ignore_text()
+        assert "__pycache__/" in result
+        assert ".env" in result
+
+    def test_remote_standard_ignore_text(self) -> None:
+        """Test method."""
+        result = VersionControllerIgnoreConfigFile.I.remote_standard_ignore_text()
+        assert "__pycache__/" in result
+        assert ".env" in result
+
+    def test_local_standard_ignore_text(self) -> None:
+        """Test method."""
+        result = VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
+        assert "__pycache__/" in result
+        assert ".env" in result
+        assert (
+            VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
+            == VersionControllerIgnoreConfigFile.I.remote_standard_ignore_text()
+        )
+
     def test_additional_ignore_lines(self) -> None:
         """Test method."""
         lines = VersionControllerIgnoreConfigFile.I.additional_ignore_lines()

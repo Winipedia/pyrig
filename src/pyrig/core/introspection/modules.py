@@ -8,7 +8,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-from pyrig_runtime.core.introspection.modules import import_module_with_default
+from pyrig_runtime.core.introspection.modules import safe_import_module
 
 from pyrig.core.introspection.paths import module_file_path, package_dir_path
 from pyrig.core.strings import read_text_utf8
@@ -100,8 +100,8 @@ def import_module_with_file_fallback(
         ImportError: If the standard import fails and the module spec cannot be
             created.
     """
-    module = import_module_with_default(name)
-    if isinstance(module, ModuleType):
+    module = safe_import_module(name, default=None)
+    if module is not None:
         return module
     return import_module_from_file(path, name=name, is_package=is_package)
 

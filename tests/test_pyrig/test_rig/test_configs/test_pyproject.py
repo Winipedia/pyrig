@@ -34,6 +34,22 @@ def my_test_pyproject_config_file(
 class TestPyprojectConfigFile:
     """Test class."""
 
+    def test_remote_latest_python_version(self) -> None:
+        """Test method."""
+        assert isinstance(PyprojectConfigFile.I.remote_latest_python_version(), str)
+        assert len(PyprojectConfigFile.I.remote_latest_python_version()) > 0
+        assert "." in PyprojectConfigFile.I.remote_latest_python_version()
+
+    def test_local_latest_python_version(self) -> None:
+        """Test method."""
+        assert isinstance(PyprojectConfigFile.I.local_latest_python_version(), str)
+        assert len(PyprojectConfigFile.I.local_latest_python_version()) > 0
+        assert "." in PyprojectConfigFile.I.local_latest_python_version()
+        assert (
+            PyprojectConfigFile.I.local_latest_python_version()
+            == PyprojectConfigFile.I.remote_latest_python_version()
+        )
+
     def test_additional_dependencies(self) -> None:
         """Test method."""
         assert PyprojectConfigFile.I.additional_dependencies() == ["pyrig-runtime"]
@@ -130,6 +146,7 @@ class TestPyprojectConfigFile:
             "packaging",
             pyrig_runtime.__name__,
             "pyyaml",
+            "requests",
             "spdx_matcher",
             "tomlkit",
             "typer",

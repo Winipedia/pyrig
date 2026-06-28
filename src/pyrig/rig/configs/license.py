@@ -1,8 +1,12 @@
 """LICENSE file configuration for generated projects."""
 
 from datetime import UTC, datetime
+from functools import cache
 from pathlib import Path
 
+from pyrig_runtime.core.wrappers import safe_call
+
+from pyrig.core.network import get_json
 from pyrig.core.resources import (
     resource_content,
 )
@@ -50,17 +54,12 @@ class LicenseConfigFile(StringConfigFile):
         return ""
 
     def lines(self) -> list[str]:
-        """Return the MIT license text split into individual lines.
-
-        Delegates to ``mit_license_with_year_and_owner`` to produce the full
-        license text, then splits it into lines for the ``StringConfigFile``
-        base-class validation.
+        """Return the MIT license text as individual lines.
 
         Returns:
-            List of lines comprising the MIT license with year and owner
-            already substituted.
+            Lines comprising the complete MIT license with year and owner substituted.
         """
-        return self.split_lines(self.mit_license_with_year_and_owner())
+        return self.split_lines(self.license())
 
     def is_correct(self) -> bool:
         """Check whether the LICENSE file has non-empty content.
@@ -74,31 +73,49 @@ class LicenseConfigFile(StringConfigFile):
         """
         return file_has_content(self.path())
 
-    def mit_license_with_year_and_owner(self) -> str:
-        """Return the MIT license text with year and owner substituted.
-
-        Loads the raw template via ``mit_license`` and replaces the ``[year]``
-        placeholder with the current UTC year and the ``[fullname]`` placeholder
-        with the repository owner parsed from the git remote URL (or the git
-        username when no remote is configured).
+    def license(self) -> str:
+        """Return the MIT license text with year and repository owner substituted.
 
         Returns:
             Complete MIT license text ready to write to the LICENSE file.
         """
-        mit_license = self.mit_license()
+        mit_license = self.license_template()
         year = datetime.now(tz=UTC).year
         owner = VersionController.I.repo_owner()
         mit_license = mit_license.replace("[year]", str(year))
         return mit_license.replace("[fullname]", owner)
 
-    def mit_license(self) -> str:
-        """Return the raw MIT license template from the bundled resources.
+    def license_template(self) -> str:
+        """Return the raw MIT license template text.
 
-        The template contains ``[year]`` and ``[fullname]`` placeholders that
-        are filled in by ``mit_license_with_year_and_owner``.
+        Attempts to fetch the latest version from the remote source; falls back
+        to the bundled resource if the network is unavailable.
 
         Returns:
-            Raw MIT license template text.
+            Raw MIT license text with ``[year]`` and ``[fullname]`` placeholders intact.
+        """
+        return safe_call(
+            self.remote_license_template,
+            default=self.local_license_template(),
+        )
+
+    @classmethod
+    @cache
+    def remote_license_template(cls) -> str:
+        """Fetch the MIT license template from the GitHub Licenses API.
+
+        Returns:
+            Raw MIT license text with ``[year]`` and ``[fullname]`` placeholders intact.
+        """
+        return get_json(
+            "https://api.github.com/licenses/mit",
+        )["body"]
+
+    def local_license_template(self) -> str:
+        """Return the MIT license template from the bundled resource.
+
+        Returns:
+            Raw MIT license text with ``[year]`` and ``[fullname]`` placeholders intact.
         """
         return resource_content("MIT_LICENSE", resources)
 
