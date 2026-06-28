@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+import requests
+
 from pyrig.rig.configs.license import LicenseConfigFile
 
 
@@ -14,21 +16,14 @@ class TestLicenseConfigFile:
         """Test method."""
         if not on_linux_and_latest_python_version_or_not_in_ci:
             return
-        result = LicenseConfigFile.I.remote_license_template()
-        assert "MIT License" in result
-        assert "[year]" in result
-        assert "[fullname]" in result
-        assert (
-            LicenseConfigFile.I.local_license_template()
-            == LicenseConfigFile.I.remote_license_template()
-        )
-
-    def test_local_license_template(self) -> None:
-        """Test method."""
-        result = LicenseConfigFile.I.local_license_template()
-        assert "MIT License" in result
-        assert "[year]" in result
-        assert "[fullname]" in result
+        mit_license = requests.get(
+            "https://api.github.com/licenses/mit",
+            timeout=(3, 10),
+        ).json()["body"]
+        assert "MIT License" in mit_license
+        assert "[year]" in mit_license
+        assert "[fullname]" in mit_license
+        assert LicenseConfigFile.I.license_template() == mit_license
 
     def test_extension_separator(self) -> None:
         """Test method."""
@@ -55,6 +50,8 @@ class TestLicenseConfigFile:
         """Test method."""
         mit_license = LicenseConfigFile.I.license_template()
         assert "MIT License" in mit_license
+        assert "[year]" in mit_license
+        assert "[fullname]" in mit_license
 
     def test_license(self) -> None:
         """Test method."""

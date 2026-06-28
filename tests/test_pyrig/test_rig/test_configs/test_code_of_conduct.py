@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import requests
 from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.code_of_conduct import CodeOfConductConfigFile
@@ -17,21 +18,14 @@ class TestCodeOfConductConfigFile:
         """Test method."""
         if not on_linux_and_latest_python_version_or_not_in_ci:
             return
-        result = CodeOfConductConfigFile.I.remote_code_of_conduct_template()
-        assert isinstance(result, str)
-        assert "[INSERT CONTACT METHOD]" in result
-        assert len(result) > 0
-        assert (
-            CodeOfConductConfigFile.I.local_code_of_conduct_template()
-            == CodeOfConductConfigFile.I.remote_code_of_conduct_template()
-        )
-
-    def test_local_code_of_conduct_template(self) -> None:
-        """Test method."""
-        result = CodeOfConductConfigFile.I.local_code_of_conduct_template()
-        assert isinstance(result, str)
-        assert len(result) > 0
-        assert "[INSERT CONTACT METHOD]" in result
+        code_of_conduct = requests.get(
+            "https://raw.githubusercontent.com/github/MVG/main/org-docs/CODE-OF-CONDUCT.md",
+            timeout=(3, 10),
+        ).text
+        assert isinstance(code_of_conduct, str)
+        assert "[INSERT CONTACT METHOD]" in code_of_conduct
+        assert len(code_of_conduct) > 0
+        assert CodeOfConductConfigFile.I.code_of_conduct_template() == code_of_conduct
 
     def test_is_correct(self) -> None:
         """Test method."""
@@ -83,5 +77,7 @@ class TestCodeOfConductConfigFile:
 
     def test_code_of_conduct_template(self) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.I.code_of_conduct_template()
-        assert len(result) > 0
+        code_of_conduct = CodeOfConductConfigFile.I.code_of_conduct_template()
+        assert isinstance(code_of_conduct, str)
+        assert "[INSERT CONTACT METHOD]" in code_of_conduct
+        assert len(code_of_conduct) > 0

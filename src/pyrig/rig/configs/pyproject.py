@@ -7,7 +7,6 @@ runtime and development dependencies, build system configuration, and tool setti
 
 import platform
 from collections.abc import Iterable
-from functools import cache
 from pathlib import Path
 from typing import Any, Literal
 
@@ -16,11 +15,9 @@ from packaging.version import Version
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_package_name,
 )
-from pyrig_runtime.core.wrappers import safe_call
 from pyrig_runtime.rig.cli import main
 
 from pyrig.core.introspection.modules import leaf_module_name
-from pyrig.core.network import get_json
 from pyrig.core.resources import (
     resource_content,
 )
@@ -211,8 +208,9 @@ class PyprojectConfigFile(TOMLConfigFile):
             FileNotFoundError: If the LICENSE file does not exist.
             LookupError: If no license can be identified in the LICENSE file.
         """
-        content = LicenseConfigFile.I.read_content()
-        return self.detect_project_licence_from_content(content)
+        return self.detect_project_licence_from_content(
+            LicenseConfigFile.I.read_content()
+        )
 
     def detect_project_licence_from_content(self, content: str) -> str:
         """Detect the SPDX license identifier from a string of text.
@@ -398,38 +396,19 @@ class PyprojectConfigFile(TOMLConfigFile):
     ) -> Version:
         """Return the latest known stable Python version.
 
-        Attempts to fetch the current version from the remote source; falls back
-        to the bundled resource if the network is unavailable.
-
         Args:
             level: Precision of the returned version. Defaults to ``"minor"``
-                (e.g., ``Version("3.13")``).
+                (e.g., ``Version("3.14")``).
 
         Returns:
             Latest stable Python version at the requested precision level.
         """
-        latest_version = safe_call(
-            self.remote_latest_python_version,
-            default=self.local_latest_python_version(),
-        )
-        return adjust_version_to_level(Version(latest_version), level)
+        return adjust_version_to_level(Version(self.latest_python_version_str()), level)
 
-    @classmethod
-    @cache
-    def remote_latest_python_version(cls) -> str:
-        """Fetch the latest stable Python version string from the endoflife.date API.
+    def latest_python_version_str(self) -> str:
+        """Return the latest known stable Python version as a string.
 
         Returns:
-            Latest stable Python version string (e.g., ``"3.13.5"``).
-        """
-        return get_json(
-            "https://endoflife.date/api/python.json",
-        )[0]["latest"]
-
-    def local_latest_python_version(self) -> str:
-        """Return the latest stable Python version string from the bundled resource.
-
-        Returns:
-            Latest stable Python version string (e.g., ``"3.13.5"``).
+            Latest stable Python version as a string (e.g., ``"3.14.4"``).
         """
         return resource_content("LATEST_PYTHON_VERSION", resources)

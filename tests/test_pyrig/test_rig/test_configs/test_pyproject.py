@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pyrig_runtime
 import pytest
+import requests
 from packaging.version import Version
 from pyrig_runtime.core.strings import dependency_requirement_as_package_name
 from pytest_mock import MockerFixture
@@ -40,19 +41,17 @@ class TestPyprojectConfigFile:
         """Test method."""
         if not on_linux_and_latest_python_version_or_not_in_ci:
             return
-        assert isinstance(PyprojectConfigFile.I.remote_latest_python_version(), str)
-        assert len(PyprojectConfigFile.I.remote_latest_python_version()) > 0
-        assert "." in PyprojectConfigFile.I.remote_latest_python_version()
-        assert (
-            PyprojectConfigFile.I.local_latest_python_version()
-            == PyprojectConfigFile.I.remote_latest_python_version()
+        latest_version = requests.get(
+            "https://endoflife.date/api/python.json",
+            timeout=(3, 10),
+        ).json()[0]["latest"]
+        assert isinstance(latest_version, str)
+        assert len(latest_version) > 0
+        assert "." in latest_version
+        assert latest_version == PyprojectConfigFile.I.latest_python_version_str()
+        assert Version(latest_version) == PyprojectConfigFile.I.latest_python_version(
+            level="micro"
         )
-
-    def test_local_latest_python_version(self) -> None:
-        """Test method."""
-        assert isinstance(PyprojectConfigFile.I.local_latest_python_version(), str)
-        assert len(PyprojectConfigFile.I.local_latest_python_version()) > 0
-        assert "." in PyprojectConfigFile.I.local_latest_python_version()
 
     def test_additional_dependencies(self) -> None:
         """Test method."""
@@ -150,7 +149,6 @@ class TestPyprojectConfigFile:
             "packaging",
             pyrig_runtime.__name__,
             "pyyaml",
-            "requests",
             "spdx_matcher",
             "tomlkit",
             "typer",
@@ -279,3 +277,13 @@ class TestPyprojectConfigFile:
         latest_version = PyprojectConfigFile().latest_python_version()
         assert isinstance(latest_version, Version)
         assert latest_version > Version("3.13")
+
+    def test_latest_python_version_str(self) -> None:
+        """Test method."""
+        latest_version_str = PyprojectConfigFile.I.latest_python_version_str()
+        assert isinstance(latest_version_str, str)
+        assert len(latest_version_str) > 0
+        assert "." in latest_version_str
+        assert Version(
+            latest_version_str
+        ) == PyprojectConfigFile.I.latest_python_version(level="micro")

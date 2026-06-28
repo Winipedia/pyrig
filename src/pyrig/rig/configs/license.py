@@ -1,12 +1,8 @@
 """LICENSE file configuration for generated projects."""
 
 from datetime import UTC, datetime
-from functools import cache
 from pathlib import Path
 
-from pyrig_runtime.core.wrappers import safe_call
-
-from pyrig.core.network import get_json
 from pyrig.core.resources import (
     resource_content,
 )
@@ -88,34 +84,8 @@ class LicenseConfigFile(StringConfigFile):
     def license_template(self) -> str:
         """Return the raw MIT license template text.
 
-        Attempts to fetch the latest version from the remote source; falls back
-        to the bundled resource if the network is unavailable.
-
         Returns:
             Raw MIT license template text.
-        """
-        return safe_call(
-            self.remote_license_template,
-            default=self.local_license_template(),
-        )
-
-    @classmethod
-    @cache
-    def remote_license_template(cls) -> str:
-        """Fetch the MIT license template from the GitHub Licenses API.
-
-        Returns:
-            Raw MIT license text with ``[year]`` and ``[fullname]`` placeholders intact.
-        """
-        return get_json(
-            "https://api.github.com/licenses/mit",
-        )["body"]
-
-    def local_license_template(self) -> str:
-        """Return the MIT license template from the bundled resource.
-
-        Returns:
-            Raw MIT license text with ``[year]`` and ``[fullname]`` placeholders intact.
         """
         return resource_content("MIT_LICENSE", resources)
 

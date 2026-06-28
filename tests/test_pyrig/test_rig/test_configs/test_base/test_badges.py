@@ -9,6 +9,7 @@ from pyrig.rig.configs.base.badges import BadgesConfigFile
 from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.configs.readme import ReadmeConfigFile
+from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
@@ -70,16 +71,16 @@ class TestBadgesConfigFile:
     def test_replace_badges(self, mocker: MockerFixture) -> None:
         """Test method."""
         # we take pyrigs actual content and change the some urls
-        content = ReadmeConfigFile().read_content()
+        content = ReadmeConfigFile().path().read_text(encoding="utf-8")
+        correct_link = Pyrigger.I.link_url()
         # we replace the actual badge urls with some dummy ones
-        false_https = "https-false://"
-        correct_https = "https://"
-        false_content = content.replace(correct_https, false_https)
-        assert correct_https not in false_content
-        assert false_https in false_content
+        false_link = "https-false://www.example.com"
+        false_content = content.replace(correct_link, false_link)
+        assert correct_link not in false_content
+        assert false_link in false_content
         corrected_content = ReadmeConfigFile().replace_badges(false_content)
-        assert correct_https in corrected_content
-        assert false_https not in corrected_content
+        assert correct_link in corrected_content
+        assert false_link not in corrected_content
 
         assert corrected_content == content
 
@@ -91,12 +92,13 @@ class TestBadgesConfigFile:
 
     def test_replace_description(self) -> None:
         """Test that replace_description replaces a stale description."""
-        expected_description = PyprojectConfigFile().project_description()
-        old_description = "Old stale project description"
-        content = f"# Project\n\n---\n\n> {old_description}\n\n---\n"
+        PyprojectConfigFile().load.cache_clear()
+        correct_description = PyprojectConfigFile().project_description()
+        false_description = "Old stale project description"
+        content = f"# Project\n\n---\n\n> {false_description}\n\n---\n"
         result = ReadmeConfigFile().replace_description(content)
-        assert f"> {expected_description}" in result
-        assert old_description not in result
+        assert f"> {correct_description}" in result
+        assert false_description not in result
 
     def test_lines(self) -> None:
         """Test method."""

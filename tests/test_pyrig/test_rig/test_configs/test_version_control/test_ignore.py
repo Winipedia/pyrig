@@ -5,6 +5,7 @@ from contextlib import chdir
 from pathlib import Path
 
 import pytest
+import requests
 
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.version_control.ignore import (
@@ -29,31 +30,25 @@ def my_test_gitignore_config_file(
 class TestVersionControllerIgnoreConfigFile:
     """Test class."""
 
-    def test_standard_ignore_text(
+    def test_remote_standard_ignore_text(
         self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
     ) -> None:
         """Test method."""
         if not on_linux_and_latest_python_version_or_not_in_ci:
             return
-        result = VersionControllerIgnoreConfigFile.I.standard_ignore_text()
-        assert "__pycache__/" in result
-        assert ".env" in result
-        assert (
-            VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
-            == VersionControllerIgnoreConfigFile.I.remote_standard_ignore_text()
-        )
+        text = requests.get(
+            "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore",
+            timeout=(3, 10),
+        ).text
+        assert "__pycache__/" in text
+        assert ".env" in text
+        assert VersionControllerIgnoreConfigFile.I.standard_ignore_text() == text
 
-    def test_remote_standard_ignore_text(self) -> None:
+    def test_standard_ignore_text(self) -> None:
         """Test method."""
-        result = VersionControllerIgnoreConfigFile.I.remote_standard_ignore_text()
-        assert "__pycache__/" in result
-        assert ".env" in result
-
-    def test_local_standard_ignore_text(self) -> None:
-        """Test method."""
-        result = VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
-        assert "__pycache__/" in result
-        assert ".env" in result
+        text = VersionControllerIgnoreConfigFile.I.standard_ignore_text()
+        assert "__pycache__/" in text
+        assert ".env" in text
 
     def test_additional_ignore_lines(self) -> None:
         """Test method."""
