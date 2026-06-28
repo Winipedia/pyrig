@@ -41,15 +41,19 @@ class TestVersionControllerIgnoreConfigFile:
         assert "__pycache__/" in result
         assert ".env" in result
 
-    def test_local_standard_ignore_text(self) -> None:
+    def test_local_standard_ignore_text(
+        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+    ) -> None:
         """Test method."""
         result = VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
         assert "__pycache__/" in result
         assert ".env" in result
-        assert (
-            VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
-            == VersionControllerIgnoreConfigFile.I.remote_standard_ignore_text()
-        )
+
+        if on_linux_and_latest_python_version_or_not_in_ci:
+            assert (
+                VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
+                == VersionControllerIgnoreConfigFile.I.remote_standard_ignore_text()
+            )
 
     def test_additional_ignore_lines(self) -> None:
         """Test method."""

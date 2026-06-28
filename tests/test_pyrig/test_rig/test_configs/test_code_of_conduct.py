@@ -18,16 +18,19 @@ class TestCodeOfConductConfigFile:
         assert "[INSERT CONTACT METHOD]" in result
         assert len(result) > 0
 
-    def test_local_code_of_conduct_template(self) -> None:
+    def test_local_code_of_conduct_template(
+        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+    ) -> None:
         """Test method."""
         result = CodeOfConductConfigFile.I.local_code_of_conduct_template()
         assert isinstance(result, str)
         assert len(result) > 0
         assert "[INSERT CONTACT METHOD]" in result
-        assert (
-            CodeOfConductConfigFile.I.local_code_of_conduct_template()
-            == CodeOfConductConfigFile.I.remote_code_of_conduct_template()
-        )
+        if on_linux_and_latest_python_version_or_not_in_ci:
+            assert (
+                CodeOfConductConfigFile.I.local_code_of_conduct_template()
+                == CodeOfConductConfigFile.I.remote_code_of_conduct_template()
+            )
 
     def test_is_correct(self) -> None:
         """Test method."""
