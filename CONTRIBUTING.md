@@ -15,7 +15,7 @@ Use issues for:
 ## Pull Requests
 
 1. Clone the repository
-2. Create a branch (`git checkout -b your-feature`)
+2. Create a branch (`git switch -c your-feature`)
 3. Make your changes
 4. Commit your changes with clear messages
 5. Push your branch and open a pull request
