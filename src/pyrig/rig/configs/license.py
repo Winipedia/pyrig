@@ -92,7 +92,7 @@ class LicenseConfigFile(StringConfigFile):
         to the bundled resource if the network is unavailable.
 
         Returns:
-            Raw MIT license text with ``[year]`` and ``[fullname]`` placeholders intact.
+            Raw MIT license template text.
         """
         return safe_call(
             self.remote_license_template,

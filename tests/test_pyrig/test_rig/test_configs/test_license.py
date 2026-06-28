@@ -15,16 +15,19 @@ class TestLicenseConfigFile:
         assert "[year]" in result
         assert "[fullname]" in result
 
-    def test_local_license_template(self) -> None:
+    def test_local_license_template(
+        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+    ) -> None:
         """Test method."""
         result = LicenseConfigFile.I.local_license_template()
         assert "MIT License" in result
         assert "[year]" in result
         assert "[fullname]" in result
-        assert (
-            LicenseConfigFile.I.local_license_template()
-            == LicenseConfigFile.I.remote_license_template()
-        )
+        if on_linux_and_latest_python_version_or_not_in_ci:
+            assert (
+                LicenseConfigFile.I.local_license_template()
+                == LicenseConfigFile.I.remote_license_template()
+            )
 
     def test_extension_separator(self) -> None:
         """Test method."""
