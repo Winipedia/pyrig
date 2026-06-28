@@ -5,6 +5,8 @@ from collections.abc import Callable, Iterable, Iterator
 from itertools import chain
 from typing import Any, cast
 
+from pyrig_runtime.core.constants import MISSING
+
 logger = logging.getLogger(__name__)
 
 
@@ -40,9 +42,8 @@ def iterator_has_items[T](
         >>> list(empty_gen)
         []
     """
-    sentinel = object()
-    first = next(iterable, sentinel)
-    if first is sentinel:
+    first = next(iterable, MISSING)
+    if first is MISSING:
         return False, iter(())
     first = cast("T", first)
     return True, chain((first,), iterable)

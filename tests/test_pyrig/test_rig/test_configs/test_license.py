@@ -8,6 +8,24 @@ from pyrig.rig.configs.license import LicenseConfigFile
 class TestLicenseConfigFile:
     """Test class."""
 
+    def test_remote_license_template(self) -> None:
+        """Test method."""
+        result = LicenseConfigFile.I.remote_license_template()
+        assert "MIT License" in result
+        assert "[year]" in result
+        assert "[fullname]" in result
+
+    def test_local_license_template(self) -> None:
+        """Test method."""
+        result = LicenseConfigFile.I.local_license_template()
+        assert "MIT License" in result
+        assert "[year]" in result
+        assert "[fullname]" in result
+        assert (
+            LicenseConfigFile.I.local_license_template()
+            == LicenseConfigFile.I.remote_license_template()
+        )
+
     def test_extension_separator(self) -> None:
         """Test method."""
         assert LicenseConfigFile.I.extension_separator() == ""
@@ -29,14 +47,14 @@ class TestLicenseConfigFile:
         """Test method."""
         assert LicenseConfigFile.I.is_correct()
 
-    def test_mit_license(self) -> None:
+    def test_license_template(self) -> None:
         """Test method."""
-        mit_license = LicenseConfigFile.I.mit_license()
+        mit_license = LicenseConfigFile.I.license_template()
         assert "MIT License" in mit_license
 
-    def test_mit_license_with_year_and_owner(self) -> None:
+    def test_license(self) -> None:
         """Test method."""
-        mit_license = LicenseConfigFile.I.mit_license_with_year_and_owner()
+        mit_license = LicenseConfigFile.I.license()
         assert "MIT License" in mit_license
         assert "Winipedia" in mit_license
 

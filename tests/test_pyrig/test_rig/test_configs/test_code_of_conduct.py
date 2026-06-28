@@ -11,20 +11,36 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class TestCodeOfConductConfigFile:
     """Test class."""
 
+    def test_remote_code_of_conduct_template(self) -> None:
+        """Test method."""
+        result = CodeOfConductConfigFile.I.remote_code_of_conduct_template()
+        assert isinstance(result, str)
+        assert "[INSERT CONTACT METHOD]" in result
+        assert len(result) > 0
+
+    def test_local_code_of_conduct_template(self) -> None:
+        """Test method."""
+        result = CodeOfConductConfigFile.I.local_code_of_conduct_template()
+        assert isinstance(result, str)
+        assert len(result) > 0
+        assert "[INSERT CONTACT METHOD]" in result
+        assert (
+            CodeOfConductConfigFile.I.local_code_of_conduct_template()
+            == CodeOfConductConfigFile.I.remote_code_of_conduct_template()
+        )
+
     def test_is_correct(self) -> None:
         """Test method."""
         assert CodeOfConductConfigFile.I.is_correct()
 
-    def test_contributor_covenant_with_contact_method(
-        self, mocker: MockerFixture
-    ) -> None:
+    def test_code_of_conduct(self, mocker: MockerFixture) -> None:
         """Test method."""
         email_mock = mocker.patch.object(
             VersionController,
             VersionController.email.__name__,
             return_value="some.email@here.com",
         )
-        content = CodeOfConductConfigFile.I.contributor_covenant_with_contact_method()
+        content = CodeOfConductConfigFile.I.code_of_conduct()
         email_mock.assert_called_once()
         assert "some.email@here.com" in content
 
@@ -61,7 +77,7 @@ class TestCodeOfConductConfigFile:
         assert len(lines) > 1
         assert "<some.email@here.com>." in lines
 
-    def test_contributor_covenant(self) -> None:
+    def test_code_of_conduct_template(self) -> None:
         """Test method."""
-        result = CodeOfConductConfigFile.I.contributor_covenant()
+        result = CodeOfConductConfigFile.I.code_of_conduct_template()
         assert len(result) > 0

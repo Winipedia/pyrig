@@ -1,7 +1,11 @@
 """Configuration management for .gitignore files."""
 
+from functools import cache
 from pathlib import Path
 
+from pyrig_runtime.core.wrappers import safe_call
+
+from pyrig.core.network import get_text
 from pyrig.core.resources import resource_content
 from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -70,16 +74,16 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         return [*standard, *additional, ""]
 
     def standard_ignore_lines(self) -> list[str]:
-        """Return the bundled Python gitignore baseline as a list of lines.
+        """Return the Python gitignore baseline as a list of lines.
 
-        Reads the ``GITIGNORE`` resource file packaged with
-        ``pyrig.rig.resources`` — a snapshot of GitHub's ``Python.gitignore``
-        template — and splits it into individual lines.
+        The baseline is sourced from GitHub's canonical `Python.gitignore`
+        template, covering common Python build artifacts, caches, and
+        environment files.
 
         Returns:
-            Lines from the bundled Python gitignore baseline.
+            Lines from the Python gitignore baseline.
         """
-        return self.split_lines(resource_content("GITIGNORE", resources))
+        return self.split_lines(self.standard_ignore_text())
 
     def additional_ignore_lines(self) -> list[str]:
         """Additional lines to be ignored.
@@ -100,3 +104,37 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             *Tool.subclasses_version_control_ignore_paths(),
             *config_file_paths,
         ]
+
+    def standard_ignore_text(self) -> str:
+        """Return the standard Python gitignore template as a single string.
+
+        Attempts to fetch the latest version from the remote source; falls back
+        to the bundled resource if the network is unavailable.
+
+        Returns:
+            Full Python gitignore template text.
+        """
+        return safe_call(
+            self.remote_standard_ignore_text,
+            default=self.local_standard_ignore_text(),
+        )
+
+    @classmethod
+    @cache
+    def remote_standard_ignore_text(cls) -> str:
+        """Fetch the Python gitignore template from the canonical remote source.
+
+        Returns:
+            Full Python gitignore template text.
+        """
+        return get_text(
+            "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore",
+        )
+
+    def local_standard_ignore_text(self) -> str:
+        """Return the Python gitignore template from the bundled resource.
+
+        Returns:
+            Full Python gitignore template text.
+        """
+        return resource_content("GITIGNORE", resources)
