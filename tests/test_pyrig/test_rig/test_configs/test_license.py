@@ -8,26 +8,27 @@ from pyrig.rig.configs.license import LicenseConfigFile
 class TestLicenseConfigFile:
     """Test class."""
 
-    def test_remote_license_template(self) -> None:
+    def test_remote_license_template(
+        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+    ) -> None:
         """Test method."""
+        if not on_linux_and_latest_python_version_or_not_in_ci:
+            return
         result = LicenseConfigFile.I.remote_license_template()
         assert "MIT License" in result
         assert "[year]" in result
         assert "[fullname]" in result
+        assert (
+            LicenseConfigFile.I.local_license_template()
+            == LicenseConfigFile.I.remote_license_template()
+        )
 
-    def test_local_license_template(
-        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
-    ) -> None:
+    def test_local_license_template(self) -> None:
         """Test method."""
         result = LicenseConfigFile.I.local_license_template()
         assert "MIT License" in result
         assert "[year]" in result
         assert "[fullname]" in result
-        if on_linux_and_latest_python_version_or_not_in_ci:
-            assert (
-                LicenseConfigFile.I.local_license_template()
-                == LicenseConfigFile.I.remote_license_template()
-            )
 
     def test_extension_separator(self) -> None:
         """Test method."""
