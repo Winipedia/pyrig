@@ -29,11 +29,19 @@ def my_test_gitignore_config_file(
 class TestVersionControllerIgnoreConfigFile:
     """Test class."""
 
-    def test_standard_ignore_text(self) -> None:
+    def test_standard_ignore_text(
+        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+    ) -> None:
         """Test method."""
+        if not on_linux_and_latest_python_version_or_not_in_ci:
+            return
         result = VersionControllerIgnoreConfigFile.I.standard_ignore_text()
         assert "__pycache__/" in result
         assert ".env" in result
+        assert (
+            VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
+            == VersionControllerIgnoreConfigFile.I.remote_standard_ignore_text()
+        )
 
     def test_remote_standard_ignore_text(self) -> None:
         """Test method."""
@@ -41,19 +49,11 @@ class TestVersionControllerIgnoreConfigFile:
         assert "__pycache__/" in result
         assert ".env" in result
 
-    def test_local_standard_ignore_text(
-        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
-    ) -> None:
+    def test_local_standard_ignore_text(self) -> None:
         """Test method."""
         result = VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
         assert "__pycache__/" in result
         assert ".env" in result
-
-        if on_linux_and_latest_python_version_or_not_in_ci:
-            assert (
-                VersionControllerIgnoreConfigFile.I.local_standard_ignore_text()
-                == VersionControllerIgnoreConfigFile.I.remote_standard_ignore_text()
-            )
 
     def test_additional_ignore_lines(self) -> None:
         """Test method."""

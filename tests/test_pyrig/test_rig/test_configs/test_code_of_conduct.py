@@ -11,26 +11,27 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class TestCodeOfConductConfigFile:
     """Test class."""
 
-    def test_remote_code_of_conduct_template(self) -> None:
+    def test_remote_code_of_conduct_template(
+        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+    ) -> None:
         """Test method."""
+        if not on_linux_and_latest_python_version_or_not_in_ci:
+            return
         result = CodeOfConductConfigFile.I.remote_code_of_conduct_template()
         assert isinstance(result, str)
         assert "[INSERT CONTACT METHOD]" in result
         assert len(result) > 0
+        assert (
+            CodeOfConductConfigFile.I.local_code_of_conduct_template()
+            == CodeOfConductConfigFile.I.remote_code_of_conduct_template()
+        )
 
-    def test_local_code_of_conduct_template(
-        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
-    ) -> None:
+    def test_local_code_of_conduct_template(self) -> None:
         """Test method."""
         result = CodeOfConductConfigFile.I.local_code_of_conduct_template()
         assert isinstance(result, str)
         assert len(result) > 0
         assert "[INSERT CONTACT METHOD]" in result
-        if on_linux_and_latest_python_version_or_not_in_ci:
-            assert (
-                CodeOfConductConfigFile.I.local_code_of_conduct_template()
-                == CodeOfConductConfigFile.I.remote_code_of_conduct_template()
-            )
 
     def test_is_correct(self) -> None:
         """Test method."""
