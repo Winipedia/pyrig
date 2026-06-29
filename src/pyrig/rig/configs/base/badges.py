@@ -1,8 +1,4 @@
-"""Badge-augmented Markdown configuration base class.
-
-Extends Markdown file management with auto-generated project badges assembled
-from pyproject.toml, CI/CD workflow metadata, and registered tool definitions.
-"""
+"""Badge-augmented Markdown configuration base class."""
 
 import re
 from typing import Any
@@ -24,36 +20,24 @@ from pyrig.rig.tools.version_control.remote import (
 
 
 class BadgesConfigFile(MarkdownConfigFile):
-    """Base class for Markdown files with auto-generated project badges.
+    """Base class for Markdown configuration files with auto-generated project badges.
 
-    Generates a Markdown header section consisting of the project name, grouped
-    badge rows (tooling, code quality, CI/CD, documentation, etc.), and a
-    project description blockquote read from pyproject.toml.
-
-    The ``merge_configs`` override handles stale files intelligently: when the
-    file already exists but has an outdated description or badge URLs, it updates
-    only those parts in-place before falling back to the standard prepend merge.
-
-    Subclasses must implement:
-        - ``parent_path``: Directory that will contain the Markdown file
-        - ``stem``: Filename without its extension
+    Generated files include a project name header, badges grouped by category,
+    and a project description sourced from pyproject.toml. When updating an
+    existing file, stale badges and descriptions are replaced in-place where
+    possible, preserving any user additions.
     """
 
     def merge_configs(self) -> list[Any]:
-        """Merge file content, updating stale badges and description in-place.
+        """Return merged file content with current badge URLs and project description.
 
-        Overrides the standard merge to attempt a targeted in-place update before
-        resorting to a full prepend. The existing file content is first patched
-        using ``replace_description`` and ``replace_badges``. If all required lines
-        are present after patching, the patched content is returned directly,
-        preserving any user additions. If the patched content is still missing
-        required lines, the standard merge runs, prepending all expected lines
-        before the existing content.
+        Prefers an in-place update of the existing content to preserve any user
+        additions. Falls back to prepending all required content before the
+        existing file content when the in-place update is insufficient.
 
         Returns:
-            Merged list of lines with description and badge URLs updated in-place,
-            or the full expected content prepended to existing content if an
-            in-place update was insufficient.
+            Merged lines with current badge URLs and project description. User
+            additions are preserved when the in-place update is sufficient.
         """
         updated_content = self.replace_description(self.read_content())
         updated_content = self.replace_badges(updated_content)
@@ -63,15 +47,13 @@ class BadgesConfigFile(MarkdownConfigFile):
         return super().merge_configs()
 
     def lines(self) -> list[str]:
-        """Generate the initial Markdown content with badges and description.
+        """Return the project header: title, grouped badge rows, and description.
 
-        Produces an H1 header with the project name, followed by badge rows grouped
-        under HTML comment category labels, then the project description as a
-        blockquote.
+        Badge rows are grouped under HTML comment category labels; the project
+        description is formatted as a blockquote.
 
         Returns:
-            List of Markdown lines: H1 header, grouped badge rows, and a
-            description blockquote.
+            Markdown lines forming the project header section.
         """
         project_name = PackageManager.I.project_name()
         badges = self.badges()
@@ -96,17 +78,16 @@ class BadgesConfigFile(MarkdownConfigFile):
     def replace_description(self, content: str) -> str:
         """Replace the description block with the current one from pyproject.toml.
 
-        Locates the first description block (text between the first two
-        ``---`` dividers) and replaces its content with the current project
-        description. Only the first occurrence is replaced, since the description
-        is always at the top of the file.
+        Locates the first description block (text between the first two `---`
+        dividers) and replaces its content with the current project description.
+        Only the first occurrence is replaced.
 
         Args:
             content: Full Markdown file content to update.
 
         Returns:
             Updated content with the current description in place of the old one.
-            If no ``---`` divider pattern is found, the content is returned unchanged.
+            If no `---` divider pattern is found, the content is returned unchanged.
         """
         pattern = r"---\s*\n(.*?)\n---"
         replacement = f"---\n\n> {PyprojectConfigFile.I.project_description()}\n\n---"
@@ -116,11 +97,8 @@ class BadgesConfigFile(MarkdownConfigFile):
     def replace_badges(self, content: str) -> str:
         """Replace stale badge URLs in the badge section with current ones.
 
-        For each expected badge, the alt text acts as a stable identifier to
-        locate the matching badge line in the existing content. If a match is
-        found, the old line is replaced with the current badge, including any
-        updated URLs. Only the content before the first ``---`` divider is
-        treated as the badge section.
+        Badge lines are only matched in the content preceding the description
+        blockquote; the description and everything after it are left unchanged.
 
         Args:
             content: Full Markdown file content to update.
@@ -148,17 +126,15 @@ class BadgesConfigFile(MarkdownConfigFile):
         return content.replace(old_badges_content, badges_content, 1)
 
     def badges(self) -> dict[str, list[str]]:
-        """Collect all project badges grouped by category.
+        """Return all project badges grouped by category.
 
-        Builds on ``Tool.grouped_badges()``, which gathers badges from all
-        registered ``Tool`` subclasses, then appends the license badge to the
-        project-info group and CI/CD workflow status badges (health check and
-        deploy) to the ci/cd group.
+        The result includes badges for each registered tool, a license badge in
+        the `"project-info"` group, and CI/CD workflow status badges for the
+        health check and deploy workflows in the `"ci/cd"` group.
 
         Returns:
-            Dict mapping category names (e.g., ``"tooling"``, ``"testing"``,
-            ``"code-quality"``, ``"project-info"``, ``"ci/cd"``) to lists of badge
-            Markdown strings.
+            Category name to list of badge Markdown strings, with keys `"ci/cd"`,
+            `"testing"`, `"code-quality"`, `"tooling"`, and `"project-info"`.
         """
         badge_groups = Tool.grouped_badges()
 

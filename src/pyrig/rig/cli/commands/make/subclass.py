@@ -14,12 +14,11 @@ from pyrig.rig.configs.base.copy_module_docstring import (
 
 
 def make_subclass() -> None:
-    """Interactively scaffold a subclass module for a selected pyrig class.
+    """Interactively scaffold a subclass module in the current project.
 
-    Prompts the user to pick a class from all discovered ``DependencySubclass``
-    subclasses, then creates (or validates) the corresponding module file in the
-    current project. The file is populated with the source module's docstring and
-    a ready-to-use subclass skeleton that imports and extends the chosen class.
+    Prompts the user to select a class, then writes a module file containing
+    the selected class's source module docstring and a subclass skeleton that
+    imports and extends the chosen class.
     """
     subclass = choose_subclass()
 
@@ -42,13 +41,7 @@ class {class_name}(Base{class_name}):
 
 
 def choose_subclass() -> type[DependencySubclass]:
-    """Present an interactive fuzzy prompt and return the chosen class.
-
-    Discovers all leaf ``DependencySubclass`` subclasses, formats them for display (
-        concrete classes use the string representation of an instance,
-        abstract classes use their module and class name
-    ), sorts them alphabetically by import path, and delegates selection to an
-    InquirerPy fuzzy prompt.
+    """Present an interactive fuzzy prompt with all available leaf subclasses.
 
     Returns:
         The class chosen by the user.

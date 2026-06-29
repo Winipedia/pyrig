@@ -22,7 +22,6 @@ from pyrig.core.introspection.classes import (
 )
 from pyrig.core.introspection.inspection import (
     def_line_sorted,
-    obj_qualname,
 )
 from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
@@ -251,7 +250,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         test_funcs = module_functions(self.module())
 
         supposed_test_func_names = (self.test_func_name(f) for f in funcs)
-        actual_test_func_names = {obj_qualname(f) for f in test_funcs}
+        actual_test_func_names = {unwrap_obj(f).__name__ for f in test_funcs}
 
         return (f for f in supposed_test_func_names if f not in actual_test_func_names)
 

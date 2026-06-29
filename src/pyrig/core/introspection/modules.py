@@ -1,4 +1,4 @@
-"""Utilities for python modules."""
+"""Utilities for Python modules."""
 
 import sys
 from importlib.machinery import SourceFileLoader
@@ -21,8 +21,7 @@ def module_content(module: ModuleType) -> str:
     """Read the source code of a module as a string.
 
     Args:
-        module: Module to read. Must have a `__file__` attribute pointing
-            to a readable `.py` file.
+        module: Module to read.
 
     Returns:
         Complete source of the module, decoded as UTF-8.
@@ -112,7 +111,7 @@ def import_module_from_file(
 
     Raises:
         ImportError: If the module spec cannot be created.
-        FileNotFoundError: If the file does not exist or cannot be read.
+        FileNotFoundError: If the file does not exist.
     """
     path = path.resolve()
     if is_package and path.name != "__init__.py":

@@ -19,7 +19,7 @@ def make_subcommand(name: str, *, shared: bool) -> None:
     Args:
         name: Name of the subcommand to create. Accepts kebab-case or snake_case.
         shared: If `True`, targets the shared subcommands module accessible to
-            all dependent projects. If `False`, targets the project-specific
+            all dependent packages. If `False`, targets the project-specific
             subcommands module.
     """
     # create the file if not existent yet

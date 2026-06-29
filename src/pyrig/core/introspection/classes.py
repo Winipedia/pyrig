@@ -16,16 +16,12 @@ def cls_methods(
 ) -> Iterator[Callable[..., Any]]:
     """Extract all methods and properties from a class, including inherited ones.
 
-    Covers instance methods, static methods, class methods, and properties
-    from the class itself and all ancestor classes. Results are yielded in
-    alphabetical order by name.
-
     Args:
         cls: Class to extract methods from.
 
     Yields:
         Instance methods, static methods, class methods, and properties,
-        in alphabetical name order.
+        in alphabetical order by name.
     """
     return (method for _name, method in obj_members(cls) if is_funclike(method))
 

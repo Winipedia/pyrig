@@ -1,4 +1,4 @@
-"""Base class for PEP 561 ``py.typed`` marker file management."""
+"""Abstract base for PEP 561 `py.typed` marker file management."""
 
 from typing import Any
 
@@ -6,54 +6,38 @@ from pyrig.rig.configs.base.config_file import DictConfigFile
 
 
 class TypedConfigFile(DictConfigFile):
-    """Abstract base class for ``py.typed`` PEP 561 marker files.
+    """Abstract base class for `py.typed` PEP 561 marker files.
 
-    A ``py.typed`` file signals to type checkers (mypy, pyright, ty, etc.)
+    A `py.typed` file signals to type checkers (mypy, pyright, ty, etc.)
     that the package ships inline type annotations and should be checked
     against its own type information. The file must always be empty; its
     mere presence carries all semantic meaning.
 
-    This base class enforces the empty-file contract: loading always returns
-    an empty dict, the expected config is always an empty dict, and dumping
-    a non-empty dict raises ``PermissionError`` to prevent accidental writes.
-
     Subclasses must implement:
-        - ``parent_path``: Directory where the ``py.typed`` file is placed.
-        - ``stem``: Filename stem (typically ``"py"`` to produce ``py.typed``).
+        - `parent_path`: Directory where the `py.typed` file is placed.
+        - `stem`: Filename stem (typically `"py"` to produce `py.typed`).
     """
 
     def extension(self) -> str:
-        """Return ``"typed"`` as the file extension.
-
-        Combined with the stem provided by the subclass, this produces the
-        canonical ``py.typed`` filename.
-        """
+        """Return `"typed"` as the file extension."""
         return "typed"
 
     def _configs(self) -> dict[str, Any]:
-        """Return an empty dict as the expected configuration.
-
-        A ``py.typed`` marker file has no configuration; its existence is
-        the only requirement.
-        """
+        """Return an empty dict as the expected configuration."""
         return {}
 
     def _load(self) -> dict[str, Any]:
-        """Return an empty dict, reflecting that the file has no content."""
+        """Return an empty dict."""
         return {}
 
     def _dump(self, configs: dict[str, Any]) -> None:
-        """Enforce the empty-file contract.
-
-        A no-op when ``configs`` is empty (the normal case). Raises
-        ``PermissionError`` when called with a non-empty dict, because
-        ``py.typed`` must never contain data.
+        """Raise `PermissionError` if `configs` is not empty.
 
         Args:
             configs: Configuration dict to validate. Must be empty.
 
         Raises:
-            PermissionError: If ``configs`` is not empty.
+            PermissionError: If `configs` is not empty.
         """
         if configs:
             msg = f"""Dumping to {self} is forbidden.

@@ -1,8 +1,4 @@
-"""Config base class for generating `__init__.py` files with copied module docstrings.
-
-Provides `InitConfigFile`, which writes a package's `__init__.py` containing
-the docstring copied from a source module declared by the subclass.
-"""
+"""Base configuration for `__init__.py` generation from a module's docstring."""
 
 from pathlib import Path
 
@@ -15,39 +11,25 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class InitConfigFile(CopyModuleDocstringConfigFile):
-    """Base class for generating ``__init__.py`` files with copied module docstrings.
+    """Base class for `__init__.py` config files containing a copied module docstring.
 
-    The filename is always ``__init__``. The parent directory is derived from the
-    source module's dotted name, with path transformation applied so that the file
-    lands inside the target project's package tree rather than pyrig's own tree.
+    The generated file is always named `__init__.py` and is placed inside the
+    package directory corresponding to the source module in the target project's tree.
 
     Subclasses must implement:
-        - ``copy_module``: Return the source module whose docstring will be written.
+        - `copy_module`: Return the source module whose docstring will be written.
     """
 
     def parent_path(self) -> Path:
-        """Return the directory that will contain the generated ``__init__.py``.
+        """Return the directory that will contain the generated `__init__.py`.
 
-        ``CopyModuleConfigFile.parent_path`` resolves a module's dotted name
-        to a filesystem path and returns its *parent directory* — the directory that
-        would hold a regular ``.py`` file of that name.  For an ``__init__.py`` the
-        file lives one level deeper: inside the package directory itself. This override
-        corrects for that by appending the package directory name to the path returned
-        by the parent implementation.
-
-        The directory name is determined as follows:
-
-        - If ``copy_module`` is the ``pyrig`` root package, the target project's
-          package name is used instead (obtained from
-          ``PackageManager.I.package_name()``).  This is necessary because ``pyrig``'s
-          leaf name (``"pyrig"``) is not the correct directory name for the generated
-          project.
-        - For every other module the last component of its dotted name is used
-          (e.g. ``"configs"`` for ``pyrig.rig.configs``).
+        The returned path is the package directory for `copy_module` within the
+        target project's source tree. When `copy_module` is the pyrig root package,
+        the directory is named after the target project's package rather than `pyrig`.
 
         Returns:
-            Absolute-or-relative path to the directory where ``__init__.py`` will be
-            written (e.g. ``src/myproject/rig/configs/`` for a configs package).
+            Path to the package directory where `__init__.py` will be written
+            (e.g., `src/myproject/rig/configs` for a configs package).
         """
         path = super().parent_path()
         # this path will be parent of the init file
@@ -60,9 +42,5 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
         return path / dir_name
 
     def stem(self) -> str:
-        """Return ``"__init__"`` as the filename stem for all ``__init__.py`` files.
-
-        Returns:
-            The string ``"__init__"``.
-        """
+        """Return `"__init__"` as the filename stem."""
         return "__init__"

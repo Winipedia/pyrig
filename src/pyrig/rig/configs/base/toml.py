@@ -1,7 +1,6 @@
 """TOML configuration file management using tomlkit.
 
-Provides a base class for declarative TOML configuration file management
-with formatting preservation, multiline arrays, and key-order retention.
+Supports round-trip preservation of comments, key order, and formatting.
 """
 
 from typing import Any
@@ -16,36 +15,24 @@ from pyrig.rig.configs.base.config_file import DictConfigFile
 class TOMLConfigFile(DictConfigFile):
     """Base class for TOML configuration files.
 
-    Implements TOML-specific file I/O using tomlkit, which preserves formatting,
-    key order, and comments on round-trip reads and writes. Lists of dicts are
-    rendered as TOML array-of-tables (``[[section]]`` syntax); all other lists are
-    rendered as multiline arrays for readability.
+    File I/O uses tomlkit, preserving formatting, key order, and comments on
+    round-trip reads and writes. Lists of dicts are rendered as TOML
+    array-of-tables (`[[section]]` syntax); all other lists are rendered as
+    multiline arrays.
 
-    The ``extension()``, ``_load()``, and ``_dump()`` methods are fully implemented
+    The `extension()`, `_load()`, and `_dump()` methods are fully implemented
     here. Subclasses must implement:
 
-        - ``parent_path()``: Directory that contains the TOML file.
-        - ``stem()``: File name without extension.
-        - ``_configs()``: Expected TOML configuration structure.
-
-    Example:
-        >>> class MyConfigFile(TOMLConfigFile):
-        ...
-        ...     def parent_path(self) -> Path:
-        ...         return Path()
-        ...
-        ...     def stem(self) -> str:
-        ...         return "myconfig"
-        ...
-        ...     def _configs(self) -> dict[str, Any]:
-        ...         return {"tool": {"myapp": {"version": "1.0.0"}}}
+        - `parent_path()`: Directory that contains the TOML file.
+        - `stem()`: File name without extension.
+        - `_configs()`: Minimum required configuration structure.
     """
 
     def _load(self) -> dict[str, Any]:
         """Read and parse the TOML file.
 
         Returns:
-            Parsed content as a ``tomlkit.TOMLDocument``, which behaves like a
+            Parsed content as a `tomlkit.TOMLDocument`, which behaves like a
             dict but retains formatting information for round-trip writes.
         """
         return tomlkit.parse(read_text_utf8(self.path()))
@@ -53,21 +40,17 @@ class TOMLConfigFile(DictConfigFile):
     def _dump(self, configs: dict[str, Any]) -> None:
         """Write configuration to the TOML file.
 
-        Delegates to ``pretty_dump()``, which converts the configs to tomlkit
-        types before writing.
-
         Args:
             configs: Configuration dict to write.
         """
         self.pretty_dump(configs)
 
     def pretty_dump(self, configs: dict[str, Any]) -> None:
-        """Convert and write configuration to the TOML file.
+        """Write configuration to the TOML file.
 
-        Converts the configs dict to tomlkit types via ``prettify_dict()``, then
-        writes the result to the file. Lists of dicts are rendered as TOML
-        array-of-tables (``[[section]]`` syntax); other lists are rendered as
-        multiline arrays. Key order is preserved.
+        Lists of dicts are rendered as TOML array-of-tables (`[[section]]`
+        syntax); all other lists are rendered as multiline arrays. Key order
+        is preserved.
 
         Args:
             configs: Configuration dict to write.
@@ -77,16 +60,14 @@ class TOMLConfigFile(DictConfigFile):
             tomlkit.dump(configs, f, sort_keys=False)
 
     def prettify_dict(self, configs: dict[str, Any]) -> Table:
-        """Convert a dict to a tomlkit ``Table`` with prettified values.
-
-        Iterates over every key-value pair and applies ``prettify_value()`` to each
-        value, building a tomlkit ``Table`` ready for serialization.
+        """Convert a configuration dict to a tomlkit `Table`.
 
         Args:
             configs: Configuration dict to convert.
 
         Returns:
-            A tomlkit ``Table`` containing all values formatted for TOML output.
+            A tomlkit `Table` with all values converted to their tomlkit
+            representations.
         """
         t = tomlkit.table()
         for k, v in configs.items():
@@ -98,24 +79,21 @@ class TOMLConfigFile(DictConfigFile):
 
         Handles four cases:
 
-        - **List of dicts**: Converted to a tomlkit array of tables using
-          ``[[section]]`` syntax. Each item is processed through
-          ``prettify_dict()``.
-        - **Other lists**: Converted to a tomlkit multiline array. Each element
-          is recursively prettified, so nested structures are fully converted.
-        - **Dicts**: Converted to a tomlkit ``Table`` via ``prettify_dict()``.
-        - **Scalars** (str, int, float, bool, etc.): Returned unchanged.
+        - **List of dicts**: converted to a tomlkit array of tables
+          (`[[section]]` syntax).
+        - **Other lists**: converted to a tomlkit multiline array with each
+          element recursively converted.
+        - **Dicts**: converted to a tomlkit `Table`.
+        - **Scalars** (str, int, float, bool, etc.): returned unchanged.
 
-        Note that ``prettify_value()`` and ``prettify_dict()`` are mutually
-        recursive: dicts inside lists will be fully converted, and lists inside
-        dicts will be recursively prettified.
+        All nesting is converted regardless of depth.
 
         Args:
             value: The Python value to convert.
 
         Returns:
-            The tomlkit-typed representation of ``value``, or the original value
-            unchanged if it is a scalar.
+            The tomlkit-typed representation of `value`, or `value` unchanged
+            if it is a scalar.
         """
         if isinstance(value, list):
             if value and all(isinstance(item, dict) for item in value):
@@ -135,6 +113,6 @@ class TOMLConfigFile(DictConfigFile):
         """Return the TOML file extension.
 
         Returns:
-            ``"toml"``
+            `"toml"`
         """
         return "toml"
