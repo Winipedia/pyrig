@@ -15,7 +15,6 @@ from pytest_mock import MockerFixture
 
 from pyrig.core.introspection import modules
 from pyrig.core.introspection.modules import (
-    callable_obj_import_path,
     import_module_from_file,
     import_module_with_file_fallback,
     leaf_module_name,
@@ -113,10 +112,3 @@ def test_reimport_module() -> None:
 def test_leaf_module_name() -> None:
     """Test function."""
     assert leaf_module_name(subcommands) == "subcommands"
-
-
-def test_callable_obj_import_path() -> None:
-    """Test function."""
-    assert (
-        callable_obj_import_path(subcommands.sync) == "pyrig.rig.cli.subcommands.sync"
-    )

@@ -1,12 +1,10 @@
 """Utilities for python modules."""
 
 import sys
-from collections.abc import Callable
 from importlib.machinery import SourceFileLoader
 from importlib.util import module_from_spec, spec_from_loader
 from pathlib import Path
 from types import ModuleType
-from typing import Any
 
 from pyrig_runtime.core.introspection.modules import safe_import_module
 
@@ -17,21 +15,6 @@ from pyrig.core.strings import read_text_utf8
 def leaf_module_name(module: ModuleType) -> str:
     """Return the last segment of a module's dotted name."""
     return module.__name__.split(".")[-1]
-
-
-def callable_obj_import_path(obj: Callable[..., Any]) -> str:
-    """Return the fully qualified import path of a callable.
-
-    The result includes any enclosing class, so for a method the path takes
-    the form `"package.module.ClassName.method"`.
-
-    Args:
-        obj: Callable (function, method, or class) to resolve.
-
-    Returns:
-        The dotted path identifying where the callable is defined.
-    """
-    return f"{obj.__module__}.{obj.__qualname__}"  # ty:ignore[unresolved-attribute]
 
 
 def module_content(module: ModuleType) -> str:
