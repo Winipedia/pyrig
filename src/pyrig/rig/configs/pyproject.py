@@ -13,7 +13,7 @@ from typing import Any, Literal
 import spdx_matcher
 from packaging.version import Version
 from pyrig_runtime.core.strings import (
-    dependency_requirement_as_package_name,
+    dependency_requirement_as_module_name,
 )
 from pyrig_runtime.rig.cli import main
 
@@ -280,13 +280,12 @@ class PyprojectConfigFile(TOMLConfigFile):
         """
         dependencies = set(dependencies)
         normalized_dependencies = {
-            dependency_requirement_as_package_name(dep) for dep in dependencies
+            dependency_requirement_as_module_name(dep) for dep in dependencies
         }
         additional = (
             dep
             for dep in additional
-            if dependency_requirement_as_package_name(dep)
-            not in normalized_dependencies
+            if dependency_requirement_as_module_name(dep) not in normalized_dependencies
         )
         # Due to caching in load(), mutating in place causes bugs.
         # Always return a new structure instead of modifying.
