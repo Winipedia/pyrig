@@ -229,9 +229,9 @@ projects, and after that you can simply use your package to start new projects
 by running:
 
 ```bash
-uv init my-new-project
+uv init my-new-project --python 3.12
 cd my-new-project
-uv add my-pyrig-package
+uv add my-pyrig-package --dev
 uv run my-pyrig-package init
 ```
 

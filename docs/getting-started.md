@@ -14,7 +14,7 @@ a new project directory, navigate into it, and run:
 ```bash
 uv init my-project --python 3.12
 cd my-project
-uv add pyrig
+uv add pyrig --dev
 uv run pyrig init
 ```
 
@@ -128,7 +128,7 @@ uv init
 
 ```bash
 # Add pyrig to project
-uv add pyrig
+uv add pyrig --dev
 ```
 
 ### 5. Add Any Plugins You Want (optional)
@@ -141,13 +141,13 @@ included in the initial scaffold:
 
 ```bash
 # Publish your package to PyPI from CI/CD
-uv add pyrig-pypi
+uv add pyrig-pypi --dev
 
 # Upload test coverage reports to Codecov
-uv add pyrig-codecov
+uv add pyrig-codecov --dev
 
 # Build standalone executables of your project
-uv add pyrig-executables
+uv add pyrig-executables --dev
 ```
 
 ### 6. Run pyrig init

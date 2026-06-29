@@ -54,7 +54,7 @@ configuration management, CLI generation, testing infrastructure, and more.
 ```bash
 uv init my-project --python 3.12
 cd my-project
-uv add pyrig
+uv add pyrig --dev
 uv run pyrig init
 ```
 
