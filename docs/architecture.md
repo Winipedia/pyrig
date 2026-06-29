@@ -232,7 +232,7 @@ by running:
 uv init my-new-project --python 3.12
 cd my-new-project
 uv add my-pyrig-package --dev
-uv run my-pyrig-package init
+uv run pyrig init
 ```
 
 All your customizations to pyrig will be in your package and you can keep
