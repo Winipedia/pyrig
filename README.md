@@ -52,7 +52,8 @@ configuration management, CLI generation, testing infrastructure, and more.
 ## Quick Start
 
 ```bash
-uv init
+uv init my-project --python 3.12
+cd my-project
 uv add pyrig
 uv run pyrig init
 ```
@@ -96,12 +97,6 @@ Generate test skeletons with `pyrig sync`.
 This will generate test skeletons for all source modules
 and update them automatically as your project evolves.
 
-### [Test Fixtures](https://Winipedia.github.io/pyrig/fixtures)
-
-pyrig enables automatic sharing and registration of pytest fixtures.
-Run `pyrig mk fixture <name>` to generate a new fixture that is
-automatically registered and available across all your tests.
-
 ### [Multi-Package Inheritance and Extensibility Architecture](https://Winipedia.github.io/pyrig/architecture)
 
 Override and customize any and all behaviour to suit your project's needs.
@@ -113,11 +108,10 @@ Run `pyrig mk subcls` to generate a subclass for any pyrig class.
 
 ### [CI/CD & Repository Protection](https://Winipedia.github.io/pyrig/ci-cd)
 
-Pyrig generates GitHub Actions workflows for CI/CD and automatically configures
-and applies repository protection settings and branch protection rules to ensure
-your repository is protected.
-Run `pyrig protect-repo` to apply or update repository protection settings or
-simply use the fully working CI/CD pipeline to apply them automatically.
+Pyrig generates GitHub Actions workflows for CI/CD which automatically configure
+and apply repository protection settings and branch protection rules when they run
+to ensure your repository is protected.
+Push your code to GitHub after initialization and see it in action.
 
 ## Commands
 
@@ -127,10 +121,8 @@ its usage.
 ```bash
 uv run pyrig init                    # Full project initialization
 uv run pyrig sync                    # Synchronize project
-uv run pyrig mk fixture <name>       # Generate a new pytest fixture
 uv run pyrig mk cmd <name>           # Create a new CLI subcommand stub
 uv run pyrig mk subcls               # Generate and override subclasses
-uv run pyrig protect-repo            # Configure repository protection
 uv run pyrig scratch                 # Execute the project's .scratch.py file
 uv run pyrig rmpyc                   # Remove __pycache__ directories
 uv run pyrig version                 # Show pyrig version
