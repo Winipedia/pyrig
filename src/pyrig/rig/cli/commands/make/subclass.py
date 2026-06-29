@@ -6,8 +6,8 @@ from itertools import chain
 from InquirerPy import inquirer
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
 from pyrig_runtime.core.introspection.classes import discard_abstract_classes
+from pyrig_runtime.core.strings import fully_qualified_name
 
-from pyrig.core.introspection.modules import callable_obj_import_path
 from pyrig.rig.configs.base.copy_module_docstring import (
     CopyModuleDocstringConfigFile,
 )
@@ -68,7 +68,7 @@ def choose_subclass() -> type[DependencySubclass]:
 
     abstract_choices = (
         {
-            "name": f"{cls.__module__}.{cls.__name__}",
+            "name": fully_qualified_name(cls),
             "value": cls,
         }
         for cls in abstract_subclass_choices
@@ -76,7 +76,7 @@ def choose_subclass() -> type[DependencySubclass]:
 
     choices = sorted(
         chain(concrete_choices, abstract_choices),
-        key=lambda c: callable_obj_import_path(c["value"]),
+        key=lambda c: c["name"],
     )
 
     return inquirer.fuzzy(
