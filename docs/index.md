@@ -48,8 +48,8 @@ We are keeping the manual documentation restricted to the essentials,
 if you want to know more about how pyrig works under the hood or you have
 more specific questions about how to use it than we explain here, check out the
 [CodeWiki](https://codewiki.google/github.com/winipedia/pyrig) for AI-generated
-documentation about pyrig's codebase, where you can also ask questions and get code
-explanations from the AI.
+documentation about pyrig's codebase, where you can also ask questions and get
+more detailed explanations from the AI.
 
 ## Architecture Overview
 

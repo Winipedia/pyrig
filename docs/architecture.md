@@ -12,7 +12,7 @@ src/pyrig/
     ├── cli/            # Entry point + subcommand registration
     ├── configs/        # Declarative config file generators
     ├── tools/          # CLI tool wrappers (git, uv, pytest, ruff …)
-    ├── tests/          # Mirror test framework + pytest fixtures
+    ├── tests/          # Mirror test framework
     ├── resources/      # Static resource files bundled with the package
     └── utils/          # Rig-layer helpers (paths, versions, GitHub API)
 ```
