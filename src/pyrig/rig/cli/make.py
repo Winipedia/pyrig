@@ -16,7 +16,7 @@ def cmd(
 ) -> None:
     """Scaffold a new CLI subcommand stub.
 
-    Appends a minimal no-op function stub named after `name` to the project's
+    Adds a no-op function stub named after `name` to the project's
     subcommand module, or the shared subcommand module when `shared` is `True`.
     The target module is created if it does not already exist. Kebab-case names
     are normalized to snake_case for the generated function name.
@@ -43,18 +43,9 @@ def cmd(
 def subcls() -> None:
     """Scaffold a subclass of any pyrig class interactively.
 
-    Launches a fuzzy-search prompt listing all ``DependencySubclass`` leaf
-    subclasses found in pyrig and its dependents — both concrete classes
-    (shown with their string representation) and abstract classes (shown by
-    qualified name), sorted alphabetically by import path.
-
-    After you select a class, pyrig creates the matching module file in your
-    project (or validates it if it already exists), copies the source
-    module's docstring into it, and appends a ready-to-edit subclass
-    skeleton that imports and extends the class you chose.
-
-    Example:
-        $ uv run pyrig mk subcls
+    Prompts the user to select a class, then appends a subclass skeleton to
+    the matching module file in the project, creating it first if it does not
+    exist. The skeleton imports and extends the chosen class.
     """
     from pyrig.rig.cli.commands.make.subclass import make_subclass  # noqa: PLC0415
 
@@ -63,17 +54,11 @@ def subcls() -> None:
 
 @app.command()
 def local() -> None:
-    """Create all version-control-ignored config files.
+    """Create or update all version-control-ignored config files.
 
-    Discovers every concrete config file subclass marked as version-control-ignored
-    and validates each one: the file (and any missing parent directories) is
-    created if absent, or updated to include any missing required configuration
-    if already present.
-
-    Examples:
-        ```
-        $ uv run pyrig mk local
-        ```
+    For each version-control-ignored config file, creates the file (and any
+    missing parent directories) if absent, or updates it to include any
+    missing required configuration if already present.
     """
     from pyrig.rig.cli.commands.make.local import make_local_files  # noqa: PLC0415
 

@@ -17,22 +17,9 @@ mk = make.app
 def init() -> None:
     """Initialize a new project from scratch.
 
-    Runs the full setup sequence — one command to go from installing pyrig to a
-    fully-configured, production-ready project with version control, dependencies,
-    configs, test skeletons, pre-commit hooks, and an initial commit.
-
-    Steps executed in order:
-
-        1.  git init            (initialize version control)
-        2.  uv add --group dev  (adds all tool dev dependencies)
-        3.  uv sync             (install all dependencies)
-        4.  pyrig sync          (generate config files, inits, and test skeletons)
-        5.  uv sync             (re-install to apply updated pyproject.toml)
-        6.  prek install        (install pre-commit hooks)
-        7.  git add .           (stage all files for commit)
-        8.  git commit          (initial commit)
-
-    Each step runs sequentially and is tracked with a progress bar.
+    Runs the full ordered setup sequence — one command to go from installing
+    pyrig to a production-ready project with version control, dependencies,
+    configuration, test scaffolding, pre-commit hooks, and an initial commit.
     The process stops immediately if any step fails.
 
     Example:
@@ -51,22 +38,12 @@ def init() -> None:
 def sync() -> None:
     """Reconcile all pyrig-managed project structure into its correct state.
 
-    Runs the three idempotent structural fixups in order, bringing the project
-    into the exact state pyrig's autouse conformance checks require:
-
-        1. Create any missing `__init__.py` files, so every directory is a
-           proper package (satisfies the `no_namespace_packages` check).
-        2. Create or update every managed `ConfigFile` — discovered across the
-           project and its installed pyrig dependencies and validated in
-           priority order (satisfies the `all_config_files_correct` check).
-        3. Generate mirror test skeletons for all source modules, adding
-           `NotImplementedError` stubs for any untested function, class, or
-           method (satisfies the `all_modules_tested` check).
-
-    Every step preserves existing user content and only adds what is missing or
-    corrects what is wrong, so this command is idempotent and safe to run
-    repeatedly. Run it after adding source code, pulling changes, or adding a
-    new pyrig dependency to bring the project back into a fully conformant state.
+    Runs the ordered structural fixups that create missing package files,
+    update managed configuration, and refresh generated test scaffolding.
+    Every fixup preserves existing user content and only adds what is missing
+    or corrects what is wrong, making this command safe to run repeatedly.
+    Run it after adding source code, pulling changes, or adding a new pyrig
+    dependency to bring the project back into a fully conformant state.
 
     Exits with code 1 if any file was created or updated, 0 if everything was
     already in sync. This makes it suitable as a git hook: auto-fixes are
@@ -85,8 +62,8 @@ def scratch() -> None:
     via .gitignore and never committed. Use it to prototype ideas, test quick
     snippets, or exercise library code without touching the main source tree.
 
-    The file is executed with `runpy.run_path` in a fresh, isolated namespace
-    so it has no side-effects on the calling environment.
+    The script runs in an isolated namespace and does not affect the calling
+    environment.
     """
     from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
 

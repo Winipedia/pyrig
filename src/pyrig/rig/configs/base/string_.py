@@ -1,30 +1,4 @@
-r"""Text-format configuration file management with content-based validation.
-
-Defines the base class for text files that require specific content to be
-present, validated via substring matching, while preserving any user additions
-when the file is updated.
-
-Example:
-    >>> from pathlib import Path
-    >>> from pyrig.rig.configs.base.string_ import StringConfigFile
-    >>>
-    >>> class LicenseFile(StringConfigFile):
-    ...
-    ...     def parent_path(self) -> Path:
-    ...         return Path()
-    ...
-    ...
-    ...     def lines(self) -> list[str]:
-    ...         return ["MIT License", "", "Copyright (c) 2024"]
-    ...
-    ...
-    ...     def stem(self) -> str:
-    ...         return "LICENSE"
-    ...
-    ...
-    ...     def extension(self) -> str:
-    ...         return ""
-"""
+"""Text-format configuration file management with content-based validation."""
 
 from abc import abstractmethod
 from collections.abc import Iterable
@@ -35,7 +9,7 @@ from pyrig.rig.configs.base.config_file import ListConfigFile
 
 
 class StringConfigFile(ListConfigFile):
-    r"""Abstract base class for text files with required content validation.
+    """Abstract base class for text files with required content validation.
 
     Manages text configuration files by validating that required lines are
     present via substring matching, while preserving any content the user
@@ -59,18 +33,17 @@ class StringConfigFile(ListConfigFile):
     def should_override_content(self) -> bool:
         """Return whether existing file content should be replaced entirely.
 
-        Controls the merge strategy in `merge_configs`. When `False`
-        (the default), existing content is kept and appended after the
-        required lines. When `True`, only the required lines are written and
+        When `False` (the default), existing content is kept and appended after
+        the required lines. When `True`, only the required lines are written and
         all existing content is discarded.
 
         Returns:
-            `False` by default; override to return `True` for full replacement.
+            `False` by default.
         """
         return False
 
     def _configs(self) -> list[str]:
-        """Return the required content as the list of lines from `lines()`."""
+        """Return the required lines."""
         return self.lines()
 
     def _load(self) -> list[str]:
@@ -93,7 +66,7 @@ class StringConfigFile(ListConfigFile):
         is discarded and only the required lines are returned.
 
         Returns:
-            Merged lines with required content first.
+            The lines for the updated file, with required content first.
         """
         expected_lines = self.configs()
         if self.should_override_content():
@@ -101,14 +74,13 @@ class StringConfigFile(ListConfigFile):
         return [*expected_lines, *self.load()]
 
     def is_correct(self) -> bool:
-        r"""Check whether the file contains all required content.
+        """Check whether the file contains all required content.
 
         Validates by checking that every required line is present anywhere
         in the file content via substring matching.
 
         Returns:
-            ``True`` if all required lines are found within the file content
-            via substring matching.
+            `True` if all required lines are found within the file content.
         """
         return self.all_lines_in_content(
             lines=self.configs(), content=self.read_content()
@@ -118,14 +90,14 @@ class StringConfigFile(ListConfigFile):
         """Check whether every line is present in the content string.
 
         Uses substring matching: a line is considered present if it appears
-        anywhere within ``content``, not necessarily as a standalone line.
+        anywhere within `content`, not necessarily as a standalone line.
 
         Args:
             lines: Lines to search for.
             content: Full text to search within.
 
         Returns:
-            ``True`` if every line in ``lines`` is a substring of ``content``.
+            `True` if every line in `lines` is a substring of `content`.
         """
         return all(line in content for line in lines)
 
@@ -144,16 +116,16 @@ class StringConfigFile(ListConfigFile):
     def split_lines(self, text: str) -> list[str]:
         """Split text into lines, preserving a trailing newline as an empty string.
 
-        Unlike ``str.splitlines()``, a trailing newline in ``text`` results in
+        Unlike `str.splitlines()`, a trailing newline in `text` results in
         an empty string at the end of the returned list. This ensures that
-        ``join_lines(split_lines(text)) == text`` for any text ending with a
+        `join_lines(split_lines(text)) == text` for any text ending with a
         newline.
 
         Args:
             text: Text to split.
 
         Returns:
-            List of lines. If ``text`` ends with a newline, the last element
+            List of lines. If `text` ends with a newline, the last element
             is an empty string.
         """
         lines = text.splitlines()

@@ -41,7 +41,6 @@ def make_package_dir(path: Path, until: tuple[Path, ...], content: str) -> None:
 def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:
     """Create `__init__.py` files in the given directories.
 
-    Writes an `__init__.py` with the given content into each directory.
     Skips any directory that already has an `__init__.py`.
 
     Args:
@@ -94,9 +93,10 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
         Imported package module.
 
     Raises:
-        FileNotFoundError: If the package directory or its `__init__.py` does
-            not exist.
-        ImportError: If the module spec cannot be created from `path`.
+        FileNotFoundError: If `name` cannot be imported and the `__init__.py`
+            at `path` does not exist.
+        ImportError: If `name` cannot be imported and the module spec
+            cannot be created from `path`.
     """
     return import_module_with_file_fallback(path=path, name=name, is_package=True)
 
@@ -104,14 +104,12 @@ def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
 def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
     """Yield all non-package modules found anywhere in a package hierarchy.
 
-    Sub-packages at any nesting depth are traversed but not themselves yielded.
     Each module is imported as a side effect of iteration.
 
     Args:
         package: Root package to search.
 
     Yields:
-        Every non-package module found anywhere within `package`, at any
-        nesting depth.
+        A non-package module found anywhere within `package`.
     """
     return (module for module, is_pkg in walk_package(package) if not is_pkg)

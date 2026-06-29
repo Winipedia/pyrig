@@ -126,7 +126,9 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     def copy_module(self) -> ModuleType:
         """Return the source module whose content will be copied.
 
-        Subclasses must implement this method to specify which module to copy.
+        The base class uses this module's source file as the written content
+        and derives the target path from its dotted name. Subclasses must
+        implement this to specify which module to copy.
 
         Returns:
             Source module to copy.

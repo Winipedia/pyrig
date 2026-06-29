@@ -11,8 +11,7 @@ def package_dir_path(package: ModuleType) -> Path:
         package: An imported Python package (a module with an `__init__.py`).
 
     Returns:
-        Path to the package directory (the parent of the package's
-        `__init__.py` file).
+        Path to the package directory.
 
     Raises:
         AttributeError: If the package's `__file__` attribute is `None`

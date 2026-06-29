@@ -21,7 +21,7 @@ def make_all_init_files() -> tuple[Path, ...]:
     """Create all missing `__init__.py` files in the project.
 
     Returns:
-        Paths where `__init__.py` files were created. Empty if all
+        Directories where `__init__.py` files were created. Empty if all
         already existed.
     """
     return make_init_files(
@@ -34,8 +34,8 @@ def namespace_package_paths() -> Iterator[Path]:
     """Yield project directories that lack an `__init__.py` file.
 
     Covers the source package root and tests package root, including each
-    root itself and all subdirectories found by recursive traversal.
-    Directories named `__pycache__` are skipped.
+    root itself and all subdirectories at any depth. Directories named
+    `__pycache__` are skipped.
 
     Yields:
         Each qualifying directory at or under the source or tests package
@@ -65,9 +65,8 @@ def namespace_package_paths() -> Iterator[Path]:
 def root_path_as_module_name(path: Path) -> str:
     """Convert a filesystem path relative to the project root to a dotted module name.
 
-    Strips the matching root directory from the path before building the
-    module name. Paths under the source root (e.g., `src/`) have that prefix
-    removed; all other paths are interpreted relative to the project root.
+    Paths under the source root (e.g., `src/`) have that prefix removed; all
+    other paths are interpreted relative to the project root.
 
     Args:
         path: Filesystem path relative to the project root.
@@ -89,11 +88,9 @@ def root_path_as_module_name(path: Path) -> str:
 def module_name_as_root_path(module_name: str) -> Path:
     """Resolve a dotted module name to its filesystem path relative to the project root.
 
-    Selects the appropriate root directory based on the module's package:
-
-    - Modules starting with the tests package name (e.g., `"tests"`) resolve
-      relative to the project root itself.
-    - All other modules resolve relative to the source root (e.g., `src/`).
+    For modules starting with the tests package name (e.g., `"tests"`), the
+    path is relative to the project root; for all other modules, it is
+    relative to the source root (e.g., `src/`).
 
     Args:
         module_name: Dotted Python module name (e.g., `"mypackage.sub.module"`
@@ -108,7 +105,10 @@ def module_name_as_root_path(module_name: str) -> Path:
 
 
 def determine_root(module_name: str) -> Path:
-    """Return the tests source root for test modules and otherwise the source root."""
+    """Return the tests source root for test modules, otherwise the source root.
+
+    Test modules are those whose name starts with the tests package name.
+    """
     return (
         ProjectTester.I.tests_source_root()
         if module_name.startswith(ProjectTester.I.tests_package_name())

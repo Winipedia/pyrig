@@ -3,10 +3,7 @@
 tests.test_pyrig.test_modules.test_inspection
 """
 
-from pyrig.core.introspection.inspection import (
-    def_line,
-    obj_qualname,
-)
+from pyrig.core.introspection.inspection import def_line, def_line_sorted
 
 
 def test_def_line() -> None:
@@ -41,38 +38,6 @@ def test_def_line() -> None:
     )
 
 
-def test_obj_qualname() -> None:
-    """Test function."""
-
-    # Test with a function
-    def test_function() -> None:
-        pass
-
-    name = obj_qualname(test_function)
-    assert name == "test_obj_qualname.<locals>.test_function", (
-        f"Expected 'test_function', got {name}"
-    )
-
-    # Test with a class
-    class TestClass:
-        pass
-
-    name = obj_qualname(TestClass)
-    assert name == "test_obj_qualname.<locals>.TestClass", (
-        f"Expected 'TestClass', got {name}"
-    )
-
-    # Test with a method
-    class TestClass2:
-        def test_method(self) -> None:
-            pass
-
-    name = obj_qualname(TestClass2.test_method)
-    assert name == "test_obj_qualname.<locals>.TestClass2.test_method", (
-        f"Expected 'test_method', got {name}"
-    )
-
-
 def test_def_line_sorted() -> None:
     """Test function."""
 
@@ -89,12 +54,10 @@ def test_def_line_sorted() -> None:
         test_func_b,
         test_func_c,
         test_func_a,
-        test_obj_qualname,
         test_def_line_sorted,
     ]
-    sorted_funcs = sorted(funcs, key=def_line)
+    sorted_funcs = def_line_sorted(funcs)
     assert sorted_funcs == [
-        test_obj_qualname,
         test_def_line_sorted,
         test_func_a,
         test_func_b,

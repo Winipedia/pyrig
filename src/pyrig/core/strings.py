@@ -15,10 +15,10 @@ def read_text_utf8(path: Path) -> str:
 
 
 def write_text_utf8(path: Path, content: str) -> int:
-    """Write text to a file using UTF-8 encoding.
+    """Write `content` to `path` as UTF-8, replacing any existing file.
 
     Returns:
-        Number of characters written.
+        The number of characters written.
     """
     return path.write_text(content, encoding=UTF_8_ENCODING)
 
@@ -28,11 +28,11 @@ def open_path_with_utf8(path: Path, *args: Any, **kwargs: Any) -> Any:
 
     Args:
         path: Path to the file to open.
-        *args: Positional arguments forwarded to `Path.open`.
-        **kwargs: Keyword arguments forwarded to `Path.open`.
+        *args: Additional positional arguments for opening the file.
+        **kwargs: Additional keyword arguments for opening the file.
 
     Returns:
-        File object returned by `Path.open`.
+        The opened file object.
     """
     return path.open(*args, encoding=UTF_8_ENCODING, **kwargs)
 
@@ -106,8 +106,7 @@ def make_name_from_obj(
             remainder lowercased). Defaults to `True`.
 
     Returns:
-        Formatted name string. For example, `"init_project"` becomes
-        `"Init-Project"` with the default parameters.
+        The formatted display name.
 
     Examples:
         >>> make_name_from_obj("init_project")

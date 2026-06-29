@@ -20,7 +20,7 @@ def resource_content(name: str, package: ModuleType) -> str:
         File contents as a UTF-8 string.
 
     Raises:
-        FileNotFoundError: If no file exists at the resolved resource path.
+        FileNotFoundError: If the resource file does not exist.
     """
     path = resource_path(name, package)
     return read_text_utf8(path)

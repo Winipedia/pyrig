@@ -73,7 +73,7 @@ def run_subprocess_cached(
     """Execute a subprocess command and cache the result.
 
     Repeated calls with identical arguments return the cached result without
-    spawning a new process. All values in `kwargs` must be hashable.
+    spawning a new process.
 
     Args:
         args: Command and arguments as a tuple (e.g., `("git", "status")`).
@@ -107,19 +107,19 @@ def run_subprocess(  # noqa: PLR0913
 
     Forbids `shell=True` to prevent shell-injection vulnerabilities. When
     `subprocess.CalledProcessError` is raised, logs the command, exit code,
-    stdout, and stderr at `ERROR` level before re-raising. Defaults `cwd` to
-    the current directory when `None` is passed.
+    stdout, and stderr at `ERROR` level before re-raising.
 
     Args:
         args: Command and arguments as a sequence (e.g., `["git", "status"]`).
         input_: Data sent to stdin.
-        capture_output: Capture stdout and stderr.
+        capture_output: When `True` (the default), captures stdout and stderr.
         timeout: Maximum seconds to wait. `None` means no limit.
-        check: Raise `subprocess.CalledProcessError` on non-zero exit.
+        check: When `True` (the default), raises `subprocess.CalledProcessError`
+            on non-zero exit.
         cwd: Working directory for the subprocess. Defaults to the current
             directory when `None`.
         shell: Must be `False`. Passing `True` raises `ValueError` immediately.
-        text: Decode stdout and stderr as strings.
+        text: When `True` (the default), decodes stdout and stderr as strings.
         **kwargs: Additional keyword arguments forwarded to `subprocess.run`.
 
     Returns:
@@ -128,8 +128,7 @@ def run_subprocess(  # noqa: PLR0913
     Raises:
         ValueError: If `shell=True` is passed.
         subprocess.CalledProcessError: If the process exits with a non-zero
-            return code and `check=True`. Failure details are logged before
-            re-raising.
+            return code and `check=True`.
         subprocess.TimeoutExpired: If the process exceeds `timeout`.
     """
     if shell:

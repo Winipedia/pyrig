@@ -1,9 +1,4 @@
-"""JSON configuration file management.
-
-Base infrastructure for managing JSON configuration files within the
-declarative `ConfigFile` system. Files are read and written using Python's
-built-in `json` module.
-"""
+"""Base classes for managing JSON configuration files."""
 
 import json
 from typing import Any
@@ -17,28 +12,15 @@ from pyrig.rig.configs.base.config_file import (
 class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     """Base class for JSON configuration files.
 
-    Implements the `_load`, `_dump`, and `extension` abstract methods from
-    `ConfigFile` using Python's built-in `json` module. Files are written with
-    4-space indentation and read as UTF-8. The top-level JSON structure is
-    either a dict or a list, fixed by the `ConfigT` type parameter.
+    Files are written with 4-space indentation and read as UTF-8. The
+    top-level JSON structure is either a dict or a list, fixed by the
+    `ConfigT` type parameter.
 
-    Subclasses must still implement the remaining `ConfigFile` abstract
-    methods: `parent_path()`, `stem()`, and `_configs()`.
-
-    Example:
-        >>> class MyConfigFile(JSONConfigFile):  # doctest: +SKIP
-        ...     def parent_path(self) -> Path:
-        ...         return Path()
-        ...     def stem(self) -> str:
-        ...         return "config"
-        ...     def _configs(self) -> dict[str, str]:
-        ...         return {"name": "my-package", "version": "1.0.0"}
+    Subclasses must implement `parent_path()`, `stem()`, and `_configs()`.
     """
 
     def _load(self) -> ConfigT:
         """Read and parse the JSON file from disk.
-
-        Internal implementation called by the public `load()` cached wrapper.
 
         Returns:
             Parsed JSON content as a dict or list, depending on `ConfigT`.
@@ -49,9 +31,6 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
 
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the JSON file with 4-space indentation.
-
-        Internal implementation called by the public `dump()`
-        cache-invalidating wrapper.
 
         Args:
             configs: Configuration dict or list to serialize and write.
