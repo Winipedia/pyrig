@@ -12,7 +12,8 @@ To get started immediately with only the essentials simply create
 a new project directory, navigate into it, and run:
 
 ```bash
-uv init
+uv init my-project --python 3.12
+cd my-project
 uv add pyrig
 uv run pyrig init
 ```
