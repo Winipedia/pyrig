@@ -17,7 +17,7 @@ Pull Request / Push / Schedule / Manual
     ┌─────────────────┐
     │  Health Check   │  ← the only gate for merging PRs
     └────────┬────────┘
-             │ completes on default branch (non-scheduled only)
+             │ completes on default branch (push-triggered only)
              ▼
     ┌─────────────────┐
     │    Release      │  ← tags and publishes a GitHub Release
@@ -35,9 +35,9 @@ jobs with an `if` condition that checks the triggering run succeeded, so a
 failure anywhere in the chain stops propagation cleanly.
 
 The Release workflow is triggered when Health Check completes on the default
-branch, but excludes scheduled health check runs. This means releases only occur
-for actual code changes pushed to the default branch, not for routine regular
-health checks.
+branch, but only when that health check run was itself triggered by a push event.
+This means scheduled runs, manual dispatches, and pull-request-triggered health
+check completions never produce a release.
 
 ---
 
