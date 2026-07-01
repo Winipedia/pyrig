@@ -225,7 +225,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             List of dependency strings from `pyproject.toml`, or an empty list
             if absent.
         """
-        return self.load().get("project", {}).get("dependencies", [])
+        return list(self.load().get("project", {}).get("dependencies", []))
 
     def dev_dependencies(self) -> list[str]:
         """Read development dependencies from `pyproject.toml`.
@@ -234,7 +234,7 @@ class PyprojectConfigFile(TOMLConfigFile):
             List of dependency strings from `dependency-groups.dev`, or an empty
             list if that section is absent.
         """
-        return self.load().get("dependency-groups", {}).get("dev", [])
+        return list(self.load().get("dependency-groups", {}).get("dev", []))
 
     def latest_possible_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"

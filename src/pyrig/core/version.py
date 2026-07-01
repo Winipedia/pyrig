@@ -175,13 +175,16 @@ class VersionConstraint:
             lower_as_tuple[major_level], upper_as_tuple[major_level] + 1
         ):
             version = [major]
+            is_lower_major = major == lower_as_tuple[major_level]
 
             minor_lower_og, minor_upper_og = (
                 lower_as_tuple[minor_level],
                 upper_as_tuple[minor_level],
             )
             diff = minor_upper_og - minor_lower_og
-            minor_lower = minor_lower_og if diff >= 0 else 0
+            # For non-lower majors start from 0 so versions like 4.0–4.7 are
+            # not skipped when upper.minor > lower.minor (diff >= 0).
+            minor_lower = (minor_lower_og if diff >= 0 else 0) if is_lower_major else 0
             minor_upper = minor_upper_og if diff >= 0 else minor_lower_og + abs(diff)
             for minor in range(
                 minor_lower,
@@ -210,6 +213,20 @@ class VersionConstraint:
                     versions.append(version[: level_int + 1])
                     version.pop()
         version_versions = sorted({Version(".".join(map(str, v))) for v in versions})
+        if level == "major":
+            # sset.contains(Version("3")) tests 3.0.0 against bounds like >=3.8
+            # which incorrectly returns False. Instead verify using a representative
+            # version that lies within the major's actual range.
+            return tuple(
+                v
+                for v in version_versions
+                if self.sset.contains(
+                    Version(f"{v.major}.{lower.minor}.{lower.micro}")
+                    if v.major == lower.major
+                    else Version(f"{v.major}.0.0")
+                )
+                or self.sset.contains(Version(f"{v.major}.{upper.minor}.{upper.micro}"))
+            )
         return tuple(v for v in version_versions if self.sset.contains(v))
 
     def upper_inclusive(self, default: str | Version | None = None) -> Version | None:

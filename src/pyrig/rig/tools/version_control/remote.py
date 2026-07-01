@@ -1,6 +1,7 @@
 """Identity and badge metadata for a repository's remote hosting service."""
 
 import os
+from urllib.parse import quote
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -123,7 +124,8 @@ class RemoteVersionController(Tool):
             VersionController.I.repo_owner(),
             PackageManager.I.project_name(),
         )
-        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={label}&logo=github"
+        encoded_label = quote(label, safe="")
+        return f"https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/{workflow_name}.yml?label={encoded_label}&logo=github"
 
     def repo_url(self) -> str:
         """Construct the HTTPS GitHub repository URL.

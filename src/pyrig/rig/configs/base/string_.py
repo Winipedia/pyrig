@@ -55,17 +55,19 @@ class StringConfigFile(ListConfigFile):
     def merge_configs(self) -> list[Any]:
         """Merge required lines with existing file content.
 
-        Places the required lines first, followed by the current file content.
+        Places only the missing required lines first, followed by the current
+        file content. Lines already present in the file are not duplicated.
         If `should_override_content()` returns `True`, the existing content
         is discarded and only the required lines are returned.
 
         Returns:
-            The lines for the updated file, with required content first.
+            The lines for the updated file, with missing required content first.
         """
-        expected_lines = self.configs()
         if self.should_override_content():
-            return expected_lines
-        return [*expected_lines, *self.load()]
+            return self.configs()
+        existing_content = self.read_content()
+        missing = [line for line in self.configs() if line not in existing_content]
+        return [*missing, *self.load()]
 
     def is_correct(self) -> bool:
         """Check whether the file already contains all required content.

@@ -249,7 +249,7 @@ def {test_func_name}() -> None:
             test_cls_content = test_cls_skeleton + "".join(
                 self.test_method_skeleton(name) for name in test_method_names
             )
-            parts = test_module_content.split(test_cls_skeleton)
+            parts = test_module_content.split(test_cls_skeleton, maxsplit=1)
             # insert the new content
             parts.insert(1, test_cls_content)
             test_module_content = "".join(parts)
@@ -348,13 +348,14 @@ def {test_func_name}() -> None:
                     supposed_test_class_name, ()
                 )
             )
-            # actual_test_methods_names is a cell variable rebound each iteration;
-            # callers must consume each inner iterator before advancing the outer one,
-            # otherwise remaining items filter against the last iteration's set.
+            # Snapshot the set so the generator below closes over a value
+            # that is stable for this iteration, not the loop variable that
+            # will be rebound on the next iteration.
+            actual_snapshot = actual_test_methods_names
             untested_test_methods_names = (
                 tmn
                 for tmn in supposed_test_methods_names
-                if tmn not in actual_test_methods_names
+                if tmn not in actual_snapshot
             )
             has_untested_methods, untested_test_methods_names = iterator_has_items(
                 untested_test_methods_names

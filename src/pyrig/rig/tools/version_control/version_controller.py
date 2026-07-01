@@ -2,6 +2,7 @@
 
 import logging
 from functools import cache
+from urllib.parse import urlparse
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -303,14 +304,12 @@ class VersionController(Tool):
             subprocess.CalledProcessError: If no remote origin is configured.
         """
         url = self.remote_url(check=True)
-        # possible formats:
-        # ssh://git@github.com/owner/repo.git
-        # git@github.com:owner/repo.git
-        # https://github.com/owner/repo.git
-        url = url.split("github.com", 1)[-1]  # split off the domain, keep the path
-        url = url.removeprefix("/").removeprefix(":")
-        # the url left must have the format: owner/repo.git
-        owner = url.split("/")[0]
+        # Normalise scp-style SSH syntax (git@host:owner/repo.git) so urlparse
+        # can handle it uniformly alongside HTTPS and ssh:// URLs.
+        if not url.startswith(("https://", "http://", "ssh://", "git://")):
+            url = "ssh://" + url.replace(":", "/", 1)
+        path = urlparse(url).path.lstrip("/")  # → "owner/repo.git"
+        owner = path.split("/")[0]
         logger.debug("Extracted owner from remote URL: %s", owner)
         return owner
 

@@ -24,7 +24,7 @@ class CoverageTester(Tool):
     def image_url(self) -> str:
         """Return the badge image URL, with a label and color set by the threshold."""
         hue, saturation, lightness = self.color()
-        return f"https://img.shields.io/badge/coverage->={self.threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white"
+        return f"https://img.shields.io/badge/coverage-%3E%3D{self.threshold()}%25-hsl({hue},{saturation}%25,{lightness}%25)?logo=codecov&logoColor=white"
 
     def link_url(self) -> str:
         """Return the URL of the pytest-cov project page."""

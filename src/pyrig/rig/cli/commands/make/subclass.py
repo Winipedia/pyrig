@@ -53,7 +53,7 @@ def choose_subclass() -> type[DependencySubclass]:
 
     concrete_choices = (
         {
-            "name": str(cls()),
+            "name": fully_qualified_name(cls),
             "value": cls,
         }
         for cls in concrete_subclass_choices

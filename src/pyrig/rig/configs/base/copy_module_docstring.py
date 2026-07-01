@@ -4,7 +4,6 @@ Extends module-copying config infrastructure to restrict output to just
 the docstring, rather than the full module source.
 """
 
-from pyrig.core.introspection.modules import module_has_docstring
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 
 
@@ -15,8 +14,8 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
     a source module. Useful for scaffolding files like `__init__.py` that need
     a description without carrying over the full module source.
 
-    The file is considered correct whenever the source module has a docstring,
-    regardless of what is currently on disk.
+    The file is considered correct when the target file on disk already contains
+    the expected docstring content (delegated to the parent `is_correct` check).
 
     Subclasses must implement:
         - `copy_module`: Return the source module whose docstring will be copied.
@@ -44,8 +43,8 @@ class CopyModuleDocstringConfigFile(CopyModuleConfigFile):
         return self.split_lines(f"{triple_quotes}{docstring}{triple_quotes}\n")
 
     def is_correct(self) -> bool:
-        """Return `True` if the source module has a docstring, `False` otherwise."""
-        return module_has_docstring(self.copy_module())
+        """Return `True` if the target file already contains the expected content."""
+        return super().is_correct()
 
     def default_docstring(self) -> str:
         """Return the default module docstring `"Module description."`."""

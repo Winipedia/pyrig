@@ -42,12 +42,12 @@ class Args(tuple[str, ...]):
         Returns:
             The completed process result.
         """
-        return run_subprocess_cached((*self, *args), **kwargs)
+        return run_subprocess_cached((*self, *args), tuple(sorted(kwargs.items())))
 
 
 @cache
 def run_subprocess_cached(
-    args: tuple[str, ...], **kwargs: Any
+    args: tuple[str, ...], kwargs: tuple[tuple[str, Any], ...] = ()
 ) -> subprocess.CompletedProcess[Any]:
     """Execute a subprocess command and cache the result.
 
@@ -56,13 +56,14 @@ def run_subprocess_cached(
 
     Args:
         args: Command and arguments as a tuple (e.g., `("git", "status")`).
-        **kwargs: Keyword arguments forwarded to the subprocess runner.
-            All values must be hashable.
+        kwargs: Keyword arguments forwarded to the subprocess runner as a
+            sorted tuple of ``(key, value)`` pairs. All values must be
+            hashable. Pass ``tuple(sorted(kwargs.items()))`` from the caller.
 
     Returns:
         The completed process result.
     """
-    return run_subprocess(args, **kwargs)
+    return run_subprocess(args, **dict(kwargs))
 
 
 def run_subprocess(  # noqa: PLR0913

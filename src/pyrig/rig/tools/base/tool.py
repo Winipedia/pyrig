@@ -96,7 +96,14 @@ class Tool(DependencySubclass):
         groups: dict[str, list[str]] = {g: [] for g in cls.groups()}
         for subclass in subclasses:
             tool = subclass()
-            groups[tool.group()].append(tool.badge())
+            group = tool.group()
+            if group not in groups:
+                msg = (
+                    f"{subclass.__name__}.group() returned unknown group {group!r}. "
+                    f"Must be one of: {list(groups)}"
+                )
+                raise ValueError(msg)
+            groups[group].append(tool.badge())
         return groups
 
     @classmethod

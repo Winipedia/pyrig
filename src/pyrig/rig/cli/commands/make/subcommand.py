@@ -1,5 +1,6 @@
 """Scaffolding logic for extending CLI subcommand modules with new stubs."""
 
+import typer
 from pyrig_runtime.core.strings import kebab_to_snake_case
 from pyrig_runtime.rig.cli import shared_subcommands, subcommands
 
@@ -30,6 +31,11 @@ def make_subcommand(name: str, *, shared: bool) -> None:
     content = config_file.read_content()
 
     name = kebab_to_snake_case(name)
+
+    if f"\ndef {name}(" in content:
+        typer.echo(f"Subcommand '{name}' already exists.", err=True)
+        raise typer.Exit(code=1)
+
     content += f'''
 
 def {name}() -> None:
