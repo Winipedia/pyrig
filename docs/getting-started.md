@@ -21,10 +21,10 @@ uv run pyrig init
 This will set up a complete python project with all of pyrig's best practices
 fully working from the start. The only thing the full setup guide will add to this
 is setting up your repository with GitHub and the CI/CD pipeline properly.
-We recommend following the full setup guide, especially if you want anything
-that needs a remote repository and/or CI/CD to work,
-but if you just want to get going with a local project and add the repository
-and CI/CD setup later, this is the fastest way to get started.
+We recommend following the full setup guide, especially if you want a remote
+repository and/or CI/CD to work, but if you just want to get going with a local
+project and add the repository and CI/CD setup later, this is the fastest way
+to get started.
 
 ## Full Setup Guide
 
@@ -65,6 +65,8 @@ See [GitHub's guide on signing commits](https://docs.github.com/en/authenticatio
 
 **uv** (Python package manager):
 
+Pyrig uses [uv](https://astral.sh/uv) as a package manager and build tool.
+
 ```bash
 # Install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -77,15 +79,16 @@ uv --version
 
 **GitHub Account**:
 
-You will need an account for [github.com](https://github.com)
+You will need a [GitHub](https://github.com) account.
 
 **GitHub Personal Access Token (REPO_TOKEN)** - **Required**:
 
 1. Go to GitHub Settings → Developer settings → Personal access tokens →
 Fine-grained tokens
 2. Under Repository permissions, set:
-   - Administration: Read and write (for `pyrig protect-repo`)
-   - Pages: Read and write (for enabling GitHub Pages)
+   - Administration: Read and write (for applying repository settings
+     and branch protection rulesets in the release workflow)
+   - Pages: Read and write (for enabling GitHub Pages in the deploy workflow)
 3. Generate token
 4. **Copy token immediately** (you won't see it again)
 5. Add token to your repository secrets as `REPO_TOKEN`
@@ -94,7 +97,7 @@ Fine-grained tokens
 
 ### 1. Create GitHub Repository
 
-On github.com, create a new repository for your project.
+On [GitHub](https://github.com), create a new repository for your project.
 It must have the same name that you want your project to have.
 This is one of pyrig's standards.
 You can but do not have to initialize the repository with a
@@ -144,9 +147,11 @@ uv add pyrig
 
 pyrig is extensible through plugins. A plugin is just a package that pyrig
 discovers automatically — adding it as a dependency is all it takes for its
-tools, config files, and workflow steps to be picked up by `pyrig init`.
-Add any of the plugins you want before running `pyrig init` so they are
-included in the initial scaffold:
+tools, config files, and workflow steps to be picked up by `pyrig init`
+and `pyrig sync`. Add any of the plugins you want before running
+`pyrig init` so they are included in the initial scaffold.
+However, you can add plugins at any time and run `pyrig sync` as well to add
+them to your project later:
 
 ```bash
 # Publish your package to PyPI from CI/CD

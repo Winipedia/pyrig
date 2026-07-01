@@ -2,8 +2,7 @@
 
 pyrig generates and manages a complete three-stage GitHub Actions pipeline.
 The workflows are produced as `ConfigFile` subclasses, so they are kept correct
-automatically by `pyrig sync` and validated on every test run just like any other
-managed file.
+automatically by the `pyrig sync` pre-commit hook, just like any other managed file.
 
 ---
 
@@ -37,7 +36,7 @@ failure anywhere in the chain stops propagation cleanly.
 
 The Release workflow is triggered when Health Check completes on the default
 branch, but excludes scheduled health check runs. This means releases only occur
-for actual code changes pushed to the default branch, not for routine nightly
+for actual code changes pushed to the default branch, not for routine regular
 health checks.
 
 ---
@@ -58,18 +57,18 @@ merging PRs, since it runs on every PR and blocks merging until it passes.
 
 **Trigger:** `Health Check` workflow completes on the default branch.
 
-The **`publish`** job runs only when the triggering health check succeeded and
-was not a scheduled (cron) run, so the regularly triggered health check does
-not create a release every day.
-It tags the current commit with the version and pushes the tag to the repository.
-Then it creates a GitHub Release with the new tag and generates a changelog.
+The **`publish`** job only runs when the triggering health check both succeeded
+and was itself triggered by a push to the default branch. Scheduled runs,
+manual dispatches, and pull request runs never produce a release.
+Before tagging, it applies repository settings and branch protection rulesets
+via the GitHub API. Then it tags the current commit, pushes the tag, generates
+a changelog, and creates a GitHub Release.
 Important: The release workflow creates a new tag, which will fail if that tag
 already exists. This means you must ensure the version is updated in `pyproject.toml`
 before pushing to the default branch, otherwise the release workflow will
 fail on the existing tag. This is a common source of confusion, so make sure
 to update the version in `pyproject.toml` before creating a new release.
-This is easily done by running `uv version --bump patch` (or `minor`/`major`)
-locally and pushing the resulting commit to the default branch.
+This is easily done by running `uv version --bump patch` (or `minor`/`major`).
 
 ---
 
@@ -94,6 +93,8 @@ A notable property of the pipeline is that **dependency
 upgrades happen inside CI** in the health check stage. It runs `uv lock --upgrade`
 to pull the latest dependency versions within declared constraints. This ensures
 your project catches problems caused by new versions in the dependencies early.
+This way the regular nightly health check runs will catch any issues caused by
+dependency upgrades automatically.
 If you need specific versions of packages you need to pin them in `pyproject.toml`
 to prevent it from being updated by the pipeline.
 
@@ -103,13 +104,13 @@ to prevent it from being updated by the pipeline.
 
 All three workflow files are managed `ConfigFile` instances, so they can be
 extended or overridden in the same way as any other managed file in pyrig.
-Subclass the relevant workflow class
-(`HealthCheckWorkflowConfigFile`,
-`ReleaseWorkflowConfigFile`, `DeployWorkflowConfigFile`) in your project's
-`rig/configs/` tree and override the methods that need changing — jobs,
-triggers, steps, permissions, or environment variables. The `WorkflowConfigFile`
-base class provides composable helpers for all common patterns (matrix
-strategies, step builders, trigger constructors) so custom workflows stay
-concise and consistent with the generated ones.
+Run `pyrig mk subcls` and search for the workflow class you want to change
+(`HealthCheckWorkflowConfigFile`, `ReleaseWorkflowConfigFile`, or
+`DeployWorkflowConfigFile`) to generate a correctly placed subclass skeleton.
+Override the methods that need changing — jobs, triggers, steps, permissions,
+or environment variables. The `WorkflowConfigFile` base class provides
+composable helpers for common patterns (matrix strategies, step builders,
+trigger constructors) so custom workflows stay concise and consistent with
+the generated ones.
 
-Run `pyrig sync` after any change to regenerate the workflow files.
+Run `pyrig sync` after any change to update or regenerate the workflow files.

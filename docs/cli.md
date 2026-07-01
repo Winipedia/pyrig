@@ -1,76 +1,62 @@
-# CLI System
+# CLI
 
-pyrig provides a **fully inheritable, automatically extensible CLI** that every
-project built on pyrig gets for free. The system is built on
-[Typer](https://typer.tiangolo.com) but adds a dynamic command-discovery layer on
-top, so projects never need to touch pyrig's source code to gain or override CLI
-commands.
-
----
-
-## How the CLI is Inherited
-
-When a project declares `pyrig` as a dependency it gets a working CLI entry point
-automatically. The only thing required is registering a console-script in
-`pyproject.toml` that points to the same `main` function pyrig uses.
-This is also handled automatically by pyrig via its PyprojectConfigFile
-and `pyrig sync`:
-
-```toml
-[project.scripts]
-my-project = "pyrig.rig.cli.main:main"
-```
-
-From that point on, `uv run my-project <command>` delegates to pyrig's entry
-point, which discovers and registers the right commands for the calling project
-automatically at runtime.
+Every project built with pyrig gets a working CLI out of the box. The underlying
+CLI system — command discovery, the `CLI` class, shared commands, and the entry
+point — is provided by [pyrig-runtime](https://Winipedia.github.io/pyrig-runtime)
+and documented there.
 
 ---
 
-## The Typer App
+## Your Project's CLI
 
-A `DependencySubclass` named `CLI` is defined in `pyrig.rig.cli.cli.cli`.
-Its `app()` method builds a fully configured `typer.Typer` application that
-registers every function defined in `my_project.rig.cli.subcommands` as a command.
-Functions from `shared_subcommands` modules across all packages in the
-dependency chain are also registered. Because `CLI` is a `DependencySubclass`,
-a dependent project can override any step of the build by subclassing it.
-
----
-
-## Command Discovery
-
-When the CLI is invoked, pyrig discovers every function defined in
-`my_project.rig.cli.subcommands` and registers them as CLI commands.
-Additionally, it discovers functions from `shared_subcommands` modules across
-all packages in the dependency chain (pyrig and all packages that depend on it).
-This means that to add a new command, simply define a new function in one of
-those modules, and it will be automatically available as a CLI command the next
-time the CLI is run. Simply run `pyrig mk cmd <command-name>` to append a new
-command function skeleton to `my_project.rig.cli.subcommands` (creating the file
-if it does not exist).
-
-`my_project.rig.cli.shared_subcommands` is a bit special: it is intended for
-commands that should be shared across multiple projects. If a project defines a
-function in `shared_subcommands`, that command will also be available in every
-other pyrig-based project that depends on it (directly or transitively).
-An example of this is pyrig's own `version` command, which is defined in `pyrig.rig.cli.shared_subcommands`
-so that it is available in every project that uses pyrig.
-So your project has already one command from the start that you can run:
+After `pyrig init`, your project already has a working CLI entry point wired up
+in `pyproject.toml` and a `version` command inherited from pyrig:
 
 ```bash
-uv run my-project version
-# This will print smth like: my-project version 1.2.3
+uv run my-project --help
+uv run my-project version   # prints: my-project 1.0.0
 ```
 
-But if you run pyrig's `version` command directly,
-you get the version of pyrig instead:
+---
+
+## Adding Commands
+
+Run `pyrig mk cmd <name>` to scaffold a new command stub in your project's
+`rig/cli/subcommands.py`. The function is wired up automatically — no
+registration needed.
 
 ```bash
-uv run pyrig version
-# This will print smth like: pyrig version 12.3.4
+uv run pyrig mk cmd my-command
 ```
 
-To add a shared command, simply run `pyrig mk cmd <command-name> --shared` and
-it will append the command skeleton to `shared_subcommands` (creating the
-file if it does not exist).
+To add a **shared command** — one that will be available in every pyrig-runtime-based
+project in the same environment where your package is installed — pass `--shared`:
+
+```bash
+uv run pyrig mk cmd my-command --shared
+```
+
+Shared commands are added to `rig/cli/shared_subcommands.py`. At runtime, the
+CLI scans all installed packages that depend on pyrig-runtime and registers their
+shared commands. So a shared command from your package is available in every
+pyrig-runtime-based project in the environment, not just projects that explicitly
+depend on your package. The `version` command is a good example of this: it is
+defined in pyrig-runtime's own `shared_subcommands` and is therefore available
+in every project built on pyrig-runtime.
+
+---
+
+## pyrig's Own Commands
+
+pyrig registers its own commands the same way. They are available whenever
+pyrig is installed as a dependency:
+
+| Command | Description |
+|---------|-------------|
+| `pyrig init` | Full project initialization |
+| `pyrig sync` | Synchronize all managed project files |
+| `pyrig mk cmd <name>` | Scaffold a new CLI command stub |
+| `pyrig mk cmd <name> --shared` | Scaffold a shared CLI command stub |
+| `pyrig mk subcls` | Interactively scaffold a subclass of any pyrig class |
+| `pyrig mk local` | Create or update version-control-ignored config files |
+| `pyrig version` | Show the installed pyrig version |

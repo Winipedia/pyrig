@@ -73,6 +73,12 @@ pyrig's config file system is built around the `ConfigFile` base class, which de
 how pyrig creates and validates files.
 See the [Config File System Documentation](config-files.md) for details.
 
+## Tool System
+
+Every external CLI tool pyrig interacts with is wrapped in a `Tool` subclass with
+typed command builders, badge metadata, and full override support.
+See the [Tool System Documentation](tools.md) for details.
+
 ## CLI System
 
 pyrig provides a fully functional, inheritable and automatically extensible
