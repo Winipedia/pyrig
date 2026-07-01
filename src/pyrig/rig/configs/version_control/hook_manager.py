@@ -1,8 +1,7 @@
 """Configuration management for version control hooks.
 
-Manages ``prek.toml`` with a local hook repository containing system-installed
-tools that run on various git stages to enforce code quality across formatting,
-linting, type checking, security, and Markdown style.
+Declares the hook pipeline that enforces code quality and dependency hygiene
+at various git stages.
 """
 
 from pathlib import Path
@@ -28,15 +27,14 @@ from pyrig.rig.tools.version_control.hook_manager import (
 
 
 class VersionControlHookManagerConfigFile(TOMLConfigFile):
-    """Manages ``prek.toml`` for version control hook configuration.
+    """Manages `prek.toml` for version control hook configuration.
 
-    Generates ``prek.toml`` at the project root with a single ``local``
-    repository entry containing hooks that cover the full code-quality
-    pipeline.  All hooks use ``language: system``, meaning the tools must be
-    installed on the host.
+    Declares a single `local` repository entry containing hooks that cover
+    the full code-quality pipeline, all running against tools already
+    installed on the host rather than fetched by prek.
 
     Note:
-        Run ``prek install`` once after generating the config to register the
+        Run `prek install` once after generating the config to register the
         hooks with git.
     """
 
@@ -45,17 +43,15 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         return Path()
 
     def stem(self) -> str:
-        """Return the config filename stem, producing ``prek.toml``."""
+        """Return `"prek"`, the config filename stem."""
         return VersionControlHookManager.I.name()
 
     def _configs(self) -> dict[str, Any]:
-        """Build the complete ``prek.toml`` configuration.
-
-        Constructs a single ``local`` repository entry containing hooks
-        that enforce the full code-quality pipeline on the project via hooks.
+        """Build the required `prek.toml` structure.
 
         Returns:
-            Top-level prek.toml structure containing the prek configuration.
+            Dict with the default hook install types and the `repos` entry
+            wrapping the configured hooks.
         """
         return {
             "default_install_hook_types": self.hook_types(),
@@ -68,11 +64,11 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         }
 
     def hook_types(self) -> list[str]:
-        """Get all hook types."""
+        """Return the sorted, deduplicated git stages used across all hooks."""
         return sorted({stage for hook in self.hooks() for stage in hook["stages"]})
 
     def hooks(self) -> list[dict[str, Any]]:
-        """Get all hooks."""
+        """Return every hook configuration entry in the pipeline."""
         return [
             self.hook(
                 "format-code",
@@ -149,31 +145,26 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
     ) -> dict[str, Any]:
         """Build a single prek hook configuration entry.
 
-        Creates a hook dict for inclusion in the ``hooks`` list of a
-        ``repos`` entry in ``prek.toml``.  The hook ``id`` and ``name``
-        fields are both set to ``name``; the ``entry`` field is the
-        space-separated string representation of ``args``.
+        The `id` and `name` fields are both set to `name`; the `entry` field
+        is `args` converted to a space-separated string.
 
         Args:
-            name: Hook identifier used for both ``id`` and ``name`` fields.
-            args: Command and arguments for the hook ``entry`` field.
-                Converted to a space-separated string via ``str()``.
-            language: Execution environment for the hook.  ``"system"`` means
+            name: Hook identifier used for both the `id` and `name` fields.
+            args: Command and arguments for the hook `entry` field.
+            language: Execution environment for the hook. `"system"` means
                 the tool must already be installed on the host rather than
-                fetched remotely by prek.  Defaults to ``"system"``.
-            pass_filenames: When ``True``, prek appends staged filenames to the
-                hook command at runtime.  Defaults to ``False``.
-            always_run: When ``True``, the hook runs on every commit regardless
-                of whether any files match the optional ``files`` filter.
-                Defaults to ``True``.
-            stages: List of stages in which the hook should run, or ``None``
-                to use the default stages.  Defaults to ``["pre-commit"]``
-                when ``None`` is provided.
-            **kwargs: Additional prek hook fields passed through verbatim
-                (e.g. ``files``, ``exclude``).
+                fetched remotely by prek. Defaults to `"system"`.
+            pass_filenames: When `True`, prek appends the matched filenames
+                to the hook command at runtime. Defaults to `False`.
+            always_run: When `True`, the hook runs on every commit regardless
+                of whether any files match the optional `files` filter.
+                Defaults to `True`.
+            stages: Git stages in which the hook should run.
+            **kwargs: Additional prek hook fields merged in verbatim (e.g.
+                `files`, `exclude`).
 
         Returns:
-            Hook configuration dict ready for inclusion in the ``hooks`` list.
+            Hook configuration dict ready for inclusion in the `hooks` list.
         """
         hook: dict[str, Any] = {
             "id": name,

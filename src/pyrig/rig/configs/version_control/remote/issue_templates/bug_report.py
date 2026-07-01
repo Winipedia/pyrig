@@ -1,4 +1,4 @@
-"""Manage the GitHub bug report issue template configuration file."""
+"""Configuration file for the GitHub bug report issue template."""
 
 from pathlib import Path
 from typing import Any
@@ -7,41 +7,24 @@ from pyrig.rig.configs.base.yml import YMLDictConfigFile
 
 
 class BugReportConfigFile(YMLDictConfigFile):
-    """Manage ``.github/ISSUE_TEMPLATE/bug_report.yml``.
+    """Configuration manager for `.github/ISSUE_TEMPLATE/bug_report.yml`.
 
-    Generates and validates the GitHub bug report issue template, which
-    provides a structured form for users to submit bug reports. The template
-    includes required fields for describing the bug, reproduction steps,
-    expected and actual behavior, plus optional fields for environment details
-    and log output.
-
-    The file is considered correct when it contains at least all the keys and
-    values defined in ``_configs()``. Users may add extra keys without the
-    system reverting their additions.
+    Generates and validates the GitHub issue form contributors use to submit
+    bug reports.
     """
 
     def parent_path(self) -> Path:
-        """Return the directory that contains the bug report template.
-
-        Returns:
-            Path to ``.github/ISSUE_TEMPLATE``, relative to the project root.
-        """
+        """Return `Path(".github/ISSUE_TEMPLATE")`."""
         return Path(".github/ISSUE_TEMPLATE")
 
     def stem(self) -> str:
-        """Return the filename stem for the bug report template file.
-
-        Returns:
-            ``"bug_report"``, which combined with the ``.yml`` extension
-            produces ``bug_report.yml``.
-        """
+        """Return `"bug_report"` as the filename stem."""
         return "bug_report"
 
     def _configs(self) -> dict[str, Any]:
-        """Return the complete YAML structure for the bug report issue template.
+        """Return the GitHub issue form definition for bug reports.
 
-        Defines the GitHub issue form with six textarea fields that guide the
-        reporter through a structured bug report:
+        Defines a form with the following textarea fields:
 
         - **Description** (required): A clear description of the bug.
         - **Steps to Reproduce** (required): Numbered reproduction steps,
@@ -52,7 +35,9 @@ class BugReportConfigFile(YMLDictConfigFile):
         - **Logs** (optional): Relevant log output, rendered as shell code.
 
         Returns:
-            A ``dict[str, Any]`` containing the full GitHub issue form schema.
+            A `dict[str, Any]` representing the full GitHub issue form YAML,
+            including metadata such as `name`, `description`, `title`,
+            `labels`, and the `body` form fields.
         """
         return {
             "name": "Bug Report",

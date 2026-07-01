@@ -1,4 +1,5 @@
-"""Version control tool wrappers.
+"""Tool wrappers for local and remote version control operations.
 
-This package contains tool wrappers for local and remote version control tools.
+Covers the local version control system, its commit-hook tooling, and the
+remote host a repository is published to.
 """

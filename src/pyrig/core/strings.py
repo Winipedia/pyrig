@@ -10,7 +10,11 @@ UTF_8_ENCODING = "utf-8"
 
 
 def read_text_utf8(path: Path) -> str:
-    """Read the text content of a file using UTF-8 encoding."""
+    """Read the text content of a file using UTF-8 encoding.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+    """
     return path.read_text(encoding=UTF_8_ENCODING)
 
 
@@ -86,13 +90,10 @@ def make_name_from_obj(
 ) -> str:
     """Create a human-readable display name from a Python object or identifier string.
 
-    Extracts the bare name from a module, function, class, or string, splits it
-    on the given separator, optionally capitalizes each part, and rejoins the
-    parts with the output separator.
-
-    For non-string objects the `__name__` attribute is used. If the name
-    contains dots (e.g., a fully qualified module name), only the last component
-    is kept.
+    Splits the bare name on the given separator, optionally capitalizes each
+    part, and rejoins the parts with the output separator. If the name
+    contains dots (e.g., a fully qualified module name), only the last
+    component is kept.
 
     Args:
         obj: Source of the name. For modules, functions, or classes the

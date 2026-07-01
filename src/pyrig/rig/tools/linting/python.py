@@ -1,97 +1,70 @@
-"""Wrapper around the python linter tool.
-
-Wraps python linter commands and information.
-"""
+"""Command-line wrapper for the Python linter and formatter."""
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class PythonLinter(Tool):
-    """Type-safe wrapper for the Ruff Python linter and formatter.
-
-    Ruff is a fast Python linter and formatter written in Rust.
-    This class constructs command-line arguments for ruff's check,
-    auto-fix, and format operations.
-    """
+    """`ruff` command wrapper for linting, auto-fixing, and formatting."""
 
     def name(self) -> str:
-        """Return the tool command name.
-
-        Returns:
-            'ruff'
-        """
+        """Return `"ruff"`."""
         return "ruff"
 
     def group(self) -> str:
-        """Return the badge group this tool belongs to."""
+        """Return `Group.CODE_QUALITY`."""
         return Group.CODE_QUALITY
 
     def image_url(self) -> str:
-        """Return the badge image URL for Ruff.
-
-        Returns:
-            The URL of the badge image as a string.
-        """
+        """Return the Shields.io badge URL advertising `ruff`."""
         return "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"
 
     def link_url(self) -> str:
-        """Return the project link URL for Ruff.
-
-        Returns:
-            The URL of the Ruff project page as a string.
-        """
+        """Return the URL of the `ruff` project page."""
         return "https://github.com/astral-sh/ruff"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
-        """Return paths to ignore in version control."""
+        """Return `ruff`'s cache directory as the only path to ignore."""
         return (".ruff_cache/",)
 
     def pydocstyle(self) -> str:
-        """Return the docstring convention enforced by Ruff.
+        """Return `"google"`, the docstring convention this project enforces.
 
-        The returned value is used in two places to keep both tools
-        in sync with each other:
-
-        - ``pyproject.toml`` — sets ``[tool.ruff.lint.pydocstyle] convention``
-          so Ruff validates docstrings against this style.
-        - ``mkdocs.yml`` — sets ``mkdocstrings`` ``docstring_style`` so the
-          docs renderer parses docstrings with the same convention.
-
-        Returns:
-            The docstring convention name: ``'google'``.
+        Note:
+            Other configuration derives its docstring convention setting
+            from this value, so it must stay in sync wherever it is used.
         """
         return "google"
 
     def check_fix_args(self, *args: str) -> Args:
-        """Construct ruff check arguments with auto-fix enabled.
+        """Build a `ruff check` command with auto-fix enabled.
 
         Args:
-            *args: Additional arguments forwarded to the check command.
+            *args: Additional arguments appended after `--fix`.
 
         Returns:
-            Args for ``ruff check --fix``.
+            Args for `ruff check --fix`.
         """
         return self.check_args("--fix", *args)
 
     def check_args(self, *args: str) -> Args:
-        """Construct ruff check arguments.
+        """Build a `ruff check` command.
 
         Args:
-            *args: Additional arguments forwarded to the check command.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``ruff check``.
+            Args for `ruff check`.
         """
         return self.args("check", *args)
 
     def format_args(self, *args: str) -> Args:
-        """Construct ruff format arguments.
+        """Build a `ruff format` command.
 
         Args:
-            *args: Additional arguments forwarded to the format command.
+            *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``ruff format``.
+            Args for `ruff format`.
         """
         return self.args("format", *args)

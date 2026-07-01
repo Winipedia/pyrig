@@ -1,6 +1,5 @@
-"""Configuration management for GitHub issue templates.
+"""Configuration management for the GitHub issue template chooser and forms.
 
-Generates and validates the YAML files placed in the `.github/ISSUE_TEMPLATE/`
-directory, which control the templates available to contributors when they open
-a new issue on GitHub.
+Covers the files in `.github/ISSUE_TEMPLATE/` that control which templates
+contributors see and can choose from when opening a new issue on GitHub.
 """

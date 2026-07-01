@@ -1,4 +1,4 @@
-"""Utilities for Python modules."""
+"""Utilities for loading, re-loading, and introspecting Python modules."""
 
 import sys
 from importlib.machinery import SourceFileLoader
@@ -49,6 +49,10 @@ def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleTy
 
     Returns:
         A freshly imported module object, distinct from the original.
+
+    Raises:
+        AttributeError: If the module's `__file__` is `None`
+            (e.g., built-in modules or namespace packages).
     """
     module_path = package_dir_path(module) if is_package else module_file_path(module)
     # Remove from cache

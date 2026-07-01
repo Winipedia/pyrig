@@ -1,9 +1,9 @@
-"""Manage .env files for local environment variables and secrets.
+"""Management of the `.env` file for local environment variables and secrets.
 
-Creates an empty .env file in the project root if one does not exist.
-Pyrig does not manage the file's content; users populate and maintain it
-manually. The file is automatically added to .gitignore so secrets are
-never committed to version control.
+Ensures an empty `.env` file exists in the project root without ever reading
+or writing its content afterward; users populate and maintain the file
+manually. The file is excluded from version control so secrets are never
+committed.
 """
 
 from pathlib import Path
@@ -13,22 +13,15 @@ from pyrig.rig.configs.base.config_file import DictConfigFile
 
 
 class EnvConfigFile(DictConfigFile):
-    """Config file manager for .env.
+    """Config file manager for `.env`.
 
-    Ensures a .env file exists at the project root for storing local
-    environment variables and secrets. Pyrig only creates the file when
-    missing; all content is managed by the user directly.
-
-    Writing is intentionally blocked: dump() raises PermissionError when
-    called with a non-empty config to prevent accidental overwriting of
-    user secrets. The file is gitignored by default.
+    Only ever creates an empty `.env` file when one is missing. Existing
+    content is never read or rewritten, so user secrets are never at risk of
+    being overwritten.
     """
 
     def _load(self) -> dict[str, str | None]:
-        """Raise ``RuntimeError`` unconditionally.
-
-        Loading the ``.env`` file is never permitted; all content is managed
-        by the user directly and must not be read programmatically.
+        """Refuse to load `.env` content.
 
         Raises:
             RuntimeError: Always.
@@ -37,18 +30,13 @@ class EnvConfigFile(DictConfigFile):
         raise RuntimeError(msg)
 
     def _dump(self, configs: dict[str, Any]) -> None:
-        """Block all non-empty writes to the .env file.
-
-        Pyrig never overwrites .env content because the file holds user
-        secrets that must not be lost. Passing an empty dict is allowed so
-        the base class can create an empty placeholder file without
-        triggering this guard.
+        """Refuse to write non-empty content to `.env`; no-op for an empty dict.
 
         Args:
             configs: Configuration to write. Must be empty.
 
         Raises:
-            PermissionError: When configs is non-empty.
+            PermissionError: If `configs` is non-empty.
         """
         if not configs:
             return
@@ -58,62 +46,29 @@ Please edit it directly."""
         raise PermissionError(msg)
 
     def _configs(self) -> dict[str, Any]:
-        """Return an empty dict; pyrig manages no .env content.
-
-        Returns:
-            An empty dict.
-        """
+        """Return an empty dict, since no `.env` content is required."""
         return {}
 
     def version_control_ignored(self) -> bool:
-        """Indicate that .env is excluded from version control.
-
-        Returns:
-            Always True.
-        """
+        """Return `True`; `.env` is always excluded from version control."""
         return True
 
     def parent_path(self) -> Path:
-        """Return the project root as the parent directory for .env.
-
-        Returns:
-            Path(), which resolves to the current working directory
-            (the project root at runtime).
-        """
+        """Return the project root, relative to the current working directory."""
         return Path()
 
     def stem(self) -> str:
-        """Return the filename stem for the .env file.
-
-        Together with the empty extension and empty separator returned by
-        extension() and extension_separator(), this produces the final
-        filename .env.
-
-        Returns:
-            ``".env"``
-        """
+        """Return `".env"`."""
         return ".env"
 
     def extension(self) -> str:
-        """Return an empty string because .env has no extension.
-
-        Returns:
-            ``""``
-        """
+        """Return `""`, since `.env` has no extension."""
         return ""
 
     def extension_separator(self) -> str:
-        """Return an empty separator between stem and extension.
-
-        Overrides the default ``"."`` separator so that the stem ``".env"``
-        is not followed by a trailing dot when combined with the empty
-        extension.
-
-        Returns:
-            ``""``
-        """
+        """Return `""`, so the stem is not followed by a trailing dot."""
         return ""
 
     def is_correct(self) -> bool:
-        """File is correct if it exists."""
+        """Return whether `.env` exists, without loading its content."""
         return self.path().exists()

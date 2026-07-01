@@ -1,4 +1,4 @@
-"""Configuration management for .gitignore files."""
+"""Configuration management for `.gitignore` files."""
 
 from pathlib import Path
 
@@ -11,56 +11,37 @@ from pyrig.rig.tools.pyrigger import Pyrigger
 
 
 class VersionControllerIgnoreConfigFile(StringConfigFile):
-    """Manages the ``.gitignore`` file for a pyrig project.
+    """Config file manager for `.gitignore`.
 
-    Produces the final ``.gitignore`` content by merging a bundled Python gitignore
+    Produces the final `.gitignore` content by merging a bundled Python gitignore
     baseline with pyrig-specific additions such as tool caches, build artifacts, and
-    the paths of config files that are excluded from version control (e.g. ``.env``,
-    ``.scratch.py``). Entries already present in the baseline are never duplicated.
+    the paths of config files that are excluded from version control (e.g. `.env`,
+    `.scratch.py`). Additions already present in the baseline are not duplicated.
     """
 
     def stem(self) -> str:
-        """Return the stem of the ``.gitignore`` filename.
-
-        Returns:
-            ``'.gitignore'``
-        """
+        """Return `'.gitignore'`, the full filename with no extension to split off."""
         return ".gitignore"
 
     def parent_path(self) -> Path:
-        """Return the directory where ``.gitignore`` is written.
-
-        Returns:
-            ``Path()`` — the current working directory, representing the project root.
-        """
+        """Return the project root as the parent directory."""
         return Path()
 
     def extension_separator(self) -> str:
-        """Return the separator between the stem and the extension.
-
-        Returns:
-            An empty string, because ``.gitignore`` has no extension.
-        """
+        """Return an empty string, so no trailing dot is appended to `.gitignore`."""
         return ""
 
     def extension(self) -> str:
-        """Return the file extension.
-
-        Returns:
-            An empty string, because ``.gitignore`` has no extension.
-        """
+        """Return an empty string, since `.gitignore` has no extension."""
         return ""
 
     def lines(self) -> list[str]:
-        """Build the complete list of lines for ``.gitignore``.
-
-        Assembles the final pattern list by merging the standard Python gitignore
-        baseline with pyrig-specific additions.
+        """Build the required lines for `.gitignore`.
 
         Returns:
-            Complete list of ``.gitignore`` lines with the baseline first,
-            followed by any pyrig-specific additions not already present in
-            the baseline, and a trailing empty string.
+            The standard gitignore baseline, followed by pyrig-specific
+            additions that are not already present in the baseline, followed
+            by a trailing empty string.
         """
         standard = self.standard_ignore_lines()
         standard_set = set(standard)
@@ -70,26 +51,16 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         return [*standard, *additional, ""]
 
     def standard_ignore_lines(self) -> list[str]:
-        """Return the Python gitignore baseline as a list of lines.
-
-        The baseline is sourced from GitHub's canonical `Python.gitignore`
-        template, covering common Python build artifacts, caches, and
-        environment files.
-
-        Returns:
-            Lines from the Python gitignore baseline.
-        """
+        """Return the Python gitignore baseline, split into individual lines."""
         return self.split_lines(self.standard_ignore_text())
 
     def additional_ignore_lines(self) -> list[str]:
-        """Additional lines to be ignored.
+        """Return the pyrig-specific lines to add to the gitignore baseline.
 
-        Builds a list of pyrig-specific patterns to be added to the gitignore.
-        This will always include at least the line ``# pyrig stuff`` as a header for
-        the pyrig-specific entries.
-        Some entries here are already covered by the standard Python gitignore, but are
-        included here to be sure as they are almost garantueed to occur in a
-        pyrig project.
+        Returns:
+            A header comment, followed by the version-control-ignore paths
+            declared by every tool, followed by the paths of every config
+            file that is excluded from version control.
         """
         config_file_paths = (
             cf().path().as_posix()
@@ -102,9 +73,5 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
         ]
 
     def standard_ignore_text(self) -> str:
-        """Return the standard Python gitignore template as a single string.
-
-        Returns:
-            Full Python gitignore template text.
-        """
+        """Return GitHub's canonical Python gitignore template as a single string."""
         return resource_content("GITIGNORE", resources)

@@ -1,16 +1,6 @@
-"""Configuration file definitions for project scaffolding.
+"""Declarative definitions of the configuration files managed for a project.
 
-This package is the discovery root for all [ConfigFile][] subclasses.
-`ConfigFile.dependency_package()` returns this module, so only subclasses
-defined here — and in dependent packages that extend pyrig — are discovered
-and validated.
-
-Running `pyrig sync` calls `ConfigFile.validate_concrete_subclasses()`, which
-finds every concrete `ConfigFile` subclass in this package and in dependent
-packages, and validates each one in priority order: creating missing files and
-updating out-of-date ones while leaving correct files untouched.
-
-To add a new managed configuration file, define a concrete `ConfigFile`
-subclass (from `pyrig.rig.configs.base.config_file`) anywhere inside this
-package.
+This package is the discovery scope for pyrig's config-file management
+plugins: every managed file, in this package or in a package that depends on
+pyrig, is defined and validated relative to here.
 """

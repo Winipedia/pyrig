@@ -1,7 +1,7 @@
 """Configuration management for CONTRIBUTING.md files.
 
-Provides a configuration file class for generating and managing CONTRIBUTING.md
-with a minimal best practices contribution guide template.
+Manages CONTRIBUTING.md using a minimal best-practices template covering
+issue reporting and the pull request workflow.
 """
 
 from pathlib import Path
@@ -42,19 +42,19 @@ Use issues for:
 
 
 class ContributingConfigFile(MarkdownConfigFile):
-    """Manages the CONTRIBUTING.md file for the project.
+    """Configuration manager for the project's CONTRIBUTING.md file.
 
-    Generates a standard contribution guide covering issue reporting and the
-    pull request workflow. Suitable for both private and public repositories.
-    Users may customize the file content after initial generation.
+    Generates CONTRIBUTING.md from a minimal best-practices template covering
+    issue reporting and the pull request workflow. Users are free to
+    customize the file after initial generation.
     """
 
     def stem(self) -> str:
-        """Return "CONTRIBUTING" as the filename stem."""
+        """Return `"CONTRIBUTING"` as the filename stem."""
         return "CONTRIBUTING"
 
     def parent_path(self) -> Path:
-        """Return project root as parent directory."""
+        """Return the project root as the parent directory."""
         return Path()
 
     def lines(self) -> list[str]:
@@ -64,14 +64,13 @@ class ContributingConfigFile(MarkdownConfigFile):
     def is_correct(self) -> bool:
         """Return whether CONTRIBUTING.md has non-empty content.
 
-        Overrides the inherited line-matching validation so that user-modified
-        content is still considered correct. Any non-empty file at the expected
-        path passes, because the template is a starting point that projects are
-        expected to customise.
+        Any non-empty file at the expected path is considered correct, even
+        if its content no longer matches the template, since the template is
+        a starting point that users are expected to customize.
 
         Returns:
-            ``True`` if the file has non-empty content; ``False`` if the
-            file is empty.
+            `True` if the file has non-empty content; `False` if the file is
+            empty.
 
         Raises:
             FileNotFoundError: If the file does not exist.

@@ -1,19 +1,12 @@
-"""Markdown configuration file management.
-
-Provides a base class for creating and managing Markdown (`.md`) configuration
-files with validated content.
-"""
+"""Abstract base for Markdown (`.md`) configuration file management."""
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
 class MarkdownConfigFile(StringConfigFile):
-    """Base class for Markdown (`.md`) configuration files.
+    """Abstract base for Markdown (`.md`) configuration files.
 
-    Extends [StringConfigFile][pyrig.rig.configs.base.string_.StringConfigFile]
-    with the `"md"` file extension. Subclasses define their directory path and
-    required content; the parent class handles reading, writing, and
-    content-based validation.
+    Fixes the file extension to `"md"`.
 
     Subclasses must implement:
         - `parent_path`: Directory containing the `.md` file.

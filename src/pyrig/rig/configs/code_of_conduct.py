@@ -20,31 +20,31 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
 
     Generates CODE_OF_CONDUCT.md using the Contributor Covenant 2.1 standard.
     Reads the covenant text from a bundled resource file and substitutes the
-    project's version control email address for the ``[INSERT CONTACT METHOD]``
+    project's version control email address for the `[INSERT CONTACT METHOD]`
     placeholder.
     """
 
     def stem(self) -> str:
-        """Return ``"CODE_OF_CONDUCT"`` as the filename stem."""
+        """Return `"CODE_OF_CONDUCT"` as the filename stem."""
         return "CODE_OF_CONDUCT"
 
     def parent_path(self) -> Path:
-        """Return project root as parent directory."""
+        """Return the project root as the parent directory."""
         return Path()
 
     def lines(self) -> list[str]:
-        """Return the Contributor Covenant content with contact method as lines."""
+        """Return the completed Contributor Covenant text as lines."""
         return self.split_lines(self.code_of_conduct())
 
     def is_correct(self) -> bool:
-        """Check if CODE_OF_CONDUCT.md has non-empty content.
+        """Check whether CODE_OF_CONDUCT.md has non-empty content.
 
         Overrides the default content-comparison check with a simpler
         non-emptiness test.
 
         Returns:
-            bool: ``True`` if the file has non-empty content; ``False`` if
-            the file is empty.
+            `True` if the file has non-empty content; `False` if the file
+            is empty.
 
         Raises:
             FileNotFoundError: If the file does not exist.
@@ -54,11 +54,11 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     def code_of_conduct(self) -> str:
         """Return the Contributor Covenant with the contact method substituted.
 
-        Replaces the ``[INSERT CONTACT METHOD]`` placeholder in the covenant
+        Replaces the `[INSERT CONTACT METHOD]` placeholder in the covenant
         text with the project's version control email address.
 
         Returns:
-            str: Contributor Covenant 2.1 text with the contact method in place.
+            Contributor Covenant 2.1 text with the contact method in place.
         """
         return self.code_of_conduct_template().replace(
             "[INSERT CONTACT METHOD]",
@@ -69,7 +69,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         """Return the raw Contributor Covenant 2.1 template text.
 
         Returns:
-            Full covenant text with the ``[INSERT CONTACT METHOD]`` placeholder intact.
+            Full covenant text with the `[INSERT CONTACT METHOD]` placeholder intact.
         """
         return resource_content("CONTRIBUTOR_COVENANT_CODE_OF_CONDUCT", resources)
 
@@ -77,7 +77,7 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
         """Return the contact method for the code of conduct.
 
         Returns:
-            str: Version control email address wrapped in angle brackets,
-                e.g., ``<user@example.com>``.
+            Version control email address wrapped in angle brackets, e.g.
+            `<user@example.com>`.
         """
         return f"<{VersionController.I.email()}>"

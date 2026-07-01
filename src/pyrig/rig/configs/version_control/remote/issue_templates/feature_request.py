@@ -7,7 +7,7 @@ from pyrig.rig.configs.base.yml import YMLDictConfigFile
 
 
 class FeatureRequestConfigFile(YMLDictConfigFile):
-    """Manages ``.github/ISSUE_TEMPLATE/feature_request.yml``.
+    """Config file for `.github/ISSUE_TEMPLATE/feature_request.yml`.
 
     Generates and validates the GitHub issue form that contributors use to
     submit feature requests. The form guides contributors through describing
@@ -18,28 +18,23 @@ class FeatureRequestConfigFile(YMLDictConfigFile):
         """Return the directory containing the feature request template file.
 
         Returns:
-            ``Path(".github/ISSUE_TEMPLATE")``.
+            `Path(".github/ISSUE_TEMPLATE")`.
         """
         return Path(".github/ISSUE_TEMPLATE")
 
     def stem(self) -> str:
-        """Return ``"feature_request"`` as the filename stem."""
+        """Return `"feature_request"` as the filename stem."""
         return "feature_request"
 
     def _configs(self) -> dict[str, Any]:
         """Return the GitHub issue form definition for feature requests.
 
-        Defines a form with the following textarea fields:
-
-        - **Summary** (required): A brief description of the requested feature.
-        - **Use Case** (required): The motivation or problem the feature would address.
-        - **Proposed Solution** (optional): The envisioned way the feature would work.
-        - **Alternatives Considered** (optional): Other approaches already evaluated.
+        The summary and use case fields are required; the proposed solution
+        and alternatives considered fields are optional.
 
         Returns:
-            A ``dict[str, Any]`` representing the full GitHub issue form YAML, including
-            metadata such as ``name``, ``description``, ``title``, ``labels``, and
-            the ``body`` form fields.
+            Issue form metadata (`name`, `description`, `title`, `labels`)
+            together with the `body` field definitions.
         """
         return {
             "name": "Feature Request",

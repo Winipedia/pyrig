@@ -1,7 +1,4 @@
-"""Version controller wrapper.
-
-Wraps VersionController commands and information.
-"""
+"""Type-safe construction of version control CLI commands."""
 
 import logging
 from functools import cache
@@ -13,55 +10,30 @@ logger = logging.getLogger(__name__)
 
 
 class VersionController(Tool):
-    """Type-safe git command argument builder.
+    """Git tool wrapper exposing typed builders for common git commands.
 
-    Each ``*_args`` method constructs an ``Args`` object representing a specific git
-    command.  ``Args`` objects can be executed directly via ``.run()`` or
-    converted to a string for embedding in shell scripts and workflow files.
-    All commands are automatically prefixed with ``git``.
+    Every `*_args` method returns an `Args` command prefixed with `git`, ready
+    to run or to render as a shell string.
     """
 
     def name(self) -> str:
-        """Return the tool's command name.
-
-        Returns:
-            ``'git'``
-        """
+        """Return `'git'` as the executable name."""
         return "git"
 
     def group(self) -> str:
-        """Return the badge group this tool belongs to.
-
-        Returns:
-            ``Group.TOOLING``
-        """
+        """Return `Group.TOOLING` as the badge category."""
         return Group.TOOLING
 
     def image_url(self) -> str:
-        """Return the badge image URL for Git.
-
-        Returns:
-            The URL of the badge image as a string.
-        """
+        """Return the Shields.io badge image URL for Git."""
         return "https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white"
 
     def link_url(self) -> str:
-        """Return the link URL for Git.
-
-        Returns:
-            The URL of the Git project page as a string.
-        """
+        """Return the URL of the Git homepage."""
         return "https://git-scm.com"
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Return development dependencies for this tool.
-
-        Git is a system dependency installed outside the Python environment,
-        so no pip-installable package is needed here.
-
-        Returns:
-            An empty tuple.
-        """
+        """Return an empty tuple; git is a system dependency, not a pip package."""
         # git is a system dependency, so we don't have a dev dependency for it
         return ()
 
@@ -70,11 +42,7 @@ class VersionController(Tool):
     # -------------------------------------------------------------------------
 
     def default_branch(self) -> str:
-        """Return the default branch name for new repositories.
-
-        Returns:
-            ``'main'``
-        """
+        """Return `'main'` as the default branch name for new repositories."""
         return "main"
 
     # -------------------------------------------------------------------------
@@ -82,13 +50,13 @@ class VersionController(Tool):
     # -------------------------------------------------------------------------
 
     def init_args(self, *args: str) -> Args:
-        """Build arguments for ``git init``.
+        """Build arguments for `git init`.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``git init [args]``.
+            Args for `git init [args]`.
         """
         return self.args("init", *args)
 
@@ -99,24 +67,24 @@ class VersionController(Tool):
     def add_all_args(self, *args: str) -> Args:
         """Build arguments to stage all modified and untracked files.
 
-        Equivalent to running ``git add .`` from the current working directory.
+        Equivalent to running `git add .` from the current working directory.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``git add . [args]``.
+            Args for `git add . [args]`.
         """
         return self.add_args(".", *args)
 
     def add_args(self, *args: str) -> Args:
-        """Build base arguments for ``git add``.
+        """Build base arguments for `git add`.
 
         Args:
             *args: Files or paths to stage.
 
         Returns:
-            Args for ``git add [args]``.
+            Args for `git add [args]`.
         """
         return self.args("add", *args)
 
@@ -125,25 +93,25 @@ class VersionController(Tool):
     # -------------------------------------------------------------------------
 
     def commit_with_msg_args(self, *args: str, msg: str) -> Args:
-        """Build arguments for ``git commit -m <msg>``.
+        """Build arguments for `git commit -m <msg>`.
 
         Args:
             *args: Additional arguments appended to the command.
             msg: The commit message.
 
         Returns:
-            Args for ``git commit -m <msg> [args]``.
+            Args for `git commit -m <msg> [args]`.
         """
         return self.commit_args("-m", msg, *args)
 
     def commit_args(self, *args: str) -> Args:
-        """Build base arguments for ``git commit``.
+        """Build base arguments for `git commit`.
 
         Args:
-            *args: Commit options or message flags (e.g. ``-m``, ``--amend``).
+            *args: Commit options or message flags (e.g. `-m`, `--amend`).
 
         Returns:
-            Args for ``git commit [args]``.
+            Args for `git commit [args]`.
         """
         return self.args("commit", *args)
 
@@ -152,39 +120,36 @@ class VersionController(Tool):
     # -------------------------------------------------------------------------
 
     def push_origin_tag_args(self, *args: str, tag: str) -> Args:
-        """Build arguments to push a specific tag to the ``origin`` remote.
-
-        Used in release workflows to publish a version tag immediately after
-        it has been created locally.
+        """Build arguments to push a specific tag to the `origin` remote.
 
         Args:
             *args: Additional arguments appended to the command.
-            tag: The tag ref to push (e.g. ``1.2.3``).
+            tag: The tag ref to push (e.g. `1.2.3`).
 
         Returns:
-            Args for ``git push origin <tag> [args]``.
+            Args for `git push origin <tag> [args]`.
         """
         return self.push_origin_args(tag, *args)
 
     def push_origin_args(self, *args: str) -> Args:
-        """Build arguments for ``git push origin``.
+        """Build arguments for `git push origin`.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``git push origin [args]``.
+            Args for `git push origin [args]`.
         """
         return self.push_args("origin", *args)
 
     def push_args(self, *args: str) -> Args:
-        """Build base arguments for ``git push``.
+        """Build base arguments for `git push`.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``git push [args]``.
+            Args for `git push [args]`.
         """
         return self.args("push", *args)
 
@@ -197,10 +162,10 @@ class VersionController(Tool):
 
         Args:
             *args: Additional arguments appended to the command.
-            tag: The tag name to create (e.g. ``1.2.3``).
+            tag: The tag name to create (e.g. `1.2.3`).
 
         Returns:
-            Args for ``git tag <tag> [args]``.
+            Args for `git tag <tag> [args]`.
         """
         return self.args("tag", tag, *args)
 
@@ -213,49 +178,50 @@ class VersionController(Tool):
     # -------------------------------------------------------------------------
 
     def config_remote_origin_url_args(self, *args: str) -> Args:
-        """Build arguments to read the ``remote.origin.url`` value.
+        """Build arguments to read the `remote.origin.url` value.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``git config --get remote.origin.url [args]``.
+            Args for `git config --get remote.origin.url [args]`.
         """
         return self.config_get_args("remote.origin.url", *args)
 
     def config_get_user_name_args(self, *args: str) -> Args:
-        """Build arguments to read the configured ``user.name`` value.
+        """Build arguments to read the configured `user.name` value.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``git config --get user.name [args]``.
+            Args for `git config --get user.name [args]`.
         """
         return self.config_get_args("user.name", *args)
 
     def config_get_user_email_args(self, *args: str) -> Args:
-        """Build arguments to read the configured ``user.email`` value.
+        """Build arguments to read the configured `user.email` value.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for ``git config --get user.email [args]``.
+            Args for `git config --get user.email [args]`.
         """
         return self.config_get_args("user.email", *args)
 
     def config_get_args(self, *args: str) -> Args:
-        """Build base arguments for ``git config --get``.
+        """Build base arguments for `git config --get`.
 
-        The ``--get`` flag instructs git to print the value for the given key
+        The `--get` flag instructs git to print the value for the given key
         and exit with a non-zero code when the key is absent.
 
         Args:
-            *args: The configuration key to query.
+            *args: The configuration key to query, and any additional
+                arguments appended to the command.
 
         Returns:
-            Args for ``git config --get [args]``.
+            Args for `git config --get [args]`.
         """
         return self.config_args("--get", *args)
 
@@ -264,13 +230,13 @@ class VersionController(Tool):
     # -------------------------------------------------------------------------
 
     def config_args(self, *args: str) -> Args:
-        """Build base arguments for ``git config``.
+        """Build base arguments for `git config`.
 
         Args:
             *args: Config subcommands, scope flags, and key/value pairs.
 
         Returns:
-            Args for ``git config [args]``.
+            Args for `git config [args]`.
         """
         return self.args("config", *args)
 
@@ -281,12 +247,9 @@ class VersionController(Tool):
     @classmethod
     @cache
     def repo_owner(cls) -> str:
-        """Return the cached repository owner.
+        """Return the repository owner.
 
-        This is the primary public entry point for obtaining the repository
-        owner.  It delegates to ``_repo_owner`` on a fresh instance
-        and caches the result at the class level so that repeated calls within
-        the same process incur no subprocess overhead.
+        The result is cached, so repeated calls incur no subprocess overhead.
 
         Returns:
             The repository owner as a string.
@@ -294,23 +257,11 @@ class VersionController(Tool):
         return cls()._repo_owner()  # noqa: SLF001
 
     def _repo_owner(self) -> str:
-        """Parse the repository owner from the git remote URL.
+        """Return the repository owner, falling back to the git user name.
 
-        Supports both HTTPS (``https://github.com/owner/repo.git``) and SSH
-        (``git@github.com:owner/repo.git``) remote formats by stripping known
-        URL prefixes, then taking the first path segment as the owner.
-
-        When no remote is configured and ````, falls back
-        to the git ``user.name`` as the owner.
-
-        If the fallback to git username is used, the spaces in the username are removed
-        to ensure URL safety and a warning is logged. This is inspired by the fact that
-        GitHub usernames cannot contain spaces in the URL, but git usernames can, so if
-        the git username contains spaces, it is likely not intended to be used as-is
-        for the repository owner in URLs.
-        When extracting the owner from the remote URL, the username is guaranteed to be
-        correct, so no correction is applied to it.
-
+        When no remote origin is configured, falls back to the configured
+        git `user.name`, stripping any spaces from it (with a warning logged)
+        since a repository owner must be URL-safe.
 
         Returns:
             The repository owner as a string.
@@ -339,16 +290,17 @@ class VersionController(Tool):
         return owner
 
     def owner_from_remote_url(self) -> str:
-        """Return the repository owner parsed from the remote URL.
+        """Return the repository owner parsed from the remote origin URL.
 
-        This method is a thin wrapper around ``remote_url()`` that extracts the
-        owner segment from the URL.
+        Supports HTTPS (`https://github.com/owner/repo.git`) and SSH
+        (`git@github.com:owner/repo.git` or `ssh://git@github.com/owner/repo.git`)
+        remote formats.
 
         Returns:
             The repository owner as a string.
 
         Raises:
-            subprocess.CalledProcessError: If no remote origin URL is configured.
+            subprocess.CalledProcessError: If no remote origin is configured.
         """
         url = self.remote_url(check=True)
         # possible formats:
@@ -365,20 +317,17 @@ class VersionController(Tool):
     def remote_url(self, *, check: bool = True) -> str:
         """Return the remote origin URL configured for this repository.
 
-        Reads ``remote.origin.url`` via ``git config --get`` and strips
-        surrounding whitespace from the output.
-
         Args:
-            check: When ``True``, raises ``subprocess.CalledProcessError`` if
-                the command fails (e.g. no remote is configured).  When
-                ``False``, returns an empty string on failure.
+            check: When `True` (the default), raises `subprocess.CalledProcessError`
+                if the underlying command fails (e.g. no remote is configured).
+                When `False`, returns an empty string on failure instead.
 
         Returns:
             The remote URL string in HTTPS or SSH format, or an empty string
-            when ``check=False`` and no remote origin is configured.
+            when `check=False` and the command fails.
 
         Raises:
-            subprocess.CalledProcessError: When ``check=True`` and the git
+            subprocess.CalledProcessError: When `check=True` and the underlying
                 command exits with a non-zero status.
         """
         return (
@@ -386,26 +335,23 @@ class VersionController(Tool):
         )
 
     def user_name(self) -> str:
-        """Return the git ``user.name`` from the active configuration.
-
-        Used as the owner fallback inside ``_repo_owner`` when no
-        remote origin is configured.
+        """Return the git `user.name` from the active configuration.
 
         Returns:
             The configured git user name string.
 
         Raises:
-            subprocess.CalledProcessError: If ``user.name`` is not configured.
+            subprocess.CalledProcessError: If `user.name` is not configured.
         """
         return self.config_get_user_name_args().run_cached().stdout.strip()
 
     def email(self) -> str:
-        """Return the git ``user.email`` from the active configuration.
+        """Return the git `user.email` from the active configuration.
 
         Returns:
             The configured git user email string.
 
         Raises:
-            subprocess.CalledProcessError: If ``user.email`` is not configured.
+            subprocess.CalledProcessError: If `user.email` is not configured.
         """
         return self.config_get_user_email_args().run_cached().stdout.strip()

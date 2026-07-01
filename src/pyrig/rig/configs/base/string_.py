@@ -14,31 +14,25 @@ class StringConfigFile(ListConfigFile):
     Manages text configuration files by validating that required lines are
     present via substring matching, while preserving any content the user
     has added beyond what is required.
-
-    Subclasses must implement:
-        - `parent_path`: Directory containing the text file.
-        - `stem`: Filename without its extension.
-        - `lines`: Required content as a list of lines.
-        - `extension`: File extension (can be an empty string).
     """
 
     @abstractmethod
     def lines(self) -> list[str]:
-        """Return the required content that must be present in the file.
+        """Return the lines that must be present in the file.
 
         Returns:
-            Lines checked via substring matching during validation.
+            Required lines, checked via substring matching rather than
+            exact line equality.
         """
 
     def should_override_content(self) -> bool:
-        """Return whether existing file content should be replaced entirely.
+        """Return whether existing file content should be discarded.
 
-        When `False` (the default), existing content is kept and appended after
-        the required lines. When `True`, only the required lines are written and
-        all existing content is discarded.
+        Defaults to `False`. Override in subclasses that must replace the
+        file's content instead of preserving it.
 
         Returns:
-            `False` by default.
+            `True` if existing content should be discarded; `False` otherwise.
         """
         return False
 
@@ -74,13 +68,13 @@ class StringConfigFile(ListConfigFile):
         return [*expected_lines, *self.load()]
 
     def is_correct(self) -> bool:
-        """Check whether the file contains all required content.
+        """Check whether the file already contains all required content.
 
-        Validates by checking that every required line is present anywhere
-        in the file content via substring matching.
+        A required line need not be an exact line of the file; it only has
+        to occur somewhere within the file's text.
 
         Returns:
-            `True` if all required lines are found within the file content.
+            `True` if every required line is present in the file.
         """
         return self.all_lines_in_content(
             lines=self.configs(), content=self.read_content()

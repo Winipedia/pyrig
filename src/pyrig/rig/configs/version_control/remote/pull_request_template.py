@@ -1,9 +1,4 @@
-"""Configuration for the GitHub pull request template.
-
-Manages ``.github/pull_request_template.md``, providing a minimal starter
-template that prompts contributors to summarize their change and describe
-how it was tested.
-"""
+"""Configuration for the GitHub pull request template."""
 
 from pathlib import Path
 
@@ -30,41 +25,31 @@ Please consider the following:
 
 
 class PullRequestTemplateConfigFile(MarkdownConfigFile):
-    """Configuration manager for the GitHub pull request template.
+    """Configuration manager for `.github/pull_request_template.md`.
 
-    Generates ``.github/pull_request_template.md`` with a concise starter
-    template containing a Change Overview section with Summary and Testing
-    subsections.
-
-    The ``is_correct`` validation is intentionally permissive: it only checks
-    that the file contains non-empty content. This lets
-    contributors freely customize the template after initial generation
-    without triggering unwanted regeneration on subsequent ``validate`` calls.
+    Validation is intentionally permissive: the file is considered correct
+    as soon as it has any content, so contributors can freely customize the
+    generated template without it being overwritten on later validation.
     """
 
     def parent_path(self) -> Path:
-        """Return the ``.github`` directory as the file's parent path."""
+        """Return the `.github` directory."""
         return Path(".github")
 
     def stem(self) -> str:
-        """Return ``"pull_request_template"`` as the filename stem."""
+        """Return `"pull_request_template"` as the filename stem."""
         return "pull_request_template"
 
     def lines(self) -> list[str]:
-        """Return the pull request template as a list of lines."""
+        """Return the required starter template content as a list of lines."""
         return self.split_lines(PULL_REQUEST_TEMPLATE)
 
     def is_correct(self) -> bool:
-        """Return whether the pull request template file has content.
-
-        Overrides the parent's content-matching validation with a permissive
-        check: the file is considered correct as long as it has non-empty
-        content. This avoids overwriting user-customized templates on
-        subsequent ``validate`` calls.
+        """Return whether the file has non-empty content.
 
         Returns:
-            ``True`` if the file has non-empty content; ``False`` if the
-            file is empty.
+            `True` if the file has non-empty content; `False` if the file
+            is empty.
 
         Raises:
             FileNotFoundError: If the file does not exist.

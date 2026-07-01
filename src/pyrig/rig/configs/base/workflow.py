@@ -24,39 +24,33 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class WorkflowConfigFile(YMLDictConfigFile):
     """Abstract base class for generating GitHub Actions workflow YAML files.
 
-    Subclasses define specific workflows by implementing [jobs][] and
-    optionally overriding the trigger and environment methods.
-    The base class provides a rich set of composable building blocks for steps,
-    jobs, strategies, triggers, and expression helpers so subclasses can
-    assemble complete workflows without writing raw YAML.
-
-    Subclasses should:
-        1. Implement [jobs][] to define the workflow jobs.
-        2. Override [workflow_triggers][] to control when the workflow runs.
-        3. Pass `permissions` to [job][] for jobs that need elevated
-           access to the automatic `GITHUB_TOKEN`.
+    Subclasses define a workflow by implementing `jobs` and optionally
+    overriding the trigger, default, and environment methods. The base class
+    provides composable building blocks for jobs, steps, strategies,
+    triggers, and expression helpers so subclasses can assemble complete
+    workflows without writing raw YAML.
 
     Attributes:
-        UBUNTU_LATEST (str): Runner label for Ubuntu (`"ubuntu-latest"`).
-        WINDOWS_LATEST (str): Runner label for Windows (`"windows-latest"`).
-        MACOS_LATEST (str): Runner label for macOS (`"macos-latest"`).
+        UBUNTU_LATEST: Runner label for Ubuntu (`"ubuntu-latest"`).
+        WINDOWS_LATEST: Runner label for Windows (`"windows-latest"`).
+        MACOS_LATEST: Runner label for macOS (`"macos-latest"`).
 
     Example:
         >>> from pyrig.rig.configs.base.workflow import WorkflowConfigFile
         >>>
         >>> class MyWorkflowConfigFile(WorkflowConfigFile):
         ...
-        ...     def jobs(self) -> dict[str, Any]:
-        ...         return self.job(
-        ...             job_func=self.jobs,
-        ...             steps=self.steps_core_installed_setup(),
-        ...         )
+        ...    def jobs(self) -> dict[str, Any]:
+        ...        return self.job(
+        ...            job_func=self.jobs,
+        ...            steps=self.steps_core_installed_setup(),
+        ...        )
         ...
         ...
-        ...     def workflow_triggers(self) -> dict[str, Any]:
-        ...         triggers = super().workflow_triggers()
-        ...         triggers.update(self.on_push())
-        ...         return triggers
+        ...    def workflow_triggers(self) -> dict[str, Any]:
+        ...        triggers = super().workflow_triggers()
+        ...        triggers.update(self.on_push())
+        ...        return triggers
     """
 
     UBUNTU_LATEST = "ubuntu-latest"
@@ -81,30 +75,24 @@ class WorkflowConfigFile(YMLDictConfigFile):
         }
 
     def parent_path(self) -> Path:
-        """Get the parent directory for workflow files.
-
-        Returns:
-            The `.github/workflows` directory path.
-        """
+        """Return the `.github/workflows` directory path."""
         return Path(".github/workflows")
 
     # Overridable WorkflowConfigFile Parts
     # ----------------------------------------------------------------------------
     @abstractmethod
     def jobs(self) -> dict[str, Any]:
-        """Return the workflow jobs for this workflow.
-
-        The result populates the `jobs` section of the generated workflow YAML.
+        """Return the jobs that make up this workflow.
 
         Returns:
             Dict mapping job IDs to their configurations.
         """
 
     def workflow_triggers(self) -> dict[str, Any]:
-        """Get the workflow triggers.
+        """Return the events that trigger this workflow.
 
-        Override to customize when the workflow runs.
-        Default is manual `workflow_dispatch` only.
+        Override to customize when the workflow runs. Defaults to a manual
+        `workflow_dispatch` trigger only.
 
         Returns:
             Dict of trigger configurations.
@@ -112,10 +100,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.on_workflow_dispatch()
 
     def defaults(self) -> dict[str, Any]:
-        """Get the workflow defaults.
+        """Return the default settings applied to every step in the workflow.
 
-        Override to customize default settings.
-        Default uses `bash` shell.
+        Override to customize. Defaults to the `bash` shell.
 
         Returns:
             Dict of default settings.
@@ -123,12 +110,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return {"run": {"shell": "bash"}}
 
     def global_env(self) -> dict[str, Any]:
-        """Get global environment variables applied to all workflow jobs.
+        """Return environment variables applied to every job in the workflow.
 
-        Override to add custom variables.  By default sets two variables:
-        one to prevent Python from writing `.pyc` bytecode files, and
-        one to prevent `uv` from automatically syncing the environment when
-        it is out of date.
+        Override to add custom variables. By default sets a variable that
+        prevents Python from writing `.pyc` bytecode files and a variable
+        that prevents `uv` from auto-syncing the environment before commands.
 
         Returns:
             Dict of environment variable names to their values.
@@ -154,10 +140,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return " ".join(split_on_uppercase(name))
 
     def run_name(self) -> str:
-        """Get the display name shown for individual workflow runs.
+        """Return the display name shown for individual workflow runs.
+
+        Override to customize. Defaults to `workflow_name`.
 
         Returns:
-            The workflow name by default.
+            The run name.
         """
         return self.workflow_name()
 
@@ -182,7 +170,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             needs: IDs of jobs that must complete before this job starts.
             strategy: Matrix or other strategy configuration.
             permissions: Job-level permissions override.
-            runs_on: Runner label.  Defaults to `ubuntu-latest`.
+            runs_on: Runner label. Defaults to `ubuntu-latest`.
             if_condition: GitHub Actions conditional expression controlling
                 whether the job runs.
             steps: Ordered list of step configurations.
@@ -306,7 +294,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Create a `push` trigger.
 
         Args:
-            branches: Branches to trigger on.  Defaults to the default branch
+            branches: Branches to trigger on. Defaults to the default branch
                 (`"main"`).
 
         Returns:
@@ -332,7 +320,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Create a `pull_request` trigger.
 
         Args:
-            types: Pull request event types to react to.  Defaults to
+            types: Pull request event types to react to. Defaults to
                 `["opened", "synchronize", "reopened"]`.
 
         Returns:
@@ -350,7 +338,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Args:
             workflows: Names of workflows whose completion triggers this
                 workflow.
-            branches: Optional branch filter.  When provided, only completions
+            branches: Optional branch filter. When provided, only completions
                 of the listed workflows on these branches fire the trigger.
 
         Returns:
@@ -373,10 +361,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Create a strategy with OS and Python version matrix.
 
         Args:
-            os: Runner labels to test against.  Defaults to Ubuntu, Windows,
+            os: Runner labels to test against. Defaults to Ubuntu, Windows,
                 and macOS latest (`ubuntu-latest`, `windows-latest`,
                 `macos-latest`).
-            python_versions: Python version strings to test against.  Defaults
+            python_versions: Python version strings to test against. Defaults
                 to all versions returned by
                 `PyprojectConfigFile.supported_python_versions()`.
             matrix: Additional matrix dimensions to merge in.
@@ -402,7 +390,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Create a strategy with OS matrix.
 
         Args:
-            os: Runner labels to test against.  Defaults to Ubuntu, Windows,
+            os: Runner labels to test against. Defaults to Ubuntu, Windows,
                 and macOS latest (`ubuntu-latest`, `windows-latest`,
                 `macos-latest`).
             matrix: Additional matrix dimensions to merge in.
@@ -465,10 +453,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Create a matrix with OS and Python version dimensions.
 
         Args:
-            os: Runner labels to include.  Defaults to Ubuntu, Windows, and
+            os: Runner labels to include. Defaults to Ubuntu, Windows, and
                 macOS latest (`ubuntu-latest`, `windows-latest`,
                 `macos-latest`).
-            python_versions: Python version strings to include.  Defaults to
+            python_versions: Python version strings to include. Defaults to
                 all versions returned by
                 `PyprojectConfigFile.supported_python_versions()`.
             matrix: Additional matrix dimensions to merge in.
@@ -495,7 +483,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Create a matrix with OS dimension.
 
         Args:
-            os: Runner labels to include.  Defaults to Ubuntu, Windows, and
+            os: Runner labels to include. Defaults to Ubuntu, Windows, and
                 macOS latest (`ubuntu-latest`, `windows-latest`,
                 `macos-latest`).
             matrix: Additional matrix dimensions to merge in.
@@ -519,7 +507,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Create a matrix with Python version dimension.
 
         Args:
-            python_versions: Python version strings to include.  Defaults to
+            python_versions: Python version strings to include. Defaults to
                 all versions returned by
                 `PyprojectConfigFile.supported_python_versions()`.
             matrix: Additional matrix dimensions to merge in.
@@ -539,7 +527,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def matrix(self, matrix: dict[str, list[Any]]) -> dict[str, Any]:
         """Return the matrix configuration.
 
-        This method is an extension point.  The base implementation returns the
+        This method is an extension point. The base implementation returns the
         dict unchanged; subclasses can override it to apply transformations or
         add fixed dimensions to every matrix produced by this workflow.
 
@@ -562,12 +550,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
     ) -> list[dict[str, Any]]:
         """Build setup steps for matrix jobs.
 
-        Delegates entirely to [steps_core_installed_setup][].  Using this
-        method in matrix jobs makes the intent explicit and keeps a consistent
-        naming pattern alongside the other `steps_core_*` helpers.
+        An alias for [steps_core_installed_setup][], provided so the name
+        matches the other `steps_core_*` helpers.
 
         Args:
-            python_version: Python version string.  `None` resolves to the
+            python_version: Python version string. `None` resolves to the
                 latest supported minor version.
             update_dependencies: Whether to include a step that updates all
                 dependencies to their latest allowed versions before installing.
@@ -594,7 +581,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         optional dependency upgrade, and a full `uv sync`.
 
         Args:
-            python_version: Python version string.  Defaults to the latest
+            python_version: Python version string. Defaults to the latest
                 minor version supported by the project.
             update_dependencies: Whether to include a step that updates all
                 dependencies to their latest allowed versions before installing.
@@ -621,7 +608,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         the specified Python version.
 
         Args:
-            python_version: Python version string for `uv`.  Defaults to the
+            python_version: Python version string for `uv`. Defaults to the
                 latest minor version supported by the project.
 
         Returns:
@@ -672,7 +659,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Build a step that installs uv and pins the Python version.
 
         Uses `astral-sh/setup-uv` to install uv on the runner and configure
-        it to use the given Python version.  All subsequent `uv run` and
+        it to use the given Python version. All subsequent `uv run` and
         `uv sync` commands will use this version.
 
         Args:
@@ -736,7 +723,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     # ----------------------------------------------------------------------------
 
     def repo_token_var(self) -> str:
-        """Get the raw secrets expression for `REPO_TOKEN`.
+        """Return the raw secrets expression for `REPO_TOKEN`.
 
         Returns:
             The `"secrets.REPO_TOKEN"` expression string.
@@ -744,7 +731,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.secrets_var(RemoteVersionController.I.access_token_key())
 
     def github_token_var(self) -> str:
-        """Get the raw secrets expression for `GITHUB_TOKEN`.
+        """Return the raw secrets expression for `GITHUB_TOKEN`.
 
         Returns:
             The `"secrets.GITHUB_TOKEN"` expression string.
@@ -766,7 +753,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     # Insertions
     # ----------------------------------------------------------------------------
     def insert_repo_token(self) -> str:
-        """Get the `${{ secrets.REPO_TOKEN }}` expression.
+        """Return the `${{ secrets.REPO_TOKEN }}` expression.
 
         Returns:
             GitHub Actions expression for the `REPO_TOKEN` secret.
@@ -787,7 +774,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.shell_insert_expression(str(PackageManager.I.version_short_args()))
 
     def insert_github_token(self) -> str:
-        """Get the `${{ secrets.GITHUB_TOKEN }}` expression.
+        """Return the `${{ secrets.GITHUB_TOKEN }}` expression.
 
         Returns:
             GitHub Actions expression for the automatic `GITHUB_TOKEN`
@@ -796,7 +783,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.insert_expression(self.github_token_var())
 
     def insert_repository(self) -> str:
-        """Get the `${{ github.repository }}` expression.
+        """Return the `${{ github.repository }}` expression.
 
         Returns:
             GitHub Actions expression for the current repository in
@@ -805,7 +792,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.insert_expression("github.repository")
 
     def insert_matrix_os(self) -> str:
-        """Get the expression that resolves to the current matrix OS value.
+        """Return the expression that resolves to the current matrix OS value.
 
         Returns:
             GitHub Actions expression for `matrix.os`.
@@ -813,7 +800,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return self.insert_expression("matrix.os")
 
     def insert_matrix_python_version(self) -> str:
-        """Get the expression that resolves to the current matrix Python version.
+        """Return the expression that resolves to the current matrix Python version.
 
         Returns:
             GitHub Actions expression for `matrix.python-version`.

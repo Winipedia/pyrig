@@ -1,7 +1,4 @@
-"""Security checker tool wrapper.
-
-Wraps SecurityChecker commands and information.
-"""
+"""Security scanner command construction and badge metadata."""
 
 from collections.abc import Iterator
 from pathlib import Path
@@ -13,58 +10,36 @@ from pyrig.rig.tools.testers.project import ProjectTester
 
 
 class SecurityChecker(Tool):
-    """Bandit security checker tool wrapper.
+    """Wrapper for the `bandit` security checker.
 
-    Constructs Bandit CLI arguments for scanning Python source code for
-    common security vulnerabilities. The primary entry point is
-    ``run_with_config_args``, which reads Bandit settings from
-    ``pyproject.toml`` and scans the project's source and test directories.
+    Constructs `bandit` command-line arguments for scanning the project's
+    source and test code for common security vulnerabilities.
     """
 
     def name(self) -> str:
-        """Get the tool command name.
-
-        Returns:
-            'bandit'
-        """
+        """Return `'bandit'`."""
         return "bandit"
 
     def group(self) -> str:
-        """Get the badge group this tool belongs to.
-
-        Returns:
-            ``Group.CODE_QUALITY``
-        """
+        """Return `Group.CODE_QUALITY`."""
         return Group.CODE_QUALITY
 
     def image_url(self) -> str:
-        """Return the badge image URL for this tool.
-
-        Returns:
-            The URL of the badge image as a string.
-        """
+        """Return the badge image URL for `bandit`."""
         return "https://img.shields.io/badge/security-bandit-yellow.svg"
 
     def link_url(self) -> str:
-        """Return the link URL for this tool.
-
-        Returns:
-            The URL of the project page as a string.
-        """
+        """Return the URL of the `bandit` project page."""
         return "https://github.com/PyCQA/bandit"
 
     def run_with_config_args(self, *args: str) -> Args:
-        """Construct Bandit arguments using ``pyproject.toml`` configuration.
-
-        Passes ``-c pyproject.toml -r`` followed by each target path so that
-        Bandit reads its settings from the project configuration file and
-        recursively scans all relevant directories.
+        """Construct `bandit` arguments that scan using `pyproject.toml` configuration.
 
         Args:
-            *args: Additional Bandit arguments appended after the target paths.
+            *args: Additional arguments appended after the scan target paths.
 
         Returns:
-            Args for ``bandit -c pyproject.toml -r <package_root> <tests_root> [args]``.
+            Args for `bandit -c pyproject.toml -r <target paths> [args]`.
         """
         return self.run_args(
             "-c",
@@ -75,36 +50,29 @@ class SecurityChecker(Tool):
         )
 
     def run_args(self, *args: str) -> Args:
-        """Construct bare Bandit arguments.
+        """Construct bare `bandit` arguments.
 
         Args:
-            *args: Bandit command arguments.
+            *args: `bandit` command arguments.
 
         Returns:
-            Args for ``bandit [args]``.
+            Args for `bandit [args]`.
         """
         return self.args(*args)
 
     def target_posix_paths(self) -> Iterator[str]:
         """Yield the target scan paths as POSIX strings.
 
-        Converts each path from ``target_paths`` to its POSIX string
-        representation, which Bandit expects on the command line.
-
-        Returns:
-            Iterator yielding a POSIX path string for each target scan directory.
+        Yields:
+            A POSIX path string for each target scan directory.
         """
         return (path.as_posix() for path in self.target_paths())
 
     def target_paths(self) -> tuple[Path, ...]:
-        """Return the directories that Bandit should scan.
-
-        Combines the project's source package root and tests package root so
-        that both application code and test code are checked for security
-        issues.
+        """Return the directories to scan for security issues.
 
         Returns:
-            Tuple of ``Path`` objects: ``(package_root, tests_package_root)``.
+            The project's source package root and tests package root.
         """
         return (
             PackageManager.I.package_root(),

@@ -51,6 +51,6 @@ class JSONDictConfigFile(JSONConfigFile[dict[str, Any]]):
     """Concrete base for JSON config files whose top-level structure is a dict.
 
     Fixes the `ConfigT` type parameter to `dict[str, Any]`, so subclasses get
-    properly typed `load()`, `dump()`, and `_configs()` for JSON files
+    properly typed `load()`, `dump()`, and `configs()` for JSON files
     structured as an object at the root level.
     """
