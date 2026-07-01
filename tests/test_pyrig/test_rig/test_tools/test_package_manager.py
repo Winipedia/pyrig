@@ -64,7 +64,7 @@ class TestPackageManager:
         result = PackageManager.I.project_cmd_args(
             "arg", cmd=self.test_project_cmd_args
         )
-        assert result == Args(("pyrig", "test-project-cmd-args", "arg"))
+        assert result == Args("pyrig", "test-project-cmd-args", "arg")
 
     def test_project_name(self) -> None:
         """Test method."""

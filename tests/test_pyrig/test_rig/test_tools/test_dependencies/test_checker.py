@@ -9,7 +9,7 @@ class TestDependencyChecker:
 
     def test_check_args(self) -> None:
         """Test method."""
-        assert DependencyChecker.I.check_args() == Args(("deptry",))
+        assert DependencyChecker.I.check_args() == Args("deptry")
 
     def test_name(self) -> None:
         """Test method."""

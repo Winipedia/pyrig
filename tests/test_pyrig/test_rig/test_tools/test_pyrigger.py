@@ -17,7 +17,7 @@ class TestPyrigger:
     def test_group_cmd_args(self) -> None:
         """Test method."""
         result = Pyrigger.I.group_cmd_args(group="mk", cmd=local)
-        assert result == Args(("pyrig", "mk", "local"))
+        assert result == Args("pyrig", "mk", "local")
 
     def test_image_url(self) -> None:
         """Test method."""

@@ -111,7 +111,7 @@ class PackageManager(Tool):
             Args for `<project-name> <cmd-as-kebab> <args...>`.
         """
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
-        return Args((self.project_name(), cmd_name, *args))
+        return Args(self.project_name(), cmd_name, *args)
 
     def run_args(self, *args: str) -> Args:
         """Construct `Args` for `uv run`.

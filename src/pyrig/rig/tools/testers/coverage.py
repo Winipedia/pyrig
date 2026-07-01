@@ -8,9 +8,8 @@ from pyrig.rig.tools.package_manager import PackageManager
 class CoverageTester(Tool):
     """Pytest-cov configuration and static coverage badge.
 
-    Constructs pytest-cov command arguments and builds a static shields.io
-    coverage badge URL whose label and color are derived from the required
-    coverage threshold.
+    Constructs pytest-cov command arguments and generates a coverage badge
+    URL whose label and color reflect the coverage threshold.
     """
 
     def name(self) -> str:
@@ -45,12 +44,10 @@ class CoverageTester(Tool):
             The pytest-cov CLI flags to run with.
         """
         return Args(
-            (
-                f"--cov={PackageManager.I.package_name()}",
-                "--cov-branch",
-                "--cov-report=term-missing",
-                f"--cov-fail-under={self.threshold()}",
-            )
+            f"--cov={PackageManager.I.package_name()}",
+            "--cov-branch",
+            "--cov-report=term-missing",
+            f"--cov-fail-under={self.threshold()}",
         )
 
     def color(self) -> tuple[int, int, int]:
