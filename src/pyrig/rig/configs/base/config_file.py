@@ -36,7 +36,7 @@ class Priority:
     """
 
     STEP = 10
-    DEFAULT = STEP - STEP
+    DEFAULT = 0
 
     @classmethod
     def increase(cls, priority: float) -> float:

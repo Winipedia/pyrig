@@ -22,8 +22,8 @@ uv run my-project version   # prints: my-project 1.0.0
 ## Adding Commands
 
 Run `pyrig mk cmd <name>` to scaffold a new command stub in your project's
-`src/<project_name>/rig/cli/subcommands.py`. The function is wired up automatically — no
-registration needed.
+`src/<project_name>/rig/cli/subcommands.py`. The function is wired up
+automatically — no registration needed.
 
 ```bash
 uv run pyrig mk cmd my-command
@@ -36,13 +36,13 @@ project in the same environment where your package is installed — pass `--shar
 uv run pyrig mk cmd my-command --shared
 ```
 
-Shared commands are added to `src/<project_name>/rig/cli/shared_subcommands.py`. At runtime, the
-CLI scans all installed packages that depend on pyrig-runtime and registers their
-shared commands. So a shared command from your package is available in every
-pyrig-runtime-based project in the environment, not just projects that explicitly
-depend on your package. The `version` command is a good example of this: it is
-defined in pyrig-runtime's own `shared_subcommands` and is therefore available
-in every project built on pyrig-runtime.
+Shared commands are added to `src/<project_name>/rig/cli/shared_subcommands.py`.
+At runtime, the CLI scans all installed packages that depend on pyrig-runtime
+and registers their shared commands. So a shared command from your package is
+available in every pyrig-runtime-based project in the environment, not just
+projects that explicitly depend on your package. The `version` command is a good
+example of this: it is defined in pyrig-runtime's own `shared_subcommands`
+and is therefore available in every project built on pyrig-runtime.
 
 ---
 
