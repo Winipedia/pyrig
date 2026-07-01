@@ -1,102 +1,76 @@
-# Mirror Test System
+# Mirror Tests
 
-pyrig enforces a strict structural rule: every source module, class, function
-and method must have a corresponding test counterpart. This is not a coverage
-metric — it is a structural guarantee. The system that implements it is
-called the **mirror test framework**, and it is built on top of the same
-`ConfigFile` machinery that manages all other project files.
-
----
-
-## The Core Idea
-
-The test tree mirrors the source tree, one file for one file, one test class for
-every source class that has direct methods, one test function/method for every
-source function/method. The
-expected test module for `src/my_project/utils.py` is always
-`tests/test_my_project/test_utils.py`. The expected test class for `MyHelper` is
-`TestMyHelper`. The expected test function for `do_something` is `test_do_something`.
-
-This naming convention is not configurable by default — it is the contract the
-system enforces. Downstream projects can override the prefix strings
-(`test_` / `Test`) by subclassing `MirrorTestConfigFile`, but the structure is
-always a 1:1 mirror.
+pyrig enforces a 1:1 structural mapping between source code and tests. Every
+source module, class, function, and method must have a corresponding test
+counterpart. This is not a coverage metric — it is a structural guarantee
+enforced by the `pyrig sync` pre-commit hook.
 
 ---
 
-## `MirrorTestConfigFile`
+## The Convention
 
-`MirrorTestConfigFile` is a `ConfigFile` subclass that treats test files the same
-way pyrig treats any other managed file: as a file with a required minimum content
-that must be present and correct.
+The test tree mirrors the source tree exactly:
 
-The "required content" for a test file is the full test module: the existing
-implementations plus new stubs for every source symbol that does not yet have a
-test. `_configs()` builds and returns that full content via `lines()` by
-reading the existing file and appending skeletons for any untested symbols.
-`validate()` (inherited from `ConfigFile`) writes the result when the file
-is missing or incorrect — it never removes existing test implementations,
-but inserts stubs for any missing tests.
-
-Each stub is a minimal placeholder:
-
-- **Functions** become:
-
-  ```python
-  def test_<name>() -> None:
-      """Test function."""
-      raise NotImplementedError
-  ```
-
-- **Classes** become:
-
-  ```python
-  class Test<Name>:
-      """Test class."""
-
-      def test_<method>(self) -> None:
-          """Test method."""
-          raise NotImplementedError
-  ```
-
-Stubs signal intent — they mark code that needs a test without pretending the
-test is implemented. Running the suite with an unimplemented stub fails that
-specific test because of `raise NotImplementedError`, not the whole suite silently.
+| Source | Expected test counterpart |
+|--------|--------------------------|
+| `src/my_project/utils.py` | `tests/test_my_project/test_utils.py` |
+| `def do_something()` | `def test_do_something()` |
+| `class MyHelper` | `class TestMyHelper` |
+| `def MyHelper.process()` | `def TestMyHelper.test_process()` |
 
 ---
 
-## Dynamic Subclass Generation
+## How It Works
 
-Unlike most `ConfigFile` subclasses, which are written by hand for a specific file,
-`MirrorTestConfigFile` is never subclassed manually for individual source modules.
-Instead, `MirrorTestConfigFile` dynamically generates one subclass per source module
-at runtime.
+`MirrorTestConfigFile` is a `ConfigFile` subclass. Instead of managing a config
+file like `pyproject.toml`, it manages test files. Its `_configs()` returns the
+complete expected test module content: existing tests merged with new stubs for
+every source symbol that has no test yet.
 
-When `sync` asks for all concrete subclasses during validation, the system:
+`validate()` (inherited from `ConfigFile`) writes the result when the file is
+missing or stubs are absent — it never removes or modifies existing test
+implementations.
 
-1. Enumerates every module in the project's source package via `discover_modules`.
-2. Generates dynamically a subclass for each one using `type()`, wiring
-   `mirror_module()` to return that specific module.
-3. Yields those subclasses to the validation machinery, which validates each one
-   in turn — creating or updating the test file as needed by adding skeleton stubs
-   for any missing tests.
+At sync time, `MirrorTestConfigFile` dynamically generates one subclass per
+source module via `concrete_subclasses()`, so the set of managed test files
+always matches the current source package — no registration or manifest needed.
 
-This means the set of managed test files is always derived from the current state
-of the source package. No registration, no manifest, no manual bookkeeping.
+### Generated Stubs
 
----
+Each missing test gets a minimal stub:
 
-## Extending the Mirror Test System
-
-The mirror test system is itself overridable via the standard `DependencySubclass`
-mechanism. A downstream project can subclass `MirrorTestConfigFile` to change
-naming conventions, adjust what counts as "tested", or customise the skeleton
-format. The `sync` command and the `all_modules_tested` fixture both use
-`MirrorTestConfigFile.L` — the leaf subclass — so a downstream override is picked
-up automatically everywhere the system is used.
-
-The `sync` command is the recommended way to trigger generation:
-
-```text
-uv run pyrig sync
+```python
+def test_do_something() -> None:
+    """Test do_something."""
+    raise NotImplementedError
 ```
+
+```python
+class TestMyHelper:
+    """Test MyHelper."""
+
+    def test_process(self) -> None:
+        """Test process."""
+        raise NotImplementedError
+```
+
+Stubs raise `NotImplementedError` so unimplemented tests fail explicitly rather
+than passing silently.
+
+---
+
+## Enforcement
+
+`pyrig sync` is run as a pre-commit hook. If any test stubs are missing it
+creates them, the hook fails, and the developer stages the new files before
+recommitting. This means a commit can never introduce untested code.
+
+---
+
+## Customising
+
+`MirrorTestConfigFile` is a `DependencySubclass`. Run `pyrig mk subcls` and
+select it to generate a skeleton. Override methods to change naming conventions,
+adjust what counts as tested, or customise the stub format. All sync operations
+use `MirrorTestConfigFile.L` (the leaf subclass), so overrides are picked up
+automatically.
