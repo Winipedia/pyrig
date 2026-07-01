@@ -45,7 +45,7 @@ Format-specific bases handle serialization:
 ```text
 ConfigFile
  ├── DictConfigFile → TOMLConfigFile (pyproject.toml, prek.toml …)
- ├── YMLDictConfigFile (GitHub Actions workflows)
+ ├── YAMLConfigFile → YMLConfigFile → YMLDictConfigFile (GitHub Actions workflows)
  └── ListConfigFile → StringConfigFile → MarkdownConfigFile (README.md …)
 ```
 
