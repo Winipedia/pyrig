@@ -41,16 +41,16 @@ Each missing test gets a minimal stub:
 
 ```python
 def test_do_something() -> None:
-    """Test do_something."""
+    """Test function."""
     raise NotImplementedError
 ```
 
 ```python
 class TestMyHelper:
-    """Test MyHelper."""
+    """Test class."""
 
     def test_process(self) -> None:
-        """Test process."""
+        """Test method."""
         raise NotImplementedError
 ```
 
