@@ -51,7 +51,7 @@ class PythonConfigFile(StringConfigFile):
         """Return the module for this config file.
 
         Returns:
-            The enclosing package module for `__init__` files, or the
+            The package module at the parent path for `__init__` files, or the
             module at the file path otherwise.
         """
         if self.is_init_file():

@@ -1,4 +1,4 @@
-"""Base classes for managing YAML configuration files."""
+"""Base class for managing YAML configuration files."""
 
 from typing import Any
 
