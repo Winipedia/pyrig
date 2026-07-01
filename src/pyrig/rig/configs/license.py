@@ -3,6 +3,8 @@
 from datetime import UTC, datetime
 from pathlib import Path
 
+from spdx_matcher import analyse_license_text
+
 from pyrig.core.resources import (
     resource_content,
 )
@@ -11,7 +13,9 @@ from pyrig.core.strings import (
     make_linked_badge_markdown,
 )
 from pyrig.rig import resources
+from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
@@ -22,14 +26,18 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class LicenseConfigFile(StringConfigFile):
     """Configuration file management for a project's MIT `LICENSE` file.
 
-    Generates the LICENSE file by loading the MIT license template from the
-    bundled resources and substituting the current year and the repository
-    owner derived from git. The file is placed at the project root with no
-    extension.
-
-    Other config files may rely on the LICENSE file already existing, so this
-    file keeps the default validation priority rather than being deprioritized.
+    Generates the license text from the current year and repository owner, and
+    detects the SPDX license identifier from the file content.
     """
+
+    def priority(self) -> float:
+        """Return a priority one step above `PyprojectConfigFile`'s.
+
+        Ensures this file is validated before `PyprojectConfigFile`
+        as it relies on `spdx_identifier()`, which reads the content
+        of the LICENSE file on disk.
+        """
+        return Priority.increase(PyprojectConfigFile.I.priority())
 
     def stem(self) -> str:
         """Return `'LICENSE'`."""
@@ -106,3 +114,13 @@ class LicenseConfigFile(StringConfigFile):
             PackageManager.I.project_name(),
         )
         return f"https://img.shields.io/github/license/{owner}/{repo}"
+
+    def spdx_identifier(self) -> str:
+        """Return the SPDX license identifier detected from the LICENSE file content.
+
+        Returns:
+            The matched SPDX identifier (e.g., `"MIT"`, `"Apache-2.0"`), or
+            `"LicenseRef-Custom"` if no standard license is recognised.
+        """
+        licenses, _ = analyse_license_text(self.read_content())
+        return next(iter(licenses["licenses"]), "LicenseRef-Custom")
