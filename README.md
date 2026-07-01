@@ -115,20 +115,10 @@ Push your code to GitHub after initialization and see it in action.
 
 ## Commands
 
+Run `pyrig --help` to see a list of all available commands and their usage.
 Run `pyrig <command> --help` for more information about a specific command and
 its usage.
-
-```bash
-uv run pyrig init                    # Full project initialization
-uv run pyrig sync                    # Synchronize project
-uv run pyrig mk cmd <name>           # Create a new CLI subcommand stub
-uv run pyrig mk subcls               # Generate and override subclasses
-uv run pyrig scratch                 # Execute the project's .scratch.py file
-uv run pyrig rmpyc                   # Remove __pycache__ directories
-uv run pyrig version                 # Show pyrig version
-uv run my-project --help             # Your project's CLI
-uv run my-project version            # Show your project's version
-```
+Run `my-project --help` to see the automatically generated CLI for your project.
 
 ## Documentation
 
