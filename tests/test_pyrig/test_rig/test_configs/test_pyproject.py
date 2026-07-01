@@ -15,6 +15,7 @@ from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile,
 )
+from pyrig.rig.configs.readme import ReadmeConfigFile
 from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
@@ -70,18 +71,7 @@ class TestPyprojectConfigFile:
     def test_priority(self) -> None:
         """Test method."""
         assert PyprojectConfigFile.I.priority() < LicenseConfigFile.I.priority()
-
-    def test_detect_project_license(self) -> None:
-        """Test method."""
-        license_id = PyprojectConfigFile.I.detect_project_license()
-        assert license_id == "MIT"
-
-    def test_detect_project_licence_from_content(self) -> None:
-        """Test method."""
-        with pytest.raises(LookupError):
-            _license_id = PyprojectConfigFile.I.detect_project_licence_from_content(
-                "No license here"
-            )
+        assert PyprojectConfigFile.I.priority() > ReadmeConfigFile.I.priority()
 
     def test_requires_python(self) -> None:
         """Test method."""

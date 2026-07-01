@@ -5,7 +5,6 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Literal
 
-import spdx_matcher
 from packaging.version import Version
 from pyrig_runtime.core.strings import (
     dependency_requirement_as_module_name,
@@ -20,7 +19,6 @@ from pyrig.core.version import VersionConstraint, adjust_version_to_level
 from pyrig.rig import resources, tests
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TOMLConfigFile
-from pyrig.rig.configs.license import LicenseConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.docs_builder import DocsBuilder
@@ -45,17 +43,14 @@ class PyprojectConfigFile(TOMLConfigFile):
     hard-coded, so it always reflects the current state of the project and its
     registered tools. Individual pieces of the structure can be customised by
     overriding the corresponding accessor method in a subclass.
-
-    Validated after every other default-priority config file, since generating
-    its content depends on values, such as the license, that those files own.
     """
 
     def priority(self) -> float:
-        """Return a priority one step below `LicenseConfigFile`'s.
+        """Return a priority one step above the default.
 
-        Ensures the LICENSE file already exists by the time this file is validated.
+        Ensures validation before all default-priority config files.
         """
-        return Priority.decrease(LicenseConfigFile.I.priority())
+        return Priority.increase(super().priority())
 
     def parent_path(self) -> Path:
         """Return the project root directory."""
@@ -71,9 +66,10 @@ class PyprojectConfigFile(TOMLConfigFile):
         Returns:
             Nested dict matching the expected `pyproject.toml` structure.
         """
-        # local import as ReadmeConfigFile inherits from BadgesConfigFile
-        # which needs pyproject info for badges, and pyproject needs the
-        # readme path for metadata. This avoids circular import issues.
+        # pyproject.toml sometimes has info other config files need and vice versa.
+        # to avoid local imports of PyprojectConfigFile spread across the project
+        # we centralize local imports of the other config files here.
+        from pyrig.rig.configs.license import LicenseConfigFile  # noqa: PLC0415
         from pyrig.rig.configs.readme import ReadmeConfigFile  # noqa: PLC0415
 
         repo_owner = VersionController.I.repo_owner()
@@ -95,7 +91,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "maintainers": [
                     {"name": repo_owner},
                 ],
-                "license": self.detect_project_license(),
+                "license": LicenseConfigFile.I.spdx_identifier(),
                 "license-files": [LicenseConfigFile.I.path().as_posix()],
                 "urls": {
                     "Homepage": RemoteVersionController.I.repo_url(),
@@ -167,40 +163,6 @@ class PyprojectConfigFile(TOMLConfigFile):
     def additional_dev_dependencies(self) -> list[str]:
         """Return the dev dependencies required in addition to `dev_dependencies()`."""
         return Tool.subclasses_dev_dependencies()
-
-    def detect_project_license(self) -> str:
-        """Detect the SPDX license identifier from the project LICENSE file.
-
-        Returns:
-            SPDX license identifier (e.g., `"MIT"`, `"Apache-2.0"`).
-
-        Raises:
-            FileNotFoundError: If the LICENSE file does not exist.
-            LookupError: If no license can be identified in the LICENSE file.
-        """
-        return self.detect_project_licence_from_content(
-            LicenseConfigFile.I.read_content()
-        )
-
-    def detect_project_licence_from_content(self, content: str) -> str:
-        """Detect the SPDX license identifier from a string of text.
-
-        Args:
-            content: Text to analyse, typically the contents of a LICENSE file.
-
-        Returns:
-            SPDX license identifier (e.g., `"MIT"`, `"Apache-2.0"`).
-
-        Raises:
-            LookupError: If `spdx_matcher` finds no recognisable license in the text.
-        """
-        licenses: dict[str, dict[str, Any]]
-        licenses, _ = spdx_matcher.analyse_license_text(content)
-        licenses = licenses["licenses"]
-        if not licenses:
-            msg = "No license detected in provided content."
-            raise LookupError(msg)
-        return next(iter(licenses))
 
     def project_version(self) -> str:
         """Read the project version from `pyproject.toml`.
