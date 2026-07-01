@@ -1,1 +1,1 @@
-"""CLI commands for the pyrig development tool."""
+"""Built-in CLI commands that pyrig provides to every dependent project."""

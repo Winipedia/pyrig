@@ -1,5 +1,5 @@
-"""Local version control configuration management.
+"""Configuration management for version control, locally and on remote hosts.
 
-Manages the project's local git configuration files: `.gitignore` patterns
-to prevent unwanted files from being committed.
+Covers both the project's local git configuration and the configuration of
+its remotely hosted repository.
 """

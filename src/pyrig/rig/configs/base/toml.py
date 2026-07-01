@@ -16,16 +16,9 @@ class TOMLConfigFile(DictConfigFile):
     """Base class for TOML configuration files.
 
     File I/O uses tomlkit, preserving formatting, key order, and comments on
-    round-trip reads and writes. Lists of dicts are rendered as TOML
-    array-of-tables (`[[section]]` syntax); all other lists are rendered as
-    multiline arrays.
-
-    The `extension()`, `_load()`, and `_dump()` methods are fully implemented
-    here. Subclasses must implement:
-
-        - `parent_path()`: Directory that contains the TOML file.
-        - `stem()`: File name without extension.
-        - `_configs()`: Minimum required configuration structure.
+    round-trip reads and writes. Nested structures are consistently rendered
+    using idiomatic TOML constructs (tables, array-of-tables, and multiline
+    arrays) instead of compact inline literals.
     """
 
     def _load(self) -> dict[str, Any]:
@@ -33,7 +26,7 @@ class TOMLConfigFile(DictConfigFile):
 
         Returns:
             Parsed content as a `tomlkit.TOMLDocument`, which behaves like a
-            dict but retains formatting information for round-trip writes.
+            dict but also retains the file's original formatting.
         """
         return tomlkit.parse(read_text_utf8(self.path()))
 
@@ -46,11 +39,9 @@ class TOMLConfigFile(DictConfigFile):
         self.pretty_dump(configs)
 
     def pretty_dump(self, configs: dict[str, Any]) -> None:
-        """Write configuration to the TOML file.
+        """Write configuration to the TOML file using idiomatic TOML formatting.
 
-        Lists of dicts are rendered as TOML array-of-tables (`[[section]]`
-        syntax); all other lists are rendered as multiline arrays. Key order
-        is preserved.
+        Key order is preserved.
 
         Args:
             configs: Configuration dict to write.
@@ -110,9 +101,5 @@ class TOMLConfigFile(DictConfigFile):
         return value
 
     def extension(self) -> str:
-        """Return the TOML file extension.
-
-        Returns:
-            `"toml"`
-        """
+        """Return `"toml"`."""
         return "toml"

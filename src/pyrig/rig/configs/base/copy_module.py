@@ -26,12 +26,12 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
     """Base class for copying a Python module's source content to a target project.
 
     Reads the source module's file and writes it to the equivalent path in the
-    target project, replacing the `pyrig` package prefix with the target
-    project's package name. For example, `pyrig.rig.configs.base.string_`
+    target project, replacing the source module's top-level package with the
+    target project's package name. For example, `pyrig.rig.configs.base.string_`
     becomes `<project>.rig.configs.base.string_`.
 
-    Keep module content generic where possible. Embedding pyrig-specific details
-    (such as pyrig-branded docstrings) in a source module will reproduce those
+    Keep module content generic where possible. Embedding details specific to
+    the source package (such as branded docstrings) will reproduce those
     details verbatim in every project generated from it.
 
     Subclasses must implement:
@@ -88,8 +88,8 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """Compute the target directory for the copied module.
 
         Replaces the root package component of the source module's dotted name
-        with the target project's package name, then resolves the result to a
-        filesystem path and returns its parent directory.
+        with the target project's package name, then converts the result to a
+        path relative to the project root and returns its parent directory.
 
         For example, source module `pyrig.rig.configs.base.string_` with a
         project named `myproject` resolves to `src/myproject/rig/configs/base`.
@@ -131,5 +131,5 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         implement this to specify which module to copy.
 
         Returns:
-            Source module to copy.
+            The module to copy.
         """

@@ -1,7 +1,4 @@
-"""Wrapper around pyrig.
-
-Provides a type-safe wrapper for pyrig commands and information.
-"""
+"""Tool wrapper for the pyrig CLI itself, used for self-referential commands."""
 
 from collections.abc import Callable
 from typing import Any
@@ -22,97 +19,69 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class Pyrigger(Tool):
-    """Pyrig CLI wrapper and project initialization orchestrator.
-
-    Constructs pyrig command arguments for programmatic execution and
-    orchestrates the full setup sequence for new pyrig projects.
-
-    Operations:
-        - Command construction: Build ``Args`` for any pyrig subcommand
-        - Project initialization: Orchestrate the full ordered setup sequence
-    """
+    """Pyrig CLI wrapper and new-project initialization orchestrator."""
 
     def name(self) -> str:
-        """Get tool name.
+        """Return the pyrig executable name.
 
         Returns:
-            'pyrig'
+            `'pyrig'`.
         """
         return snake_to_kebab_case(pyrig.__name__)
 
     def group(self) -> str:
-        """Returns the group the tool belongs to.
+        """Return the badge group this tool belongs to.
 
         Returns:
-            `Group.TOOLING`
+            `Group.TOOLING`.
         """
         return Group.TOOLING
 
     def image_url(self) -> str:
-        """Return the badge image URL for pyrig.
-
-        Returns:
-            The URL of the badge image as a string.
-        """
+        """Return the badge image URL for pyrig."""
         return f"https://img.shields.io/badge/built%20with-{self.name()}-3776AB?logo=buildkite&logoColor=black"
 
     def link_url(self) -> str:
-        """Return the link URL for pyrig.
-
-        Returns:
-            The URL of the GitHub repository page as a string.
-        """
+        """Return the badge link URL for pyrig."""
         return f"https://github.com/Winipedia/{self.name()}"
 
     def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
-        """Construct pyrig command arguments from a callable.
+        """Construct `Args` for a top-level pyrig CLI command.
 
-        Derives the CLI command name from the callable's ``__name__``
-        attribute by converting it from snake_case to kebab-case
-        (e.g., ``my_command`` → ``my-command``), then prepends
-        ``"pyrig"`` to form a complete command.
+        Derives the command name from `cmd.__name__`, converted from
+        snake_case to kebab-case (e.g. `my_command` becomes `my-command`).
 
         Args:
             *args: Additional arguments appended after the command name.
-            cmd: Callable whose ``__name__`` is used as the command name.
+            cmd: Callable whose `__name__` is used as the command name.
 
         Returns:
-            Args for ``'pyrig <cmd_name> [args...]'``.
+            Args for `pyrig <cmd_name> [args...]`.
         """
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return self.args(cmd_name, *args)
 
     def group_cmd_args(self, *args: str, group: str, cmd: Callable[..., Any]) -> Args:
-        """Construct pyrig command arguments for a subcommand within a command group.
+        """Construct `Args` for a pyrig CLI subcommand within a command group.
 
-        Resolves the group name by searching the subcommands module for the given
-        ``typer.Typer`` instance by identity (the same strategy used by the CLI
-        builder), then derives the command name from the callable's ``__name__``
-        in kebab-case.
+        Converts both `group` and `cmd.__name__` from snake_case to
+        kebab-case to derive the group and subcommand names.
 
         Args:
             *args: Additional arguments appended after the command name.
-            group: The ``typer.Typer`` group app (e.g. ``make.app``).
-            cmd: Callable whose ``__name__`` is used as the subcommand name.
+            group: Name of the command group, in snake_case.
+            cmd: Callable whose `__name__` is used as the subcommand name.
 
         Returns:
-            Args for ``'pyrig <group_name> <cmd_name> [args...]'``.
-
-        Raises:
-            StopIteration: If ``group`` is not registered in the subcommands module.
+            Args for `pyrig <group_name> <cmd_name> [args...]`.
         """
         group_name = snake_to_kebab_case(group)
         cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
         return self.args(group_name, cmd_name, *args)
 
     def init_project(self) -> None:
-        """Run the full project initialization sequence.
+        """Run the ordered project initialization sequence with a progress bar.
 
-        Fetches all setup steps from ``setup_steps()``, then executes them
-        in order. Each step's ``Args`` object is wrapped with
-        ``PackageManager.I.run_args`` (i.e., ``uv run <args>``)
-        to ensure commands run inside the project's virtual environment.
-        The progress bar advances after each step completes.
         The process stops immediately if any step exits with a non-zero
         return code.
 
@@ -132,15 +101,12 @@ class Pyrigger(Tool):
     def setup_steps(self) -> list[tuple[Args, dict[str, Any]]]:
         """Return the ordered setup steps for project initialization.
 
-        Each step is a ``(Args, RunKwargs)`` pair. ``Args`` holds the command
-        to run; ``RunKwargs`` is passed directly to ``Args.run()`` and is empty
-        for most steps. The sync step uses ``{"check": False}`` because it
-        exits with code 1 whenever it creates or updates files — expected on a
-        fresh project. The final git commit triggers the pre-commit hook, which
-        re-runs sync and acts as the convergence gate.
+        Each step pairs the command to run with the keyword arguments to pass
+        to its `.run()` call. The sync step tolerates a non-zero exit, since
+        syncing a fresh project is expected to create or update files.
 
         Returns:
-            Ordered list of ``(Args, RunKwargs)`` steps.
+            Ordered list of `(Args, run_kwargs)` steps.
         """
         return [
             (VersionController.I.init_args(), {}),
@@ -165,5 +131,9 @@ class Pyrigger(Tool):
         ]
 
     def runtime_dependency(self) -> str:
-        """Returns pyrigs runtime dependency."""
+        """Return the package name of pyrig's runtime dependency.
+
+        Returns:
+            `'pyrig-runtime'`.
+        """
         return snake_to_kebab_case(pyrig_runtime.__name__)

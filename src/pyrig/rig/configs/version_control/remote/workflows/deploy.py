@@ -1,9 +1,4 @@
-"""GitHub Actions workflow for deploying documentation to GitHub Pages.
-
-Provides the ``DeployWorkflowConfigFile`` class, which generates the
-``.github/workflows/deploy.yml`` workflow file. This workflow is the final
-step in the automated CI/CD pipeline and runs after a successful release.
-"""
+"""GitHub Actions workflow generator for deploying documentation to GitHub Pages."""
 
 from typing import Any
 
@@ -16,39 +11,20 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class DeployWorkflowConfigFile(WorkflowConfigFile):
-    """Generates the GitHub Actions workflow for deployment.
+    """GitHub Actions workflow that publishes documentation to GitHub Pages.
 
-    Produces ``.github/workflows/deploy.yml``, which runs automatically when
-    ``ReleaseWorkflowConfigFile`` completes. The job is gated on a successful
-    triggering run.
-
-    One job is defined:
-
-    - **documentation**: Builds the MkDocs documentation site and
-      deploys it to GitHub Pages. Requires ``pages: write`` and
-      ``id-token: write`` job-level permissions.
+    Runs automatically when the release workflow completes successfully.
     """
 
     def stem(self) -> str:
-        """Return the stem used to name the generated workflow file.
-
-        Returns:
-            ``"deploy"``, which produces ``.github/workflows/deploy.yml``.
-        """
+        """Return `"deploy"`, the workflow file's stem."""
         return "deploy"
 
     def workflow_triggers(self) -> dict[str, Any]:
-        """Build the workflow trigger configuration.
-
-        Extends the default ``workflow_dispatch`` trigger inherited from the
-        base class with a ``workflow_run`` trigger that fires whenever
-        ``ReleaseWorkflowConfigFile`` completes. The job further guards
-        itself with an ``if`` condition checked via
-        :meth:`if_workflow_run_is_success`.
+        """Add a `workflow_run` trigger that fires when the release workflow completes.
 
         Returns:
-            Combined trigger dict with ``workflow_dispatch`` and
-            ``workflow_run`` entries.
+            Trigger dict with `workflow_dispatch` and `workflow_run` entries.
         """
         triggers = super().workflow_triggers()
         triggers.update(
@@ -59,18 +35,11 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return triggers
 
     def job(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
-        """Build a job gated on the triggering workflow run succeeding.
-
-        Overrides :meth:`WorkflowConfigFile.job` to inject an ``if`` condition
-        (via :meth:`if_workflow_run_is_success`) into every job in this
-        workflow, so jobs run only when the triggering ``workflow_run`` event
-        reports a successful conclusion.
+        """Build a job gated on the triggering workflow run having succeeded.
 
         Args:
-            *args: Positional arguments forwarded to
-                :meth:`WorkflowConfigFile.job`.
-            **kwargs: Keyword arguments forwarded to
-                :meth:`WorkflowConfigFile.job`.
+            *args: Positional arguments forwarded to the base implementation.
+            **kwargs: Keyword arguments forwarded to the base implementation.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
@@ -88,12 +57,10 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return {**self.job_documentation()}
 
     def job_documentation(self) -> dict[str, Any]:
-        """Build the job that deploys the MkDocs documentation to GitHub Pages.
+        """Build the job that builds and deploys the documentation site.
 
-        Requests ``pages: write`` and ``id-token: write`` permissions at the
-        job level, which are required by the GitHub Pages deployment API. The
-        job runs only when the triggering workflow run succeeded. Steps are
-        provided by :meth:`steps_documentation`.
+        Requests `pages: write` and `id-token: write` permissions at the job
+        level, required by the GitHub Pages deployment API.
 
         Returns:
             Dict mapping the derived job ID to its configuration.
@@ -107,12 +74,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     def steps_documentation(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the documentation job.
 
-        Combines core installed-setup steps with the full documentation build
-        and GitHub Pages deployment sequence.
-
         Returns:
-            Ordered list of step dicts: core installed setup, build docs,
-            enable Pages, upload artifact, deploy to GitHub Pages.
+            Ordered list of step dicts: environment setup, build the
+            documentation, enable Pages, upload the artifact, deploy it.
         """
         return [
             *self.steps_core_installed_setup(),
@@ -127,18 +91,13 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step that generates the MkDocs documentation site.
-
-        Runs the docs builder command, which invokes ``mkdocs build`` and
-        writes the rendered HTML site to the ``site/`` directory.  The
-        ``site/`` directory is then consumed by the subsequent
-        :meth:`step_upload_documentation` step.
+        """Build a step that builds the documentation site into the `site/` directory.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs the docs builder command.
+            Step that runs the documentation build command.
         """
         return self.step(
             step_func=self.step_build_documentation,
@@ -153,22 +112,22 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that enables GitHub Pages for the repository.
 
-        Calls ``actions/configure-pages`` with ``enablement: true``.  This is
-        idempotent -- running it on a repository where Pages is already enabled
+        Idempotent: running it on a repository where Pages is already enabled
         has no effect.
 
-        Authenticates with ``REPO_TOKEN`` rather than the automatic
-        ``GITHUB_TOKEN``: enabling Pages calls ``POST /repos/{owner}/{repo}/pages``.
-        A fine-grained PAT reaches that endpoint with ``pages: write`` alone, but
-        for an installation token like ``GITHUB_TOKEN`` the same call also requires
-        ``administration: write`` -- a scope the automatic token can never hold --
-        so it would fail with ``Resource not accessible by integration``.
+        Authenticates with `REPO_TOKEN` rather than the automatic
+        `GITHUB_TOKEN`: enabling Pages calls
+        `POST /repos/{owner}/{repo}/pages`, and for an installation token
+        like `GITHUB_TOKEN` that call also requires `administration: write`
+        -- a scope the automatic token can never hold -- so it would fail
+        with `Resource not accessible by integration`. A fine-grained PAT
+        reaches the endpoint with `pages: write` alone.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that enables GitHub Pages using ``REPO_TOKEN``.
+            Step that enables GitHub Pages using `REPO_TOKEN`.
         """
         return self.step(
             step_func=self.step_configure_pages,
@@ -182,17 +141,13 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step that uploads the documentation as a Pages artifact.
-
-        Uploads the ``site/`` directory produced by
-        :meth:`step_build_documentation` so that the Pages deployment step
-        can publish it.
+        """Build a step that uploads the `site/` directory as a Pages artifact.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step using ``actions/upload-pages-artifact@main``.
+            Step using `actions/upload-pages-artifact@main`.
         """
         return self.step(
             step_func=self.step_upload_documentation,
@@ -208,15 +163,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that deploys the uploaded Pages artifact to GitHub Pages.
 
-        Must be preceded by :meth:`step_upload_documentation`.  The job that
-        contains this step must have ``pages: write`` and
-        ``id-token: write`` permissions.
+        Requires the job to have `pages: write` and `id-token: write`
+        permissions.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step using ``actions/deploy-pages@main``.
+            Step using `actions/deploy-pages@main`.
         """
         return self.step(
             step_func=self.step_deploy_documentation,

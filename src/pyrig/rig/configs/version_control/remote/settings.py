@@ -1,8 +1,4 @@
-"""Branch protection ruleset configuration for GitHub repositories.
-
-Manages the generation of branch protection rulesets and
-repository-level security settings for use with the GitHub API.
-"""
+"""Repository-level settings and branch protection ruleset configuration for GitHub."""
 
 from pathlib import Path
 from typing import Any
@@ -19,45 +15,30 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class RepoSettingsConfigFile(JSONDictConfigFile):
     """Configuration file for GitHub repository settings and branch protection rulesets.
 
-    Generates and manages ``.github/settings.json``, which contains two top-level
-    keys: ``repository`` (general repo settings) and ``rulesets`` (branch protection
-    rules). The ruleset targets the default branch and enforces pull request reviews,
-    status checks against the health-check workflow, linear commit history, signed
-    commits, and protection against force pushes.
-
-    The generated file is applied automatically during the release workflow via the
-    GitHub CLI (``gh api``), or can be uploaded manually via the repository's
-    Settings > Rules > Rulesets page.
+    Manages `.github/settings.json`, containing the general repository settings
+    and the branch protection rulesets to apply to the default branch. The
+    release workflow reads this file and applies its contents to the repository
+    via the GitHub CLI.
     """
 
     def parent_path(self) -> Path:
-        """Return the directory that will contain the settings.json file.
-
-        Returns:
-            ``Path(".github")``, the standard GitHub configuration directory.
-        """
+        """Return `Path(".github")`, the standard GitHub configuration directory."""
         return Path(".github")
 
     def stem(self) -> str:
-        """Return the filename stem for the repository settings configuration file.
-
-        Returns:
-            ``'settings'``
-        """
+        """Return `"settings"`."""
         return "settings"
 
     def _configs(self) -> dict[str, Any]:
-        """Build the combined repository settings and ruleset configuration.
+        """Build the required repository settings and branch protection ruleset.
 
-        Returns a dict with two keys: ``repository`` (general settings applied
-        via ``PATCH /repos/{owner}/{repo}``) and ``rulesets`` (a list of ruleset
-        dicts, each matching the shape exported from GitHub's ruleset UI). The
-        default ruleset targets the default branch and enables the recommended
-        protections for a Python project.
+        The ruleset targets the default branch, requires pull request review,
+        a passing health-check status check, linear history, and signed
+        commits, and blocks branch creation, deletion, and force pushes.
+        Repository admins are exempt from the ruleset.
 
         Returns:
-            Dict with ``repository`` and ``rulesets`` keys, ready to be
-            serialized as ``.github/settings.json``.
+            Dict keyed by `repository_key()` and `rulesets_key()`.
         """
         status_check_id = HealthCheckWorkflowConfigFile.I.make_id_from_func(
             HealthCheckWorkflowConfigFile.I.job_health_check
@@ -123,9 +104,9 @@ class RepoSettingsConfigFile(JSONDictConfigFile):
         }
 
     def repository_key(self) -> str:
-        """Get the key for the repo settings."""
+        """Return `"repository"`, the top-level key for the repo settings."""
         return "repository"
 
     def rulesets_key(self) -> str:
-        """Get the key for the rulesets."""
+        """Return `"rulesets"`, the top-level key for the branch protection rulesets."""
         return "rulesets"

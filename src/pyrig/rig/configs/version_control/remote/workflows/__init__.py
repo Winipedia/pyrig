@@ -1,5 +1,5 @@
-"""GitHub Actions workflow configuration generators for the CI/CD pipeline.
+"""Configuration management for the project's GitHub Actions workflows.
 
-Each module in this package defines a workflow configuration file generator for one
-stage of the automated pipeline: Health Check, Release, and Deploy.
+Each stage of the automated CI/CD pipeline is declared as a separate
+workflow configuration file within this package.
 """

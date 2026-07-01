@@ -1,4 +1,4 @@
-"""Abstract base class for Python source file configuration."""
+"""Base class for managing Python (`.py`) source file configuration."""
 
 from types import ModuleType
 from typing import Any
@@ -50,11 +50,9 @@ class PythonConfigFile(StringConfigFile):
     def module(self) -> ModuleType:
         """Return the module for this config file.
 
-        For `__init__` files, returns the enclosing package module; for
-        other files, returns the module at the file path.
-
         Returns:
-            The module corresponding to this config file's path.
+            The enclosing package module for `__init__` files, or the
+            module at the file path otherwise.
         """
         if self.is_init_file():
             import_func = import_package_with_dir_fallback

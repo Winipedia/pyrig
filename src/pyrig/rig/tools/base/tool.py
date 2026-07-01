@@ -1,8 +1,4 @@
-"""Abstract base classes for tool wrappers.
-
-Defines the ``Tool`` base class and ``Group`` constants that all tool
-wrappers in pyrig and downstream packages must implement.
-"""
+"""Shared contract every external CLI tool wrapper must implement."""
 
 from abc import abstractmethod
 from types import ModuleType
@@ -15,10 +11,7 @@ from pyrig.rig import tools
 
 
 class Group:
-    """Named constants for tool badge groups.
-
-    Used to categorize tool badges when rendering the project ``README.md``.
-    """
+    """Named constants for the categories tool badges are grouped under."""
 
     CI_CD = "ci/cd"
     CODE_QUALITY = "code-quality"
@@ -28,16 +21,11 @@ class Group:
 
 
 class Tool(DependencySubclass):
-    """Abstract base class for CLI tool wrappers.
+    """Abstract base for wrapping an external CLI tool's identity and commands.
 
-    All tools in pyrig (linter, package manager, type checker, etc.) subclass
-    ``Tool``. A subclass implements the four abstract methods to provide its
-    identity (``name``), badge metadata (``group``, ``image_url``,
-    ``link_url``), and then adds ``*_args`` methods that return ``Args`` objects
-    for each supported command.
-
-    The ``Tool.I`` shortcut gives access to a cached singleton instance of the
-    leaf subclass, which is the primary way tools are invoked from pyrig internals.
+    A subclass provides its identity and badge metadata through the abstract
+    methods, then adds its own `*_args` methods that build `Args` for each
+    command it supports.
 
     Example:
         >>> class MyTool(Tool):
@@ -51,99 +39,58 @@ class Tool(DependencySubclass):
         ...         return "https://mytool.io"
         ...     def build_args(self, *args: str) -> Args:
         ...         return self.args("build", *args)
-        >>> MyTool.I.build_args("--verbose")
-        Args(('mytool', 'build', '--verbose'))
+        >>> tuple(MyTool.I.build_args("--verbose"))
+        ('mytool', 'build', '--verbose')
     """
 
     def __str__(self) -> str:
         """Return the fully qualified class name with the tool name in parentheses.
 
         Returns:
-            String in the form ``'package.ClassName (toolname)'``.
+            String in the form `'module.ClassName (toolname)'`.
         """
         return f"{super().__str__()} ({self.name()})"
 
     @abstractmethod
     def name(self) -> str:
-        """Return the CLI command name for this tool.
-
-        This is the executable name used as the first element of every ``Args``
-        object produced by this tool (e.g., ``"git"``, ``"uv"``, ``"pytest"``).
-
-        Returns:
-            The executable name as a string.
-        """
+        """Return the executable name for this tool's CLI command (e.g. `"git"`)."""
 
     @abstractmethod
     def group(self) -> str:
-        """Return the badge group this tool belongs to.
-
-        Groups are used to categorize badges when rendering the project
-        ``README.md``. Use one of the ``Group`` constants as the return value.
-
-        Returns:
-            A ``Group`` constant string (e.g., ``Group.TESTING``).
-        """
+        """Return the `Group` constant this tool's badge is categorized under."""
 
     @abstractmethod
     def image_url(self) -> str:
-        """Return the URL of the badge image for this tool.
-
-        This is used to render a markdown badges.
-
-        Returns:
-            The URL of the badge image as a string.
-        """
+        """Return the URL of this tool's badge image."""
 
     @abstractmethod
     def link_url(self) -> str:
-        """Return the URL that the badge should link to for this tool.
-
-        This is used to render a markdown badges.
-
-        Returns:
-            The URL that the badge should link to as a string.
-        """
+        """Return the URL this tool's badge should link to."""
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
-        """Return a tuple of file paths to ignore for version control.
+        """Return paths this tool writes that should be excluded from version control.
 
-        Used by pyrig's project initialization logic to automatically add
-        tool-specific files (e.g., cache directories) to the
-        project's ``.gitignore``. Override in a subclass to specify the paths
-        relevant to that tool.
+        Paths are relative to the project root. Override in a subclass to
+        declare the tool's cache directories or other generated files.
 
         Returns:
-            A tuple of file paths (relative to the project root) that should be
-            added to version control ignore files. Defaults to an empty tuple.
+            File paths to ignore. Empty by default.
         """
         return ()
 
     @classmethod
     def dependency_package(cls) -> ModuleType:
-        """Return the ``pyrig.rig.tools`` package as the subclass discovery scope.
-
-        Implements the abstract ``DependencySubclass.dependency_package`` with
-        the ``pyrig.rig.tools`` sub-package, so that only tool implementations
-        are found when searching dependent packages.
-
-        Returns:
-            The ``pyrig.rig.tools`` module.
-        """
+        """Return the `pyrig.rig.tools` package as the tool discovery scope."""
         return tools
 
     @classmethod
     def grouped_badges(cls) -> dict[str, list[str]]:
-        """Return all tool badges grouped by their ``Group`` category.
-
-        Collects every concrete ``Tool`` subclass, sorts them by ``sort_key``,
-        and builds a mapping from group name to the list of Markdown badge
-        strings for that group. Used by ``BadgesConfigFile`` to render the
-        ``README.md``.
+        """Return every concrete tool's badge, grouped by its `Group` category.
 
         Returns:
-            A ``dict`` mapping each group name to a list of Markdown badge
-            strings for the tools in that group.
+            Mapping from each group name to the Markdown badge strings of the
+            tools in that group. Groups are ordered by `groups()`; badges
+            within a group are ordered by each tool's `sort_key()`.
         """
         subclasses = cls.subclasses_sorted(cls.concrete_subclasses())
         groups: dict[str, list[str]] = {g: [] for g in cls.groups()}
@@ -154,7 +101,7 @@ class Tool(DependencySubclass):
 
     @classmethod
     def groups(cls) -> tuple[str, ...]:
-        """Get the ordering of the tool groups."""
+        """Return the display order of the `Group` categories."""
         return (
             Group.CI_CD,
             Group.TESTING,
@@ -165,16 +112,11 @@ class Tool(DependencySubclass):
 
     @classmethod
     def subclasses_dev_dependencies(cls) -> list[str]:
-        """Return a sorted list of dev dependencies from all concrete tool subclasses.
-
-        Iterates every concrete ``Tool`` subclass and collects its
-        ``dev_dependencies`` to produce a unified, sorted list. This list is
-        used when generating the ``[dependency-groups] dev`` section of
-        ``pyproject.toml`` so that any tool added or removed from the rig is
-        automatically reflected in the project's dependencies.
+        """Return the dev dependency names of every concrete tool, sorted.
 
         Returns:
-            Sorted list of dev dependency names across all tools.
+            Sorted list of dev dependency names across all tools. May contain
+            duplicates if multiple tools share a dependency.
         """
         return sorted(
             dep
@@ -184,10 +126,11 @@ class Tool(DependencySubclass):
 
     @classmethod
     def subclasses_version_control_ignore_paths(cls) -> list[str]:
-        """Return a sorted list of version control ignore paths for all tools.
+        """Return the version control ignore paths of every concrete tool, sorted.
 
-        Iterates every concrete ``Tool`` subclass and collects its
-        ``version_control_ignore_paths`` to produce a unified, sorted list.
+        Returns:
+            Sorted list of ignore paths across all tools. May contain
+            duplicates if multiple tools share a path.
         """
         return sorted(
             path
@@ -198,11 +141,8 @@ class Tool(DependencySubclass):
     def badge(self) -> str:
         """Return the Markdown badge string for this tool.
 
-        Combines ``image_url`` and ``link_url`` into a Markdown inline image
-        that links to the tool's home page. The class name is used as alt text.
-
         Returns:
-            A Markdown string in the form ``[![ClassName](image_url)](link_url)``.
+            A Markdown string in the form `[![ClassName](image_url)](link_url)`.
         """
         return make_linked_badge_markdown(
             image_url=self.image_url(),
@@ -213,32 +153,23 @@ class Tool(DependencySubclass):
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return the dev dependency names required by this tool.
 
-        Used by ``subclasses_dev_dependencies`` to collect all tool dependencies
-        for ``pyproject.toml``. Override in a subclass to declare a different
-        set of packages, for example when a tool ships under a package name that
-        differs from its executable name.
+        Override in a subclass to declare a different set of packages, for
+        example when a tool ships under a package name that differs from its
+        executable name.
 
         Returns:
-            A tuple of package names. Defaults to a single-element tuple
-            containing the tool's executable name.
+            Package names. Defaults to a single-element tuple containing the
+            tool's executable name.
         """
         return (self.name(),)
 
     def args(self, *args: str) -> Args:
-        """Construct an ``Args`` object with the tool name prepended.
-
-        The core building block used by every ``*_args`` method in a ``Tool``
-        subclass. Prepending ``name()`` ensures every constructed command
-        starts with the correct executable.
+        """Build an `Args` command starting with this tool's executable name.
 
         Args:
             *args: Command arguments to follow the tool name.
 
         Returns:
-            An ``Args`` object whose first element is the tool name.
-
-        Example:
-            >>> PackageManager.I.args("run", "pytest")
-            Args(('uv', 'run', 'pytest'))
+            An `Args` object whose first element is the tool name.
         """
         return Args((self.name(), *args))

@@ -1,4 +1,4 @@
-"""Configuration for the .scratch.py scratch file at the project root."""
+"""Management of the project-root scratch file used for ad-hoc experimentation."""
 
 from pathlib import Path
 
@@ -6,84 +6,43 @@ from pyrig.rig.configs.base.python import PythonConfigFile
 
 
 class ScratchConfigFile(PythonConfigFile):
-    """Manages the .scratch.py file at the project root.
+    """Config file manager for `.scratch.py`.
 
-    .scratch.py is a local scratch file intended for ad-hoc experimentation.
-    It is automatically excluded from version control via .gitignore and is
-    never committed to the repository. Validation only checks that the file
-    exists; content is intentionally left free for the user to modify.
-
-    When the scratch file is first created, the root-level ``main.py`` that
-    ``uv init`` leaves behind is removed, since pyrig-managed projects do not
-    use it.
+    `.scratch.py` is excluded from version control and never committed.
+    Because its content is meant to be edited freely by the user, validation
+    checks only that the file exists, not what it contains.
     """
 
     def create_file(self) -> None:
-        """Generate ``.scratch.py`` and remove the root ``main.py``.
-
-        Delegates file creation to the parent implementation, then removes
-        ``main.py`` from the project root if it exists.
-        """
+        """Create `.scratch.py` and remove the root `main.py`, if present."""
         super().create_file()
         self.delete_root_main()
 
     def is_correct(self) -> bool:
-        """Return whether .scratch.py exists at the project root.
-
-        Overrides the default validation from the base class, which verifies
-        required content. Because .scratch.py is a
-        free-form scratch file that users are expected to edit freely,
-        content is not validated — only existence matters.
-
-        Returns:
-            bool: True if .scratch.py exists at the project root.
-        """
+        """Check whether `.scratch.py` exists, ignoring its content."""
         return self.path().exists()
 
     def version_control_ignored(self) -> bool:
-        """Return True to indicate .scratch.py is excluded from version control.
-
-        Returns:
-            bool: Always True.
-        """
+        """Return `True`; `.scratch.py` is always excluded from version control."""
         return True
 
     def stem(self) -> str:
-        """Return the stem of the scratch filename.
-
-        Combined with the ".py" extension provided by the parent class,
-        this produces the filename ".scratch.py".
-
-        Returns:
-            str: ".scratch"
-        """
+        """Return `".scratch"`."""
         return ".scratch"
 
     def parent_path(self) -> Path:
-        """Return the directory that will contain .scratch.py.
-
-        Returns:
-            Path: An empty Path, representing the project root.
-        """
+        """Return the project root as the parent directory."""
         return Path()
 
     def lines(self) -> list[str]:
-        """Return the initial content lines written to .scratch.py.
-
-        The generated file contains only a module docstring stating its
-        purpose. Users are free to replace or extend this content.
-
-        Returns:
-            list[str]: Initial content lines for the scratch file.
-        """
+        """Return a one-line module docstring followed by a trailing newline."""
         return ['"""This file is for scratch work and is ignored by git."""', ""]
 
     def delete_root_main(self) -> None:
-        """Remove ``main.py`` from the project root if it exists.
+        """Delete `main.py` at the project root, if present.
 
-        ``uv init`` places a ``main.py`` in the project root as a starter
-        script. Pyrig-managed projects do not use it, so this cleanup step
-        removes it after the scratch file is generated.
+        `uv init` places a starter `main.py` at the project root; pyrig-managed
+        projects do not use it.
         """
         root_main_path = Path("main.py")
         if root_main_path.exists():

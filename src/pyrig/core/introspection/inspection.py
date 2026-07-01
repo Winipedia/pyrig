@@ -1,4 +1,4 @@
-"""Utilities for inspecting Python objects."""
+"""Utilities for locating an object's source definition line."""
 
 import inspect
 from collections.abc import Iterable
@@ -11,7 +11,7 @@ def def_line_sorted(objs: Iterable[Any]) -> list[Any]:
     """Sort objects by their source definition line number.
 
     Args:
-        objs: Iterable of objects to sort (functions, methods, properties, etc.).
+        objs: Iterable of objects to sort (functions, methods, classes, etc.).
 
     Returns:
         New list of objects sorted ascending by their definition line number.
@@ -26,8 +26,8 @@ def def_line(obj: Any) -> int:
     underlying function's line is returned rather than the wrapper's line.
 
     Args:
-        obj: Callable (function, method, property, staticmethod, classmethod,
-            or decorated callable).
+        obj: Function, method, class, property, staticmethod, classmethod, or
+            decorated callable.
 
     Returns:
         1-based line number of the first line of the object's definition.

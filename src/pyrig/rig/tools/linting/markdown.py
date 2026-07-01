@@ -1,7 +1,4 @@
-"""Wrapper around the Markdown linter tool.
-
-Wraps Markdown linter commands and information.
-"""
+"""Wrapper around the rumdl Markdown linter tool."""
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -15,49 +12,33 @@ class MarkdownLinter(Tool):
     """
 
     def name(self) -> str:
-        """Get tool name.
-
-        Returns:
-            'rumdl'
-        """
+        """Return `'rumdl'`, the executable name for this tool's CLI command."""
         return "rumdl"
 
     def group(self) -> str:
-        """Returns the group the tool belongs to.
-
-        Returns:
-            `Group.CODE_QUALITY`
-        """
+        """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
         return Group.CODE_QUALITY
 
     def image_url(self) -> str:
-        """Return the badge image URL for rumdl.
-
-        Returns:
-            The URL of the badge image as a string.
-        """
+        """Return the badge image URL for rumdl."""
         return "https://img.shields.io/badge/markdown-rumdl-darkgreen"
 
     def link_url(self) -> str:
-        """Return the link URL for rumdl.
-
-        Returns:
-            The URL of the rumdl project page as a string.
-        """
+        """Return the URL of the rumdl project page."""
         return "https://github.com/rvben/rumdl"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
-        """Return paths to ignore in version control."""
+        """Return `('.rumdl_cache/',)`, rumdl's cache directory."""
         return (".rumdl_cache/",)
 
     def check_fix_args(self, *args: str) -> Args:
         """Construct rumdl check arguments with auto-fix enabled.
 
         Args:
-            *args: Additional arguments forwarded to ``rumdl check --fix``.
+            *args: Additional arguments forwarded to `rumdl check --fix`.
 
         Returns:
-            Args for 'rumdl check --fix'.
+            Args for `rumdl check --fix`.
         """
         return self.check_args("--fix", *args)
 
@@ -65,9 +46,9 @@ class MarkdownLinter(Tool):
         """Construct rumdl check arguments.
 
         Args:
-            *args: Additional arguments forwarded to ``rumdl check``.
+            *args: Additional arguments forwarded to `rumdl check`.
 
         Returns:
-            Args for 'rumdl check'.
+            Args for `rumdl check`.
         """
         return self.args("check", *args)

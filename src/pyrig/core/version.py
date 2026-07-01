@@ -1,9 +1,4 @@
-"""Version constraint parsing and range generation utilities.
-
-Provides tools for working with PEP 440 version specifiers, including
-extracting inclusive and exclusive bounds from a constraint string and
-enumerating all versions within a range at a specified precision level.
-"""
+"""Parsing of PEP 440 version constraints and the version ranges they imply."""
 
 from typing import Literal
 
@@ -26,14 +21,6 @@ def adjust_version_to_level(
     Returns:
         The version at the specified precision. Pre-release and other suffixes
         are stripped for `"major"` and `"minor"`.
-
-    Examples:
-        >>> adjust_version_to_level(Version("3.11.5"), "major")
-        <Version('3')>
-        >>> adjust_version_to_level(Version("3.11.5"), "minor")
-        <Version('3.11')>
-        >>> adjust_version_to_level(Version("3.11.5"), "micro")
-        <Version('3.11.5')>
     """
     if level == "major":
         return Version(f"{version.major}")
@@ -84,20 +71,7 @@ class VersionConstraint:
     """
 
     def __init__(self, constraint: str) -> None:
-        """Initialize from a PEP 440 specifier string.
-
-        Args:
-            constraint: A PEP 440 version specifier string. Leading and trailing
-                quotes and whitespace are stripped. Supports multiple specifiers
-                joined by commas (e.g., `">=3.8,<3.12"`).
-
-        Examples:
-            >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.lower_inclusive
-            <Version('3.8')>
-            >>> vc.upper_exclusive
-            <Version('3.12')>
-        """
+        """Parse `constraint` and derive the class's normalized bound attributes."""
         self.constraint = constraint
         self.spec = self.constraint.strip().strip('"').strip("'")
         self.sset = SpecifierSet(self.spec)
@@ -146,10 +120,14 @@ class VersionConstraint:
         lower_default: str | Version | None = None,
         upper_default: str | Version | None = None,
     ) -> tuple[Version, ...]:
-        """Enumerate all versions within the constraint at the specified precision.
+        """Enumerate versions at the given precision between the constraint's bounds.
 
-        Exclusion operators (`!=`) in the constraint are applied correctly,
-        so versions excluded by the specifier are absent from the result.
+        For a range confined to a single major version, the result is every version
+        at the requested precision between the lower and upper bound that the
+        constraint actually matches (so, for example, `!=` exclusions are absent).
+        A range spanning multiple major versions instead repeats the lower and
+        upper bound's minor (and micro) digits within each major, rather than
+        covering every value in between.
 
         Args:
             level: Granularity of version increments. Defaults to `"major"`.
@@ -164,7 +142,7 @@ class VersionConstraint:
 
         Returns:
             A tuple of `Version` objects satisfying the constraint, sorted ascending.
-            May be empty if no versions satisfy the constraint.
+            Empty if the constraint excludes every candidate at this precision.
 
         Raises:
             RuntimeError: If the constraint and defaults together fail to yield a

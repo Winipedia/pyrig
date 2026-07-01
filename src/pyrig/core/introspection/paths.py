@@ -14,8 +14,7 @@ def package_dir_path(package: ModuleType) -> Path:
         Path to the package directory.
 
     Raises:
-        AttributeError: If the package's `__file__` attribute is `None`
-            (e.g., built-in modules or namespace packages).
+        AttributeError: If the package has no resolvable source file.
     """
     return module_file_path(package).parent
 
@@ -30,8 +29,8 @@ def module_file_path(module: ModuleType) -> Path:
         Path to the module's source file.
 
     Raises:
-        AttributeError: If the module's `__file__` attribute is `None`
-            (e.g., built-in modules or namespace packages).
+        AttributeError: If the module has no `__file__` attribute, or that
+            attribute is `None` (e.g., built-in or namespace packages).
     """
     file = module.__file__
     if file is None:

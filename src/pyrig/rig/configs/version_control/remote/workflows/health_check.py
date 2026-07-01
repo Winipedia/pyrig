@@ -16,41 +16,27 @@ from pyrig.rig.tools.version_control.hook_manager import (
 
 
 class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
-    """Generates the ``health_check.yml`` GitHub Actions workflow.
+    """GitHub Actions workflow that runs code quality checks and tests.
 
-    This workflow runs code quality checks and tests on every pull request,
-    push to the default branch, daily cron schedule, and manual trigger.
-
-    Three jobs run as part of this workflow:
-
-    1. ``health-checks`` — a single-runner job that applies all pre-commit
-       hooks (linting, formatting, type checking, security, markdown), and audits
-       dependencies for known CVEs.
-    2. ``matrix-health-checks`` — a matrix job that runs the full test suite
-       with coverage reporting across all supported OS and Python versions.
-    3. ``health-check`` — a fan-in job that waits for both jobs above to
-       succeed. Its job ID is registered as the required status check in the
-       branch protection ruleset, making it the single gate for merging.
+    Triggered on every pull request, on push to the default branch, on a
+    daily cron schedule, and manually. Its aggregation job is the single
+    required status check for merging, so this workflow is the CI gate the
+    project relies on.
     """
 
     def stem(self) -> str:
-        """Return the stem used to derive the workflow filename.
-
-        Returns:
-            ``"health_check"``, giving the path
-            ``.github/workflows/health_check.yml``.
-        """
+        """Return `"health_check"`, the workflow file's stem."""
         return "health_check"
 
     def workflow_triggers(self) -> dict[str, Any]:
         """Return the triggers for the health check workflow.
 
-        Extends the default ``workflow_dispatch`` trigger from the base class
-        with pull request, push, and scheduled cron triggers.
+        Extends the base `workflow_dispatch` trigger with pull request,
+        push, and scheduled cron triggers.
 
         Returns:
-            Trigger configuration dict with ``workflow_dispatch``,
-            ``pull_request``, ``push``, and ``schedule`` entries.
+            Trigger configuration dict with `workflow_dispatch`,
+            `pull_request`, `push`, and `schedule` entries.
         """
         triggers = super().workflow_triggers()
         triggers.update(self.on_pull_request())
@@ -67,14 +53,14 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         int | Literal["*"],
         int | Literal["*"],
     ]:
-        """Return the cron schedule tuple for the daily workflow run.
+        """Return the cron schedule for the daily workflow run.
 
-        The five-element tuple maps to ``(minute, hour, day, month, weekday)``
-        and is joined into a cron string by :meth:`workflow_triggers`.
+        The tuple elements are, in order, `(minute, hour, day, month,
+        weekday)`, using `"*"` for any field that is not constrained.
 
         Returns:
-            ``(0, 1, "*", "*", "*")``, which schedules the workflow every day
-            at 01:00 UTC.
+            `(0, 1, "*", "*", "*")`, which schedules the workflow every
+            day at 01:00 UTC.
         """
         return 0, 1, "*", "*", "*"
 
@@ -82,9 +68,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """Return all jobs for the health check workflow.
 
         Returns:
-            Dict containing the ``health-checks`` job, the
-            ``matrix-health-checks`` job, and the ``health-check``
-            aggregation job.
+            Dict mapping job IDs to their configurations.
         """
         jobs: dict[str, Any] = {}
         jobs.update(self.job_health_checks())
@@ -95,14 +79,12 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     def job_health_check(self) -> dict[str, Any]:
         """Return the fan-in aggregation job.
 
-        This job depends on both ``health-checks`` and
-        ``matrix-health-checks`` completing successfully. Its job ID
-        (``"health-check"``) is registered as the sole required status check
-        in the branch protection ruleset, making it the single gate that must
-        pass before any pull request can be merged.
+        Depends on the other two jobs completing successfully; its outcome
+        is relied on elsewhere as the sole indicator of whether the health
+        check as a whole passed.
 
         Returns:
-            Job configuration with ``needs`` set to both sibling jobs and a
+            Job configuration with `needs` set to both sibling jobs and a
             single aggregation step.
         """
         matrix_health_checks_job_id = self.make_id_from_func(
@@ -118,12 +100,11 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     def job_matrix_health_checks(self) -> dict[str, Any]:
         """Return the matrix job that runs the test suite across environments.
 
-        Uses a strategy matrix of all supported OS and Python version
-        combinations so the test suite is verified on every platform the
-        project targets.
+        Uses a strategy matrix combining the default operating systems with
+        every Python version the project supports.
 
         Returns:
-            Job configuration with a matrix strategy, dynamic ``runs-on``
+            Job configuration with a matrix strategy, dynamic `runs-on`
             value, and steps for setup and testing.
         """
         return self.job(
@@ -151,7 +132,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """Return the steps for the fan-in aggregation job.
 
         Returns:
-            A single-element list containing the aggregation echo step.
+            A single-element list containing the aggregation step.
         """
         return [
             self.step_aggregate_jobs(),
@@ -177,8 +158,8 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
 
         Returns:
             Steps that install dependencies, create version-control-ignored
-            local files, run all pre-commit hooks (linting, formatting, type
-            checking, security, markdown), and audit dependencies for CVEs.
+            local files, run the configured pre-commit hooks, and audit
+            dependencies for known vulnerabilities.
         """
         return [
             *self.steps_core_installed_setup(update_dependencies=True),
@@ -198,7 +179,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that executes pytest with CI-appropriate flags.
+            Step that runs `pytest`.
         """
         if step is None:
             step = {}
@@ -214,10 +195,17 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step to create local gitignored files.
+        """Build a step that creates version-control-ignored local config files.
 
-        This is needed so that pyrig sync does not fail on the next step
-        and all pre commit hooks pass cleanly.
+        Must run before the pre-commit hooks step: creating these files here
+        avoids a spurious failure from the hook that checks the project is
+        fully synchronized.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that creates the missing local config files.
         """
         return self.step(
             step_func=self.step_create_version_control_ignored_files,
@@ -261,14 +249,14 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that audits dependencies for known vulnerabilities.
 
-        Runs ``pip-audit`` via uv against the installed environment to detect
+        Runs `pip-audit` via uv against the installed environment to detect
         CVEs in direct and transitive dependencies.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs ``uv run pip-audit``.
+            Step that runs `uv run pip-audit`.
         """
         return self.step(
             step_func=self.step_run_dependency_audit,
@@ -281,10 +269,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a fan-in step used to aggregate matrix job results.
-
-        The job containing this step declares a ``needs`` dependency on the
-        sibling jobs, ensuring all runners have finished before this step runs.
+        """Build a no-op step that only echoes a message.
 
         Args:
             step: Additional keys to merge into the step configuration.

@@ -32,8 +32,8 @@ class BadgesConfigFile(MarkdownConfigFile):
         """Return merged file content with current badge URLs and project description.
 
         Prefers an in-place update of the existing content to preserve any user
-        additions. Falls back to prepending all required content before the
-        existing file content when the in-place update is insufficient.
+        additions, falling back to the default merge strategy when the in-place
+        update does not yield all required content.
 
         Returns:
             Merged lines with current badge URLs and project description. User

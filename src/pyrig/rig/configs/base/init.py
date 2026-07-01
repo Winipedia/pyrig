@@ -24,8 +24,9 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
         """Return the directory that will contain the generated `__init__.py`.
 
         The returned path is the package directory for `copy_module` within the
-        target project's source tree. When `copy_module` is the pyrig root package,
-        the directory is named after the target project's package rather than `pyrig`.
+        target project's source tree. When `copy_module` is the `pyrig` root
+        package, the directory is named after the target project's package
+        rather than `pyrig`.
 
         Returns:
             Path to the package directory where `__init__.py` will be written

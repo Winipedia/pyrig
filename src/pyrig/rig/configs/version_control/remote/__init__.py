@@ -1,5 +1,5 @@
-"""Configuration file generators for GitHub repository setup.
+"""Configuration management for the project's GitHub-hosted remote repository.
 
-Provides ``ConfigFile`` subclasses that generate and manage the GitHub-specific
-configuration files for a project.
+Complements local version control configuration by managing the files under
+`.github/` that govern how the repository behaves on GitHub.
 """

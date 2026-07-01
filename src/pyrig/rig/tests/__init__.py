@@ -1,1 +1,1 @@
-"""Shared test infrastructure for pyrig-based projects."""
+"""Discovery scope for generated test skeletons that mirror project source code."""

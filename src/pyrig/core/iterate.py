@@ -83,7 +83,7 @@ def nested_structure_is_subset(  # noqa: C901
     | None = None,
     on_list_mismatch: Callable[[list[Any], list[Any], int], Any] | None = None,
 ) -> bool:
-    """Recursively check whether one nested structure is contained within another.
+    """Check whether one nested structure is contained within another.
 
     Compares dicts, lists, and primitives according to subset semantics:
 

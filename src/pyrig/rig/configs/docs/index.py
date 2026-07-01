@@ -1,9 +1,4 @@
-"""Configuration file manager for the MkDocs home page (``docs/index.md``).
-
-Produces the project's documentation landing page by extending the
-badge-augmented Markdown base with a ``{project_name} Documentation`` H1
-header.
-"""
+"""Configuration file manager for the MkDocs documentation landing page."""
 
 from pathlib import Path
 
@@ -13,39 +8,29 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class IndexConfigFile(BadgesConfigFile):
-    """Configuration manager for the MkDocs home page (``docs/index.md``).
+    """Configuration manager for the documentation site's landing page.
 
-    Produces ``docs/index.md`` with a ``# {project_name} Documentation`` H1
-    header, followed by the grouped status badges and project description
-    provided by the badge-augmented Markdown base class. The file is registered
-    as the "Home" entry in ``mkdocs.yml`` navigation.
+    Produces the same project header, status badges, and description as the
+    badge-augmented Markdown base, with the heading naming it as the project's
+    documentation rather than the project itself.
     """
 
     def parent_path(self) -> Path:
-        """Return the ``docs/`` directory path.
-
-        Returns:
-            Path: The MkDocs documentation source directory,
-            relative to the project root.
-        """
+        """Return the MkDocs documentation source directory."""
         return DocsBuilder.I.docs_dir()
 
     def stem(self) -> str:
-        """Return ``"index"`` as the filename stem."""
+        """Return the filename stem `"index"`."""
         return "index"
 
     def lines(self) -> list[str]:
-        """Build the home page content lines.
+        """Build the landing page content lines.
 
-        Extends the parent's output by appending ``" Documentation"`` to the
-        project name in the H1 header, so the heading reads
-        ``# {project_name} Documentation`` rather than ``# {project_name}``.
-        The remainder of the content — badge rows and project description block
-        — is inherited unchanged from the base class.
+        Renames the inherited heading from the project name alone to the
+        project name followed by `" Documentation"`.
 
         Returns:
-            List of Markdown lines with the modified H1 header followed by the
-            badge rows and project description block.
+            Markdown lines for the landing page.
         """
         lines = super().lines()
         project_name = PackageManager.I.project_name()

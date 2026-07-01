@@ -1,28 +1,35 @@
-"""Wrapper around the dependency checker tool."""
+"""Detection of unused, missing, and transitive Python dependencies."""
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 
 
 class DependencyChecker(Tool):
-    """Wrapper around the dependency checker tool."""
+    """`deptry` command wrapper."""
 
     def name(self) -> str:
-        """Get the tool name."""
+        """Return `"deptry"`."""
         return "deptry"
 
     def group(self) -> str:
-        """Get the tool group."""
+        """Return `Group.CODE_QUALITY`."""
         return Group.CODE_QUALITY
 
     def image_url(self) -> str:
-        """Get the badges image url."""
+        """Return the Shields.io badge URL advertising `deptry`."""
         return "https://img.shields.io/badge/dependencies-deptry-blue"
 
     def link_url(self) -> str:
-        """Get the badges link url."""
+        """Return the URL of the `deptry` project page."""
         return "https://github.com/osprey-oss/deptry"
 
     def check_args(self, *args: str) -> Args:
-        """Get the args to check deps."""
+        """Build the `deptry` command.
+
+        Args:
+            *args: Additional CLI flags for `deptry`.
+
+        Returns:
+            Args for running `deptry` with the given flags.
+        """
         return self.args(*args)

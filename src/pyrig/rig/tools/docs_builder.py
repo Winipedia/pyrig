@@ -1,7 +1,4 @@
-"""Documentation builder tool wrapper.
-
-Wraps DocsBuilder commands and information.
-"""
+"""MkDocs command construction and GitHub Pages documentation metadata."""
 
 from pathlib import Path
 
@@ -12,60 +9,30 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class DocsBuilder(Tool):
-    """MkDocs documentation builder tool wrapper.
-
-    Provides methods for constructing mkdocs command arguments and
-    generating documentation-related URLs and badges for GitHub Pages.
-    """
+    """MkDocs command wrapper with GitHub Pages URL metadata."""
 
     def name(self) -> str:
-        """Get the tool command name.
-
-        Returns:
-            ``'mkdocs'``
-        """
+        """Return `'mkdocs'`."""
         return "mkdocs"
 
     def group(self) -> str:
-        """Get the badge group for this tool.
-
-        Returns:
-            ``Group.PROJECT_INFO`` for grouping in generated badge lists.
-        """
+        """Return `Group.PROJECT_INFO`."""
         return Group.PROJECT_INFO
 
     def image_url(self) -> str:
-        """Return the badge image URL for MkDocs.
-
-        Returns:
-            The URL of the badge image as a string.
-        """
+        """Return the badge image URL."""
         return "https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white"
 
     def link_url(self) -> str:
-        """Return the link URL for MkDocs.
-
-        Returns:
-            The documentation URL for this project, as produced by
-            ``documentation_url()``.
-        """
+        """Return the expected GitHub Pages URL for this project."""
         return self.documentation_url()
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
-        """Return paths to ignore in version control."""
+        """Return the built site output directory, `'/site'`."""
         return ("/site",)
 
     def dev_dependencies(self) -> tuple[str, ...]:
-        """Get the development dependencies required for MkDocs documentation.
-
-        Extends the base ``Tool`` dependency (``'mkdocs'``) with additional
-        packages for the Material theme, Mermaid diagram support, and
-        Python API docstring rendering.
-
-        Returns:
-            Tuple of ``'mkdocs'``, ``'mkdocs-material'``,
-            ``'mkdocs-mermaid2-plugin'``, and ``'mkdocstrings[python]'``.
-        """
+        """Return `mkdocs` plus the Material, Mermaid, and mkdocstrings packages."""
         return (
             *super().dev_dependencies(),
             "mkdocs-material",
@@ -74,35 +41,29 @@ class DocsBuilder(Tool):
         )
 
     def docs_dir(self) -> Path:
-        """Get the documentation source directory.
-
-        Returns:
-            ``Path('docs')`` — the standard MkDocs source directory,
-            relative to the project root.
-        """
+        """Return the documentation source directory, `Path('docs')`."""
         return Path("docs")
 
     def build_args(self, *args: str) -> Args:
-        """Construct arguments for the ``mkdocs build`` command.
+        """Construct arguments for the `mkdocs build` command.
 
         Args:
-            *args: Additional arguments appended after ``build``.
+            *args: Additional arguments appended after `build`.
 
         Returns:
-            Args representing ``['mkdocs', 'build', *args]``.
+            Args for `mkdocs build <args...>`.
         """
         return self.args("build", *args)
 
     def documentation_url(self) -> str:
         """Construct the expected GitHub Pages URL for this project.
 
-        Reads the repository owner from the git remote URL if configured,
-        otherwise falls back to the git username, and the repository name
-        from the project name. Does not verify that the
-        remote is configured or that GitHub Pages is enabled.
+        The owner comes from `VersionController` and the repository name
+        from `PackageManager`. Does not verify that the remote is configured
+        or that GitHub Pages is enabled.
 
         Returns:
-            URL in the form ``https://{owner}.github.io/{repo}``.
+            URL in the form `https://{owner}.github.io/{repo}`.
         """
         owner, repo = (
             VersionController.I.repo_owner(),

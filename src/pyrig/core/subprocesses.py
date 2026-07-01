@@ -11,13 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Args(tuple[str, ...]):
-    """Immutable sequence of command-line tokens that can execute itself.
-
-    Example:
-        >>> args = Args(["uv", "sync"])
-        >>> str(args)
-        'uv sync'
-    """
+    """Immutable sequence of command-line tokens that can execute itself."""
 
     __slots__ = ()
 
@@ -34,20 +28,11 @@ class Args(tuple[str, ...]):
 
         Returns:
             The completed process result.
-
-        Raises:
-            subprocess.CalledProcessError: If `check=True` and the command
-                exits with a non-zero return code.
-            subprocess.TimeoutExpired: If a `timeout` is passed and the process
-                exceeds it.
         """
         return run_subprocess((*self, *args), **kwargs)
 
     def run_cached(self, *args: str, **kwargs: Any) -> subprocess.CompletedProcess[Any]:
-        """Execute the command with result caching.
-
-        Repeated calls with identical arguments return the cached result without
-        spawning a new process.
+        """Execute the command, caching the result for identical arguments.
 
         Args:
             *args: Additional arguments to append to the command before execution.
@@ -56,12 +41,6 @@ class Args(tuple[str, ...]):
 
         Returns:
             The completed process result.
-
-        Raises:
-            subprocess.CalledProcessError: If `check=True` and the command
-                exits with a non-zero return code.
-            subprocess.TimeoutExpired: If a `timeout` is passed and the process
-                exceeds it.
         """
         return run_subprocess_cached((*self, *args), **kwargs)
 
@@ -82,11 +61,6 @@ def run_subprocess_cached(
 
     Returns:
         The completed process result.
-
-    Raises:
-        subprocess.CalledProcessError: If the command exits with a non-zero
-            return code and `check=True`.
-        subprocess.TimeoutExpired: If the process exceeds the configured timeout.
     """
     return run_subprocess(args, **kwargs)
 

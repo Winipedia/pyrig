@@ -1,8 +1,9 @@
 """Project-specific CLI commands.
 
-All functions in this module are automatically discovered and registered
-as CLI commands for this project. Module-level `typer.Typer` instances are
-registered as command groups named after their variable.
+Functions defined directly in this module are discovered and registered as
+top-level CLI commands. Module-level `typer.Typer` instances are registered
+as command groups, with each group named after the kebab-case form of its
+variable name.
 """
 
 # Bind the make module's Typer app to `mk` so the CLI discovery registers it
@@ -38,12 +39,9 @@ def init() -> None:
 def sync() -> None:
     """Reconcile all pyrig-managed project structure into its correct state.
 
-    Runs the ordered structural fixups that create missing package files,
-    update managed configuration, and refresh generated test scaffolding.
-    Every fixup preserves existing user content and only adds what is missing
-    or corrects what is wrong, making this command safe to run repeatedly.
-    Run it after adding source code, pulling changes, or adding a new pyrig
-    dependency to bring the project back into a fully conformant state.
+    Safe to run repeatedly: existing user content is preserved, and only what
+    is missing or incorrect is changed. Run it after adding source code,
+    pulling changes, or adding a new pyrig dependency.
 
     Exits with code 1 if any file was created or updated, 0 if everything was
     already in sync. This makes it suitable as a git hook: auto-fixes are
@@ -55,15 +53,19 @@ def sync() -> None:
 
 
 def scratch() -> None:
-    """Run the .scratch.py file at the project root.
+    """Run the `.scratch.py` file at the project root.
 
-    .scratch.py is a throwaway Python script kept at the project root for
+    `.scratch.py` is a throwaway Python script kept at the project root for
     local experimentation. It is automatically excluded from version control
-    via .gitignore and never committed. Use it to prototype ideas, test quick
-    snippets, or exercise library code without touching the main source tree.
+    via `.gitignore` and never committed. Use it to prototype ideas, test
+    quick snippets, or exercise library code without touching the main
+    source tree.
 
     The script runs in an isolated namespace and does not affect the calling
     environment.
+
+    Raises:
+        FileNotFoundError: If `.scratch.py` does not exist at the project root.
     """
     from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
 
@@ -73,13 +75,9 @@ def scratch() -> None:
 def rmpyc() -> None:
     """Remove all `__pycache__` directories from the project's source and test trees.
 
-    Recursively scans the package root and tests package root, printing each
-    path before deleting it. Useful for clearing stale bytecode that may cause
-    import errors or test-isolation issues after refactors, branch switches, or
-    moving files around.
-
-    Safe to run multiple times — only directories that currently exist are
-    removed.
+    Useful for clearing stale bytecode that may cause import errors or
+    test-isolation issues after refactors, branch switches, or moving files
+    around. Safe to run repeatedly.
     """
     from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
 

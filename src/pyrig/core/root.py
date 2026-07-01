@@ -1,4 +1,4 @@
-"""Utilities regarding the root standards of pyrig."""
+"""Path and module-name resolution relative to the project's root layout."""
 
 import logging
 from collections.abc import Iterator
@@ -33,13 +33,13 @@ def make_all_init_files() -> tuple[Path, ...]:
 def namespace_package_paths() -> Iterator[Path]:
     """Yield project directories that lack an `__init__.py` file.
 
-    Covers the source package root and tests package root, including each
-    root itself and all subdirectories at any depth. Directories named
-    `__pycache__` are skipped.
+    Searches the source package root and tests package root, including each
+    root itself and all subdirectories at any depth, skipping `__pycache__`
+    directories.
 
     Yields:
-        Each qualifying directory at or under the source or tests package
-        root that has no `__init__.py`.
+        Each directory under the source or tests package root that has no
+        `__init__.py`.
     """
     logger.debug("Discovering namespace packages")
 
@@ -65,8 +65,9 @@ def namespace_package_paths() -> Iterator[Path]:
 def root_path_as_module_name(path: Path) -> str:
     """Convert a filesystem path relative to the project root to a dotted module name.
 
-    Paths under the source root (e.g., `src/`) have that prefix removed; all
-    other paths are interpreted relative to the project root.
+    Removes whichever prefix the path falls under, the source root or the
+    tests source root. A path under neither is treated as already relative
+    to the project root.
 
     Args:
         path: Filesystem path relative to the project root.
@@ -88,9 +89,7 @@ def root_path_as_module_name(path: Path) -> str:
 def module_name_as_root_path(module_name: str) -> Path:
     """Resolve a dotted module name to its filesystem path relative to the project root.
 
-    For modules starting with the tests package name (e.g., `"tests"`), the
-    path is relative to the project root; for all other modules, it is
-    relative to the source root (e.g., `src/`).
+    Test modules and source modules resolve against different roots.
 
     Args:
         module_name: Dotted Python module name (e.g., `"mypackage.sub.module"`

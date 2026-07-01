@@ -41,34 +41,23 @@ class SecurityConfigFile(MarkdownConfigFile):
     and response expectations. The contact method placeholder in the template
     is populated from the configured git user email.
 
-    Any non-empty SECURITY.md is treated as valid, so users can replace or
-    extend the generated template with their own policy without triggering
-    validation failures.
+    Any non-empty SECURITY.md is treated as valid, so users are free to
+    replace or extend the generated template with their own policy.
     """
 
     def stem(self) -> str:
-        """Return the filename stem ``"SECURITY"``."""
+        """Return the filename stem `"SECURITY"`."""
         return "SECURITY"
 
     def parent_path(self) -> Path:
-        """Return the project root directory as the location for SECURITY.md.
-
-        Returns:
-            Path: Current working directory (project root).
-        """
+        """Return the project root as the parent directory."""
         return Path()
 
     def is_correct(self) -> bool:
         """Return whether SECURITY.md has non-empty content.
 
-        Overrides the parent's content-subset validation with a simpler check.
-        Any non-empty SECURITY.md is accepted as correct, allowing users to
-        replace or extend the generated template with their own policy without
-        triggering validation failures.
-
         Returns:
-            bool: ``True`` if the file has non-empty content; ``False`` if
-            the file is empty.
+            `True` if the file is non-empty; `False` if it is empty.
 
         Raises:
             FileNotFoundError: If the file does not exist.
@@ -78,24 +67,18 @@ class SecurityConfigFile(MarkdownConfigFile):
     def lines(self) -> list[str]:
         """Return the security policy template as a list of lines.
 
-        Delegates to ``template_with_contact_method()`` to build the full
-        template string, then splits it into lines for the parent class.
-
         Returns:
-            list[str]: Lines of the security policy template with the git
-                user email substituted as the contact method.
+            Lines of the security policy template, with the contact method
+            placeholder filled in.
         """
         return self.split_lines(self.template_with_contact_method())
 
     def template_with_contact_method(self) -> str:
         """Return the security template with the contact placeholder replaced.
 
-        Substitutes the ``[INSERT CONTACT METHOD]`` placeholder in
-        ``SECURITY_TEMPLATE`` with the value returned by ``contact_method()``.
-
         Returns:
-            str: Complete security policy template with the contact method
-                filled in.
+            Complete security policy template with the contact method
+            filled in.
         """
         contact_method = self.contact_method()
         return SECURITY_TEMPLATE.replace("[INSERT CONTACT METHOD]", contact_method)
@@ -103,10 +86,8 @@ class SecurityConfigFile(MarkdownConfigFile):
     def contact_method(self) -> str:
         """Return the contact email address for security reports.
 
-        Reads the git ``user.email`` configuration and wraps it in angle
-        brackets to form a standard email reference (e.g. ``<user@example.com>``).
-
         Returns:
-            str: Git user email wrapped in angle brackets.
+            The configured git user email wrapped in angle brackets, e.g.
+            `<user@example.com>`.
         """
         return f"<{VersionController.I.email()}>"

@@ -1,9 +1,4 @@
-"""Configuration file manager for mkdocs.yml.
-
-Manages the project's mkdocs.yml, which configures the Material-themed
-MkDocs site with a dark/light mode palette toggle, page navigation,
-Mermaid diagram support, and Google-style API documentation via mkdocstrings.
-"""
+"""Configuration file management for the MkDocs site build."""
 
 from pathlib import Path
 from typing import Any
@@ -17,12 +12,11 @@ from pyrig.rig.tools.package_manager import PackageManager
 
 
 class DocsBuilderConfigFile(YMLDictConfigFile):
-    """Configuration manager for the project's ``mkdocs.yml`` file.
+    """Configuration manager for the project's `mkdocs.yml` file.
 
-    Generates ``mkdocs.yml`` with the Material theme, a dark/light mode
-    palette toggle, navigation entries for the Home and API pages, and
-    the search, mermaid2, and mkdocstrings plugins configured for
-    Google-style docstring rendering.
+    Configures a Material-themed MkDocs site with a dark/light palette
+    toggle, navigation to the home and API pages, and search, Mermaid, and
+    mkdocstrings plugins.
     """
 
     def parent_path(self) -> Path:
@@ -30,31 +24,17 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
         return Path()
 
     def stem(self) -> str:
-        """Return ``'mkdocs'`` as the configuration file stem."""
+        """Return `'mkdocs'` as the configuration file stem."""
         return DocsBuilder.I.name()
 
     def _configs(self) -> dict[str, Any]:
-        """Build the complete mkdocs.yml configuration.
+        """Return the required `mkdocs.yml` structure.
 
-        Constructs the full configuration dict that is written to
-        ``mkdocs.yml``. The returned dict contains four top-level keys:
-
-        - ``site_name``: Set to the project name.
-        - ``nav``: Two entries — ``Home`` pointing to ``index.md`` and
-          ``API`` pointing to ``api.md``, both expressed as POSIX paths
-          relative to the ``docs/`` directory.
-        - ``plugins``: Enables ``search``, ``mermaid2``, and
-          ``mkdocstrings`` (configured for the Python handler). The
-          ``docstring_style`` option is sourced from
-          :meth:`~pyrig.rig.tools.linting.python.PythonLinter.pydocstyle` so that
-          Ruff and mkdocstrings always agree on the docstring convention.
-        - ``theme``: Uses the Material theme with a two-entry palette:
-          dark mode (``slate`` scheme) listed first so it is the default,
-          followed by light mode (``default`` scheme). Each entry has a
-          brightness toggle icon and label for switching between modes.
+        The docstring rendering convention configured for mkdocstrings is
+        kept in sync with the convention Ruff enforces.
 
         Returns:
-            A ``dict[str, Any]`` representing the complete mkdocs.yml structure.
+            The complete `mkdocs.yml` structure as a dict.
         """
         return {
             "site_name": PackageManager.I.project_name(),

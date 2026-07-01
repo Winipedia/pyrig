@@ -1,23 +1,4 @@
-"""YAML configuration file management.
-
-Provides a base class for managing YAML configuration files. Uses PyYAML's
-safe_load and safe_dump for secure parsing and serialization.
-
-Example:
-    >>> from pathlib import Path
-    >>> from pyrig.rig.configs.base.yaml import YAMLConfigFile
-    >>>
-    >>> class MyWorkflowConfigFile(YAMLConfigFile):
-    ...
-    ...     def parent_path(self) -> Path:
-    ...         return Path(".github/workflows")
-    ...
-    ...     def stem(self) -> str:
-    ...         return "my_workflow"
-    ...
-    ...     def _configs(self) -> dict:
-    ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
-"""
+"""Base classes for managing YAML configuration files."""
 
 from typing import Any
 
@@ -30,38 +11,42 @@ from pyrig.rig.configs.base.config_file import ConfigFile
 class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     """Base class for YAML configuration files.
 
-    Implements YAML-specific load and dump operations for the ConfigFile
-    framework. Uses PyYAML's safe_load and safe_dump to prevent arbitrary
-    code execution during parsing. Key insertion order is preserved in output
-    (sort_keys=False).
+    Parses and serializes YAML content using PyYAML's safe-mode functions,
+    which refuse to construct or represent arbitrary Python objects.
 
-    Subclasses must implement:
-        - `parent_path`: Directory containing the YAML file
-        - `stem`: Filename without extension
-        - `_configs`: Expected YAML configuration structure
+    Subclasses must implement `parent_path()`, `stem()`, and `_configs()`.
+
+    Example:
+        >>> from pathlib import Path
+        >>> from pyrig.rig.configs.base.yaml import YAMLConfigFile
+        >>>
+        >>> class MyWorkflowConfigFile(YAMLConfigFile):
+        ...
+        ...     def parent_path(self) -> Path:
+        ...         return Path(".github/workflows")
+        ...
+        ...     def stem(self) -> str:
+        ...         return "my_workflow"
+        ...
+        ...     def _configs(self) -> dict:
+        ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
     """
 
     def _load(self) -> ConfigT:
-        """Load and parse the YAML file using safe_load.
-
-        Returns:
-            Parsed YAML content as a dict or list.
-        """
+        """Read and parse the YAML file from disk, returning a dict or list."""
         return yaml.safe_load(read_text_utf8(self.path()))
 
     def _dump(self, configs: ConfigT) -> None:
-        """Write configuration to the YAML file using safe_dump.
+        """Write configuration to the YAML file, preserving key order.
 
-        Key insertion order is preserved (``sort_keys=False``) and non-ASCII
-        characters are written as-is rather than escaped (``allow_unicode=True``).
-        The file is opened with explicit UTF-8 encoding.
+        Non-ASCII characters are written literally rather than escaped.
 
         Args:
-            configs: Configuration dict or list to write.
+            configs: Configuration dict or list to serialize and write.
         """
         with open_path_with_utf8(self.path(), mode="w") as f:
             yaml.safe_dump(configs, f, sort_keys=False, allow_unicode=True)
 
     def extension(self) -> str:
-        """Return ``"yaml"``."""
+        """Return `"yaml"`, the fixed extension for YAML files."""
         return "yaml"

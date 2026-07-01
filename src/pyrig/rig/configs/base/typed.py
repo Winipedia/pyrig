@@ -27,14 +27,14 @@ class TypedConfigFile(DictConfigFile):
         return {}
 
     def _load(self) -> dict[str, Any]:
-        """Return an empty dict."""
+        """Return an empty dict without reading the file from disk."""
         return {}
 
     def _dump(self, configs: dict[str, Any]) -> None:
-        """Raise `PermissionError` if `configs` is not empty.
+        """Never write to disk; raise `PermissionError` if `configs` is not empty.
 
         Args:
-            configs: Configuration dict to validate. Must be empty.
+            configs: Configuration to validate. Must be empty.
 
         Raises:
             PermissionError: If `configs` is not empty.
