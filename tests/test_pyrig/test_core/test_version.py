@@ -213,7 +213,6 @@ class TestVersionConstraint:
         assert versions == expected
 
         # make so that find_lower_inclusive and upper_inclusive return both None
-        # should raise RuntimeError
         constraint = "<3.12"
         version_constraint = VersionConstraint(constraint)
         with pytest.raises(RuntimeError):
@@ -253,3 +252,7 @@ class TestVersionConstraint:
             ]
         )
         assert versions == expected
+
+        constraint = ">=2.1, <2.4"
+        version_constraint = VersionConstraint(constraint)
+        assert version_constraint.version_range(level="major") == ()
