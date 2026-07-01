@@ -172,4 +172,4 @@ class Tool(DependencySubclass):
         Returns:
             An `Args` object whose first element is the tool name.
         """
-        return Args((self.name(), *args))
+        return Args(self.name(), *args)

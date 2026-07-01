@@ -58,7 +58,7 @@ class TestVersionControlHookManagerConfigFile:
     def test_hook(self) -> None:
         """Test method."""
         hook = VersionControlHookManagerConfigFile.I.hook(
-            "test", Args(("test",)), stages=["some-stage"]
+            "test", Args("test"), stages=["some-stage"]
         )
         assert hook["id"] == "test"
         assert hook["stages"] == ["some-stage"]

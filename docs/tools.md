@@ -36,8 +36,8 @@ class MyTool(Tool):
     def link_url(self) -> str:
         return "https://mytool.io"
 
-    def build_args(self, *extra: str) -> Args:
-        return self.args("build", *extra)
+    def build_args(self, *args: str) -> Args:
+        return self.args("build", *args)
 ```
 
 Place the class anywhere under `<your_package>.rig.tools` and it will be
@@ -66,6 +66,8 @@ Every `Tool` subclass is a `DependencySubclass`, so use `.I` to get a cached
 instance of the leaf subclass (respecting any downstream override):
 
 ```python
-PackageManager.I.install_dependencies_args().run()  # → uv sync
-VersionController.I.commit_with_msg_args("init").run()  # → git commit -m init
+# uv sync
+PackageManager.I.install_dependencies_args().run()
+# git commit -m "my commit message"
+VersionController.I.commit_with_msg_args(msg="my commit message").run()
 ```

@@ -1,5 +1,6 @@
 """Tests for pyrig.os.os module."""
 
+import copy
 import logging
 from pathlib import Path
 from subprocess import CalledProcessError  # nosec: B404
@@ -52,9 +53,30 @@ def test_run_subprocess_cached() -> None:
 class TestArgs:
     """Test class."""
 
+    def test___getnewargs__(self) -> None:
+        """Test method."""
+        args = Args("git", "commit", "-m", "msg")
+        # tokens are returned unwrapped so Args(*tokens) rebuilds the instance
+        assert args.__getnewargs__() == ("git", "commit", "-m", "msg")
+        assert Args(*args.__getnewargs__()) == args
+
+        # copy/deepcopy reconstruct through __getnewargs__: value and Args type
+        # must both survive the round-trip
+        for rebuilt in (copy.copy(args), copy.deepcopy(args)):
+            assert rebuilt == args
+            assert isinstance(rebuilt, Args)
+            assert len(rebuilt) == len(args)
+
+    def test___new__(self) -> None:
+        """Test method."""
+        args = Args("git", "commit", "-m", "msg")
+        assert args == ("git", "commit", "-m", "msg")
+        assert isinstance(args, Args)
+        assert Args() == ()
+
     def test_run_cached(self) -> None:
         """Test method."""
-        args = Args(("echo", "hello"))
+        args = Args("echo", "hello")
         result1 = args.run_cached()
         result2 = args.run_cached()
         assert result1 == result2
@@ -70,13 +92,13 @@ class TestArgs:
 
     def test___str__(self) -> None:
         """Test method."""
-        args = Args(("uv", "run", "pytest"))
+        args = Args("uv", "run", "pytest")
         result = str(args)
         assert result == "uv run pytest"
 
     def test_run(self, mocker: MockerFixture) -> None:
         """Test method."""
         mock_run_subprocess = mocker.patch("subprocess.run")
-        args = Args(("uv", "--version"))
+        args = Args("uv", "--version")
         args.run()
         mock_run_subprocess.assert_called_once()
