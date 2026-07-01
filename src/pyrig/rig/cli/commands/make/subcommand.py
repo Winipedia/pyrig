@@ -1,5 +1,7 @@
 """Scaffolding logic for extending CLI subcommand modules with new stubs."""
 
+import re
+
 import typer
 from pyrig_runtime.core.strings import kebab_to_snake_case
 from pyrig_runtime.rig.cli import shared_subcommands, subcommands
@@ -32,7 +34,9 @@ def make_subcommand(name: str, *, shared: bool) -> None:
 
     name = kebab_to_snake_case(name)
 
-    if f"\ndef {name}(" in content:
+    # Use a regex anchored to line-start to avoid false positives from
+    # occurrences inside string literals or comments.
+    if re.search(rf"^def {re.escape(name)}\s*\(", content, re.MULTILINE):
         typer.echo(f"Subcommand '{name}' already exists.", err=True)
         raise typer.Exit(code=1)
 
