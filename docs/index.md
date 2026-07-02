@@ -62,6 +62,13 @@ To get started with pyrig, check out the [Getting Started Guide](getting-started
 for a complete walkthrough of setting up a new python project from scratch with
 pyrig.
 
+## Plugins
+
+pyrig has a range of plugins that extend your project with extra capabilities —
+publishing to PyPI, building executables, container images, coverage uploads,
+and more. Just add one as a dev dependency and it wires itself in automatically.
+Check them out in the [Plugins Documentation](plugins.md).
+
 ## Scaffolding
 
 To see the full file tree of a project scaffolded by pyrig and get detailed descriptions
