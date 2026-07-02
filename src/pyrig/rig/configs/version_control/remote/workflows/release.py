@@ -64,7 +64,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         """
         return super().job(
             *args,
-            if_condition=self.if_workflow_run_is_success_and_not_cron_triggered(),
+            if_condition=self.if_workflow_run_is_success_and_push_triggered(),
             **kwargs,
         )
 

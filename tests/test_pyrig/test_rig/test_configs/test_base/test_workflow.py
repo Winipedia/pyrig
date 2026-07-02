@@ -439,11 +439,11 @@ class TestWorkflowConfigFile:
             == "${{ github.event.workflow_run.event == 'push' }}"
         )
 
-    def test_if_workflow_run_is_success_and_not_cron_triggered(
+    def test_if_workflow_run_is_success_and_push_triggered(
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()
-        result = workflow.if_workflow_run_is_success_and_not_cron_triggered()
+        result = workflow.if_workflow_run_is_success_and_push_triggered()
         expected = "${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}"  # noqa: E501
         assert result == expected

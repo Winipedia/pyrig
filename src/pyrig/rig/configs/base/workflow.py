@@ -875,7 +875,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.insert_expression("github.event.workflow_run.event == 'push'")
 
-    def if_workflow_run_is_success_and_not_cron_triggered(self) -> str:
+    def if_workflow_run_is_success_and_push_triggered(self) -> str:
         """Build a condition true for a successful, push-triggered workflow run.
 
         Returns:
