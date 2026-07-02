@@ -1,13 +1,13 @@
 [project]
 name = "pyrig"
-version = "16.0.0"
+version = "16.1.0"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "inquirerpy>=0.3.4",
     "packaging>=26.2",
-    "pyrig-runtime>=0.24.0",
+    "pyrig-runtime>=1.0.0",
     "pyyaml>=6.0.3",
     "spdx-matcher>=0.1.4",
     "tomlkit>=0.15.0",
@@ -78,11 +78,11 @@ dev = [
     "pip-audit>=2.10.1",
     "prek>=0.4.6",
     "pyrig>=15.0.0",
-    "pyrig-codecov>=1.23.0",
-    "pyrig-fixtures>=0.31.0",
-    "pyrig-overrides>=2.17.0",
-    "pyrig-pypi>=1.26.0",
-    "pyrig-resources>=1.18.0",
+    "pyrig-codecov>=2.0.0",
+    "pyrig-fixtures>=1.0.0",
+    "pyrig-overrides>=3.0.0",
+    "pyrig-pypi>=2.0.0",
+    "pyrig-resources>=2.0.0",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.20",
