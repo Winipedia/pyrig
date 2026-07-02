@@ -1,17 +1,17 @@
 [project]
 name = "pyrig"
-version = "15.64.0"
+version = "16.0.0"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "inquirerpy>=0.3.4",
     "packaging>=26.2",
-    "pyrig-runtime>=0.1.0",
+    "pyrig-runtime>=0.24.0",
     "pyyaml>=6.0.3",
     "spdx-matcher>=0.1.4",
-    "tomlkit>=0.14.0",
-    "typer>=0.26.7",
+    "tomlkit>=0.15.0",
+    "typer>=0.26.8",
 ]
 license = "MIT"
 license-files = [
@@ -69,26 +69,26 @@ pyrig = "pyrig_runtime.rig.cli.main:main"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.9.3",
+    "bandit>=1.9.4",
     "deptry>=0.25.1",
-    "mkdocs-material>=9.7.1",
-    "mkdocs-mermaid2-plugin>=1.2.3",
     "mkdocs>=1.6.1",
-    "mkdocstrings[python]>=1.0.3",
-    "pip-audit>=2.10.0",
-    "prek>=0.3.2",
+    "mkdocs-material>=9.7.6",
+    "mkdocs-mermaid2-plugin>=1.2.3",
+    "mkdocstrings[python]>=1.0.4",
+    "pip-audit>=2.10.1",
+    "prek>=0.4.6",
     "pyrig>=15.0.0",
-    "pyrig-codecov>=1.1.0",
-    "pyrig-fixtures>=0.20.0",
-    "pyrig-overrides>=1.0.0",
-    "pyrig-pypi>=1.0.0",
-    "pyrig-resources>=1.0.0",
-    "pytest-cov>=7.0.0",
-    "pytest>=9.0.2",
-    "ruff>=0.15.0",
-    "rumdl>=0.1.17",
-    "ty>=0.0.16",
-    "typos>=1.47.2",
+    "pyrig-codecov>=1.23.0",
+    "pyrig-fixtures>=0.31.0",
+    "pyrig-overrides>=2.17.0",
+    "pyrig-pypi>=1.26.0",
+    "pyrig-resources>=1.18.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.20",
+    "rumdl>=0.2.27",
+    "ty>=0.0.56",
+    "typos>=1.48.0",
 ]
 
 [build-system]
