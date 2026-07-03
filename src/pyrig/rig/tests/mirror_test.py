@@ -11,7 +11,7 @@ from collections.abc import Callable, Iterable, Iterator
 from importlib import import_module
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Self, cast
+from typing import Any, Self
 
 from pyrig_runtime.core.introspection.functions import module_functions
 from pyrig_runtime.core.introspection.inspection import unwrap_obj
@@ -19,6 +19,7 @@ from pyrig_runtime.core.introspection.inspection import unwrap_obj
 from pyrig.core.introspection.classes import (
     cls_methods,
     discard_parent_methods,
+    generate_class,
     module_classes,
 )
 from pyrig.core.introspection.inspection import (
@@ -455,12 +456,11 @@ class {test_class_name}:
             """Return the source module captured at subclass creation time."""
             return module
 
-        subclass = type(
-            test_cls_name,
-            (cls,),
-            {cls.mirror_module.__name__: mirror_module},
+        return generate_class(
+            name=test_cls_name,
+            bases=(cls,),
+            methods=(mirror_module,),
         )
-        return cast("type[Self]", subclass)
 
     @classmethod
     def mirror_modules(cls) -> Iterator[ModuleType]:
