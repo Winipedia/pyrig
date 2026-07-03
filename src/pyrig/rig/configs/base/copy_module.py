@@ -17,7 +17,7 @@ from pyrig.core.introspection.modules import (
     module_content,
 )
 from pyrig.core.root import module_name_as_root_path
-from pyrig.core.strings import make_name_from_obj
+from pyrig.core.strings import reformat_name
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 
@@ -67,7 +67,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             True
         """
         cls_name = (
-            make_name_from_obj(
+            reformat_name(
                 leaf_module_name(module), split_on="_", join_on="", capitalize=True
             )
             + cls.__name__

@@ -1,7 +1,6 @@
 """Tests module."""
 
 from pathlib import Path
-from types import ModuleType
 
 import pytest
 
@@ -9,9 +8,9 @@ from pyrig.core.strings import (
     file_has_content,
     fstring_var_name,
     make_linked_badge_markdown,
-    make_name_from_obj,
     open_path_with_utf8,
     read_text_utf8,
+    reformat_name,
     split_on_uppercase,
     write_text_utf8,
 )
@@ -60,19 +59,18 @@ def test_split_on_uppercase() -> None:
     assert result == expected
 
 
-def test_make_name_from_obj() -> None:
+def test_reformat_name() -> None:
     """Test function."""
-    # Create mock source package
-    mock_src_package = ModuleType("some_package")
-    mock_src_package.__name__ = "some_package"
-
-    result = make_name_from_obj(mock_src_package)
-    expected = "Some-Package"
-    assert result == expected, f"Expected '{expected}', got '{result}'"
-
-    result = make_name_from_obj(mock_src_package, capitalize=False)
-    expected = "some-package"
-    assert result == expected, f"Expected '{expected}', got '{result}'"
+    assert reformat_name("some_package", split_on="_", join_on="-") == "some-package"
+    assert (
+        reformat_name("some_package", split_on="_", join_on="-", capitalize=True)
+        == "Some-Package"
+    )
+    assert (
+        reformat_name("some_package", split_on="_", join_on="", capitalize=True)
+        == "SomePackage"
+    )
+    assert reformat_name("__lead_trail__", split_on="_", join_on="-") == "lead-trail"
 
 
 def test_make_linked_badge_markdown() -> None:
@@ -83,7 +81,7 @@ def test_make_linked_badge_markdown() -> None:
         alt_text="Example Badge",
     )
     expected = "[![Example Badge](https://example.com/badge.svg)](https://example.com/)"
-    assert result == expected, f"Expected '{expected}', got '{result}'"
+    assert result == expected
 
 
 def test_read_text_utf8(tmp_path: Path) -> None:

@@ -8,7 +8,7 @@ from typing import Any
 from pyrig_runtime.core.strings import snake_to_kebab_case
 
 from pyrig.core.strings import (
-    make_name_from_obj,
+    reformat_name,
     split_on_uppercase,
 )
 from pyrig.rig.configs.base.yml import YMLDictConfigFile
@@ -258,7 +258,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Display name with the prefix removed, e.g. `"Do Something"`
             from `job_do_something`.
         """
-        name = make_name_from_obj(func, split_on="_", join_on=" ", capitalize=True)
+        name = reformat_name(func.__name__, split_on="_", join_on=" ", capitalize=True)  # ty:ignore[unresolved-attribute]
         prefix = next(split_on_uppercase(name))
         return name.removeprefix(prefix).strip()
 

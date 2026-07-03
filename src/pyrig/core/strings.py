@@ -1,9 +1,8 @@
 """String manipulation and text encoding utilities."""
 
 import re
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from pathlib import Path
-from types import ModuleType
 from typing import Any
 
 UTF_8_ENCODING = "utf-8"
@@ -81,53 +80,32 @@ def split_on_uppercase(string: str) -> Iterator[str]:
     return (s for s in re.split(r"(?=[A-Z])", string) if s)
 
 
-def make_name_from_obj(
-    obj: ModuleType | Callable[..., Any] | type | str,
-    split_on: str = "_",
-    join_on: str = "-",
+def reformat_name(
+    name: str,
     *,
-    capitalize: bool = True,
+    split_on: str,
+    join_on: str,
+    capitalize: bool = False,
 ) -> str:
-    """Create a human-readable display name from a Python object or identifier string.
+    """Split a name on one separator and rejoin the parts with another.
 
-    Splits the bare name on the given separator, optionally capitalizes each
-    part, and rejoins the parts with the output separator. If the name
-    contains dots (e.g., a fully qualified module name), only the last
-    component is kept.
+    Empty parts produced by the split are discarded.
 
     Args:
-        obj: Source of the name. For modules, functions, or classes the
-            `__name__` attribute is used. For strings the value is used
-            directly.
-        split_on: Character(s) to split the raw name on. Defaults to `"_"`
-            for snake_case identifiers.
-        join_on: Character(s) to join the resulting parts with. Defaults to
-            `"-"` producing kebab-case output.
+        name: The name to split and rejoin.
+        split_on: Separator that divides `name` into parts.
+        join_on: Separator placed between the parts in the result.
         capitalize: Whether to capitalize each part (first letter uppercased,
-            remainder lowercased). Defaults to `True`.
+            remainder lowercased). Defaults to `False`.
 
     Returns:
-        The formatted display name.
+        The reformatted name.
 
-    Examples:
-        >>> make_name_from_obj("init_project")
-        'Init-Project'
-        >>> make_name_from_obj("init_project", join_on=" ")
-        'Init Project'
-
-    Note:
-        Does not split on uppercase letters. To derive a display name from a
-        PascalCase identifier, use `split_on_uppercase` on the class name
-        first and join the parts into a snake_case string before passing it
-        here.
+    Example:
+        >>> reformat_name("do_something", split_on="_", join_on=" ", capitalize=True)
+        'Do Something'
     """
-    if not isinstance(obj, str):
-        name = getattr(obj, "__name__", str(obj))
-        obj_name: str = name.split(".")[-1]
-    else:
-        obj_name = obj
-    parts = (part for part in obj_name.split(split_on) if part)
-
+    parts = (part for part in name.split(split_on) if part)
     if capitalize:
         parts = (part.capitalize() for part in parts)
     return join_on.join(parts)
