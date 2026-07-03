@@ -36,7 +36,10 @@ class ScratchConfigFile(PythonConfigFile):
 
     def lines(self) -> list[str]:
         """Return a one-line module docstring followed by a trailing newline."""
-        return ['"""This file is for scratch work and is ignored by git."""', ""]
+        return [
+            '"""This file is for scratch work and is ignored by version control."""',
+            "",
+        ]
 
     def delete_root_main(self) -> None:
         """Delete `main.py` at the project root, if present.
