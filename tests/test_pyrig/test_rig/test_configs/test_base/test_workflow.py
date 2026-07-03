@@ -116,12 +116,8 @@ class TestWorkflowConfigFile:
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
-
-        def job_test_function() -> None:
-            pass
-
-        result = my_test_workflow().make_id_from_func(job_test_function)
-        assert result == "test-function"
+        result = my_test_workflow().make_id_from_func(self.test_make_id_from_func)
+        assert result == "make-id-from-func"
 
     def test__configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -181,23 +177,23 @@ class TestWorkflowConfigFile:
 
     def test_job(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-
-        def job_test() -> None:
-            pass
-
-        result = my_test_workflow().job(job_test, steps=[])
+        result = my_test_workflow().job(self.test_job, steps=[])
         assert len(result) == 1, "Expected job to have one key"
 
         # Test with job=None (line 222->224 False branch)
-        result = my_test_workflow().job(job_test, job=None, runs_on="ubuntu-latest")
+        result = my_test_workflow().job(
+            self.test_job, job=None, runs_on="ubuntu-latest"
+        )
         assert len(result) == 1, "Expected job to have one key"
 
         # Test with job={} (line 222->224 True branch - job is not None)
-        result = my_test_workflow().job(job_test, job={}, runs_on="ubuntu-latest")
+        result = my_test_workflow().job(self.test_job, job={}, runs_on="ubuntu-latest")
         assert len(result) == 1, "Expected job to have one key"
 
         # Test with steps=None (line 234->236 False branch)
-        result = my_test_workflow().job(job_test, runs_on="ubuntu-latest", steps=None)
+        result = my_test_workflow().job(
+            self.test_job, runs_on="ubuntu-latest", steps=None
+        )
         assert len(result) == 1, "Expected job to have one key"
         job_config = next(iter(result.values()))
         assert "steps" not in job_config
@@ -206,12 +202,8 @@ class TestWorkflowConfigFile:
         self, my_test_workflow: type[WorkflowConfigFile]
     ) -> None:
         """Test method."""
-
-        def job_test_function() -> None:
-            pass
-
-        result = my_test_workflow().make_name_from_func(job_test_function)
-        assert len(result) > 0, "Expected name to be non-empty"
+        result = my_test_workflow().make_name_from_func(self.test_make_name_from_func)
+        assert result == "Make Name From Func"
 
     def test_on_workflow_dispatch(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -254,12 +246,8 @@ class TestWorkflowConfigFile:
 
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-
-        def step_test() -> None:
-            pass
-
         result = my_test_workflow().step(
-            step_func=step_test,
+            step_func=self.test_step,
             run="echo test",
             if_condition="condition",
             uses="action/checkout@v2",

@@ -1,6 +1,6 @@
 """Tool wrapper for the pyrig CLI itself, used for self-referential commands."""
 
-from collections.abc import Callable
+from types import FunctionType
 from typing import Any
 
 import pyrig_runtime
@@ -45,7 +45,7 @@ class Pyrigger(Tool):
         """Return the badge link URL for pyrig."""
         return f"https://github.com/Winipedia/{self.name()}"
 
-    def cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
+    def cmd_args(self, *args: str, cmd: FunctionType) -> Args:
         """Construct `Args` for a top-level pyrig CLI command.
 
         Derives the command name from `cmd.__name__`, converted from
@@ -58,10 +58,10 @@ class Pyrigger(Tool):
         Returns:
             Args for `pyrig <cmd_name> [args...]`.
         """
-        cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
+        cmd_name = snake_to_kebab_case(cmd.__name__)
         return self.args(cmd_name, *args)
 
-    def group_cmd_args(self, *args: str, group: str, cmd: Callable[..., Any]) -> Args:
+    def group_cmd_args(self, *args: str, group: str, cmd: FunctionType) -> Args:
         """Construct `Args` for a pyrig CLI subcommand within a command group.
 
         Converts both `group` and `cmd.__name__` from snake_case to
@@ -76,7 +76,7 @@ class Pyrigger(Tool):
             Args for `pyrig <group_name> <cmd_name> [args...]`.
         """
         group_name = snake_to_kebab_case(group)
-        cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
+        cmd_name = snake_to_kebab_case(cmd.__name__)
         return self.args(group_name, cmd_name, *args)
 
     def init_project(self) -> None:

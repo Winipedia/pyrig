@@ -1,8 +1,8 @@
 """GitHub Actions workflow YAML generation utilities and abstract base classes."""
 
 from abc import abstractmethod
-from collections.abc import Callable
 from pathlib import Path
+from types import MethodType
 from typing import Any
 
 from pyrig_runtime.core.strings import snake_to_kebab_case
@@ -153,7 +153,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
     # ----------------------------------------------------------------------------
     def job(  # noqa: PLR0913
         self,
-        job_func: Callable[..., Any],
+        job_func: MethodType,
         needs: list[str] | None = None,
         strategy: dict[str, Any] | None = None,
         permissions: dict[str, Any] | None = None,
@@ -199,7 +199,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
     def step(  # noqa: PLR0913
         self,
-        step_func: Callable[..., Any],
+        step_func: MethodType,
         run: str | None = None,
         if_condition: str | None = None,
         uses: str | None = None,
@@ -245,7 +245,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         return step_config
 
-    def make_name_from_func(self, func: Callable[..., Any]) -> str:
+    def make_name_from_func(self, func: MethodType) -> str:
         """Generate a human-readable display name from a function.
 
         Splits the function name on underscores, capitalises each word, and
@@ -258,11 +258,11 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Display name with the prefix removed, e.g. `"Do Something"`
             from `job_do_something`.
         """
-        name = reformat_name(func.__name__, split_on="_", join_on=" ", capitalize=True)  # ty:ignore[unresolved-attribute]
+        name = reformat_name(func.__name__, split_on="_", join_on=" ", capitalize=True)
         prefix = next(split_on_uppercase(name))
         return name.removeprefix(prefix).strip()
 
-    def make_id_from_func(self, func: Callable[..., Any]) -> str:
+    def make_id_from_func(self, func: MethodType) -> str:
         """Generate a compact identifier from a function name.
 
         Strips the first underscore-delimited segment (the type prefix, e.g.
@@ -275,7 +275,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Identifier string in kebab-case, e.g. `"do-something"` from
             `job_do_something`.
         """
-        name = func.__name__  # ty:ignore[unresolved-attribute]
+        name = func.__name__
         prefix = name.split("_")[0]
         name = name.removeprefix(f"{prefix}_")
         return snake_to_kebab_case(name)

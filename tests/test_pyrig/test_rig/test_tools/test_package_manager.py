@@ -61,9 +61,11 @@ class TestPackageManager:
 
     def test_project_cmd_args(self) -> None:
         """Test method."""
-        result = PackageManager.I.project_cmd_args(
-            "arg", cmd=self.test_project_cmd_args
-        )
+
+        def test_project_cmd_args(arg: str) -> tuple[str, str, str]:
+            return ("pyrig", "test-project-cmd-args", arg)
+
+        result = PackageManager.I.project_cmd_args("arg", cmd=test_project_cmd_args)
         assert result == Args("pyrig", "test-project-cmd-args", "arg")
 
     def test_project_name(self) -> None:
