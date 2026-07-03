@@ -15,6 +15,7 @@ from pyrig.core.introspection import classes as classes_module
 from pyrig.core.introspection.classes import (
     cls_methods,
     discard_parent_methods,
+    generate_class,
     module_classes,
 )
 from pyrig.core.introspection.inspection import unwrap_obj
@@ -204,3 +205,68 @@ def test_discard_parent_methods() -> None:
     assert ParentClass.parent_class_method.__name__ not in method_names
 
     assert ChildTestClass.class_method.__name__ in method_names
+
+
+def test_generate_class() -> None:
+    """Test function."""
+
+    class SomeClass:
+        """A simple class for testing."""
+
+        def method(self) -> str:
+            """Return a string."""
+            return "method"
+
+    def method2(self: SomeClass) -> str:
+        """Return another string."""
+        return self.method() + "2"
+
+    subclass = generate_class(
+        name="SubSomeClass",
+        bases=(SomeClass,),
+        methods=(method2,),
+    )
+    assert subclass.__name__ == "SubSomeClass"
+    assert issubclass(subclass, SomeClass)
+    assert hasattr(subclass, "method2")
+    assert subclass.method2.__name__ == "method2"  # ty:ignore[unresolved-attribute]
+    assert subclass().method2() == "method2"  # ty:ignore[unresolved-attribute]
+    assert subclass().method() == "method"
+
+    subclass2 = generate_class(
+        name="SubSomeClass2",
+        bases=(subclass,),
+        methods=(),
+        namespace={"new_attr": "value"},
+    )
+    assert subclass2.__name__ == "SubSomeClass2"
+    assert issubclass(subclass2, subclass)
+    assert hasattr(subclass2, "new_attr")
+    assert subclass2.new_attr == "value"
+
+    # A method whose name matches an inherited one overrides the base method.
+    def method(_self: SomeClass) -> str:
+        """Return a string that overrides the inherited method."""
+        return "overridden"
+
+    override_subclass = generate_class(
+        name="OverrideSomeClass",
+        bases=(SomeClass,),
+        methods=(method,),
+    )
+    assert override_subclass().method() == "overridden"
+    assert SomeClass().method() == "method"
+
+    # A method whose name matches a namespace key overrides that entry.
+    def collide(_self: SomeClass) -> str:
+        """Return a value that overrides the namespace entry of the same name."""
+        return "from_method"
+
+    collision_subclass = generate_class(
+        name="CollisionSomeClass",
+        bases=(SomeClass,),
+        methods=(collide,),
+        namespace={collide.__name__: "from_namespace"},
+    )
+    result = collision_subclass().collide()  # ty:ignore[unresolved-attribute]
+    assert result == "from_method"

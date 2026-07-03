@@ -8,10 +8,11 @@ the target project's package name.
 from abc import abstractmethod
 from pathlib import Path
 from types import ModuleType
-from typing import Self, cast
+from typing import Self
 
 from pyrig_runtime.core.introspection.modules import replace_root_module_name
 
+from pyrig.core.introspection.classes import generate_class
 from pyrig.core.introspection.modules import (
     leaf_module_name,
     module_content,
@@ -73,16 +74,15 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             + cls.__name__
         )
 
-        def copy_module(self: type[Self]) -> ModuleType:  # noqa: ARG001
+        def copy_module(_self: Self) -> ModuleType:
             """Return the source module captured at subclass creation time."""
             return module
 
-        subclass = type(
-            cls_name,
-            (cls,),
-            {cls.copy_module.__name__: copy_module},
+        return generate_class(
+            name=cls_name,
+            bases=(cls,),
+            methods=(copy_module,),
         )
-        return cast("type[Self]", subclass)
 
     def parent_path(self) -> Path:
         """Compute the target directory for the copied module.

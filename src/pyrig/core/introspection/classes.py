@@ -3,7 +3,7 @@
 import inspect
 from collections.abc import Callable, Iterable, Iterator
 from types import ModuleType
-from typing import Any
+from typing import Any, cast
 
 from pyrig_runtime.core.introspection.functions import is_funclike
 from pyrig_runtime.core.introspection.inspection import obj_members, obj_module
@@ -69,3 +69,30 @@ def module_classes(module: ModuleType) -> Iterator[type]:
         for _, obj in obj_members(module, inspect.isclass)
         if obj_module(obj, default) is module
     )
+
+
+def generate_class[T](
+    name: str,
+    bases: tuple[type[T], ...],
+    methods: tuple[Callable[..., Any], ...],
+    namespace: dict[str, Any] | None = None,
+) -> type[T]:
+    """Dynamically create a class from base classes, methods, and attributes.
+
+    Args:
+        name: Name of the new class, used as its `__name__`.
+        bases: Base classes the new class inherits from.
+        methods: Functions to add to the class, each under its own `__name__`.
+        namespace: Extra attributes for the class body, keyed by name. The
+            `methods` are added on top, so a method whose name matches a key
+            here overrides it. Defaults to an empty namespace.
+
+    Returns:
+        The newly created class.
+    """
+    if namespace is None:
+        namespace = {}
+    for method in methods:
+        namespace[method.__name__] = method  # ty:ignore[unresolved-attribute]
+    cls = type(name, bases, namespace)
+    return cast("type[T]", cls)
