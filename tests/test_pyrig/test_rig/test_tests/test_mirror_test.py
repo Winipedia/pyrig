@@ -316,7 +316,7 @@ class TestMirrorClass:
 
     def test_is_correct(self) -> None:
         """Test method."""
-        subclass = MirrorTestConfigFile.L.generate_subclass(mirror_test)
+        subclass = MirrorTestConfigFile.generate_subclass(mirror_test)
         assert subclass().is_correct()
 
     def test_test_path(
