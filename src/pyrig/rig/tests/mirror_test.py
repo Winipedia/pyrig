@@ -26,11 +26,12 @@ from pyrig.core.introspection.inspection import (
 )
 from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
+    leaf_module_name,
 )
 from pyrig.core.introspection.packages import discover_modules
 from pyrig.core.iterate import iterator_has_items
 from pyrig.core.root import module_name_as_root_path
-from pyrig.core.strings import make_name_from_obj
+from pyrig.core.strings import reformat_name
 from pyrig.rig import tests
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
@@ -441,7 +442,12 @@ class {test_class_name}:
             `"UtilsMirrorTestConfigFile"`.
         """
         test_cls_name = (
-            make_name_from_obj(obj=module, split_on="_", join_on="", capitalize=True)
+            reformat_name(
+                leaf_module_name(module),
+                split_on="_",
+                join_on="",
+                capitalize=True,
+            )
             + cls.__name__
         )
 
