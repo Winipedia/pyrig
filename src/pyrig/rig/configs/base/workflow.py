@@ -165,7 +165,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Build a job configuration dict.
 
         Args:
-            job_func: Function representing this job; its name is used to derive
+            job_func: Method representing this job; its name is used to derive
                 the job ID.
             needs: IDs of jobs that must complete before this job starts.
             strategy: Matrix or other strategy configuration.
@@ -210,7 +210,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Build a step configuration dict.
 
         Args:
-            step_func: Function representing this step; its name is used to
+            step_func: Method representing this step; its name is used to
                 derive the step `name` and `id` fields.
             run: Shell command to execute.
             if_condition: GitHub Actions conditional expression controlling
@@ -246,13 +246,13 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return step_config
 
     def make_name_from_func(self, func: MethodType) -> str:
-        """Generate a human-readable display name from a function.
+        """Generate a human-readable display name from a method.
 
-        Splits the function name on underscores, capitalises each word, and
+        Splits the method name on underscores, capitalises each word, and
         strips the first word (the type prefix, e.g. `job` or `step`).
 
         Args:
-            func: The function whose name provides the source text.
+            func: The method whose name provides the source text.
 
         Returns:
             Display name with the prefix removed, e.g. `"Do Something"`
@@ -263,13 +263,13 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return name.removeprefix(prefix).strip()
 
     def make_id_from_func(self, func: MethodType) -> str:
-        """Generate a compact identifier from a function name.
+        """Generate a compact identifier from a method name.
 
         Strips the first underscore-delimited segment (the type prefix, e.g.
         `step` or `job`) and returns the rest in kebab-case.
 
         Args:
-            func: The function whose name provides the source text.
+            func: The method whose name provides the source text.
 
         Returns:
             Identifier string in kebab-case, e.g. `"do-something"` from
