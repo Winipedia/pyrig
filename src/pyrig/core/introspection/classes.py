@@ -1,4 +1,4 @@
-"""Utilities for introspecting and filtering Python classes."""
+"""Utilities for Python classes."""
 
 import inspect
 from collections.abc import Callable, Iterable, Iterator
