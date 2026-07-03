@@ -87,12 +87,10 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Job configuration with `needs` set to both sibling jobs and a
             single aggregation step.
         """
-        matrix_health_checks_job_id = self.make_id_from_func(
-            self.job_matrix_health_checks
-        )
-        health_checks_job_id = self.make_id_from_func(self.job_health_checks)
+        matrix_health_checks_job_id = self.id_from_method(self.job_matrix_health_checks)
+        health_checks_job_id = self.id_from_method(self.job_health_checks)
         return self.job(
-            job_func=self.job_health_check,
+            self.job_health_check,
             needs=[health_checks_job_id, matrix_health_checks_job_id],
             steps=self.steps_aggregate_jobs(),
         )
@@ -108,7 +106,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             value, and steps for setup and testing.
         """
         return self.job(
-            job_func=self.job_matrix_health_checks,
+            self.job_matrix_health_checks,
             strategy=self.strategy_matrix_os_and_python_version(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_matrix_health_checks(),
@@ -124,7 +122,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Job configuration with steps for the full quality check sequence.
         """
         return self.job(
-            job_func=self.job_health_checks,
+            self.job_health_checks,
             steps=self.steps_health_checks(),
         )
 
@@ -185,7 +183,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             step = {}
         run = str(PackageManager.I.run_args(*ProjectTester.I.test_args()))
         return self.step(
-            step_func=self.step_run_tests,
+            self.step_run_tests,
             run=run,
             step=step,
         )
@@ -208,7 +206,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Step that creates the missing local config files.
         """
         return self.step(
-            step_func=self.step_create_version_control_ignored_files,
+            self.step_create_version_control_ignored_files,
             run=str(
                 PackageManager.I.run_args(
                     *Pyrigger.I.group_cmd_args(
@@ -233,7 +231,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Step that runs the pre-commit hooks.
         """
         return self.step(
-            step_func=self.step_run_pre_commit_hooks,
+            self.step_run_pre_commit_hooks,
             run=str(
                 PackageManager.I.run_args(
                     *VersionControlHookManager.I.run_all_files_stage_pre_commit_args()
@@ -259,7 +257,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Step that runs `uv run pip-audit`.
         """
         return self.step(
-            step_func=self.step_run_dependency_audit,
+            self.step_run_dependency_audit,
             run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
             step=step,
         )
@@ -278,7 +276,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             Step that echoes an aggregation message.
         """
         return self.step(
-            step_func=self.step_aggregate_jobs,
+            self.step_aggregate_jobs,
             run="echo 'Aggregating jobs into one job.'",
             step=step,
         )

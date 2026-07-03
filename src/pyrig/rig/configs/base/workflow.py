@@ -42,7 +42,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         ...
         ...    def jobs(self) -> dict[str, Any]:
         ...        return self.job(
-        ...            job_func=self.jobs,
+        ...            self.jobs,
         ...            steps=self.steps_core_installed_setup(),
         ...        )
         ...
@@ -153,7 +153,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
     # ----------------------------------------------------------------------------
     def job(  # noqa: PLR0913
         self,
-        job_func: MethodType,
+        method: MethodType,
+        *,
         needs: list[str] | None = None,
         strategy: dict[str, Any] | None = None,
         permissions: dict[str, Any] | None = None,
@@ -165,7 +166,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Build a job configuration dict.
 
         Args:
-            job_func: Method representing this job; its name is used to derive
+            method: Method representing this job; its name is used to derive
                 the job ID.
             needs: IDs of jobs that must complete before this job starts.
             strategy: Matrix or other strategy configuration.
@@ -179,7 +180,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         Returns:
             Dict mapping the derived job ID to its configuration.
         """
-        name = self.make_id_from_func(job_func)
         if job is None:
             job = {}
         job_config: dict[str, Any] = {}
@@ -195,11 +195,12 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if steps is not None:
             job_config["steps"] = steps
         job_config.update(job)
-        return {name: job_config}
+        return {self.id_from_method(method): job_config}
 
     def step(  # noqa: PLR0913
         self,
-        step_func: MethodType,
+        method: MethodType,
+        *,
         run: str | None = None,
         if_condition: str | None = None,
         uses: str | None = None,
@@ -210,7 +211,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Build a step configuration dict.
 
         Args:
-            step_func: Method representing this step; its name is used to
+            method: Method representing this step; its name is used to
                 derive the step `name` and `id` fields.
             run: Shell command to execute.
             if_condition: GitHub Actions conditional expression controlling
@@ -226,10 +227,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         if step is None:
             step = {}
-        # make name from setup function name if name is a function
-        name = self.make_name_from_func(step_func)
-        id_ = self.make_id_from_func(step_func)
-        step_config: dict[str, Any] = {"name": name, "id": id_}
+        step_config: dict[str, Any] = {
+            "name": self.name_from_method(method),
+            "id": self.id_from_method(method),
+        }
         if if_condition is not None:
             step_config["if"] = if_condition
         if env is not None:
@@ -245,37 +246,39 @@ class WorkflowConfigFile(YMLDictConfigFile):
 
         return step_config
 
-    def make_name_from_func(self, func: MethodType) -> str:
+    def name_from_method(self, method: MethodType) -> str:
         """Generate a human-readable display name from a method.
 
         Splits the method name on underscores, capitalises each word, and
         strips the first word (the type prefix, e.g. `job` or `step`).
 
         Args:
-            func: The method whose name provides the source text.
+            method: The method whose name provides the source text.
 
         Returns:
             Display name with the prefix removed, e.g. `"Do Something"`
             from `job_do_something`.
         """
-        name = reformat_name(func.__name__, split_on="_", join_on=" ", capitalize=True)
+        name = reformat_name(
+            method.__name__, split_on="_", join_on=" ", capitalize=True
+        )
         prefix = next(split_on_uppercase(name))
         return name.removeprefix(prefix).strip()
 
-    def make_id_from_func(self, func: MethodType) -> str:
+    def id_from_method(self, method: MethodType) -> str:
         """Generate a compact identifier from a method name.
 
         Strips the first underscore-delimited segment (the type prefix, e.g.
         `step` or `job`) and returns the rest in kebab-case.
 
         Args:
-            func: The method whose name provides the source text.
+            method: The method whose name provides the source text.
 
         Returns:
             Identifier string in kebab-case, e.g. `"do-something"` from
             `job_do_something`.
         """
-        name = func.__name__
+        name = method.__name__
         prefix = name.split("_")[0]
         name = name.removeprefix(f"{prefix}_")
         return snake_to_kebab_case(name)
@@ -645,7 +648,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         if step is None:
             step = {}
         return self.step(
-            step_func=self.step_checkout_repository,
+            self.step_checkout_repository,
             uses="actions/checkout@main",
             step=step,
         )
@@ -670,7 +673,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Step using `astral-sh/setup-uv@main`.
         """
         return self.step(
-            step_func=self.step_setup_package_manager,
+            self.step_setup_package_manager,
             uses="astral-sh/setup-uv@main",
             with_={"python-version": python_version},
             step=step,
@@ -693,7 +696,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Step that runs `uv lock --upgrade`.
         """
         return self.step(
-            step_func=self.step_update_dependencies,
+            self.step_update_dependencies,
             run=str(PackageManager.I.update_dependencies_args()),
             step=step,
         )
@@ -714,7 +717,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Step that runs `uv sync`.
         """
         return self.step(
-            step_func=self.step_install_dependencies,
+            self.step_install_dependencies,
             run=str(PackageManager.I.install_dependencies_args()),
             step=step,
         )

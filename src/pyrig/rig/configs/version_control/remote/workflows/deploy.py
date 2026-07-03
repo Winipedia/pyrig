@@ -66,7 +66,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Dict mapping the derived job ID to its configuration.
         """
         return self.job(
-            job_func=self.job_documentation,
+            self.job_documentation,
             permissions={"pages": "write", "id-token": "write"},
             steps=self.steps_documentation(),
         )
@@ -100,7 +100,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Step that runs the documentation build command.
         """
         return self.step(
-            step_func=self.step_build_documentation,
+            self.step_build_documentation,
             run=str(PackageManager.I.run_args(*DocsBuilder.I.build_args())),
             step=step,
         )
@@ -130,7 +130,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Step that enables GitHub Pages using `REPO_TOKEN`.
         """
         return self.step(
-            step_func=self.step_configure_pages,
+            self.step_configure_pages,
             uses="actions/configure-pages@main",
             with_={"token": self.insert_repo_token(), "enablement": "true"},
             step=step,
@@ -150,7 +150,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Step using `actions/upload-pages-artifact@main`.
         """
         return self.step(
-            step_func=self.step_upload_documentation,
+            self.step_upload_documentation,
             uses="actions/upload-pages-artifact@main",
             with_={"path": "site"},
             step=step,
@@ -173,7 +173,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Step using `actions/deploy-pages@main`.
         """
         return self.step(
-            step_func=self.step_deploy_documentation,
+            self.step_deploy_documentation,
             uses="actions/deploy-pages@main",
             step=step,
         )
