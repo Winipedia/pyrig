@@ -112,12 +112,10 @@ class TestWorkflowConfigFile:
         result = my_test_workflow().steps_core_installed_setup()
         assert len(result) > 0
 
-    def test_make_id_from_func(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
+    def test_id_from_method(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().make_id_from_func(self.test_make_id_from_func)
-        assert result == "make-id-from-func"
+        result = my_test_workflow().id_from_method(self.test_id_from_method)
+        assert result == "id-from-method"
 
     def test__configs(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
@@ -198,12 +196,10 @@ class TestWorkflowConfigFile:
         job_config = next(iter(result.values()))
         assert "steps" not in job_config
 
-    def test_make_name_from_func(
-        self, my_test_workflow: type[WorkflowConfigFile]
-    ) -> None:
+    def test_name_from_method(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
-        result = my_test_workflow().make_name_from_func(self.test_make_name_from_func)
-        assert result == "Make Name From Func"
+        result = my_test_workflow().name_from_method(self.test_name_from_method)
+        assert result == "Name From Method"
 
     def test_on_workflow_dispatch(
         self, my_test_workflow: type[WorkflowConfigFile]
@@ -247,7 +243,7 @@ class TestWorkflowConfigFile:
     def test_step(self, my_test_workflow: type[WorkflowConfigFile]) -> None:
         """Test method."""
         result = my_test_workflow().step(
-            step_func=self.test_step,
+            self.test_step,
             run="echo test",
             if_condition="condition",
             uses="action/checkout@v2",

@@ -10,11 +10,7 @@ class TestDeployWorkflowConfigFile:
 
     def test_job(self) -> None:
         """Test method."""
-
-        def job_test() -> None:
-            pass
-
-        result = DeployWorkflowConfigFile.I.job(job_func=job_test, steps=[])
+        result = DeployWorkflowConfigFile.I.job(self.test_job, steps=[])
         assert len(result) == 1, "Expected job to have one key"
         job_config = next(iter(result.values()))
         expected = "${{ github.event.workflow_run.conclusion == 'success' }}"

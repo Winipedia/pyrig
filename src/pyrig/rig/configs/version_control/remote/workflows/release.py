@@ -87,7 +87,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
             guard condition and the ordered release steps.
         """
         return self.job(
-            job_func=self.job_publish,
+            self.job_publish,
             permissions={"contents": "write"},
             steps=self.steps_publish(),
         )
@@ -144,7 +144,7 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
         path = RepoSettingsConfigFile.I.path().as_posix()
         run = f"jq '.{key}' {path} | gh api --method PATCH \"repos/{repo}\" --input -"
         return self.step(
-            step_func=self.step_apply_repository_settings,
+            self.step_apply_repository_settings,
             run=run,
             env={"GH_TOKEN": self.insert_repo_token()},
             step=step,
@@ -180,7 +180,7 @@ jq -c '.{key}[]' {path} | while read ruleset; do
   gh api --method "$METHOD" "repos/$REPO/rulesets${{ID:+/$ID}}" --input - <<< "$ruleset"
 done"""
         return self.step(
-            step_func=self.step_apply_rulesets,
+            self.step_apply_rulesets,
             run=run,
             env={"GH_TOKEN": self.insert_repo_token()},
             step=step,
@@ -203,7 +203,7 @@ done"""
             Step that runs `git tag` to create the version tag.
         """
         return self.step(
-            step_func=self.step_create_tag,
+            self.step_create_tag,
             run=str(VersionController.I.tag_args(tag=self.shell_insert_version())),
             step=step,
         )
@@ -222,7 +222,7 @@ done"""
             Step that runs `git push origin <tag>`.
         """
         return self.step(
-            step_func=self.step_push_tag,
+            self.step_push_tag,
             run=str(
                 VersionController.I.push_origin_tag_args(
                     tag=self.shell_insert_version()
@@ -245,7 +245,7 @@ done"""
             Step that appends `version=<x.y.z>` to the `$GITHUB_OUTPUT` file.
         """
         return self.step(
-            step_func=self.step_extract_version,
+            self.step_extract_version,
             run=f'echo "version={self.shell_insert_version()}" >> $GITHUB_OUTPUT',
             step=step,
         )
@@ -267,7 +267,7 @@ done"""
             Step using `mikepenz/release-changelog-builder-action@develop`.
         """
         return self.step(
-            step_func=self.step_build_changelog,
+            self.step_build_changelog,
             uses="mikepenz/release-changelog-builder-action@develop",
             with_={"token": self.insert_github_token()},
             step=step,
@@ -291,7 +291,7 @@ done"""
         """
         version = self.insert_version_from_extract_version_step()
         return self.step(
-            step_func=self.step_create_release,
+            self.step_create_release,
             uses="ncipollo/release-action@main",
             with_={
                 "tag": version,
@@ -307,9 +307,8 @@ done"""
         Returns:
             GitHub Actions expression for `steps.extract-version.outputs.version`.
         """
-        # make dynamic with self.make_id_from_func(self.step_extract_version)
         return self.insert_expression(
-            f"steps.{self.make_id_from_func(self.step_extract_version)}.outputs.version"
+            f"steps.{self.id_from_method(self.step_extract_version)}.outputs.version"
         )
 
     def insert_changelog(self) -> str:
@@ -319,5 +318,5 @@ done"""
             GitHub Actions expression for `steps.build-changelog.outputs.changelog`.
         """
         return self.insert_expression(
-            f"steps.{self.make_id_from_func(self.step_build_changelog)}.outputs.changelog"
+            f"steps.{self.id_from_method(self.step_build_changelog)}.outputs.changelog"
         )
