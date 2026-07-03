@@ -7,10 +7,10 @@ corresponding test counterpart, without overwriting tests that already exist.
 import logging
 import re
 from abc import abstractmethod
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Iterable, Iterator
 from importlib import import_module
 from pathlib import Path
-from types import ModuleType
+from types import FunctionType, MethodType, ModuleType
 from typing import Any, Self
 
 from pyrig_runtime.core.introspection.functions import module_functions
@@ -202,7 +202,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         funcs = def_line_sorted(module_functions(self.mirror_module()))
         test_funcs = module_functions(self.module())
 
-        supposed_test_func_names = (self.test_func_name(f) for f in funcs)
+        supposed_test_func_names = (self.test_func_name(unwrap_obj(f)) for f in funcs)
         actual_test_func_names = {unwrap_obj(f).__name__ for f in test_funcs}
 
         return (f for f in supposed_test_func_names if f not in actual_test_func_names)
@@ -333,7 +333,10 @@ def {test_func_name}() -> None:
         )
 
         supposed_test_class_to_test_methods_names = (
-            (self.test_cls_name(c), (self.test_func_name(m) for m in ms))
+            (
+                self.test_cls_name(unwrap_obj(c)),
+                (self.test_func_name(unwrap_obj(m)) for m in ms),
+            )
             for c, ms in class_to_methods
         )
         actual_test_class_to_test_methods_names = {
@@ -471,7 +474,7 @@ class {test_class_name}:
         """
         return discover_modules(import_module(PackageManager.I.package_name()))
 
-    def test_func_name(self, func: Callable[..., Any]) -> str:
+    def test_func_name(self, func: FunctionType | MethodType) -> str:
         """Return the expected test function name for a given source function.
 
         Args:
@@ -480,7 +483,7 @@ class {test_class_name}:
         Returns:
             Test function name (e.g., `"test_my_function"` for `my_function`).
         """
-        return self.test_func_prefix() + unwrap_obj(func).__name__
+        return self.test_func_prefix() + func.__name__
 
     def test_cls_name(self, cls: type) -> str:
         """Return the expected test class name for a given source class.

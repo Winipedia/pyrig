@@ -2,11 +2,10 @@
 
 import inspect
 from collections.abc import Callable, Iterable, Iterator
-from types import ModuleType
+from types import FunctionType, ModuleType
 from typing import Any, cast
 
-from pyrig_runtime.core.introspection.functions import is_funclike
-from pyrig_runtime.core.introspection.inspection import obj_members, obj_module
+from pyrig_runtime.core.introspection.inspection import obj_members
 
 from pyrig.core.introspection.inspection import unwrap_obj
 
@@ -23,7 +22,12 @@ def cls_methods(
         Instance methods, static methods, class methods, and properties,
         in alphabetical order by name.
     """
-    return (method for _name, method in obj_members(cls) if is_funclike(method))
+    return (
+        method
+        for _name, method in obj_members(unwrap_obj(cls))
+        # unwrapped methods of any kind are collapsed to functions
+        if inspect.isfunction(unwrap_obj(method))
+    )
 
 
 def discard_parent_methods(
@@ -42,12 +46,14 @@ def discard_parent_methods(
     Yields:
         Methods that are defined directly on `cls`.
     """
-    return (
-        method
-        for method in methods
-        if obj_module(method) is obj_module(cls)
-        and unwrap_obj(method).__name__ in cls.__dict__
-    )
+    for method in methods:
+        unwrapped_method = unwrap_obj(method)
+        unwrapped_cls = unwrap_obj(cls)
+        if (
+            inspect.getmodule(unwrapped_method) is inspect.getmodule(unwrapped_cls)
+            and unwrapped_method.__name__ in unwrapped_cls.__dict__
+        ):
+            yield method
 
 
 def module_classes(module: ModuleType) -> Iterator[type]:
@@ -62,19 +68,19 @@ def module_classes(module: ModuleType) -> Iterator[type]:
     Yields:
         Class types defined directly in `module`.
     """
-    # necessary for bindings packages like AESGCM from cryptography._rust backend
-    default = ModuleType(module_classes.__name__)  # to not match any real module
-    return (
-        obj
-        for _, obj in obj_members(module, inspect.isclass)
-        if obj_module(obj, default) is module
-    )
+    for _, obj in obj_members(module):
+        unwrapped_obj = unwrap_obj(obj)
+        if (
+            inspect.isclass(unwrapped_obj)
+            and inspect.getmodule(unwrapped_obj) is module
+        ):
+            yield obj
 
 
 def generate_class[T](
     name: str,
     bases: tuple[type[T], ...],
-    methods: tuple[Callable[..., Any], ...],
+    methods: tuple[FunctionType, ...],
     namespace: dict[str, Any] | None = None,
 ) -> type[T]:
     """Dynamically create a class from base classes, methods, and attributes.
@@ -93,6 +99,6 @@ def generate_class[T](
     if namespace is None:
         namespace = {}
     for method in methods:
-        namespace[method.__name__] = method  # ty:ignore[unresolved-attribute]
+        namespace[method.__name__] = method
     cls = type(name, bases, namespace)
     return cast("type[T]", cls)

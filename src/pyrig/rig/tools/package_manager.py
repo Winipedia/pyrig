@@ -1,8 +1,7 @@
 """Wrapper for the project's Python package manager."""
 
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from types import FunctionType
 
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 
@@ -97,7 +96,7 @@ class PackageManager(Tool):
         """Return an empty tuple: uv is a system-level tool, not a dev dependency."""
         return ()
 
-    def project_cmd_args(self, *args: str, cmd: Callable[..., Any]) -> Args:
+    def project_cmd_args(self, *args: str, cmd: FunctionType) -> Args:
         """Construct `Args` for running one of the project's own CLI subcommands.
 
         The subcommand name is derived from `cmd`'s `__name__`, converted from
@@ -110,7 +109,7 @@ class PackageManager(Tool):
         Returns:
             Args for `<project-name> <cmd-as-kebab> <args...>`.
         """
-        cmd_name = snake_to_kebab_case(cmd.__name__)  # ty:ignore[unresolved-attribute]
+        cmd_name = snake_to_kebab_case(cmd.__name__)
         return Args(self.project_name(), cmd_name, *args)
 
     def run_args(self, *args: str) -> Args:
