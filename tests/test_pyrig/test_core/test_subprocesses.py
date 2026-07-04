@@ -2,7 +2,6 @@
 
 import copy
 import logging
-from pathlib import Path
 from subprocess import CalledProcessError  # nosec: B404
 
 import pytest
@@ -22,14 +21,15 @@ def test_run_subprocess(
     assert res.stderr == "", f"Expected stderr '', got {res.stderr}"
 
     with pytest.raises(
-        ValueError, match=r"shell=True is forbidden for security reasons."
+        TypeError,
+        match=r"shell",
     ):
         run_subprocess(cmd, shell=True)  # noqa: S604  # nosec: B604
 
     # mock run to raise CalledProcessError
     mock_run = mocker.patch("subprocess.run", side_effect=CalledProcessError(1, cmd))
     with caplog.at_level(logging.ERROR), pytest.raises(CalledProcessError):
-        run_subprocess(cmd, cwd=Path())
+        run_subprocess(cmd)
     mock_run.assert_called_once()
     # Check that the error was logged
     assert any(
@@ -86,9 +86,6 @@ class TestArgs:
             f"Expected stdout 'hello\n', got {result1.stdout}"
         )
         assert result1.stderr == "", f"Expected stderr '', got {result1.stderr}"
-
-        result3 = args.run_cached(cwd=Path())
-        assert result3.returncode == 0
 
     def test___str__(self) -> None:
         """Test method."""

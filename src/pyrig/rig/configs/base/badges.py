@@ -91,7 +91,6 @@ class BadgesConfigFile(MarkdownConfigFile):
         """
         pattern = r"---\s*\n(.*?)\n---"
         replacement = f"---\n\n> {PyprojectConfigFile.I.project_description()}\n\n---"
-        # only replace first occurrence, as description is expected at the top
         return re.sub(pattern, lambda _: replacement, content, count=1, flags=re.DOTALL)
 
     def replace_badges(self, content: str) -> str:
@@ -108,21 +107,17 @@ class BadgesConfigFile(MarkdownConfigFile):
         """
         expected_badges = (badge for group in self.badges().values() for badge in group)
 
-        # only consider content before description
         old_badges_content = content.split("\n---\n\n>", 1)[0]
         badges_content = old_badges_content
         for badge in expected_badges:
-            # extract the alt text from the badge markdown — used as stable identifier
             alt_text_match = re.search(r"\[!\[(.*?)\]", badge)
             if not alt_text_match:
                 continue
             alt_text = alt_text_match.group(1)
-            # find and replace the line containing the badge with the same alt text
             pattern = rf".*\[!\[{re.escape(alt_text)}\].*"
             badges_content = re.sub(
                 pattern, lambda _, badge=badge: badge, badges_content
             )
-        # replace the old badges content with the updated one
         return content.replace(old_badges_content, badges_content, 1)
 
     def badges(self) -> dict[str, list[str]]:

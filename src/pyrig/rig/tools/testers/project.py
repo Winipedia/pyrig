@@ -10,8 +10,8 @@ class ProjectTester(Tool):
     """`pytest` wrapper and source of the project's test-package layout conventions.
 
     Beyond the badge and command metadata every `Tool` provides, this also
-    exposes where the test suite lives and how its files are named, since
-    those follow conventions distinct from the source package layout.
+    exposes where the test suite lives, since its location follows a
+    convention distinct from the source package layout.
     """
 
     def name(self) -> str:
@@ -51,10 +51,6 @@ class ProjectTester(Tool):
     def tests_package_name(self) -> str:
         """Return `'tests'`, the name of the top-level tests package."""
         return "tests"
-
-    def test_module_prefix(self) -> str:
-        """Return `'test_'`, the filename prefix used to identify test modules."""
-        return "test_"
 
     def test_args(self, *args: str) -> Args:
         """Build a pytest command with the given arguments.

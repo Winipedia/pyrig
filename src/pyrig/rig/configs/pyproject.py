@@ -11,12 +11,11 @@ from pyrig_runtime.core.strings import (
 )
 from pyrig_runtime.rig.cli import main
 
-from pyrig.core.introspection.modules import leaf_module_name
 from pyrig.core.resources import (
     resource_content,
 )
 from pyrig.core.version import VersionConstraint, adjust_version_to_level
-from pyrig.rig import resources, tests
+from pyrig.rig import resources
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.toml import TOMLConfigFile
 from pyrig.rig.tools.base.tool import Tool
@@ -25,7 +24,6 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.security_checker import SecurityChecker
 from pyrig.rig.tools.testers.coverage import CoverageTester
 from pyrig.rig.tools.testers.project import ProjectTester
 from pyrig.rig.tools.type_checker import TypeChecker
@@ -72,8 +70,6 @@ class PyprojectConfigFile(TOMLConfigFile):
         from pyrig.rig.configs.license import LicenseConfigFile  # noqa: PLC0415
         from pyrig.rig.configs.readme import ReadmeConfigFile  # noqa: PLC0415
 
-        repo_owner = VersionController.I.repo_owner()
-        rig_tests_dir_name = leaf_module_name(tests)
         return {
             "project": {
                 "name": PackageManager.I.project_name(),
@@ -86,10 +82,10 @@ class PyprojectConfigFile(TOMLConfigFile):
                     additional=self.additional_dependencies(),
                 ),
                 "authors": [
-                    {"name": repo_owner},
+                    {"name": VersionController.I.repo_owner()},
                 ],
                 "maintainers": [
-                    {"name": repo_owner},
+                    {"name": VersionController.I.repo_owner()},
                 ],
                 "license": LicenseConfigFile.I.spdx_identifier(),
                 "license-files": [LicenseConfigFile.I.path().as_posix()],
@@ -123,7 +119,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                         "ignore": ["COM812", "ANN401"],
                         "fixable": ["ALL"],
                         "per-file-ignores": {
-                            f"**/{rig_tests_dir_name}/**/*.py": ["S101"],
+                            f"{ProjectTester.I.tests_package_name()}/**/*.py": ["S101"],
                         },
                         "pydocstyle": {"convention": PythonLinter.I.pydocstyle()},
                     },
@@ -138,16 +134,6 @@ class PyprojectConfigFile(TOMLConfigFile):
                         "testpaths": [ProjectTester.I.tests_package_root().as_posix()],
                         "addopts": str(CoverageTester.I.additional_test_args()),
                     }
-                },
-                SecurityChecker.I.name(): {
-                    "assert_used": {
-                        "skips": [
-                            # to ignore asserts for the rig tests package
-                            f"*/{rig_tests_dir_name}/*.py",
-                            # to ignore asserts in test folders like tests/test_utils/
-                            f"*/{ProjectTester.I.test_module_prefix()}*/*.py",
-                        ],
-                    },
                 },
                 DependencyChecker.I.name(): {
                     "root": PackageManager.I.source_root().as_posix(),
@@ -214,8 +200,6 @@ class PyprojectConfigFile(TOMLConfigFile):
             for dep in additional
             if dependency_requirement_as_module_name(dep) not in normalized_dependencies
         )
-        # Due to caching in load(), mutating in place causes bugs.
-        # Always return a new structure instead of modifying.
         return sorted({*dependencies, *additional})
 
     def dependencies(self) -> list[str]:

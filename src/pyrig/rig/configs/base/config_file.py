@@ -189,8 +189,6 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
             Negative of the subclass priority value, so ascending sort
             orders higher-priority subclasses first.
         """
-        # sort by priority (higher first),
-        # so return negative priority for ascending sort
         return -cls().priority()
 
     @classmethod

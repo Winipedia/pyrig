@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "17.0.2"
+version = "17.1.0"
 description = "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -110,7 +110,7 @@ fixable = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**/*.py" = [
+"tests/**/*.py" = [
     "S101",
 ]
 
@@ -125,12 +125,6 @@ testpaths = [
     "tests",
 ]
 addopts = "--cov=pyrig --cov-branch --cov-report=term-missing --cov-fail-under=100 --cov-report=xml"
-
-[tool.bandit.assert_used]
-skips = [
-    "*/tests/*.py",
-    "*/test_*/*.py",
-]
 
 [tool.deptry]
 root = "src"

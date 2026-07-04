@@ -102,61 +102,40 @@ def run_subprocess_cached(
     return run_subprocess(args, **kwargs)
 
 
-def run_subprocess(  # noqa: PLR0913
+def run_subprocess(
     args: Sequence[str],
     *,
-    input_: str | bytes | None = None,
-    capture_output: bool = True,
-    timeout: int | None = None,
     check: bool = True,
-    cwd: str | Path | None = None,
-    shell: bool = False,
-    text: bool = True,
     **kwargs: Any,
 ) -> subprocess.CompletedProcess[Any]:
     """Execute a subprocess command with automatic failure logging.
 
-    Forbids `shell=True` to prevent shell-injection vulnerabilities. When
-    `subprocess.CalledProcessError` is raised, logs the command, exit code,
-    stdout, and stderr at `ERROR` level before re-raising.
+    The command always runs without a shell in the current working directory,
+    capturing stdout and stderr and decoding them as text. On a non-zero exit
+    with `check=True`, the command, exit code, stdout, and stderr are logged at
+    `ERROR` level before the error propagates.
 
     Args:
         args: Command and arguments as a sequence (e.g., `["git", "status"]`).
-        input_: Data sent to stdin.
-        capture_output: When `True` (the default), captures stdout and stderr.
-        timeout: Maximum seconds to wait. `None` means no limit.
-        check: When `True` (the default), raises `subprocess.CalledProcessError`
-            on non-zero exit.
-        cwd: Working directory for the subprocess. Defaults to the current
-            directory when `None`.
-        shell: Must be `False`. Passing `True` raises `ValueError` immediately.
-        text: When `True` (the default), decodes stdout and stderr as strings.
+        check: When `True` (the default), raise `subprocess.CalledProcessError`
+            on a non-zero exit.
         **kwargs: Additional keyword arguments forwarded to `subprocess.run`.
 
     Returns:
-        The completed process result.
+        The completed process, with `stdout` and `stderr` as decoded strings.
 
     Raises:
-        ValueError: If `shell=True` is passed.
-        subprocess.CalledProcessError: If the process exits with a non-zero
-            return code and `check=True`.
-        subprocess.TimeoutExpired: If the process exceeds `timeout`.
+        subprocess.CalledProcessError: If the command exits with a non-zero
+            return code and `check` is `True`.
     """
-    if shell:
-        msg = f"{shell=} is forbidden for security reasons."
-        raise ValueError(msg)
-    if cwd is None:
-        cwd = Path()
     try:
         result = subprocess.run(  # noqa: S603  # nosec: B603
             args,
             check=check,
-            input=input_,
-            capture_output=capture_output,
-            timeout=timeout,
-            cwd=cwd,
+            capture_output=True,
+            cwd=Path(),
             shell=False,
-            text=text,
+            text=True,
             **kwargs,
         )
     except subprocess.CalledProcessError as e:

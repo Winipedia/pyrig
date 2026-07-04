@@ -25,7 +25,6 @@ def cls_methods(
     return (
         method
         for _name, method in obj_members(unwrap_obj(cls))
-        # unwrapped methods of any kind are collapsed to functions
         if inspect.isfunction(unwrap_obj(method))
     )
 
