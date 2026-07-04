@@ -29,7 +29,7 @@
 <!-- rumdl-disable MD013 -->
 ---
 
-> Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance.
+> A tool that standardizes and automates Python project setup, configuration, development, and maintenance.
 
 ---
 

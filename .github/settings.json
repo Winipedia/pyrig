@@ -1,7 +1,7 @@
 {
     "repository": {
         "name": "pyrig",
-        "description": "Pyrig is a toolkit that standardizes and automates Python project setup, configuration, development, and maintenance.",
+        "description": "A tool that standardizes and automates Python project setup, configuration, development, and maintenance.",
         "default_branch": "main",
         "delete_branch_on_merge": true,
         "allow_update_branch": true,
