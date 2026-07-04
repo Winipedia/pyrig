@@ -27,10 +27,6 @@ class TestProjectTester:
         """Test method."""
         assert ProjectTester.I.version_control_ignore_paths() == (".pytest_cache/",)
 
-    def test_test_module_prefix(self) -> None:
-        """Test method."""
-        assert ProjectTester.I.test_module_prefix() == "test_"
-
     def test_tests_source_root(self) -> None:
         """Test method."""
         assert ProjectTester.I.tests_source_root() == Path()

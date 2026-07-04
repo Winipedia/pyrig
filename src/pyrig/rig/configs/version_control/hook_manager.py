@@ -97,7 +97,7 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             ),
             self.hook(
                 "check-security",
-                PackageManager.I.run_args(*SecurityChecker.I.run_with_config_args()),
+                PackageManager.I.run_args(*SecurityChecker.I.check_args()),
                 stages=["pre-commit"],
             ),
             self.hook(

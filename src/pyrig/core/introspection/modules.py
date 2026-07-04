@@ -55,7 +55,6 @@ def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleTy
             (e.g., built-in modules or namespace packages).
     """
     module_path = package_dir_path(module) if is_package else module_file_path(module)
-    # Remove from cache
     del sys.modules[module.__name__]
     return import_module_with_file_fallback(
         module_path, name=module.__name__, is_package=is_package

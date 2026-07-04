@@ -34,20 +34,11 @@ class VersionController(Tool):
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return an empty tuple; git is a system dependency, not a pip package."""
-        # git is a system dependency, so we don't have a dev dependency for it
         return ()
-
-    # -------------------------------------------------------------------------
-    # Tool constants
-    # -------------------------------------------------------------------------
 
     def default_branch(self) -> str:
         """Return `'main'` as the default branch name for new repositories."""
         return "main"
-
-    # -------------------------------------------------------------------------
-    # Repository initialisation
-    # -------------------------------------------------------------------------
 
     def init_args(self, *args: str) -> Args:
         """Build arguments for `git init`.
@@ -59,10 +50,6 @@ class VersionController(Tool):
             Args for `git init [args]`.
         """
         return self.args("init", *args)
-
-    # -------------------------------------------------------------------------
-    # Staging
-    # -------------------------------------------------------------------------
 
     def add_all_args(self, *args: str) -> Args:
         """Build arguments to stage all modified and untracked files.
@@ -88,10 +75,6 @@ class VersionController(Tool):
         """
         return self.args("add", *args)
 
-    # -------------------------------------------------------------------------
-    # Committing
-    # -------------------------------------------------------------------------
-
     def commit_with_msg_args(self, *args: str, msg: str) -> Args:
         """Build arguments for `git commit -m <msg>`.
 
@@ -114,10 +97,6 @@ class VersionController(Tool):
             Args for `git commit [args]`.
         """
         return self.args("commit", *args)
-
-    # -------------------------------------------------------------------------
-    # Pushing
-    # -------------------------------------------------------------------------
 
     def push_origin_tag_args(self, *args: str, tag: str) -> Args:
         """Build arguments to push a specific tag to the `origin` remote.
@@ -153,10 +132,6 @@ class VersionController(Tool):
         """
         return self.args("push", *args)
 
-    # -------------------------------------------------------------------------
-    # Tagging
-    # -------------------------------------------------------------------------
-
     def tag_args(self, *args: str, tag: str) -> Args:
         """Build arguments to create a local tag.
 
@@ -168,14 +143,6 @@ class VersionController(Tool):
             Args for `git tag <tag> [args]`.
         """
         return self.args("tag", tag, *args)
-
-    # -------------------------------------------------------------------------
-    # Configuration - write/set
-    # -------------------------------------------------------------------------
-
-    # -------------------------------------------------------------------------
-    # Configuration - read/get
-    # -------------------------------------------------------------------------
 
     def config_remote_origin_url_args(self, *args: str) -> Args:
         """Build arguments to read the `remote.origin.url` value.
@@ -225,10 +192,6 @@ class VersionController(Tool):
         """
         return self.config_args("--get", *args)
 
-    # -------------------------------------------------------------------------
-    # Configuration - base
-    # -------------------------------------------------------------------------
-
     def config_args(self, *args: str) -> Args:
         """Build base arguments for `git config`.
 
@@ -239,10 +202,6 @@ class VersionController(Tool):
             Args for `git config [args]`.
         """
         return self.args("config", *args)
-
-    # -------------------------------------------------------------------------
-    # Repository metadata
-    # -------------------------------------------------------------------------
 
     @classmethod
     @cache

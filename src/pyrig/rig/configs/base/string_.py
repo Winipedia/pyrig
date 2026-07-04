@@ -124,7 +124,5 @@ class StringConfigFile(ListConfigFile):
         """
         lines = text.splitlines()
         if text.endswith("\n"):
-            # to preserve the lineending for join_lines
-            # we add an empty string if the text ends with a newline
             lines.append("")
         return lines

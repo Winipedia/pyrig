@@ -78,8 +78,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """Return the `.github/workflows` directory path."""
         return Path(".github/workflows")
 
-    # Overridable WorkflowConfigFile Parts
-    # ----------------------------------------------------------------------------
     @abstractmethod
     def jobs(self) -> dict[str, Any]:
         """Return the jobs that make up this workflow.
@@ -124,8 +122,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             PackageManager.I.no_auto_install_env_var(): 1,
         }
 
-    # WorkflowConfigFile Conventions
-    # ----------------------------------------------------------------------------
     def workflow_name(self) -> str:
         """Derive a human-readable name from the class name.
 
@@ -149,8 +145,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.workflow_name()
 
-    # Build Utilities
-    # ----------------------------------------------------------------------------
     def job(  # noqa: PLR0913
         self,
         method: MethodType,
@@ -283,7 +277,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         name = name.removeprefix(f"{prefix}_")
         return snake_to_kebab_case(name)
 
-    # triggers
     def on_workflow_dispatch(self) -> dict[str, Any]:
         """Create a manual `workflow_dispatch` trigger.
 
@@ -353,7 +346,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             configs["branches"] = branches
         return {"workflow_run": configs}
 
-    # Strategy
     def strategy_matrix_os_and_python_version(
         self,
         os: list[str] | None = None,
@@ -542,9 +534,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return matrix
 
-    # WorkflowConfigFile Steps
-    # ----------------------------------------------------------------------------
-    # Combined Steps
     def steps_core_matrix_setup(
         self,
         *,
@@ -625,9 +614,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             self.step_checkout_repository(),
             self.step_setup_package_manager(python_version=python_version),
         ]
-
-    # Single Steps
-    # ----------------------------------------------------------------------------
 
     def step_checkout_repository(
         self,
@@ -722,9 +708,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
             step=step,
         )
 
-    # Variables
-    # ----------------------------------------------------------------------------
-
     def repo_token_var(self) -> str:
         """Return the raw secrets expression for `REPO_TOKEN`.
 
@@ -753,8 +736,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return f"secrets.{name}"
 
-    # Insertions
-    # ----------------------------------------------------------------------------
     def insert_repo_token(self) -> str:
         """Return the `${{ secrets.REPO_TOKEN }}` expression.
 
@@ -835,8 +816,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return f"${{{{ {var} }}}}"
 
-    # ifs
-    # ----------------------------------------------------------------------------
     def combined_if(self, *conditions: str, operator: str) -> str:
         """Combine multiple GitHub Actions expressions with a logical operator.
 

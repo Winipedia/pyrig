@@ -73,6 +73,12 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class for MirrorTestConfigFile."""
 
+    def test_test_module_prefix(
+        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
+    ) -> None:
+        """Test method."""
+        assert my_test_mirror_test_config_file().test_module_prefix() == "test_"
+
     def test_class_skeleton_pattern(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:

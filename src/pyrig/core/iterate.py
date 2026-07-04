@@ -173,7 +173,6 @@ def nested_structure_is_subset(  # noqa: C901
                 all_good = nested_structure_is_subset(subset, superset)
 
                 if not all_good:
-                    # make an informational log
                     logger.debug(
                         """
                         -------------------------------------------------------------------------------

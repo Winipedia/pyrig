@@ -22,7 +22,6 @@ def make_subcommand(name: str, *, shared: bool) -> None:
             all dependent packages. If `False`, targets the project-specific
             subcommands module.
     """
-    # create the file if not existent yet
     config_file = CopyModuleDocstringConfigFile.generate_subclass(
         shared_subcommands if shared else subcommands
     )()

@@ -86,7 +86,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         Returns:
             Filename stem (e.g., `"test_utils"`).
         """
-        return self.test_path().stem  # filename without extension
+        return self.test_path().stem
 
     def parent_path(self) -> Path:
         """Return the directory where the test file lives.
@@ -150,7 +150,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         return ".".join(
             [ProjectTester.I.tests_package_name()]
             + [
-                ProjectTester.I.test_module_prefix() + part
+                self.test_module_prefix() + part
                 for part in self.mirror_module().__name__.split(".")
             ]
         )
@@ -252,7 +252,6 @@ def {test_func_name}() -> None:
                 self.test_method_skeleton(name) for name in test_method_names
             )
             parts = test_module_content.split(test_cls_skeleton)
-            # insert the new content
             parts.insert(1, test_cls_content)
             test_module_content = "".join(parts)
 
@@ -290,8 +289,6 @@ def {test_func_name}() -> None:
             Compiled regex pattern matching the class skeleton.
         """
         cls_skeleton = self.test_class_skeleton(test_class_name)
-        # use cls_skeleton as a regex pattern by replacing the docstring
-        # with regex that matches any docstring
         pattern_str = cls_skeleton.replace(
             self.test_class_skeleton_docstring(),
             r"(?:\"\"\".*?\"\"\"|\'\'\'.*?\'\'\')",
@@ -353,9 +350,6 @@ def {test_func_name}() -> None:
                     supposed_test_class_name, ()
                 )
             )
-            # actual_test_methods_names is a cell variable rebound each iteration;
-            # callers must consume each inner iterator before advancing the outer one,
-            # otherwise remaining items filter against the last iteration's set.
             untested_test_methods_names = (
                 tmn
                 for tmn in supposed_test_methods_names
@@ -511,6 +505,14 @@ class {test_class_name}:
             `"Test"`.
         """
         return "Test"
+
+    def test_module_prefix(self) -> str:
+        """Return the prefix used for test module names.
+
+        Returns:
+            `"test_"`.
+        """
+        return "test_"
 
     def test_module_docstring(self) -> str:
         """Return the default docstring used for newly created test modules.

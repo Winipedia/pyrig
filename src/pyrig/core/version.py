@@ -82,31 +82,24 @@ class VersionConstraint:
         self.lowers_exclusive = tuple(
             Version(s.version) for s in self.sset if s.operator == ">"
         )
-        # increment the last number of exclusive, so
-        # >3.4.1 to >=3.4.2; <3.4.0 to <=3.4.1; 3.0.0 to <=3.0.1
         self.lowers_exclusive_to_inclusive = tuple(
             Version(f"{v.major}.{v.minor}.{v.micro + 1}") for v in self.lowers_exclusive
         )
         self.lowers_inclusive = (
             self.lowers_inclusive + self.lowers_exclusive_to_inclusive
         )
-
         self.uppers_inclusive = tuple(
             Version(s.version) for s in self.sset if s.operator == "<="
         )
         self.uppers_exclusive = tuple(
             Version(s.version) for s in self.sset if s.operator == "<"
         )
-
-        # increment the last number of inclusive, so
-        # <=3.4.1 to <3.4.2; >=3.4.0 to >3.4.1; 3.0.0 to >3.0.1
         self.uppers_inclusive_to_exclusive = tuple(
             Version(f"{v.major}.{v.minor}.{v.micro + 1}") for v in self.uppers_inclusive
         )
         self.uppers_exclusive = (
             self.uppers_inclusive_to_exclusive + self.uppers_exclusive
         )
-
         self.upper_exclusive = (
             min(self.uppers_exclusive) if self.uppers_exclusive else None
         )
@@ -187,7 +180,6 @@ class VersionConstraint:
                 minor_lower,
                 minor_upper + 1,
             ):
-                # pop the minor if one already exists
                 if len(version) > minor_level:
                     version.pop()
 
@@ -240,7 +232,6 @@ class VersionConstraint:
             >>> vc.upper_inclusive()
             <Version('2')>
         """
-        # increment the default by 1 micro to make it exclusive
         if default:
             default = Version(str(default))
             default = Version(f"{default.major}.{default.minor}.{default.micro + 1}")

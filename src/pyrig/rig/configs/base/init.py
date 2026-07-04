@@ -33,7 +33,6 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
             (e.g., `src/myproject/rig/configs` for a configs package).
         """
         path = super().parent_path()
-        # this path will be parent of the init file
         copy_module = self.copy_module()
         dir_name = (
             leaf_module_name(copy_module)
