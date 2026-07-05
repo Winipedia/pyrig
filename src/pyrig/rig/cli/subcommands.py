@@ -60,8 +60,8 @@ def scratch() -> None:
     The script runs in an isolated namespace and does not affect the calling
     environment.
 
-    Raises:
-        FileNotFoundError: If `.scratch.py` does not exist at the project root.
+    It runs it as `__main__`.
+
     """
     from pyrig.rig.cli.commands.scratch import run_scratch_file  # noqa: PLC0415
 
