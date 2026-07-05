@@ -155,7 +155,7 @@ class VersionController(Tool):
         """
         return self.config_get_args("remote.origin.url", *args)
 
-    def config_get_user_name_args(self, *args: str) -> Args:
+    def config_get_username_args(self, *args: str) -> Args:
         """Build arguments to read the configured `user.name` value.
 
         Args:
@@ -228,9 +228,10 @@ class VersionController(Tool):
         url = self.remote_url(check=False)
         if not url:
             # we default to git username and repo name from cwd
-            owner = self.user_name()
+            owner = self.username()
             logger.warning(
-                "No remote url found, using git username: '%s' as repo owner",
+                "No remote url found, using username from %s as repository owner: '%s'",
+                self.name(),
                 owner,
             )
             if " " in owner:
@@ -293,7 +294,7 @@ class VersionController(Tool):
             self.config_remote_origin_url_args().run_cached(check=check).stdout.strip()
         )
 
-    def user_name(self) -> str:
+    def username(self) -> str:
         """Return the git `user.name` from the active configuration.
 
         Returns:
@@ -302,7 +303,7 @@ class VersionController(Tool):
         Raises:
             subprocess.CalledProcessError: If `user.name` is not configured.
         """
-        return self.config_get_user_name_args().run_cached().stdout.strip()
+        return self.config_get_username_args().run_cached().stdout.strip()
 
     def email(self) -> str:
         """Return the git `user.email` from the active configuration.

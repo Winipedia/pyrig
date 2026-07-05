@@ -41,7 +41,7 @@ class TestVersionController:
         )
         username_mock = mocker.patch.object(
             VersionController,
-            VersionController.user_name.__name__,
+            VersionController.username.__name__,
             return_value="Test User",
         )
         result = VersionController()._repo_owner(  # noqa: SLF001
@@ -110,9 +110,9 @@ class TestVersionController:
         result = VersionController.I.config_remote_origin_url_args()
         assert result == ("git", "config", "--get", "remote.origin.url")
 
-    def test_config_get_user_name_args(self) -> None:
+    def test_config_get_username_args(self) -> None:
         """Test method."""
-        result = VersionController.I.config_get_user_name_args()
+        result = VersionController.I.config_get_username_args()
         assert result == ("git", "config", "--get", "user.name")
 
     def test_push_origin_args(self) -> None:
@@ -176,13 +176,13 @@ class TestVersionController:
         """Test method."""
         assert "github" in VersionController.I.remote_url()
 
-    def test_user_name(self, mocker: MockerFixture) -> None:
+    def test_username(self, mocker: MockerFixture) -> None:
         """Test method."""
         run_mock = mocker.patch.object(
             Args,
             Args.run_cached.__name__,
             return_value=mocker.Mock(stdout="Some User\n"),
         )
-        result = VersionController.I.user_name()
+        result = VersionController.I.username()
         run_mock.assert_called_once()
         assert result == "Some User"
