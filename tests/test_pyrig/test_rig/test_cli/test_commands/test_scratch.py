@@ -12,7 +12,7 @@ from pyrig.rig.configs.scratch import ScratchConfigFile
 def test_run_scratch_file(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        ScratchConfigFile().I.validate()
+        ScratchConfigFile.I.validate()
         # write a raise Error in the .scratch file to ensure it gets executed
         path = ScratchConfigFile.I.path()
         msg = "This error is expected from .scratch!"

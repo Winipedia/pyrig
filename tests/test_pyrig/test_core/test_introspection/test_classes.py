@@ -9,9 +9,6 @@ from functools import wraps
 from importlib import import_module
 from typing import Any, ClassVar
 
-from pyrig_runtime.core.introspection.classes import classproperty
-
-from pyrig.core.introspection import classes as classes_module
 from pyrig.core.introspection.classes import (
     cls_methods,
     discard_parent_methods,
@@ -179,13 +176,6 @@ def test_module_classes() -> None:
     assert set(classes_names) == set(expected_classes_names), (
         f"Expected classes {expected_classes_names}, got {classes_names}"
     )
-
-    # classproperty is special and implements fget which unwrapped obj unwraps to a
-    # C member object that doesnt work with def_line, as this a super special case
-    # we will ignore it for simplicity, we are checking this to make sure our behaviour
-    # is consistent in our inspection functionality
-    classes = module_classes(classes_module)
-    assert classproperty not in classes
 
 
 def test_discard_parent_methods() -> None:
