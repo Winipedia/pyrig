@@ -6,9 +6,5 @@ from pyrig.rig.configs.scratch import ScratchConfigFile
 
 
 def run_scratch_file() -> None:
-    """Execute `.scratch.py` at the project root.
-
-    Raises:
-        FileNotFoundError: If `.scratch.py` does not exist at the project root.
-    """
-    run_path(ScratchConfigFile.I.path().as_posix())
+    """Execute `.scratch.py` at the project root as `__main__`."""
+    run_path(ScratchConfigFile.I.path().as_posix(), run_name="__main__")
