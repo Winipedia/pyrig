@@ -76,7 +76,11 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
     """
 
     def __str__(self) -> str:
-        """Return the fully qualified class name followed by the file path in parens."""
+        """Add the file path to the string representation.
+
+        Returns:
+            The class's string representation, followed by the file path in parentheses.
+        """
         return f"{super().__str__()} ({self.path()})"
 
     @abstractmethod
