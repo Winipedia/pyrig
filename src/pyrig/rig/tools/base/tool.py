@@ -44,10 +44,10 @@ class Tool(DependencySubclass):
     """
 
     def __str__(self) -> str:
-        """Return the fully qualified class name with the tool name in parentheses.
+        """Add the tool name to the string representation.
 
         Returns:
-            String in the form `"package.module.ClassName (toolname)"`.
+            The class's string representation followed by the tool name in parentheses.
         """
         return f"{super().__str__()} ({self.name()})"
 
