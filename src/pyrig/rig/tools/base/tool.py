@@ -47,7 +47,7 @@ class Tool(DependencySubclass):
         """Return the fully qualified class name with the tool name in parentheses.
 
         Returns:
-            String in the form `'module.ClassName (toolname)'`.
+            String in the form `"<class 'module.ClassName'> (toolname)"`.
         """
         return f"{super().__str__()} ({self.name()})"
 
