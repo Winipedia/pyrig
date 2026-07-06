@@ -38,7 +38,7 @@ discovered and validated automatically by `pyrig sync` — no registration neede
   `Priority.increase()` / `Priority.decrease()` relative to another file's
   priority, or return any `int` or `float`.
 - **`version_control_ignored()`** — Set to `True` for files that should not be
-  committed (e.g. `.env`). These are only validated by `pyrig mk local`.
+  committed (e.g. `.env`). These are also validated by `pyrig mk local`.
 
 ---
 
