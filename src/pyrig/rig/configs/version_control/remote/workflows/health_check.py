@@ -177,7 +177,7 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs `pytest`.
+            Step that runs `uv run pytest`.
         """
         if step is None:
             step = {}

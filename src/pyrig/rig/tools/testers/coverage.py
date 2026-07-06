@@ -53,8 +53,8 @@ class CoverageTester(Tool):
     def color(self) -> tuple[int, int, int]:
         """Return the badge color derived from the coverage threshold.
 
-        Interpolates the hue on a red-to-green spectrum where 0% coverage is
-        red (hue 0), 50% is yellow (hue 60), and 100% is green (hue 120).
+        Interpolates the hue on a red-to-green spectrum where a threshold of
+        0% is red (hue 0), 50% is yellow (hue 60), and 100% is green (hue 120).
 
         Returns:
             An `(hue, saturation, lightness)` tuple.
