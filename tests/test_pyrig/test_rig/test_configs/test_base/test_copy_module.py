@@ -56,6 +56,21 @@ def my_test_copy_module_config_file(
 class TestCopyModuleConfigFile:
     """Test class."""
 
+    def test_module_path(self) -> None:
+        """Test method."""
+        # Create a mock module to test
+        module = ModuleType("test_package.test_subpackage.test_module")
+        module.__file__ = "test_package/test_subpackage/test_module.py"
+
+        # Generate the subclass config file
+        subclass = CopyModuleConfigFile.generate_subclass(module)
+
+        # Verify the generated subclass has the correct module_path method
+        subclass_instance = subclass()
+        expected_path = Path("src/pyrig/test_subpackage/test_module.py")
+        actual_path = subclass_instance.module_path()
+        assert actual_path == expected_path
+
     def test_generate_subclass(self) -> None:
         """Test method."""
         # Create a mock module to subclass

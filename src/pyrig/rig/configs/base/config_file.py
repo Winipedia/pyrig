@@ -135,7 +135,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         """
 
     @classmethod
-    def dependency_package(cls) -> ModuleType:
+    def discovery_module(cls) -> ModuleType:
         """Return the `pyrig.rig.configs` package, scoping discovery to config files.
 
         Returns:

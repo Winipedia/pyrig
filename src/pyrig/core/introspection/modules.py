@@ -7,6 +7,7 @@ from pathlib import Path
 from types import ModuleType
 
 from pyrig_runtime.core.introspection.modules import safe_import_module
+from pyrig_runtime.core.introspection.packages import is_package
 
 from pyrig.core.introspection.paths import module_file_path, package_dir_path
 from pyrig.core.strings import read_text_utf8
@@ -35,17 +36,15 @@ def module_content(module: ModuleType) -> str:
     return read_text_utf8(path)
 
 
-def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleType:
+def reimport_module(module: ModuleType) -> ModuleType:
     """Re-import a module, bypassing the import cache.
 
     Evicts the module from `sys.modules` before re-importing it, so on-disk
     changes to the module's source are picked up without restarting the
-    interpreter.
+    interpreter. Packages and plain modules are both handled.
 
     Args:
         module: Module to re-import.
-        is_package: Set to `True` when the target is a package rather than a
-            plain module. Defaults to `False`.
 
     Returns:
         A freshly imported module object, distinct from the original.
@@ -54,16 +53,14 @@ def reimport_module(module: ModuleType, *, is_package: bool = False) -> ModuleTy
         AttributeError: If the module's `__file__` is `None`
             (e.g., built-in modules or namespace packages).
     """
-    module_path = package_dir_path(module) if is_package else module_file_path(module)
-    del sys.modules[module.__name__]
-    return import_module_with_file_fallback(
-        module_path, name=module.__name__, is_package=is_package
+    module_path = (
+        package_dir_path(module) if is_package(module) else module_file_path(module)
     )
+    del sys.modules[module.__name__]
+    return import_module_with_file_fallback(module_path, name=module.__name__)
 
 
-def import_module_with_file_fallback(
-    path: Path, name: str, *, is_package: bool = False
-) -> ModuleType:
+def import_module_with_file_fallback(path: Path, name: str) -> ModuleType:
     """Import a module by name, falling back to direct file import on failure.
 
     Attempts a standard import of `name`; if that fails for any reason,
@@ -73,8 +70,6 @@ def import_module_with_file_fallback(
     Args:
         path: Path to the module file, used only when the standard import fails.
         name: Name under which to register the imported module.
-        is_package: Set to `True` when the target is a package rather than a
-            plain module. Defaults to `False`.
 
     Returns:
         The imported module.
@@ -88,12 +83,10 @@ def import_module_with_file_fallback(
     module = safe_import_module(name, default=None)
     if module is not None:
         return module
-    return import_module_from_file(path, name=name, is_package=is_package)
+    return import_module_from_file(path, name=name)
 
 
-def import_module_from_file(
-    path: Path, name: str, *, is_package: bool = False
-) -> ModuleType:
+def import_module_from_file(path: Path, name: str) -> ModuleType:
     """Import a module directly from a `.py` file, bypassing `sys.path`.
 
     The module is registered in `sys.modules` under `name` before execution so
@@ -101,13 +94,10 @@ def import_module_from_file(
     again if execution fails, leaving no invalid cache entry behind.
 
     Args:
-        path: Path to the source file; resolved to an absolute path. When
-            `is_package` is `True` and the path is not already an `__init__.py`,
+        path: Path to the source file or package directory; resolved to an
+            absolute path. A directory is treated as a package, and
             `__init__.py` is appended to it.
         name: Name under which to register the imported module.
-        is_package: Set to `True` when the target is a package rather than a
-            plain module, enabling package semantics (e.g., relative imports).
-            Defaults to `False`.
 
     Returns:
         The imported and executed module.
@@ -117,10 +107,12 @@ def import_module_from_file(
         FileNotFoundError: If the file does not exist.
     """
     path = path.resolve()
-    if is_package and path.name != "__init__.py":
+    path_name = path.name
+    is_pkg = path.is_dir() or path_name == "__init__.py"
+    if is_pkg and path_name != "__init__.py":
         path = path / "__init__.py"
     loader = SourceFileLoader(name, str(path))
-    spec = spec_from_loader(name=name, loader=loader, is_package=is_package)
+    spec = spec_from_loader(name=name, loader=loader, is_package=is_pkg)
     if spec is None:
         msg = f"Could not create spec for {path}"
         raise ImportError(msg)

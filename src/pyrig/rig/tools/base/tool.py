@@ -79,7 +79,7 @@ class Tool(DependencySubclass):
         return ()
 
     @classmethod
-    def dependency_package(cls) -> ModuleType:
+    def discovery_module(cls) -> ModuleType:
         """Return the `pyrig.rig.tools` package as the tool discovery scope."""
         return tools
 

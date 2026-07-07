@@ -2,12 +2,9 @@
 
 from pathlib import Path
 
-import pyrig
-from pyrig.core.introspection.modules import leaf_module_name
 from pyrig.rig.configs.base.copy_module_docstring import (
     CopyModuleDocstringConfigFile,
 )
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 class InitConfigFile(CopyModuleDocstringConfigFile):
@@ -20,27 +17,25 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
         - `copy_module`: Return the source module whose docstring will be written.
     """
 
-    def parent_path(self) -> Path:
-        """Return the directory that will contain the generated `__init__.py`.
-
-        The returned path is the package directory for `copy_module` within the
-        target project's source tree. When `copy_module` is the `pyrig` root
-        package, the directory is named after the target project's package
-        rather than `pyrig`.
-
-        Returns:
-            Path to the package directory where `__init__.py` will be written
-            (e.g., `src/myproject/rig/configs` for a configs package).
-        """
-        path = super().parent_path()
-        copy_module = self.copy_module()
-        dir_name = (
-            leaf_module_name(copy_module)
-            if copy_module is not pyrig
-            else PackageManager.I.package_name()
-        )
-        return path / dir_name
-
     def stem(self) -> str:
         """Return `"__init__"` as the filename stem."""
         return "__init__"
+
+    def module_path(self) -> Path:
+        """Return the target path of the generated `__init__.py`.
+
+        The file lives inside the package directory that mirrors the source
+        package within the target project's tree.
+
+        Returns:
+            Path to the `__init__.py` that will be written.
+        """
+        return super().module_path().with_suffix("") / self.filename()
+
+    def import_path(self) -> Path:
+        """Return the package directory used to import the managed package.
+
+        Returns:
+            Directory of the package whose `__init__.py` this config manages.
+        """
+        return super().import_path().parent

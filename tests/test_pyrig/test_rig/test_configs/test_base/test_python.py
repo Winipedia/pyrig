@@ -1,5 +1,7 @@
 """module."""
 
+from pathlib import Path
+
 from pyrig_fixtures.rig.configs.conftest import ConftestConfigFile
 from pytest_mock import MockerFixture
 
@@ -11,10 +13,9 @@ from pyrig.rig.configs.package_init import PackageInitConfigFile
 class TestPythonConfigFile:
     """Test class."""
 
-    def test_is_init_file(self) -> None:
+    def test_import_path(self) -> None:
         """Test method."""
-        assert not ConftestConfigFile.I.is_init_file()
-        assert PackageInitConfigFile.I.is_init_file()
+        assert ConftestConfigFile.I.import_path() == Path("tests/conftest.py")
 
     def test__dump(self, mocker: MockerFixture) -> None:
         """Test method."""

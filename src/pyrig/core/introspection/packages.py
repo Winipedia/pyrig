@@ -7,9 +7,6 @@ from types import ModuleType
 import typer
 from pyrig_runtime.core.introspection.packages import walk_package
 
-from pyrig.core.introspection.modules import (
-    import_module_with_file_fallback,
-)
 from pyrig.core.strings import write_text_utf8
 
 
@@ -76,29 +73,6 @@ def make_init_file(path: Path, content: str) -> bool:
 
     write_text_utf8(path, content)
     return True
-
-
-def import_package_with_dir_fallback(path: Path, name: str) -> ModuleType:
-    """Import a package by name, using the directory at `path` as a fallback.
-
-    Packages that cannot be resolved by name alone — such as those not yet
-    installed — can still be imported when `path` points to their directory.
-
-    Args:
-        path: Path to the package directory, used when the name-based import
-            fails.
-        name: Dotted module name for the package (e.g., `"myproject.utils"`).
-
-    Returns:
-        Imported package module.
-
-    Raises:
-        FileNotFoundError: If `name` cannot be imported and the `__init__.py`
-            at `path` does not exist.
-        ImportError: If `name` cannot be imported and the module spec
-            cannot be created from `path`.
-    """
-    return import_module_with_file_fallback(path=path, name=name, is_package=True)
 
 
 def discover_modules(package: ModuleType) -> Iterator[ModuleType]:

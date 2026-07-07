@@ -267,11 +267,11 @@ class TestMirrorClass:
                 == my_test_mirror_test_config_file().configs()
             )
 
-    def test_dependency_package(
+    def test_discovery_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
         """Test method."""
-        assert my_test_mirror_test_config_file().dependency_package() is tests
+        assert my_test_mirror_test_config_file().discovery_module() is tests
 
     def test_mirror_module(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
