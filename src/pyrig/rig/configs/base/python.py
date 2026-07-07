@@ -1,5 +1,6 @@
 """Base class for managing Python (`.py`) source file configuration."""
 
+from pathlib import Path
 from types import ModuleType
 from typing import Any
 
@@ -7,7 +8,6 @@ from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
     reimport_module,
 )
-from pyrig.core.introspection.packages import import_package_with_dir_fallback
 from pyrig.core.root import root_path_as_module_name
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
@@ -45,23 +45,21 @@ class PythonConfigFile(StringConfigFile):
     def _dump(self, configs: list[Any]) -> None:
         """Reimport the module after the config file is written."""
         super()._dump(configs)
-        reimport_module(self.module(), is_package=self.is_init_file())
+        reimport_module(self.module())
 
     def module(self) -> ModuleType:
-        """Return the module for this config file.
+        """Return the imported module this config file manages.
 
         Returns:
-            The package module at the parent path for `__init__` files, or the
-            module at the file path otherwise.
+            Module imported from this config file's import path.
         """
-        if self.is_init_file():
-            import_func = import_package_with_dir_fallback
-            path = self.parent_path()
-        else:
-            import_func = import_module_with_file_fallback
-            path = self.path()
-        return import_func(path, root_path_as_module_name(path))
+        path = self.import_path()
+        return import_module_with_file_fallback(path, root_path_as_module_name(path))
 
-    def is_init_file(self) -> bool:
-        """Check if this config file is an `__init__.py`."""
-        return self.stem() == "__init__"
+    def import_path(self) -> Path:
+        """Return the path from which this config file's module is imported.
+
+        Returns:
+            The config file's path.
+        """
+        return self.path()

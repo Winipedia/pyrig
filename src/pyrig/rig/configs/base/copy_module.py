@@ -85,25 +85,32 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         )
 
     def parent_path(self) -> Path:
-        """Compute the target directory for the copied module.
-
-        Replaces the root package component of the source module's dotted name
-        with the target project's package name, then converts the result to a
-        path relative to the project root and returns its parent directory.
-
-        For example, source module `pyrig.rig.configs.base.string_` with a
-        project named `myproject` resolves to `src/myproject/rig/configs/base`.
+        """Return the directory that will contain the copied module file.
 
         Returns:
-            Target directory path for the copied module file.
+            Directory of the copied module's target path.
         """
-        copy_module = self.copy_module()
-        new_module_name = replace_root_module_name(
-            copy_module, PackageManager.I.package_name()
-        )
+        return self.module_path().parent
 
-        new_module_path = module_name_as_root_path(new_module_name)
-        return new_module_path.parent
+    def module_path(self) -> Path:
+        """Return the target path for the copied module file.
+
+        Replaces the source module's top-level package with the target
+        project's package name and converts the result to a path relative to
+        the project root.
+
+        For example, source module `pyrig.rig.configs.base.string_` in a
+        project named `myproject` resolves to
+        `src/myproject/rig/configs/base/string_.py`.
+
+        Returns:
+            Path where the copied module file will be written.
+        """
+        return module_name_as_root_path(
+            replace_root_module_name(
+                self.copy_module(), PackageManager.I.package_name()
+            )
+        )
 
     def lines(self) -> list[str]:
         """Read the source module's file content as a list of lines.

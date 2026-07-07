@@ -3,7 +3,6 @@
 from contextlib import chdir
 from pathlib import Path
 
-import pytest
 from pytest_mock import MockerFixture
 
 import pyrig
@@ -11,7 +10,6 @@ from pyrig.core import introspection
 from pyrig.core.introspection import packages
 from pyrig.core.introspection.packages import (
     discover_modules,
-    import_package_with_dir_fallback,
     make_init_file,
     make_init_files,
     make_package_dir,
@@ -64,30 +62,6 @@ def test_make_package_dir_path_not_under_cwd(
     # without breaking, since neither cwd nor Path() appear in the chain.
     expected_call_count = 1 + len(elsewhere.parents)
     assert make_init_file_mock.call_count == expected_call_count
-
-
-def test_import_package_with_dir_fallback(tmp_path: Path) -> None:
-    """Test function."""
-    with chdir(tmp_path):
-        non_existing_dir = tmp_path / "non_existing"
-        assert not non_existing_dir.exists()
-        with pytest.raises(FileNotFoundError):
-            import_package_with_dir_fallback(non_existing_dir, name="non_existing")
-        # import nonexisting again to check if somehow cached in sys
-        with pytest.raises(FileNotFoundError):
-            import_package_with_dir_fallback(non_existing_dir, name="non_existing")
-
-        dir_name = test_import_package_with_dir_fallback.__name__
-        existing_dir = tmp_path / dir_name
-        existing_dir.mkdir()
-        init_file = existing_dir / "__init__.py"
-        init_file.write_text('"""Test package."""\n')
-        package = import_package_with_dir_fallback(existing_dir, name=dir_name)
-        assert package.__name__ == dir_name
-
-        # test that if the package is already imported it doesn't reload from disk
-        package = import_package_with_dir_fallback(existing_dir, name=dir_name)
-        assert package.__name__ == dir_name
 
 
 def test_discover_modules() -> None:

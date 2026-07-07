@@ -5,6 +5,7 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
+from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
 from pyrig.rig.configs.base.init import InitConfigFile
 
@@ -43,6 +44,27 @@ def my_test_init_config_file(
 
 class TestInitConfigFile:
     """Test class."""
+
+    def test_import_path(self) -> None:
+        """Test method."""
+        assert ResourcesInitConfigFile.I.import_path() == Path(
+            "src/pyrig/rig/resources"
+        )
+
+    def test_module_path(self) -> None:
+        """Test method."""
+        # Create a mock module to test
+        module = ModuleType("test_package.test_subpackage.test_subpackage2")
+        module.__file__ = "test_package/test_subpackage/test_subpackage2/__init__.py"
+
+        # Generate the subclass config file
+        subclass = InitConfigFile.generate_subclass(module)
+
+        # Verify the generated subclass has the correct module_path method
+        subclass_instance = subclass()
+        expected_path = Path("src/pyrig/test_subpackage/test_subpackage2/__init__.py")
+        actual_path = subclass_instance.module_path()
+        assert actual_path == expected_path
 
     def test_parent_path(self, my_test_init_config_file: type[InitConfigFile]) -> None:
         """Test method."""

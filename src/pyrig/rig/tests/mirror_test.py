@@ -63,7 +63,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
 
     @classmethod
-    def dependency_package(cls) -> ModuleType:
+    def discovery_module(cls) -> ModuleType:
         """Return the `pyrig.rig.tests` package, scoping discovery to mirror tests.
 
         Returns:
