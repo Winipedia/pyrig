@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
+from pyrig.rig.tools.package_manager import PackageManager
 
 
 @pytest.fixture
@@ -25,8 +26,8 @@ def my_test_python_package_config_file(
             return "test_package"
 
         def parent_path(self) -> Path:
-            """Get the parent path."""
-            return Path("parent_package")
+            """Get the parent path under the package root."""
+            return PackageManager.I.package_root() / "parent_package"
 
         def lines(self) -> list[str]:
             """Get the content string."""
@@ -38,6 +39,24 @@ def my_test_python_package_config_file(
 class TestPythonPackageConfigFile:
     """Test class."""
 
+    def test_package_root(
+        self, my_test_python_package_config_file: type[PythonPackageConfigFile]
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_python_package_config_file().package_root()
+            == PackageManager.I.package_root()
+        )
+
+    def test_source_root(
+        self, my_test_python_package_config_file: type[PythonPackageConfigFile]
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_python_package_config_file().source_root()
+            == PackageManager.I.source_root()
+        )
+
     def test__dump(
         self,
         my_test_python_package_config_file: type[PythonPackageConfigFile],
@@ -48,4 +67,16 @@ class TestPythonPackageConfigFile:
             my_test_python_package_config_file().validate()
             assert (
                 my_test_python_package_config_file().path().parent / "__init__.py"
-            ).exists(), "Expected __init__.py to be created"
+            ).exists()
+            assert my_test_python_package_config_file().path().exists()
+            assert (
+                my_test_python_package_config_file().path().read_text()
+                == '"""Test content."""'
+            )
+            assert (
+                my_test_python_package_config_file().source_root()
+                == PackageManager.I.source_root()
+            )
+            assert not (
+                my_test_python_package_config_file().source_root() / "__init__.py"
+            ).exists()

@@ -14,7 +14,7 @@ def remove_pycache() -> None:
     Covers the package root and tests package root at all depths, printing
     each path to standard output before removal.
     """
-    roots = (ProjectTester.I.tests_package_root(), PackageManager.I.package_root())
+    roots = (ProjectTester.I.package_root(), PackageManager.I.package_root())
     for root in roots:
         for pycache in root.rglob("__pycache__"):
             if pycache.is_dir():

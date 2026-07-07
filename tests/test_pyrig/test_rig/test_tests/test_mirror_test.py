@@ -12,6 +12,7 @@ from pyrig.core.introspection.modules import reimport_module
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.testers.project import ProjectTester
 
 MIRROR_MODULE_PATH = Path("mirror_test_package/mirror_test_module.py")
 MIRROR_MODULE_NAME = "mirror_test_package.mirror_test_module"
@@ -72,6 +73,19 @@ def mirror_function():
 
 class TestMirrorTestConfigFile:
     """Test class for MirrorTestConfigFile."""
+
+    def test_package_root(
+        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
+    ) -> None:
+        """Test method."""
+        assert (
+            my_test_mirror_test_config_file().package_root()
+            == ProjectTester.I.package_root()
+        )
+        assert (
+            my_test_mirror_test_config_file().source_root()
+            == ProjectTester.I.source_root()
+        )
 
     def test_test_module_prefix(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]

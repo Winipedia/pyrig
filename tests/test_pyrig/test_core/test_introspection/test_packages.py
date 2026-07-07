@@ -3,8 +3,6 @@
 from contextlib import chdir
 from pathlib import Path
 
-from pytest_mock import MockerFixture
-
 import pyrig
 from pyrig.core import introspection
 from pyrig.core.introspection import packages
@@ -30,38 +28,13 @@ def test_make_init_file(tmp_path: Path) -> None:
 def test_make_package_dir(tmp_path: Path) -> None:
     """Test function."""
     with chdir(tmp_path):
-        path = Path.cwd() / "test" / "package" / "sub_package"
-        make_package_dir(path, until=(Path.cwd() / "test",), content="")
-        assert not (Path.cwd() / "test" / "__init__.py").exists()
-        assert (Path.cwd() / "test" / "package" / "__init__.py").exists()
-        assert (
-            Path.cwd() / "test" / "package" / "sub_package" / "__init__.py"
-        ).exists()
-        assert not (Path.cwd() / "__init__.py").exists()
-
-
-def test_make_package_dir_path_not_under_cwd(
-    tmp_path: Path, mocker: MockerFixture
-) -> None:
-    """Test the loop exhausts when the path shares no ancestor with cwd."""
-    cwd_dir = tmp_path / "cwd"
-    cwd_dir.mkdir()
-    elsewhere = tmp_path / "elsewhere" / "deep" / "pkg"
-
-    # Mock make_init_file so the test does not write __init__.py files into
-    # ancestor directories like /tmp or /.
-    make_init_file_mock = mocker.patch(
-        make_init_file.__module__ + "." + make_init_file.__name__, return_value=None
-    )
-
-    with chdir(cwd_dir):
-        make_package_dir(elsewhere, until=(), content="")
-
-    assert elsewhere.exists()
-    # The for loop should have iterated over the path and every ancestor
-    # without breaking, since neither cwd nor Path() appear in the chain.
-    expected_call_count = 1 + len(elsewhere.parents)
-    assert make_init_file_mock.call_count == expected_call_count
+        path = Path() / "test" / "package" / "sub_package"
+        make_package_dir(path, root=Path() / "test", content="")
+        # `root` is the last directory processed and receives an __init__.py.
+        assert (Path() / "test" / "__init__.py").exists()
+        assert (Path() / "test" / "package" / "__init__.py").exists()
+        assert (Path() / "test" / "package" / "sub_package" / "__init__.py").exists()
+        assert not (Path() / "__init__.py").exists()
 
 
 def test_discover_modules() -> None:

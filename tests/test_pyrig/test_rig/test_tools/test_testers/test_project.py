@@ -27,13 +27,13 @@ class TestProjectTester:
         """Test method."""
         assert ProjectTester.I.version_control_ignore_paths() == (".pytest_cache/",)
 
-    def test_tests_source_root(self) -> None:
+    def test_source_root(self) -> None:
         """Test method."""
-        assert ProjectTester.I.tests_source_root() == Path()
+        assert ProjectTester.I.source_root() == Path()
 
-    def test_tests_package_root(self) -> None:
+    def test_package_root(self) -> None:
         """Test method."""
-        assert ProjectTester.I.tests_package_root() == Path("tests")
+        assert ProjectTester.I.package_root() == Path("tests")
 
     def test_group(self) -> None:
         """Test method."""
@@ -51,7 +51,7 @@ class TestProjectTester:
         result = ProjectTester.I.name()
         assert result == "pytest"
 
-    def test_tests_package_name(self) -> None:
+    def test_package_name(self) -> None:
         """Test method."""
-        result = ProjectTester.I.tests_package_name()
+        result = ProjectTester.I.package_name()
         assert result == "tests"
