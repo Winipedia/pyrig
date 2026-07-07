@@ -36,11 +36,11 @@ class ProjectTester(Tool):
         """Return `('.pytest_cache/',)`."""
         return (".pytest_cache/",)
 
-    def tests_package_root(self) -> Path:
+    def package_root(self) -> Path:
         """Return the path to the top-level tests package."""
-        return self.tests_source_root() / self.tests_package_name()
+        return self.source_root() / self.package_name()
 
-    def tests_source_root(self) -> Path:
+    def source_root(self) -> Path:
         """Return the directory the tests package lives directly under.
 
         Returns `Path()`, meaning the tests package sits at the project
@@ -48,7 +48,7 @@ class ProjectTester(Tool):
         """
         return Path()
 
-    def tests_package_name(self) -> str:
+    def package_name(self) -> str:
         """Return `'tests'`, the name of the top-level tests package."""
         return "tests"
 

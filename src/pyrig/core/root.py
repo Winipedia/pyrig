@@ -1,4 +1,4 @@
-"""Path and module-name resolution relative to the project's root layout."""
+"""Project root related utilities."""
 
 import logging
 from collections.abc import Iterator
@@ -6,10 +6,6 @@ from itertools import chain
 from pathlib import Path
 
 from pyrig.core.introspection.packages import make_init_files
-from pyrig.core.introspection.paths import (
-    module_name_as_path,
-    path_as_module_name,
-)
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
 from pyrig.rig.tools.testers.project import ProjectTester
@@ -45,7 +41,7 @@ def namespace_package_paths() -> Iterator[Path]:
 
     package_root, tests_package_root = (
         PackageManager.I.package_root(),
-        ProjectTester.I.tests_package_root(),
+        ProjectTester.I.package_root(),
     )
     for p in chain(
         (package_root, tests_package_root),
@@ -60,56 +56,3 @@ def namespace_package_paths() -> Iterator[Path]:
         if init.exists():
             continue
         yield p
-
-
-def root_path_as_module_name(path: Path) -> str:
-    """Convert a filesystem path relative to the project root to a dotted module name.
-
-    Removes whichever prefix the path falls under, the source root or the
-    tests source root. A path under neither is treated as already relative
-    to the project root.
-
-    Args:
-        path: Filesystem path relative to the project root.
-
-    Returns:
-        Dotted Python module name (e.g., `"mypackage.sub.module"` or
-        `"tests.test_sub.test_module"`).
-    """
-    if path.is_relative_to(PackageManager.I.source_root()):
-        root = PackageManager.I.source_root()
-    elif path.is_relative_to(ProjectTester.I.tests_source_root()):
-        root = ProjectTester.I.tests_source_root()
-    else:
-        root = Path()
-    relative_path = path.relative_to(root)
-    return path_as_module_name(relative_path)
-
-
-def module_name_as_root_path(module_name: str) -> Path:
-    """Resolve a dotted module name to its filesystem path relative to the project root.
-
-    Test modules and source modules resolve against different roots.
-
-    Args:
-        module_name: Dotted Python module name (e.g., `"mypackage.sub.module"`
-            or `"tests.test_sub.test_module"`).
-
-    Returns:
-        Path to the module's `.py` file relative to the project root
-        (e.g., `Path("src/mypackage/sub/module.py")` for a source module, or
-        `Path("tests/test_sub/test_module.py")` for a test module).
-    """
-    return determine_root(module_name) / module_name_as_path(module_name)
-
-
-def determine_root(module_name: str) -> Path:
-    """Return the tests source root for test modules, otherwise the source root.
-
-    Test modules are those whose name starts with the tests package name.
-    """
-    return (
-        ProjectTester.I.tests_source_root()
-        if module_name.startswith(ProjectTester.I.tests_package_name())
-        else PackageManager.I.source_root()
-    )

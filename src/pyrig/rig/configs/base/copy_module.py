@@ -17,7 +17,7 @@ from pyrig.core.introspection.modules import (
     leaf_module_name,
     module_content,
 )
-from pyrig.core.root import module_name_as_root_path
+from pyrig.core.introspection.paths import module_name_as_path
 from pyrig.core.strings import reformat_name
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
@@ -106,7 +106,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         Returns:
             Path where the copied module file will be written.
         """
-        return module_name_as_root_path(
+        return self.source_root() / module_name_as_path(
             replace_root_module_name(
                 self.copy_module(), PackageManager.I.package_name()
             )

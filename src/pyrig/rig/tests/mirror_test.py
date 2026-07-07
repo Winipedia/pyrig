@@ -30,8 +30,8 @@ from pyrig.core.introspection.modules import (
     leaf_module_name,
 )
 from pyrig.core.introspection.packages import discover_modules
+from pyrig.core.introspection.paths import module_name_as_path
 from pyrig.core.iterate import iterator_has_items
-from pyrig.core.root import module_name_as_root_path
 from pyrig.core.strings import reformat_name
 from pyrig.rig import tests
 from pyrig.rig.configs.base.package import PythonPackageConfigFile
@@ -96,6 +96,10 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return self.test_path().parent
 
+    def package_root(self) -> Path:
+        """Return the root directory of the tests package."""
+        return ProjectTester.I.package_root()
+
     def lines(self) -> list[Any]:
         """Return the complete test module content as a list of lines.
 
@@ -148,7 +152,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Dotted import path (e.g., `"tests.test_mypackage.test_mymodule"`).
         """
         return ".".join(
-            [ProjectTester.I.tests_package_name()]
+            [ProjectTester.I.package_name()]
             + [
                 self.test_module_prefix() + part
                 for part in self.mirror_module().__name__.split(".")
@@ -162,7 +166,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             Path to the test file, relative to the project root
             (e.g., `Path("tests/test_package/test_mod.py")`).
         """
-        return module_name_as_root_path(self.test_module_name())
+        return self.source_root() / module_name_as_path(self.test_module_name())
 
     def test_module_content_with_skeletons(self) -> str:
         """Build the complete test module content with skeletons for untested code.

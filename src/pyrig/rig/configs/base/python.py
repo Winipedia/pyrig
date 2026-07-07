@@ -8,7 +8,7 @@ from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
     reimport_module,
 )
-from pyrig.core.root import root_path_as_module_name
+from pyrig.core.introspection.paths import path_as_module_name
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
 
@@ -54,7 +54,9 @@ class PythonConfigFile(StringConfigFile):
             Module imported from this config file's import path.
         """
         path = self.import_path()
-        return import_module_with_file_fallback(path, root_path_as_module_name(path))
+        return import_module_with_file_fallback(
+            path, path_as_module_name(path.relative_to(self.source_root()))
+        )
 
     def import_path(self) -> Path:
         """Return the path from which this config file's module is imported.
@@ -63,3 +65,11 @@ class PythonConfigFile(StringConfigFile):
             The config file's path.
         """
         return self.path()
+
+    def source_root(self) -> Path:
+        """Return the directory this file's path is relative to for its module name.
+
+        Defaults to the project root; subclasses whose files live under a
+        dedicated source directory override it.
+        """
+        return Path()

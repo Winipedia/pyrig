@@ -119,7 +119,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                         "ignore": ["COM812", "ANN401"],
                         "fixable": ["ALL"],
                         "per-file-ignores": {
-                            f"{ProjectTester.I.tests_package_name()}/**/*.py": ["S101"],
+                            f"{ProjectTester.I.package_name()}/**/*.py": ["S101"],
                         },
                         "pydocstyle": {"convention": PythonLinter.I.pydocstyle()},
                     },
@@ -131,7 +131,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                 },
                 ProjectTester.I.name(): {
                     "ini_options": {
-                        "testpaths": [ProjectTester.I.tests_package_root().as_posix()],
+                        "testpaths": [ProjectTester.I.package_root().as_posix()],
                         "addopts": str(CoverageTester.I.additional_test_args()),
                     }
                 },

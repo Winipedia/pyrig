@@ -13,6 +13,10 @@ from pyrig.rig.configs.package_init import PackageInitConfigFile
 class TestPythonConfigFile:
     """Test class."""
 
+    def test_source_root(self) -> None:
+        """Test method."""
+        assert ConftestConfigFile.I.source_root() == Path()
+
     def test_import_path(self) -> None:
         """Test method."""
         assert ConftestConfigFile.I.import_path() == Path("tests/conftest.py")
