@@ -69,7 +69,8 @@ class TestReleaseWorkflowConfigFile:
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().workflow_triggers()
-        assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
+        assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
+        assert "workflow_dispatch" not in result
         assert "pull_request" not in result
 
     def test_jobs(

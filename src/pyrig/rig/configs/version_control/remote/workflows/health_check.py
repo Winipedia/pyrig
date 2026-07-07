@@ -31,18 +31,19 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
     def workflow_triggers(self) -> dict[str, Any]:
         """Return the triggers for the health check workflow.
 
-        Extends the base `workflow_dispatch` trigger with pull request,
-        push, and scheduled cron triggers.
+        Combines manual dispatch, pull request, push, and scheduled cron
+        triggers.
 
         Returns:
             Trigger configuration dict with `workflow_dispatch`,
             `pull_request`, `push`, and `schedule` entries.
         """
-        triggers = super().workflow_triggers()
-        triggers.update(self.on_pull_request())
-        triggers.update(self.on_push())
-        triggers.update(self.on_schedule(cron=" ".join(map(str, self.cron_schedule()))))
-        return triggers
+        return {
+            **self.on_workflow_dispatch(),
+            **self.on_pull_request(),
+            **self.on_push(),
+            **self.on_schedule(cron=" ".join(map(str, self.cron_schedule()))),
+        }
 
     def cron_schedule(
         self,

@@ -34,11 +34,6 @@ fires when the previous stage finishes. Each downstream stage also guards its
 jobs with an `if` condition that checks the triggering run succeeded, so a
 failure anywhere in the chain stops propagation cleanly.
 
-The Release workflow is triggered when Health Check completes on the default
-branch, but only when that health check run was itself triggered by a push event.
-This means scheduled runs, manual dispatches, and pull-request-triggered health
-check completions never produce a release.
-
 ---
 
 ## Stage 1 — Health Check

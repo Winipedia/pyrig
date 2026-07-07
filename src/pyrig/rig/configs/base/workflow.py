@@ -48,9 +48,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         ...
         ...
         ...    def workflow_triggers(self) -> dict[str, Any]:
-        ...        triggers = super().workflow_triggers()
-        ...        triggers.update(self.on_push())
-        ...        return triggers
+        ...        return {**self.on_workflow_dispatch(), **self.on_push()}
     """
 
     UBUNTU_LATEST = "ubuntu-latest"
@@ -86,16 +84,17 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Dict mapping job IDs to their configurations.
         """
 
+    @abstractmethod
     def workflow_triggers(self) -> dict[str, Any]:
         """Return the events that trigger this workflow.
 
-        Override to customize when the workflow runs. Defaults to a manual
-        `workflow_dispatch` trigger only.
+        Build the dict from the `on_*` trigger helpers, e.g.
+        `on_workflow_dispatch()` for manual runs or `on_push()` for
+        pushes to the default branch.
 
         Returns:
             Dict of trigger configurations.
         """
-        return self.on_workflow_dispatch()
 
     def defaults(self) -> dict[str, Any]:
         """Return the default settings applied to every step in the workflow.
