@@ -31,15 +31,15 @@ class TypedConfigFile(DictConfigFile):
         return {}
 
     def _dump(self, configs: dict[str, Any]) -> None:
-        """Never write to disk; raise `PermissionError` if `configs` is not empty.
+        """Refuse to write non-empty content to `py.typed`; no-op for an empty dict.
 
         Args:
             configs: Configuration to validate. Must be empty.
 
         Raises:
-            PermissionError: If `configs` is not empty.
+            RuntimeError: If `configs` is not empty.
         """
-        if configs:
-            msg = f"""Dumping to {self} is forbidden.
-It is a marker for type checkers and should be empty."""
-            raise PermissionError(msg)
+        if not configs:
+            return
+        msg = f"""cannot dump to {self}"""
+        raise RuntimeError(msg)

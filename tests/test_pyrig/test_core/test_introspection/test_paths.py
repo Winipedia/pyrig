@@ -37,7 +37,7 @@ def test_module_file_path(
     # make ModuleType with __file__ attribute as None
     module_no_file = ModuleType("module_no_file")
     module_no_file.__file__ = None
-    with pytest.raises(AttributeError, match=r"Module .* has no __file__"):
+    with pytest.raises(AttributeError, match=r"module .* has no __file__"):
         module_file_path(module_no_file)
 
 

@@ -50,7 +50,7 @@ class TestTypedConfigFile:
             "Expected dump to work with empty dict"
         )
         # assert raises ValueError if config is not empty
-        with pytest.raises(PermissionError, match=r"Dumping to .* is forbidden."):
+        with pytest.raises(RuntimeError, match=r"cannot dump to .*"):
             my_test_typed_config_file().dump({"key": "value"})
 
     def test__configs(self, my_test_typed_config_file: type[TypedConfigFile]) -> None:

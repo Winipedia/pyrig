@@ -46,8 +46,8 @@ class TestEnvConfigFile:
         """Test method."""
         # dump should raise RuntimeError if config is not empty (truthy)
         with pytest.raises(
-            PermissionError,
-            match=r"Dumping to .* is forbidden.",
+            RuntimeError,
+            match=r"cannot dump to .*",
         ):
             my_test_dotenv_config_file().dump({"key": "val"})
 

@@ -15,7 +15,7 @@ def test_run_scratch_file(tmp_path: Path) -> None:
         ScratchConfigFile.I.validate()
         # write a raise Error in the .scratch file to ensure it gets executed
         path = ScratchConfigFile.I.path()
-        msg = "This error is expected from .scratch!"
+        msg = "this error is expected from .scratch.py"
         path.write_text(f"""
 if __name__ == "__main__":
     raise ValueError("{msg}")

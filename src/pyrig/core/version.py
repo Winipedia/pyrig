@@ -1,6 +1,6 @@
 """Parsing of PEP 440 version constraints and the version ranges they imply."""
 
-from typing import Literal
+from typing import Literal, overload
 
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
@@ -150,10 +150,10 @@ class VersionConstraint:
             (<Version('3.10.1')>, <Version('3.10.2')>, <Version('3.10.3')>)
         """
         lower = self.find_lower_inclusive(lower_default)
-        upper = self.upper_inclusive(upper_default)
+        upper = self.find_upper_inclusive(upper_default)
 
         if lower is None or upper is None:
-            msg = "No lower or upper bound. Please specify default values."
+            msg = "defaults must be provided for unbounded directions of the constraint"
             raise RuntimeError(msg)
 
         major_level, minor_level, micro_level = range(3)
@@ -204,7 +204,13 @@ class VersionConstraint:
         version_versions = sorted({Version(".".join(map(str, v))) for v in versions})
         return tuple(v for v in version_versions if self.sset.contains(v))
 
-    def upper_inclusive(self, default: str | Version | None = None) -> Version | None:
+    @overload
+    def find_upper_inclusive(self, default: str | Version) -> Version: ...
+    @overload
+    def find_upper_inclusive(self, default: None = None) -> Version | None: ...
+    def find_upper_inclusive(
+        self, default: str | Version | None = None
+    ) -> Version | None:
         """Return the inclusive upper bound of the constraint.
 
         The inclusive form of the exclusive upper bound (`<`):
@@ -223,19 +229,21 @@ class VersionConstraint:
 
         Examples:
             >>> vc = VersionConstraint(">=3.8,<3.12.5")
-            >>> vc.upper_inclusive()
+            >>> vc.find_upper_inclusive()
             <Version('3.12.4')>
             >>> vc = VersionConstraint(">=3.8,<3.12.0")
-            >>> vc.upper_inclusive()
+            >>> vc.find_upper_inclusive()
             <Version('3.11')>
             >>> vc = VersionConstraint(">=2.8,<3.0.0")
-            >>> vc.upper_inclusive()
+            >>> vc.find_upper_inclusive()
             <Version('2')>
         """
-        if default:
+        if default is None:
+            upper_exclusive = self.find_upper_exclusive()
+        else:
             default = Version(str(default))
             default = Version(f"{default.major}.{default.minor}.{default.micro + 1}")
-        upper_exclusive = self.find_upper_exclusive(default)
+            upper_exclusive = self.find_upper_exclusive(default)
         if upper_exclusive is None:
             return None
 
@@ -250,6 +258,10 @@ class VersionConstraint:
             return Version(f"{major}.{minor - 1}")
         return Version(f"{major - 1}")
 
+    @overload
+    def find_lower_inclusive(self, default: str | Version) -> Version: ...
+    @overload
+    def find_lower_inclusive(self, default: None = None) -> Version | None: ...
     def find_lower_inclusive(
         self, default: str | Version | None = None
     ) -> Version | None:
@@ -278,12 +290,16 @@ class VersionConstraint:
             >>> vc.find_lower_inclusive("3.8")
             <Version('3.8')>
         """
-        default = str(default) if default else None
-        if self.lower_inclusive is None:
-            return Version(default) if default else None
+        if self.lower_inclusive is not None:
+            return self.lower_inclusive
+        if default is None:
+            return None
+        return Version(str(default))
 
-        return self.lower_inclusive
-
+    @overload
+    def find_upper_exclusive(self, default: str | Version) -> Version: ...
+    @overload
+    def find_upper_exclusive(self, default: None = None) -> Version | None: ...
     def find_upper_exclusive(
         self, default: str | Version | None = None
     ) -> Version | None:
@@ -312,8 +328,8 @@ class VersionConstraint:
             >>> vc.find_upper_exclusive("3.12")
             <Version('3.12')>
         """
-        default = str(default) if default else None
-        if self.upper_exclusive is None:
-            return Version(default) if default else None
-
-        return self.upper_exclusive
+        if self.upper_exclusive is not None:
+            return self.upper_exclusive
+        if default is None:
+            return None
+        return Version(str(default))

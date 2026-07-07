@@ -2,9 +2,9 @@
 
 import typer
 
-from pyrig.core.root import make_all_init_files
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 
 def synchronize_project() -> None:
@@ -18,7 +18,7 @@ def synchronize_project() -> None:
         typer.Exit: With code 1 if any file was created or updated during
             the run.
     """
-    created_inits = make_all_init_files()
+    created_inits = ProgrammingLanguage.I.make_init_files()
     changed_configs = ConfigFile.validate_concrete_subclasses()
     changed_tests = MirrorTestConfigFile.L.validate_concrete_subclasses()
     if created_inits or changed_configs or changed_tests:
