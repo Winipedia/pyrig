@@ -21,18 +21,14 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return "deploy"
 
     def workflow_triggers(self) -> dict[str, Any]:
-        """Add a `workflow_run` trigger that fires when the release workflow completes.
+        """Return a `workflow_run` trigger for completion of the release workflow.
 
         Returns:
-            Trigger dict with `workflow_dispatch` and `workflow_run` entries.
+            Trigger configuration dict with a `workflow_run` entry.
         """
-        triggers = super().workflow_triggers()
-        triggers.update(
-            self.on_workflow_run(
-                workflows=[ReleaseWorkflowConfigFile.I.workflow_name()]
-            )
+        return self.on_workflow_run(
+            workflows=[ReleaseWorkflowConfigFile.I.workflow_name()]
         )
-        return triggers
 
     def job(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Build a job gated on the triggering workflow run having succeeded.

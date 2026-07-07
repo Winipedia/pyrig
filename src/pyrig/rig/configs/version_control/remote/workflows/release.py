@@ -15,10 +15,10 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     """Generator for the `release.yml` GitHub Actions workflow.
 
-    The workflow itself can be triggered manually or by completion of the
-    health check workflow on the default branch, but its job only proceeds
-    when the completed health check run both succeeded and was triggered by
-    a push — so a manual dispatch, the daily scheduled run, and pull request
+    The workflow is triggered by completion of the health check workflow on
+    the default branch, but its job only proceeds when that health check run
+    both succeeded and was itself triggered by a push — so the daily
+    scheduled run, manual dispatches of the health check, and pull request
     runs never produce a release. A qualifying run tags the current version,
     applies repository settings and branch protection rulesets, generates a
     changelog, and publishes a GitHub release.
@@ -31,22 +31,16 @@ class ReleaseWorkflowConfigFile(WorkflowConfigFile):
     def workflow_triggers(self) -> dict[str, Any]:
         """Return the triggers for the release workflow.
 
-        Extends the default `workflow_dispatch` trigger from the base class
-        with a `workflow_run` trigger that fires when the health check
+        A single `workflow_run` trigger that fires when the health check
         workflow completes on the default branch.
 
         Returns:
-            Trigger configuration dict with `workflow_dispatch` and
-            `workflow_run` entries.
+            Trigger configuration dict with a `workflow_run` entry.
         """
-        triggers = super().workflow_triggers()
-        triggers.update(
-            self.on_workflow_run(
-                workflows=[HealthCheckWorkflowConfigFile.I.workflow_name()],
-                branches=[VersionController.I.default_branch()],
-            )
+        return self.on_workflow_run(
+            workflows=[HealthCheckWorkflowConfigFile.I.workflow_name()],
+            branches=[VersionController.I.default_branch()],
         )
-        return triggers
 
     def job(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Build a job gated on the workflow having been triggered by a push.

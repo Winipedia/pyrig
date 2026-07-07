@@ -35,8 +35,8 @@ class TestDeployWorkflowConfigFile:
     def test_workflow_triggers(self) -> None:
         """Test method."""
         result = DeployWorkflowConfigFile.I.workflow_triggers()
-        assert "workflow_dispatch" in result, "Expected 'workflow_dispatch' in triggers"
-        assert "workflow_run" in result
+        assert "workflow_run" in result, "Expected 'workflow_run' in triggers"
+        assert "workflow_dispatch" not in result
 
     def test_jobs(self) -> None:
         """Test method."""
