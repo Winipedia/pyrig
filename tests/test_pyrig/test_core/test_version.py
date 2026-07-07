@@ -80,38 +80,38 @@ class TestVersionConstraint:
         expected = "3.12"
         assert str(upper) == expected
 
-    def test_upper_inclusive(self) -> None:
+    def test_find_upper_inclusive(self) -> None:
         """Test method."""
         constraint = ">=3.8, <3.12"
         version_constraint = VersionConstraint(constraint)
-        upper = version_constraint.upper_inclusive()
+        upper = version_constraint.find_upper_inclusive()
         expected = "3.11"
         assert str(upper) == expected
         constraint = ">=3.8, <=3.12"
         version_constraint = VersionConstraint(constraint)
-        upper = version_constraint.upper_inclusive()
+        upper = version_constraint.find_upper_inclusive()
         expected = "3.12.0"
         assert str(upper) == expected
         constraint = ">=3.8, <3.12.1"
         version_constraint = VersionConstraint(constraint)
-        upper = version_constraint.upper_inclusive()
+        upper = version_constraint.find_upper_inclusive()
         expected = "3.12.0"
         assert str(upper) == expected
 
         constraint = ">=3.8"
         version_constraint = VersionConstraint(constraint)
-        upper = version_constraint.upper_inclusive()
+        upper = version_constraint.find_upper_inclusive()
         assert upper is None, f"Expected None, got {upper}"
 
         constraint = ">=2.8, <3.12.0"
         version_constraint = VersionConstraint(constraint)
-        upper = version_constraint.upper_inclusive()
+        upper = version_constraint.find_upper_inclusive()
         expected = "3.11"
         assert str(upper) == expected
 
         constraint = ">=2.8, <3.0.0"
         version_constraint = VersionConstraint(constraint)
-        upper = version_constraint.upper_inclusive()
+        upper = version_constraint.find_upper_inclusive()
         expected = "2"
         assert str(upper) == expected
 
@@ -212,7 +212,7 @@ class TestVersionConstraint:
         )
         assert versions == expected
 
-        # make so that find_lower_inclusive and upper_inclusive return both None
+        # make so that find_lower_inclusive and find_upper_inclusive return both None
         constraint = "<3.12"
         version_constraint = VersionConstraint(constraint)
         with pytest.raises(RuntimeError):

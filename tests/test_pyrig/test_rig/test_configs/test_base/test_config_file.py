@@ -262,7 +262,7 @@ class TestConfigFile:
         )
         with pytest.raises(
             RuntimeError,
-            match=r"Failed to validate .* after merging and dumping configs",
+            match=r"failed to validate .*",
         ):
             my_test_config_file().validate()
 

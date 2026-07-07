@@ -114,7 +114,7 @@ def import_module_from_file(path: Path, name: str) -> ModuleType:
     loader = SourceFileLoader(name, str(path))
     spec = spec_from_loader(name=name, loader=loader, is_package=is_pkg)
     if spec is None:
-        msg = f"Could not create spec for {path}"
+        msg = f"could not create spec for {path}"
         raise ImportError(msg)
 
     module = module_from_spec(spec)

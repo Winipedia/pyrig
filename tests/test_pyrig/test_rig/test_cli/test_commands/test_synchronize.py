@@ -6,17 +6,20 @@ import pytest
 import typer
 from pytest_mock import MockerFixture
 
-from pyrig.core.root import make_all_init_files
-from pyrig.rig.cli.commands import synchronize
-from pyrig.rig.cli.commands.synchronize import synchronize_project
+from pyrig.rig.cli.commands.synchronize import (
+    synchronize_project,
+)
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
+from pyrig.rig.tools.programming_language import ProgrammingLanguage
 
 
 def test_synchronize_project(mocker: MockerFixture) -> None:
     """Test function."""
     make_init_files_mock = mocker.patch.object(
-        synchronize, make_all_init_files.__name__, return_value=()
+        ProgrammingLanguage,
+        ProgrammingLanguage.make_init_files.__name__,
+        return_value=(),
     )
     config_file_mock = mocker.patch.object(
         ConfigFile, ConfigFile.validate_concrete_subclasses.__name__, return_value=()

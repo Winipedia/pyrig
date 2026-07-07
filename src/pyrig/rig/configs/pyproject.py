@@ -237,10 +237,9 @@ class PyprojectConfigFile(TOMLConfigFile):
         """
         constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)
-        version = version_constraint.upper_inclusive()
-        if version is None:
-            version = self.latest_python_version(level=level)
-
+        version = version_constraint.find_upper_inclusive(
+            default=self.latest_python_version(level=level)
+        )
         return adjust_version_to_level(version, level)
 
     def first_supported_python_version(self) -> Version:
@@ -256,7 +255,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         version_constraint = VersionConstraint(constraint)
         lower = version_constraint.find_lower_inclusive()
         if lower is None:
-            msg = "Need a lower bound for python version"
+            msg = "lower bound for python version is required"
             raise LookupError(msg)
         return lower
 

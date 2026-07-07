@@ -16,8 +16,6 @@ from pyrig.core.iterate import (
     nested_structure_is_subset,
 )
 from pyrig.rig import configs
-from pyrig.rig.cli.subcommands import sync
-from pyrig.rig.tools.pyrigger import Pyrigger
 
 logger = logging.getLogger(__name__)
 
@@ -252,9 +250,7 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
         self.dump(config)
 
         if not self.is_correct():
-            msg = f"""Failed to validate {self} after merging and dumping configs.
-Please check the file for issues and fix manually if needed.
-You can delete the file and use {Pyrigger.I.cmd_args(cmd=sync)} to recreate it."""
+            msg = f"""failed to validate {self}"""
             raise RuntimeError(msg)
         return False
 
@@ -262,25 +258,26 @@ You can delete the file and use {Pyrigger.I.cmd_args(cmd=sync)} to recreate it."
         """Create the config file and any missing parent directories.
 
         Touches the file, creating it empty, after ensuring the full parent
-        directory tree exists.
+        directory tree exists. Echoes the created file path to stdout.
         """
         path = self.path()
-        typer.echo(f"Creating {self}")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.touch()
+        typer.echo(f"Created {self}")
 
     def dump(self, configs: ConfigT) -> None:
         """Write configuration to disk and keep the load cache consistent.
 
         Clears the `load()` cache afterward, so the new content is read on
         subsequent `load()` calls instead of the stale cached value.
+        Echoes the updated file path to stdout.
 
         Args:
             configs: Configuration data to write.
         """
-        typer.echo(f"Updating {self}")
         self._dump(configs)
         self.load.cache_clear()
+        typer.echo(f"Updated {self}")
 
     def merge_configs(self) -> ConfigT:
         """Merge the required configuration into the current file contents.

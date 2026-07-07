@@ -36,14 +36,12 @@ class EnvConfigFile(DictConfigFile):
             configs: Configuration to write. Must be empty.
 
         Raises:
-            PermissionError: If `configs` is non-empty.
+            RuntimeError: If `configs` is non-empty.
         """
         if not configs:
             return
-        msg = f"""Dumping to {self} is forbidden.
-For security reasons this file is managed manually by the user.
-Please edit it directly."""
-        raise PermissionError(msg)
+        msg = f"""cannot dump to {self}"""
+        raise RuntimeError(msg)
 
     def _configs(self) -> dict[str, Any]:
         """Return an empty dict, since no `.env` content is required."""
