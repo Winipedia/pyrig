@@ -85,9 +85,7 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
     if both_dicts(subset, superset):
         for key, sub_val in subset.items():
             sup_val = superset.get(key, MISSING)
-            if sup_val is MISSING:
-                superset[key] = sub_val
-            elif both_dicts_or_lists(sub_val, sup_val):
+            if both_dicts_or_lists(sub_val, sup_val):
                 merge_nested_structures(sub_val, sup_val)
             elif not nested_structure_is_subset(sub_val, sup_val):
                 superset[key] = sub_val

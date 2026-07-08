@@ -227,7 +227,6 @@ class VersionController(Tool):
         """
         url = self.remote_url(check=False)
         if not url:
-            # we default to git username and repo name from cwd
             owner = self.username()
             logger.warning(
                 "No remote url found, using username from %s as repository owner: '%s'",
