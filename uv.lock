@@ -891,7 +891,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "17.7.3"
+version = "17.7.4"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
