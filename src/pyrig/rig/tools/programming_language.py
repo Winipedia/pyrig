@@ -1,5 +1,6 @@
 """Metadata and constants for the project's programming language."""
 
+import shutil
 from collections.abc import Iterator
 from itertools import chain
 from pathlib import Path
@@ -51,6 +52,19 @@ class ProgrammingLanguage(Tool):
     def standard_init_content(self) -> str:
         """Return the minimal source text for a generated `__init__.py` file."""
         return '"""Package initialization."""\n'
+
+    def remove_pycache(self) -> None:
+        """Remove all `__pycache__` directories in the project.
+
+        Covers the package root and tests package root at all depths, echoing
+        each removed path to standard output.
+        """
+        roots = (ProjectTester.I.package_root(), PackageManager.I.package_root())
+        for root in roots:
+            for pycache in root.rglob("__pycache__"):
+                if pycache.is_dir():
+                    shutil.rmtree(pycache)
+                    typer.echo(f"Removed {pycache}")
 
     def make_init_files(self) -> tuple[Path, ...]:
         """Create all missing `__init__.py` files in the project.
