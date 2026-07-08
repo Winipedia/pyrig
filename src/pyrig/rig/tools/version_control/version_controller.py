@@ -156,16 +156,16 @@ class VersionController(Tool):
         """
         return self.args("tag", tag, *args)
 
-    def config_remote_origin_url_args(self, *args: str) -> Args:
-        """Build arguments to read the `remote.origin.url` value.
+    def config_get_user_email_args(self, *args: str) -> Args:
+        """Build arguments to read the configured `user.email` value.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for `git config --get remote.origin.url [args]`.
+            Args for `git config --get user.email [args]`.
         """
-        return self.config_get_args("remote.origin.url", *args)
+        return self.config_get_args("user.email", *args)
 
     def config_get_username_args(self, *args: str) -> Args:
         """Build arguments to read the configured `user.name` value.
@@ -178,16 +178,16 @@ class VersionController(Tool):
         """
         return self.config_get_args("user.name", *args)
 
-    def config_get_user_email_args(self, *args: str) -> Args:
-        """Build arguments to read the configured `user.email` value.
+    def config_remote_origin_url_args(self, *args: str) -> Args:
+        """Build arguments to read the `remote.origin.url` value.
 
         Args:
             *args: Additional arguments appended to the command.
 
         Returns:
-            Args for `git config --get user.email [args]`.
+            Args for `git config --get remote.origin.url [args]`.
         """
-        return self.config_get_args("user.email", *args)
+        return self.config_get_args("remote.origin.url", *args)
 
     def config_get_args(self, *args: str) -> Args:
         """Build base arguments for `git config --get`.
