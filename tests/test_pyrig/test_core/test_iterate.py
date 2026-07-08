@@ -3,81 +3,13 @@
 from typing import Any
 
 from pyrig.core.iterate import (
-    add_missing_dict_val,
-    insert_missing_list_val,
+    both_dicts,
+    both_dicts_or_lists,
+    both_lists,
     iterator_has_items,
     merge_nested_structures,
     nested_structure_is_subset,
 )
-
-
-def test_nested_structure_is_subset() -> None:
-    """Test function."""
-    subset: dict[str, Any] = {
-        "a": 1,
-        "b": [2, 3, {"c": 4}],
-    }
-    superset: dict[str, Any] = {
-        "a": 1,
-        "b": [2, 3, {"c": 4}, 5],
-        "d": 6,
-    }
-    assert nested_structure_is_subset(subset, superset), (
-        "Expected subset to be subset of superset"
-    )
-
-    subset = {
-        "a": 1,
-        "b": [2, 3, {"c": 4}],
-    }
-    superset = {
-        "a": 1,
-        "b": [2, 3, {"c": 5}],
-    }
-    assert not nested_structure_is_subset(subset, superset), (
-        "Expected subset not to be subset of superset"
-    )
-
-    false_values: list[Any] = []
-
-    def on_dict_mismatch(
-        subset_obj: dict[str, Any], _superset_obj: dict[str, Any], key: str
-    ) -> None:
-        fv = subset_obj[key]
-        false_values.append(fv)
-
-    def on_list_mismatch(
-        subset_obj: list[Any], _superset_obj: list[Any], index: int
-    ) -> None:
-        fv = subset_obj[index]
-        false_values.append(fv)
-
-    subset = {
-        "a": 1,
-        "b": [2, 0, {"c": 4}],
-    }
-    superset = {
-        "a": 1,
-        "b": [2, 3, {"c": 5}],
-    }
-    nested_structure_is_subset(subset, superset, on_dict_mismatch, on_list_mismatch)
-    expected_false_values: list[Any] = [0, 4, {"c": 4}, [2, 0, {"c": 4}]]
-    assert false_values == expected_false_values, (
-        f"Expected false values to be {expected_false_values}, got {false_values}"
-    )
-
-    subset = {
-        "a": 1,
-        "b": [2, 3, {"d": 5}, {"c": 4}],
-    }
-    superset = {
-        "a": 1,
-        "b": [3, 2, {"c": 4}, {"d": 5}],
-    }
-    is_nested_subset = nested_structure_is_subset(
-        subset, superset, on_dict_mismatch, on_list_mismatch
-    )
-    assert is_nested_subset, "Expected subset to be subset of superset"
 
 
 def test_iterator_has_items() -> None:
@@ -92,44 +24,79 @@ def test_iterator_has_items() -> None:
     gen = (x for x in empty_iterable)
     has_items, items = iterator_has_items(gen)
     assert has_items is False
+    assert list(items) == []
 
 
 def test_merge_nested_structures() -> None:
     """Test function."""
-    subset = {
-        "a": 1,
-        "b": [2, 3, {"c": 4}],
-    }
-    superset = {
-        "a": 0,
-        "b": [2, {"c": 5}],
-        "d": 6,
-    }
+    # conflicting primitive is overwritten; missing list item and nested value
+    # are filled in; superset-only key is preserved.
+    subset = {"a": 1, "b": [2, 3, {"c": 4}]}
+    superset = {"a": 0, "b": [2, {"c": 5}], "d": 6}
     merged = merge_nested_structures(subset, superset)
-    expected_merged = {
-        "a": 1,
-        "b": [2, 3, {"c": 4}],
-        "d": 6,
-    }
-    assert merged == expected_merged
+    assert merged == {"a": 1, "b": [2, 3, {"c": 4}], "d": 6}
+
+    # an already-satisfied key is left untouched; superset-only key is kept.
+    assert merge_nested_structures({"a": 1}, {"a": 1, "z": 9}) == {"a": 1, "z": 9}
+
+    # a required null-valued key that is absent is added ("missing" is not
+    # conflated with "present and None").
+    assert merge_nested_structures({"x": None}, {}) == {"x": None}
+
+    # list: items missing from a shorter superset are appended.
+    assert merge_nested_structures([2, 3], [2]) == [2, 3]
+
+    # list: a not-yet-contained item is merged into the positional element.
+    assert merge_nested_structures([[1, 2]], [[1]]) == [[1, 2]]
+
+    # mismatched top-level container types leave the superset untouched.
+    assert merge_nested_structures({"a": 1}, [1]) == [1]
 
 
-def test_add_missing_dict_val() -> None:
+def test_nested_structure_is_subset() -> None:
     """Test function."""
-    expected_dict = {"key1": "value1", "key2": {"nested_key": "nested_value"}}
-    actual_dict = {"key2": {"nested_key": "old_value"}, "key3": "value3"}
-    add_missing_dict_val(expected_dict, actual_dict, "key1")
-    add_missing_dict_val(expected_dict, actual_dict, "key2")
-    assert actual_dict == {
-        "key1": "value1",
-        "key2": {"nested_key": "nested_value"},
-        "key3": "value3",
-    }, "Expected actual dict to be updated with missing values from expected dict"
+    # extra keys and list items in the superset are allowed.
+    assert nested_structure_is_subset(
+        {"a": 1, "b": [2, 3, {"c": 4}]},
+        {"a": 1, "b": [2, 3, {"c": 4}, 5], "d": 6},
+    )
+    # a differing nested primitive breaks containment.
+    assert not nested_structure_is_subset(
+        {"a": 1, "b": [2, 3, {"c": 4}]},
+        {"a": 1, "b": [2, 3, {"c": 5}]},
+    )
+    # list matching is order-independent.
+    assert nested_structure_is_subset(
+        {"b": [2, 3, {"d": 5}, {"c": 4}]},
+        {"b": [3, 2, {"c": 4}, {"d": 5}]},
+    )
+    # a required null-valued key that is absent is NOT contained.
+    assert not nested_structure_is_subset({"a": None}, {})
+    assert not nested_structure_is_subset([1, None], [1])
+    # primitives compare by equality.
+    assert nested_structure_is_subset(1, 1)
 
 
-def test_insert_missing_list_val() -> None:
+def test_both_dicts_or_lists() -> None:
     """Test function."""
-    expected_list = [1, 2, 3]
-    actual_list = [1, 3]
-    insert_missing_list_val(expected_list, actual_list, 1)
-    assert actual_list == [1, 2, 3]
+    assert both_dicts_or_lists({}, {"a": 1})
+    assert both_dicts_or_lists([1], [])
+    assert not both_dicts_or_lists({}, [])
+    assert not both_dicts_or_lists({}, 1)
+    assert not both_dicts_or_lists(1, 2)
+
+
+def test_both_dicts() -> None:
+    """Test function."""
+    assert both_dicts({}, {"a": 1})
+    assert not both_dicts({}, [])
+    assert not both_dicts({}, 1)
+    assert not both_dicts(1, 2)
+
+
+def test_both_lists() -> None:
+    """Test function."""
+    assert both_lists([], [1])
+    assert not both_lists([], {})
+    assert not both_lists([], 1)
+    assert not both_lists(1, 2)
