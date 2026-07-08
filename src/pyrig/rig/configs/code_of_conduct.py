@@ -24,18 +24,6 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
     placeholder.
     """
 
-    def stem(self) -> str:
-        """Return `"CODE_OF_CONDUCT"` as the filename stem."""
-        return "CODE_OF_CONDUCT"
-
-    def parent_path(self) -> Path:
-        """Return the project root as the parent directory."""
-        return Path()
-
-    def lines(self) -> list[str]:
-        """Return the completed Contributor Covenant text as lines."""
-        return self.split_lines(self.code_of_conduct())
-
     def is_correct(self) -> bool:
         """Check whether CODE_OF_CONDUCT.md has non-empty content.
 
@@ -50,6 +38,18 @@ class CodeOfConductConfigFile(MarkdownConfigFile):
             FileNotFoundError: If the file does not exist.
         """
         return file_has_content(self.path())
+
+    def lines(self) -> list[str]:
+        """Return the completed Contributor Covenant text as lines."""
+        return self.split_lines(self.code_of_conduct())
+
+    def parent_path(self) -> Path:
+        """Return the project root as the parent directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return `"CODE_OF_CONDUCT"` as the filename stem."""
+        return "CODE_OF_CONDUCT"
 
     def code_of_conduct(self) -> str:
         """Return the Contributor Covenant with the contact method substituted.

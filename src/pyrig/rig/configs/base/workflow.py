@@ -55,6 +55,26 @@ class WorkflowConfigFile(YMLDictConfigFile):
     WINDOWS_LATEST = "windows-latest"
     MACOS_LATEST = "macos-latest"
 
+    @abstractmethod
+    def jobs(self) -> dict[str, Any]:
+        """Return the jobs that make up this workflow.
+
+        Returns:
+            Dict mapping job IDs to their configurations.
+        """
+
+    @abstractmethod
+    def workflow_triggers(self) -> dict[str, Any]:
+        """Return the events that trigger this workflow.
+
+        Build the dict from the `on_*` trigger helpers, e.g.
+        `on_workflow_dispatch()` for manual runs or `on_push()` for
+        pushes to the default branch.
+
+        Returns:
+            Dict of trigger configurations.
+        """
+
     def _configs(self) -> dict[str, Any]:
         """Assemble the complete workflow configuration dict.
 
@@ -75,26 +95,6 @@ class WorkflowConfigFile(YMLDictConfigFile):
     def parent_path(self) -> Path:
         """Return the `.github/workflows` directory path."""
         return Path(".github/workflows")
-
-    @abstractmethod
-    def jobs(self) -> dict[str, Any]:
-        """Return the jobs that make up this workflow.
-
-        Returns:
-            Dict mapping job IDs to their configurations.
-        """
-
-    @abstractmethod
-    def workflow_triggers(self) -> dict[str, Any]:
-        """Return the events that trigger this workflow.
-
-        Build the dict from the `on_*` trigger helpers, e.g.
-        `on_workflow_dispatch()` for manual runs or `on_push()` for
-        pushes to the default branch.
-
-        Returns:
-            Dict of trigger configurations.
-        """
 
     def defaults(self) -> dict[str, Any]:
         """Return the default settings applied to every step in the workflow.

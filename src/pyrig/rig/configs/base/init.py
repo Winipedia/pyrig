@@ -17,9 +17,13 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
         - `copy_module`: Return the source module whose docstring will be written.
     """
 
-    def stem(self) -> str:
-        """Return `"__init__"` as the filename stem."""
-        return "__init__"
+    def import_path(self) -> Path:
+        """Return the package directory used to import the managed package.
+
+        Returns:
+            Directory of the package whose `__init__.py` this config manages.
+        """
+        return super().import_path().parent
 
     def module_path(self) -> Path:
         """Return the target path of the generated `__init__.py`.
@@ -32,10 +36,6 @@ class InitConfigFile(CopyModuleDocstringConfigFile):
         """
         return super().module_path().with_suffix("") / self.filename()
 
-    def import_path(self) -> Path:
-        """Return the package directory used to import the managed package.
-
-        Returns:
-            Directory of the package whose `__init__.py` this config manages.
-        """
-        return super().import_path().parent
+    def stem(self) -> str:
+        """Return `"__init__"` as the filename stem."""
+        return "__init__"

@@ -11,14 +11,6 @@ class VersionControlHookManager(Tool):
     the local git repository and running hooks against files.
     """
 
-    def name(self) -> str:
-        """Return the tool's command name.
-
-        Returns:
-            `'prek'`.
-        """
-        return "prek"
-
     def group(self) -> str:
         """Return the badge group this tool belongs to.
 
@@ -42,6 +34,14 @@ class VersionControlHookManager(Tool):
             The URL of the prek project page as a string.
         """
         return "https://github.com/j178/prek"
+
+    def name(self) -> str:
+        """Return the tool's command name.
+
+        Returns:
+            `'prek'`.
+        """
+        return "prek"
 
     def install_args(self, *args: str) -> Args:
         """Build arguments for `prek install`.

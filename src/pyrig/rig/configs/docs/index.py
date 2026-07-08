@@ -15,14 +15,6 @@ class IndexConfigFile(BadgesConfigFile):
     documentation rather than the project itself.
     """
 
-    def parent_path(self) -> Path:
-        """Return the MkDocs documentation source directory."""
-        return DocsBuilder.I.docs_dir()
-
-    def stem(self) -> str:
-        """Return the filename stem `"index"`."""
-        return "index"
-
     def lines(self) -> list[str]:
         """Build the landing page content lines.
 
@@ -36,3 +28,11 @@ class IndexConfigFile(BadgesConfigFile):
         project_name = PackageManager.I.project_name()
         lines[0] = lines[0].replace(project_name, f"{project_name} Documentation", 1)
         return lines
+
+    def parent_path(self) -> Path:
+        """Return the MkDocs documentation source directory."""
+        return DocsBuilder.I.docs_dir()
+
+    def stem(self) -> str:
+        """Return the filename stem `"index"`."""
+        return "index"

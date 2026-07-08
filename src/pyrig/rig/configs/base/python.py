@@ -38,14 +38,14 @@ class PythonConfigFile(StringConfigFile):
         ...         return ["from typing import Any", "import sys"]
     """
 
-    def extension(self) -> str:
-        """Return `"py"`, the fixed extension for Python source files."""
-        return "py"
-
     def _dump(self, configs: list[Any]) -> None:
         """Reimport the module after the config file is written."""
         super()._dump(configs)
         reimport_module(self.module())
+
+    def extension(self) -> str:
+        """Return `"py"`, the fixed extension for Python source files."""
+        return "py"
 
     def module(self) -> ModuleType:
         """Return the imported module this config file manages.

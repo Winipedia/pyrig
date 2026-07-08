@@ -7,10 +7,6 @@ from pyrig.rig.tools.base.tool import Group, Tool
 class DependencyChecker(Tool):
     """`deptry` command wrapper."""
 
-    def name(self) -> str:
-        """Return `"deptry"`."""
-        return "deptry"
-
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`."""
         return Group.CODE_QUALITY
@@ -22,6 +18,10 @@ class DependencyChecker(Tool):
     def link_url(self) -> str:
         """Return the URL of the `deptry` project page."""
         return "https://github.com/osprey-oss/deptry"
+
+    def name(self) -> str:
+        """Return `"deptry"`."""
+        return "deptry"
 
     def check_args(self, *args: str) -> Args:
         """Build the `deptry` command.

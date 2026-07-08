@@ -21,6 +21,14 @@ class TOMLConfigFile(DictConfigFile):
     arrays) instead of compact inline literals.
     """
 
+    def _dump(self, configs: dict[str, Any]) -> None:
+        """Write configuration to the TOML file.
+
+        Args:
+            configs: Configuration dict to write.
+        """
+        self.pretty_dump(configs)
+
     def _load(self) -> dict[str, Any]:
         """Read and parse the TOML file.
 
@@ -30,13 +38,9 @@ class TOMLConfigFile(DictConfigFile):
         """
         return tomlkit.parse(read_text_utf8(self.path()))
 
-    def _dump(self, configs: dict[str, Any]) -> None:
-        """Write configuration to the TOML file.
-
-        Args:
-            configs: Configuration dict to write.
-        """
-        self.pretty_dump(configs)
+    def extension(self) -> str:
+        """Return `"toml"`."""
+        return "toml"
 
     def pretty_dump(self, configs: dict[str, Any]) -> None:
         """Write configuration to the TOML file using idiomatic TOML formatting.
@@ -99,7 +103,3 @@ class TOMLConfigFile(DictConfigFile):
         if isinstance(value, dict):
             return self.prettify_dict(value)
         return value
-
-    def extension(self) -> str:
-        """Return `"toml"`."""
-        return "toml"

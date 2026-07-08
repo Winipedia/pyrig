@@ -25,14 +25,6 @@ class APIDocsConfigFile(MarkdownConfigFile):
         ```
     """
 
-    def parent_path(self) -> Path:
-        """Return the MkDocs documentation source directory."""
-        return DocsBuilder.I.docs_dir()
-
-    def stem(self) -> str:
-        """Return the filename stem `"api"`."""
-        return "api"
-
     def lines(self) -> list[str]:
         """Build the API reference page content.
 
@@ -41,3 +33,11 @@ class APIDocsConfigFile(MarkdownConfigFile):
             mkdocstrings `:::` directive for the project's package.
         """
         return ["# API Reference", "", f"::: {PackageManager.I.package_name()}", ""]
+
+    def parent_path(self) -> Path:
+        """Return the MkDocs documentation source directory."""
+        return DocsBuilder.I.docs_dir()
+
+    def stem(self) -> str:
+        """Return the filename stem `"api"`."""
+        return "api"

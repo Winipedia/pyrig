@@ -43,21 +43,6 @@ class PyprojectConfigFile(TOMLConfigFile):
     overriding the corresponding accessor method in a subclass.
     """
 
-    def priority(self) -> float:
-        """Return a priority one step above the default.
-
-        Ensures validation before all default-priority config files.
-        """
-        return Priority.increase(super().priority())
-
-    def parent_path(self) -> Path:
-        """Return the project root directory."""
-        return Path()
-
-    def stem(self) -> str:
-        """Return `"pyproject"`."""
-        return "pyproject"
-
     def _configs(self) -> dict[str, Any]:
         """Assemble the required `pyproject.toml` structure from live project state.
 
@@ -142,6 +127,21 @@ class PyprojectConfigFile(TOMLConfigFile):
             },
         }
 
+    def parent_path(self) -> Path:
+        """Return the project root directory."""
+        return Path()
+
+    def priority(self) -> float:
+        """Return a priority one step above the default.
+
+        Ensures validation before all default-priority config files.
+        """
+        return Priority.increase(super().priority())
+
+    def stem(self) -> str:
+        """Return `"pyproject"`."""
+        return "pyproject"
+
     def additional_dependencies(self) -> list[str]:
         """Return the runtime dependencies required in addition to `dependencies()`."""
         return [Pyrigger.I.runtime_dependency()]
@@ -150,27 +150,23 @@ class PyprojectConfigFile(TOMLConfigFile):
         """Return the dev dependencies required in addition to `dev_dependencies()`."""
         return Tool.subclasses_dev_dependencies()
 
-    def project_version(self) -> str:
-        """Read the project version from `pyproject.toml`.
+    def dependencies(self) -> list[str]:
+        """Read runtime dependencies from `pyproject.toml`.
 
         Returns:
-            Version string from `pyproject.toml`, or `"0.1.0"` if absent
-            (matching uv's initial scaffold value).
+            List of dependency strings from `pyproject.toml`, or an empty list
+            if absent.
         """
-        return self.load().get("project", {}).get("version", "0.1.0")
+        return self.load().get("project", {}).get("dependencies", [])
 
-    def project_description(self) -> str:
-        """Read the project description from `pyproject.toml`.
+    def dev_dependencies(self) -> list[str]:
+        """Read development dependencies from `pyproject.toml`.
 
         Returns:
-            Description string from `pyproject.toml`. Defaults to uv's initial
-            scaffold value, `"Add your description here"`, if absent.
+            List of dependency strings from `dependency-groups.dev`, or an empty
+            list if that section is absent.
         """
-        return (
-            self.load()
-            .get("project", {})
-            .get("description", "Add your description here")
-        )
+        return self.load().get("dependency-groups", {}).get("dev", [])
 
     def merge_additional_dependencies(
         self,
@@ -202,23 +198,44 @@ class PyprojectConfigFile(TOMLConfigFile):
         )
         return sorted({*dependencies, *additional})
 
-    def dependencies(self) -> list[str]:
-        """Read runtime dependencies from `pyproject.toml`.
+    def project_description(self) -> str:
+        """Read the project description from `pyproject.toml`.
 
         Returns:
-            List of dependency strings from `pyproject.toml`, or an empty list
-            if absent.
+            Description string from `pyproject.toml`. Defaults to uv's initial
+            scaffold value, `"Add your description here"`, if absent.
         """
-        return self.load().get("project", {}).get("dependencies", [])
+        return (
+            self.load()
+            .get("project", {})
+            .get("description", "Add your description here")
+        )
 
-    def dev_dependencies(self) -> list[str]:
-        """Read development dependencies from `pyproject.toml`.
+    def project_version(self) -> str:
+        """Read the project version from `pyproject.toml`.
 
         Returns:
-            List of dependency strings from `dependency-groups.dev`, or an empty
-            list if that section is absent.
+            Version string from `pyproject.toml`, or `"0.1.0"` if absent
+            (matching uv's initial scaffold value).
         """
-        return self.load().get("dependency-groups", {}).get("dev", [])
+        return self.load().get("project", {}).get("version", "0.1.0")
+
+    def first_supported_python_version(self) -> Version:
+        """Return the minimum Python version required by the project.
+
+        Returns:
+            Lowest inclusive Python version supported by the project.
+
+        Raises:
+            LookupError: If the requires-python constraint has no lower bound.
+        """
+        constraint = self.requires_python()
+        version_constraint = VersionConstraint(constraint)
+        lower = version_constraint.find_lower_inclusive()
+        if lower is None:
+            msg = "lower bound for python version is required"
+            raise LookupError(msg)
+        return lower
 
     def latest_possible_python_version(
         self, level: Literal["major", "minor", "micro"] = "minor"
@@ -242,23 +259,6 @@ class PyprojectConfigFile(TOMLConfigFile):
         )
         return adjust_version_to_level(version, level)
 
-    def first_supported_python_version(self) -> Version:
-        """Return the minimum Python version required by the project.
-
-        Returns:
-            Lowest inclusive Python version supported by the project.
-
-        Raises:
-            LookupError: If the requires-python constraint has no lower bound.
-        """
-        constraint = self.requires_python()
-        version_constraint = VersionConstraint(constraint)
-        lower = version_constraint.find_lower_inclusive()
-        if lower is None:
-            msg = "lower bound for python version is required"
-            raise LookupError(msg)
-        return lower
-
     def supported_python_versions(self) -> tuple[Version, ...]:
         """Return all Python minor versions within the requires-python range.
 
@@ -277,24 +277,6 @@ class PyprojectConfigFile(TOMLConfigFile):
         return version_constraint.version_range(
             level="minor",
             upper_default=self.latest_python_version(level="minor"),
-        )
-
-    def requires_python(self) -> str:
-        """Read the requires-python constraint from `pyproject.toml`.
-
-        If the field is absent, defaults to a specifier that matches the
-        currently running Python version (e.g., `">=3.12"` for Python 3.12).
-
-        Returns:
-            PEP 440 version specifier string (e.g., `">=3.13"`).
-        """
-        current_version = adjust_version_to_level(
-            Version(platform.python_version()), level="minor"
-        )
-        return (
-            self.load()
-            .get("project", {})
-            .get("requires-python", f">={current_version}")
         )
 
     def latest_python_version(
@@ -318,3 +300,21 @@ class PyprojectConfigFile(TOMLConfigFile):
             Latest stable Python version as a string (e.g., `"3.14.4"`).
         """
         return resource_content("LATEST_PYTHON_VERSION", resources)
+
+    def requires_python(self) -> str:
+        """Read the requires-python constraint from `pyproject.toml`.
+
+        If the field is absent, defaults to a specifier that matches the
+        currently running Python version (e.g., `">=3.12"` for Python 3.12).
+
+        Returns:
+            PEP 440 version specifier string (e.g., `">=3.13"`).
+        """
+        current_version = adjust_version_to_level(
+            Version(platform.python_version()), level="minor"
+        )
+        return (
+            self.load()
+            .get("project", {})
+            .get("requires-python", f">={current_version}")
+        )

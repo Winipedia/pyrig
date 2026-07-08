@@ -45,6 +45,18 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             **self.on_schedule(cron=" ".join(map(str, self.cron_schedule()))),
         }
 
+    def jobs(self) -> dict[str, Any]:
+        """Return all jobs for the health check workflow.
+
+        Returns:
+            Dict mapping job IDs to their configurations.
+        """
+        jobs: dict[str, Any] = {}
+        jobs.update(self.job_health_checks())
+        jobs.update(self.job_matrix_health_checks())
+        jobs.update(self.job_health_check())
+        return jobs
+
     def cron_schedule(
         self,
     ) -> tuple[
@@ -65,18 +77,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return 0, 1, "*", "*", "*"
 
-    def jobs(self) -> dict[str, Any]:
-        """Return all jobs for the health check workflow.
-
-        Returns:
-            Dict mapping job IDs to their configurations.
-        """
-        jobs: dict[str, Any] = {}
-        jobs.update(self.job_health_checks())
-        jobs.update(self.job_matrix_health_checks())
-        jobs.update(self.job_health_check())
-        return jobs
-
     def job_health_check(self) -> dict[str, Any]:
         """Return the fan-in aggregation job.
 
@@ -96,6 +96,20 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_aggregate_jobs(),
         )
 
+    def job_health_checks(self) -> dict[str, Any]:
+        """Return the single-runner job that applies all code quality checks.
+
+        Runs on a single Ubuntu runner (no matrix) and covers pre-commit hooks
+        and dependency auditing.
+
+        Returns:
+            Job configuration with steps for the full quality check sequence.
+        """
+        return self.job(
+            self.job_health_checks,
+            steps=self.steps_health_checks(),
+        )
+
     def job_matrix_health_checks(self) -> dict[str, Any]:
         """Return the matrix job that runs the test suite across environments.
 
@@ -113,20 +127,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             steps=self.steps_matrix_health_checks(),
         )
 
-    def job_health_checks(self) -> dict[str, Any]:
-        """Return the single-runner job that applies all code quality checks.
-
-        Runs on a single Ubuntu runner (no matrix) and covers pre-commit hooks
-        and dependency auditing.
-
-        Returns:
-            Job configuration with steps for the full quality check sequence.
-        """
-        return self.job(
-            self.job_health_checks,
-            steps=self.steps_health_checks(),
-        )
-
     def steps_aggregate_jobs(self) -> list[dict[str, Any]]:
         """Return the steps for the fan-in aggregation job.
 
@@ -135,21 +135,6 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
         """
         return [
             self.step_aggregate_jobs(),
-        ]
-
-    def steps_matrix_health_checks(self) -> list[dict[str, Any]]:
-        """Return the steps for the matrix test job.
-
-        Returns:
-            Steps that set up the environment for the current matrix OS and
-            Python version and run the test suite.
-        """
-        return [
-            *self.steps_core_matrix_setup(
-                python_version=self.insert_matrix_python_version(),
-                update_dependencies=True,
-            ),
-            self.step_run_tests(),
         ]
 
     def steps_health_checks(self) -> list[dict[str, Any]]:
@@ -167,25 +152,37 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_run_dependency_audit(),
         ]
 
-    def step_run_tests(
+    def steps_matrix_health_checks(self) -> list[dict[str, Any]]:
+        """Return the steps for the matrix test job.
+
+        Returns:
+            Steps that set up the environment for the current matrix OS and
+            Python version and run the test suite.
+        """
+        return [
+            *self.steps_core_matrix_setup(
+                python_version=self.insert_matrix_python_version(),
+                update_dependencies=True,
+            ),
+            self.step_run_tests(),
+        ]
+
+    def step_aggregate_jobs(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step that runs the test suite with pytest.
+        """Build a no-op step that only echoes a message.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs `uv run pytest`.
+            Step that echoes an aggregation message.
         """
-        if step is None:
-            step = {}
-        run = str(PackageManager.I.run_args(*ProjectTester.I.test_args()))
         return self.step(
-            self.step_run_tests,
-            run=run,
+            self.step_aggregate_jobs,
+            run="echo 'Aggregating jobs into one job.'",
             step=step,
         )
 
@@ -218,6 +215,28 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             step=step,
         )
 
+    def step_run_dependency_audit(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build a step that audits dependencies for known vulnerabilities.
+
+        Runs `pip-audit` via uv against the installed environment to detect
+        CVEs in direct and transitive dependencies.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            Step that runs `uv run pip-audit`.
+        """
+        return self.step(
+            self.step_run_dependency_audit,
+            run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
+            step=step,
+        )
+
     def step_run_pre_commit_hooks(
         self,
         *,
@@ -241,43 +260,24 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             step=step,
         )
 
-    def step_run_dependency_audit(
+    def step_run_tests(
         self,
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step that audits dependencies for known vulnerabilities.
-
-        Runs `pip-audit` via uv against the installed environment to detect
-        CVEs in direct and transitive dependencies.
+        """Build a step that runs the test suite with pytest.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step that runs `uv run pip-audit`.
+            Step that runs `uv run pytest`.
         """
+        if step is None:
+            step = {}
+        run = str(PackageManager.I.run_args(*ProjectTester.I.test_args()))
         return self.step(
-            self.step_run_dependency_audit,
-            run=str(PackageManager.I.run_args(*DependencyAuditor.I.audit_args())),
-            step=step,
-        )
-
-    def step_aggregate_jobs(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build a no-op step that only echoes a message.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            Step that echoes an aggregation message.
-        """
-        return self.step(
-            self.step_aggregate_jobs,
-            run="echo 'Aggregating jobs into one job.'",
+            self.step_run_tests,
+            run=run,
             step=step,
         )

@@ -28,24 +28,6 @@ class BadgesConfigFile(MarkdownConfigFile):
     possible, preserving any user additions.
     """
 
-    def merge_configs(self) -> list[Any]:
-        """Return merged file content with current badge URLs and project description.
-
-        Prefers an in-place update of the existing content to preserve any user
-        additions, falling back to the default merge strategy when the in-place
-        update does not yield all required content.
-
-        Returns:
-            Merged lines with current badge URLs and project description. User
-            additions are preserved when the in-place update is sufficient.
-        """
-        updated_content = self.replace_description(self.read_content())
-        updated_content = self.replace_badges(updated_content)
-        if self.all_lines_in_content(lines=self.configs(), content=updated_content):
-            return self.split_lines(updated_content)
-
-        return super().merge_configs()
-
     def lines(self) -> list[str]:
         """Return the project header: title, grouped badge rows, and description.
 
@@ -74,6 +56,24 @@ class BadgesConfigFile(MarkdownConfigFile):
             "---",
             "",
         ]
+
+    def merge_configs(self) -> list[Any]:
+        """Return merged file content with current badge URLs and project description.
+
+        Prefers an in-place update of the existing content to preserve any user
+        additions, falling back to the default merge strategy when the in-place
+        update does not yield all required content.
+
+        Returns:
+            Merged lines with current badge URLs and project description. User
+            additions are preserved when the in-place update is sufficient.
+        """
+        updated_content = self.replace_description(self.read_content())
+        updated_content = self.replace_badges(updated_content)
+        if self.all_lines_in_content(lines=self.configs(), content=updated_content):
+            return self.split_lines(updated_content)
+
+        return super().merge_configs()
 
     def replace_description(self, content: str) -> str:
         """Replace the description block with the current one from pyproject.toml.

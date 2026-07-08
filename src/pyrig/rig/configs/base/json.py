@@ -19,6 +19,15 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
     Subclasses must implement `parent_path()`, `stem()`, and `_configs()`.
     """
 
+    def _dump(self, configs: ConfigT) -> None:
+        """Write configuration to the JSON file with 4-space indentation.
+
+        Args:
+            configs: Configuration dict or list to serialize and write.
+        """
+        with open_path_with_utf8(self.path(), mode="w") as f:
+            json.dump(configs, f, indent=4)
+
     def _load(self) -> ConfigT:
         """Read and parse the JSON file from disk.
 
@@ -28,15 +37,6 @@ class JSONConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         path = self.path()
         data: ConfigT = json.loads(read_text_utf8(path))
         return data
-
-    def _dump(self, configs: ConfigT) -> None:
-        """Write configuration to the JSON file with 4-space indentation.
-
-        Args:
-            configs: Configuration dict or list to serialize and write.
-        """
-        with open_path_with_utf8(self.path(), mode="w") as f:
-            json.dump(configs, f, indent=4)
 
     def extension(self) -> str:
         """Return the file extension for JSON files.

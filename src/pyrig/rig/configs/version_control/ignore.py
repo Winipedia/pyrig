@@ -19,20 +19,20 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
     `.scratch.py`). Additions already present in the baseline are not duplicated.
     """
 
-    def stem(self) -> str:
-        """Return `'.gitignore'`, the full filename with no extension to split off."""
-        return ".gitignore"
-
     def parent_path(self) -> Path:
         """Return the project root as the parent directory."""
         return Path()
 
-    def extension_separator(self) -> str:
-        """Return an empty string, so no trailing dot is appended to `.gitignore`."""
-        return ""
+    def stem(self) -> str:
+        """Return `'.gitignore'`, the full filename with no extension to split off."""
+        return ".gitignore"
 
     def extension(self) -> str:
         """Return an empty string, since `.gitignore` has no extension."""
+        return ""
+
+    def extension_separator(self) -> str:
+        """Return an empty string, so no trailing dot is appended to `.gitignore`."""
         return ""
 
     def lines(self) -> list[str]:
@@ -49,10 +49,6 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             line for line in self.additional_ignore_lines() if line not in standard_set
         ]
         return [*standard, *additional, ""]
-
-    def standard_ignore_lines(self) -> list[str]:
-        """Return the Python gitignore baseline, split into individual lines."""
-        return self.split_lines(self.standard_ignore_text())
 
     def additional_ignore_lines(self) -> list[str]:
         """Return the pyrig-specific lines to add to the gitignore baseline.
@@ -71,6 +67,10 @@ class VersionControllerIgnoreConfigFile(StringConfigFile):
             *Tool.subclasses_version_control_ignore_paths(),
             *config_file_paths,
         ]
+
+    def standard_ignore_lines(self) -> list[str]:
+        """Return the Python gitignore baseline, split into individual lines."""
+        return self.split_lines(self.standard_ignore_text())
 
     def standard_ignore_text(self) -> str:
         """Return GitHub's canonical Python gitignore template as a single string."""
