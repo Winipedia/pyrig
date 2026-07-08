@@ -32,20 +32,16 @@ def init() -> None:
     init_project()
 
 
-def sync() -> None:
-    """Reconcile all pyrig-managed project structure into its correct state.
+def rmpyc() -> None:
+    """Remove all `__pycache__` directories from the project's source and test trees.
 
-    Safe to run repeatedly: existing user content is preserved, and only what
-    is missing or incorrect is changed. Run it after adding source code,
-    pulling changes, or adding a new pyrig dependency.
-
-    Exits with code 1 if any file was created or updated, 0 if everything was
-    already in sync. This makes it suitable as a git hook: auto-fixes are
-    applied, the hook fails, the developer stages the changes and recommits.
+    Useful for clearing stale bytecode that may cause import errors or
+    test-isolation issues after refactors, branch switches, or moving files
+    around. Safe to run repeatedly.
     """
-    from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
+    from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
 
-    synchronize_project()
+    remove_pycache()
 
 
 def scratch() -> None:
@@ -68,13 +64,17 @@ def scratch() -> None:
     run_scratch_file()
 
 
-def rmpyc() -> None:
-    """Remove all `__pycache__` directories from the project's source and test trees.
+def sync() -> None:
+    """Reconcile all pyrig-managed project structure into its correct state.
 
-    Useful for clearing stale bytecode that may cause import errors or
-    test-isolation issues after refactors, branch switches, or moving files
-    around. Safe to run repeatedly.
+    Safe to run repeatedly: existing user content is preserved, and only what
+    is missing or incorrect is changed. Run it after adding source code,
+    pulling changes, or adding a new pyrig dependency.
+
+    Exits with code 1 if any file was created or updated, 0 if everything was
+    already in sync. This makes it suitable as a git hook: auto-fixes are
+    applied, the hook fails, the developer stages the changes and recommits.
     """
-    from pyrig.rig.cli.commands.remove_pycache import remove_pycache  # noqa: PLC0415
+    from pyrig.rig.cli.commands.synchronize import synchronize_project  # noqa: PLC0415
 
-    remove_pycache()
+    synchronize_project()

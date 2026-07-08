@@ -36,6 +36,11 @@ def module_content(module: ModuleType) -> str:
     return read_text_utf8(path)
 
 
+def module_has_docstring(module: ModuleType) -> bool:
+    """Return whether the module defines a docstring."""
+    return module.__doc__ is not None
+
+
 def reimport_module(module: ModuleType) -> ModuleType:
     """Re-import a module, bypassing the import cache.
 
@@ -125,8 +130,3 @@ def import_module_from_file(path: Path, name: str) -> ModuleType:
         del sys.modules[name]
         raise
     return module
-
-
-def module_has_docstring(module: ModuleType) -> bool:
-    """Return whether the module defines a docstring."""
-    return module.__doc__ is not None

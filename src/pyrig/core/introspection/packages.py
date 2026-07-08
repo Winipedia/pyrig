@@ -9,6 +9,36 @@ from pyrig_runtime.core.introspection.packages import walk_package
 from pyrig.core.strings import write_text_utf8
 
 
+def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
+    """Yield all non-package modules found anywhere in a package hierarchy.
+
+    Each module is imported as a side effect of iteration.
+
+    Args:
+        package: Root package to search.
+
+    Yields:
+        A non-package module found anywhere within `package`.
+    """
+    return (module for module, is_pkg in walk_package(package) if not is_pkg)
+
+
+def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:
+    """Create `__init__.py` files in the given directories.
+
+    Skips any directory that already has an `__init__.py`.
+
+    Args:
+        paths: Paths of directories to initialize as packages.
+        content: Content to write into each `__init__.py` file.
+
+    Returns:
+        Tuple of paths where `__init__.py` files were created.
+        Empty if all already existed.
+    """
+    return tuple(path for path in paths if make_init_file(path, content))
+
+
 def make_package_dir(path: Path, root: Path, content: str) -> None:
     """Create a directory tree and mark it as packages with `__init__.py` files.
 
@@ -27,22 +57,6 @@ def make_package_dir(path: Path, root: Path, content: str) -> None:
     path.mkdir(parents=True, exist_ok=True)
     for p in (relative, *relative.parents):
         make_init_file(root / p, content=content)
-
-
-def make_init_files(paths: Iterable[Path], content: str) -> tuple[Path, ...]:
-    """Create `__init__.py` files in the given directories.
-
-    Skips any directory that already has an `__init__.py`.
-
-    Args:
-        paths: Paths of directories to initialize as packages.
-        content: Content to write into each `__init__.py` file.
-
-    Returns:
-        Tuple of paths where `__init__.py` files were created.
-        Empty if all already existed.
-    """
-    return tuple(path for path in paths if make_init_file(path, content))
 
 
 def make_init_file(path: Path, content: str) -> bool:
@@ -64,17 +78,3 @@ def make_init_file(path: Path, content: str) -> bool:
 
     write_text_utf8(path, content)
     return True
-
-
-def discover_modules(package: ModuleType) -> Iterator[ModuleType]:
-    """Yield all non-package modules found anywhere in a package hierarchy.
-
-    Each module is imported as a side effect of iteration.
-
-    Args:
-        package: Root package to search.
-
-    Yields:
-        A non-package module found anywhere within `package`.
-    """
-    return (module for module, is_pkg in walk_package(package) if not is_pkg)
