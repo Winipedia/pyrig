@@ -71,9 +71,13 @@ class PackageManager(Tool):
         """Return `Path("src")`."""
         return Path("src")
 
-    def lock_file(self) -> Path:
-        """Return `Path("uv.lock")`, relative to the project root."""
-        return Path("uv.lock")
+    def build_backend(self) -> str:
+        """Return `"uv_build"` for the `[build-system].build-backend` field.
+
+        Override this alongside `build_system_requires` if the project uses a
+        different build back-end.
+        """
+        return "uv_build"
 
     def build_system_requires(self) -> list[str]:
         """Return `["uv_build"]` for the `[build-system].requires` field.
@@ -84,13 +88,9 @@ class PackageManager(Tool):
         """
         return ["uv_build"]
 
-    def build_backend(self) -> str:
-        """Return `"uv_build"` for the `[build-system].build-backend` field.
-
-        Override this alongside `build_system_requires` if the project uses a
-        different build back-end.
-        """
-        return "uv_build"
+    def lock_file(self) -> Path:
+        """Return `Path("uv.lock")`, relative to the project root."""
+        return Path("uv.lock")
 
     def no_auto_install_env_var(self) -> str:
         """Return the name of the env var that disables uv's implicit auto-sync."""
