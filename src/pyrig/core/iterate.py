@@ -144,7 +144,7 @@ def nested_structure_is_subset(  # noqa: C901
 
     elif isinstance(subset, list) and isinstance(superset, list):
         iterable = enumerate(subset)
-        on_false_action = on_list_mismatch
+        on_false_action: Callable[[Any, Any, Any], Any] | None = on_list_mismatch
 
         def get_actual(key_or_index: Any) -> Any:
             """Return the superset element that matches `subset[key_or_index]`.
@@ -163,31 +163,33 @@ def nested_structure_is_subset(  # noqa: C901
 
     all_good = True
     for key_or_index, value in iterable:
-        actual_value = get_actual(key_or_index)
-        if not nested_structure_is_subset(
-            value, actual_value, on_dict_mismatch, on_list_mismatch
+        if nested_structure_is_subset(
+            value, get_actual(key_or_index), on_dict_mismatch, on_list_mismatch
         ):
-            all_good = False
-            if on_false_action is not None:
-                on_false_action(subset, superset, key_or_index)  # ty: ignore[invalid-argument-type]
-                all_good = nested_structure_is_subset(subset, superset)
+            continue
 
-                if not all_good:
-                    logger.debug(
-                        """
-                        -------------------------------------------------------------------------------
-                        Subset:
-                        %s
-                        -------------------
-                        is not a subset of
-                        -------------------
-                        Superset:
-                        %s
-                        -------------------------------------------------------------------------------
-                        """,
-                        subset,
-                        superset,
-                    )
+        if on_false_action is None:
+            # Read-only containment check: one mismatch settles the answer.
+            return False
+
+        on_false_action(subset, superset, key_or_index)
+        if not nested_structure_is_subset(value, get_actual(key_or_index)):
+            all_good = False
+            logger.debug(
+                """
+                -------------------------------------------------------------------------------
+                Subset:
+                %s
+                -------------------
+                is not a subset of
+                -------------------
+                Superset:
+                %s
+                -------------------------------------------------------------------------------
+                """,
+                subset,
+                superset,
+            )
 
     return all_good
 
@@ -212,7 +214,6 @@ def add_missing_dict_val(
     """
     expected_val: Any = expected_dict[key]
     actual_val = actual_dict.get(key)
-    actual_dict.setdefault(key, expected_val)
 
     if isinstance(expected_val, dict) and isinstance(actual_val, dict):
         actual_val.update(expected_val)
