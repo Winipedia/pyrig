@@ -4,6 +4,32 @@ from pathlib import Path
 from types import ModuleType
 
 
+def module_name_as_path(name: str) -> Path:
+    """Convert a dotted module name to a relative `.py` file path.
+
+    Args:
+        name: Dotted Python module name (e.g., `"package.subpackage.module"`).
+
+    Returns:
+        Relative path to the module's source file
+        (e.g., `Path("package/subpackage/module.py")`).
+    """
+    return package_name_as_path(name).with_suffix(".py")
+
+
+def package_name_as_path(name: str) -> Path:
+    """Convert a dotted package name to a relative directory path.
+
+    Args:
+        name: Dotted Python package name (e.g., `"package.subpackage"`).
+
+    Returns:
+        Relative path to the package directory
+        (e.g., `Path("package/subpackage")`).
+    """
+    return Path(*name.split("."))
+
+
 def package_dir_path(package: ModuleType) -> Path:
     """Return the directory of an imported package.
 
@@ -37,32 +63,6 @@ def module_file_path(module: ModuleType) -> Path:
         msg = f"module {module} has no __file__"
         raise AttributeError(msg)
     return Path(file)
-
-
-def module_name_as_path(name: str) -> Path:
-    """Convert a dotted module name to a relative `.py` file path.
-
-    Args:
-        name: Dotted Python module name (e.g., `"package.subpackage.module"`).
-
-    Returns:
-        Relative path to the module's source file
-        (e.g., `Path("package/subpackage/module.py")`).
-    """
-    return package_name_as_path(name).with_suffix(".py")
-
-
-def package_name_as_path(name: str) -> Path:
-    """Convert a dotted package name to a relative directory path.
-
-    Args:
-        name: Dotted Python package name (e.g., `"package.subpackage"`).
-
-    Returns:
-        Relative path to the package directory
-        (e.g., `Path("package/subpackage")`).
-    """
-    return Path(*name.split("."))
 
 
 def path_as_module_name(path: Path) -> str:

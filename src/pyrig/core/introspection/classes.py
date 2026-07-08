@@ -55,27 +55,6 @@ def discard_parent_methods(
             yield method
 
 
-def module_classes(module: ModuleType) -> Iterator[type]:
-    """Extract all classes defined directly in a module, excluding imported ones.
-
-    Classes backed by C or Rust extensions (such as `cryptography`'s
-    `AESGCM`) whose module origin cannot be resolved are silently excluded.
-
-    Args:
-        module: Module to inspect.
-
-    Yields:
-        Class types defined directly in `module`.
-    """
-    for _, obj in obj_members(module):
-        unwrapped_obj = unwrap_obj(obj)
-        if (
-            inspect.isclass(unwrapped_obj)
-            and inspect.getmodule(unwrapped_obj) is module
-        ):
-            yield obj
-
-
 def generate_class[T](
     name: str,
     bases: tuple[type[T], ...],
@@ -101,3 +80,24 @@ def generate_class[T](
         namespace[method.__name__] = method
     cls = type(name, bases, namespace)
     return cast("type[T]", cls)
+
+
+def module_classes(module: ModuleType) -> Iterator[type]:
+    """Extract all classes defined directly in a module, excluding imported ones.
+
+    Classes backed by C or Rust extensions (such as `cryptography`'s
+    `AESGCM`) whose module origin cannot be resolved are silently excluded.
+
+    Args:
+        module: Module to inspect.
+
+    Yields:
+        Class types defined directly in `module`.
+    """
+    for _, obj in obj_members(module):
+        unwrapped_obj = unwrap_obj(obj)
+        if (
+            inspect.isclass(unwrapped_obj)
+            and inspect.getmodule(unwrapped_obj) is module
+        ):
+            yield obj
