@@ -62,60 +62,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             The source module to mirror.
         """
 
-    @classmethod
-    def discovery_module(cls) -> ModuleType:
-        """Return the `pyrig.rig.tests` package, scoping discovery to mirror tests.
-
-        Returns:
-            The `pyrig.rig.tests` package module.
-        """
-        return tests
-
-    @classmethod
-    def concrete_subclasses(cls) -> Iterator[type[Self]]:
-        """Yield a dynamically generated subclass for every module in the project.
-
-        Yields:
-            One dynamically created subclass per source module.
-        """
-        return cls.generate_subclasses(cls.mirror_modules())
-
-    def stem(self) -> str:
-        """Return the test file's base name without its extension.
-
-        Returns:
-            Filename stem (e.g., `"test_utils"`).
-        """
-        return self.test_path().stem
-
-    def parent_path(self) -> Path:
-        """Return the directory where the test file lives.
-
-        Returns:
-            Parent directory of the test file path.
-        """
-        return self.test_path().parent
-
-    def package_root(self) -> Path:
-        """Return the root directory of the tests package."""
-        return ProjectTester.I.package_root()
-
-    def lines(self) -> list[Any]:
-        """Return the complete test module content as a list of lines.
-
-        Returns:
-            All lines of the test module source, ready to be written to disk.
-        """
-        return self.split_lines(self.test_module_content_with_skeletons())
-
-    def should_override_content(self) -> bool:
-        """Check whether existing file content should be discarded on dump.
-
-        Returns:
-            Always `True`.
-        """
-        return True
-
     def create_file(self) -> None:
         """Create the test file on disk and register it in `sys.modules`."""
         super().create_file()
@@ -134,6 +80,14 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             or any(self.untested_class_and_method_names())
         )
 
+    def lines(self) -> list[Any]:
+        """Return the complete test module content as a list of lines.
+
+        Returns:
+            All lines of the test module source, ready to be written to disk.
+        """
+        return self.split_lines(self.test_module_content_with_skeletons())
+
     def merge_configs(self) -> list[Any]:
         """Return the full test module content, already merged with existing content.
 
@@ -141,6 +95,122 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             The complete test module lines, ready to write to disk.
         """
         return self.configs()
+
+    def package_root(self) -> Path:
+        """Return the root directory of the tests package."""
+        return ProjectTester.I.package_root()
+
+    def parent_path(self) -> Path:
+        """Return the directory where the test file lives.
+
+        Returns:
+            Parent directory of the test file path.
+        """
+        return self.test_path().parent
+
+    def should_override_content(self) -> bool:
+        """Check whether existing file content should be discarded on dump.
+
+        Returns:
+            Always `True`.
+        """
+        return True
+
+    def stem(self) -> str:
+        """Return the test file's base name without its extension.
+
+        Returns:
+            Filename stem (e.g., `"test_utils"`).
+        """
+        return self.test_path().stem
+
+    @classmethod
+    def concrete_subclasses(cls) -> Iterator[type[Self]]:
+        """Yield a dynamically generated subclass for every module in the project.
+
+        Yields:
+            One dynamically created subclass per source module.
+        """
+        return cls.generate_subclasses(cls.mirror_modules())
+
+    @classmethod
+    def discovery_module(cls) -> ModuleType:
+        """Return the `pyrig.rig.tests` package, scoping discovery to mirror tests.
+
+        Returns:
+            The `pyrig.rig.tests` package module.
+        """
+        return tests
+
+    @classmethod
+    def generate_subclass(cls, module: ModuleType) -> type[Self]:
+        """Dynamically create a config subclass bound to a specific source module.
+
+        The new subclass inherits from `cls` and implements `mirror_module` to
+        return `module`. Its class name is `cls`'s name prefixed with the last
+        component of `module`'s dotted name, converted from snake_case to
+        PascalCase.
+
+        Args:
+            module: Source module that the new subclass will create tests for.
+
+        Returns:
+            Dynamically created subclass configured for the given module.
+
+        Example:
+            Given a module named `myproject.utils`, calling this on
+            `MirrorTestConfigFile` produces a subclass named
+            `"UtilsMirrorTestConfigFile"`.
+        """
+        test_cls_name = (
+            reformat_name(
+                leaf_module_name(module),
+                split_on="_",
+                join_on="",
+                capitalize=True,
+            )
+            + cls.__name__
+        )
+
+        def mirror_module(_self: Self) -> ModuleType:
+            """Return the source module captured at subclass creation time."""
+            return module
+
+        return generate_class(
+            name=test_cls_name,
+            bases=(cls,),
+            methods=(mirror_module,),
+        )
+
+    @classmethod
+    def generate_subclasses(cls, modules: Iterable[ModuleType]) -> Iterator[type[Self]]:
+        """Yield a dynamically created config subclass for each module.
+
+        Args:
+            modules: Source modules to create test config subclasses for.
+
+        Yields:
+            One subclass per module, in input order.
+        """
+        return (cls.generate_subclass(m) for m in modules)
+
+    @classmethod
+    def mirror_modules(cls) -> Iterator[ModuleType]:
+        """Yield every module in the project's source package.
+
+        Yields:
+            Each module in the package declared by the active `PackageManager`.
+        """
+        return discover_modules(import_module(PackageManager.I.package_name()))
+
+    def test_path(self) -> Path:
+        """Return the filesystem path of the test module file.
+
+        Returns:
+            Path to the test file, relative to the project root
+            (e.g., `Path("tests/test_package/test_mod.py")`).
+        """
+        return self.source_root() / module_name_as_path(self.test_module_name())
 
     def test_module_name(self) -> str:
         """Return the fully qualified import name of the test module.
@@ -158,15 +228,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
                 for part in self.mirror_module().__name__.split(".")
             ]
         )
-
-    def test_path(self) -> Path:
-        """Return the filesystem path of the test module file.
-
-        Returns:
-            Path to the test file, relative to the project root
-            (e.g., `Path("tests/test_package/test_mod.py")`).
-        """
-        return self.source_root() / module_name_as_path(self.test_module_name())
 
     def test_module_content_with_skeletons(self) -> str:
         """Build the complete test module content with skeletons for untested code.
@@ -410,67 +471,6 @@ class {test_class_name}:
         """Test method."""
         raise {NotImplementedError.__name__}
 '''
-
-    @classmethod
-    def generate_subclasses(cls, modules: Iterable[ModuleType]) -> Iterator[type[Self]]:
-        """Yield a dynamically created config subclass for each module.
-
-        Args:
-            modules: Source modules to create test config subclasses for.
-
-        Yields:
-            One subclass per module, in input order.
-        """
-        return (cls.generate_subclass(m) for m in modules)
-
-    @classmethod
-    def generate_subclass(cls, module: ModuleType) -> type[Self]:
-        """Dynamically create a config subclass bound to a specific source module.
-
-        The new subclass inherits from `cls` and implements `mirror_module` to
-        return `module`. Its class name is `cls`'s name prefixed with the last
-        component of `module`'s dotted name, converted from snake_case to
-        PascalCase.
-
-        Args:
-            module: Source module that the new subclass will create tests for.
-
-        Returns:
-            Dynamically created subclass configured for the given module.
-
-        Example:
-            Given a module named `myproject.utils`, calling this on
-            `MirrorTestConfigFile` produces a subclass named
-            `"UtilsMirrorTestConfigFile"`.
-        """
-        test_cls_name = (
-            reformat_name(
-                leaf_module_name(module),
-                split_on="_",
-                join_on="",
-                capitalize=True,
-            )
-            + cls.__name__
-        )
-
-        def mirror_module(_self: Self) -> ModuleType:
-            """Return the source module captured at subclass creation time."""
-            return module
-
-        return generate_class(
-            name=test_cls_name,
-            bases=(cls,),
-            methods=(mirror_module,),
-        )
-
-    @classmethod
-    def mirror_modules(cls) -> Iterator[ModuleType]:
-        """Yield every module in the project's source package.
-
-        Yields:
-            Each module in the package declared by the active `PackageManager`.
-        """
-        return discover_modules(import_module(PackageManager.I.package_name()))
 
     def test_func_name(self, func: FunctionType | MethodType) -> str:
         """Return the expected test function name for a given source function.

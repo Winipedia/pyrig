@@ -21,9 +21,9 @@ class ProgrammingLanguage(Tool):
     hard-code language-specific strings.
     """
 
-    def name(self) -> str:
-        """Return `"python"`."""
-        return "python"
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return `()`, since Python is the runtime and not a dev dependency."""
+        return ()
 
     def group(self) -> str:
         """Return `Group.PROJECT_INFO`."""
@@ -37,34 +37,13 @@ class ProgrammingLanguage(Tool):
         """Return the URL of the official Python website."""
         return "https://www.python.org"
 
+    def name(self) -> str:
+        """Return `"python"`."""
+        return "python"
+
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `("__pycache__/",)`."""
         return ("__pycache__/",)
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return `()`, since Python is the runtime and not a dev dependency."""
-        return ()
-
-    def no_bytecode_env_var(self) -> str:
-        """Return the name of the env var that disables `.pyc` bytecode writing."""
-        return "PYTHONDONTWRITEBYTECODE"
-
-    def standard_init_content(self) -> str:
-        """Return the minimal source text for a generated `__init__.py` file."""
-        return '"""Package initialization."""\n'
-
-    def remove_pycache(self) -> None:
-        """Remove all `__pycache__` directories in the project.
-
-        Covers the package root and tests package root at all depths, echoing
-        each removed path to standard output.
-        """
-        roots = (ProjectTester.I.package_root(), PackageManager.I.package_root())
-        for root in roots:
-            for pycache in root.rglob("__pycache__"):
-                if pycache.is_dir():
-                    shutil.rmtree(pycache)
-                    typer.echo(f"Removed {pycache}")
 
     def make_init_files(self) -> tuple[Path, ...]:
         """Create all missing `__init__.py` files in the project.
@@ -111,3 +90,24 @@ class ProgrammingLanguage(Tool):
             if init.exists():
                 continue
             yield p
+
+    def no_bytecode_env_var(self) -> str:
+        """Return the name of the env var that disables `.pyc` bytecode writing."""
+        return "PYTHONDONTWRITEBYTECODE"
+
+    def remove_pycache(self) -> None:
+        """Remove all `__pycache__` directories in the project.
+
+        Covers the package root and tests package root at all depths, echoing
+        each removed path to standard output.
+        """
+        roots = (ProjectTester.I.package_root(), PackageManager.I.package_root())
+        for root in roots:
+            for pycache in root.rglob("__pycache__"):
+                if pycache.is_dir():
+                    shutil.rmtree(pycache)
+                    typer.echo(f"Removed {pycache}")
+
+    def standard_init_content(self) -> str:
+        """Return the minimal source text for a generated `__init__.py` file."""
+        return '"""Package initialization."""\n'

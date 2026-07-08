@@ -7,10 +7,6 @@ from pyrig.rig.tools.base.tool import Group, Tool
 class PythonLinter(Tool):
     """`ruff` command wrapper for linting, auto-fixing, and formatting."""
 
-    def name(self) -> str:
-        """Return `"ruff"`."""
-        return "ruff"
-
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`."""
         return Group.CODE_QUALITY
@@ -23,18 +19,13 @@ class PythonLinter(Tool):
         """Return the URL of the `ruff` project page."""
         return "https://github.com/astral-sh/ruff"
 
+    def name(self) -> str:
+        """Return `"ruff"`."""
+        return "ruff"
+
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `ruff`'s cache directory as the only path to ignore."""
         return (".ruff_cache/",)
-
-    def pydocstyle(self) -> str:
-        """Return `"google"`, the docstring convention this project enforces.
-
-        Note:
-            Other configuration derives its docstring convention setting
-            from this value, so it must stay in sync wherever it is used.
-        """
-        return "google"
 
     def check_fix_args(self, *args: str) -> Args:
         """Build a `ruff check` command with auto-fix enabled.
@@ -68,3 +59,12 @@ class PythonLinter(Tool):
             Args for `ruff format`.
         """
         return self.args("format", *args)
+
+    def pydocstyle(self) -> str:
+        """Return `"google"`, the docstring convention this project enforces.
+
+        Note:
+            Other configuration derives its docstring convention setting
+            from this value, so it must stay in sync wherever it is used.
+        """
+        return "google"

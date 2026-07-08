@@ -20,14 +20,9 @@ class EnvConfigFile(DictConfigFile):
     being overwritten.
     """
 
-    def _load(self) -> dict[str, str | None]:
-        """Refuse to load `.env` content.
-
-        Raises:
-            RuntimeError: Always.
-        """
-        msg = f"{self} should never be loaded."
-        raise RuntimeError(msg)
+    def _configs(self) -> dict[str, Any]:
+        """Return an empty dict, since no `.env` content is required."""
+        return {}
 
     def _dump(self, configs: dict[str, Any]) -> None:
         """Refuse to write non-empty content to `.env`; no-op for an empty dict.
@@ -43,21 +38,14 @@ class EnvConfigFile(DictConfigFile):
         msg = f"""cannot dump to {self}"""
         raise RuntimeError(msg)
 
-    def _configs(self) -> dict[str, Any]:
-        """Return an empty dict, since no `.env` content is required."""
-        return {}
+    def _load(self) -> dict[str, str | None]:
+        """Refuse to load `.env` content.
 
-    def version_control_ignored(self) -> bool:
-        """Return `True`; `.env` is always excluded from version control."""
-        return True
-
-    def parent_path(self) -> Path:
-        """Return the project root, relative to the current working directory."""
-        return Path()
-
-    def stem(self) -> str:
-        """Return `".env"`."""
-        return ".env"
+        Raises:
+            RuntimeError: Always.
+        """
+        msg = f"{self} should never be loaded."
+        raise RuntimeError(msg)
 
     def extension(self) -> str:
         """Return `""`, since `.env` has no extension."""
@@ -70,3 +58,15 @@ class EnvConfigFile(DictConfigFile):
     def is_correct(self) -> bool:
         """Return whether `.env` exists, without loading its content."""
         return self.path().exists()
+
+    def parent_path(self) -> Path:
+        """Return the project root, relative to the current working directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return `".env"`."""
+        return ".env"
+
+    def version_control_ignored(self) -> bool:
+        """Return `True`; `.env` is always excluded from version control."""
+        return True

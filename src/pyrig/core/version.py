@@ -6,29 +6,6 @@ from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 
 
-def adjust_version_to_level(
-    version: Version, level: Literal["major", "minor", "micro"]
-) -> Version:
-    """Truncate a version to the specified precision level.
-
-    Args:
-        version: The version to truncate.
-        level: Precision level:
-            - `"major"`: Keep only the major component (e.g., `"3.11.5"` → `"3"`).
-            - `"minor"`: Keep major and minor (e.g., `"3.11.5"` → `"3.11"`).
-            - `"micro"`: Return the version unchanged.
-
-    Returns:
-        The version at the specified precision. Pre-release and other suffixes
-        are stripped for `"major"` and `"minor"`.
-    """
-    if level == "major":
-        return Version(f"{version.major}")
-    if level == "minor":
-        return Version(f"{version.major}.{version.minor}")
-    return version
-
-
 class VersionConstraint:
     """Parsed PEP 440 version constraint with normalized bounds.
 
@@ -205,6 +182,44 @@ class VersionConstraint:
         return tuple(v for v in version_versions if self.sset.contains(v))
 
     @overload
+    def find_lower_inclusive(self, default: str | Version) -> Version: ...
+    @overload
+    def find_lower_inclusive(self, default: None = None) -> Version | None: ...
+    def find_lower_inclusive(
+        self, default: str | Version | None = None
+    ) -> Version | None:
+        """Return the effective inclusive lower bound of the constraint.
+
+        Exclusive lower bounds (`>`) are normalized to inclusive form.
+
+        Args:
+            default: Inclusive lower bound to use when the constraint specifies none.
+                Accepts a version string (e.g., `"3.8"`) or a `Version` object.
+
+        Returns:
+            The inclusive lower bound as a `Version`, or `None` if no lower
+            bound exists and no default was provided.
+
+        Examples:
+            >>> vc = VersionConstraint(">=3.8,<3.12")
+            >>> vc.find_lower_inclusive()
+            <Version('3.8')>
+            >>> vc = VersionConstraint(">3.7.5,<3.12")
+            >>> vc.find_lower_inclusive()
+            <Version('3.7.6')>
+            >>> vc = VersionConstraint("<3.12")
+            >>> vc.find_lower_inclusive() is None
+            True
+            >>> vc.find_lower_inclusive("3.8")
+            <Version('3.8')>
+        """
+        if self.lower_inclusive is not None:
+            return self.lower_inclusive
+        if default is None:
+            return None
+        return Version(str(default))
+
+    @overload
     def find_upper_inclusive(self, default: str | Version) -> Version: ...
     @overload
     def find_upper_inclusive(self, default: None = None) -> Version | None: ...
@@ -259,44 +274,6 @@ class VersionConstraint:
         return Version(f"{major - 1}")
 
     @overload
-    def find_lower_inclusive(self, default: str | Version) -> Version: ...
-    @overload
-    def find_lower_inclusive(self, default: None = None) -> Version | None: ...
-    def find_lower_inclusive(
-        self, default: str | Version | None = None
-    ) -> Version | None:
-        """Return the effective inclusive lower bound of the constraint.
-
-        Exclusive lower bounds (`>`) are normalized to inclusive form.
-
-        Args:
-            default: Inclusive lower bound to use when the constraint specifies none.
-                Accepts a version string (e.g., `"3.8"`) or a `Version` object.
-
-        Returns:
-            The inclusive lower bound as a `Version`, or `None` if no lower
-            bound exists and no default was provided.
-
-        Examples:
-            >>> vc = VersionConstraint(">=3.8,<3.12")
-            >>> vc.find_lower_inclusive()
-            <Version('3.8')>
-            >>> vc = VersionConstraint(">3.7.5,<3.12")
-            >>> vc.find_lower_inclusive()
-            <Version('3.7.6')>
-            >>> vc = VersionConstraint("<3.12")
-            >>> vc.find_lower_inclusive() is None
-            True
-            >>> vc.find_lower_inclusive("3.8")
-            <Version('3.8')>
-        """
-        if self.lower_inclusive is not None:
-            return self.lower_inclusive
-        if default is None:
-            return None
-        return Version(str(default))
-
-    @overload
     def find_upper_exclusive(self, default: str | Version) -> Version: ...
     @overload
     def find_upper_exclusive(self, default: None = None) -> Version | None: ...
@@ -333,3 +310,26 @@ class VersionConstraint:
         if default is None:
             return None
         return Version(str(default))
+
+
+def adjust_version_to_level(
+    version: Version, level: Literal["major", "minor", "micro"]
+) -> Version:
+    """Truncate a version to the specified precision level.
+
+    Args:
+        version: The version to truncate.
+        level: Precision level:
+            - `"major"`: Keep only the major component (e.g., `"3.11.5"` → `"3"`).
+            - `"minor"`: Keep major and minor (e.g., `"3.11.5"` → `"3.11"`).
+            - `"micro"`: Return the version unchanged.
+
+    Returns:
+        The version at the specified precision. Pre-release and other suffixes
+        are stripped for `"major"` and `"minor"`.
+    """
+    if level == "major":
+        return Version(f"{version.major}")
+    if level == "minor":
+        return Version(f"{version.major}.{version.minor}")
+    return version

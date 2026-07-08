@@ -32,10 +32,6 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         ...         return {"name": "My Workflow", "on": ["push", "pull_request"]}
     """
 
-    def _load(self) -> ConfigT:
-        """Read and parse the YAML file from disk, returning a dict or list."""
-        return yaml.safe_load(read_text_utf8(self.path()))
-
     def _dump(self, configs: ConfigT) -> None:
         """Write configuration to the YAML file, preserving key order.
 
@@ -46,6 +42,10 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         """
         with open_path_with_utf8(self.path(), mode="w") as f:
             yaml.safe_dump(configs, f, sort_keys=False, allow_unicode=True)
+
+    def _load(self) -> ConfigT:
+        """Read and parse the YAML file from disk, returning a dict or list."""
+        return yaml.safe_load(read_text_utf8(self.path()))
 
     def extension(self) -> str:
         """Return `"yaml"`, the fixed extension for YAML files."""

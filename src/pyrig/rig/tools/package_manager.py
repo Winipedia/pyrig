@@ -21,9 +21,9 @@ class PackageManager(Tool):
     back-end or project layout.
     """
 
-    def name(self) -> str:
-        """Return `'uv'`."""
-        return "uv"
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return an empty tuple: uv is a system-level tool, not a dev dependency."""
+        return ()
 
     def group(self) -> str:
         """Return `Group.TOOLING`."""
@@ -36,6 +36,10 @@ class PackageManager(Tool):
     def link_url(self) -> str:
         """Return the URL of the uv project page."""
         return "https://github.com/astral-sh/uv"
+
+    def name(self) -> str:
+        """Return `'uv'`."""
+        return "uv"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `(".venv", "dist/")`."""
@@ -91,10 +95,6 @@ class PackageManager(Tool):
     def no_auto_install_env_var(self) -> str:
         """Return the name of the env var that disables uv's implicit auto-sync."""
         return "UV_NO_SYNC"
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return an empty tuple: uv is a system-level tool, not a dev dependency."""
-        return ()
 
     def project_cmd_args(self, *args: str, cmd: FunctionType) -> Args:
         """Construct `Args` for running one of the project's own CLI subcommands.

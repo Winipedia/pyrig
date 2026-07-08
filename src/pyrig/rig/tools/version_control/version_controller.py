@@ -16,9 +16,9 @@ class VersionController(Tool):
     to run or to render as a shell string.
     """
 
-    def name(self) -> str:
-        """Return `'git'` as the executable name."""
-        return "git"
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return an empty tuple; git is a system dependency, not a pip package."""
+        return ()
 
     def group(self) -> str:
         """Return `Group.TOOLING` as the badge category."""
@@ -32,9 +32,21 @@ class VersionController(Tool):
         """Return the URL of the Git homepage."""
         return "https://git-scm.com"
 
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return an empty tuple; git is a system dependency, not a pip package."""
-        return ()
+    def name(self) -> str:
+        """Return `'git'` as the executable name."""
+        return "git"
+
+    @classmethod
+    @cache
+    def repo_owner(cls) -> str:
+        """Return the repository owner.
+
+        The result is cached, so repeated calls incur no subprocess overhead.
+
+        Returns:
+            The repository owner as a string.
+        """
+        return cls()._repo_owner()  # noqa: SLF001
 
     def default_branch(self) -> str:
         """Return `'main'` as the default branch name for new repositories."""
@@ -203,51 +215,6 @@ class VersionController(Tool):
         """
         return self.args("config", *args)
 
-    @classmethod
-    @cache
-    def repo_owner(cls) -> str:
-        """Return the repository owner.
-
-        The result is cached, so repeated calls incur no subprocess overhead.
-
-        Returns:
-            The repository owner as a string.
-        """
-        return cls()._repo_owner()  # noqa: SLF001
-
-    def _repo_owner(self) -> str:
-        """Return the repository owner, falling back to the git user name.
-
-        When no remote origin is configured, falls back to the configured
-        git `user.name`, stripping any spaces from it (with a warning logged)
-        since a repository owner must be URL-safe.
-
-        Returns:
-            The repository owner as a string.
-        """
-        url = self.remote_url(check=False)
-        if not url:
-            owner = self.username()
-            logger.warning(
-                "No remote url found, using username from %s as repository owner: '%s'",
-                self.name(),
-                owner,
-            )
-            if " " in owner:
-                logger.warning(
-                    "Repository owner '%s' contains spaces.",
-                    owner,
-                )
-                owner = owner.replace(" ", "")
-                logger.warning(
-                    "Spaces removed from the owner to ensure URL safety: '%s'",
-                    owner,
-                )
-        else:
-            owner = self.owner_from_remote_url()
-
-        return owner
-
     def owner_from_remote_url(self) -> str:
         """Return the repository owner parsed from the remote origin URL.
 
@@ -314,3 +281,36 @@ class VersionController(Tool):
             subprocess.CalledProcessError: If `user.email` is not configured.
         """
         return self.config_get_user_email_args().run_cached().stdout.strip()
+
+    def _repo_owner(self) -> str:
+        """Return the repository owner, falling back to the git user name.
+
+        When no remote origin is configured, falls back to the configured
+        git `user.name`, stripping any spaces from it (with a warning logged)
+        since a repository owner must be URL-safe.
+
+        Returns:
+            The repository owner as a string.
+        """
+        url = self.remote_url(check=False)
+        if not url:
+            owner = self.username()
+            logger.warning(
+                "No remote url found, using username from %s as repository owner: '%s'",
+                self.name(),
+                owner,
+            )
+            if " " in owner:
+                logger.warning(
+                    "Repository owner '%s' contains spaces.",
+                    owner,
+                )
+                owner = owner.replace(" ", "")
+                logger.warning(
+                    "Spaces removed from the owner to ensure URL safety: '%s'",
+                    owner,
+                )
+        else:
+            owner = self.owner_from_remote_url()
+
+        return owner

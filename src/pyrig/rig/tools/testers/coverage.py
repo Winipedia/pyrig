@@ -12,10 +12,6 @@ class CoverageTester(Tool):
     URL whose label and color reflect the coverage threshold.
     """
 
-    def name(self) -> str:
-        """Return `'pytest-cov'`."""
-        return "pytest-cov"
-
     def group(self) -> str:
         """Return `Group.TESTING`."""
         return Group.TESTING
@@ -28,6 +24,10 @@ class CoverageTester(Tool):
     def link_url(self) -> str:
         """Return the URL of the pytest-cov project page."""
         return "https://github.com/pytest-dev/pytest-cov"
+
+    def name(self) -> str:
+        """Return `'pytest-cov'`."""
+        return "pytest-cov"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `(".coverage",)`."""

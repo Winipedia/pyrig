@@ -16,13 +16,15 @@ class RemoteVersionController(Tool):
     reference them from README and workflow files.
     """
 
-    def name(self) -> str:
-        """Return the tool's name.
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return the dev dependency names required by this tool.
+
+        GitHub is not installed as a Python package, so none are required.
 
         Returns:
-            `'github'`.
+            An empty tuple.
         """
-        return "github"
+        return ()
 
     def group(self) -> str:
         """Return the badge group this tool belongs to.
@@ -53,15 +55,13 @@ class RemoteVersionController(Tool):
         """
         return self.repo_url()
 
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the dev dependency names required by this tool.
-
-        GitHub is not installed as a Python package, so none are required.
+    def name(self) -> str:
+        """Return the tool's name.
 
         Returns:
-            An empty tuple.
+            `'github'`.
         """
-        return ()
+        return "github"
 
     def cicd_badge(self, workflow_name: str, label: str) -> str:
         """Construct a clickable Markdown badge for a GitHub Actions workflow status.

@@ -14,10 +14,6 @@ class ProjectTester(Tool):
     convention distinct from the source package layout.
     """
 
-    def name(self) -> str:
-        """Return `'pytest'`."""
-        return "pytest"
-
     def group(self) -> str:
         """Return `Group.TESTING`."""
         return Group.TESTING
@@ -32,6 +28,10 @@ class ProjectTester(Tool):
         """Return the URL of the pytest project page."""
         return "https://pytest.org"
 
+    def name(self) -> str:
+        """Return `'pytest'`."""
+        return "pytest"
+
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `('.pytest_cache/',)`."""
         return (".pytest_cache/",)
@@ -40,6 +40,10 @@ class ProjectTester(Tool):
         """Return the path to the top-level tests package."""
         return self.source_root() / self.package_name()
 
+    def package_name(self) -> str:
+        """Return `'tests'`, the name of the top-level tests package."""
+        return "tests"
+
     def source_root(self) -> Path:
         """Return the directory the tests package lives directly under.
 
@@ -47,10 +51,6 @@ class ProjectTester(Tool):
         root rather than under a source subdirectory such as `src/`.
         """
         return Path()
-
-    def package_name(self) -> str:
-        """Return `'tests'`, the name of the top-level tests package."""
-        return "tests"
 
     def test_args(self, *args: str) -> Args:
         """Build a pytest command with the given arguments.

@@ -25,24 +25,9 @@ class StringConfigFile(ListConfigFile):
             exact line equality.
         """
 
-    def should_override_content(self) -> bool:
-        """Return whether existing file content should be discarded.
-
-        Defaults to `False`. Override in subclasses that must replace the
-        file's content instead of preserving it.
-
-        Returns:
-            `True` if existing content should be discarded; `False` otherwise.
-        """
-        return False
-
     def _configs(self) -> list[str]:
         """Return the required lines."""
         return self.lines()
-
-    def _load(self) -> list[str]:
-        """Read the file as UTF-8 text and split it into lines."""
-        return self.split_lines(read_text_utf8(self.path()))
 
     def _dump(self, configs: list[str]) -> None:
         """Join the lines and write them to the file as UTF-8 text.
@@ -51,6 +36,23 @@ class StringConfigFile(ListConfigFile):
             configs: Lines to write to the file.
         """
         write_text_utf8(self.path(), self.join_lines(configs))
+
+    def _load(self) -> list[str]:
+        """Read the file as UTF-8 text and split it into lines."""
+        return self.split_lines(read_text_utf8(self.path()))
+
+    def is_correct(self) -> bool:
+        """Check whether the file already contains all required content.
+
+        A required line need not be an exact line of the file; it only has
+        to occur somewhere within the file's text.
+
+        Returns:
+            `True` if every required line is present in the file.
+        """
+        return self.all_lines_in_content(
+            lines=self.configs(), content=self.read_content()
+        )
 
     def merge_configs(self) -> list[Any]:
         """Merge required lines with existing file content.
@@ -67,18 +69,16 @@ class StringConfigFile(ListConfigFile):
             return expected_lines
         return [*expected_lines, *self.load()]
 
-    def is_correct(self) -> bool:
-        """Check whether the file already contains all required content.
+    def should_override_content(self) -> bool:
+        """Return whether existing file content should be discarded.
 
-        A required line need not be an exact line of the file; it only has
-        to occur somewhere within the file's text.
+        Defaults to `False`. Override in subclasses that must replace the
+        file's content instead of preserving it.
 
         Returns:
-            `True` if every required line is present in the file.
+            `True` if existing content should be discarded; `False` otherwise.
         """
-        return self.all_lines_in_content(
-            lines=self.configs(), content=self.read_content()
-        )
+        return False
 
     def all_lines_in_content(self, lines: Iterable[str], content: str) -> bool:
         """Check whether every line is present in the content string.

@@ -11,10 +11,6 @@ class MarkdownLinter(Tool):
     markdown files.
     """
 
-    def name(self) -> str:
-        """Return `'rumdl'`, the executable name for this tool's CLI command."""
-        return "rumdl"
-
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`, the badge group this tool belongs to."""
         return Group.CODE_QUALITY
@@ -26,6 +22,10 @@ class MarkdownLinter(Tool):
     def link_url(self) -> str:
         """Return the URL of the rumdl project page."""
         return "https://github.com/rvben/rumdl"
+
+    def name(self) -> str:
+        """Return `'rumdl'`, the executable name for this tool's CLI command."""
+        return "rumdl"
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `('.rumdl_cache/',)`, rumdl's cache directory."""

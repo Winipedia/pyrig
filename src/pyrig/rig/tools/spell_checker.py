@@ -11,10 +11,6 @@ class SpellChecker(Tool):
     spelling mistakes in source code, comments, and documentation.
     """
 
-    def name(self) -> str:
-        """Return `'typos'`."""
-        return "typos"
-
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`."""
         return Group.CODE_QUALITY
@@ -26,6 +22,10 @@ class SpellChecker(Tool):
     def link_url(self) -> str:
         """Return the URL of the `typos` project page."""
         return "https://github.com/crate-ci/typos"
+
+    def name(self) -> str:
+        """Return `'typos'`."""
+        return "typos"
 
     def check_fix_args(self, *args: str) -> Args:
         """Construct `typos` arguments with auto-fix enabled.

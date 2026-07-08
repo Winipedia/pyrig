@@ -45,14 +45,6 @@ class SecurityConfigFile(MarkdownConfigFile):
     replace or extend the generated template with their own policy.
     """
 
-    def stem(self) -> str:
-        """Return the filename stem `"SECURITY"`."""
-        return "SECURITY"
-
-    def parent_path(self) -> Path:
-        """Return the project root as the parent directory."""
-        return Path()
-
     def is_correct(self) -> bool:
         """Return whether SECURITY.md has non-empty content.
 
@@ -72,6 +64,14 @@ class SecurityConfigFile(MarkdownConfigFile):
             placeholder filled in.
         """
         return self.split_lines(self.template_with_contact_method())
+
+    def parent_path(self) -> Path:
+        """Return the project root as the parent directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return the filename stem `"SECURITY"`."""
+        return "SECURITY"
 
     def template_with_contact_method(self) -> str:
         """Return the security template with the contact placeholder replaced.

@@ -12,10 +12,6 @@ class DependencyAuditor(Tool):
     ignore lists or output formats.
     """
 
-    def name(self) -> str:
-        """Return `"pip-audit"`."""
-        return "pip-audit"
-
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`."""
         return Group.CODE_QUALITY
@@ -27,6 +23,10 @@ class DependencyAuditor(Tool):
     def link_url(self) -> str:
         """Return the URL of the `pip-audit` project page."""
         return "https://github.com/pypa/pip-audit"
+
+    def name(self) -> str:
+        """Return `"pip-audit"`."""
+        return "pip-audit"
 
     def audit_args(self, *args: str) -> Args:
         """Build the `pip-audit` command.

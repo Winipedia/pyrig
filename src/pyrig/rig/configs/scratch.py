@@ -22,24 +22,24 @@ class ScratchConfigFile(PythonConfigFile):
         """Check whether `.scratch.py` exists, ignoring its content."""
         return self.path().exists()
 
-    def version_control_ignored(self) -> bool:
-        """Return `True`; `.scratch.py` is always excluded from version control."""
-        return True
-
-    def stem(self) -> str:
-        """Return `".scratch"`."""
-        return ".scratch"
-
-    def parent_path(self) -> Path:
-        """Return the project root as the parent directory."""
-        return Path()
-
     def lines(self) -> list[str]:
         """Return a one-line module docstring followed by a trailing newline."""
         return [
             '"""This file is for scratch work and is ignored by version control."""',
             "",
         ]
+
+    def parent_path(self) -> Path:
+        """Return the project root as the parent directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return `".scratch"`."""
+        return ".scratch"
+
+    def version_control_ignored(self) -> bool:
+        """Return `True`; `.scratch.py` is always excluded from version control."""
+        return True
 
     def delete_root_main(self) -> None:
         """Delete `main.py` at the project root, if present.

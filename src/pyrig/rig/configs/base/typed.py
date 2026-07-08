@@ -18,16 +18,8 @@ class TypedConfigFile(DictConfigFile):
         - `stem`: Filename stem (typically `"py"` to produce `py.typed`).
     """
 
-    def extension(self) -> str:
-        """Return `"typed"` as the file extension."""
-        return "typed"
-
     def _configs(self) -> dict[str, Any]:
         """Return an empty dict as the expected configuration."""
-        return {}
-
-    def _load(self) -> dict[str, Any]:
-        """Return an empty dict without reading the file from disk."""
         return {}
 
     def _dump(self, configs: dict[str, Any]) -> None:
@@ -43,3 +35,11 @@ class TypedConfigFile(DictConfigFile):
             return
         msg = f"""cannot dump to {self}"""
         raise RuntimeError(msg)
+
+    def _load(self) -> dict[str, Any]:
+        """Return an empty dict without reading the file from disk."""
+        return {}
+
+    def extension(self) -> str:
+        """Return `"typed"` as the file extension."""
+        return "typed"

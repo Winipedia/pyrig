@@ -12,10 +12,6 @@ class SecurityChecker(Tool):
     source code for common security vulnerabilities.
     """
 
-    def name(self) -> str:
-        """Return `'bandit'`."""
-        return "bandit"
-
     def group(self) -> str:
         """Return `Group.CODE_QUALITY`."""
         return Group.CODE_QUALITY
@@ -27,6 +23,10 @@ class SecurityChecker(Tool):
     def link_url(self) -> str:
         """Return the URL of the `bandit` project page."""
         return "https://github.com/PyCQA/bandit"
+
+    def name(self) -> str:
+        """Return `'bandit'`."""
+        return "bandit"
 
     def check_args(self, *args: str) -> Args:
         """Construct `bandit` arguments for a recursive scan of the source package.

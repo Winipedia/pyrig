@@ -51,6 +51,31 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             The module to copy.
         """
 
+    def lines(self) -> list[str]:
+        """Read the source module's file content as a list of lines.
+
+        Returns:
+            Source code of the module split into individual lines.
+        """
+        return self.split_lines(module_content(self.copy_module()))
+
+    def parent_path(self) -> Path:
+        """Return the directory that will contain the copied module file.
+
+        Returns:
+            Directory of the copied module's target path.
+        """
+        return self.module_path().parent
+
+    def stem(self) -> str:
+        """Return the filename stem for the copied module.
+
+        Returns:
+            Leaf component of the source module's dotted name, used as the
+            file stem when writing the copied module.
+        """
+        return leaf_module_name(self.copy_module())
+
     @classmethod
     def generate_subclass(cls, module: ModuleType) -> type[Self]:
         """Dynamically create a named subclass bound to a specific source module.
@@ -96,14 +121,6 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             methods=(copy_module,),
         )
 
-    def parent_path(self) -> Path:
-        """Return the directory that will contain the copied module file.
-
-        Returns:
-            Directory of the copied module's target path.
-        """
-        return self.module_path().parent
-
     def module_path(self) -> Path:
         """Return the target path for the copied module file.
 
@@ -123,20 +140,3 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
                 self.copy_module(), PackageManager.I.package_name()
             )
         )
-
-    def lines(self) -> list[str]:
-        """Read the source module's file content as a list of lines.
-
-        Returns:
-            Source code of the module split into individual lines.
-        """
-        return self.split_lines(module_content(self.copy_module()))
-
-    def stem(self) -> str:
-        """Return the filename stem for the copied module.
-
-        Returns:
-            Leaf component of the source module's dotted name, used as the
-            file stem when writing the copied module.
-        """
-        return leaf_module_name(self.copy_module())

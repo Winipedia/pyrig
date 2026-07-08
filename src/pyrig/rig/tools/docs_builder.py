@@ -11,9 +11,14 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class DocsBuilder(Tool):
     """MkDocs command wrapper with GitHub Pages URL metadata."""
 
-    def name(self) -> str:
-        """Return `'mkdocs'`."""
-        return "mkdocs"
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return `mkdocs` plus the Material, Mermaid, and mkdocstrings packages."""
+        return (
+            *super().dev_dependencies(),
+            "mkdocs-material",
+            "mkdocs-mermaid2-plugin",
+            "mkdocstrings[python]",
+        )
 
     def group(self) -> str:
         """Return `Group.PROJECT_INFO`."""
@@ -27,22 +32,13 @@ class DocsBuilder(Tool):
         """Return the expected GitHub Pages URL for this project."""
         return self.documentation_url()
 
+    def name(self) -> str:
+        """Return `'mkdocs'`."""
+        return "mkdocs"
+
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return the built site output directory, `'/site'`."""
         return ("/site",)
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return `mkdocs` plus the Material, Mermaid, and mkdocstrings packages."""
-        return (
-            *super().dev_dependencies(),
-            "mkdocs-material",
-            "mkdocs-mermaid2-plugin",
-            "mkdocstrings[python]",
-        )
-
-    def docs_dir(self) -> Path:
-        """Return the documentation source directory, `Path('docs')`."""
-        return Path("docs")
 
     def build_args(self, *args: str) -> Args:
         """Construct arguments for the `mkdocs build` command.
@@ -54,6 +50,10 @@ class DocsBuilder(Tool):
             Args for `mkdocs build <args...>`.
         """
         return self.args("build", *args)
+
+    def docs_dir(self) -> Path:
+        """Return the documentation source directory, `Path('docs')`."""
+        return Path("docs")
 
     def documentation_url(self) -> str:
         """Construct the expected GitHub Pages URL for this project.

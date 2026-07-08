@@ -10,16 +10,6 @@ from pyrig.core.subprocesses import Args
 from pyrig.rig import tools
 
 
-class Group:
-    """Named constants for the categories tool badges are grouped under."""
-
-    CI_CD = "ci/cd"
-    CODE_QUALITY = "code-quality"
-    PROJECT_INFO = "project-info"
-    TOOLING = "tooling"
-    TESTING = "testing"
-
-
 class Tool(DependencySubclass):
     """Abstract base for wrapping an external CLI tool's identity and commands.
 
@@ -43,18 +33,6 @@ class Tool(DependencySubclass):
         ('mytool', 'build', '--verbose')
     """
 
-    def __str__(self) -> str:
-        """Add the tool name to the string representation.
-
-        Returns:
-            The class's string representation followed by the tool name in parentheses.
-        """
-        return f"{super().__str__()} ({self.name()})"
-
-    @abstractmethod
-    def name(self) -> str:
-        """Return the executable name for this tool's CLI command (e.g. `"git"`)."""
-
     @abstractmethod
     def group(self) -> str:
         """Return the `Group` constant this tool's badge is categorized under."""
@@ -67,16 +45,9 @@ class Tool(DependencySubclass):
     def link_url(self) -> str:
         """Return the URL this tool's badge should link to."""
 
-    def version_control_ignore_paths(self) -> tuple[str, ...]:
-        """Return paths this tool writes that should be excluded from version control.
-
-        Paths are relative to the project root. Override in a subclass to
-        declare the tool's cache directories or other generated files.
-
-        Returns:
-            File paths to ignore. Empty by default.
-        """
-        return ()
+    @abstractmethod
+    def name(self) -> str:
+        """Return the executable name for this tool's CLI command (e.g. `"git"`)."""
 
     @classmethod
     def discovery_module(cls) -> ModuleType:
@@ -138,6 +109,17 @@ class Tool(DependencySubclass):
             for path in subclass().version_control_ignore_paths()
         )
 
+    def args(self, *args: str) -> Args:
+        """Build an `Args` command starting with this tool's executable name.
+
+        Args:
+            *args: Command arguments to follow the tool name.
+
+        Returns:
+            An `Args` object whose first element is the tool name.
+        """
+        return Args(self.name(), *args)
+
     def badge(self) -> str:
         """Return the Markdown badge string for this tool.
 
@@ -163,13 +145,31 @@ class Tool(DependencySubclass):
         """
         return (self.name(),)
 
-    def args(self, *args: str) -> Args:
-        """Build an `Args` command starting with this tool's executable name.
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return paths this tool writes that should be excluded from version control.
 
-        Args:
-            *args: Command arguments to follow the tool name.
+        Paths are relative to the project root. Override in a subclass to
+        declare the tool's cache directories or other generated files.
 
         Returns:
-            An `Args` object whose first element is the tool name.
+            File paths to ignore. Empty by default.
         """
-        return Args(self.name(), *args)
+        return ()
+
+    def __str__(self) -> str:
+        """Add the tool name to the string representation.
+
+        Returns:
+            The class's string representation followed by the tool name in parentheses.
+        """
+        return f"{super().__str__()} ({self.name()})"
+
+
+class Group:
+    """Named constants for the categories tool badges are grouped under."""
+
+    CI_CD = "ci/cd"
+    CODE_QUALITY = "code-quality"
+    PROJECT_INFO = "project-info"
+    TOOLING = "tooling"
+    TESTING = "testing"

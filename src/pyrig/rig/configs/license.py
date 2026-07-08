@@ -30,23 +30,6 @@ class LicenseConfigFile(StringConfigFile):
     detects the SPDX license identifier from the file content.
     """
 
-    def priority(self) -> float:
-        """Return a priority one step above `PyprojectConfigFile`'s.
-
-        Ensures this file is validated before `PyprojectConfigFile`
-        as it relies on `spdx_identifier()`, which reads the content
-        of the LICENSE file on disk.
-        """
-        return Priority.increase(PyprojectConfigFile.I.priority())
-
-    def stem(self) -> str:
-        """Return `'LICENSE'`."""
-        return "LICENSE"
-
-    def parent_path(self) -> Path:
-        """Return the project root as the parent directory."""
-        return Path()
-
     def extension(self) -> str:
         """Return an empty string — LICENSE has no file extension."""
         return ""
@@ -54,14 +37,6 @@ class LicenseConfigFile(StringConfigFile):
     def extension_separator(self) -> str:
         """Return an empty string — no separator is needed without an extension."""
         return ""
-
-    def lines(self) -> list[str]:
-        """Return the MIT license text as individual lines.
-
-        Returns:
-            Lines comprising the complete MIT license with year and owner substituted.
-        """
-        return self.split_lines(self.license())
 
     def is_correct(self) -> bool:
         """Check whether the LICENSE file has non-empty content.
@@ -74,6 +49,31 @@ class LicenseConfigFile(StringConfigFile):
             FileNotFoundError: If the LICENSE file does not exist.
         """
         return file_has_content(self.path())
+
+    def lines(self) -> list[str]:
+        """Return the MIT license text as individual lines.
+
+        Returns:
+            Lines comprising the complete MIT license with year and owner substituted.
+        """
+        return self.split_lines(self.license())
+
+    def parent_path(self) -> Path:
+        """Return the project root as the parent directory."""
+        return Path()
+
+    def priority(self) -> float:
+        """Return a priority one step above `PyprojectConfigFile`'s.
+
+        Ensures this file is validated before `PyprojectConfigFile`
+        as it relies on `spdx_identifier()`, which reads the content
+        of the LICENSE file on disk.
+        """
+        return Priority.increase(PyprojectConfigFile.I.priority())
+
+    def stem(self) -> str:
+        """Return `'LICENSE'`."""
+        return "LICENSE"
 
     def license(self) -> str:
         """Return the MIT license text with year and repository owner substituted."""

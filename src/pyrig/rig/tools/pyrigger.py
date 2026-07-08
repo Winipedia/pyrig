@@ -21,14 +21,6 @@ from pyrig.rig.tools.version_control.version_controller import VersionController
 class Pyrigger(Tool):
     """Pyrig CLI wrapper and new-project initialization orchestrator."""
 
-    def name(self) -> str:
-        """Return the pyrig executable name.
-
-        Returns:
-            `'pyrig'`.
-        """
-        return snake_to_kebab_case(pyrig.__name__)
-
     def group(self) -> str:
         """Return the badge group this tool belongs to.
 
@@ -44,6 +36,14 @@ class Pyrigger(Tool):
     def link_url(self) -> str:
         """Return the badge link URL for pyrig."""
         return f"https://github.com/Winipedia/{self.name()}"
+
+    def name(self) -> str:
+        """Return the pyrig executable name.
+
+        Returns:
+            `'pyrig'`.
+        """
+        return snake_to_kebab_case(pyrig.__name__)
 
     def cmd_args(self, *args: str, cmd: FunctionType) -> Args:
         """Construct `Args` for a top-level pyrig CLI command.

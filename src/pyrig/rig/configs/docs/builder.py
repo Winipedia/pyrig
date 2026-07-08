@@ -19,14 +19,6 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
     mkdocstrings plugins.
     """
 
-    def parent_path(self) -> Path:
-        """Return the project root directory."""
-        return Path()
-
-    def stem(self) -> str:
-        """Return `'mkdocs'` as the configuration file stem."""
-        return DocsBuilder.I.name()
-
     def _configs(self) -> dict[str, Any]:
         """Return the required `mkdocs.yml` structure.
 
@@ -90,3 +82,11 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
                 ],
             },
         }
+
+    def parent_path(self) -> Path:
+        """Return the project root directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return `'mkdocs'` as the configuration file stem."""
+        return DocsBuilder.I.name()

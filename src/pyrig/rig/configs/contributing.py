@@ -49,18 +49,6 @@ class ContributingConfigFile(MarkdownConfigFile):
     customize the file after initial generation.
     """
 
-    def stem(self) -> str:
-        """Return `"CONTRIBUTING"` as the filename stem."""
-        return "CONTRIBUTING"
-
-    def parent_path(self) -> Path:
-        """Return the project root as the parent directory."""
-        return Path()
-
-    def lines(self) -> list[str]:
-        """Return the contributing template content as lines."""
-        return self.split_lines(CONTRIBUTING_TEMPLATE)
-
     def is_correct(self) -> bool:
         """Return whether CONTRIBUTING.md has non-empty content.
 
@@ -76,3 +64,15 @@ class ContributingConfigFile(MarkdownConfigFile):
             FileNotFoundError: If the file does not exist.
         """
         return file_has_content(self.path())
+
+    def lines(self) -> list[str]:
+        """Return the contributing template content as lines."""
+        return self.split_lines(CONTRIBUTING_TEMPLATE)
+
+    def parent_path(self) -> Path:
+        """Return the project root as the parent directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return `"CONTRIBUTING"` as the filename stem."""
+        return "CONTRIBUTING"
