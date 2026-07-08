@@ -39,6 +39,18 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         - `copy_module`: Return the source module whose content will be copied.
     """
 
+    @abstractmethod
+    def copy_module(self) -> ModuleType:
+        """Return the source module whose content will be copied.
+
+        The base class uses this module's source file as the written content
+        and derives the target path from its dotted name. Subclasses must
+        implement this to specify which module to copy.
+
+        Returns:
+            The module to copy.
+        """
+
     @classmethod
     def generate_subclass(cls, module: ModuleType) -> type[Self]:
         """Dynamically create a named subclass bound to a specific source module.
@@ -128,15 +140,3 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
             file stem when writing the copied module.
         """
         return leaf_module_name(self.copy_module())
-
-    @abstractmethod
-    def copy_module(self) -> ModuleType:
-        """Return the source module whose content will be copied.
-
-        The base class uses this module's source file as the written content
-        and derives the target path from its dotted name. Subclasses must
-        implement this to specify which module to copy.
-
-        Returns:
-            The module to copy.
-        """
