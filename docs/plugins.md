@@ -12,6 +12,14 @@ uv add pyrig-plugin-name --dev
 uv run pyrig sync
 ```
 
+After adding and syncing a plugin, please check all the files it affected
+to ensure they are correct. The best way to add a plugin is before initializing
+your project with `pyrig init`, this way each file is definitely correctly generated.
+Syncing works correctly as well, but there might be some edge cases where the
+deep merge logic may produce a slightly incorrect file. In that case you can
+delete a file and re-run `pyrig sync` to regenerate it, then it will definitely
+be correct as well.
+
 The plugins maintained alongside pyrig are listed below. Each links to its own
 documentation.
 

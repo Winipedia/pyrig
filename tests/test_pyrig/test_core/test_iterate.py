@@ -7,6 +7,7 @@ from pyrig.core.iterate import (
     both_dicts_or_lists,
     both_lists,
     iterator_has_items,
+    match_list_items,
     merge_nested_structures,
     nested_structure_is_subset,
 )
@@ -51,6 +52,12 @@ def test_merge_nested_structures() -> None:
 
     # mismatched top-level container types leave the superset untouched.
     assert merge_nested_structures({"a": 1}, [1]) == [1]
+
+    assert merge_nested_structures([1, 1, "", 1, ""], []) == [1, 1, "", 1, ""]
+
+    assert merge_nested_structures({"key": [1, 1, "", 1, ""]}, {"key": [1, 2]}) == {
+        "key": [1, 1, "", 1, "", 2],
+    }
 
 
 def test_nested_structure_is_subset() -> None:
@@ -100,3 +107,20 @@ def test_both_lists() -> None:
     assert not both_lists([], {})
     assert not both_lists([], 1)
     assert not both_lists(1, 2)
+
+
+def test_match_list_items() -> None:
+    """Test function."""
+    # a value present once can satisfy only one occurrence in subset.
+    assert match_list_items(["", ""], [""]) == [True, False]
+
+    # each superset item is matched by at most one subset item.
+    assert match_list_items(["", "a", ""], ["", "z"]) == [True, False, False]
+
+    # order does not matter, and every subset item gets a distinct match.
+    assert match_list_items([1, 2], [2, 1, 3]) == [True, True]
+
+    # nested subset semantics still apply per matched item.
+    assert match_list_items([{"a": 1}], [{"a": 1, "b": 2}]) == [True]
+
+    assert match_list_items([], []) == []

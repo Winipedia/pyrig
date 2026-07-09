@@ -64,10 +64,11 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
     of dicts or a pair of lists is returned unchanged.
 
     Note:
-        Lists are matched order-independently. An item that is not already
-        contained anywhere in `superset` is merged into the item at the same
-        index when both are dicts or both are lists, and otherwise inserted at
-        that index.
+        Lists are matched order-independently, but multiplicity is respected:
+        an item that occurs N times in `subset` requires N distinct matches in
+        `superset` (see `match_list_items`). An item without a match is merged
+        into the item at the same index when both are dicts or both are
+        lists, and otherwise inserted at that index.
 
     Args:
         subset: The structure whose values are treated as required.
@@ -81,6 +82,8 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
         {'a': 1, 'b': 2}
         >>> merge_nested_structures([2, 3], [2])
         [2, 3]
+        >>> merge_nested_structures(["", "", "---"], [""])
+        ['', '', '---']
     """
     if both_dicts(subset, superset):
         for key, sub_val in subset.items():
@@ -91,8 +94,9 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
                 superset[key] = sub_val
 
     elif both_lists(subset, superset):
+        matched = match_list_items(subset, superset)
         for index, sub_val in enumerate(subset):
-            if any(nested_structure_is_subset(sub_val, other) for other in superset):
+            if matched[index]:
                 continue
             sup_val = superset[index] if index < len(superset) else MISSING
             if both_dicts_or_lists(sub_val, sup_val):
@@ -118,8 +122,10 @@ def nested_structure_is_subset(subset: Any, superset: Any) -> bool:
 
     - Dicts: every key in `subset` must exist in `superset` with a value that
       is itself a subset. Extra keys in `superset` are ignored.
-    - Lists: every item in `subset` must be a subset of some item in
-      `superset` (order-independent). Extra items are ignored.
+    - Lists: every item in `subset` must match a distinct item in `superset`
+      (order-independent, see `match_list_items`), so an item occurring N
+      times in `subset` requires N matching items in `superset`. Extra items
+      are ignored.
     - Everything else: values must be equal (`==`).
 
     Args:
@@ -139,6 +145,8 @@ def nested_structure_is_subset(subset: Any, superset: Any) -> bool:
         True
         >>> nested_structure_is_subset({"a": None}, {})
         False
+        >>> nested_structure_is_subset(["", ""], [""])
+        False
     """
     if both_dicts(subset, superset):
         return all(
@@ -146,11 +154,42 @@ def nested_structure_is_subset(subset: Any, superset: Any) -> bool:
             for key, value in subset.items()
         )
     if both_lists(subset, superset):
-        return all(
-            any(nested_structure_is_subset(item, other) for other in superset)
-            for item in subset
-        )
+        return all(match_list_items(subset, superset))
     return subset == superset
+
+
+def match_list_items(subset: list[Any], superset: list[Any]) -> list[bool]:
+    """Check whether each `subset` item is satisfied by a distinct `superset` item.
+
+    Each `superset` item can satisfy at most one `subset` item, so a value
+    that occurs multiple times in `subset` requires that many distinct
+    matches in `superset` rather than being satisfied by a single occurrence.
+
+    Args:
+        subset: Items to find matches for.
+        superset: Items to match against. Not modified.
+
+    Returns:
+        One entry per item in `subset`, in order: `True` if a distinct,
+        not-yet-matched `superset` item satisfies it, `False` otherwise.
+
+    Examples:
+        >>> match_list_items(["", ""], [""])
+        [True, False]
+        >>> match_list_items(["", "a", ""], ["", "z"])
+        [True, False, False]
+    """
+    pool = list(superset)
+    matched: list[bool] = []
+    for sub_val in subset:
+        for index, other in enumerate(pool):
+            if nested_structure_is_subset(sub_val, other):
+                del pool[index]
+                matched.append(True)
+                break
+        else:
+            matched.append(False)
+    return matched
 
 
 def both_dicts_or_lists(a: Any, b: Any) -> bool:

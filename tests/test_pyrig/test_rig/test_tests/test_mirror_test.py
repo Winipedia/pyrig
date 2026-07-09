@@ -328,12 +328,6 @@ class TestMirrorClass:
             assert "def test_mirror_function" in content
             assert "class TestMirrorClass" in content
 
-    def test_should_override_content(
-        self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
-    ) -> None:
-        """Test method."""
-        assert my_test_mirror_test_config_file().should_override_content()
-
     def test_is_correct(self) -> None:
         """Test method."""
         subclass = MirrorTestConfigFile.generate_subclass(mirror_test)

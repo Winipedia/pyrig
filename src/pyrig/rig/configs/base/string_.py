@@ -2,7 +2,6 @@
 
 from abc import abstractmethod
 from collections.abc import Iterable
-from typing import Any
 
 from pyrig.core.strings import read_text_utf8, write_text_utf8
 from pyrig.rig.configs.base.config_file import ListConfigFile
@@ -53,32 +52,6 @@ class StringConfigFile(ListConfigFile):
         return self.all_lines_in_content(
             lines=self.configs(), content=self.read_content()
         )
-
-    def merge_configs(self) -> list[Any]:
-        """Merge required lines with existing file content.
-
-        Places the required lines first, followed by the current file content.
-        If `should_override_content()` returns `True`, the existing content
-        is discarded and only the required lines are returned.
-
-        Returns:
-            The lines for the updated file, with required content first.
-        """
-        expected_lines = self.configs()
-        if self.should_override_content():
-            return expected_lines
-        return [*expected_lines, *self.load()]
-
-    def should_override_content(self) -> bool:
-        """Return whether existing file content should be discarded.
-
-        Defaults to `False`. Override in subclasses that must replace the
-        file's content instead of preserving it.
-
-        Returns:
-            `True` if existing content should be discarded; `False` otherwise.
-        """
-        return False
 
     def all_lines_in_content(self, lines: Iterable[str], content: str) -> bool:
         """Check whether every line is present in the content string.

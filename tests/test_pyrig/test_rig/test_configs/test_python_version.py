@@ -28,7 +28,3 @@ class TestPythonVersionConfigFile:
         """Test method."""
         lines = PythonVersionConfigFile.I.lines()
         assert lines == ["3.12", ""]
-
-    def test_should_override_content(self) -> None:
-        """Test method."""
-        assert PythonVersionConfigFile.I.should_override_content()
