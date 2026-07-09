@@ -74,6 +74,23 @@ def mirror_function():
 class TestMirrorTestConfigFile:
     """Test class for MirrorTestConfigFile."""
 
+    def test_modules_and_members(
+        self,
+        my_test_mirror_test_config_file: type[MirrorTestConfigFile],
+        create_module: Callable[[Path], ModuleType],
+        tmp_path: Path,
+    ) -> None:
+        """Test method."""
+        with chdir(tmp_path):
+            create_module(my_test_mirror_test_config_file().test_path())
+            module, test_module, module_members, test_module_members = (
+                my_test_mirror_test_config_file().modules_and_members()
+            )
+            assert module.__name__ == MIRROR_MODULE_NAME
+            assert test_module.__name__ == TESTS_MIRROR_MODULE_NAME
+            assert len(module_members) > 0
+            assert len(test_module_members) > 0
+
     def test_package_root(
         self, my_test_mirror_test_config_file: type[MirrorTestConfigFile]
     ) -> None:
@@ -380,7 +397,8 @@ class TestMirrorClass:
         with chdir(tmp_path):
             create_module(my_test_mirror_test_config_file().test_path())
             content = my_test_mirror_test_config_file().test_module_content_with_func_skeletons(  # noqa: E501
-                my_test_mirror_test_config_file().test_module_content_with_skeletons()
+                my_test_mirror_test_config_file().test_module_content_with_skeletons(),
+                *my_test_mirror_test_config_file().modules_and_members(),
             )
             assert "def test_mirror_method" in content
             assert "def test_mirror_function" in content
@@ -397,7 +415,9 @@ class TestMirrorClass:
         with chdir(tmp_path):
             create_module(my_test_mirror_test_config_file().test_path())
             untested_func_names = tuple(
-                my_test_mirror_test_config_file().untested_func_names()
+                my_test_mirror_test_config_file().untested_func_names(
+                    *my_test_mirror_test_config_file().modules_and_members()
+                )
             )
         assert len(untested_func_names) > 0
 
@@ -421,7 +441,8 @@ class TestMirrorClass:
         with chdir(tmp_path):
             create_module(my_test_mirror_test_config_file().test_path())
             content = my_test_mirror_test_config_file().test_module_content_with_class_skeletons(  # noqa: E501
-                my_test_mirror_test_config_file().test_module_content_with_skeletons()
+                my_test_mirror_test_config_file().test_module_content_with_skeletons(),
+                *my_test_mirror_test_config_file().modules_and_members(),
             )
         assert "def test_mirror_method" in content
         assert "def test_mirror_function" in content
@@ -438,7 +459,9 @@ class TestMirrorClass:
         with chdir(tmp_path):
             create_module(my_test_mirror_test_config_file().test_path())
             untested_class_and_method_names = tuple(
-                my_test_mirror_test_config_file().untested_class_and_method_names()
+                my_test_mirror_test_config_file().untested_class_and_method_names(
+                    *my_test_mirror_test_config_file().modules_and_members()
+                )
             )
         assert len(untested_class_and_method_names) > 0
 

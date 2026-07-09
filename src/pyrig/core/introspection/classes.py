@@ -55,18 +55,6 @@ def discard_parent_methods(
             yield method
 
 
-def module_classes(module: ModuleType) -> Iterator[type]:
-    """Extract all classes defined directly in a module, excluding imported ones.
-
-    Args:
-        module: Module to inspect.
-
-    Yields:
-        Class types defined directly in `module`.
-    """
-    yield from filter_module_classes(module, obj_members(module))
-
-
 def filter_module_classes(
     module: ModuleType,
     members: Iterable[Any],

@@ -13,14 +13,16 @@ from pathlib import Path
 from types import FunctionType, MethodType, ModuleType
 from typing import Any, Self
 
-from pyrig_runtime.core.introspection.functions import module_functions
-from pyrig_runtime.core.introspection.inspection import unwrap_obj
+from pyrig_runtime.core.introspection.functions import (
+    filter_module_functions,
+)
+from pyrig_runtime.core.introspection.inspection import obj_members, unwrap_obj
 
 from pyrig.core.introspection.classes import (
     cls_methods,
     discard_parent_methods,
+    filter_module_classes,
     generate_class,
-    module_classes,
 )
 from pyrig.core.introspection.inspection import (
     def_line_sorted,
@@ -75,9 +77,26 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             `True` if no source function or method is missing a test; `False`
             otherwise.
         """
+        module, test_module, module_members, test_module_members = (
+            self.modules_and_members()
+        )
         return not (
-            any(self.untested_func_names())
-            or any(self.untested_class_and_method_names())
+            any(
+                self.untested_func_names(
+                    module=module,
+                    test_module=test_module,
+                    module_members=module_members,
+                    test_module_members=test_module_members,
+                )
+            )
+            or any(
+                self.untested_class_and_method_names(
+                    module=module,
+                    test_module=test_module,
+                    module_members=module_members,
+                    test_module_members=test_module_members,
+                )
+            )
         )
 
     def lines(self) -> list[Any]:
@@ -229,35 +248,97 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             test implementations.
         """
         test_module_content = self.read_content()
-        test_module_content = self.test_module_content_with_func_skeletons(
-            test_module_content
+        module, test_module, module_members, test_module_members = (
+            self.modules_and_members()
         )
-        return self.test_module_content_with_class_skeletons(test_module_content)
+        test_module_content = self.test_module_content_with_func_skeletons(
+            test_module_content,
+            module=module,
+            test_module=test_module,
+            module_members=module_members,
+            test_module_members=test_module_members,
+        )
+        return self.test_module_content_with_class_skeletons(
+            test_module_content,
+            module=module,
+            test_module=test_module,
+            module_members=module_members,
+            test_module_members=test_module_members,
+        )
 
-    def test_module_content_with_func_skeletons(self, test_module_content: str) -> str:
+    def modules_and_members(
+        self,
+    ) -> tuple[ModuleType, ModuleType, tuple[Any], tuple[Any]]:
+        """Return the source and test modules along with their members.
+
+        Returns:
+            A tuple containing:
+                - The source module to mirror.
+                - The test module corresponding to the source module.
+                - Tuple of members of the source module.
+                - Tuple of members of the test module.
+        """
+        module, test_module = self.mirror_module(), self.module()
+        return (
+            module,
+            test_module,
+            tuple(obj_members(module)),
+            tuple(obj_members(test_module)),
+        )
+
+    def test_module_content_with_func_skeletons(
+        self,
+        test_module_content: str,
+        module: ModuleType,
+        test_module: ModuleType,
+        module_members: Iterable[Any],
+        test_module_members: Iterable[Any],
+    ) -> str:
         """Append function skeletons for all untested source functions.
 
         Args:
             test_module_content: Existing test module content to extend.
+            module: The source module to mirror.
+            test_module: The test module corresponding to the source module.
+            module_members: Members of the source module.
+            test_module_members: Members of the test module.
 
         Returns:
             Test module content with new function skeletons appended at the end.
         """
         return test_module_content + "".join(
-            self.test_func_skeleton(name) for name in self.untested_func_names()
+            self.test_func_skeleton(name)
+            for name in self.untested_func_names(
+                module=module,
+                test_module=test_module,
+                module_members=module_members,
+                test_module_members=test_module_members,
+            )
         )
 
-    def untested_func_names(self) -> Iterator[str]:
+    def untested_func_names(
+        self,
+        module: ModuleType,
+        test_module: ModuleType,
+        module_members: Iterable[Any],
+        test_module_members: Iterable[Any],
+    ) -> Iterator[str]:
         """Yield test function names for functions that have no corresponding test.
 
         Names are yielded in the source function's definition order.
+
+        Args:
+            module: The source module to mirror.
+            test_module: The test module corresponding to the source module.
+            module_members: Members of the source module.
+            test_module_members: Members of the test module.
 
         Yields:
             Expected test function name (e.g., `"test_foo"`) for each source
             function that has no matching test function.
         """
-        funcs = def_line_sorted(module_functions(self.mirror_module()))
-        test_funcs = module_functions(self.module())
+        funcs = def_line_sorted(filter_module_functions(module, module_members))
+        test_funcs = filter_module_functions(test_module, test_module_members)
 
         supposed_test_func_names = (self.test_func_name(unwrap_obj(f)) for f in funcs)
         actual_test_func_names = {unwrap_obj(f).__name__ for f in test_funcs}
@@ -283,7 +364,14 @@ def {test_func_name}() -> None:
     raise {NotImplementedError.__name__}
 '''
 
-    def test_module_content_with_class_skeletons(self, test_module_content: str) -> str:
+    def test_module_content_with_class_skeletons(
+        self,
+        test_module_content: str,
+        module: ModuleType,
+        test_module: ModuleType,
+        module_members: Iterable[Any],
+        test_module_members: Iterable[Any],
+    ) -> str:
         """Insert class and method skeletons for untested source classes.
 
         For each untested source class, method skeletons are placed inside the
@@ -292,6 +380,10 @@ def {test_func_name}() -> None:
 
         Args:
             test_module_content: Existing test module content to extend.
+            module: The source module to mirror.
+            test_module: The test module corresponding to the source module.
+            module_members: Members of the source module.
+            test_module_members: Members of the test module.
 
         Returns:
             Test module content with all missing class and method skeletons inserted.
@@ -299,7 +391,12 @@ def {test_func_name}() -> None:
         for (
             test_class_name,
             test_method_names,
-        ) in self.untested_class_and_method_names():
+        ) in self.untested_class_and_method_names(
+            module=module,
+            test_module=test_module,
+            module_members=module_members,
+            test_module_members=test_module_members,
+        ):
             test_cls_skeleton = self.extract_test_class_skeleton_from_content(
                 test_module_content,
                 test_class_name=test_class_name,
@@ -354,6 +451,10 @@ def {test_func_name}() -> None:
 
     def untested_class_and_method_names(
         self,
+        module: ModuleType,
+        test_module: ModuleType,
+        module_members: Iterable[Any],
+        test_module_members: Iterable[Any],
     ) -> Iterator[tuple[str, Iterator[str]]]:
         """Yield test class/method pairs for source classes that have untested methods.
 
@@ -362,6 +463,12 @@ def {test_func_name}() -> None:
         methods of its own or if every one of its methods already has a test.
 
         Classes are yielded in source definition order.
+
+        Args:
+            module: The source module to mirror.
+            test_module: The test module corresponding to the source module.
+            module_members: Members of the source module.
+            test_module_members: Members of the test module.
 
         Yields:
             `(test_class_name, missing_test_methods)` tuples, where
@@ -372,8 +479,8 @@ def {test_func_name}() -> None:
             to the next tuple; otherwise its remaining items are filtered
             against a later class's methods instead of its own.
         """
-        classes = def_line_sorted(module_classes(self.mirror_module()))
-        test_classes = module_classes(self.module())
+        classes = def_line_sorted(filter_module_classes(module, module_members))
+        test_classes = filter_module_classes(test_module, test_module_members)
 
         class_to_methods = (
             (

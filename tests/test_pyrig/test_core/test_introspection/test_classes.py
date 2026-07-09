@@ -16,7 +16,6 @@ from pyrig.core.introspection.classes import (
     discard_parent_methods,
     filter_module_classes,
     generate_class,
-    module_classes,
 )
 from pyrig.core.introspection.inspection import unwrap_obj
 
@@ -155,30 +154,6 @@ def test_cls_methods() -> None:
         ChildTestClass.decorated_method.__name__,
     }
     assert set(method_names) == expected_method_names
-
-
-def test_module_classes() -> None:
-    """Test function."""
-    # use this file as the module
-    module = import_module(test_module_classes.__module__)
-
-    classes = module_classes(module)
-
-    # expected classes in order of definition
-    expected_classes: list[type] = [
-        ParentClass,
-        ChildTestClass,
-        GrandchildTestClass,
-        DecoratedClass,
-        AbstractParent,
-        ConcreteChild,
-        AnotherAbstractChild,
-    ]
-    expected_classes_names: list[str] = [c.__name__ for c in expected_classes]
-    classes_names = [c.__name__ for c in classes]
-    assert set(classes_names) == set(expected_classes_names), (
-        f"Expected classes {expected_classes_names}, got {classes_names}"
-    )
 
 
 def test_discard_parent_methods() -> None:
