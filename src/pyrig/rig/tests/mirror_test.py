@@ -108,14 +108,6 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
         """
         return self.test_path().parent
 
-    def should_override_content(self) -> bool:
-        """Check whether existing file content should be discarded on dump.
-
-        Returns:
-            Always `True`.
-        """
-        return True
-
     def stem(self) -> str:
         """Return the test file's base name without its extension.
 

@@ -1,11 +1,9 @@
 """module."""
 
 from collections.abc import Callable
-from contextlib import chdir
 from pathlib import Path
 
 import pytest
-from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
@@ -77,29 +75,6 @@ class TestStringConfigFile:
         lines_no_newline = my_test_string_config_file().split_lines(text_no_newline)
         assert lines_no_newline == expected_lines_no_newline
 
-    def test_merge_configs(
-        self,
-        my_test_string_config_file: type[StringConfigFile],
-        tmp_path: Path,
-        mocker: MockerFixture,
-    ) -> None:
-        """Test method."""
-        with chdir(tmp_path):
-            my_test_string_config_file().validate()
-
-            my_test_string_config_file().dump(["New content.", ""])
-            added_configs = my_test_string_config_file().merge_configs()
-            assert added_configs == ["Test content.", "New content.", ""]
-
-            mock_should_override_content = mocker.patch.object(
-                StringConfigFile,
-                StringConfigFile.should_override_content.__name__,
-                return_value=True,
-            )
-            overridden_configs = my_test_string_config_file().merge_configs()
-            assert overridden_configs == ["Test content."]
-            mock_should_override_content.assert_called_once()
-
     def test_join_lines(
         self, my_test_string_config_file: type[StringConfigFile]
     ) -> None:
@@ -107,14 +82,6 @@ class TestStringConfigFile:
         lines = ["Test content.", "Second line."]
         string = my_test_string_config_file().join_lines(lines)
         assert string == "Test content.\nSecond line."
-
-    def test_should_override_content(
-        self, my_test_string_config_file: type[StringConfigFile]
-    ) -> None:
-        """Test method."""
-        assert not my_test_string_config_file().should_override_content(), (
-            "Expected False"
-        )
 
     def test_lines(self, my_test_string_config_file: type[StringConfigFile]) -> None:
         """Test method."""

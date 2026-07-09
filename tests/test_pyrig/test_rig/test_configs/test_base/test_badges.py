@@ -49,21 +49,24 @@ class TestBadgesConfigFile:
             assert false_description not in merged_content
             assert merged_content == content
 
-            # now dump smth completely false and check
-            # that configs are inserted at beginning
-            false_content = "Completely false content"
-            ReadmeConfigFile().dump([false_content])
-            merged_lines = ReadmeConfigFile().merge_configs()
-            merged_content = ReadmeConfigFile().join_lines(merged_lines)
-            assert merged_content.endswith(false_content)
-            assert merged_content.startswith(
-                ReadmeConfigFile().join_lines(ReadmeConfigFile().configs())
-            )
-
             # dump configs and check file is correct
             ReadmeConfigFile().dump(ReadmeConfigFile().configs())
             assert ReadmeConfigFile().is_correct()
             assert ReadmeConfigFile().read_content() == content
+            # remove one of the lines with a badge completely
+            content_lines = ReadmeConfigFile().split_lines(content)
+            badge_line = content_lines[3]
+            assert badge_line.startswith("[![")
+            content_lines.remove(badge_line)
+            ReadmeConfigFile().dump(content_lines)
+            assert not ReadmeConfigFile().is_correct()
+            # merge configs
+            merged_lines = ReadmeConfigFile().merge_configs()
+            merged_content = ReadmeConfigFile().join_lines(merged_lines)
+            assert merged_content == content
+            # validate configs and check file is correct
+            ReadmeConfigFile().validate()
+            assert ReadmeConfigFile().is_correct()
 
         # clear the cache so other tests have the correct readme configs again
         ReadmeConfigFile.configs.cache_clear()
