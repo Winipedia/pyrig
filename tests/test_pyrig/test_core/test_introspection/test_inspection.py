@@ -27,15 +27,11 @@ def test_def_line() -> None:
             return "test"
 
     method_line = def_line(TestClass.test_method)
-    assert method_line > 0, (
-        f"Expected positive integer line number for method, got {method_line}"
-    )
+    assert method_line > 0
 
     # Test with a property
     prop_line = def_line(TestClass.test_property)
-    assert prop_line > 0, (
-        f"Expected positive integer line number for property, got {prop_line}"
-    )
+    assert prop_line > 0
 
 
 def test_def_line_sorted() -> None:

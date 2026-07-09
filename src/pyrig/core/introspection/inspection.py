@@ -39,6 +39,7 @@ def def_line(obj: Any) -> int:
             source cannot be retrieved.
     """
     unwrapped = unwrap_obj(obj)
-    if hasattr(unwrapped, "__code__"):
-        return int(unwrapped.__code__.co_firstlineno)
-    return inspect.getsourcelines(unwrapped)[1]
+    code = getattr(unwrapped, "__code__", None)
+    if code is not None:
+        return code.co_firstlineno
+    return inspect.findsource(unwrapped)[1] + 1
