@@ -8,7 +8,7 @@ from pathlib import Path
 from subprocess import CalledProcessError  # nosec: B404
 
 import pytest
-from pyrig_runtime.core.dependencies.discovery import deps_depending_on_dep
+from pyrig_runtime.core.dependencies.discovery import dependency_ancestors
 from pyrig_runtime.core.strings import snake_to_kebab_case
 from pyrig_runtime.rig.cli.shared_subcommands import version
 from pytest_mock import MockerFixture
@@ -88,7 +88,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
         # Add pyrig wheel as a dev dependency and plugins
         plugins = tuple(
-            snake_to_kebab_case(dep.__name__) for dep in deps_depending_on_dep(pyrig)
+            snake_to_kebab_case(dep.__name__) for dep in dependency_ancestors(pyrig)
         )
 
         # add plugins
