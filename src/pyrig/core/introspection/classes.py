@@ -23,9 +23,9 @@ def cls_methods(
         in alphabetical order by name.
     """
     return (
-        method
-        for _name, method in obj_members(unwrap_obj(cls))
-        if inspect.isfunction(unwrap_obj(method))
+        member
+        for member in obj_members(unwrap_obj(cls))
+        if inspect.isfunction(unwrap_obj(member))
     )
 
 
@@ -55,6 +55,40 @@ def discard_parent_methods(
             yield method
 
 
+def module_classes(module: ModuleType) -> Iterator[type]:
+    """Extract all classes defined directly in a module, excluding imported ones.
+
+    Args:
+        module: Module to inspect.
+
+    Yields:
+        Class types defined directly in `module`.
+    """
+    yield from filter_module_classes(module, obj_members(module))
+
+
+def filter_module_classes(
+    module: ModuleType,
+    members: Iterable[Any],
+) -> Iterator[type]:
+    """Filter an iterable of objects to keep only classes defined in a module.
+
+    Args:
+        module: Module to filter against.
+        members: Iterable of objects to filter.
+
+    Yields:
+        Class types defined directly in `module`.
+    """
+    for member in members:
+        unwrapped_member = unwrap_obj(member)
+        if (
+            inspect.isclass(unwrapped_member)
+            and unwrapped_member.__module__ == module.__name__
+        ):
+            yield member
+
+
 def generate_class[T](
     name: str,
     bases: tuple[type[T], ...],
@@ -80,24 +114,3 @@ def generate_class[T](
         namespace[method.__name__] = method
     cls = type(name, bases, namespace)
     return cast("type[T]", cls)
-
-
-def module_classes(module: ModuleType) -> Iterator[type]:
-    """Extract all classes defined directly in a module, excluding imported ones.
-
-    Classes backed by C or Rust extensions (such as `cryptography`'s
-    `AESGCM`) whose module origin cannot be resolved are silently excluded.
-
-    Args:
-        module: Module to inspect.
-
-    Yields:
-        Class types defined directly in `module`.
-    """
-    for _, obj in obj_members(module):
-        unwrapped_obj = unwrap_obj(obj)
-        if (
-            inspect.isclass(unwrapped_obj)
-            and inspect.getmodule(unwrapped_obj) is module
-        ):
-            yield obj

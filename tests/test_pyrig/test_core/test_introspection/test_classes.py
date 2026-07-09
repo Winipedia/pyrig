@@ -9,9 +9,12 @@ from functools import wraps
 from importlib import import_module
 from typing import Any, ClassVar
 
+from pyrig_runtime.core.introspection.inspection import obj_members
+
 from pyrig.core.introspection.classes import (
     cls_methods,
     discard_parent_methods,
+    filter_module_classes,
     generate_class,
     module_classes,
 )
@@ -260,3 +263,22 @@ def test_generate_class() -> None:
     )
     result = collision_subclass().collide()  # ty:ignore[unresolved-attribute]
     assert result == "from_method"
+
+
+def test_filter_module_classes() -> None:
+    """Test function."""
+    module = import_module(test_filter_module_classes.__module__)
+    members = list(obj_members(module))
+    classes = list(filter_module_classes(module, members))
+    expected_classes: list[type] = [
+        ParentClass,
+        ChildTestClass,
+        GrandchildTestClass,
+        DecoratedClass,
+        AbstractParent,
+        ConcreteChild,
+        AnotherAbstractChild,
+    ]
+    expected_classes_names: list[str] = [c.__name__ for c in expected_classes]
+    classes_names = [c.__name__ for c in classes]
+    assert set(classes_names) == set(expected_classes_names)
