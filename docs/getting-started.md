@@ -123,11 +123,20 @@ git remote -v
 ### 3. Initialize Project with uv
 
 ```bash
-# Initialize Python project
-uv init
+# Initialize Python project with your desired Python version
+uv init --python 3.12
 ```
 
-### 4. Add pyrig Dependency
+### 4. Add Your Project Description
+
+Go to the `pyproject.toml` file and add your project description:
+
+```toml
+[project]
+description = "My awesome project description."
+```
+
+### 5. Add pyrig Dependency
 
 ```bash
 # Add pyrig to project
@@ -143,7 +152,7 @@ your plugin as a dev dependency to the project you are scaffolding with pyrig.
 uv add pyrig
 ```
 
-### 5. Add Any Plugins You Want (optional)
+### 6. Add Any Plugins You Want (optional)
 
 pyrig is extensible through plugins. A plugin is just a package that pyrig
 discovers automatically — adding it as a dependency is all it takes for its
@@ -164,7 +173,7 @@ uv add pyrig-codecov --dev
 uv add pyrig-executables --dev
 ```
 
-### 6. Run pyrig init
+### 7. Run pyrig init
 
 This will create an initial commit of the scaffolded and initialized project.
 
@@ -173,17 +182,25 @@ This will create an initial commit of the scaffolded and initialized project.
 uv run pyrig init
 ```
 
-### 7. Push to GitHub
+### 8. Start coding
+
+Start coding under the `src/my_project/` directory.
+
+Add commands to your CLI with `pyrig mk cmd <name>` and start building your project!
+Generate test skeletons with `pyrig sync` and watch your CI/CD pipeline
+run on every push.
+
+### 9. Push to GitHub
 
 Make sure you have the necessary tokens and secrets set up before
 pushing so that the CI/CD pipeline can run successfully on push.
 
 ```bash
 # Push initial commit
-git push -u origin main
+git push
 ```
 
-### 8. Verify Workflows
+### 10. Verify Workflows
 
 On GitHub.com:
 
@@ -193,10 +210,5 @@ followed by Release workflow and Deploy workflow
 3. Verify all jobs run successfully
 (should just take a 2-3 minutes on an empty project)
 
-### 9. Start coding
-
-Start coding under the `src/my_project/` directory.
-
-Add commands to your CLI with `pyrig mk cmd <name>` and start building your project!
-Generate test skeletons with `pyrig sync` and watch your CI/CD pipeline
-run on every push.
+Note: The Health Check workflow will fail if you have not written any tests yet
+and the pipeline will not run.
