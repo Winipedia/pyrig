@@ -1,3 +1,4 @@
+---
 name: Release
 'on':
   workflow_run:
@@ -67,3 +68,4 @@ jobs:
         tag: ${{ steps.extract-version.outputs.version }}
         name: ${{ steps.extract-version.outputs.version }}
         body: ${{ steps.build-changelog.outputs.changelog }}
+...

@@ -1,3 +1,4 @@
+---
 site_name: pyrig
 site_url: https://Winipedia.github.io/pyrig
 repo_url: https://github.com/Winipedia/pyrig
@@ -35,3 +36,4 @@ plugins:
           relative_crossrefs: true
           scoped_crossrefs: true
           filters: []
+...

@@ -45,6 +45,8 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
                 f,
                 sort_keys=False,
                 allow_unicode=True,
+                explicit_start=True,
+                explicit_end=True,
             )
 
     def _load(self) -> ConfigT:
