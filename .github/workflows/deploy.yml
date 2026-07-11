@@ -1,3 +1,4 @@
+---
 name: Deploy
 'on':
   workflow_run:
@@ -66,3 +67,4 @@ jobs:
     - name: Publish Package
       id: publish-package
       run: uv publish --token ${{ secrets.PYPI_TOKEN }}
+...
