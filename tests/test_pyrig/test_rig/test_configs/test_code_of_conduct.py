@@ -13,7 +13,9 @@ class TestCodeOfConductConfigFile:
     """Test class."""
 
     def test_remote_code_of_conduct_template(
-        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+        self,
+        *,
+        on_linux_and_latest_python_version_or_not_in_ci: bool,
     ) -> None:
         """Test method."""
         if not on_linux_and_latest_python_version_or_not_in_ci:

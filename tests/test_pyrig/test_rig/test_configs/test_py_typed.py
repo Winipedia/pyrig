@@ -28,7 +28,8 @@ class TestPyTypedConfigFile:
         assert PyTypedConfigFile().path().name == "py.typed"
 
     def test_parent_path(
-        self, my_test_py_typed_config_file: type[PyTypedConfigFile]
+        self,
+        my_test_py_typed_config_file: type[PyTypedConfigFile],
     ) -> None:
         """Test method."""
         parent_path = my_test_py_typed_config_file().parent_path()

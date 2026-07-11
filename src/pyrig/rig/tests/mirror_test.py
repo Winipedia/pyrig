@@ -87,7 +87,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
                     test_module=test_module,
                     module_members=module_members,
                     test_module_members=test_module_members,
-                )
+                ),
             )
             or any(
                 self.untested_class_and_method_names(
@@ -95,7 +95,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
                     test_module=test_module,
                     module_members=module_members,
                     test_module_members=test_module_members,
-                )
+                ),
             )
         )
 
@@ -237,7 +237,7 @@ class MirrorTestConfigFile(PythonPackageConfigFile):
             + [
                 self.test_module_prefix() + part
                 for part in self.mirror_module().__name__.split(".")
-            ]
+            ],
         )
 
     def test_module_content_with_skeletons(self) -> str:
@@ -412,7 +412,10 @@ def {test_func_name}() -> None:
         return test_module_content
 
     def extract_test_class_skeleton_from_content(
-        self, test_module_content: str, test_class_name: str, default: str
+        self,
+        test_module_content: str,
+        test_class_name: str,
+        default: str,
     ) -> str:
         """Extract the skeleton of a specific test class from the test module content.
 
@@ -511,8 +514,9 @@ def {test_func_name}() -> None:
         ) in supposed_test_class_to_test_methods_names:
             actual_test_methods_names = set(
                 actual_test_class_to_test_methods_names.get(
-                    supposed_test_class_name, ()
-                )
+                    supposed_test_class_name,
+                    (),
+                ),
             )
             untested_test_methods_names = (
                 tmn
@@ -520,7 +524,7 @@ def {test_func_name}() -> None:
                 if tmn not in actual_test_methods_names
             )
             has_untested_methods, untested_test_methods_names = iterator_has_items(
-                untested_test_methods_names
+                untested_test_methods_names,
             )
             if has_untested_methods:
                 logger.debug("Class %s has untested methods", supposed_test_class_name)

@@ -162,7 +162,8 @@ class TestVersionConstraint:
         constraint = ">=3.12"
         version_constraint = VersionConstraint(constraint)
         versions = version_constraint.version_range(
-            level="minor", upper_default="3.14.0"
+            level="minor",
+            upper_default="3.14.0",
         )
         expected = tuple(Version(x) for x in ["3.12", "3.13", "3.14"])
         assert versions == expected

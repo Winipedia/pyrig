@@ -208,9 +208,10 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             run=str(
                 PackageManager.I.run_args(
                     *Pyrigger.I.group_cmd_args(
-                        group=fstring_var_name(f"{mk=}"), cmd=local
-                    )
-                )
+                        group=fstring_var_name(f"{mk=}"),
+                        cmd=local,
+                    ),
+                ),
             ),
             step=step,
         )
@@ -254,8 +255,8 @@ class HealthCheckWorkflowConfigFile(WorkflowConfigFile):
             self.step_run_pre_commit_hooks,
             run=str(
                 PackageManager.I.run_args(
-                    *VersionControlHookManager.I.run_all_files_stage_pre_commit_args()
-                )
+                    *VersionControlHookManager.I.run_all_files_stage_pre_commit_args(),
+                ),
             ),
             step=step,
         )

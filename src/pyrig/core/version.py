@@ -142,7 +142,8 @@ class VersionConstraint:
 
         versions: list[list[int]] = []
         for major in range(
-            lower_as_tuple[major_level], upper_as_tuple[major_level] + 1
+            lower_as_tuple[major_level],
+            upper_as_tuple[major_level] + 1,
         ):
             version = [major]
 
@@ -186,7 +187,8 @@ class VersionConstraint:
     @overload
     def find_lower_inclusive(self, default: None = None) -> Version | None: ...
     def find_lower_inclusive(
-        self, default: str | Version | None = None
+        self,
+        default: str | Version | None = None,
     ) -> Version | None:
         """Return the effective inclusive lower bound of the constraint.
 
@@ -224,7 +226,8 @@ class VersionConstraint:
     @overload
     def find_upper_inclusive(self, default: None = None) -> Version | None: ...
     def find_upper_inclusive(
-        self, default: str | Version | None = None
+        self,
+        default: str | Version | None = None,
     ) -> Version | None:
         """Return the inclusive upper bound of the constraint.
 
@@ -278,7 +281,8 @@ class VersionConstraint:
     @overload
     def find_upper_exclusive(self, default: None = None) -> Version | None: ...
     def find_upper_exclusive(
-        self, default: str | Version | None = None
+        self,
+        default: str | Version | None = None,
     ) -> Version | None:
         """Return the effective exclusive upper bound of the constraint.
 
@@ -313,7 +317,8 @@ class VersionConstraint:
 
 
 def adjust_version_to_level(
-    version: Version, level: Literal["major", "minor", "micro"]
+    version: Version,
+    level: Literal["major", "minor", "micro"],
 ) -> Version:
     """Truncate a version to the specified precision level.
 

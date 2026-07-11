@@ -48,7 +48,8 @@ def iterator_has_items[T](
 
 @overload
 def merge_nested_structures(
-    subset: dict[Any, Any], superset: dict[Any, Any]
+    subset: dict[Any, Any],
+    superset: dict[Any, Any],
 ) -> dict[Any, Any]: ...
 @overload
 def merge_nested_structures(subset: list[Any], superset: list[Any]) -> list[Any]: ...
@@ -109,7 +110,8 @@ def merge_nested_structures(subset: Any, superset: Any) -> Any:
 
 @overload
 def nested_structure_is_subset(
-    subset: dict[Any, Any], superset: dict[Any, Any]
+    subset: dict[Any, Any],
+    superset: dict[Any, Any],
 ) -> bool: ...
 @overload
 def nested_structure_is_subset(subset: list[Any], superset: list[Any]) -> bool: ...

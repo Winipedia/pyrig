@@ -113,7 +113,7 @@ class Pyrigger(Tool):
             (PackageManager.I.add_args(self.runtime_dependency()), {}),
             (
                 PackageManager.I.add_dev_dependencies_args(
-                    *Tool.subclasses_dev_dependencies()
+                    *Tool.subclasses_dev_dependencies(),
                 ),
                 {},
             ),
@@ -124,7 +124,7 @@ class Pyrigger(Tool):
             (VersionController.I.add_all_args(), {}),
             (
                 VersionController.I.commit_with_msg_args(
-                    msg=f"{self.name()}: Initial commit"
+                    msg=f"{self.name()}: Initial commit",
                 ),
                 {},
             ),

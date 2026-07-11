@@ -23,7 +23,7 @@ def make_subcommand(name: str, *, shared: bool) -> None:
             subcommands module.
     """
     config_file = CopyModuleDocstringConfigFile.generate_subclass(
-        shared_subcommands if shared else subcommands
+        shared_subcommands if shared else subcommands,
     )()
     config_file.validate()
     content = config_file.read_content()

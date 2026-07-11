@@ -18,7 +18,8 @@ from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
 @pytest.fixture
 def my_test_config_file(
     config_file_factory: Callable[
-        [type[ConfigFile[dict[str, Any]]]], type[ConfigFile[dict[str, Any]]]
+        [type[ConfigFile[dict[str, Any]]]],
+        type[ConfigFile[dict[str, Any]]],
     ],
 ) -> type[ConfigFile[dict[str, Any]]]:
     """Create a test config file class with tmp_path."""
@@ -69,20 +70,23 @@ class TestConfigFile:
     """Test class."""
 
     def test_filename(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert my_test_config_file().filename() == "my-test-file.txt"
 
     def test___str__(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         cf = my_test_config_file()
         assert str(cf.path()) in str(cf)
 
     def test_version_control_ignored(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert not my_test_config_file().version_control_ignored()
@@ -95,14 +99,16 @@ class TestConfigFile:
         }
 
     def test_sort_key(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         result = my_test_config_file.sort_key()
         assert isinstance(result, (float, int))
 
     def test_configs(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         configs = my_test_config_file()._configs()  # noqa: SLF001
@@ -116,7 +122,8 @@ class TestConfigFile:
         assert ConfigFile.discovery_module() is configs
 
     def test_create_file(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         my_test_config_file().create_file()
@@ -152,7 +159,8 @@ class TestConfigFile:
         assert my_test_config_file().load()["key"] == "new_value"
 
     def test_priority(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert my_test_config_file().priority() == 0
@@ -178,13 +186,15 @@ class TestConfigFile:
         ConfigFile.validate_concrete_subclasses()
 
     def test_extension_separator(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert my_test_config_file().extension_separator() == "."
 
     def test_parent_path(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         expected = Path("parent_dir")
@@ -207,13 +217,15 @@ class TestConfigFile:
         assert my_test_config_file().load() == dump_dict, "Expected dump to work"
 
     def test_extension(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert my_test_config_file().extension() == "txt", "Expected txt"
 
     def test__configs(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert isinstance(my_test_config_file().configs(), dict), "Expected dict"
@@ -267,7 +279,9 @@ class TestConfigFile:
             my_test_config_file().validate()
 
     def test_path(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]], tmp_path: Path
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
+        tmp_path: Path,
     ) -> None:
         """Test method."""
         assert (
@@ -281,7 +295,8 @@ class TestConfigFile:
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test_merge_configs(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         # same test as in init test
@@ -299,7 +314,8 @@ class TestConfigFile:
         assert actual == expected, "Expected config to be correct"
 
     def test_is_correct(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert not my_test_config_file().is_correct(), "Expected config to be correct"
@@ -307,7 +323,8 @@ class TestConfigFile:
         assert my_test_config_file().is_correct(), "Expected config to be correct"
 
     def test_is_correct_recursively(
-        self, my_test_config_file: type[ConfigFile[dict[str, Any]]]
+        self,
+        my_test_config_file: type[ConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert not my_test_config_file().is_correct_recursively()

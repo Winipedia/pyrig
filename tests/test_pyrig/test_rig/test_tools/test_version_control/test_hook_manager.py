@@ -32,7 +32,7 @@ class TestVersionControlHookManager:
     def test_run_all_files_stage_args(self) -> None:
         """Test method."""
         assert VersionControlHookManager.I.run_all_files_stage_args(
-            stage="some-stage"
+            stage="some-stage",
         ) == (
             "prek",
             "run",

@@ -251,7 +251,10 @@ class WorkflowConfigFile(YMLDictConfigFile):
             from `job_do_something`.
         """
         name = reformat_name(
-            method.__name__, split_on="_", join_on=" ", capitalize=True
+            method.__name__,
+            split_on="_",
+            join_on=" ",
+            capitalize=True,
         )
         prefix = next(split_on_uppercase(name))
         return name.removeprefix(prefix).strip()
@@ -324,7 +327,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
         return {"pull_request": {"types": types}}
 
     def on_workflow_run(
-        self, workflows: list[str], branches: list[str] | None = None
+        self,
+        workflows: list[str],
+        branches: list[str] | None = None,
     ) -> dict[str, Any]:
         """Create a `workflow_run` trigger.
 
@@ -368,7 +373,9 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         return self.strategy_matrix(
             matrix=self.matrix_os_and_python_version(
-                os=os, python_versions=python_versions, matrix=matrix
+                os=os,
+                python_versions=python_versions,
+                matrix=matrix,
             ),
             strategy=strategy,
         )
@@ -392,7 +399,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
             Strategy configuration containing the OS matrix.
         """
         return self.strategy_matrix(
-            matrix=self.matrix_os(os=os, matrix=matrix), strategy=strategy
+            matrix=self.matrix_os(os=os, matrix=matrix),
+            strategy=strategy,
         )
 
     def strategy_matrix(
@@ -460,7 +468,8 @@ class WorkflowConfigFile(YMLDictConfigFile):
             matrix = {}
         os_matrix = self.matrix_os(os=os, matrix=matrix)["os"]
         python_version_matrix = self.matrix_python_version(
-            python_versions=python_versions, matrix=matrix
+            python_versions=python_versions,
+            matrix=matrix,
         )["python-version"]
         matrix["os"] = os_matrix
         matrix["python-version"] = python_version_matrix
@@ -605,7 +614,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
         """
         if python_version is None:
             python_version = str(
-                PyprojectConfigFile.I.latest_possible_python_version(level="minor")
+                PyprojectConfigFile.I.latest_possible_python_version(level="minor"),
             )
         return [
             self.step_checkout_repository(),
@@ -842,7 +851,7 @@ class WorkflowConfigFile(YMLDictConfigFile):
             `github.event.workflow_run.conclusion == 'success'`.
         """
         return self.insert_expression(
-            "github.event.workflow_run.conclusion == 'success'"
+            "github.event.workflow_run.conclusion == 'success'",
         )
 
     def if_workflow_run_is_push_triggered(self) -> str:

@@ -22,7 +22,7 @@ def my_test_prek_config_file(
     """Create a test prek config file class with tmp_path."""
 
     class MyTestVersionControlHookManagerConfigFile(
-        config_file_factory(VersionControlHookManagerConfigFile)  # ty: ignore[unsupported-base]
+        config_file_factory(VersionControlHookManagerConfigFile),  # ty: ignore[unsupported-base]
     ):
         """Test prek config file with tmp_path override."""
 
@@ -58,7 +58,9 @@ class TestVersionControlHookManagerConfigFile:
     def test_hook(self) -> None:
         """Test method."""
         hook = VersionControlHookManagerConfigFile.I.hook(
-            "test", Args("test"), stages=["some-stage"]
+            "test",
+            Args("test"),
+            stages=["some-stage"],
         )
         assert hook["id"] == "test"
         assert hook["stages"] == ["some-stage"]
@@ -74,7 +76,8 @@ class TestVersionControlHookManagerConfigFile:
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
     def test__configs(
-        self, my_test_prek_config_file: type[VersionControlHookManagerConfigFile]
+        self,
+        my_test_prek_config_file: type[VersionControlHookManagerConfigFile],
     ) -> None:
         """Test method."""
         configs = my_test_prek_config_file().configs()

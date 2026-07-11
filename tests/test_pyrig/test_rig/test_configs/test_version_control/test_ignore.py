@@ -20,7 +20,7 @@ def my_test_gitignore_config_file(
     """Create a test gitignore config file class with tmp_path."""
 
     class MyTestVersionControllerIgnoreConfigFile(
-        config_file_factory(VersionControllerIgnoreConfigFile)  # ty: ignore[unsupported-base]
+        config_file_factory(VersionControllerIgnoreConfigFile),  # ty: ignore[unsupported-base]
     ):
         """Test gitignore config file with tmp_path override."""
 
@@ -31,7 +31,9 @@ class TestVersionControllerIgnoreConfigFile:
     """Test class."""
 
     def test_remote_standard_ignore_text(
-        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+        self,
+        *,
+        on_linux_and_latest_python_version_or_not_in_ci: bool,
     ) -> None:
         """Test method."""
         if not on_linux_and_latest_python_version_or_not_in_ci:
@@ -81,7 +83,8 @@ class TestVersionControllerIgnoreConfigFile:
         assert "__pycache__/" in github_gitignore
 
     def test_stem(
-        self, my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile]
+        self,
+        my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
     ) -> None:
         """Test method."""
         filename = my_test_gitignore_config_file().stem()
@@ -98,7 +101,8 @@ class TestVersionControllerIgnoreConfigFile:
             assert parent_path == Path(), f"Expected Path(), got {parent_path}"
 
     def test_extension_separator(
-        self, my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile]
+        self,
+        my_test_gitignore_config_file: type[VersionControllerIgnoreConfigFile],
     ) -> None:
         """Test method."""
         extension = my_test_gitignore_config_file().extension_separator()

@@ -27,7 +27,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Trigger configuration dict with a `workflow_run` entry.
         """
         return self.on_workflow_run(
-            workflows=[ReleaseWorkflowConfigFile.I.workflow_name()]
+            workflows=[ReleaseWorkflowConfigFile.I.workflow_name()],
         )
 
     def job(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
@@ -41,7 +41,9 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
             Dict mapping the derived job ID to its configuration.
         """
         return super().job(
-            *args, if_condition=self.if_workflow_run_is_success(), **kwargs
+            *args,
+            if_condition=self.if_workflow_run_is_success(),
+            **kwargs,
         )
 
     def jobs(self) -> dict[str, Any]:

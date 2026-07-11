@@ -28,7 +28,8 @@ from pyrig.rig.tools.version_control.controller import VersionController
 def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:
     """This test exists only to get to 100% test coverage."""
     pyrigger_init_project_mock = mocker.patch.object(
-        Pyrigger, Pyrigger.init_project.__name__
+        Pyrigger,
+        Pyrigger.init_project.__name__,
     )
     init_project()
     pyrigger_init_project_mock.assert_called_once()
@@ -79,7 +80,9 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
         # Initialize git repo in the test project directory
         VersionController.I.init_args().run()
         VersionController.I.config_args(
-            "--local", "user.email", "test@example.com"
+            "--local",
+            "user.email",
+            "test@example.com",
         ).run()
         VersionController.I.config_args("--local", "user.name", "Test User").run()
 
@@ -93,7 +96,7 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
 
         # add plugins
         PackageManager.I.add_dev_dependencies_args(wheel_path, *plugins).run(
-            env=clean_env
+            env=clean_env,
         )
 
         # uv add converts absolute paths to relative paths, which breaks when
@@ -176,5 +179,8 @@ def test_init_project(tmp_path: Path) -> None:  # noqa: PLR0915
             ).run(env=clean_env)
 
         PackageManager.I.run_args(
-            "--no-dev", "--no-sync", project_name, version.__name__
+            "--no-dev",
+            "--no-sync",
+            project_name,
+            version.__name__,
         ).run(env=clean_env)
