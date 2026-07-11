@@ -148,7 +148,7 @@ class DeployWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_upload_documentation,
             uses="actions/upload-pages-artifact@main",
-            with_={"path": "site"},
+            with_={"path": DocsBuilder.I.site_dir().as_posix()},
             step=step,
         )
 

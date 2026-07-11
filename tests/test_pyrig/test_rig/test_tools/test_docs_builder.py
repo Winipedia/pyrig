@@ -8,6 +8,11 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 class TestDocsBuilder:
     """Test class."""
 
+    def test_site_dir(self) -> None:
+        """Test method."""
+        result = DocsBuilder.I.site_dir()
+        assert result == Path("site")
+
     def test_image_url(self) -> None:
         """Test method."""
         assert (

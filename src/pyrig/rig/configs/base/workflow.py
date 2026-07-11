@@ -39,16 +39,14 @@ class WorkflowConfigFile(YMLDictConfigFile):
         >>> from pyrig.rig.configs.base.workflow import WorkflowConfigFile
         >>>
         >>> class MyWorkflowConfigFile(WorkflowConfigFile):
+        ...     def jobs(self) -> dict[str, Any]:
+        ...         return self.job(
+        ...             self.jobs,
+        ...             steps=self.steps_core_installed_setup(),
+        ...         )
         ...
-        ...    def jobs(self) -> dict[str, Any]:
-        ...        return self.job(
-        ...            self.jobs,
-        ...            steps=self.steps_core_installed_setup(),
-        ...        )
-        ...
-        ...
-        ...    def workflow_triggers(self) -> dict[str, Any]:
-        ...        return {**self.on_workflow_dispatch(), **self.on_push()}
+        ...     def workflow_triggers(self) -> dict[str, Any]:
+        ...         return {**self.on_workflow_dispatch(), **self.on_push()}
     """
 
     UBUNTU_LATEST = "ubuntu-latest"

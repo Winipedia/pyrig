@@ -27,7 +27,6 @@ class PythonConfigFile(StringConfigFile):
         >>> from pyrig.rig.configs.base.python import PythonConfigFile
         >>>
         >>> class MyPythonFile(PythonConfigFile):
-        ...
         ...     def parent_path(self) -> Path:
         ...         return Path("src")
         ...

@@ -36,13 +36,11 @@ class YMLDictConfigFile(YMLConfigFile[dict[str, Any]]):
         >>> from pyrig.rig.configs.base.yml import YMLDictConfigFile
         >>>
         >>> class MySiteConfigFile(YMLDictConfigFile):
-        ...
         ...     def parent_path(self) -> Path:
         ...         return Path()
         ...
         ...     def stem(self) -> str:
         ...         return "mysite"
-        ...
         ...
         ...     def _configs(self) -> dict[str, Any]:
         ...         return {"site_name": "My Project", "theme": {"name": "material"}}

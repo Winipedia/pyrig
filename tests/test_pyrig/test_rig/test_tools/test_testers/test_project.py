@@ -2,11 +2,18 @@
 
 from pathlib import Path
 
+from pyrig.rig.tools.testers.coverage import CoverageTester
 from pyrig.rig.tools.testers.project import ProjectTester
 
 
 class TestProjectTester:
     """Test class."""
+
+    def test_additional_args(self) -> None:
+        """Test method."""
+        assert (
+            ProjectTester.I.additional_args() == CoverageTester.I.additional_test_args()
+        )
 
     def test_dev_dependencies(self) -> None:
         """Test method."""

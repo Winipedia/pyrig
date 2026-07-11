@@ -46,8 +46,8 @@ class CoverageTester(Tool):
         return Args(
             f"--cov={PackageManager.I.package_name()}",
             "--cov-branch",
-            "--cov-report=term-missing",
             f"--cov-fail-under={self.threshold()}",
+            "--cov-report=term-missing:skip-covered",
         )
 
     def color(self) -> tuple[int, int, int]:

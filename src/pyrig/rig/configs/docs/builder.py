@@ -4,66 +4,47 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.rig.configs.base.yml import YMLDictConfigFile
-from pyrig.rig.configs.docs.api import APIDocsConfigFile
-from pyrig.rig.configs.docs.index import IndexConfigFile
 from pyrig.rig.tools.docs_builder import DocsBuilder
-from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.version_control.remote import RemoteVersionController
+from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class DocsBuilderConfigFile(YMLDictConfigFile):
-    """Configuration manager for the project's `mkdocs.yml` file.
+    """Configuration manager for the project's MkDocs site (`mkdocs.yml`).
 
-    Configures a Material-themed MkDocs site with a dark/light palette
-    toggle, navigation to the home and API pages, and search, Mermaid, and
-    mkdocstrings plugins.
+    Assembles the required configuration from live project metadata — name,
+    documentation and repository URLs, and default branch — combined with a
+    fixed Material theme, strict validation, and the plugins needed to render
+    search, Mermaid diagrams, and the API reference from docstrings.
     """
 
     def _configs(self) -> dict[str, Any]:
-        """Return the required `mkdocs.yml` structure.
-
-        The docstring rendering convention configured for mkdocstrings is
-        kept in sync with the convention Ruff enforces.
+        """Assemble the required `mkdocs.yml` structure from live project state.
 
         Returns:
-            The complete `mkdocs.yml` structure as a dict.
+            Nested dict matching the expected `mkdocs.yml` structure.
         """
+        branch = VersionController.I.default_branch()
+        docs_dir = DocsBuilder.I.docs_dir().as_posix()
         return {
             "site_name": PackageManager.I.project_name(),
-            "nav": [
-                {
-                    "Home": IndexConfigFile.I.path()
-                    .relative_to(DocsBuilder.I.docs_dir())
-                    .as_posix()
-                },
-                {
-                    "API": APIDocsConfigFile.I.path()
-                    .relative_to(DocsBuilder.I.docs_dir())
-                    .as_posix()
-                },
-            ],
-            "plugins": [
-                "search",
-                "mermaid2",
-                {
-                    "mkdocstrings": {
-                        "handlers": {
-                            "python": {
-                                "options": {
-                                    "docstring_style": PythonLinter.I.pydocstyle(),
-                                    "members": True,
-                                    "show_source": True,
-                                    "inherited_members": True,
-                                    "filters": [],
-                                    "show_submodules": True,
-                                },
-                            },
-                        },
-                    },
-                },
-            ],
+            "site_url": DocsBuilder.I.documentation_url(),
+            "repo_url": RemoteVersionController.I.repo_url(),
+            "edit_uri": f"edit/{branch}/{docs_dir}",
+            "strict": True,
+            "validation": {
+                "omitted_files": "warn",
+                "absolute_links": "warn",
+                "unrecognized_links": "warn",
+                "anchors": "warn",
+            },
             "theme": {
                 "name": "material",
+                "features": [
+                    "content.action.edit",
+                    "content.action.view",
+                ],
                 "palette": [
                     {
                         "scheme": "slate",
@@ -81,6 +62,25 @@ class DocsBuilderConfigFile(YMLDictConfigFile):
                     },
                 ],
             },
+            "plugins": [
+                "search",
+                "mermaid2",
+                {
+                    "mkdocstrings": {
+                        "handlers": {
+                            "python": {
+                                "options": {
+                                    "members": True,
+                                    "inherited_members": True,
+                                    "show_submodules": True,
+                                    "relative_crossrefs": True,
+                                    "scoped_crossrefs": True,
+                                },
+                            },
+                        },
+                    },
+                },
+            ],
         }
 
     def parent_path(self) -> Path:

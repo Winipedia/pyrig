@@ -4,29 +4,26 @@ from pathlib import Path
 
 from pyrig.rig.configs.base.badges import BadgesConfigFile
 from pyrig.rig.tools.docs_builder import DocsBuilder
-from pyrig.rig.tools.package_manager import PackageManager
 
 
 class IndexConfigFile(BadgesConfigFile):
     """Configuration manager for the documentation site's landing page.
 
-    Produces the same project header, status badges, and description as the
-    badge-augmented Markdown base, with the heading naming it as the project's
-    documentation rather than the project itself.
+    Produces the same status badges and description as the badge-augmented
+    Markdown base, with the heading replaced by `"Home"` so the auto-generated
+    MkDocs nav shows a short label for the landing page.
     """
 
     def lines(self) -> list[str]:
         """Build the landing page content lines.
 
-        Renames the inherited heading from the project name alone to the
-        project name followed by `" Documentation"`.
+        Replaces the inherited project-name heading with `"Home"`.
 
         Returns:
             Markdown lines for the landing page.
         """
         lines = super().lines()
-        project_name = PackageManager.I.project_name()
-        lines[0] = lines[0].replace(project_name, f"{project_name} Documentation", 1)
+        lines[0] = "# Home"
         return lines
 
     def parent_path(self) -> Path:

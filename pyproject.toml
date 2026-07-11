@@ -1,6 +1,6 @@
 [project]
 name = "pyrig"
-version = "17.9.1"
+version = "18.0.3"
 description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -105,9 +105,6 @@ ignore = [
     "COM812",
     "ANN401",
 ]
-fixable = [
-    "ALL",
-]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
@@ -117,14 +114,24 @@ fixable = [
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ty.terminal]
-error-on-warning = true
+[tool.ruff.format]
+docstring-code-format = true
 
-[tool.pytest.ini_options]
+[tool.pytest]
 testpaths = [
     "tests",
 ]
-addopts = "--cov=pyrig --cov-branch --cov-report=term-missing --cov-fail-under=100 --cov-report=xml"
+addopts = [
+    "--cov=pyrig",
+    "--cov-branch",
+    "--cov-fail-under=100",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=xml",
+]
+filterwarnings = [
+    "error",
+]
+strict = true
 
 [tool.deptry]
 root = "src"

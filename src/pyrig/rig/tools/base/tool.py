@@ -4,6 +4,7 @@ from abc import abstractmethod
 from types import ModuleType
 
 from pyrig_runtime.core.dependencies.subclass import DependencySubclass
+from pyrig_runtime.core.strings import kebab_to_snake_case
 
 from pyrig.core.strings import make_linked_badge_markdown
 from pyrig.core.subprocesses import Args
@@ -21,12 +22,16 @@ class Tool(DependencySubclass):
         >>> class MyTool(Tool):
         ...     def name(self) -> str:
         ...         return "mytool"
+        ...
         ...     def group(self) -> str:
         ...         return Group.TOOLING
+        ...
         ...     def image_url(self) -> str:
         ...         return "https://img.shields.io/badge/my-badge"
+        ...
         ...     def link_url(self) -> str:
         ...         return "https://mytool.io"
+        ...
         ...     def build_args(self, *args: str) -> Args:
         ...         return self.args("build", *args)
         >>> tuple(MyTool.I.build_args("--verbose"))
@@ -131,6 +136,17 @@ class Tool(DependencySubclass):
             link_url=self.link_url(),
             alt_text=self.__class__.__name__,
         )
+
+    def config_name(self) -> str:
+        """Return the normalized config name for this tool.
+
+        Exists for purposes like the tool section of `pyproject.toml`
+        where snake_case is more common than kebab-case.
+
+        Returns:
+            The tool's name as snake_case.
+        """
+        return kebab_to_snake_case(self.name())
 
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return the dev dependency names required by this tool.

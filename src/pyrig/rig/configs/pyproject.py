@@ -24,9 +24,7 @@ from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.testers.coverage import CoverageTester
 from pyrig.rig.tools.testers.project import ProjectTester
-from pyrig.rig.tools.type_checker import TypeChecker
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
 )
@@ -98,29 +96,26 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "build-backend": PackageManager.I.build_backend(),
             },
             "tool": {
-                PythonLinter.I.name(): {
+                PythonLinter.I.config_name(): {
                     "lint": {
                         "select": ["ALL"],
                         "ignore": ["COM812", "ANN401"],
-                        "fixable": ["ALL"],
                         "per-file-ignores": {
                             f"{ProjectTester.I.package_name()}/**/*.py": ["S101"],
                         },
                         "pydocstyle": {"convention": PythonLinter.I.pydocstyle()},
                     },
-                },
-                TypeChecker.I.name(): {
-                    "terminal": {
-                        "error-on-warning": True,
+                    "format": {
+                        "docstring-code-format": True,
                     },
                 },
-                ProjectTester.I.name(): {
-                    "ini_options": {
-                        "testpaths": [ProjectTester.I.package_root().as_posix()],
-                        "addopts": str(CoverageTester.I.additional_test_args()),
-                    }
+                ProjectTester.I.config_name(): {
+                    "testpaths": [ProjectTester.I.package_root().as_posix()],
+                    "addopts": list(ProjectTester.I.additional_args()),
+                    "filterwarnings": ["error"],
+                    "strict": True,
                 },
-                DependencyChecker.I.name(): {
+                DependencyChecker.I.config_name(): {
                     "root": PackageManager.I.source_root().as_posix(),
                     "per_rule_ignores": {"DEP002": [Pyrigger.I.runtime_dependency()]},
                 },

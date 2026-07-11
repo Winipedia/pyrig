@@ -61,10 +61,5 @@ class PythonLinter(Tool):
         return self.args("format", *args)
 
     def pydocstyle(self) -> str:
-        """Return `"google"`, the docstring convention this project enforces.
-
-        Note:
-            Other configuration derives its docstring convention setting
-            from this value, so it must stay in sync wherever it is used.
-        """
+        """Return `google` as the docstring standard."""
         return "google"

@@ -26,12 +26,12 @@ class TestCoverageTester:
         assert tuple(CoverageTester().additional_test_args()) == (
             "--cov=pyrig",
             "--cov-branch",
-            "--cov-report=term-missing",
             "--cov-fail-under=90",
+            "--cov-report=term-missing:skip-covered",
         )
-        assert (
-            str(CoverageTester().additional_test_args())
-            == "--cov=pyrig --cov-branch --cov-report=term-missing --cov-fail-under=90"
+        assert str(CoverageTester().additional_test_args()) == (
+            "--cov=pyrig --cov-branch --cov-fail-under=90"
+            " --cov-report=term-missing:skip-covered"
         )
 
     def test_threshold(self) -> None:
