@@ -21,7 +21,6 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
         >>> from pyrig.rig.configs.base.yaml import YAMLConfigFile
         >>>
         >>> class MyWorkflowConfigFile(YAMLConfigFile):
-        ...
         ...     def parent_path(self) -> Path:
         ...         return Path(".github/workflows")
         ...

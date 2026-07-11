@@ -1,22 +1,18 @@
 site_name: pyrig
-nav:
-- Home: index.md
-- API: api.md
-plugins:
-- search
-- mermaid2
-- mkdocstrings:
-    handlers:
-      python:
-        options:
-          docstring_style: google
-          members: true
-          show_source: true
-          inherited_members: true
-          filters: []
-          show_submodules: true
+site_url: https://Winipedia.github.io/pyrig
+repo_url: https://github.com/Winipedia/pyrig
+edit_uri: edit/main/docs
+strict: true
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
 theme:
   name: material
+  features:
+  - content.action.edit
+  - content.action.view
   palette:
   - scheme: slate
     toggle:
@@ -26,3 +22,16 @@ theme:
     toggle:
       icon: material/brightness-7
       name: Dark mode
+plugins:
+- search
+- mermaid2
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          members: true
+          inherited_members: true
+          show_submodules: true
+          relative_crossrefs: true
+          scoped_crossrefs: true
+          filters: []

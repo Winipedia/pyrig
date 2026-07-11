@@ -4,10 +4,16 @@ from pyrig.rig import tools
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.testers.coverage import CoverageTester
 
 
 class TestTool:
     """Test class."""
+
+    def test_config_name(self) -> None:
+        """Test method."""
+        assert PackageManager.I.config_name() == "uv"
+        assert CoverageTester.I.config_name() == "pytest_cov"
 
     def test_groups(self) -> None:
         """Test method."""

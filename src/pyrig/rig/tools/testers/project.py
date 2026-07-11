@@ -4,6 +4,7 @@ from pathlib import Path
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
+from pyrig.rig.tools.testers.coverage import CoverageTester
 
 
 class ProjectTester(Tool):
@@ -35,6 +36,18 @@ class ProjectTester(Tool):
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return `('.pytest_cache/',)`."""
         return (".pytest_cache/",)
+
+    def additional_args(self) -> Args:
+        """Return additional pytest command arguments to include in the config.
+
+        This hook exists to allow overriding and therefore easier integration
+        for pytest plugins and flags that do not support configuration via
+        `pyproject.toml`.
+
+        Returns:
+            The pytest-cov CLI flags to append to the test run.
+        """
+        return CoverageTester.I.additional_test_args()
 
     def package_root(self) -> Path:
         """Return the path to the top-level tests package."""
