@@ -106,7 +106,10 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         cls_name = (
             reformat_name(
-                leaf_module_name(module), split_on="_", join_on="", capitalize=True
+                leaf_module_name(module),
+                split_on="_",
+                join_on="",
+                capitalize=True,
             )
             + cls.__name__
         )
@@ -137,6 +140,7 @@ class CopyModuleConfigFile(PythonPackageConfigFile):
         """
         return self.source_root() / module_name_as_path(
             replace_root_module_name(
-                self.copy_module(), PackageManager.I.package_name()
-            )
+                self.copy_module(),
+                PackageManager.I.package_name(),
+            ),
         )

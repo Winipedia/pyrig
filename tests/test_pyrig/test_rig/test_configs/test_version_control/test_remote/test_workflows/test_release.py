@@ -12,7 +12,8 @@ from pyrig.rig.configs.version_control.remote.workflows.release import (
 @pytest.fixture
 def my_test_release_workflow(
     config_file_factory: Callable[
-        [type[ReleaseWorkflowConfigFile]], type[ReleaseWorkflowConfigFile]
+        [type[ReleaseWorkflowConfigFile]],
+        type[ReleaseWorkflowConfigFile],
     ],
 ) -> type[ReleaseWorkflowConfigFile]:
     """Create a test release workflow class with tmp_path."""
@@ -23,7 +24,8 @@ class TestReleaseWorkflowConfigFile:
     """Test class."""
 
     def test_step_apply_repository_settings(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         step = my_test_release_workflow().step_apply_repository_settings()
@@ -31,7 +33,8 @@ class TestReleaseWorkflowConfigFile:
         assert "env" in step
 
     def test_step_apply_rulesets(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         step = my_test_release_workflow().step_apply_rulesets()
@@ -39,7 +42,8 @@ class TestReleaseWorkflowConfigFile:
         assert "env" in step
 
     def test_steps_configure_repository(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_release_workflow()
@@ -65,7 +69,8 @@ class TestReleaseWorkflowConfigFile:
         assert ReleaseWorkflowConfigFile.I.stem() == "release"
 
     def test_workflow_triggers(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().workflow_triggers()
@@ -74,14 +79,16 @@ class TestReleaseWorkflowConfigFile:
         assert "pull_request" not in result
 
     def test_jobs(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().jobs()
         assert len(result) > 0, "Expected jobs to be non-empty"
 
     def test_job_publish(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().job_publish()
@@ -90,56 +97,64 @@ class TestReleaseWorkflowConfigFile:
         assert "steps" in result[job_name], "Expected 'steps' in job"
 
     def test_steps_publish(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().steps_publish()
         assert len(result) > 0, "Expected steps to be non-empty"
 
     def test_step_create_tag(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         step = my_test_release_workflow().step_create_tag()
         assert "run" in step
 
     def test_step_push_tag(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         step = my_test_release_workflow().step_push_tag()
         assert "run" in step
 
     def test_step_extract_version(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().step_extract_version()
         assert "run" in result
 
     def test_step_build_changelog(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().step_build_changelog()
         assert "uses" in result, "Expected 'uses' in step"
 
     def test_step_create_release(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().step_create_release()
         assert "uses" in result, "Expected 'uses' in step"
 
     def test_insert_version_from_extract_version_step(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().insert_version_from_extract_version_step()
         assert "steps.extract-version.outputs.version" in result
 
     def test_insert_changelog(
-        self, my_test_release_workflow: type[ReleaseWorkflowConfigFile]
+        self,
+        my_test_release_workflow: type[ReleaseWorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_release_workflow().insert_changelog()

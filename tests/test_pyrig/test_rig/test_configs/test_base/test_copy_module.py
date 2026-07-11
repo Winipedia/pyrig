@@ -15,7 +15,8 @@ from pyrig.rig.configs.base.package import PythonPackageConfigFile
 @pytest.fixture
 def my_test_copy_module_config_file(
     config_file_factory: Callable[
-        [type[PythonPackageConfigFile]], type[PythonPackageConfigFile]
+        [type[PythonPackageConfigFile]],
+        type[PythonPackageConfigFile],
     ],
     tmp_path: Path,
 ) -> type[PythonPackageConfigFile]:
@@ -24,7 +25,7 @@ def my_test_copy_module_config_file(
 
     mock_module = ModuleType("test_package.test_subpackage.test_module")
     mock_module.__file__ = str(
-        tmp_path / "test_package" / "test_subpackage" / "test_module.py"
+        tmp_path / "test_package" / "test_subpackage" / "test_module.py",
     )
 
     # Create the module file with some content
@@ -86,7 +87,8 @@ class TestCopyModuleConfigFile:
         assert subclass_instance.copy_module() == module
 
     def test_copy_module(
-        self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
+        self,
+        my_test_copy_module_config_file: type[CopyModuleConfigFile],
     ) -> None:
         """Test method."""
         src_module = my_test_copy_module_config_file().copy_module()
@@ -97,14 +99,16 @@ class TestCopyModuleConfigFile:
         )
 
     def test_parent_path(
-        self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
+        self,
+        my_test_copy_module_config_file: type[CopyModuleConfigFile],
     ) -> None:
         """Test method."""
         parent_path = my_test_copy_module_config_file().parent_path()
         assert isinstance(parent_path, Path), "Expected Path"
 
     def test_lines(
-        self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
+        self,
+        my_test_copy_module_config_file: type[CopyModuleConfigFile],
     ) -> None:
         """Test method."""
         lines = my_test_copy_module_config_file().lines()
@@ -114,7 +118,8 @@ class TestCopyModuleConfigFile:
         assert "Test module content" in content_str, "Expected module content in string"
 
     def test_stem(
-        self, my_test_copy_module_config_file: type[CopyModuleConfigFile]
+        self,
+        my_test_copy_module_config_file: type[CopyModuleConfigFile],
     ) -> None:
         """Test method."""
         filename = my_test_copy_module_config_file().stem()

@@ -19,12 +19,13 @@ from pyrig.rig.tests import mirror_test
 
 
 def test_module_file_path(
-    create_module: Callable[[Path], ModuleType], tmp_path: Path
+    create_module: Callable[[Path], ModuleType],
+    tmp_path: Path,
 ) -> None:
     """Test function."""
     with chdir(tmp_path):
         expected_path = Path(test_module_file_path.__name__) / Path(
-            "subpackage/module.py"
+            "subpackage/module.py",
         )
         module = create_module(expected_path)
         assert module_file_path(module) == expected_path.resolve()
@@ -42,7 +43,8 @@ def test_module_file_path(
 
 
 def test_package_dir_path(
-    create_package: Callable[[Path], ModuleType], tmp_path: Path
+    create_package: Callable[[Path], ModuleType],
+    tmp_path: Path,
 ) -> None:
     """Test function."""
     with chdir(tmp_path):

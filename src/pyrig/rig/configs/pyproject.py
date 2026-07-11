@@ -82,14 +82,14 @@ class PyprojectConfigFile(TOMLConfigFile):
                 "scripts": {
                     PackageManager.I.project_name(): (
                         f"{main.__name__}:{main.main.__name__}"
-                    )
+                    ),
                 },
             },
             "dependency-groups": {
                 "dev": self.merge_additional_dependencies(
                     dependencies=self.dev_dependencies(),
                     additional=self.additional_dev_dependencies(),
-                )
+                ),
             },
             "build-system": {
                 "requires": PackageManager.I.build_system_requires(),
@@ -99,7 +99,7 @@ class PyprojectConfigFile(TOMLConfigFile):
                 PythonLinter.I.config_name(): {
                     "lint": {
                         "select": ["ALL"],
-                        "ignore": ["COM812", "ANN401"],
+                        "ignore": ["ANN401"],
                         "per-file-ignores": {
                             f"{ProjectTester.I.package_name()}/**/*.py": ["S101"],
                         },
@@ -233,7 +233,8 @@ class PyprojectConfigFile(TOMLConfigFile):
         return lower
 
     def latest_possible_python_version(
-        self, level: Literal["major", "minor", "micro"] = "minor"
+        self,
+        level: Literal["major", "minor", "micro"] = "minor",
     ) -> Version:
         """Return the highest Python version allowed by the requires-python constraint.
 
@@ -250,7 +251,7 @@ class PyprojectConfigFile(TOMLConfigFile):
         constraint = self.requires_python()
         version_constraint = VersionConstraint(constraint)
         version = version_constraint.find_upper_inclusive(
-            default=self.latest_python_version(level=level)
+            default=self.latest_python_version(level=level),
         )
         return adjust_version_to_level(version, level)
 
@@ -275,7 +276,8 @@ class PyprojectConfigFile(TOMLConfigFile):
         )
 
     def latest_python_version(
-        self, level: Literal["major", "minor", "micro"] = "minor"
+        self,
+        level: Literal["major", "minor", "micro"] = "minor",
     ) -> Version:
         """Return the latest known stable Python version.
 
@@ -306,7 +308,8 @@ class PyprojectConfigFile(TOMLConfigFile):
             PEP 440 version specifier string (e.g., `">=3.13"`).
         """
         current_version = adjust_version_to_level(
-            Version(platform.python_version()), level="minor"
+            Version(platform.python_version()),
+            level="minor",
         )
         return (
             self.load()

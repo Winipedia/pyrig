@@ -84,7 +84,8 @@ class Args(tuple[str, ...]):
 
 @cache
 def run_subprocess_cached(
-    args: tuple[str, ...], **kwargs: Any
+    args: tuple[str, ...],
+    **kwargs: Any,
 ) -> subprocess.CompletedProcess[Any]:
     """Execute a subprocess command and cache the result.
 

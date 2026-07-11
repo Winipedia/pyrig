@@ -153,7 +153,8 @@ class ConfigFile[ConfigT: dict[str, Any] | list[Any]](DependencySubclass):
 
     @classmethod
     def validate_subclasses(
-        cls, subclasses: Iterable[type[Self]]
+        cls,
+        subclasses: Iterable[type[Self]],
     ) -> tuple[type[Self], ...]:
         """Validate a specific collection of `ConfigFile` subclasses.
 

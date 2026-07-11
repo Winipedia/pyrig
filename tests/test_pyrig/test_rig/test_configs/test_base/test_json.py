@@ -49,7 +49,8 @@ class TestJSONConfigFile:
         assert loaded == {"key": "value"}
 
     def test_extension(
-        self, my_test_json_config_file: type[JSONDictConfigFile]
+        self,
+        my_test_json_config_file: type[JSONDictConfigFile],
     ) -> None:
         """Test method."""
         extension = my_test_json_config_file().extension()

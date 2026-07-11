@@ -11,7 +11,8 @@ from pyrig.core.subprocesses import Args, run_subprocess, run_subprocess_cached
 
 
 def test_run_subprocess(
-    mocker: MockerFixture, caplog: pytest.LogCaptureFixture
+    mocker: MockerFixture,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test function."""
     cmd = ["echo", "hello"]

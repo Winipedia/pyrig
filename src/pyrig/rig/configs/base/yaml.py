@@ -40,7 +40,12 @@ class YAMLConfigFile[ConfigT: dict[str, Any] | list[Any]](ConfigFile[ConfigT]):
             configs: Configuration dict or list to serialize and write.
         """
         with open_path_with_utf8(self.path(), mode="w") as f:
-            yaml.safe_dump(configs, f, sort_keys=False, allow_unicode=True)
+            yaml.safe_dump(
+                configs,
+                f,
+                sort_keys=False,
+                allow_unicode=True,
+            )
 
     def _load(self) -> ConfigT:
         """Read and parse the YAML file from disk, returning a dict or list."""

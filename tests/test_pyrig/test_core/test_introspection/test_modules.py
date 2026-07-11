@@ -78,7 +78,8 @@ def test_import_module_from_file(tmp_path: Path, mocker: MockerFixture) -> None:
 
         # mock spec_from_loader to return None to test ImportError
         spec_from_loader_mock = mocker.patch(
-            modules.__name__ + ".spec_from_loader", return_value=None
+            modules.__name__ + ".spec_from_loader",
+            return_value=None,
         )
         with pytest.raises(ImportError):
             import_module_from_file(module_path, name=module_name)
@@ -86,7 +87,8 @@ def test_import_module_from_file(tmp_path: Path, mocker: MockerFixture) -> None:
 
 
 def test_module_has_docstring(
-    tmp_path: Path, create_module: Callable[[Path], ModuleType]
+    tmp_path: Path,
+    create_module: Callable[[Path], ModuleType],
 ) -> None:
     """Test function."""
     module_name = test_module_has_docstring.__name__

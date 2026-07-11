@@ -157,5 +157,5 @@ class TestProgrammingLanguage:
             pycache.mkdir()
             assert pycache.is_dir()
             assert list(ProgrammingLanguage.I.namespace_package_paths()) == [
-                namespace_package.relative_to(Path.cwd())
+                namespace_package.relative_to(Path.cwd()),
             ]

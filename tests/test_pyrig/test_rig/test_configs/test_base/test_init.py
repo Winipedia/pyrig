@@ -18,7 +18,7 @@ def my_test_init_config_file(
     """Create a test init config file class with tmp_path."""
     mock_module = ModuleType("test_package.test_subpackage.test_module")
     mock_module.__file__ = str(
-        tmp_path / "test_package" / "test_subpackage" / "test_module.py"
+        tmp_path / "test_package" / "test_subpackage" / "test_module.py",
     )
 
     # Create the module file with some content
@@ -48,7 +48,7 @@ class TestInitConfigFile:
     def test_import_path(self) -> None:
         """Test method."""
         assert ResourcesInitConfigFile.I.import_path() == Path(
-            "src/pyrig/rig/resources"
+            "src/pyrig/rig/resources",
         )
 
     def test_module_path(self) -> None:

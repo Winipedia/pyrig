@@ -37,7 +37,9 @@ class TestVersionController:
 
         # mock remote_url to return empty string
         remote_mock = mocker.patch.object(
-            VersionController, VersionController.remote_url.__name__, return_value=""
+            VersionController,
+            VersionController.remote_url.__name__,
+            return_value="",
         )
         username_mock = mocker.patch.object(
             VersionController,

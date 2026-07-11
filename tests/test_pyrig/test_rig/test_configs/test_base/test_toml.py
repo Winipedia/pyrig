@@ -37,7 +37,8 @@ class TestTOMLConfigFile:
     """Test class."""
 
     def test_prettify_value(
-        self, my_test_toml_config_file: type[TOMLConfigFile]
+        self,
+        my_test_toml_config_file: type[TOMLConfigFile],
     ) -> None:
         """Test method."""
         # scalar passthrough
@@ -55,13 +56,14 @@ class TestTOMLConfigFile:
 
         # nested: list of dicts with nested lists
         result = my_test_toml_config_file().prettify_value(
-            [{"repo": "local", "hooks": [{"id": "test"}]}]
+            [{"repo": "local", "hooks": [{"id": "test"}]}],
         )
         assert result[0]["repo"] == "local"
         assert result[0]["hooks"][0]["id"] == "test"
 
     def test_prettify_dict(
-        self, my_test_toml_config_file: type[TOMLConfigFile]
+        self,
+        my_test_toml_config_file: type[TOMLConfigFile],
     ) -> None:
         """Test method."""
         expected = {"key": ["value"]}

@@ -26,7 +26,8 @@ def my_test_copy_module_only_docstring_config_file(
     path = Path("test_package") / "test_subpackage" / "test_module.py"
     with chdir(tmp_path):
         cached_module = sys.modules.pop(
-            "test_package.test_subpackage.test_module", None
+            "test_package.test_subpackage.test_module",
+            None,
         )
         if cached_module is not None:
             # needed for the debugger for some reason
@@ -38,7 +39,7 @@ def my_test_copy_module_only_docstring_config_file(
         module = reimport_module(module)
 
     class MyTestCopyModuleDocstringConfigFile(
-        config_file_factory(CopyModuleDocstringConfigFile)  # ty: ignore[unsupported-base]
+        config_file_factory(CopyModuleDocstringConfigFile),  # ty: ignore[unsupported-base]
     ):
         """Test copy module only docstring config file with tmp_path override."""
 
@@ -60,7 +61,8 @@ class TestCopyModuleDocstringConfigFile:
     ) -> None:
         """Test method."""
         assert isinstance(
-            my_test_copy_module_only_docstring_config_file().default_docstring(), str
+            my_test_copy_module_only_docstring_config_file().default_docstring(),
+            str,
         )
 
     def test_lines(

@@ -41,7 +41,7 @@ class RepoSettingsConfigFile(JSONDictConfigFile):
             Dict keyed by `repository_key()` and `rulesets_key()`.
         """
         status_check_id = HealthCheckWorkflowConfigFile.I.id_from_method(
-            HealthCheckWorkflowConfigFile.I.job_health_check
+            HealthCheckWorkflowConfigFile.I.job_health_check,
         )
         return {
             self.repository_key(): {
@@ -60,7 +60,7 @@ class RepoSettingsConfigFile(JSONDictConfigFile):
                     "target": "branch",
                     "enforcement": "active",
                     "conditions": {
-                        "ref_name": {"exclude": [], "include": ["~DEFAULT_BRANCH"]}
+                        "ref_name": {"exclude": [], "include": ["~DEFAULT_BRANCH"]},
                     },
                     "rules": [
                         {"type": "creation"},
@@ -85,7 +85,7 @@ class RepoSettingsConfigFile(JSONDictConfigFile):
                                 "strict_required_status_checks_policy": True,
                                 "do_not_enforce_on_create": True,
                                 "required_status_checks": [
-                                    {"context": status_check_id}
+                                    {"context": status_check_id},
                                 ],
                             },
                         },
@@ -97,9 +97,9 @@ class RepoSettingsConfigFile(JSONDictConfigFile):
                             "actor_id": 5,
                             "actor_type": "RepositoryRole",
                             "bypass_mode": "always",
-                        }
+                        },
                     ],
-                }
+                },
             ],
         }
 

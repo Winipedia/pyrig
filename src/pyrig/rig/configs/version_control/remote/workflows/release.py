@@ -219,8 +219,8 @@ done"""
             self.step_push_tag,
             run=str(
                 VersionController.I.push_origin_tag_args(
-                    tag=self.shell_insert_version()
-                )
+                    tag=self.shell_insert_version(),
+                ),
             ),
             step=step,
         )
@@ -302,7 +302,7 @@ done"""
             GitHub Actions expression for `steps.extract-version.outputs.version`.
         """
         return self.insert_expression(
-            f"steps.{self.id_from_method(self.step_extract_version)}.outputs.version"
+            f"steps.{self.id_from_method(self.step_extract_version)}.outputs.version",
         )
 
     def insert_changelog(self) -> str:
@@ -312,5 +312,5 @@ done"""
             GitHub Actions expression for `steps.build-changelog.outputs.changelog`.
         """
         return self.insert_expression(
-            f"steps.{self.id_from_method(self.step_build_changelog)}.outputs.changelog"
+            f"steps.{self.id_from_method(self.step_build_changelog)}.outputs.changelog",
         )

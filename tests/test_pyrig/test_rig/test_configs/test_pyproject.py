@@ -22,7 +22,8 @@ from pyrig.rig.tools.version_control.controller import VersionController
 @pytest.fixture
 def my_test_pyproject_config_file(
     config_file_factory: Callable[
-        [type[PyprojectConfigFile]], type[PyprojectConfigFile]
+        [type[PyprojectConfigFile]],
+        type[PyprojectConfigFile],
     ],
 ) -> type[PyprojectConfigFile]:
     """Create a test pyproject config file class with tmp_path."""
@@ -37,7 +38,9 @@ class TestPyprojectConfigFile:
     """Test class."""
 
     def test_remote_latest_python_version(
-        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+        self,
+        *,
+        on_linux_and_latest_python_version_or_not_in_ci: bool,
     ) -> None:
         """Test method."""
         if not on_linux_and_latest_python_version_or_not_in_ci:
@@ -51,7 +54,7 @@ class TestPyprojectConfigFile:
         assert "." in latest_version
         assert latest_version == PyprojectConfigFile.I.latest_python_version_str()
         assert Version(latest_version) == PyprojectConfigFile.I.latest_python_version(
-            level="micro"
+            level="micro",
         )
 
     def test_additional_dependencies(self) -> None:
@@ -116,13 +119,15 @@ class TestPyprojectConfigFile:
         assert "keywords" not in configs["project"]
 
     def test_merge_additional_dependencies(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
     ) -> None:
         """Test method."""
         dependencies = ["dep1", "dep1", "dep3[dev]"]
         additional = ["dep3", "dep2"]
         deps_versions = my_test_pyproject_config_file().merge_additional_dependencies(
-            dependencies, additional
+            dependencies,
+            additional,
         )
         assert deps_versions == ["dep1", "dep2", "dep3[dev]"]
 
@@ -150,7 +155,8 @@ class TestPyprojectConfigFile:
         assert isinstance(dev_deps, list)
 
     def test_latest_possible_python_version(
-        self, my_test_pyproject_config_file: type[PyprojectConfigFile]
+        self,
+        my_test_pyproject_config_file: type[PyprojectConfigFile],
     ) -> None:
         """Test method."""
         # make sure repo owner is cached before entering non git folder tmp
@@ -237,7 +243,7 @@ class TestPyprojectConfigFile:
         config["project"]["requires-python"] = ">=3.8, <3.12"
         my_test_pyproject_config_file().dump(config)
         first_version = str(
-            my_test_pyproject_config_file().first_supported_python_version()
+            my_test_pyproject_config_file().first_supported_python_version(),
         )
         assert first_version == "3.8", (
             "Expected first_supported_python_version to return 3.8"
@@ -245,7 +251,7 @@ class TestPyprojectConfigFile:
         config["project"]["requires-python"] = "<=3.12, >3.8"
         my_test_pyproject_config_file().dump(config)
         first_version = str(
-            my_test_pyproject_config_file().first_supported_python_version()
+            my_test_pyproject_config_file().first_supported_python_version(),
         )
         assert first_version == "3.8.1", (
             "Expected first_supported_python_version to return 3.8.1"
@@ -275,5 +281,5 @@ class TestPyprojectConfigFile:
         assert len(latest_version_str) > 0
         assert "." in latest_version_str
         assert Version(
-            latest_version_str
+            latest_version_str,
         ) == PyprojectConfigFile.I.latest_python_version(level="micro")

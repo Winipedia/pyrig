@@ -22,7 +22,9 @@ def test_synchronize_project(mocker: MockerFixture) -> None:
         return_value=(),
     )
     config_file_mock = mocker.patch.object(
-        ConfigFile, ConfigFile.validate_concrete_subclasses.__name__, return_value=()
+        ConfigFile,
+        ConfigFile.validate_concrete_subclasses.__name__,
+        return_value=(),
     )
 
     synchronize_project()
@@ -32,7 +34,7 @@ def test_synchronize_project(mocker: MockerFixture) -> None:
         (
             ConfigFile.validate_concrete_subclasses,
             MirrorTestConfigFile.validate_concrete_subclasses,
-        )
+        ),
     )
 
     make_init_files_mock.return_value = (Path(),)

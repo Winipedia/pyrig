@@ -12,7 +12,8 @@ from pyrig.rig.configs.base.yaml import YAMLConfigFile
 @pytest.fixture
 def my_test_yaml_config_file(
     config_file_factory: Callable[
-        [type[YAMLConfigFile[dict[str, Any]]]], type[YAMLConfigFile[dict[str, Any]]]
+        [type[YAMLConfigFile[dict[str, Any]]]],
+        type[YAMLConfigFile[dict[str, Any]]],
     ],
 ) -> type[YAMLConfigFile[dict[str, Any]]]:
     """Create a test yaml config file class with tmp_path."""
@@ -39,7 +40,8 @@ class TestYAMLConfigFile:
     """Test class."""
 
     def test__load(
-        self, my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]]
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         my_test_yaml_config_file().validate()
@@ -48,7 +50,8 @@ class TestYAMLConfigFile:
         assert actual == expected, f"Expected {expected}, got {actual}"
 
     def test__dump(
-        self, my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]]
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         my_test_yaml_config_file().dump({"key": "value"})
@@ -57,7 +60,8 @@ class TestYAMLConfigFile:
         )
 
     def test_extension(
-        self, my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]]
+        self,
+        my_test_yaml_config_file: type[YAMLConfigFile[dict[str, Any]]],
     ) -> None:
         """Test method."""
         assert my_test_yaml_config_file().extension() == "yaml", "Expected yaml"

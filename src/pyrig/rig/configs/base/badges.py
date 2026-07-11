@@ -116,7 +116,9 @@ class BadgesConfigFile(MarkdownConfigFile):
             alt_text = alt_text_match.group(1)
             pattern = rf".*\[!\[{re.escape(alt_text)}\].*"
             badges_content = re.sub(
-                pattern, lambda _, badge=badge: badge, badges_content
+                pattern,
+                lambda _, badge=badge: badge,
+                badges_content,
             )
         return content.replace(old_badges_content, badges_content, 1)
 
@@ -136,17 +138,19 @@ class BadgesConfigFile(MarkdownConfigFile):
         badge_groups[Group.PROJECT_INFO].extend(
             [
                 LicenseConfigFile.I.license_badge(),
-            ]
+            ],
         )
         badge_groups[Group.CI_CD].extend(
             [
                 RemoteVersionController.I.cicd_badge(
-                    HealthCheckWorkflowConfigFile.I.stem(), "CI"
+                    HealthCheckWorkflowConfigFile.I.stem(),
+                    "CI",
                 ),
                 RemoteVersionController.I.cicd_badge(
-                    DeployWorkflowConfigFile.I.stem(), "CD"
+                    DeployWorkflowConfigFile.I.stem(),
+                    "CD",
                 ),
-            ]
+            ],
         )
 
         return badge_groups

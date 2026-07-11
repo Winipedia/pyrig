@@ -21,13 +21,17 @@ class TestLicenseConfigFile:
         assert LicenseConfigFile.I.spdx_identifier() == "MIT"
 
         read_content_mock = mocker.patch.object(
-            LicenseConfigFile, "read_content", return_value="Not a valid license text."
+            LicenseConfigFile,
+            "read_content",
+            return_value="Not a valid license text.",
         )
         assert LicenseConfigFile.I.spdx_identifier() == "LicenseRef-Custom"
         read_content_mock.assert_called_once()
 
     def test_remote_license_template(
-        self, *, on_linux_and_latest_python_version_or_not_in_ci: bool
+        self,
+        *,
+        on_linux_and_latest_python_version_or_not_in_ci: bool,
     ) -> None:
         """Test method."""
         if not on_linux_and_latest_python_version_or_not_in_ci:

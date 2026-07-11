@@ -50,7 +50,8 @@ class StringConfigFile(ListConfigFile):
             `True` if every required line is present in the file.
         """
         return self.all_lines_in_content(
-            lines=self.configs(), content=self.read_content()
+            lines=self.configs(),
+            content=self.read_content(),
         )
 
     def all_lines_in_content(self, lines: Iterable[str], content: str) -> bool:

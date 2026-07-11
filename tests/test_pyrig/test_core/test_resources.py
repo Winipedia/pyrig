@@ -9,7 +9,8 @@ from pyrig.core.resources import resource_content, resource_path
 
 
 def test_resource_path(
-    tmp_path: Path, create_package: Callable[[Path], ModuleType]
+    tmp_path: Path,
+    create_package: Callable[[Path], ModuleType],
 ) -> None:
     """Test function."""
     with chdir(tmp_path):
@@ -24,7 +25,8 @@ def test_resource_path(
 
 
 def test_resource_content(
-    tmp_path: Path, create_package: Callable[[Path], ModuleType]
+    tmp_path: Path,
+    create_package: Callable[[Path], ModuleType],
 ) -> None:
     """Test function."""
     with chdir(tmp_path):

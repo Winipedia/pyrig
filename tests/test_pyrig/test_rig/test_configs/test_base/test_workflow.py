@@ -40,7 +40,7 @@ def my_test_workflow(
                 "test_job": {
                     "runs-on": "ubuntu-latest",
                     "steps": [{"name": "Test Step", "run": "echo test"}],
-                }
+                },
             }
 
     return MyTestWorkflowConfigFileClass
@@ -50,7 +50,8 @@ class TestWorkflowConfigFile:
     """Test class."""
 
     def test_insert_repository(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         assert my_test_workflow().insert_repository() == "${{ github.repository }}"
@@ -80,14 +81,16 @@ class TestWorkflowConfigFile:
         )
 
     def test_step_update_dependencies(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_update_dependencies()
         assert "run" in result, f"Expected 'run' in step, got {result}"
 
     def test_insert_expression(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         condition = "condition"
@@ -106,7 +109,8 @@ class TestWorkflowConfigFile:
         assert result == expected, f"Expected '{expected}', got {result}"
 
     def test_steps_core_installed_setup(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().steps_core_installed_setup()
@@ -142,7 +146,8 @@ class TestWorkflowConfigFile:
         assert "test_job" in result, "Expected 'test_job' in jobs"
 
     def test_workflow_triggers(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().workflow_triggers()
@@ -180,7 +185,9 @@ class TestWorkflowConfigFile:
 
         # Test with job=None (line 222->224 False branch)
         result = my_test_workflow().job(
-            self.test_job, job=None, runs_on="ubuntu-latest"
+            self.test_job,
+            job=None,
+            runs_on="ubuntu-latest",
         )
         assert len(result) == 1, "Expected job to have one key"
 
@@ -190,7 +197,9 @@ class TestWorkflowConfigFile:
 
         # Test with steps=None (line 234->236 False branch)
         result = my_test_workflow().job(
-            self.test_job, runs_on="ubuntu-latest", steps=None
+            self.test_job,
+            runs_on="ubuntu-latest",
+            steps=None,
         )
         assert len(result) == 1, "Expected job to have one key"
         job_config = next(iter(result.values()))
@@ -202,7 +211,8 @@ class TestWorkflowConfigFile:
         assert result == "Name From Method"
 
     def test_on_workflow_dispatch(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().on_workflow_dispatch()
@@ -231,7 +241,7 @@ class TestWorkflowConfigFile:
 
         # Test with types=None (should use default types)
         result = my_test_workflow().on_pull_request(
-            types=["opened", "synchronize", "reopened"]
+            types=["opened", "synchronize", "reopened"],
         )
         assert result["pull_request"]["types"] == ["opened", "synchronize", "reopened"]
 
@@ -260,14 +270,16 @@ class TestWorkflowConfigFile:
         assert "env" in result
 
     def test_strategy_matrix_os_and_python_version(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().strategy_matrix_os_and_python_version()
         assert "matrix" in result, "Expected 'matrix' in strategy"
 
     def test_strategy_matrix_os(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().strategy_matrix_os()
@@ -288,7 +300,8 @@ class TestWorkflowConfigFile:
         assert "fail-fast" in result
 
     def test_matrix_os_and_python_version(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().matrix_os_and_python_version()
@@ -309,14 +322,16 @@ class TestWorkflowConfigFile:
         assert result["os"] == ["ubuntu-latest"]
 
     def test_matrix_python_version(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().matrix_python_version()
         assert "python-version" in result
 
         result = my_test_workflow().matrix_python_version(
-            python_versions=["3.14"], matrix={}
+            python_versions=["3.14"],
+            matrix={},
         )
         assert "python-version" in result
         assert result["python-version"] == ["3.14"]
@@ -332,14 +347,16 @@ class TestWorkflowConfigFile:
         assert len(result) > 0
 
     def test_steps_core_matrix_setup(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().steps_core_matrix_setup()
         assert len(result) > 0
 
     def test_step_checkout_repository(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_checkout_repository()
@@ -350,28 +367,32 @@ class TestWorkflowConfigFile:
         assert "uses" in result, "Expected 'uses' in step"
 
     def test_step_setup_package_manager(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_setup_package_manager(python_version="3.14")
         assert "uses" in result, "Expected 'uses' in step"
 
     def test_step_install_dependencies(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().step_install_dependencies()
         assert "run" in result
 
     def test_insert_repo_token(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().insert_repo_token()
         assert result == "${{ secrets.REPO_TOKEN }}"
 
     def test_shell_insert_version(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().shell_insert_version()
@@ -379,7 +400,8 @@ class TestWorkflowConfigFile:
         assert not result.startswith("v"), "Expected no 'v' prefix in result"
 
     def test_insert_github_token(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().insert_github_token()
@@ -393,7 +415,8 @@ class TestWorkflowConfigFile:
         assert "matrix.os" in result, "Expected 'matrix.os' in result"
 
     def test_insert_matrix_python_version(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         result = my_test_workflow().insert_matrix_python_version()
@@ -402,7 +425,8 @@ class TestWorkflowConfigFile:
         )
 
     def test_if_workflow_run_is_success(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         my_test_workflow().validate()
@@ -415,7 +439,8 @@ class TestWorkflowConfigFile:
         assert my_test_workflow().is_correct()
 
     def test_if_workflow_run_is_push_triggered(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         assert (
@@ -424,7 +449,8 @@ class TestWorkflowConfigFile:
         )
 
     def test_if_workflow_run_is_success_and_push_triggered(
-        self, my_test_workflow: type[WorkflowConfigFile]
+        self,
+        my_test_workflow: type[WorkflowConfigFile],
     ) -> None:
         """Test method."""
         workflow = my_test_workflow()

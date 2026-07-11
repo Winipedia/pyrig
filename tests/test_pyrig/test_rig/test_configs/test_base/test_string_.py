@@ -40,7 +40,8 @@ class TestStringConfigFile:
     """Test class."""
 
     def test_write_content(
-        self, my_test_string_config_file: type[StringConfigFile]
+        self,
+        my_test_string_config_file: type[StringConfigFile],
     ) -> None:
         """Test method."""
         content = "New content.\n"
@@ -49,7 +50,8 @@ class TestStringConfigFile:
         assert read_content == content
 
     def test_all_lines_in_content(
-        self, my_test_string_config_file: type[StringConfigFile]
+        self,
+        my_test_string_config_file: type[StringConfigFile],
     ) -> None:
         """Test method."""
         lines = ["Line 1", "Line 2"]
@@ -58,11 +60,13 @@ class TestStringConfigFile:
 
         content_missing_line = "This is Line 1."
         assert not my_test_string_config_file().all_lines_in_content(
-            lines, content_missing_line
+            lines,
+            content_missing_line,
         )
 
     def test_split_lines(
-        self, my_test_string_config_file: type[StringConfigFile]
+        self,
+        my_test_string_config_file: type[StringConfigFile],
     ) -> None:
         """Test method."""
         text = "Line 1.\nLine 2.\n"
@@ -76,7 +80,8 @@ class TestStringConfigFile:
         assert lines_no_newline == expected_lines_no_newline
 
     def test_join_lines(
-        self, my_test_string_config_file: type[StringConfigFile]
+        self,
+        my_test_string_config_file: type[StringConfigFile],
     ) -> None:
         """Test method."""
         lines = ["Test content.", "Second line."]
@@ -111,7 +116,8 @@ class TestStringConfigFile:
         assert configs == ["Test content."]
 
     def test_is_correct(
-        self, my_test_string_config_file: type[StringConfigFile]
+        self,
+        my_test_string_config_file: type[StringConfigFile],
     ) -> None:
         """Test method."""
         my_test_string_config_file().validate()
@@ -119,7 +125,8 @@ class TestStringConfigFile:
         assert is_correct, "Expected config to be correct after validation"
 
     def test_read_content(
-        self, my_test_string_config_file: type[StringConfigFile]
+        self,
+        my_test_string_config_file: type[StringConfigFile],
     ) -> None:
         """Test method."""
         my_test_string_config_file().validate()

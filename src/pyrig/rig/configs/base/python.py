@@ -54,7 +54,8 @@ class PythonConfigFile(StringConfigFile):
         """
         path = self.import_path()
         return import_module_with_file_fallback(
-            path, path_as_module_name(path.relative_to(self.source_root()))
+            path,
+            path_as_module_name(path.relative_to(self.source_root())),
         )
 
     def import_path(self) -> Path:

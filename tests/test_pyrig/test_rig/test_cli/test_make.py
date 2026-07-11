@@ -31,7 +31,8 @@ def test_subcls(
 ) -> None:
     """Test function."""
     result = run_subprocess(
-        ["pyrig", "mk", snake_to_kebab_case(subcls.__name__), "--help"], check=False
+        ["pyrig", "mk", snake_to_kebab_case(subcls.__name__), "--help"],
+        check=False,
     )
     assert result.returncode == 0
 
