@@ -5,7 +5,7 @@ from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
 
 
-class SecurityChecker(Tool):
+class SecurityLinter(Tool):
     """Wrapper for the `bandit` security checker.
 
     Constructs `bandit` command-line arguments for scanning the project's

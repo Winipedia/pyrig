@@ -15,10 +15,10 @@ from pyrig.rig.configs.base.yml import YMLDictConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.programming_language import ProgrammingLanguage
+from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
 )
-from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class WorkflowConfigFile(YMLDictConfigFile):

@@ -1,6 +1,6 @@
 """module."""
 
-from pyrig.rig.tools.testers.coverage import CoverageTester
+from pyrig.rig.tools.testing.coverage import CoverageTester
 
 
 class TestCoverageTester:

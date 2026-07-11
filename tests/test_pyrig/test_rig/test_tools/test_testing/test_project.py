@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-from pyrig.rig.tools.testers.coverage import CoverageTester
-from pyrig.rig.tools.testers.project import ProjectTester
+from pyrig.rig.tools.testing.coverage import CoverageTester
+from pyrig.rig.tools.testing.project import ProjectTester
 
 
 class TestProjectTester:

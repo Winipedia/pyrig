@@ -21,8 +21,8 @@ from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.base.tool import Tool
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.testers.project import ProjectTester
-from pyrig.rig.tools.version_control.version_controller import VersionController
+from pyrig.rig.tools.testing.project import ProjectTester
+from pyrig.rig.tools.version_control.controller import VersionController
 
 
 def test_init_project_calls_pyrigger(mocker: MockerFixture) -> None:

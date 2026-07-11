@@ -5,7 +5,7 @@ from pathlib import Path
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.version_control.version_controller import VersionController
+from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class DocsBuilder(Tool):

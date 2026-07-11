@@ -17,10 +17,10 @@ from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.base.string_ import StringConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
 )
-from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class LicenseConfigFile(StringConfigFile):

@@ -43,8 +43,8 @@ stages = [
 ]
 
 [[repos.hooks]]
-id = "check-spelling"
-name = "check-spelling"
+id = "fix-spelling"
+name = "fix-spelling"
 entry = "uv run typos --write-changes"
 language = "system"
 always_run = true
@@ -54,9 +54,9 @@ stages = [
 ]
 
 [[repos.hooks]]
-id = "check-types"
-name = "check-types"
-entry = "uv run ty check"
+id = "check-secrets"
+name = "check-secrets"
+entry = "uv run detect-secrets-hook"
 language = "system"
 always_run = true
 pass_filenames = false
@@ -68,6 +68,17 @@ stages = [
 id = "check-security"
 name = "check-security"
 entry = "uv run bandit -r src/pyrig"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-commit",
+]
+
+[[repos.hooks]]
+id = "check-types"
+name = "check-types"
+entry = "uv run ty check"
 language = "system"
 always_run = true
 pass_filenames = false

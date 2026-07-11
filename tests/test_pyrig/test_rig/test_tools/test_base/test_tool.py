@@ -4,7 +4,7 @@ from pyrig.rig import tools
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.testers.coverage import CoverageTester
+from pyrig.rig.tools.testing.coverage import CoverageTester
 
 
 class TestTool:

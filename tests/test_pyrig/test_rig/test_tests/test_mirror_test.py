@@ -12,7 +12,7 @@ from pyrig.core.introspection.modules import reimport_module
 from pyrig.rig import tests
 from pyrig.rig.tests import mirror_test
 from pyrig.rig.tests.mirror_test import MirrorTestConfigFile
-from pyrig.rig.tools.testers.project import ProjectTester
+from pyrig.rig.tools.testing.project import ProjectTester
 
 MIRROR_MODULE_PATH = Path("mirror_test_package/mirror_test_module.py")
 MIRROR_MODULE_NAME = "mirror_test_package.mirror_test_module"
