@@ -16,9 +16,10 @@ from pyrig.rig.tools.dependencies.auditor import DependencyAuditor
 from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
 from pyrig.rig.tools.linting.python import PythonLinter
+from pyrig.rig.tools.linting.security import SecurityLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
-from pyrig.rig.tools.security_checker import SecurityChecker
+from pyrig.rig.tools.secrets_checker import SecretsChecker
 from pyrig.rig.tools.spell_checker import SpellChecker
 from pyrig.rig.tools.type_checker import TypeChecker
 from pyrig.rig.tools.version_control.hook_manager import (
@@ -38,14 +39,6 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
         hooks with git.
     """
 
-    def parent_path(self) -> Path:
-        """Return the project root directory."""
-        return Path()
-
-    def stem(self) -> str:
-        """Return `"prek"`, the config filename stem."""
-        return VersionControlHookManager.I.name()
-
     def _configs(self) -> dict[str, Any]:
         """Build the required `prek.toml` structure.
 
@@ -62,6 +55,14 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 },
             ],
         }
+
+    def parent_path(self) -> Path:
+        """Return the project root directory."""
+        return Path()
+
+    def stem(self) -> str:
+        """Return `"prek"`, the config filename stem."""
+        return VersionControlHookManager.I.name()
 
     def hook_types(self) -> list[str]:
         """Return the sorted, deduplicated git stages used across all hooks."""
@@ -86,18 +87,23 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
                 stages=["pre-commit"],
             ),
             self.hook(
-                "check-spelling",
+                "fix-spelling",
                 PackageManager.I.run_args(*SpellChecker.I.check_fix_args()),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "check-secrets",
+                PackageManager.I.run_args(*SecretsChecker.I.check_args()),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "check-security",
+                PackageManager.I.run_args(*SecurityLinter.I.check_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
                 "check-types",
                 PackageManager.I.run_args(*TypeChecker.I.check_args()),
-                stages=["pre-commit"],
-            ),
-            self.hook(
-                "check-security",
-                PackageManager.I.run_args(*SecurityChecker.I.check_args()),
                 stages=["pre-commit"],
             ),
             self.hook(

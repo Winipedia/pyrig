@@ -9,7 +9,7 @@ from pyrig.rig.configs.version_control.remote.workflows.health_check import (
     HealthCheckWorkflowConfigFile,
 )
 from pyrig.rig.tools.package_manager import PackageManager
-from pyrig.rig.tools.version_control.version_controller import VersionController
+from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class RepoSettingsConfigFile(JSONDictConfigFile):

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.testers.coverage import CoverageTester
+from pyrig.rig.tools.testing.coverage import CoverageTester
 
 
 class ProjectTester(Tool):

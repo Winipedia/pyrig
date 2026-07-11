@@ -6,7 +6,7 @@ import requests
 from pytest_mock import MockerFixture
 
 from pyrig.rig.configs.code_of_conduct import CodeOfConductConfigFile
-from pyrig.rig.tools.version_control.version_controller import VersionController
+from pyrig.rig.tools.version_control.controller import VersionController
 
 
 class TestCodeOfConductConfigFile:

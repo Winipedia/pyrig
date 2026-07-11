@@ -1,13 +1,13 @@
 [project]
 name = "pyrig"
-version = "18.2.0"
+version = "18.3.6"
 description = "A tool that standardizes and automates Python project setup, configuration, development, and maintenance."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "inquirerpy>=0.3.4",
     "packaging>=26.2",
-    "pyrig-runtime>=3.0.5",
+    "pyrig-runtime>=3.5.2",
     "pyyaml>=6.0.3",
     "spdx-matcher>=0.1.4",
     "tomlkit>=0.15.0",
@@ -71,23 +71,24 @@ pyrig = "pyrig_runtime.rig.cli.main:main"
 dev = [
     "bandit>=1.9.4",
     "deptry>=0.25.1",
+    "detect-secrets>=1.5.0",
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.7.6",
     "mkdocs-mermaid2-plugin>=1.2.3",
-    "mkdocstrings[python]>=1.0.4",
+    "mkdocstrings[python]>=1.0.5",
     "pip-audit>=2.10.1",
     "prek>=0.4.8",
     "pyrig>=15.0.0",
-    "pyrig-codecov>=3.0.10",
-    "pyrig-fixtures>=2.2.2",
-    "pyrig-overrides>=4.0.11",
-    "pyrig-pypi>=3.0.10",
-    "pyrig-resources>=3.0.10",
+    "pyrig-codecov>=3.2.6",
+    "pyrig-fixtures>=2.3.2",
+    "pyrig-overrides>=4.2.2",
+    "pyrig-pypi>=3.1.2",
+    "pyrig-resources>=3.1.2",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
-    "ruff>=0.15.20",
-    "rumdl>=0.2.28",
-    "ty>=0.0.56",
+    "ruff>=0.15.21",
+    "rumdl>=0.2.30",
+    "ty>=0.0.58",
     "typos>=1.48.0",
 ]
 

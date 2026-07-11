@@ -6,8 +6,8 @@ from typing import Any
 from pyrig.rig.configs.base.yml import YMLDictConfigFile
 from pyrig.rig.tools.docs_builder import DocsBuilder
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote import RemoteVersionController
-from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class DocsBuilderConfigFile(YMLDictConfigFile):
