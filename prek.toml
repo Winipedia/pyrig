@@ -43,6 +43,17 @@ stages = [
 ]
 
 [[repos.hooks]]
+id = "lint-yaml"
+name = "lint yaml"
+entry = "uv run ryl check . -d 'extends: default' --fix"
+language = "system"
+always_run = true
+pass_filenames = false
+stages = [
+    "pre-commit",
+]
+
+[[repos.hooks]]
 id = "fix-spelling"
 name = "fix spelling"
 entry = "uv run typos --write-changes"

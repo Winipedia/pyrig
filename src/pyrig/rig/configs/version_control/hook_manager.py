@@ -18,6 +18,7 @@ from pyrig.rig.tools.dependencies.checker import DependencyChecker
 from pyrig.rig.tools.linting.markdown import MarkdownLinter
 from pyrig.rig.tools.linting.python import PythonLinter
 from pyrig.rig.tools.linting.security import SecurityLinter
+from pyrig.rig.tools.linting.yaml import YAMLLinter
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.secrets_checker import SecretsChecker
@@ -85,6 +86,11 @@ class VersionControlHookManagerConfigFile(TOMLConfigFile):
             self.hook(
                 "lint-markdown",
                 PackageManager.I.run_args(*MarkdownLinter.I.check_fix_args()),
+                stages=["pre-commit"],
+            ),
+            self.hook(
+                "lint-yaml",
+                PackageManager.I.run_args(*YAMLLinter.I.check_fix_args()),
                 stages=["pre-commit"],
             ),
             self.hook(
