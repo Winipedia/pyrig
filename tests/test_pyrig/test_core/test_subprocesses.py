@@ -16,7 +16,7 @@ def test_run_subprocess(
 ) -> None:
     """Test function."""
     cmd = ["echo", "hello"]
-    res = run_subprocess(cmd)
+    res = run_subprocess(*cmd)
     assert res.returncode == 0, "Expected returncode 0"
     assert res.stdout == "hello\n", f"Expected stdout 'hello\n', got {res.stdout}"
     assert res.stderr == "", f"Expected stderr '', got {res.stderr}"
@@ -25,24 +25,24 @@ def test_run_subprocess(
         TypeError,
         match=r"shell",
     ):
-        run_subprocess(cmd, shell=True)  # noqa: S604  # nosec: B604
+        run_subprocess(*cmd, shell=True)  # ty: ignore[unknown-argument]  # noqa: S604  # nosec: B604
 
     # mock run to raise CalledProcessError
     mock_run = mocker.patch("subprocess.run", side_effect=CalledProcessError(1, cmd))
     with caplog.at_level(logging.ERROR), pytest.raises(CalledProcessError):
-        run_subprocess(cmd)
+        run_subprocess(*cmd)
     mock_run.assert_called_once()
     # Check that the error was logged
     assert any(
-        "Command failed: ['echo', 'hello'] (exit code 1)" in record.message
+        "Command failed: ('echo', 'hello') (exit code 1)" in record.message
         for record in caplog.records
     )
 
 
 def test_run_subprocess_cached() -> None:
     """Test function."""
-    result1 = run_subprocess_cached(("echo", "hello"))
-    result2 = run_subprocess_cached(("echo", "hello"))
+    result1 = run_subprocess_cached("echo", "hello")
+    result2 = run_subprocess_cached("echo", "hello")
     assert result1 == result2, "Expected cached result to be the same"
     assert result1.returncode == 0, "Expected returncode 0"
     assert result1.stdout == "hello\n", (

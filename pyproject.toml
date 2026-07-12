@@ -126,9 +126,6 @@ strict = true
 select = [
     "ALL",
 ]
-ignore = [
-    "ANN401",
-]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [

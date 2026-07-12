@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import wraps
 from importlib import import_module
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from pyrig_runtime.core.introspection.inspection import obj_members
 
@@ -20,11 +20,11 @@ from pyrig.core.introspection.classes import (
 from pyrig.core.introspection.inspection import unwrap_obj
 
 
-def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+def decorator[R](func: Callable[..., R]) -> Callable[..., R]:
     """Decorate a function for testing purposes."""
 
     @wraps(func)
-    def wrapper(*args: Any, **kwargs: Any) -> Any:
+    def wrapper(*args: object, **kwargs: object) -> R:
         """Execute the wrapped function."""
         return func(*args, **kwargs)
 

@@ -3,13 +3,15 @@
 from typing import Any
 
 from ruamel.yaml import YAML
+from ruamel.yaml.nodes import ScalarNode
+from ruamel.yaml.representer import RoundTripRepresenter
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString, LiteralScalarString
 
 from pyrig.core.strings import is_multiline, open_path_with_utf8, read_text_utf8
 from pyrig.rig.configs.base.config_file import ConfigFile
 
 
-def _represent_str(representer: Any, data: str) -> Any:
+def _represent_str(representer: RoundTripRepresenter, data: str) -> ScalarNode:
     """Represent a string in YAML.
 
     Represents multi-line strings as literal block scalars and single-line
