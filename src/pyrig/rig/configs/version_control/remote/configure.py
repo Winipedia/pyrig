@@ -37,7 +37,8 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
 
 {self.apply_rulesets_script()}
 
-{self.footer_content()}"""
+{self.footer_content()}
+"""
 
     def parent_path(self) -> Path:
         """Return `Path(".github")`."""
@@ -83,8 +84,7 @@ class ConfigureRepositoryConfigFile(ShellConfigFile):
     if [ -z "$id" ]; then method="POST"; else method="PUT"; fi
     gh api "$endpoint${{id:+/$id}}" -X "$method" --input - <<<"$ruleset"
   done
-}}
-"""
+}}"""
 
     def apply_rulesets_function(self) -> str:
         """Return `"rulesets"`, the function name."""
